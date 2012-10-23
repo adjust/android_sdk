@@ -44,6 +44,44 @@ Build and run your Android app. In your LogCat viewer you can set the filter `ta
 
 ![AdjustIo log][log]
 
+## Additional Features
+
+Once you have integrated the AdjustIo SDK into you project, you can take advantage of the following features wherever you see fit.
+
+### Add tracking of custom events.
+You can tell AdjustIo about every event you consider to be of your interest. Suppose you want to track every tap on a button. We would give you an eventId, like `abc123`. In your button's onClick method you could then add the following code to track the click:
+
+    AdjustIo.trackEvent("abc123");
+
+You can also register a callback URL for that event and we will send a request to that URL whenever the event happens. Additianally you can put some key-value-pairs in a Map and pass it to the trackEvent method. In that case we will forward these named parameters to your callback URL. Suppose you registered the URL `http://www.adeven.com/callback` for your event and call the following lines:
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("key", "value");
+    parameters.put("foo", "bar");
+    AdjustIo.trackEvent("abc123", parameters);
+
+In that case we would track the event and send a request to `http://www.adeven.com/callback?key=value&foo=bar`. In any case you need to import AdjustIo in any source file that makes use of the SDK.
+
+### Add tracking of revenue
+
+If your users can make revenue by clicking on advertisements you can track those revenues. If the click is worth one cent, you could make the following call to track that revenue:
+
+    AdjustIo.trackRevenue(1.0f);
+
+The parameter is supposed to be in Cents and will get rounded to one decimal point. If you want to differentiate between different kinds of revenue you can get different eventIds for each kind. In that case you would make a call like this:
+
+    AdjustIo.trackRevenue(1.0f, "abc123");
+
+You can also register a callback URL again and provide a map of named parameters, just like it worked with normal events.
+
+    Map<String, String> parameters = new HashMap<String, String>();
+    parameters.put("key", "value");
+    parameters.put("foo", "bar");
+    AdjustIo.trackRevenue(1.0f, "abc123", parameters)
+
+In any case, don't forget to import AdjustIo.
+
+
 [adjust.io]: http://www.adjust.io
 [download]: https://github.com/adeven/adjust_android_sdk/zipball/master
 [project]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/project.png
