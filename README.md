@@ -7,7 +7,7 @@ This is the Android SDK of AdjustIo. You ca read more about it at [adjust.io][].
 These are the minimal steps required to integrate the AdjustIo SDK into your Android project. We are going to assume that you use Eclipse for your Android development.
 
 ### 1. Get the SDK
-Download the latest version [here][download]. Extract the archive in a folder of your liking.
+Download the latest version from our [tags page][tags]. Extract the archive in a folder of your liking.
 
 ### 2. Add it to your project
 In the Eclipse menu select `File|New|Project...`.
@@ -83,7 +83,7 @@ In any case, don't forget to import AdjustIo.
 
 
 [adjust.io]: http://www.adjust.io
-[download]: https://github.com/adeven/adjust_android_sdk/zipball/master
+[tags]: https://github.com/adeven/adjust_android_sdk/tags
 [project]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/project.png
 [android]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/android.png
 [import]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/import.png
