@@ -32,16 +32,18 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class Util {
-
+    
     private static final String BASEURL = "http://app.adjust.io";
     private static final String CLIENTSDK = "android1.0";
-
+    
     public static String getBase64EncodedParameters(Map<String, String> parameters) {
         if (parameters == null) {
             return null;
@@ -55,9 +57,9 @@ public class Util {
     
     public static StringEntity getEntityEncodedParameters(String... parameters) throws UnsupportedEncodingException {
         List<NameValuePair> pairs = new ArrayList<NameValuePair>(2);
-        for (int i = 0; i < parameters.length; i += 2) {
+        for (int i = 0; i+1 < parameters.length; i += 2) {
             String key = parameters[i];
-            String value = parameters[i + 1];
+            String value = parameters[i+1];
             if (value != null) {
                 pairs.add(new BasicNameValuePair(key, value));
             }
@@ -110,10 +112,18 @@ public class Util {
     }
 
     protected static String getMacAddress(Application app) {
-        WifiManager wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE);
-        String address = wifiManager.getConnectionInfo().getMacAddress();
-        String result = address.replace(":", "");
-        return result;
+        WifiManager wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE); // TODO: only works on device
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        String address = wifiInfo.getMacAddress();
+        
+        if (address == null) {
+            address = "andremul";
+        } else {
+            address = address.replace(":", "");
+        }
+        
+        Log.d("aoeu", address);
+        return address;
     }
 
     private static String getAppVersion(Application app) {
@@ -175,16 +185,17 @@ public class Util {
     
     private static String getScreenDensity(DisplayMetrics displayMetrics) {
         int density = displayMetrics.densityDpi;
+        int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
+        int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
         
-        switch (density) {
-        case DisplayMetrics.DENSITY_LOW:
-            return "low";
-        case DisplayMetrics.DENSITY_MEDIUM:
-            return "medium";
-        case DisplayMetrics.DENSITY_HIGH:
-            return "high";
-        default:
+        if (density == 0) {
             return "unknown";
+        } else if (density < low) {
+            return "low";
+        } else if (density > high) {
+            return "high";
+        } else {
+            return "medium";
         }
     }
 }
