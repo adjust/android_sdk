@@ -33,9 +33,16 @@ In the left pane select `Android`. In the bottom right group `Library` click the
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they are not present already.
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
 ![Add Permissions][permissions]
 
-In the Package Explorer open the launch activity of your Android App. Add the line `import com.adeven.adjustio.AdjustIo;` to the top of the source file. In the onCreate method of your activity add the line `AdjustIo.appDidLaunch(getApplication());`. This tells AdjustIo about the launch of your Application.
+In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the onCreate method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
+
+    import com.adeven.adjustio.AdjustIo;
+    ...
+    AdjustIo.appDidLaunch(getApplication());
 
 ![Adjust Activity][activity]
 
