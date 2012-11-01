@@ -37,7 +37,6 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 public class Util {
 
@@ -250,7 +249,6 @@ public class Util {
         }
 
         String sanitized = sanitizeString(address);
-        Log.d("mac", sanitized);
         return sanitized;
     }
 
