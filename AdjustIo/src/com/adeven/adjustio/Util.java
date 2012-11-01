@@ -8,6 +8,9 @@
 
 package com.adeven.adjustio;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,51 +29,52 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 public class Util {
-    
+
     private static final String BASEURL = "http://app.adjust.io";
-    private static final String CLIENTSDK = "android1.0";
-    
-    public static String getBase64EncodedParameters(Map<String, String> parameters) {
+    private static final String CLIENTSDK = "android1.1";
+
+    public static String getBase64EncodedParameters(
+            Map<String, String> parameters) {
         if (parameters == null) {
             return null;
         }
 
         JSONObject jsonObject = new JSONObject(parameters);
         String jsonString = jsonObject.toString();
-        String encoded = Base64.encodeToString(jsonString.getBytes(), Base64.DEFAULT);
+        String encoded = Base64.encodeToString(jsonString.getBytes(),
+                Base64.DEFAULT);
         return encoded;
     }
-    
-    public static StringEntity getEntityEncodedParameters(String... parameters) throws UnsupportedEncodingException {
+
+    public static StringEntity getEntityEncodedParameters(String... parameters)
+            throws UnsupportedEncodingException {
         List<NameValuePair> pairs = new ArrayList<NameValuePair>(2);
-        for (int i = 0; i+1 < parameters.length; i += 2) {
+        for (int i = 0; i + 1 < parameters.length; i += 2) {
             String key = parameters[i];
-            String value = parameters[i+1];
+            String value = parameters[i + 1];
             if (value != null) {
                 pairs.add(new BasicNameValuePair(key, value));
             }
         }
+
         StringEntity entity = new UrlEncodedFormEntity(pairs);
         return entity;
     }
 
     public static HttpClient getHttpClient(String userAgent) {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpParams params = httpClient.getParams(); 
+        HttpParams params = httpClient.getParams();
         params.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
         return httpClient;
     }
@@ -85,7 +89,7 @@ public class Util {
 
         return request;
     }
-    
+
     protected static String getUserAgent(Application app) {
         Resources resources = app.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -93,37 +97,29 @@ public class Util {
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
 
-        StringBuilder builder = new StringBuilder(app.getPackageName());
-        builder.append(" " + Util.getAppVersion(app));
-        builder.append(" " + Util.getDeviceType(screenLayout));
-        builder.append(" " + Build.DEVICE.replaceAll(" ", ""));
-        builder.append(" " + "android");
-        builder.append(" " + Build.VERSION.SDK_INT);
-        builder.append(" " + locale.getLanguage());
-        builder.append(" " + locale.getCountry());
-        builder.append(" " + Util.getScreenSize(screenLayout));
-        builder.append(" " + Util.getScreenFormat(screenLayout));
-        builder.append(" " + Util.getScreenDensity(displayMetrics));
-        builder.append(" " + displayMetrics.widthPixels);
-        builder.append(" " + displayMetrics.heightPixels);
+        StringBuilder builder = new StringBuilder();
+        builder.append(getPackageName(app));
+        builder.append(" " + getAppVersion(app));
+        builder.append(" " + getDeviceType(screenLayout));
+        builder.append(" " + getDeviceName());
+        builder.append(" " + getOsName());
+        builder.append(" " + getOsVersion());
+        builder.append(" " + getLanguage(locale));
+        builder.append(" " + getCountry(locale));
+        builder.append(" " + getScreenSize(screenLayout));
+        builder.append(" " + getScreenFormat(screenLayout));
+        builder.append(" " + getScreenDensity(displayMetrics));
+        builder.append(" " + getDisplayWidth(displayMetrics));
+        builder.append(" " + getDisplayHeight(displayMetrics));
 
         String userAgent = builder.toString();
         return userAgent;
     }
 
-    protected static String getMacAddress(Application app) {
-        WifiManager wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE); // TODO: only works on device
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        String address = wifiInfo.getMacAddress();
-        
-        if (address == null) {
-            address = "andremul";
-        } else {
-            address = address.replace(":", "");
-        }
-        
-        Log.d("aoeu", address);
-        return address;
+    private static String getPackageName(Application app) {
+        String packageName = app.getPackageName();
+        String sanitized = sanitizeString(packageName);
+        return sanitized;
     }
 
     private static String getAppVersion(Application app) {
@@ -132,7 +128,8 @@ public class Util {
             String name = app.getPackageName();
             PackageInfo info = packageManager.getPackageInfo(name, 0);
             String versionName = info.versionName;
-            return versionName;
+            String result = sanitizeString(versionName);
+            return result;
         } catch (NameNotFoundException e) {
             return "unknown";
         }
@@ -140,7 +137,7 @@ public class Util {
 
     private static String getDeviceType(int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
-        
+
         switch (screenSize) {
         case Configuration.SCREENLAYOUT_SIZE_SMALL:
         case Configuration.SCREENLAYOUT_SIZE_NORMAL:
@@ -151,6 +148,34 @@ public class Util {
         default:
             return "unknown";
         }
+    }
+
+    private static String getDeviceName() {
+        String deviceName = Build.MODEL;
+        String sanitized = sanitizeString(deviceName);
+        return sanitized;
+    }
+
+    private static String getOsName() {
+        return "android";
+    }
+
+    private static String getOsVersion() {
+        String osVersion = "" + Build.VERSION.SDK_INT;
+        String sanitized = sanitizeString(osVersion);
+        return sanitized;
+    }
+
+    private static String getLanguage(Locale locale) {
+        String language = locale.getLanguage();
+        String sanitized = sanitizeString(language, "zz");
+        return sanitized;
+    }
+
+    private static String getCountry(Locale locale) {
+        String country = locale.getCountry();
+        String sanitized = sanitizeString(country, "zz");
+        return sanitized;
     }
 
     private static String getScreenSize(int screenLayout) {
@@ -182,12 +207,12 @@ public class Util {
             return "unknown";
         }
     }
-    
+
     private static String getScreenDensity(DisplayMetrics displayMetrics) {
         int density = displayMetrics.densityDpi;
         int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
-        
+
         if (density == 0) {
             return "unknown";
         } else if (density < low) {
@@ -196,6 +221,77 @@ public class Util {
             return "high";
         } else {
             return "medium";
+        }
+    }
+
+    private static String getDisplayWidth(DisplayMetrics displayMetrics) {
+        String displayWidth = String.valueOf(displayMetrics.widthPixels);
+        String sanitized = sanitizeString(displayWidth);
+        return sanitized;
+    }
+
+    private static String getDisplayHeight(DisplayMetrics displayMetrics) {
+        String displayHeight = String.valueOf(displayMetrics.heightPixels);
+        String sanitized = sanitizeString(displayHeight);
+        return sanitized;
+    }
+
+    protected static String getMacAddress(Application app) {
+        String address = null;
+
+        // android devices should have a wlan address
+        if (address == null) {
+            address = loadAddress("wlan0");
+        }
+
+        // emulators should have an ethernet address
+        if (address == null) {
+            address = loadAddress("eth0");
+        }
+
+        String sanitized = sanitizeString(address);
+        Log.d("mac", sanitized);
+        return sanitized;
+    }
+
+    // removes spaces and replaces empty string with "unknown"
+    private static String sanitizeString(String string) {
+        return sanitizeString(string, "unknown");
+    }
+
+    private static String sanitizeString(String string, String defaultString) {
+        if (string == null) {
+            string = defaultString;
+        }
+
+        String result = string.replaceAll("\\s", "");
+        if (result.length() == 0) {
+            result = defaultString;
+        }
+
+        return result;
+    }
+
+    public static String loadAddress(String interfaceName) {
+        try {
+            String filePath = "/sys/class/net/" + interfaceName + "/address";
+            StringBuffer fileData = new StringBuffer(1000);
+            BufferedReader reader;
+            reader = new BufferedReader(new FileReader(filePath));
+            char[] buf = new char[1024];
+            int numRead = 0;
+
+            while ((numRead = reader.read(buf)) != -1) {
+                String readData = String.valueOf(buf, 0, numRead);
+                fileData.append(readData);
+            }
+
+            reader.close();
+            String string = fileData.toString();
+            String address = string.replaceAll(":", "").toUpperCase();
+            return address;
+        } catch (IOException e) {
+            return null;
         }
     }
 }
