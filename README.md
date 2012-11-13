@@ -31,10 +31,9 @@ In the left pane select `Android`. In the bottom right group `Library` click the
 
 ![Add Library][library]
 
-In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they are not present already.
+In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for `INTERNET` if it isn't present already.
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
 ![Add Permissions][permissions]
 
@@ -96,7 +95,7 @@ In any case, don't forget to import AdjustIo.
 [import]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/import.png
 [properties]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/properties.png
 [library]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/library.png
-[permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions.png
+[permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions2.png
 [activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity.png
 [log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log.png
 
@@ -105,7 +104,7 @@ In any case, don't forget to import AdjustIo.
 
 The adjust-sdk is licensed under the MIT License.
 
-Copyright (c) 2012 adeven GmbH, 
+Copyright (c) 2012 adeven GmbH,
 http://www.adeven.com
 
 Permission is hereby granted, free of charge, to any person obtaining
