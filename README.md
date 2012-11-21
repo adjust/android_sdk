@@ -12,43 +12,43 @@ Download the latest version from our [tags page][tags]. Extract the archive in a
 ### 2. Add it to your project
 In the Eclipse menu select `File|New|Project...`.
 
-![New Project][project]
+![][project]
 
 From the Wizard expand the `Android` group and select `Android Project from Existing Code` and click `Next`.
 
-![Android Project][android]
+![][android]
 
 On the top of the next screen click the `Browse...` button and locate the folder you extracted in step 1. Select the AdjustIo subfolder and click `Open`. In the `Projects:` group make sure the AdjustIo project is selected. Also tick the option `Copy projects into workspace` and click `Finish`.
 
-![Import Projects][import]
+![][import]
 
 ### 3. Integrate AdjustIo into your app
 In the Package Explorer right click on your Android project and select `Properties`.
 
-![Project Properties][properties]
+![][properties]
 
 In the left pane select `Android`. In the bottom right group `Library` click the `Add...` button. From the list select the AdjustIo library project and click `OK`. Save your changed project properties by clicking `OK` again.
 
-![Add Library][library]
+![][library]
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for `INTERNET` if it isn't present already.
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-![Add Permissions][permissions]
+![][permissions]
 
 In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the onCreate method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
 
     import com.adeven.adjustio.AdjustIo;
-    ...
+    // ...
     AdjustIo.appDidLaunch(getApplication());
 
-![Adjust Activity][activity]
+![][activity]
 
 ### 4. Build your app
 Build and run your Android app. In your LogCat viewer you can set the filter `tag:AdjustIo` to hide all other logs. After your app has launched you should see the following AdjustIo log: `Tracked session start.`
 
-![AdjustIo log][log]
+![][log]
 
 ## Additional Features
 
@@ -59,7 +59,7 @@ You can tell AdjustIo about every event you consider to be of your interest. Sup
 
     AdjustIo.trackEvent("abc123");
 
-You can also register a callback URL for that event and we will send a request to that URL whenever the event happens. Additianally you can put some key-value-pairs in a Map and pass it to the trackEvent method. In that case we will forward these named parameters to your callback URL. Suppose you registered the URL `http://www.adeven.com/callback` for your event and call the following lines:
+You can also register a callback URL for that event and we will send a request to that URL whenever the event happens. Additianally you can put some key-value-pairs in a Map and pass it to the trackEvent method. In that case we will forward these named parameters to your callback URL. Suppose you registered the URL `http://www.adeven.com/callback` for your event and execute the following lines:
 
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("key", "value");
@@ -86,7 +86,6 @@ You can also register a callback URL again and provide a map of named parameters
     AdjustIo.trackRevenue(1.0f, "abc123", parameters)
 
 In any case, don't forget to import AdjustIo.
-
 
 [adjust.io]: http://www.adjust.io
 [tags]: https://github.com/adeven/adjust_android_sdk/tags
