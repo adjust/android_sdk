@@ -29,22 +29,25 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 import android.app.Application;
+import android.content.ContentResolver;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings.Secure;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 
 public class Util {
 
     private static final String BASEURL = "http://app.adjust.io";
-    private static final String CLIENTSDK = "android1.1";
+    private static final String CLIENTSDK = "android1.2";
 
-    public static String getBase64EncodedParameters(
-            Map<String, String> parameters) {
+    public static String getBase64EncodedParameters(Map<String, String> parameters) {
         if (parameters == null) {
             return null;
         }
@@ -291,5 +294,22 @@ public class Util {
         } catch (IOException e) {
             return null;
         }
+    }
+
+    public static String getAndroidId(Application app) {
+        return Secure.getString(app.getContentResolver(), Secure.ANDROID_ID);
+    }
+
+    public static String getAttributionId(Application application) {
+        ContentResolver contentResolver = application.getContentResolver();
+        Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
+        String columnName = "aid";
+        String[] projection = {columnName};
+        Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+        if (cursor == null || !cursor.moveToFirst()) {
+            return null;
+        }
+        String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
+        return attributionId;
     }
 }
