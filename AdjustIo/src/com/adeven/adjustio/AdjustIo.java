@@ -20,6 +20,8 @@ public class AdjustIo {
         appId = app.getPackageName();
         macAddress = Util.getMacAddress(app);
         userAgent = Util.getUserAgent(app);
+        androidId = Util.getAndroidId(app);
+        attributionId = Util.getAttributionId(app);
 
         trackSessionStart();
     }
@@ -30,53 +32,63 @@ public class AdjustIo {
     public static void trackEvent(String eventId) {
         trackEvent(eventId, null);
     }
-    
+
     public static void trackEvent(String eventId, Map<String,String> parameters) {
         String paramString = Util.getBase64EncodedParameters(parameters);
-        
+
         RequestTask requestTask = new RequestTask("/event");
         requestTask.setSuccessMessage("Tracked event " + eventId + ".");
         requestTask.setFailureMessage("Failed to track event " + eventId + ".");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("id", eventId, "app_id", appId, "mac", macAddress, "params", paramString);
+        requestTask.execute("id", eventId, "app_id", appId, "mac", macAddress, "android_id", androidId, "params", paramString);
     }
-    
+
     // Tell AdjustIo that the current user generated some revenue. The amount is
-    // measured in cents and rounded to on digit after the decimal point. If you 
-    // want to differentiate between various types of revenues you can do so by 
+    // measured in cents and rounded to on digit after the decimal point. If you
+    // want to differentiate between various types of revenues you can do so by
     // providing different eventIds. If your revenue events have callbacks, you
-    // can also pass in parameters that will be forwarded to your server.    
+    // can also pass in parameters that will be forwarded to your server.
     public static void trackRevenue(float amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
     }
-    
+
     public static void trackRevenue(float amountInCents, String eventId) {
         AdjustIo.trackRevenue(amountInCents, eventId, null);
     }
-    
+
     public static void trackRevenue(float amountInCents, String eventId, Map<String,String> parameters) {
         int amountInMillis = Math.round(10 * amountInCents);
         String amount = Integer.toString(amountInMillis);
         String paramString = Util.getBase64EncodedParameters(parameters);
-        
+
         RequestTask requestTask = new RequestTask("/revenue");
         requestTask.setSuccessMessage("Tracked revenue.");
         requestTask.setFailureMessage("Failed to track revenue.");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macAddress, "amount", amount, "event_id", eventId, "params", paramString);
+        requestTask.execute("app_id", appId, "mac", macAddress, "android_id", androidId, "amount", amount, "event_id", eventId, "params", paramString);
     }
-    
+
     // This line marks the end of the public interface.
-    
+
     private static String appId;
     private static String macAddress;
     private static String userAgent;
-    
+    private static String androidId;
+    private static String attributionId;
+
     private static void trackSessionStart() {
         RequestTask requestTask = new RequestTask("/startup");
         requestTask.setSuccessMessage("Tracked session start.");
-        requestTask.setFailureMessage("Failed to track session.");
+        requestTask.setFailureMessage("Failed to track session start.");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macAddress);
+        requestTask.execute("app_id", appId, "mac", macAddress, "android_id", androidId, "fb_id", attributionId);
+    }
+
+    private static void trackSessionEnd() {
+        RequestTask requestTask = new RequestTask("/shutdown");
+        requestTask.setSuccessMessage("Tracked session end.");
+        requestTask.setFailureMessage("Failed to track session end.");
+        requestTask.setUserAgent(userAgent);
+        requestTask.execute("app_id", appId, "mac", macAddress, "android_id", androidId);
     }
 }
