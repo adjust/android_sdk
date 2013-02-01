@@ -37,7 +37,7 @@ In the Package Explorer open the `AndroidManifest.xml` of your Android project. 
 
 ![][permissions]
 
-In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the onCreate method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
+In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the `onCreate` method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
 
     import com.adeven.adjustio.AdjustIo;
     // ...
@@ -66,11 +66,10 @@ You can also register a callback URL for that event and we will send a request t
     parameters.put("foo", "bar");
     AdjustIo.trackEvent("abc123", parameters);
 
-In that case we would track the event and send a request to `http://www.adeven.com/callback?key=value&foo=bar`. In any case you need to import AdjustIo in any source file that makes use of the SDK. Please note that we don't store your custom parameters. If you haven't registered a callback URL for an event, there is no point in sendung us parameters.
+In that case we would track the event and send a request to `http://www.adeven.com/callback?key=value&foo=bar`. In any case you need to import AdjustIo in any source file that makes use of the SDK. Please note that we don't store your custom parameters. If you haven't registered a callback URL for an event, there is no point in sending us parameters.
 
 ### Add tracking of revenue
-
-If your users can make revenue by clicking on advertisements you can track those revenues. If the click is worth one cent, you could make the following call to track that revenue:
+If your users can generate revenue by clicking on advertisements you can track those revenues. If the click is worth one Cent, you could make the following call to track that revenue:
 
     AdjustIo.trackRevenue(1.0f);
 
@@ -83,7 +82,7 @@ You can also register a callback URL again and provide a map of named parameters
     Map<String, String> parameters = new HashMap<String, String>();
     parameters.put("key", "value");
     parameters.put("foo", "bar");
-    AdjustIo.trackRevenue(1.0f, "abc123", parameters)
+    AdjustIo.trackRevenue(1.0f, "abc123", parameters);
 
 In any case, don't forget to import AdjustIo. Again, there is no point in sending parameters if you haven't registered a callback URL for that revenue event.
 
