@@ -25,7 +25,7 @@ public class AdjustIo {
 
         trackSessionStart();
     }
-    
+
     // Track any kind of event. You can assign a callback url to the event which
     // will get called every time the event is reported. You can also provide
     // parameters that will be forwarded to these callbacks.
