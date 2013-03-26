@@ -67,7 +67,7 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
 
     protected void onPostExecute(HttpResponse response) {
         if (response == null) {
-            Log.d(LOGTAG, failureMessage + " (Request failed.)");
+            Log.d(LOGTAG, "This SDK requires the INTERNET permission. You might need to adjust your manifest. See the README for details.");
         } else {
             int statusCode = response.getStatusLine().getStatusCode();
             String responseString = parseResponse(response);
@@ -89,7 +89,7 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
             out.close();
             responseString = out.toString().trim();
         } catch (Exception e) {
-            return "Failed parsing response.";
+            return "Failed parsing response";
         }
 
         return responseString;

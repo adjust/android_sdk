@@ -44,8 +44,8 @@ import android.util.DisplayMetrics;
 
 public class Util {
 
-    private static final String BASEURL = "http://app.adjust.io";
-    private static final String CLIENTSDK = "android1.2";
+    private static final String BASEURL = "https://app.adjust.io";
+    private static final String CLIENTSDK = "android1.3";
 
     public static String getBase64EncodedParameters(Map<String, String> parameters) {
         if (parameters == null) {
@@ -301,15 +301,19 @@ public class Util {
     }
 
     public static String getAttributionId(Application application) {
-        ContentResolver contentResolver = application.getContentResolver();
-        Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
-        String columnName = "aid";
-        String[] projection = {columnName};
-        Cursor cursor = contentResolver.query(uri, projection, null, null, null);
-        if (cursor == null || !cursor.moveToFirst()) {
+        try {
+            ContentResolver contentResolver = application.getContentResolver();
+            Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
+            String columnName = "aid";
+            String[] projection = {columnName};
+            Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+            if (cursor == null || !cursor.moveToFirst()) {
+                return null;
+            }
+            String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
+            return attributionId;
+        } catch (Exception e) {
             return null;
         }
-        String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
-        return attributionId;
     }
 }
