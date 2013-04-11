@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import org.json.JSONObject;
 
 import android.app.Application;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -39,13 +41,16 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 public class Util {
 
     private static final String BASEURL = "https://app.adjust.io";
-    private static final String CLIENTSDK = "android1.3";
+    private static final String CLIENTSDK = "android1.4";
+    private static final String LOGTAG = "AdjustIo";
 
     public static String getBase64EncodedParameters(Map<String, String> parameters) {
         if (parameters == null) {
@@ -53,9 +58,8 @@ public class Util {
         }
 
         JSONObject jsonObject = new JSONObject(parameters);
-        String jsonString = jsonObject.toString();
-        String encoded = Base64.encodeToString(jsonString.getBytes(),
-                Base64.DEFAULT);
+        byte[] bytes = jsonObject.toString().getBytes();
+        String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
         return encoded;
     }
 
@@ -289,7 +293,7 @@ public class Util {
 
             reader.close();
             String string = fileData.toString();
-            String address = string.replaceAll(":", "").toUpperCase();
+            String address = string.toUpperCase();
             return address;
         } catch (IOException e) {
             return null;
@@ -315,5 +319,34 @@ public class Util {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static String sha1(String text) {
+        try {
+            MessageDigest mesd = MessageDigest.getInstance("SHA-1");
+            byte[] bytes = text.getBytes("iso-8859-1");
+            mesd.update(bytes, 0, bytes.length);
+            byte[] sha2hash = mesd.digest();
+            return convertToHex(sha2hash);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private static String convertToHex(byte[] bytes) {
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            int halfbyte = (bytes[i] >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                if ((0 <= halfbyte) && (halfbyte <= 9))
+                    buffer.append((char) ('0' + halfbyte));
+                else
+                    buffer.append((char) ('a' + (halfbyte - 10)));
+                halfbyte = bytes[i] & 0x0F;
+            } while (two_halfs++ < 1);
+        }
+        String hex = buffer.toString();
+        return hex;
     }
 }
