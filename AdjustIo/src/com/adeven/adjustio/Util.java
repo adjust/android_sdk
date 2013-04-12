@@ -39,9 +39,9 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -49,8 +49,22 @@ import android.util.Log;
 public class Util {
 
     private static final String BASEURL = "https://app.adjust.io";
-    private static final String CLIENTSDK = "android1.4";
+    private static final String CLIENTSDK = "android1.5";
     private static final String LOGTAG = "AdjustIo";
+
+    public static boolean checkPermissions(Application app) {
+        boolean result = true;
+
+        if (app.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
+            Log.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
+            result = false;
+        }
+        if (app.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
+            Log.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
+        }
+
+        return result;
+    }
 
     public static String getBase64EncodedParameters(Map<String, String> parameters) {
         if (parameters == null) {
@@ -243,20 +257,36 @@ public class Util {
     }
 
     protected static String getMacAddress(Application app) {
-        String address = null;
+        String rawAddress = getRawMacAddress(app);
+        String upperAddress = rawAddress.toUpperCase();
+        String sanitized = sanitizeString(upperAddress);
+        return sanitized;
+    }
 
+    private static String getRawMacAddress(Application app) {
         // android devices should have a wlan address
-        if (address == null) {
-            address = loadAddress("wlan0");
+        String wlanAddress = loadAddress("wlan0");
+        if (wlanAddress != null) {
+            return wlanAddress;
         }
 
         // emulators should have an ethernet address
-        if (address == null) {
-            address = loadAddress("eth0");
+        String ethAddress = loadAddress("eth0");
+        if (ethAddress != null) {
+            return ethAddress;
         }
 
-        String sanitized = sanitizeString(address);
-        return sanitized;
+        // query the wifi manager (requires the ACCESS_WIFI_STATE permission)
+        try {
+            WifiManager wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE);
+            String wifiAddress = wifiManager.getConnectionInfo().getMacAddress();
+            if (wifiAddress != null) {
+                return wifiAddress;
+            }
+        } catch (Exception e) {
+        }
+
+        return "";
     }
 
     // removes spaces and replaces empty string with "unknown"
@@ -292,8 +322,7 @@ public class Util {
             }
 
             reader.close();
-            String string = fileData.toString();
-            String address = string.toUpperCase();
+            String address = fileData.toString();
             return address;
         } catch (IOException e) {
             return null;
@@ -315,6 +344,7 @@ public class Util {
                 return null;
             }
             String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
+            cursor.close();
             return attributionId;
         } catch (Exception e) {
             return null;

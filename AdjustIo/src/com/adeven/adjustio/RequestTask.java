@@ -21,7 +21,7 @@ import org.apache.http.client.methods.HttpPost;
 import android.os.AsyncTask;
 import android.util.Log;
 
-public class RequestTask extends AsyncTask<String, String, HttpResponse> {
+public class RequestTask extends AsyncTask<String, String, String> {
 
     private static final String LOGTAG = "AdjustIo";
 
@@ -46,14 +46,14 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
         this.userAgent = userAgent;
     }
 
-    protected HttpResponse doInBackground(String... parameters) {
+    protected String doInBackground(String... parameters) {
         HttpClient httpClient = Util.getHttpClient(userAgent);
         HttpPost request = Util.getPostRequest(this.path);
 
         try {
             request.setEntity(Util.getEntityEncodedParameters(parameters));
             HttpResponse response = httpClient.execute(request);
-            return response;
+            return getLogString(response);
         } catch (SocketException e) {
             Log.d(LOGTAG, "This SDK requires the INTERNET permission. You might need to adjust your manifest. See the README for details.");
         } catch (UnsupportedEncodingException e) {
@@ -65,17 +65,17 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
         return null;
     }
 
-    protected void onPostExecute(HttpResponse response) {
+    private String getLogString(HttpResponse response) {
         if (response == null) {
-            Log.d(LOGTAG, failureMessage + " (Request failed. Are you missing the INTERNET permission? See README)");
+            return failureMessage + " (Request failed)";
         } else {
             int statusCode = response.getStatusLine().getStatusCode();
             String responseString = parseResponse(response);
 
             if (statusCode == HttpStatus.SC_OK) {
-                Log.d(LOGTAG, successMessage);
+                return successMessage;
             } else {
-                Log.d(LOGTAG, failureMessage + " (" + responseString + ")");
+                return failureMessage + " (" + responseString + ")";
             }
         }
     }
@@ -89,9 +89,14 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
             out.close();
             responseString = out.toString().trim();
         } catch (Exception e) {
+            e.printStackTrace();
             return "Failed parsing response";
         }
 
         return responseString;
+    }
+
+    protected void onPostExecute(String responseString) {
+        Log.d(LOGTAG, responseString);
     }
 }

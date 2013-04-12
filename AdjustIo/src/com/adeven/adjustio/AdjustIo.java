@@ -17,6 +17,10 @@ public class AdjustIo {
     // initialize AdjustIo. Call this in the onCreate method of your launch
     // activity.
     public static void appDidLaunch(Application app) {
+        if (!Util.checkPermissions(app)) {
+            return;
+        }
+
         String macAddress = Util.getMacAddress(app);
 
         appId = app.getPackageName();
