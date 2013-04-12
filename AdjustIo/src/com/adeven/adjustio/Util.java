@@ -344,6 +344,7 @@ public class Util {
                 return null;
             }
             String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
+            cursor.close();
             return attributionId;
         } catch (Exception e) {
             return null;
