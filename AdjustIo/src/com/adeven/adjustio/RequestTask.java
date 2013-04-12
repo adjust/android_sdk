@@ -67,7 +67,7 @@ public class RequestTask extends AsyncTask<String, String, HttpResponse> {
 
     protected void onPostExecute(HttpResponse response) {
         if (response == null) {
-            Log.d(LOGTAG, failureMessage + " (Request failed. Are you missing the INTERNET permission? See README)");
+            Log.d(LOGTAG, failureMessage + " (Request failed)");
         } else {
             int statusCode = response.getStatusLine().getStatusCode();
             String responseString = parseResponse(response);
