@@ -140,15 +140,15 @@ public class Util {
         return builder.toString();
     }
   
-  private static StringBuilder appendWithSpacePrefix(StringBuilder builder, String... stringsToAppend) {
-    if (null != builder) {
-      for (String stringToAppend : stringsToAppend) {
-        builder.append(" ");
-        builder.append(stringToAppend);
+    private static StringBuilder appendWithSpacePrefix(StringBuilder builder, String... stringsToAppend) {
+      if (null != builder) {
+        for (String stringToAppend : stringsToAppend) {
+          builder.append(" ");
+          builder.append(stringToAppend);
+        }
       }
+      return builder;
     }
-    return builder;
-  }
 
     private static String getPackageName(Application app) {
         String packageName = app.getPackageName();
