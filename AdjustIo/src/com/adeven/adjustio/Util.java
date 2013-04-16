@@ -50,7 +50,7 @@ public class Util {
 
     private static final String BASEURL = "https://app.adjust.io";
     private static final String CLIENTSDK = "android1.5";
-    private static final String LOGTAG = "AdjustIo";
+    protected static final String LOGTAG = "AdjustIo";
   
     private static final String PHONE = "phone";
     private static final String TABLET = "phone";
