@@ -51,6 +51,10 @@ public class Util {
     private static final String BASEURL = "https://app.adjust.io";
     private static final String CLIENTSDK = "android1.5";
     private static final String LOGTAG = "AdjustIo";
+  
+    private static final String PHONE = "phone";
+    private static final String TABLET = "phone";
+    private static final String UNKNOWN = "unknown";
 
     public static boolean checkPermissions(Application app) {
         boolean result = true;
@@ -151,7 +155,7 @@ public class Util {
             String result = sanitizeString(versionName);
             return result;
         } catch (NameNotFoundException e) {
-            return "unknown";
+            return UNKNOWN;
         }
     }
 
@@ -161,12 +165,12 @@ public class Util {
         switch (screenSize) {
         case Configuration.SCREENLAYOUT_SIZE_SMALL:
         case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            return "phone";
+            return PHONE;
         case Configuration.SCREENLAYOUT_SIZE_LARGE:
         case 4:
-            return "tablet";
+            return TABLET;
         default:
-            return "unknown";
+            return UNKNOWN;
         }
     }
 
@@ -211,7 +215,7 @@ public class Util {
         case 4:
             return "xlarge";
         default:
-            return "unknown";
+            return UNKNOWN;
         }
     }
 
@@ -224,7 +228,7 @@ public class Util {
         case Configuration.SCREENLAYOUT_LONG_NO:
             return "normal";
         default:
-            return "unknown";
+            return UNKNOWN;
         }
     }
 
@@ -234,7 +238,7 @@ public class Util {
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
 
         if (density == 0) {
-            return "unknown";
+            return UNKNOWN;
         } else if (density < low) {
             return "low";
         } else if (density > high) {
@@ -291,7 +295,7 @@ public class Util {
 
     // removes spaces and replaces empty string with "unknown"
     private static String sanitizeString(String string) {
-        return sanitizeString(string, "unknown");
+        return sanitizeString(string, UNKNOWN);
     }
 
     private static String sanitizeString(String string, String defaultString) {
