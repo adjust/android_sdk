@@ -57,7 +57,7 @@ public class RequestTask extends AsyncTask<String, String, String> {
         } catch (UnsupportedEncodingException e) {
             Log.d(Util.LOGTAG, "Failed to encode parameters.");
         } catch (IOException e) {
-            e.printStackTrace();
+          Log.d(Util.LOGTAG, "Unexpected IOException", e);
         }
 
         return null;
