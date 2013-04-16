@@ -23,8 +23,6 @@ import android.util.Log;
 
 public class RequestTask extends AsyncTask<String, String, String> {
 
-    private static final String LOGTAG = "AdjustIo";
-
     private String path;
     private String successMessage;
     private String failureMessage;
@@ -55,9 +53,9 @@ public class RequestTask extends AsyncTask<String, String, String> {
             HttpResponse response = httpClient.execute(request);
             return getLogString(response);
         } catch (SocketException e) {
-            Log.d(LOGTAG, "This SDK requires the INTERNET permission. You might need to adjust your manifest. See the README for details.");
+            Log.d(Util.LOGTAG, "This SDK requires the INTERNET permission. You might need to adjust your manifest. See the README for details.");
         } catch (UnsupportedEncodingException e) {
-            Log.d(LOGTAG, "Failed to encode parameters.");
+            Log.d(Util.LOGTAG, "Failed to encode parameters.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -97,6 +95,6 @@ public class RequestTask extends AsyncTask<String, String, String> {
     }
 
     protected void onPostExecute(String responseString) {
-        Log.d(LOGTAG, responseString);
+        Log.d(Util.LOGTAG, responseString);
     }
 }
