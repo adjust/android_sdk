@@ -53,7 +53,7 @@ public class Util {
     protected static final String LOGTAG = "AdjustIo";
   
     private static final String PHONE = "phone";
-    private static final String TABLET = "phone";
+    private static final String TABLET = "tablet";
     private static final String UNKNOWN = "unknown";
 
     public static boolean checkPermissions(Application app) {
