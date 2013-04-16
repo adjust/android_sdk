@@ -123,22 +123,32 @@ public class Util {
 
         StringBuilder builder = new StringBuilder();
         builder.append(getPackageName(app));
-        builder.append(" " + getAppVersion(app));
-        builder.append(" " + getDeviceType(screenLayout));
-        builder.append(" " + getDeviceName());
-        builder.append(" " + getOsName());
-        builder.append(" " + getOsVersion());
-        builder.append(" " + getLanguage(locale));
-        builder.append(" " + getCountry(locale));
-        builder.append(" " + getScreenSize(screenLayout));
-        builder.append(" " + getScreenFormat(screenLayout));
-        builder.append(" " + getScreenDensity(displayMetrics));
-        builder.append(" " + getDisplayWidth(displayMetrics));
-        builder.append(" " + getDisplayHeight(displayMetrics));
+        appendWithSpacePrefix(builder, 
+          getAppVersion(app), 
+          getDeviceType(screenLayout), 
+          getDeviceName(), 
+          getOsName(), 
+          getOsVersion(), 
+          getLanguage(locale), 
+          getCountry(locale),
+          getScreenSize(screenLayout),
+          getScreenFormat(screenLayout),
+          getScreenDensity(displayMetrics),
+          getDisplayWidth(displayMetrics),
+          getDisplayHeight(displayMetrics));
 
-        String userAgent = builder.toString();
-        return userAgent;
+        return builder.toString();
     }
+  
+  private static StringBuilder appendWithSpacePrefix(StringBuilder builder, String... stringsToAppend) {
+    if (null != builder) {
+      for (String stringToAppend : stringsToAppend) {
+        builder.append(" ");
+        builder.append(stringToAppend);
+      }
+    }
+    return builder;
+  }
 
     private static String getPackageName(Application app) {
         String packageName = app.getPackageName();
