@@ -91,6 +91,15 @@ public class AdjustIo {
     getRequestThread().track(trackingInformation);
   }
 
+  /**
+   * Enables toggling of the log tag.
+   *
+   * @param isLoggingEnabled <code>true</code> if the logging should be enabled else <code>false</code>.
+   */
+  public static void setLoggingEnabled(boolean isLoggingEnabled) {
+    LogWrapper.setLoggingEnabled(isLoggingEnabled);
+  }
+
   // This line marks the end of the public interface.
 
   private static String appId;

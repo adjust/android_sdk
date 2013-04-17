@@ -6,7 +6,6 @@ package com.adeven.adjustio;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
-import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +17,7 @@ import org.apache.http.client.methods.HttpPost;
 
 /**
  * Enables sending tracking information to adeven.
- * 
+ *
  * @author keyboardsurfer
  * @since 17.4.13
  */
@@ -56,14 +55,14 @@ class RequestThread extends HandlerThread {
     try {
       request.setEntity(Util.getEntityEncodedParameters(trackingInformation.trackingParameters));
       HttpResponse response = httpClient.execute(request);
-      Log.d(Util.LOGTAG, getLogString(response, trackingInformation));
+      LogWrapper.d(Util.LOGTAG, getLogString(response, trackingInformation));
     } catch (SocketException e) {
-      Log.e(Util.LOGTAG,
+      LogWrapper.e(Util.LOGTAG,
         "This SDK requires the INTERNET permission. You might need to adjust your manifest. See the README for details.");
     } catch (UnsupportedEncodingException e) {
-      Log.d(Util.LOGTAG, "Failed to encode parameters.");
+      LogWrapper.d(Util.LOGTAG, "Failed to encode parameters.");
     } catch (IOException e) {
-      Log.d(Util.LOGTAG, "Unexpected IOException", e);
+      LogWrapper.d(Util.LOGTAG, "Unexpected IOException", e);
     }
   }
 
@@ -91,7 +90,7 @@ class RequestThread extends HandlerThread {
       out.close();
       responseString = out.toString().trim();
     } catch (Exception e) {
-      Log.d(Util.LOGTAG, "error parsing response", e);
+      LogWrapper.d(Util.LOGTAG, "error parsing response", e);
       return "Failed parsing response";
     }
 

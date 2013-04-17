@@ -23,7 +23,6 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -58,11 +57,11 @@ public class Util {
         boolean result = true;
 
         if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
-            Log.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
+            LogWrapper.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
             result = false;
         }
         if (context.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
-            Log.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
+            LogWrapper.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
         }
 
         return result;
