@@ -8,28 +8,6 @@
 
 package com.adeven.adjustio;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
-
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -45,6 +23,25 @@ import android.provider.Settings.Secure;
 import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
 
 public class Util {
 
@@ -56,14 +53,14 @@ public class Util {
     private static final String TABLET = "tablet";
     private static final String UNKNOWN = "unknown";
 
-    public static boolean checkPermissions(Application app) {
+    public static boolean checkPermissions(Context context) {
         boolean result = true;
 
-        if (app.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
+        if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
             Log.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
             result = false;
         }
-        if (app.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
+        if (context.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
             Log.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
         }
 
@@ -114,17 +111,17 @@ public class Util {
         return request;
     }
 
-    protected static String getUserAgent(Application app) {
-        Resources resources = app.getResources();
+    protected static String getUserAgent(Context context) {
+        Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
 
         StringBuilder builder = new StringBuilder();
-        builder.append(getPackageName(app));
+        builder.append(getPackageName(context));
         appendWithSpacePrefix(builder, 
-          getAppVersion(app), 
+          getAppVersion(context), 
           getDeviceType(screenLayout), 
           getDeviceName(), 
           getOsName(), 
@@ -150,16 +147,16 @@ public class Util {
       return builder;
     }
 
-    private static String getPackageName(Application app) {
-        String packageName = app.getPackageName();
+    private static String getPackageName(Context context) {
+        String packageName = context.getPackageName();
         String sanitized = sanitizeString(packageName);
         return sanitized;
     }
 
-    private static String getAppVersion(Application app) {
+    private static String getAppVersion(Context context) {
         try {
-            PackageManager packageManager = app.getPackageManager();
-            String name = app.getPackageName();
+            PackageManager packageManager = context.getPackageManager();
+            String name = context.getPackageName();
             PackageInfo info = packageManager.getPackageInfo(name, 0);
             String versionName = info.versionName;
             String result = sanitizeString(versionName);
@@ -270,14 +267,14 @@ public class Util {
         return sanitized;
     }
 
-    protected static String getMacAddress(Application app) {
-        String rawAddress = getRawMacAddress(app);
+    protected static String getMacAddress(Context context) {
+        String rawAddress = getRawMacAddress(context);
         String upperAddress = rawAddress.toUpperCase();
         String sanitized = sanitizeString(upperAddress);
         return sanitized;
     }
 
-    private static String getRawMacAddress(Application app) {
+    private static String getRawMacAddress(Context context) {
         // android devices should have a wlan address
         String wlanAddress = loadAddress("wlan0");
         if (wlanAddress != null) {
@@ -292,7 +289,7 @@ public class Util {
 
         // query the wifi manager (requires the ACCESS_WIFI_STATE permission)
         try {
-            WifiManager wifiManager = (WifiManager) app.getSystemService(Context.WIFI_SERVICE);
+            WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             String wifiAddress = wifiManager.getConnectionInfo().getMacAddress();
             if (wifiAddress != null) {
                 return wifiAddress;
@@ -343,13 +340,13 @@ public class Util {
         }
     }
 
-    public static String getAndroidId(Application app) {
-        return Secure.getString(app.getContentResolver(), Secure.ANDROID_ID);
+    public static String getAndroidId(Context context) {
+        return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
     }
 
-    public static String getAttributionId(Application application) {
+    public static String getAttributionId(Context context) {
         try {
-            ContentResolver contentResolver = application.getContentResolver();
+            ContentResolver contentResolver = context.getContentResolver();
             Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
             String columnName = "aid";
             String[] projection = {columnName};

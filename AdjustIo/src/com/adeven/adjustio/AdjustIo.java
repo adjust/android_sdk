@@ -8,9 +8,8 @@
 
 package com.adeven.adjustio;
 
+import android.content.Context;
 import java.util.Map;
-
-import android.app.Application;
 
 public class AdjustIo {
   
@@ -25,19 +24,19 @@ public class AdjustIo {
     // Tell AdjustIo that the application did launch. This is required to
     // initialize AdjustIo. Call this in the onCreate method of your launch
     // activity.
-    public static void appDidLaunch(Application app) {
-        if (!Util.checkPermissions(app)) {
+    public static void appDidLaunch(Context context) {
+        if (!Util.checkPermissions(context)) {
             return;
         }
 
-        String macAddress = Util.getMacAddress(app);
+        String macAddress = Util.getMacAddress(context);
 
-        appId = app.getPackageName();
+        appId = context.getPackageName();
         macSha1 = Util.sha1(macAddress);
         macShort = macAddress.replaceAll(":", "");
-        userAgent = Util.getUserAgent(app);
-        androidId = Util.getAndroidId(app);
-        attributionId = Util.getAttributionId(app);
+        userAgent = Util.getUserAgent(context);
+        androidId = Util.getAndroidId(context);
+        attributionId = Util.getAttributionId(context);
 
         trackSessionStart();
     }
