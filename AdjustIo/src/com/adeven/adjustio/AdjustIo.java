@@ -9,95 +9,131 @@
 
 package com.adeven.adjustio;
 
+import android.content.Context;
 import java.util.Map;
 
-import android.app.Application;
-
 public class AdjustIo {
-    // Tell AdjustIo that the application did launch. This is required to
-    // initialize AdjustIo. Call this in the onCreate method of your launch
-    // activity.
-    public static void appDidLaunch(Application app) {
-        if (!Util.checkPermissions(app)) {
-            return;
-        }
 
-        String macAddress = Util.getMacAddress(app);
+  private static final String AMOUNT = "amount";
+  private static final String ANDROID_ID = "android_id";
+  private static final String APP_ID = "app_id";
+  private static final String EVENT_ID = "event_id";
+  private static final String ID = "id";
+  private static final String MAC = "mac";
+  private static final String PARAMS = "params";
 
-        appId = app.getPackageName();
-        macSha1 = Util.sha1(macAddress);
-        macShort = macAddress.replaceAll(":", "");
-        userAgent = Util.getUserAgent(app);
-        androidId = Util.getAndroidId(app);
-        attributionId = Util.getAttributionId(app);
+  private static RequestThread requestThread;
 
-        trackSessionStart();
+  // Tell AdjustIo that the application did launch. This is required to
+  // initialize AdjustIo. Call this in the onCreate method of your launch
+  // activity.
+  public static void appDidLaunch(Context context) {
+    if (!Util.checkPermissions(context)) {
+      return;
     }
 
-    // Track any kind of event. You can assign a callback url to the event which
-    // will get called every time the event is reported. You can also provide
-    // parameters that will be forwarded to these callbacks.
-    public static void trackEvent(String eventId) {
-        trackEvent(eventId, null);
+    String macAddress = Util.getMacAddress(context);
+
+    appId = context.getPackageName();
+    macSha1 = Util.sha1(macAddress);
+    macShort = macAddress.replaceAll(":", "");
+    userAgent = Util.getUserAgent(context);
+    androidId = Util.getAndroidId(context);
+    attributionId = Util.getAttributionId(context);
+
+    trackSessionStart();
+  }
+
+  // Track any kind of event. You can assign a callback url to the event which
+  // will get called every time the event is reported. You can also provide
+  // parameters that will be forwarded to these callbacks.
+  public static void trackEvent(String eventId) {
+    trackEvent(eventId, null);
+  }
+
+  public static void trackEvent(String eventId, Map<String, String> parameters) {
+    String paramString = Util.getBase64EncodedParameters(parameters);
+
+    TrackingInformation trackingInformation = new TrackingInformation.Builder().setPath("/event")
+      .setSuccessMessage("Tracked event " + eventId + ".")
+      .setFailureMessage("Failed to track event " + eventId + ".")
+      .setUserAgent(userAgent)
+      .setTrackingParameters(ID, eventId, APP_ID, appId, MAC, macShort, ANDROID_ID, androidId, PARAMS, paramString)
+      .build();
+    getRequestThread().track(trackingInformation);
+  }
+
+  // Tell AdjustIo that the current user generated some revenue. The amount is
+  // measured in cents and rounded to on digit after the decimal point. If you
+  // want to differentiate between various types of revenues you can do so by
+  // providing different eventIds. If your revenue events have callbacks, you
+  // can also pass in parameters that will be forwarded to your server.
+  public static void trackRevenue(float amountInCents) {
+    AdjustIo.trackRevenue(amountInCents, null);
+  }
+
+  public static void trackRevenue(float amountInCents, String eventId) {
+    AdjustIo.trackRevenue(amountInCents, eventId, null);
+  }
+
+  public static void trackRevenue(float amountInCents, String eventId, Map<String, String> parameters) {
+    int amountInMillis = Math.round(10 * amountInCents);
+    String amount = Integer.toString(amountInMillis);
+    String paramString = Util.getBase64EncodedParameters(parameters);
+
+    TrackingInformation trackingInformation = new TrackingInformation.Builder().setPath("/revenue")
+      .setSuccessMessage("Tracked revenue.")
+      .setFailureMessage("Failed to track revenue.")
+      .setUserAgent(userAgent)
+      .setTrackingParameters(APP_ID, appId, MAC, macShort, ANDROID_ID, androidId, AMOUNT, amount, EVENT_ID, eventId,
+        PARAMS, paramString)
+      .build();
+    getRequestThread().track(trackingInformation);
+  }
+
+  /**
+   * Enables toggling of the log tag.
+   *
+   * @param isLoggingEnabled <code>true</code> if the logging should be enabled else <code>false</code>.
+   */
+  public static void setLoggingEnabled(boolean isLoggingEnabled) {
+    LogWrapper.setLoggingEnabled(isLoggingEnabled);
+  }
+
+  // This line marks the end of the public interface.
+
+  private static String appId;
+  private static String macSha1;
+  private static String macShort;
+  private static String userAgent;
+  private static String androidId;
+  private static String attributionId;
+
+  private static void trackSessionStart() {
+    TrackingInformation trackingInformation = new TrackingInformation.Builder().setPath("/startup")
+      .setSuccessMessage("Tracked session start.")
+      .setFailureMessage("Failed to track session start.")
+      .setUserAgent(userAgent)
+      .setTrackingParameters(APP_ID, appId, MAC, macShort, "mac_sha1", macSha1, ANDROID_ID, androidId,
+        "fb_id", attributionId)
+      .build();
+    getRequestThread().track(trackingInformation);
+  }
+
+  private static void trackSessionEnd() {
+    TrackingInformation trackingInformation = new TrackingInformation.Builder().setPath("/shutdown")
+      .setSuccessMessage("Tracked session end.")
+      .setFailureMessage("Failed to track session end.")
+      .setUserAgent(userAgent)
+      .setTrackingParameters(APP_ID, appId, MAC, macShort, ANDROID_ID, androidId)
+      .build();
+    getRequestThread().track(trackingInformation);
+  }
+
+  private static RequestThread getRequestThread() {
+    if (null == requestThread) {
+      requestThread = new RequestThread();
     }
-
-    public static void trackEvent(String eventId, Map<String,String> parameters) {
-        String paramString = Util.getBase64EncodedParameters(parameters);
-
-        RequestTask requestTask = new RequestTask("/event");
-        requestTask.setSuccessMessage("Tracked event " + eventId + ".");
-        requestTask.setFailureMessage("Failed to track event " + eventId + ".");
-        requestTask.setUserAgent(userAgent);
-        requestTask.execute("id", eventId, "app_id", appId, "mac", macShort, "android_id", androidId, "params", paramString);
-    }
-
-    // Tell AdjustIo that the current user generated some revenue. The amount is
-    // measured in cents and rounded to on digit after the decimal point. If you
-    // want to differentiate between various types of revenues you can do so by
-    // providing different eventIds. If your revenue events have callbacks, you
-    // can also pass in parameters that will be forwarded to your server.
-    public static void trackRevenue(float amountInCents) {
-        AdjustIo.trackRevenue(amountInCents, null);
-    }
-
-    public static void trackRevenue(float amountInCents, String eventId) {
-        AdjustIo.trackRevenue(amountInCents, eventId, null);
-    }
-
-    public static void trackRevenue(float amountInCents, String eventId, Map<String,String> parameters) {
-        int amountInMillis = Math.round(10 * amountInCents);
-        String amount = Integer.toString(amountInMillis);
-        String paramString = Util.getBase64EncodedParameters(parameters);
-
-        RequestTask requestTask = new RequestTask("/revenue");
-        requestTask.setSuccessMessage("Tracked revenue.");
-        requestTask.setFailureMessage("Failed to track revenue.");
-        requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "android_id", androidId, "amount", amount, "event_id", eventId, "params", paramString);
-    }
-
-    // This line marks the end of the public interface.
-
-    private static String appId;
-    private static String macSha1;
-    private static String macShort;
-    private static String userAgent;
-    private static String androidId;
-    private static String attributionId;
-
-    private static void trackSessionStart() {
-        RequestTask requestTask = new RequestTask("/startup");
-        requestTask.setSuccessMessage("Tracked session start.");
-        requestTask.setFailureMessage("Failed to track session start.");
-        requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "mac_sha1", macSha1, "android_id", androidId, "fb_id", attributionId);
-    }
-
-    private static void trackSessionEnd() {
-        RequestTask requestTask = new RequestTask("/shutdown");
-        requestTask.setSuccessMessage("Tracked session end.");
-        requestTask.setFailureMessage("Failed to track session end.");
-        requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "android_id", androidId);
-    }
+    return requestThread;
+  }
 }
