@@ -8,27 +8,35 @@
 
 package com.adeven.adjustio;
 
+import android.content.Context;
 import java.util.Map;
 
-import android.app.Application;
-
 public class AdjustIo {
+  
+  private static final String AMOUNT = "amount";
+  private static final String ANDROID_ID = "android_id";
+  private static final String APP_ID = "app_id";
+  private static final String EVENT_ID = "event_id";
+  private static final String ID = "id";
+  private static final String MAC = "mac";
+  private static final String PARAMS = "params";
+  
     // Tell AdjustIo that the application did launch. This is required to
     // initialize AdjustIo. Call this in the onCreate method of your launch
     // activity.
-    public static void appDidLaunch(Application app) {
-        if (!Util.checkPermissions(app)) {
+    public static void appDidLaunch(Context context) {
+        if (!Util.checkPermissions(context)) {
             return;
         }
 
-        String macAddress = Util.getMacAddress(app);
+        String macAddress = Util.getMacAddress(context);
 
-        appId = app.getPackageName();
+        appId = context.getPackageName();
         macSha1 = Util.sha1(macAddress);
         macShort = macAddress.replaceAll(":", "");
-        userAgent = Util.getUserAgent(app);
-        androidId = Util.getAndroidId(app);
-        attributionId = Util.getAttributionId(app);
+        userAgent = Util.getUserAgent(context);
+        androidId = Util.getAndroidId(context);
+        attributionId = Util.getAttributionId(context);
 
         trackSessionStart();
     }
@@ -47,7 +55,7 @@ public class AdjustIo {
         requestTask.setSuccessMessage("Tracked event " + eventId + ".");
         requestTask.setFailureMessage("Failed to track event " + eventId + ".");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("id", eventId, "app_id", appId, "mac", macShort, "android_id", androidId, "params", paramString);
+        requestTask.execute(ID, eventId, APP_ID, appId, MAC, macShort, ANDROID_ID, androidId, PARAMS, paramString);
     }
 
     // Tell AdjustIo that the current user generated some revenue. The amount is
@@ -72,7 +80,7 @@ public class AdjustIo {
         requestTask.setSuccessMessage("Tracked revenue.");
         requestTask.setFailureMessage("Failed to track revenue.");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "android_id", androidId, "amount", amount, "event_id", eventId, "params", paramString);
+        requestTask.execute(APP_ID, appId, MAC, macShort, ANDROID_ID, androidId, AMOUNT, amount, EVENT_ID, eventId, PARAMS, paramString);
     }
 
     // This line marks the end of the public interface.
@@ -89,7 +97,7 @@ public class AdjustIo {
         requestTask.setSuccessMessage("Tracked session start.");
         requestTask.setFailureMessage("Failed to track session start.");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "mac_sha1", macSha1, "android_id", androidId, "fb_id", attributionId);
+        requestTask.execute(APP_ID, appId, MAC, macShort, "mac_sha1", macSha1, ANDROID_ID, androidId, "fb_id", attributionId);
     }
 
     private static void trackSessionEnd() {
@@ -97,6 +105,6 @@ public class AdjustIo {
         requestTask.setSuccessMessage("Tracked session end.");
         requestTask.setFailureMessage("Failed to track session end.");
         requestTask.setUserAgent(userAgent);
-        requestTask.execute("app_id", appId, "mac", macShort, "android_id", androidId);
+        requestTask.execute(APP_ID, appId, MAC, macShort, ANDROID_ID, androidId);
     }
 }
