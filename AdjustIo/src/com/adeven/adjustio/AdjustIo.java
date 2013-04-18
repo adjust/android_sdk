@@ -9,10 +9,21 @@
 
 package com.adeven.adjustio;
 
-import android.content.Context;
 import java.util.Map;
 
+import android.content.Context;
+
+/**
+ * The main interface to AdjustIo.
+ *
+ * Use the methods of this class to tell AdjustIo about the usage of your app.
+ * See the README for details.
+ *
+ * @author wellle
+ * @since 11.10.12
+ */
 public class AdjustIo {
+
     /**
      * Tell AdjustIo that the application did launch.
      *
@@ -22,6 +33,7 @@ public class AdjustIo {
      * @param context Your application context
      *     Generally obtained by calling getApplication()
      */
+
     public static void appDidLaunch(Context context) {
         if (!Util.checkPermissions(context)) {
             return;
@@ -29,7 +41,7 @@ public class AdjustIo {
 
         String macAddress = Util.getMacAddress(context);
 
-        appId = context.getPackageName();
+        packageName = context.getPackageName();
         macSha1 = Util.sha1(macAddress);
         macShort = macAddress.replaceAll(":", "");
         userAgent = Util.getUserAgent(context);
@@ -38,6 +50,7 @@ public class AdjustIo {
 
         trackSessionStart();
     }
+
 
     /**
      * Track any kind of event.
@@ -52,31 +65,46 @@ public class AdjustIo {
      * @param parameters An optional dictionary containing callback parameters
      *     Provide key-value-pairs to be forwarded to your callbacks
      */
+
     public static void trackEvent(String eventToken) {
-        // TODO: log if eventToken has wrong length
         trackEvent(eventToken, null);
     }
 
     public static void trackEvent(String eventToken, Map<String, String> parameters) {
-        String paramString = Util.getBase64EncodedParameters(parameters);
+        if (eventToken.length() != 6) {
+            Logger.error(
+                "Event tracking only works with proper event tokens. " +
+                "Find them in your dashboard at http://www.adjust.io " +
+                "or contact support@adjust.io"
+            );
+            return;
+        }
 
-        TrackingInformation trackingInformation = new TrackingInformation.Builder()
+        String paramString = Util.getBase64EncodedParameters(parameters);
+        String successMessage = "Tracked event: '" + eventToken + "'";
+        String failureMessage = "Failed to track event: '" + eventToken + "'";
+
+        TrackingPackage event = new TrackingPackage.Builder()
             .setPath("/event")
-            .setSuccessMessage("Tracked event " + eventToken + ".")
-            .setFailureMessage("Failed to track event " + eventToken + ".")
+            .setSuccessMessage(successMessage)
+            .setFailureMessage(failureMessage)
             .setUserAgent(userAgent)
-            // TODO: add method addTrackingParameter(key, value)
-            .setTrackingParameters(EVENT_TOKEN, eventToken, APP_ID, appId, MAC_SHORT, macShort, ANDROID_ID, androidId, PARAMETERS, paramString)
+            .addTrackingParameter(EVENT_TOKEN, eventToken)
+            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(MAC_SHORT, macShort)
+            .addTrackingParameter(ANDROID_ID, androidId)
+            .addTrackingParameter(PARAMETERS, paramString)
             .build();
-        getRequestThread().track(trackingInformation);
+        getRequestThread().track(event);
     }
+
 
     /**
      * Tell AdjustIo that the current user generated some revenue.
      *
      * The amount is measured in cents and rounded to on digit after the decimal
-     * point. If you want to differentiate between various types of revenues you
-     * can do so by using different event tokens. If your revenue events have
+     * point. If you want to differentiate between various types of specific revenues
+     * you can do so by using different event tokens. If your revenue events have
      * callbacks, you can also pass in parameters that will be forwarded to your
      * server.
      *
@@ -84,6 +112,7 @@ public class AdjustIo {
      * @param eventToken The token for this revenue event (see above)
      * @param parameters Parameters for this revenue event (see above)
      */
+
     public static void trackRevenue(float amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
     }
@@ -93,43 +122,65 @@ public class AdjustIo {
     }
 
     public static void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
+        if (eventToken != null && eventToken.length() != 6) {
+            Logger.error(
+                "Specific revenue tracking only works with proper event tokens. " +
+                "Find them in your dashboard at http://www.adjust.io " +
+                "or contact support@adjust.io"
+            );
+            return;
+        }
+
         int amountInMillis = Math.round(10 * amountInCents);
+        amountInCents = amountInMillis/10.0f; // now rounded to one decimal point
         String amount = Integer.toString(amountInMillis);
         String paramString = Util.getBase64EncodedParameters(parameters);
+        String successMessage = "Tracked revenue: " + amountInCents + " Cent";
+        String failureMessage = "Failed to track revenue: " + amountInCents + " Cent";
 
-        TrackingInformation trackingInformation = new TrackingInformation.Builder()
+        if (eventToken != null) {
+            String eventString = " (event token: '" + eventToken + "')";
+            successMessage += eventString;
+            failureMessage += eventString;
+        }
+
+        TrackingPackage revenue = new TrackingPackage.Builder()
             .setPath("/revenue")
-            .setSuccessMessage("Tracked revenue.")
-            .setFailureMessage("Failed to track revenue.")
+            .setSuccessMessage(successMessage)
+            .setFailureMessage(failureMessage)
             .setUserAgent(userAgent)
-            .setTrackingParameters(APP_ID, appId, MAC_SHORT, macShort, ANDROID_ID, androidId, AMOUNT, amount, EVENT_TOKEN, eventToken,
-                    PARAMETERS, paramString)
+            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(MAC_SHORT, macShort)
+            .addTrackingParameter(ANDROID_ID, androidId)
+            .addTrackingParameter(AMOUNT, amount)
+            .addTrackingParameter(EVENT_TOKEN, eventToken)
+            .addTrackingParameter(PARAMETERS, paramString)
             .build();
-        getRequestThread().track(trackingInformation);
+        getRequestThread().track(revenue);
     }
 
-    // TODO: add log levels INFO (default), WARN, ERROR
+
     /**
-     * Enables toggling of the logs.
+     * Change the verbosity of AdjustIo's logs.
      *
-     * Use this to disable the AdjustIo logs.
-     *
-     * @param enabled Whether or not the logging should be enabled (default: true)
+     * @param logLevel The desired minimum log level (default: info)
+     *     Must be one of the following:
+     *      - Log.VERBOSE (enable all logging)
+     *      - Log.DEBUG
+     *      - Log.INFO    (the default)
+     *      - Log.WARN    (disable info logging)
+     *      - Log.ERROR   (disable warnings as well)
+     *      - Log.ASSERT  (disable errors as well)
      */
-    public static void setLoggingEnabled(boolean enabled) {
-        Logger.setLoggingEnabled(enabled);
+
+    public static void setLogLevel(int logLevel) {
+        Logger.setLogLevel(logLevel);
     }
+
 
     // This line marks the end of the public interface.
 
-    private static String appId;
-    private static String macSha1;
-    private static String macShort;
-    private static String userAgent;
-    private static String androidId;
-    private static String attributionId;
-
-    private static final String APP_ID = "app_id";
+    private static final String PACKAGE_NAME = "app_id";
     private static final String MAC_SHA1 = "mac_sha1";
     private static final String MAC_SHORT = "mac";
     private static final String ANDROID_ID = "android_id";
@@ -138,31 +189,29 @@ public class AdjustIo {
     private static final String PARAMETERS = "params";
     private static final String AMOUNT = "amount";
 
-    private static RequestThread requestThread;
+    private static String packageName;
+    private static String macSha1;
+    private static String macShort;
+    private static String userAgent;
+    private static String androidId;
+    private static String attributionId;
 
     private static void trackSessionStart() {
-        TrackingInformation trackingInformation = new TrackingInformation.Builder()
+        TrackingPackage sessionStart = new TrackingPackage.Builder()
             .setPath("/startup")
             .setSuccessMessage("Tracked session start.")
             .setFailureMessage("Failed to track session start.")
             .setUserAgent(userAgent)
-            .setTrackingParameters(APP_ID, appId, MAC_SHORT, macShort, MAC_SHA1, macSha1, ANDROID_ID, androidId,
-                    ATTRIBUTION_ID, attributionId)
+            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(MAC_SHORT, macShort)
+            .addTrackingParameter(MAC_SHA1, macSha1)
+            .addTrackingParameter(ANDROID_ID, androidId)
+            .addTrackingParameter(ATTRIBUTION_ID, attributionId)
             .build();
-        getRequestThread().track(trackingInformation);
+        getRequestThread().track(sessionStart);
     }
 
-    private static void trackSessionEnd() {
-        TrackingInformation trackingInformation = new TrackingInformation.Builder()
-            .setPath("/shutdown")
-            .setSuccessMessage("Tracked session end.")
-            .setFailureMessage("Failed to track session end.")
-            .setUserAgent(userAgent)
-            .setTrackingParameters(APP_ID, appId, MAC_SHORT, macShort, ANDROID_ID, androidId)
-            .build();
-        getRequestThread().track(trackingInformation);
-    }
-
+    private static RequestThread requestThread;
     private static RequestThread getRequestThread() {
         if (requestThread == null) {
             requestThread = new RequestThread();

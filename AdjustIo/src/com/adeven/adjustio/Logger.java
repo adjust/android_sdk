@@ -11,7 +11,6 @@ package com.adeven.adjustio;
 
 import android.util.Log;
 
-// TODO: add log levels
 /**
  * A Wrapper that allows easy toggles of Logging.
  *
@@ -19,35 +18,51 @@ import android.util.Log;
  * @since 17.4.13
  */
 public class Logger {
+    protected static final String LOGTAG = "AdjustIo";
 
-    private static boolean isLoggingEnabled = true;
+    private static int logLevel = Log.INFO;
 
-    public static void setLoggingEnabled(boolean isLoggingEnabled) {
-        Logger.isLoggingEnabled = isLoggingEnabled;
+    public static void setLogLevel(int logLevel) {
+        Logger.logLevel = logLevel;
     }
 
-
-    public static void d(String logTag, String message) {
-        if (isLoggingEnabled) {
-            Log.d(logTag, message);
+    public static void verbose(String message) {
+        if (logLevel <= Log.VERBOSE) {
+            Log.v(LOGTAG, message);
         }
     }
 
-    public static void d(String logTag, String message, Throwable throwable) {
-        if (isLoggingEnabled) {
-            Log.d(logTag, message, throwable);
+    public static void verbose(String context, String name, String value) {
+        verbose("[" + context + "] " + name + ": '" + value + "'");
+    }
+
+    public static void debug(String message) {
+        if (logLevel <= Log.DEBUG) {
+            Log.d(LOGTAG, message);
         }
     }
 
-    public static void w(String logTag, String message) {
-        if (isLoggingEnabled) {
-            Log.w(logTag, message);
+    public static void info(String message) {
+        if (logLevel <= Log.INFO) {
+            Log.i(LOGTAG, message);
         }
     }
 
-    public static void e(String logTag, String message) {
-        if (isLoggingEnabled) {
-            Log.e(logTag, message);
+    public static void warn(String message) {
+        if (logLevel <= Log.WARN) {
+            Log.w(LOGTAG, message);
+        }
+    }
+
+    public static void error(String message) {
+        if (logLevel <= Log.ERROR) {
+            Log.e(LOGTAG, message);
+        }
+    }
+
+    public static void error(String message, Throwable throwable) {
+        if (logLevel <= Log.ERROR) {
+            Log.e(LOGTAG, message, throwable);
         }
     }
 }
