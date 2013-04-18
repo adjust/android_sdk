@@ -44,11 +44,11 @@ import org.apache.http.params.HttpParams;
 import org.json.JSONObject;
 
 public class Util {
+    protected static final String LOGTAG = "AdjustIo";
 
     private static final String BASEURL = "https://app.adjust.io";
     private static final String CLIENTSDK = "android1.5";
-    protected static final String LOGTAG = "AdjustIo";
-  
+
     private static final String PHONE = "phone";
     private static final String TABLET = "tablet";
     private static final String UNKNOWN = "unknown";
@@ -56,12 +56,13 @@ public class Util {
     public static boolean checkPermissions(Context context) {
         boolean result = true;
 
+        // TODO: add checkPermission()
         if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
-            LogWrapper.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
+            Logger.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
             result = false;
         }
         if (context.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
-            LogWrapper.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
+            Logger.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
         }
 
         return result;
@@ -79,7 +80,7 @@ public class Util {
     }
 
     public static StringEntity getEntityEncodedParameters(String... parameters)
-            throws UnsupportedEncodingException {
+        throws UnsupportedEncodingException {
         List<NameValuePair> pairs = new ArrayList<NameValuePair>(2);
         for (int i = 0; i + 1 < parameters.length; i += 2) {
             String key = parameters[i];
@@ -118,33 +119,35 @@ public class Util {
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
 
+        // TODO: use StringUtils.join?
         StringBuilder builder = new StringBuilder();
         builder.append(getPackageName(context));
-        appendWithSpacePrefix(builder, 
-          getAppVersion(context), 
-          getDeviceType(screenLayout), 
-          getDeviceName(), 
-          getOsName(), 
-          getOsVersion(), 
-          getLanguage(locale), 
-          getCountry(locale),
-          getScreenSize(screenLayout),
-          getScreenFormat(screenLayout),
-          getScreenDensity(displayMetrics),
-          getDisplayWidth(displayMetrics),
-          getDisplayHeight(displayMetrics));
+        appendWithSpacePrefix(builder,
+                getAppVersion(context),
+                getDeviceType(screenLayout),
+                getDeviceName(),
+                getOsName(),
+                getOsVersion(),
+                getLanguage(locale),
+                getCountry(locale),
+                getScreenSize(screenLayout),
+                getScreenFormat(screenLayout),
+                getScreenDensity(displayMetrics),
+                getDisplayWidth(displayMetrics),
+                getDisplayHeight(displayMetrics)
+                );
 
         return builder.toString();
     }
-  
+
     private static StringBuilder appendWithSpacePrefix(StringBuilder builder, String... stringsToAppend) {
-      if (null != builder) {
-        for (String stringToAppend : stringsToAppend) {
-          builder.append(" ");
-          builder.append(stringToAppend);
+        if (builder != null) {
+            for (String stringToAppend : stringsToAppend) {
+                builder.append(" ");
+                builder.append(stringToAppend);
+            }
         }
-      }
-      return builder;
+        return builder;
     }
 
     private static String getPackageName(Context context) {
@@ -170,14 +173,14 @@ public class Util {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
-        case Configuration.SCREENLAYOUT_SIZE_SMALL:
-        case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            return PHONE;
-        case Configuration.SCREENLAYOUT_SIZE_LARGE:
-        case 4:
-            return TABLET;
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                return PHONE;
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+            case 4:
+                return TABLET;
+            default:
+                return UNKNOWN;
         }
     }
 
@@ -213,16 +216,16 @@ public class Util {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
-        case Configuration.SCREENLAYOUT_SIZE_SMALL:
-            return "small";
-        case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            return "normal";
-        case Configuration.SCREENLAYOUT_SIZE_LARGE:
-            return "large";
-        case 4:
-            return "xlarge";
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                return "small";
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                return "normal";
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                return "large";
+            case 4:
+                return "xlarge";
+            default:
+                return UNKNOWN;
         }
     }
 
@@ -230,12 +233,12 @@ public class Util {
         int screenFormat = screenLayout & Configuration.SCREENLAYOUT_LONG_MASK;
 
         switch (screenFormat) {
-        case Configuration.SCREENLAYOUT_LONG_YES:
-            return "long";
-        case Configuration.SCREENLAYOUT_LONG_NO:
-            return "normal";
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_LONG_YES:
+                return "long";
+            case Configuration.SCREENLAYOUT_LONG_NO:
+                return "normal";
+            default:
+                return UNKNOWN;
         }
     }
 
