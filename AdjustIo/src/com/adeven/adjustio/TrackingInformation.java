@@ -4,7 +4,7 @@
 package com.adeven.adjustio;
 
 /**
- * Holds tracking information. 
+ * Holds tracking information.
  *
  * @author keyboardsurfer
  * @since 17.4.13
@@ -17,7 +17,7 @@ class TrackingInformation {
   final String[] trackingParameters;
 
   TrackingInformation(String path, String successMessage,
-                      String failureMessage, String userAgent, String... trackingParameters) {
+    String failureMessage, String userAgent, String... trackingParameters) {
     this.path = path;
     this.successMessage = successMessage;
     this.failureMessage = failureMessage;
@@ -62,7 +62,7 @@ class TrackingInformation {
     }
 
     TrackingInformation build() {
-      return new TrackingInformation(path, userAgent, successMessage, failureMessage, trackingParameters);
+      return new TrackingInformation(path, successMessage, failureMessage, userAgent, trackingParameters);
     }
   }
 }
