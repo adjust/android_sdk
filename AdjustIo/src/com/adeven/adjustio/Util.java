@@ -9,6 +9,25 @@
 
 package com.adeven.adjustio;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -21,50 +40,46 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.DisplayMetrics;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
 
+/**
+ * Collects utility functions used by AdjustIo.
+ *
+ * @author wellle
+ * @since 11.10.12
+ */
 public class Util {
-
     private static final String BASEURL = "https://app.adjust.io";
     private static final String CLIENTSDK = "android1.5";
-    protected static final String LOGTAG = "AdjustIo";
-  
-    private static final String PHONE = "phone";
-    private static final String TABLET = "tablet";
+
     private static final String UNKNOWN = "unknown";
 
     public static boolean checkPermissions(Context context) {
         boolean result = true;
 
-        if (context.checkCallingOrSelfPermission(android.Manifest.permission.INTERNET) == PackageManager.PERMISSION_DENIED) {
-            LogWrapper.e(LOGTAG, "This SDK requires the INTERNET permission. See the README for details.");
+        if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
+            Logger.error(
+                "This SDK requires the INTERNET permission. " +
+                "See the README for details."
+            );
             result = false;
         }
-        if (context.checkCallingOrSelfPermission(android.Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_DENIED) {
-            LogWrapper.w(LOGTAG, "You can improve your tracking results by adding the ACCESS_WIFI_STATE permission. See the README for details.");
+        if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+            Logger.warn(
+                "You can improve your tracking results by adding the " +
+                "ACCESS_WIFI_STATE permission. See the README for details."
+            );
         }
 
         return result;
+    }
+
+    private static boolean checkPermission(Context context, String permission) {
+        int result = context.checkCallingOrSelfPermission(permission);
+        boolean granted = (result == PackageManager.PERMISSION_GRANTED);
+        return granted;
     }
 
     public static String getBase64EncodedParameters(Map<String, String> parameters) {
@@ -78,18 +93,8 @@ public class Util {
         return encoded;
     }
 
-    public static StringEntity getEntityEncodedParameters(String... parameters)
-            throws UnsupportedEncodingException {
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>(2);
-        for (int i = 0; i + 1 < parameters.length; i += 2) {
-            String key = parameters[i];
-            String value = parameters[i + 1];
-            if (value != null) {
-                pairs.add(new BasicNameValuePair(key, value));
-            }
-        }
-
-        StringEntity entity = new UrlEncodedFormEntity(pairs);
+    public static StringEntity getEntityEncodedParameters(List<NameValuePair> parameters) throws UnsupportedEncodingException {
+        StringEntity entity = new UrlEncodedFormEntity(parameters);
         return entity;
     }
 
@@ -118,33 +123,23 @@ public class Util {
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(getPackageName(context));
-        appendWithSpacePrefix(builder, 
-          getAppVersion(context), 
-          getDeviceType(screenLayout), 
-          getDeviceName(), 
-          getOsName(), 
-          getOsVersion(), 
-          getLanguage(locale), 
-          getCountry(locale),
-          getScreenSize(screenLayout),
-          getScreenFormat(screenLayout),
-          getScreenDensity(displayMetrics),
-          getDisplayWidth(displayMetrics),
-          getDisplayHeight(displayMetrics));
-
-        return builder.toString();
-    }
-  
-    private static StringBuilder appendWithSpacePrefix(StringBuilder builder, String... stringsToAppend) {
-      if (null != builder) {
-        for (String stringToAppend : stringsToAppend) {
-          builder.append(" ");
-          builder.append(stringToAppend);
-        }
-      }
-      return builder;
+        String[] parts = {
+            getPackageName(context),
+            getAppVersion(context),
+            getDeviceType(screenLayout),
+            getDeviceName(),
+            getOsName(),
+            getOsVersion(),
+            getLanguage(locale),
+            getCountry(locale),
+            getScreenSize(screenLayout),
+            getScreenFormat(screenLayout),
+            getScreenDensity(displayMetrics),
+            getDisplayWidth(displayMetrics),
+            getDisplayHeight(displayMetrics)
+        };
+        String userAgent = TextUtils.join(" ", parts);
+        return userAgent;
     }
 
     private static String getPackageName(Context context) {
@@ -170,14 +165,14 @@ public class Util {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
-        case Configuration.SCREENLAYOUT_SIZE_SMALL:
-        case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            return PHONE;
-        case Configuration.SCREENLAYOUT_SIZE_LARGE:
-        case 4:
-            return TABLET;
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                return "phone";
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+            case 4:
+                return "tablet";
+            default:
+                return UNKNOWN;
         }
     }
 
@@ -199,13 +194,13 @@ public class Util {
 
     private static String getLanguage(Locale locale) {
         String language = locale.getLanguage();
-        String sanitized = sanitizeString(language, "zz");
+        String sanitized = sanitizeStringShort(language);
         return sanitized;
     }
 
     private static String getCountry(Locale locale) {
         String country = locale.getCountry();
-        String sanitized = sanitizeString(country, "zz");
+        String sanitized = sanitizeStringShort(country);
         return sanitized;
     }
 
@@ -213,16 +208,16 @@ public class Util {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
-        case Configuration.SCREENLAYOUT_SIZE_SMALL:
-            return "small";
-        case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-            return "normal";
-        case Configuration.SCREENLAYOUT_SIZE_LARGE:
-            return "large";
-        case 4:
-            return "xlarge";
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_SIZE_SMALL:
+                return "small";
+            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+                return "normal";
+            case Configuration.SCREENLAYOUT_SIZE_LARGE:
+                return "large";
+            case 4:
+                return "xlarge";
+            default:
+                return UNKNOWN;
         }
     }
 
@@ -230,12 +225,12 @@ public class Util {
         int screenFormat = screenLayout & Configuration.SCREENLAYOUT_LONG_MASK;
 
         switch (screenFormat) {
-        case Configuration.SCREENLAYOUT_LONG_YES:
-            return "long";
-        case Configuration.SCREENLAYOUT_LONG_NO:
-            return "normal";
-        default:
-            return UNKNOWN;
+            case Configuration.SCREENLAYOUT_LONG_YES:
+                return "long";
+            case Configuration.SCREENLAYOUT_LONG_NO:
+                return "normal";
+            default:
+                return UNKNOWN;
         }
     }
 
@@ -269,7 +264,7 @@ public class Util {
 
     protected static String getMacAddress(Context context) {
         String rawAddress = getRawMacAddress(context);
-        String upperAddress = rawAddress.toUpperCase();
+        String upperAddress = rawAddress.toUpperCase(Locale.US);
         String sanitized = sanitizeString(upperAddress);
         return sanitized;
     }
@@ -305,6 +300,10 @@ public class Util {
         return sanitizeString(string, UNKNOWN);
     }
 
+    private static String sanitizeStringShort(String string) {
+        return sanitizeString(string, "zz");
+    }
+
     private static String sanitizeString(String string, String defaultString) {
         if (string == null) {
             string = defaultString;
@@ -323,7 +322,7 @@ public class Util {
             String filePath = "/sys/class/net/" + interfaceName + "/address";
             StringBuffer fileData = new StringBuffer(1000);
             BufferedReader reader;
-            reader = new BufferedReader(new FileReader(filePath));
+            reader = new BufferedReader(new FileReader(filePath), 1024);
             char[] buf = new char[1024];
             int numRead = 0;
 
@@ -351,9 +350,15 @@ public class Util {
             String columnName = "aid";
             String[] projection = {columnName};
             Cursor cursor = contentResolver.query(uri, projection, null, null, null);
-            if (cursor == null || !cursor.moveToFirst()) {
+
+            if (cursor == null) {
                 return null;
             }
+            if (!cursor.moveToFirst()) {
+                cursor.close();
+                return null;
+            }
+
             String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
             cursor.close();
             return attributionId;
@@ -379,14 +384,18 @@ public class Util {
         for (int i = 0; i < bytes.length; i++) {
             int halfbyte = (bytes[i] >>> 4) & 0x0F;
             int two_halfs = 0;
+
             do {
-                if ((0 <= halfbyte) && (halfbyte <= 9))
+                if ((0 <= halfbyte) && (halfbyte <= 9)) {
                     buffer.append((char) ('0' + halfbyte));
-                else
+                } else {
                     buffer.append((char) ('a' + (halfbyte - 10)));
+                }
+
                 halfbyte = bytes[i] & 0x0F;
             } while (two_halfs++ < 1);
         }
+
         String hex = buffer.toString();
         return hex;
     }
