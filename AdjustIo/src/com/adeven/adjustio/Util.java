@@ -52,7 +52,7 @@ import android.util.DisplayMetrics;
  */
 public class Util {
     private static final String BASEURL = "https://app.adjust.io";
-    private static final String CLIENTSDK = "android1.5";
+    private static final String CLIENTSDK = "android1.6";
 
     private static final String UNKNOWN = "unknown";
 
