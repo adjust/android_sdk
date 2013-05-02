@@ -83,19 +83,16 @@ public class RequestThread extends HandlerThread {
     }
 
     private String parseResponse(HttpResponse response) {
-        String responseString = null;
-
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             response.getEntity().writeTo(out);
             out.close();
-            responseString = out.toString().trim();
+            String responseString = out.toString().trim();
+            return responseString;
         } catch (Exception e) {
             Logger.error("error parsing response", e);
             return "Failed parsing response";
         }
-
-        return responseString;
     }
 
     private static final class RequestHandler extends Handler {
