@@ -33,16 +33,20 @@ In the left pane select `Android`. In the bottom right group `Library` click the
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they aren't present already.
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+```java
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+```
 
 ![][permissions]
 
 In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the `onCreate` method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
 
-    import com.adeven.adjustio.AdjustIo;
-    // ...
-    AdjustIo.appDidLaunch(getApplication());
+```java
+import com.adeven.adjustio.AdjustIo;
+// ...
+AdjustIo.appDidLaunch(getApplication());
+```
 
 ![][activity]
 
@@ -58,7 +62,9 @@ Once you have integrated the AdjustIo SDK into you project, you can take advanta
 ### Add tracking of custom events.
 You can tell AdjustIo about every event you consider to be of your interest. Suppose you want to track every tap on a button. Currently you would have to ask us for an event token and we would give you one, like `abc123`. In your button's onClick method you could then add the following code to track the click:
 
-    AdjustIo.trackEvent("abc123");
+```java
+AdjustIo.trackEvent("abc123");
+```
 
 You can also register a callback URL for that event and we will send a request to that URL whenever the event happens. Additianally you can put some key-value-pairs in a Map and pass it to the trackEvent method. In that case we will forward these named parameters to your callback URL. Suppose you registered the URL `http://www.adeven.com/callback` for your event and execute the following lines:
 
@@ -72,18 +78,24 @@ In that case we would track the event and send a request to `http://www.adeven.c
 ### Add tracking of revenue
 If your users can generate revenue by clicking on advertisements you can track those revenues. If the click is worth one Cent, you could make the following call to track that revenue:
 
-    AdjustIo.trackRevenue(1.0f);
+```java
+AdjustIo.trackRevenue(1.0f);
+```
 
 The parameter is supposed to be in Cents and will get rounded to one decimal point. If you want to differentiate between different kinds of revenue you can get different event tokens for each kind. Again, you need to ask us for event tokens that you can then use. In that case you would make a call like this:
 
-    AdjustIo.trackRevenue(1.0f, "abc123");
+```java
+AdjustIo.trackRevenue(1.0f, "abc123");
+```
 
 You can also register a callback URL again and provide a map of named parameters, just like it worked with normal events.
 
-    Map<String, String> parameters = new HashMap<String, String>();
-    parameters.put("key", "value");
-    parameters.put("foo", "bar");
-    AdjustIo.trackRevenue(1.0f, "abc123", parameters);
+```java
+Map<String, String> parameters = new HashMap<String, String>();
+parameters.put("key", "value");
+parameters.put("foo", "bar");
+AdjustIo.trackRevenue(1.0f, "abc123", parameters);
+```
 
 In any case, don't forget to import AdjustIo. Again, there is no point in sending parameters if you haven't registered a callback URL for that revenue event.
 
