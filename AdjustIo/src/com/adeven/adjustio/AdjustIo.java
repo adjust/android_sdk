@@ -34,19 +34,19 @@ public class AdjustIo {
      *     Generally obtained by calling getApplication()
      */
 
-    public static void appDidLaunch(Context context) {
+    public static void appDidLaunch(String appToken, Context context) {
         if (!Util.checkPermissions(context)) {
             return;
         }
 
         String macAddress = Util.getMacAddress(context);
 
-        packageName = context.getPackageName();
-        macSha1 = Util.sha1(macAddress);
-        macShort = macAddress.replaceAll(":", "");
-        userAgent = Util.getUserAgent(context);
-        androidId = Util.getAndroidId(context);
-        attributionId = Util.getAttributionId(context);
+        AdjustIo.appToken = appToken;
+        AdjustIo.macSha1 = Util.sha1(macAddress);
+        AdjustIo.macShort = macAddress.replaceAll(":", "");
+        AdjustIo.userAgent = Util.getUserAgent(context);
+        AdjustIo.androidId = Util.getAndroidId(context);
+        AdjustIo.attributionId = Util.getAttributionId(context);
 
         trackSessionStart();
     }
@@ -89,10 +89,10 @@ public class AdjustIo {
             .setSuccessMessage(successMessage)
             .setFailureMessage(failureMessage)
             .setUserAgent(userAgent)
-            .addTrackingParameter(EVENT_TOKEN, eventToken)
-            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(APP_TOKEN, appToken)
             .addTrackingParameter(MAC_SHORT, macShort)
             .addTrackingParameter(ANDROID_ID, androidId)
+            .addTrackingParameter(EVENT_TOKEN, eventToken)
             .addTrackingParameter(PARAMETERS, paramString)
             .build();
         getRequestThread().track(event);
@@ -149,7 +149,7 @@ public class AdjustIo {
             .setSuccessMessage(successMessage)
             .setFailureMessage(failureMessage)
             .setUserAgent(userAgent)
-            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(APP_TOKEN, appToken)
             .addTrackingParameter(MAC_SHORT, macShort)
             .addTrackingParameter(ANDROID_ID, androidId)
             .addTrackingParameter(AMOUNT, amount)
@@ -180,7 +180,7 @@ public class AdjustIo {
 
     // This line marks the end of the public interface.
 
-    private static final String PACKAGE_NAME = "app_id";
+    private static final String APP_TOKEN = "app_token";
     private static final String MAC_SHA1 = "mac_sha1";
     private static final String MAC_SHORT = "mac";
     private static final String ANDROID_ID = "android_id";
@@ -189,7 +189,7 @@ public class AdjustIo {
     private static final String PARAMETERS = "params";
     private static final String AMOUNT = "amount";
 
-    private static String packageName;
+    private static String appToken;
     private static String macSha1;
     private static String macShort;
     private static String userAgent;
@@ -202,7 +202,7 @@ public class AdjustIo {
             .setSuccessMessage("Tracked session start.")
             .setFailureMessage("Failed to track session start.")
             .setUserAgent(userAgent)
-            .addTrackingParameter(PACKAGE_NAME, packageName)
+            .addTrackingParameter(APP_TOKEN, appToken)
             .addTrackingParameter(MAC_SHORT, macShort)
             .addTrackingParameter(MAC_SHA1, macSha1)
             .addTrackingParameter(ANDROID_ID, androidId)
