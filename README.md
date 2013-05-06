@@ -40,12 +40,12 @@ In the Package Explorer open the `AndroidManifest.xml` of your Android project. 
 
 ![][permissions]
 
-In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the `onCreate` method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application.
+In the Package Explorer open the launch activity of your Android App. Add the `import` statement to the top of the source file. In the `onCreate` method of your activity call the method `appDidLaunch`. This tells AdjustIo about the launch of your Application. Replace `<YourAppToken>` with the App Token that you can find in your dashboard at [adjust.io][].
 
 ```java
 import com.adeven.adjustio.AdjustIo;
 // ...
-AdjustIo.appDidLaunch(getApplication());
+AdjustIo.appDidLaunch("<YourAppToken>", getApplication());
 ```
 
 ![][activity]
