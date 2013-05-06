@@ -56,7 +56,7 @@ Build and run your Android app. In your LogCat viewer you can set the filter `ta
 Once you have integrated the AdjustIo SDK into you project, you can take advantage of the following features wherever you see fit.
 
 ### Add tracking of custom events.
-You can tell AdjustIo about every event you consider to be of your interest. Suppose you want to track every tap on a button. Currently you would have to ask us for an eventId and we would give you one, like `abc123`. In your button's onClick method you could then add the following code to track the click:
+You can tell AdjustIo about every event you consider to be of your interest. Suppose you want to track every tap on a button. Currently you would have to ask us for an event token and we would give you one, like `abc123`. In your button's onClick method you could then add the following code to track the click:
 
     AdjustIo.trackEvent("abc123");
 
@@ -74,7 +74,7 @@ If your users can generate revenue by clicking on advertisements you can track t
 
     AdjustIo.trackRevenue(1.0f);
 
-The parameter is supposed to be in Cents and will get rounded to one decimal point. If you want to differentiate between different kinds of revenue you can get different eventIds for each kind. Again, you need to ask us for eventIds that you can then use. In that case you would make a call like this:
+The parameter is supposed to be in Cents and will get rounded to one decimal point. If you want to differentiate between different kinds of revenue you can get different event tokens for each kind. Again, you need to ask us for event tokens that you can then use. In that case you would make a call like this:
 
     AdjustIo.trackRevenue(1.0f, "abc123");
 
