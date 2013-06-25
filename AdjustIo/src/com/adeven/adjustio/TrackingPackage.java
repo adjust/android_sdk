@@ -10,8 +10,8 @@
 package com.adeven.adjustio;
 
 import java.io.Serializable;
-import java.util.Map;
 
+// TODO: remove this comment? clean up comments!
 /**
  * Holds information of one tracking package.
  *
@@ -19,10 +19,8 @@ import java.util.Map;
  * @since 17.4.13
  */
 public class TrackingPackage implements Serializable {
-    /**
-     *
-     */
     private static final long serialVersionUID = -5435782033488813179L;
+
     final String path;
     final String successMessage;
     final String failureMessage;
@@ -35,63 +33,5 @@ public class TrackingPackage implements Serializable {
         this.failureMessage = failureMessage;
         this.userAgent = userAgent;
         this.parameters = parameters;
-    }
-
-    /**
-     * A builder to enable chained building of a TrackingPackage.
-     */
-    static class Builder {
-        public float amountInCents;
-        public String eventToken;
-        public Map<String, String> parameters;
-
-        private String path;
-        private String successMessage;
-        private String failureMessage;
-        private String userAgent;
-        private String parameterString;
-
-        Builder setPath(String path) {
-            this.path = path;
-            return this;
-        }
-
-        Builder setUserAgent(String userAgent) {
-            this.userAgent = userAgent;
-            Logger.verbose(path, "userAgent", userAgent);
-            return this;
-        }
-
-        Builder setSuccessMessage(String successMessage) {
-            this.successMessage = successMessage;
-            Logger.verbose(path, "successMessage", successMessage);
-            return this;
-        }
-
-        Builder setFailureMessage(String failureMessage) {
-            this.failureMessage = failureMessage;
-            Logger.verbose(path, "failureMessage", failureMessage);
-            return this;
-        }
-
-        Builder addTrackingParameter(String key, String value) {
-            if (value == null || value == "" ) {
-                return this;
-            }
-
-            if (parameterString == null || parameterString == "") {
-                parameterString = key + "=" + value;
-            } else {
-                parameterString += "&" + key + "=" + value;
-            }
-
-            Logger.verbose(path, key, value);   // TODO: remove these logs here?
-            return this;
-        }
-
-        TrackingPackage build() {
-            TrackingPackage trackingPackage = new TrackingPackage(path, successMessage, failureMessage, userAgent, parameterString);
-            return trackingPackage;
-        }
     }
 }
