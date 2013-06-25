@@ -11,7 +11,7 @@ package com.adeven.adjustio;
 
 import java.util.Map;
 
-import android.content.Context;
+import android.app.Activity;
 
 /**
  * The main interface to AdjustIo.
@@ -24,6 +24,10 @@ import android.content.Context;
  */
 public class AdjustIo {
 
+    // forwards everything to sessionThread
+    private static SessionThread sessionThread;
+
+    // TODO: update all comments
     /**
      * Tell AdjustIo that the application did launch.
      *
@@ -34,23 +38,20 @@ public class AdjustIo {
      *     Generally obtained by calling getApplication()
      */
 
-    public static void appDidLaunch(String appToken, Context context) {
-        if (!Util.checkPermissions(context)) {
-            return;
+    public static void onResume(String appToken, Activity activity) {
+        if (sessionThread == null) {
+            sessionThread = new SessionThread(appToken, activity.getApplication());
         }
-
-        String macAddress = Util.getMacAddress(context);
-
-        AdjustIo.appToken = appToken;
-        AdjustIo.macSha1 = Util.sha1(macAddress);
-        AdjustIo.macShort = macAddress.replaceAll(":", "");
-        AdjustIo.userAgent = Util.getUserAgent(context);
-        AdjustIo.androidId = Util.getAndroidId(context);
-        AdjustIo.attributionId = Util.getAttributionId(context);
-
-        trackSessionStart();
+        sessionThread.trackSubsessionStart();
     }
 
+    public static void onPause() {
+        try {
+            sessionThread.trackSubsessionEnd();
+        } catch (NullPointerException e) {
+            // TODO: log
+        }
+    }
 
     /**
      * Track any kind of event.
@@ -71,31 +72,11 @@ public class AdjustIo {
     }
 
     public static void trackEvent(String eventToken, Map<String, String> parameters) {
-        if (eventToken.length() != 6) {
-            Logger.error(
-                "Event tracking only works with proper event tokens. " +
-                "Find them in your dashboard at http://www.adjust.io " +
-                "or contact support@adjust.io"
-            );
-            return;
+        try {
+            sessionThread.trackEvent(eventToken, parameters);
+        } catch (NullPointerException e) {
+            // TODO: log
         }
-
-        String paramString = Util.getBase64EncodedParameters(parameters);
-        String successMessage = "Tracked event: '" + eventToken + "'";
-        String failureMessage = "Failed to track event: '" + eventToken + "'";
-
-        TrackingPackage event = new TrackingPackage.Builder()
-            .setPath("/event")
-            .setSuccessMessage(successMessage)
-            .setFailureMessage(failureMessage)
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(EVENT_TOKEN, eventToken)
-            .addTrackingParameter(PARAMETERS, paramString)
-            .build();
-        getRequestThread().track(event);
     }
 
 
@@ -122,41 +103,11 @@ public class AdjustIo {
     }
 
     public static void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
-        if (eventToken != null && eventToken.length() != 6) {
-            Logger.error(
-                "Specific revenue tracking only works with proper event tokens. " +
-                "Find them in your dashboard at http://www.adjust.io " +
-                "or contact support@adjust.io"
-            );
-            return;
+        try {
+            sessionThread.trackRevenue(amountInCents, eventToken, parameters);
+        } catch (NullPointerException e) {
+            // TODO: log
         }
-
-        int amountInMillis = Math.round(10 * amountInCents);
-        amountInCents = amountInMillis/10.0f; // now rounded to one decimal point
-        String amount = Integer.toString(amountInMillis);
-        String paramString = Util.getBase64EncodedParameters(parameters);
-        String successMessage = "Tracked revenue: " + amountInCents + " Cent";
-        String failureMessage = "Failed to track revenue: " + amountInCents + " Cent";
-
-        if (eventToken != null) {
-            String eventString = " (event token: '" + eventToken + "')";
-            successMessage += eventString;
-            failureMessage += eventString;
-        }
-
-        TrackingPackage revenue = new TrackingPackage.Builder()
-            .setPath("/revenue")
-            .setSuccessMessage(successMessage)
-            .setFailureMessage(failureMessage)
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(AMOUNT, amount)
-            .addTrackingParameter(EVENT_TOKEN, eventToken)
-            .addTrackingParameter(PARAMETERS, paramString)
-            .build();
-        getRequestThread().track(revenue);
     }
 
 
@@ -175,47 +126,5 @@ public class AdjustIo {
 
     public static void setLogLevel(int logLevel) {
         Logger.setLogLevel(logLevel);
-    }
-
-
-    // This line marks the end of the public interface.
-
-    private static final String APP_TOKEN = "app_token";
-    private static final String MAC_SHA1 = "mac_sha1";
-    private static final String MAC_SHORT = "mac";
-    private static final String ANDROID_ID = "android_id";
-    private static final String ATTRIBUTION_ID = "fb_id";
-    private static final String EVENT_TOKEN = "event_id";
-    private static final String PARAMETERS = "params";
-    private static final String AMOUNT = "amount";
-
-    private static String appToken;
-    private static String macSha1;
-    private static String macShort;
-    private static String userAgent;
-    private static String androidId;
-    private static String attributionId;
-
-    private static void trackSessionStart() {
-        TrackingPackage sessionStart = new TrackingPackage.Builder()
-            .setPath("/startup")
-            .setSuccessMessage("Tracked session start.")
-            .setFailureMessage("Failed to track session start.")
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(MAC_SHA1, macSha1)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(ATTRIBUTION_ID, attributionId)
-            .build();
-        getRequestThread().track(sessionStart);
-    }
-
-    private static RequestThread requestThread;
-    private static RequestThread getRequestThread() {
-        if (requestThread == null) {
-            requestThread = new RequestThread();
-        }
-        return requestThread;
     }
 }

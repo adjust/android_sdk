@@ -9,11 +9,8 @@
 
 package com.adeven.adjustio;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * Holds information of one tracking package.
@@ -21,14 +18,18 @@ import org.apache.http.message.BasicNameValuePair;
  * @author keyboardsurfer
  * @since 17.4.13
  */
-public class TrackingPackage {
+public class TrackingPackage implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -5435782033488813179L;
     final String path;
     final String successMessage;
     final String failureMessage;
     final String userAgent;
-    final List<NameValuePair> parameters;
+    final String parameters;
 
-    public TrackingPackage(String path, String successMessage, String failureMessage, String userAgent, List<NameValuePair> parameters) {
+    public TrackingPackage(String path, String successMessage, String failureMessage, String userAgent, String parameters) {
         this.path = path;
         this.successMessage = successMessage;
         this.failureMessage = failureMessage;
@@ -37,18 +38,18 @@ public class TrackingPackage {
     }
 
     /**
-     * A builder to enable chained building of a RequestThread.
+     * A builder to enable chained building of a TrackingPackage.
      */
     static class Builder {
+        public float amountInCents;
+        public String eventToken;
+        public Map<String, String> parameters;
+
         private String path;
         private String successMessage;
         private String failureMessage;
         private String userAgent;
-        private List<NameValuePair> parameters;
-
-        Builder() {
-            parameters = new ArrayList<NameValuePair>();
-        }
+        private String parameterString;
 
         Builder setPath(String path) {
             this.path = path;
@@ -78,13 +79,18 @@ public class TrackingPackage {
                 return this;
             }
 
-            parameters.add(new BasicNameValuePair(key, value));
-            Logger.verbose(path, key, value);
+            if (parameterString == null || parameterString == "") {
+                parameterString = key + "=" + value;
+            } else {
+                parameterString += "&" + key + "=" + value;
+            }
+
+            Logger.verbose(path, key, value);   // TODO: remove these logs here?
             return this;
         }
 
         TrackingPackage build() {
-            TrackingPackage trackingPackage = new TrackingPackage(path, successMessage, failureMessage, userAgent, parameters);
+            TrackingPackage trackingPackage = new TrackingPackage(path, successMessage, failureMessage, userAgent, parameterString);
             return trackingPackage;
         }
     }
