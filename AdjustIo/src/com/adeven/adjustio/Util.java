@@ -12,6 +12,8 @@ package com.adeven.adjustio;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.List;
@@ -22,7 +24,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
@@ -51,7 +52,7 @@ import android.util.DisplayMetrics;
  * @since 11.10.12
  */
 public class Util {
-    private static final String BASEURL = "https://app.adjust.io";
+    private static final String BASEURL = "http://192.168.178.117:8509";
     private static final String CLIENTSDK = "android1.6";
 
     private static final String UNKNOWN = "unknown";
@@ -93,8 +94,21 @@ public class Util {
         return encoded;
     }
 
-    public static StringEntity getEntityEncodedParameters(List<NameValuePair> parameters) throws UnsupportedEncodingException {
-        StringEntity entity = new UrlEncodedFormEntity(parameters);
+    public static UrlEncodedFormEntity getEntityEncodedParameters(List<NameValuePair> parameters) throws UnsupportedEncodingException {
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
+
+        try {
+            InputStream stream = entity.getContent();
+            InputStreamReader reader = new InputStreamReader(stream);
+            BufferedReader buffer = new BufferedReader(reader);
+            String line;
+            while ((line = buffer.readLine()) != null) {
+                Logger.error("entity line: " + line);
+            }
+        } catch (IOException e) {
+            Logger.error("failed to read entity");
+        }
+
         return entity;
     }
 
