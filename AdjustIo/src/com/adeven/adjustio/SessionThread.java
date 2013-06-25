@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,12 +48,13 @@ public class SessionThread extends HandlerThread {
 
     private static final String SESSION_FILENAME = "sessionstate";
     private static final int MESSAGE_ARG_UPDATE = 72610;
-    private static final int MESSAGE_ARG_READ = 72620;
     private static final int MESSAGE_ARG_INIT = 72630;
     private static final int MESSAGE_ARG_START = 72640;
     private static final int MESSAGE_ARG_END = 72650;
-    private static final int MESSAGE_ARG_EVENT= 72660;
-    private static final int MESSAGE_ARG_REVENUE= 72670;
+    private static final int MESSAGE_ARG_EVENT = 72660;
+    private static final int MESSAGE_ARG_REVENUE = 72670;
+
+    private static final long SESSION_INTERVAL = 1000 * 1; // 1 second, TODO: 30 minutes
 
     public SessionThread(String appToken, Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -63,8 +65,9 @@ public class SessionThread extends HandlerThread {
         this.appToken = appToken;
         this.context = context;
 
-        init();
-        readSessionState();
+        Message message = Message.obtain();
+        message.arg1 = MESSAGE_ARG_INIT;
+        sessionHandler.sendMessage(message);
     }
 
     public void trackSubsessionStart() {
@@ -80,7 +83,7 @@ public class SessionThread extends HandlerThread {
     }
 
     public void trackEvent(String eventToken, Map<String, String> parameters) {
-        TrackingPackage.Builder builder = new TrackingPackage.Builder();
+        PackageBuilder builder = new PackageBuilder();
         builder.eventToken = eventToken;
         builder.parameters = parameters;
 
@@ -90,8 +93,9 @@ public class SessionThread extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
-        TrackingPackage.Builder builder = new TrackingPackage.Builder();
+    public void trackRevenue(float amountInCents, String eventToken,
+            Map<String, String> parameters) {
+        PackageBuilder builder = new PackageBuilder();
         builder.amountInCents = amountInCents;
         builder.eventToken = eventToken;
         builder.parameters = parameters;
@@ -108,27 +112,15 @@ public class SessionThread extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    private void init() {
-        Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_INIT;
-        sessionHandler.sendMessage(message);
-    }
-
-    private void readSessionState() {
-        Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_READ;
-        sessionHandler.sendMessage(message);
-    }
-
     private static final class SessionHandler extends Handler {
         private final WeakReference<SessionThread> sessionThreadReference;
 
         public SessionHandler(Looper looper, SessionThread sessionThread) {
             super(looper);
-            this.sessionThreadReference = new WeakReference<SessionThread>(sessionThread);
+            this.sessionThreadReference = new WeakReference<SessionThread>(
+                    sessionThread);
         }
 
-        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
@@ -137,8 +129,6 @@ public class SessionThread extends HandlerThread {
                 return;
             } else if (message.arg1 == MESSAGE_ARG_UPDATE) {
                 sessionThread.updateInternal();
-            } else if (message.arg1 == MESSAGE_ARG_READ) {
-                sessionThread.readInternal();
             } else if (message.arg1 == MESSAGE_ARG_INIT) {
                 sessionThread.initInternal();
             } else if (message.arg1 == MESSAGE_ARG_START) {
@@ -146,23 +136,24 @@ public class SessionThread extends HandlerThread {
             } else if (message.arg1 == MESSAGE_ARG_END) {
                 sessionThread.endInternal();
             } else if (message.arg1 == MESSAGE_ARG_EVENT) {
-                TrackingPackage.Builder builder = (TrackingPackage.Builder)message.obj;
+                PackageBuilder builder = (PackageBuilder) message.obj;
                 sessionThread.eventInternal(builder);
             } else if (message.arg1 == MESSAGE_ARG_REVENUE) {
-                TrackingPackage.Builder builder = (TrackingPackage.Builder)message.obj;
+                PackageBuilder builder = (PackageBuilder) message.obj;
                 sessionThread.revenueInternal(builder);
             }
         }
     }
 
-    private void updateInternal() {
-        Logger.info("update");
-    }
+    // TODO: rename internal methods
 
     private void initInternal() {
-        if (!Util.checkPermissions(context)) return;
-        if (!checkAppToken(appToken)) return;
-        if (!checkContext(context)) return;
+        if (!Util.checkPermissions(context))
+            return;
+        if (!checkAppToken(appToken))
+            return;
+        if (!checkContext(context))
+            return;
 
         String macAddress = Util.getMacAddress(context);
 
@@ -173,24 +164,63 @@ public class SessionThread extends HandlerThread {
         attributionId = Util.getAttributionId(context);
 
         queueThread = new QueueThread(context);
+        readSessionStateInternal();
+    }
+
+    private void updateInternal() {
+        Logger.info("update");
     }
 
     private void startInternal() {
-        startExecutor();
+        // startExecutor(); // TODO: enable
 
-        TrackingPackage sessionStart = new TrackingPackage.Builder()
-            .setPath("/startup")
-            .setSuccessMessage("Tracked session start.")
-            .setFailureMessage("Failed to track session start.")
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(MAC_SHA1, macSha1)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(ATTRIBUTION_ID, attributionId)
-            .build();
+        long now = new Date().getTime();
 
+        // very first session on this device
+        if (sessionState.lastActivity == 0) {
+            sessionState.eventCount = 0;        // no events yet
+            sessionState.sessionCount = 1;      // the first session just started
+            sessionState.subsessionCount = -1;  // we don't know how many subssessions this first  session will have
+            sessionState.sessionLength = -1;    // same for session length and time spent
+            sessionState.timeSpent = -1;        // this information will be collected and attached to the next session
+            sessionState.createdAt = now;
+
+            writeSessionStateInternal();
+            enqueueSessionInternal();
+            return;
+        }
+
+        // new session
+        if (now - sessionState.lastActivity > SESSION_INTERVAL) {
+            sessionState.sessionCount++;
+
+            enqueueSessionInternal();
+        }
+    }
+
+    private void enqueueSessionInternal() {
+        PackageBuilder builder = sessionState.getPackageBuilder();
+
+        // TODO: extract?
+        builder.setUserAgent(userAgent);
+        builder.addTrackingParameter(APP_TOKEN, appToken);
+        builder.addTrackingParameter(MAC_SHORT, macShort);
+        builder.addTrackingParameter(MAC_SHA1, macSha1);
+        builder.addTrackingParameter(ANDROID_ID, androidId);
+        builder.addTrackingParameter(ATTRIBUTION_ID, attributionId);
+
+        TrackingPackage sessionStart = builder.build();
         queueThread.addPackage(sessionStart);
+
+        long now = new Date().getTime();
+
+        sessionState.sessionCount++;        // the next session just started
+        sessionState.subsessionCount = 1;   // first subsession
+        sessionState.sessionLength = 0;     // no session length yet
+        sessionState.timeSpent = 0;         // no time spent yet
+        sessionState.createdAt = now;
+        sessionState.lastSubsessionStart = now;
+        sessionState.lastActivity = now;
     }
 
     private void endInternal() {
@@ -198,43 +228,47 @@ public class SessionThread extends HandlerThread {
         // TODO: update last activity
     }
 
-    private void eventInternal(TrackingPackage.Builder builder) {
-        // TODO: clean up the builder stuff: reuse builder or even use its eventToken and parameters
-        if (!checkEventTokenNotNull(builder.eventToken)) return;
-        if (!checkEventTokenLength(builder.eventToken)) return;
+    private void eventInternal(PackageBuilder builder) {
+        // TODO: clean up the builder stuff: reuse builder or even use its
+        // eventToken and parameters
+        if (!checkEventTokenNotNull(builder.eventToken))
+            return;
+        if (!checkEventTokenLength(builder.eventToken))
+            return;
 
-        String paramString = Util.getBase64EncodedParameters(builder.parameters);
+        String paramString = Util
+                .getBase64EncodedParameters(builder.parameters);
         String successMessage = "Tracked event: '" + builder.eventToken + "'";
-        String failureMessage = "Failed to track event: '" + builder.eventToken + "'";
+        String failureMessage = "Failed to track event: '" + builder.eventToken
+                + "'";
 
-        TrackingPackage eventPackage = new TrackingPackage.Builder()
-            .setPath("/event")
-            .setSuccessMessage(successMessage)
-            .setFailureMessage(failureMessage)
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(EVENT_TOKEN, builder.eventToken)
-            .addTrackingParameter(PARAMETERS, paramString)
-            .build();
+        TrackingPackage eventPackage = new PackageBuilder()
+                .setPath("/event").setSuccessMessage(successMessage)
+                .setFailureMessage(failureMessage).setUserAgent(userAgent)
+                .addTrackingParameter(APP_TOKEN, appToken)
+                .addTrackingParameter(MAC_SHORT, macShort)
+                .addTrackingParameter(ANDROID_ID, androidId)
+                .addTrackingParameter(EVENT_TOKEN, builder.eventToken)
+                .addTrackingParameter(PARAMETERS, paramString).build();
 
         queueThread.addPackage(eventPackage);
     }
 
-    private void revenueInternal(TrackingPackage.Builder builder) {
-    	if (!checkEventTokenLength(builder.eventToken)) return;
+    private void revenueInternal(PackageBuilder builder) {
+        if (!checkEventTokenLength(builder.eventToken))
+            return;
 
         Logger.info("revenueInternal");
         // TODO: clean up and extract general event stuff?
 
-
         int amountInMillis = Math.round(10 * builder.amountInCents);
-        float amountInCents = amountInMillis/10.0f; // now rounded to one decimal point
+        float amountInCents = amountInMillis / 10.0f; // now rounded to one decimal point
         String amount = Integer.toString(amountInMillis);
-        String paramString = Util.getBase64EncodedParameters(builder.parameters);
+        String paramString = Util
+                .getBase64EncodedParameters(builder.parameters);
         String successMessage = "Tracked revenue: " + amountInCents + " Cent";
-        String failureMessage = "Failed to track revenue: " + amountInCents + " Cent";
+        String failureMessage = "Failed to track revenue: " + amountInCents
+                + " Cent";
 
         if (builder.eventToken != null) {
             String eventString = " (event token: '" + builder.eventToken + "')";
@@ -242,35 +276,36 @@ public class SessionThread extends HandlerThread {
             failureMessage += eventString;
         }
 
-        TrackingPackage revenuePackage = new TrackingPackage.Builder()
-            .setPath("/revenue")
-            .setSuccessMessage(successMessage)
-            .setFailureMessage(failureMessage)
-            .setUserAgent(userAgent)
-            .addTrackingParameter(APP_TOKEN, appToken)
-            .addTrackingParameter(MAC_SHORT, macShort)
-            .addTrackingParameter(ANDROID_ID, androidId)
-            .addTrackingParameter(AMOUNT, amount)
-            .addTrackingParameter(EVENT_TOKEN, builder.eventToken)
-            .addTrackingParameter(PARAMETERS, paramString)
-            .build();
-        //getRequestThread().track(revenue);
+        TrackingPackage revenuePackage = new PackageBuilder()
+                .setPath("/revenue").setSuccessMessage(successMessage)
+                .setFailureMessage(failureMessage).setUserAgent(userAgent)
+                .addTrackingParameter(APP_TOKEN, appToken)
+                .addTrackingParameter(MAC_SHORT, macShort)
+                .addTrackingParameter(ANDROID_ID, androidId)
+                .addTrackingParameter(AMOUNT, amount)
+                .addTrackingParameter(EVENT_TOKEN, builder.eventToken)
+                .addTrackingParameter(PARAMETERS, paramString).build();
+        // getRequestThread().track(revenue);
         queueThread.addPackage(revenuePackage);
     }
 
-    private void readInternal() {
+    private void readSessionStateInternal() {
         try {
-            FileInputStream inputStream = context.openFileInput(SESSION_FILENAME);
-            BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
-            ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+            FileInputStream inputStream = context
+                    .openFileInput(SESSION_FILENAME);
+            BufferedInputStream bufferedStream = new BufferedInputStream(
+                    inputStream);
+            ObjectInputStream objectStream = new ObjectInputStream(
+                    bufferedStream);
             try {
-                sessionState = (SessionState)objectStream.readObject();
+                sessionState = (SessionState) objectStream.readObject();
                 Logger.error("state");
             } finally {
                 objectStream.close();
             }
         } catch (FileNotFoundException e) {
             sessionState = new SessionState();
+            writeSessionStateInternal();
         } catch (ClassNotFoundException e) {
             Logger.error("class not found");
         } catch (IOException e) {
@@ -278,13 +313,19 @@ public class SessionThread extends HandlerThread {
         }
     }
 
-    private void writeInternal() {
-        try { Thread.sleep(100); } catch (Exception e) {}
+    private void writeSessionStateInternal() {
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+        }
 
         try {
-            FileOutputStream outputStream = context.openFileOutput(SESSION_FILENAME, Context.MODE_PRIVATE);
-            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
-            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+            FileOutputStream outputStream = context.openFileOutput(
+                    SESSION_FILENAME, Context.MODE_PRIVATE);
+            BufferedOutputStream bufferedStream = new BufferedOutputStream(
+                    outputStream);
+            ObjectOutputStream objectStream = new ObjectOutputStream(
+                    bufferedStream);
             try {
                 objectStream.writeObject(sessionState);
             } finally {
@@ -335,7 +376,8 @@ public class SessionThread extends HandlerThread {
     }
 
     private static boolean checkEventTokenLength(String eventToken) {
-    	if (eventToken == null) return true;
+        if (eventToken == null)
+            return true;
 
         if (eventToken.length() != 6) {
             Logger.error("Malformed Event Token");
