@@ -157,7 +157,7 @@ public class QueueThread extends HandlerThread {
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
             try {
                 packages = (List<TrackingPackage>)objectStream.readObject();
-                Logger.error("packages " + packages.size());
+                Logger.info("packages " + packages.size());
             } finally {
                 objectStream.close();
             }
