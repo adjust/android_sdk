@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.lang.ref.WeakReference;
@@ -29,7 +30,7 @@ public class QueueThread extends HandlerThread {
     private List<TrackingPackage> packages;
 
     private static final String QUEUE_FILENAME = "testqueue";
-    private static final int MESSAGE_ARG_ADD = 72500;   // TODO: change numbers?
+    private static final int MESSAGE_ARG_ADD = 72500; // TODO: change numbers?
     private static final int MESSAGE_ARG_REMOVE = 72510;
     private static final int MESSAGE_ARG_READ = 72520;
     private static final int MESSAGE_ARG_TRACK = 72530;
@@ -156,7 +157,7 @@ public class QueueThread extends HandlerThread {
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
             try {
-                packages = (List<TrackingPackage>)objectStream.readObject();
+                packages = (List<TrackingPackage>) objectStream.readObject();
                 Logger.info("packages " + packages.size());
             } finally {
                 objectStream.close();
@@ -171,7 +172,10 @@ public class QueueThread extends HandlerThread {
     }
 
     private void writeInternal() {
-        try { Thread.sleep(100); } catch (Exception e) {}
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {
+        }
 
         try {
             FileOutputStream outputStream = context.openFileOutput(QUEUE_FILENAME, Context.MODE_PRIVATE);
@@ -179,11 +183,14 @@ public class QueueThread extends HandlerThread {
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
             try {
                 objectStream.writeObject(packages);
+            } catch (NotSerializableException e) {
+                Logger.error("failed to serialize package");
             } finally {
                 objectStream.close();
             }
         } catch (IOException e) {
-            Logger.error("failed to write package"); // TODO: improve log
+            Logger.error("failed to write packages (" + e.getLocalizedMessage() + ")"); // TODO: improve log
+            e.printStackTrace();
         }
     }
 }

@@ -344,7 +344,7 @@ public class SessionThread extends HandlerThread {
                 objectStream.close();
             }
         } catch (IOException e) {
-            Logger.error("failed to write package"); // TODO: improve log
+            Logger.error("failed to write package X (" + e.getLocalizedMessage() + ")"); // TODO: improve log
         }
     }
 

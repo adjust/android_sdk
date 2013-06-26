@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
-
 public class PackageBuilder {
     // general
     public String appToken;
@@ -25,7 +23,7 @@ public class PackageBuilder {
     // events
     public String eventToken;
     public float amountInCents;
-    public Map<String, String> callbackParameters;
+    public Map<String, String> callbackParameters; // TODO: remove
 
     // meta
     public String path;
@@ -36,22 +34,20 @@ public class PackageBuilder {
     public String failureMessage;
 
     public TrackingPackage buildSessionPackage() {
-        Map<String, String> pairs = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<String, String>();
 
-        addString(pairs, "app_token", appToken);
-        addString(pairs, "mac_sha1", macSha1);
-        addString(pairs, "mac", macShort);
-        addString(pairs, "android_id", androidId);
-        addString(pairs, "fb_id", attributionId);
+        addString(parameters, "app_token", appToken);
+        addString(parameters, "mac_sha1", macSha1);
+        addString(parameters, "mac", macShort);
+        addString(parameters, "android_id", androidId);
+        addString(parameters, "fb_id", attributionId);
 
-        addInt(pairs, "session_id", sessionCount); // TODO: rename?
-        addInt(pairs, "subsession_count", subsessionCount);
-        addDate(pairs, "created_at", createdAt);
-        addDuration(pairs, "session_length", sessionLength);
-        addDuration(pairs, "time_spent", timeSpent);
-        addDuration(pairs, "last_interval", lastInterval);
-
-        String parameterString = buildParameterString(pairs);
+        addInt(parameters, "session_id", sessionCount); // TODO: rename?
+        addInt(parameters, "subsession_count", subsessionCount);
+        addDate(parameters, "created_at", createdAt);
+        addDuration(parameters, "session_length", sessionLength);
+        addDuration(parameters, "time_spent", timeSpent);
+        addDuration(parameters, "last_interval", lastInterval);
 
         path = "/startup";
         successMessage = "Tracked session start.";
@@ -62,7 +58,7 @@ public class PackageBuilder {
         sessionPackage.path = "/startup";
         sessionPackage.successMessage = "Tracked session start.";   // TODO: can these logs be improved?
         sessionPackage.failureMessage = "Failed to track session start.";
-        sessionPackage.parameters = parameterString;
+        sessionPackage.parameters = parameters;
         sessionPackage.userAgent = userAgent;
 
         Logger.info("session package: " + sessionPackage);
@@ -79,69 +75,32 @@ public class PackageBuilder {
         return null;
     }
 
-    private String buildParameterString(Map<String, String> pairs) {
-        String parameterString = null;
-        for (Map.Entry<String, String> entry : pairs.entrySet()) {
-            String pair = entry.getKey() + "=" + entry.getValue();
-            if (parameterString == null) {
-                parameterString = pair;
-            } else {
-                parameterString += "&" + pair;
-            }
-        }
-        return parameterString;
-    }
-
-    private void getParameterString() {
-        String callbackParametersString = Util.getBase64EncodedParameters(callbackParameters);
-        int amountInMillis = Math.round(10 * amountInCents);
-        float amountInCents = amountInMillis / 10.0f; // now rounded to one decimal point
-        String amountString = Integer.toString(amountInMillis);
-
-        Map<String, String> pairs = new HashMap<String, String>();
-
-        addString(pairs, "app_token", appToken);
-        addString(pairs, "mac_sha1", macSha1);
-        addString(pairs, "mac", macShort);
-        addString(pairs, "android_id", androidId);
-        addString(pairs, "fb_id", attributionId);
-
-        addInt(pairs, "session_id", sessionCount); // TODO: rename?
-        addInt(pairs, "subsession_count", subsessionCount);
-        addDate(pairs, "session_length", sessionLength);
-        addDate(pairs, "time_spent", timeSpent);
-        addDate(pairs, "last_interval", lastInterval);
-
-        addString(pairs, "event_id", eventToken);
-        addString(pairs, "params", callbackParametersString);
-        addString(pairs, "amount", amountString);
-    }
-
-    private void addString(Map<String, String> pairs, String key, String value) {
+    private void addString(Map<String, String> parameters, String key, String value) {
         if (value == null || value == "") {
             return;
         }
-        pairs.put(key, value);
+        parameters.put(key, value);
     }
 
-    private void addInt(Map<String, String> pairs, String key, long value) {
+    private void addInt(Map<String, String> parameters, String key, long value) {
         if (value == -1) {
             return;
         }
         String valueString = Long.toString(value);
-        pairs.put(key, valueString);
+        addString(parameters, key, valueString);
     }
 
-    private void addDate(Map<String, String> pairs, String key, long value) {
+    private void addDate(Map<String, String> parameters, String key, long value) {
         if (value == -1) {
             return;
         }
         Date date = new Date(value);
-        pairs.put(key, date.toString());    // TODO: format
+        String dateString = date.toString();    // TODO: format
+        addString(parameters, key, dateString);
     }
 
-    private void addDuration(Map<String, String> pairs, String key, long durationInMilliSeconds) {
+    private void addDuration(Map<String, String> parameters, String key, long durationInMilliSeconds) {
         long durationInSeconds = durationInMilliSeconds / 1000;
-        addInt(pairs, key, durationInSeconds);
+        addInt(parameters, key, durationInSeconds);
     }
 }
