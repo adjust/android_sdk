@@ -19,9 +19,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.protocol.HTTP;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -77,15 +74,14 @@ public class RequestThread extends HandlerThread {
     }
 
     private void trackInternal(TrackingPackage trackingPackage) {
+
         HttpClient httpClient = Util.getHttpClient(trackingPackage.userAgent);
         HttpPost request = Util.getPostRequest(trackingPackage.path);
 
         // TODO: test all paths!
-        // TODO: reject if unsure (because rejected packages will always be retried)
+        // TODO: track next if unsure (because rejected packages will always be retried)
         try {
-            StringEntity entity = new StringEntity(trackingPackage.parameters, HTTP.UTF_8);
-            entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
-            request.setEntity(entity);
+            trackingPackage.injectEntity(request);
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, trackingPackage);
         } catch (UnsupportedEncodingException e) {
@@ -93,10 +89,13 @@ public class RequestThread extends HandlerThread {
             queueThread.trackNextPackage();
         } catch (ClientProtocolException e) {
             Logger.error("client protocol error");
-            queueThread.rejectFirstPackage();
+            queueThread.rejectFirstPackage(); // TODO: track next, right?
         } catch (IOException e) {
-            Logger.error("connection failed (" + e.getLocalizedMessage() + ")");
+            Logger.error("connection failed (" + e.getLocalizedMessage() + ")"); // TODO: "will try again later"
             queueThread.rejectFirstPackage();
+        } catch (IllegalArgumentException e) {
+            Logger.error("Failed to track package (" + e.getLocalizedMessage() + ")");
+            queueThread.trackNextPackage();
         }
     }
 

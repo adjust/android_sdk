@@ -1,37 +1,44 @@
-//
-//  TrackingPackage.java
-//  AdjustIo
-//
-//  Created by Benjamin Weiss on 17.4.13
-//  Copyright (c) 2012 adeven. All rights reserved.
-//  See the file MIT-LICENSE for copying permission.
-//
+// TODO: add header comments
 
 package com.adeven.adjustio;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 
-// TODO: remove this comment? clean up comments!
-/**
- * Holds information of one tracking package.
- *
- * @author keyboardsurfer
- * @since 17.4.13
- */
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HTTP;
+
 public class TrackingPackage implements Serializable {
-    private static final long serialVersionUID = -5435782033488813179L;
+    private static final long serialVersionUID = -35935556512024097L;
 
-    final String path;
-    final String successMessage;
-    final String failureMessage;
-    final String userAgent;
-    final String parameters;
+    // data
+    public String path;
+    public String parameters;
+    public String userAgent;
 
-    public TrackingPackage(String path, String successMessage, String failureMessage, String userAgent, String parameters) {
-        this.path = path;
-        this.successMessage = successMessage;
-        this.failureMessage = failureMessage;
-        this.userAgent = userAgent;
-        this.parameters = parameters;
+    // for logging
+    public String kind;
+    public String successMessage;
+    public String failureMessage;
+
+    public String toString() {
+        return "k:" + kind +
+                " pt:" + path +
+                " pr:" + parameters +
+                " ua:" + userAgent +
+                " sm:" + successMessage +
+                " fm:" + failureMessage;
+    }
+
+    public void injectEntity(HttpPost request) throws UnsupportedEncodingException {
+        if (parameters == null) {
+            return;
+        }
+
+        StringEntity entity = new StringEntity(parameters, HTTP.UTF_8);
+        entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
+        request.setEntity(entity);
     }
 }
