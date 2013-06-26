@@ -94,24 +94,6 @@ public class Util {
         return encoded;
     }
 
-    public static UrlEncodedFormEntity getEntityEncodedParameters(List<NameValuePair> parameters) throws UnsupportedEncodingException {
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(parameters);
-
-        try {
-            InputStream stream = entity.getContent();
-            InputStreamReader reader = new InputStreamReader(stream);
-            BufferedReader buffer = new BufferedReader(reader);
-            String line;
-            while ((line = buffer.readLine()) != null) {
-                Logger.error("entity line: " + line);
-            }
-        } catch (IOException e) {
-            Logger.error("failed to read entity");
-        }
-
-        return entity;
-    }
-
     public static HttpClient getHttpClient(String userAgent) {
         HttpClient httpClient = new DefaultHttpClient();
         HttpParams params = httpClient.getParams();
