@@ -1,12 +1,3 @@
-//
-//  RequestThread.java
-//  AdjustIo
-//
-//  Created by Benjamin Weiss on 17.4.13
-//  Copyright (c) 2012 adeven. All rights reserved.
-//  See the file MIT-LICENSE for copying permission.
-//
-
 package com.adeven.adjustio;
 
 import java.io.ByteArrayOutputStream;
@@ -25,15 +16,9 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-/**
- * Used to send tracking packages.
- *
- * @author keyboardsurfer
- * @since 17.4.13
- */
 public class RequestThread extends HandlerThread {
-
     private static final int MESSAGE_ARG_TRACK = 72400;
+
     private Handler trackingHandler;
     private QueueThread queueThread;
 
@@ -61,39 +46,40 @@ public class RequestThread extends HandlerThread {
             this.requestThreadReference = new WeakReference<RequestThread>(requestThread);
         }
 
-         public void handleMessage(Message message) {
+        public void handleMessage(Message message) {
             super.handleMessage(message);
 
             RequestThread requestThread = requestThreadReference.get();
-            if (requestThread == null) {
-                return;
-            } else if (message.arg1 == MESSAGE_ARG_TRACK) {
+            if (requestThread == null) return;
+
+            if (message.arg1 == MESSAGE_ARG_TRACK) {
                 requestThread.trackInternal((TrackingPackage) message.obj);
             }
         }
     }
 
     private void trackInternal(TrackingPackage trackingPackage) {
-
-        HttpClient httpClient = Util.getHttpClient(trackingPackage.userAgent);
-        HttpPost request = Util.getPostRequest(trackingPackage.path);
-
         // TODO: test all paths!
-        // TODO: track next if unsure (because rejected packages will always be retried)
         try {
+            HttpClient httpClient = Util.getHttpClient(trackingPackage.userAgent);
+            HttpPost request = Util.getPostRequest(trackingPackage.path);
             trackingPackage.injectEntity(request);
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, trackingPackage);
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             Logger.error("failed to encode parameters");
             queueThread.trackNextPackage();
-        } catch (ClientProtocolException e) {
+        }
+        catch (ClientProtocolException e) {
             Logger.error("client protocol error");
-            queueThread.rejectFirstPackage(); // TODO: track next, right?
-        } catch (IOException e) {
-            Logger.error("connection failed (" + e.getLocalizedMessage() + ")"); // TODO: "will try again later"
-            queueThread.rejectFirstPackage();
-        } catch (IllegalArgumentException e) {
+            queueThread.closeFirstPackage();
+        }
+        catch (IOException e) {
+            Logger.error(trackingPackage.getFailureMessage() + " Will retry later. (Request failed: " + e.getLocalizedMessage() + ")");
+            queueThread.closeFirstPackage();
+        }
+        catch (IllegalArgumentException e) {
             Logger.error("Failed to track package (" + e.getLocalizedMessage() + ")");
             queueThread.trackNextPackage();
         }
@@ -101,8 +87,8 @@ public class RequestThread extends HandlerThread {
 
     private void requestFinished(HttpResponse response, TrackingPackage trackingPackage) {
         if (response == null) { // TODO: test
-            Logger.debug(trackingPackage.failureMessage + " (Request failed)"); // TODO: "will retry later" like on ios
-            queueThread.rejectFirstPackage();
+            Logger.debug(trackingPackage.getFailureMessage() + " (Request failed)"); // TODO: "will retry later" like on ios
+            queueThread.closeFirstPackage();
             return;
         }
 
@@ -110,9 +96,9 @@ public class RequestThread extends HandlerThread {
         String responseString = parseResponse(response);
 
         if (statusCode == HttpStatus.SC_OK) {
-            Logger.info(trackingPackage.successMessage);
+            Logger.info(trackingPackage.getSuccessMessage());
         } else {
-            Logger.warn(trackingPackage.failureMessage + " (" + responseString + ")");
+            Logger.warn(trackingPackage.getFailureMessage() + " (" + responseString + ")");
         }
 
         queueThread.trackNextPackage();
@@ -125,7 +111,8 @@ public class RequestThread extends HandlerThread {
             out.close();
             String responseString = out.toString().trim();
             return responseString;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             Logger.error("error parsing response", e);
             return "Failed parsing response";
         }

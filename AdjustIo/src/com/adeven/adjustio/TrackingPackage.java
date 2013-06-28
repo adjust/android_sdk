@@ -2,10 +2,6 @@
 
 package com.adeven.adjustio;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -26,18 +22,20 @@ public class TrackingPackage implements Serializable {
     public String userAgent;
     Map<String, String> parameters;
 
-    // for logging
+    // logs
     public String kind;
-    public String successMessage;
-    public String failureMessage;
+    public String suffix;
 
     public String toString() {
-        return "k:" + kind +
-                " pt:" + path +
-                " pr:" + parameters.toString() +    // TODO: format?
-                " ua:" + userAgent +
-                " sm:" + successMessage +
-                " fm:" + failureMessage;
+        return kind + suffix + " " + path;
+    }
+
+    public String parameterString() {
+        String parameterString = "parameters:";
+        for (Map.Entry<String, String> entity : parameters.entrySet()) {
+            parameterString += String.format("\n\t%-16s %s", entity.getKey(), entity.getValue());
+        }
+        return parameterString;
     }
 
     public void injectEntity(HttpPost request) throws UnsupportedEncodingException {
@@ -56,4 +54,11 @@ public class TrackingPackage implements Serializable {
         request.setEntity(entity);
     }
 
+    public String getSuccessMessage() {
+        return "Tracked " + kind + suffix;
+    }
+
+    public String getFailureMessage() {
+        return "Failed to track " + kind + suffix;
+    }
 }
