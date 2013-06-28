@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,27 +24,19 @@ import android.os.Message;
 
 // persistent
 public class QueueThread extends HandlerThread {
+    private static final String QUEUE_FILENAME = "testqueue3";
+
+    private static final int MESSAGE_ARG_ADD = 72500; // TODO: change constants!
+    private static final int MESSAGE_ARG_TRACK_NEXT = 72510;
+    private static final int MESSAGE_ARG_TRACK_FIRST = 72530;
+    private static final int MESSAGE_ARG_READ = 72520;
+
     private Handler queueHandler;
     private Context context;
     private AtomicBoolean isTracking;
     private RequestThread requestThread;
     private List<TrackingPackage> packages;
-
-    private static final String QUEUE_FILENAME = "testqueue";
-    private static final int MESSAGE_ARG_ADD = 72500; // TODO: change numbers?
-    private static final int MESSAGE_ARG_REMOVE = 72510;
-    private static final int MESSAGE_ARG_READ = 72520;
-    private static final int MESSAGE_ARG_TRACK = 72530;
-
-    // tracking loop:
-    // - q.addPackage
-    // - q.addInternal // or q.tryTrack
-    // - q.trackInternal (lock) // exception (unlock)
-    // - r.trackPackage
-    // - r.requestFinished
-    // - q.trackNext // or q.rejectFirst (unlock)
-    // - q.removeInternal (unlock)
-    // - q.trackInternal (repeat)
+    private boolean paused;
 
     // TODO: on session end: stop current tracking loop
     // add an attribute that gets read before trackInternal starts
@@ -58,9 +51,12 @@ public class QueueThread extends HandlerThread {
         this.isTracking = new AtomicBoolean();
         this.requestThread = new RequestThread(this);
 
-        readPackages();
+        Message message = Message.obtain();
+        message.arg1 = MESSAGE_ARG_READ;
+        queueHandler.sendMessage(message);
     }
 
+    // add a package to the queue, trigger tracking
     public void addPackage(TrackingPackage pack) {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_ADD;
@@ -68,26 +64,34 @@ public class QueueThread extends HandlerThread {
         queueHandler.sendMessage(message);
     }
 
-    public void tryTrackFirstPackage() {
+    // try to track the oldest package
+    public void trackFirstPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_TRACK;
+        message.arg1 = MESSAGE_ARG_TRACK_FIRST;
         queueHandler.sendMessage(message);
     }
 
+    // remove oldest package and try to track the next one
+    // (after success or possibly permanent failure)
     public void trackNextPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_REMOVE;
+        message.arg1 = MESSAGE_ARG_TRACK_NEXT;
         queueHandler.sendMessage(message);
     }
 
-    public void rejectFirstPackage() {
+    // close the package to retry in the future (after temporary failure)
+    public void closeFirstPackage() {
         isTracking.set(false);
     }
 
-    private void readPackages() {
-        Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_READ;
-        queueHandler.sendMessage(message);
+    // interrupt the tracking loop after the current request has finished
+    public void pauseTracking() {
+        paused = true;
+    }
+
+    // allow tracking requests again
+    public void resumeTracking() {
+        paused = false;
     }
 
     private static final class PackageHandler extends Handler {
@@ -98,98 +102,128 @@ public class QueueThread extends HandlerThread {
             this.queueThreadReference = new WeakReference<QueueThread>(queueThread);
         }
 
-        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
             QueueThread queueThread = queueThreadReference.get();
-            if (queueThread == null) {
-                return;
-            } else if (message.arg1 == MESSAGE_ARG_ADD) {
-                queueThread.addInternal((TrackingPackage) message.obj);
-            } else if (message.arg1 == MESSAGE_ARG_REMOVE) {
-                queueThread.removeInternal();
-            } else if (message.arg1 == MESSAGE_ARG_READ) {
-                queueThread.readInternal();
-            } else if (message.arg1 == MESSAGE_ARG_TRACK) {
-                queueThread.trackInternal();
+            if (queueThread == null) return;
+
+            switch (message.arg1) {
+            case MESSAGE_ARG_ADD:
+                TrackingPackage trackingPackage = (TrackingPackage) message.obj;
+                queueThread.addInternal(trackingPackage);
+                break;
+            case MESSAGE_ARG_TRACK_FIRST:
+                queueThread.trackFirstInternal();
+                break;
+            case MESSAGE_ARG_TRACK_NEXT:
+                queueThread.trackNextInternal();
+                break;
+            case MESSAGE_ARG_READ:
+                queueThread.readPackagesInternal();
+                break;
             }
         }
     }
 
-    // internal methods run in own thread
+    // internal methods run in dedicated queue thread
 
-    // TODO: lock needed? test with sleep
-    private void addInternal(TrackingPackage pack) {
-        packages.add(pack);
-        writeInternal();
+    private void addInternal(TrackingPackage newPackage) {
+        packages.add(newPackage);
+        Logger.info("added package " + packages.size() + " (" + newPackage + ")");
+        Logger.verbose(newPackage.parameterString());
 
-        trackInternal();
+        writePackagesInternal();
+        trackFirstInternal();
     }
 
-    // TODO: check package?
-    private void removeInternal() {
-        packages.remove(0);
-        writeInternal();
-        isTracking.set(false);
-
-        trackInternal();
-    }
-
-    // TODO: add lock
-    private void trackInternal() {
-        if (isTracking.getAndSet(true)) {
-            Logger.error("locked");
+    private void trackFirstInternal() {
+        if (paused) {
+            Logger.debug("paused");
             return;
         }
+        if (isTracking.getAndSet(true)) {
+            Logger.debug("locked");
+            return;
+        }
+
         try {
             TrackingPackage firstPackage = packages.get(0);
             requestThread.trackPackage(firstPackage);
-        } catch (IndexOutOfBoundsException e) {
+        }
+        catch (IndexOutOfBoundsException e) {
             isTracking.set(false);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void readInternal() {
+    private void trackNextInternal() {
+        packages.remove(0);
+        writePackagesInternal();
+        isTracking.set(false);
+        trackFirstInternal();
+    }
+
+    private void readPackagesInternal() {
+        // initialize with empty list; if any exception gets raised
+        // while reading the queue file this list will be used
+        packages = new ArrayList<TrackingPackage>();
+
         try {
             FileInputStream inputStream = context.openFileInput(QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+
             try {
-                packages = (List<TrackingPackage>) objectStream.readObject();
-                Logger.info("packages " + packages.size());
-            } finally {
+                Object object = objectStream.readObject();
+                @SuppressWarnings("unchecked")
+                List<TrackingPackage> packages = (List<TrackingPackage>) object;
+                Logger.debug("read " + packages.size() + " packages");
+                this.packages = packages;
+            }
+            catch (ClassNotFoundException e) {
+                Logger.error("failed to find queue class");
+            }
+            catch (OptionalDataException e) {} catch (IOException e) {
+                Logger.error("failed to read queue object");
+            }
+            catch (ClassCastException e) {
+                Logger.error("failed to cast queue object");
+            }
+            finally {
                 objectStream.close();
             }
-        } catch (FileNotFoundException e) {
-            packages = new ArrayList<TrackingPackage>();
-        } catch (ClassNotFoundException e) {
-            Logger.error("class not found");
-        } catch (IOException e) {
-            Logger.error("failed to read object");
+        }
+        catch (FileNotFoundException e) {
+            Logger.verbose("queue file not found");
+        }
+        catch (IOException e) {
+            Logger.error("failed to read queue file");
         }
     }
 
-    private void writeInternal() {
-        try {
+    private void writePackagesInternal() {
+        try {   // TODO: remove!
             Thread.sleep(100);
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         try {
             FileOutputStream outputStream = context.openFileOutput(QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+
             try {
                 objectStream.writeObject(packages);
-            } catch (NotSerializableException e) {
-                Logger.error("failed to serialize package");
-            } finally {
+                Logger.debug("wrote " + packages.size() + " packages");
+            }
+            catch (NotSerializableException e) {
+                Logger.error("failed to serialize packages");
+            }
+            finally {
                 objectStream.close();
             }
-        } catch (IOException e) {
-            Logger.error("failed to write packages (" + e.getLocalizedMessage() + ")"); // TODO: improve log
+        }
+        catch (IOException e) {
+            Logger.error("failed to write packages (" + e.getLocalizedMessage() + ")");
             e.printStackTrace();
         }
     }

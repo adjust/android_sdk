@@ -12,22 +12,15 @@ package com.adeven.adjustio;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -42,7 +35,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.DisplayMetrics;
 
 /**
@@ -52,7 +44,7 @@ import android.util.DisplayMetrics;
  * @since 11.10.12
  */
 public class Util {
-    private static final String BASEURL = "http://192.168.178.117:8509";
+    private static final String BASEURL = "http://192.168.178.117:8509";    // TODO: change!
     private static final String CLIENTSDK = "android1.6";
 
     private static final String UNKNOWN = "unknown";
@@ -83,19 +75,9 @@ public class Util {
         return granted;
     }
 
-    public static String getBase64EncodedParameters(Map<String, String> parameters) {
-        if (parameters == null) {
-            return null;
-        }
-
-        JSONObject jsonObject = new JSONObject(parameters);
-        byte[] bytes = jsonObject.toString().getBytes();
-        String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
-        return encoded;
-    }
-
     public static HttpClient getHttpClient(String userAgent) {
-        HttpClient httpClient = new DefaultHttpClient();
+        HttpParams httpParams = new BasicHttpParams();
+        HttpClient httpClient = new DefaultHttpClient(httpParams);
         HttpParams params = httpClient.getParams();
         params.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
         return httpClient;

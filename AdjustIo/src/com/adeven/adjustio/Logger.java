@@ -12,6 +12,7 @@ package com.adeven.adjustio;
 import android.util.Log;
 
 // TODO: check if java.util.logging.Logger is an alternative
+// TODO: go through all log calls and set a proper log level
 
 /**
  * A Wrapper that allows easy toggles of Logging.

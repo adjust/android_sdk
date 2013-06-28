@@ -18,6 +18,7 @@ public class SessionState implements Serializable {
     public long timeSpent;
     public long createdAt;          // all times in milliseconds since 1970
     public long lastActivity;
+    public long lastInterval;
 
     public SessionState() {
         eventCount = 0;        // no events yet
@@ -27,6 +28,7 @@ public class SessionState implements Serializable {
         timeSpent = -1;        // this information will be collected and attached to the next session
         createdAt = -1;
         lastActivity = -1;
+        lastInterval = -1;
     }
 
     public void startNextSession(long now) {
@@ -36,18 +38,27 @@ public class SessionState implements Serializable {
         timeSpent = 0;         // no time spent yet
         createdAt = now;
         lastActivity = now;
+        lastInterval = 0;
     }
 
-    public PackageBuilder getPackageBuilder() {
-        PackageBuilder builder = new PackageBuilder();
-
+    public void injectSessionAttributes(PackageBuilder builder) {
         builder.sessionCount = sessionCount;
         builder.subsessionCount = subsessionCount;
         builder.sessionLength = sessionLength;
         builder.timeSpent = timeSpent;
         builder.createdAt = createdAt;
 
-        return builder;
+        builder.lastInterval = lastInterval;
+    }
+
+    public void injectEventAttributes(PackageBuilder builder) {
+        builder.sessionCount = sessionCount;
+        builder.subsessionCount = subsessionCount;
+        builder.sessionLength = sessionLength;
+        builder.timeSpent = timeSpent;
+        builder.createdAt = createdAt;
+
+        builder.eventCount = eventCount;
     }
 
     public String toString() {
