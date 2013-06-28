@@ -10,33 +10,33 @@ import android.util.Base64;
 
 public class PackageBuilder {
     // general
-    public String appToken;
-    public String macSha1;
-    public String macShort; // TODO: md5!
-    public String androidId;
-    public String attributionId;
+    protected String appToken;
+    protected String macSha1;
+    protected String macShort; // TODO: md5!
+    protected String androidId;
+    protected String attributionId;
 
     // sessions
-    public int sessionCount;
-    public int subsessionCount;
-    public long createdAt;
-    public long sessionLength;
-    public long timeSpent;
-    public long lastInterval;
+    protected int sessionCount;
+    protected int subsessionCount;
+    protected long createdAt;
+    protected long sessionLength;
+    protected long timeSpent;
+    protected long lastInterval;
 
     // events
-    public int eventCount;
-    public String eventToken;
-    public float amountInCents;
-    public Map<String, String> callbackParameters;  // TODO: test!
+    protected int eventCount;
+    protected String eventToken;
+    protected float amountInCents;
+    protected Map<String, String> callbackParameters;  // TODO: test!
 
     // meta TODO: remove
-    public String path;
-    public String userAgent;
-    public String kind;
-    public String suffix;
+    protected String path;
+    protected String userAgent;
+    protected String kind;
+    protected String suffix;
 
-    public TrackingPackage buildSessionPackage() {
+    protected TrackingPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
 
         // session specific
@@ -56,7 +56,7 @@ public class PackageBuilder {
         return sessionPackage;
     }
 
-    public TrackingPackage buildEventPackage() {
+    protected TrackingPackage buildEventPackage() {
         Map<String, String> parameters = getDefaultParameters();
 
         // event specific
@@ -81,7 +81,7 @@ public class PackageBuilder {
         return eventPackage;
     }
 
-    public TrackingPackage buildRevenuePackage() {
+    protected TrackingPackage buildRevenuePackage() {
         Map<String, String> parameters = getDefaultParameters();
 
         // event specific

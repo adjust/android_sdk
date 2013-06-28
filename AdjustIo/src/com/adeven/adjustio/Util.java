@@ -40,7 +40,7 @@ import android.util.DisplayMetrics;
 public class Util {
     private static final String UNKNOWN = "unknown";
 
-    public static boolean checkPermissions(Context context) {
+    protected static boolean checkPermissions(Context context) {
         boolean result = true;
 
         if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
@@ -267,7 +267,7 @@ public class Util {
         return result;
     }
 
-    public static String loadAddress(String interfaceName) {
+    protected static String loadAddress(String interfaceName) {
         try {
             String filePath = "/sys/class/net/" + interfaceName + "/address";
             StringBuffer fileData = new StringBuffer(1000);
@@ -289,11 +289,11 @@ public class Util {
         }
     }
 
-    public static String getAndroidId(Context context) {
+    protected static String getAndroidId(Context context) {
         return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
     }
 
-    public static String getAttributionId(Context context) {
+    protected static String getAttributionId(Context context) {
         try {
             ContentResolver contentResolver = context.getContentResolver();
             Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
@@ -317,7 +317,7 @@ public class Util {
         }
     }
 
-    public static String sha1(String text) {
+    protected static String sha1(String text) {
         try {
             MessageDigest mesd = MessageDigest.getInstance("SHA-1");
             byte[] bytes = text.getBytes("iso-8859-1");

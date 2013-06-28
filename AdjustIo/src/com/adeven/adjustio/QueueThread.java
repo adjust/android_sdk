@@ -41,7 +41,7 @@ public class QueueThread extends HandlerThread {
     // TODO: on session end: stop current tracking loop
     // add an attribute that gets read before trackInternal starts
 
-    public QueueThread(Context context) {
+    protected QueueThread(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -57,7 +57,7 @@ public class QueueThread extends HandlerThread {
     }
 
     // add a package to the queue, trigger tracking
-    public void addPackage(TrackingPackage pack) {
+    protected void addPackage(TrackingPackage pack) {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_ADD;
         message.obj = pack;
@@ -65,7 +65,7 @@ public class QueueThread extends HandlerThread {
     }
 
     // try to track the oldest package
-    public void trackFirstPackage() {
+    protected void trackFirstPackage() {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_TRACK_FIRST;
         queueHandler.sendMessage(message);
@@ -73,31 +73,31 @@ public class QueueThread extends HandlerThread {
 
     // remove oldest package and try to track the next one
     // (after success or possibly permanent failure)
-    public void trackNextPackage() {
+    protected void trackNextPackage() {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_TRACK_NEXT;
         queueHandler.sendMessage(message);
     }
 
     // close the package to retry in the future (after temporary failure)
-    public void closeFirstPackage() {
+    protected void closeFirstPackage() {
         isTracking.set(false);
     }
 
     // interrupt the tracking loop after the current request has finished
-    public void pauseTracking() {
+    protected void pauseTracking() {
         paused = true;
     }
 
     // allow tracking requests again
-    public void resumeTracking() {
+    protected void resumeTracking() {
         paused = false;
     }
 
     private static final class PackageHandler extends Handler {
         private final WeakReference<QueueThread> queueThreadReference;
 
-        public PackageHandler(Looper looper, QueueThread queueThread) {
+        protected PackageHandler(Looper looper, QueueThread queueThread) {
             super(looper);
             this.queueThreadReference = new WeakReference<QueueThread>(queueThread);
         }
