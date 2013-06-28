@@ -33,7 +33,7 @@ public class RequestThread extends HandlerThread {
     private QueueThread queueThread;
     private HttpClient httpClient;
 
-    public RequestThread(QueueThread queueThread) {
+    protected RequestThread(QueueThread queueThread) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -46,7 +46,7 @@ public class RequestThread extends HandlerThread {
         trackingHandler.sendMessage(message);
     }
 
-    public void trackPackage(TrackingPackage pack) {
+    protected void trackPackage(TrackingPackage pack) {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_TRACK;
         message.obj = pack;
@@ -56,7 +56,7 @@ public class RequestThread extends HandlerThread {
     private static final class RequestHandler extends Handler {
         private final WeakReference<RequestThread> requestThreadReference;
 
-        public RequestHandler(Looper looper, RequestThread requestThread) {
+        protected RequestHandler(Looper looper, RequestThread requestThread) {
             super(looper);
             this.requestThreadReference = new WeakReference<RequestThread>(requestThread);
         }
@@ -108,30 +108,12 @@ public class RequestThread extends HandlerThread {
         catch (IOException e) {
             closePackage(trackingPackage, "Request failed: " + e.getLocalizedMessage());
         }
-        catch (RuntimeException e) {
-            trackNextPackage(trackingPackage, "Runtime exception: " + e.getClass() + ": " + e.getLocalizedMessage());
+        catch (Exception e) {
+            trackNextPackage(trackingPackage, e.getClass().toString());
         }
-    }
-
-    private void closePackage(TrackingPackage trackingPackage, String message) {
-        String failureMessage = trackingPackage.getFailureMessage();
-        Logger.error(failureMessage + " Will retry later. (" + message + ")");
-        queueThread.closeFirstPackage();
-    }
-
-    private void trackNextPackage(TrackingPackage trackingPackage, String message) {
-        String failureMessage = trackingPackage.getFailureMessage();
-        Logger.error(failureMessage + " (No parameters found)");
-        queueThread.trackNextPackage();
     }
 
     private void requestFinished(HttpResponse response, TrackingPackage trackingPackage) {
-        if (response == null) { // TODO: test
-            Logger.debug(trackingPackage.getFailureMessage() + " (Missing response)"); // TODO: "will retry later" like on ios
-            queueThread.closeFirstPackage();
-            return;
-        }
-
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
 
@@ -156,6 +138,18 @@ public class RequestThread extends HandlerThread {
             Logger.error("error parsing response", e);
             return "Failed parsing response";
         }
+    }
+
+    private void closePackage(TrackingPackage trackingPackage, String message) {
+        String failureMessage = trackingPackage.getFailureMessage();
+        Logger.error(failureMessage + " Will retry later. (" + message + ")");
+        queueThread.closeFirstPackage();
+    }
+
+    private void trackNextPackage(TrackingPackage trackingPackage, String message) {
+        String failureMessage = trackingPackage.getFailureMessage();
+        Logger.error(failureMessage + " (" + message + ")");
+        queueThread.trackNextPackage();
     }
 
     private void setUserAgent(String userAgent) {

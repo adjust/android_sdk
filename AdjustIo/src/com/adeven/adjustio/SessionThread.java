@@ -50,7 +50,7 @@ public class SessionThread extends HandlerThread {
     private String androidId;  // everything else here could be persisted
     private String attributionId;
 
-    public SessionThread(String appToken, Context context) {
+    protected SessionThread(String appToken, Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -64,19 +64,19 @@ public class SessionThread extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void trackSubsessionStart() {
+    protected void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_START;
         sessionHandler.sendMessage(message);
     }
 
-    public void trackSubsessionEnd() {
+    protected void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_END;
         sessionHandler.sendMessage(message);
     }
 
-    public void trackEvent(String eventToken, Map<String, String> parameters) {
+    protected void trackEvent(String eventToken, Map<String, String> parameters) {
         PackageBuilder builder = new PackageBuilder();
         builder.eventToken = eventToken;
         builder.callbackParameters = parameters;
@@ -87,7 +87,7 @@ public class SessionThread extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
+    protected void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
         PackageBuilder builder = new PackageBuilder();
         builder.amountInCents = amountInCents;
         builder.eventToken = eventToken;
@@ -102,7 +102,7 @@ public class SessionThread extends HandlerThread {
     private static final class SessionHandler extends Handler {
         private final WeakReference<SessionThread> sessionThreadReference;
 
-        public SessionHandler(Looper looper, SessionThread sessionThread) {
+        protected SessionHandler(Looper looper, SessionThread sessionThread) {
             super(looper);
             this.sessionThreadReference = new WeakReference<SessionThread>(sessionThread);
         }
@@ -144,7 +144,7 @@ public class SessionThread extends HandlerThread {
 
         String macAddress = Util.getMacAddress(context);
         macSha1 = Util.sha1(macAddress);
-        macShort = macAddress.replaceAll(":", "");
+        macShort = macAddress.replaceAll(":", "");  // TODO: macMd5!!!
         userAgent = Util.getUserAgent(context);
         androidId = Util.getAndroidId(context);
         attributionId = Util.getAttributionId(context);

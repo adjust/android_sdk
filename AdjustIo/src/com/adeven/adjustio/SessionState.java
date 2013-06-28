@@ -9,18 +9,18 @@ public class SessionState implements Serializable {
     // TODO: make attributes private?
 
     // global counters
-    public int eventCount;
-    public int sessionCount;
+    protected int eventCount;
+    protected int sessionCount;
 
     // session attributes
-    public int subsessionCount;
-    public long sessionLength;      // all durations in milliseconds
-    public long timeSpent;
-    public long createdAt;          // all times in milliseconds since 1970
-    public long lastActivity;
-    public long lastInterval;
+    protected int subsessionCount;
+    protected long sessionLength;      // all durations in milliseconds
+    protected long timeSpent;
+    protected long createdAt;          // all times in milliseconds since 1970
+    protected long lastActivity;
+    protected long lastInterval;
 
-    public SessionState() {
+    protected SessionState() {
         eventCount = 0;        // no events yet
         sessionCount = 0;      // the first session just started
         subsessionCount = -1;  // we don't know how many subssessions this first  session will have
@@ -31,7 +31,7 @@ public class SessionState implements Serializable {
         lastInterval = -1;
     }
 
-    public void startNextSession(long now) {
+    protected void startNextSession(long now) {
         sessionCount++;        // the next session just started
         subsessionCount = 1;   // first subsession
         sessionLength = 0;     // no session length yet
@@ -41,7 +41,7 @@ public class SessionState implements Serializable {
         lastInterval = 0;
     }
 
-    public void injectSessionAttributes(PackageBuilder builder) {
+    protected void injectSessionAttributes(PackageBuilder builder) {
         builder.sessionCount = sessionCount;
         builder.subsessionCount = subsessionCount;
         builder.sessionLength = sessionLength;
@@ -51,7 +51,7 @@ public class SessionState implements Serializable {
         builder.lastInterval = lastInterval;
     }
 
-    public void injectEventAttributes(PackageBuilder builder) {
+    protected void injectEventAttributes(PackageBuilder builder) {
         builder.sessionCount = sessionCount;
         builder.subsessionCount = subsessionCount;
         builder.sessionLength = sessionLength;

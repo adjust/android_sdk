@@ -21,19 +21,19 @@ public class TrackingPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
 
     // data
-    public String path;
-    public String userAgent;
-    public Map<String, String> parameters;
+    protected String path;
+    protected String userAgent;
+    protected Map<String, String> parameters;
 
     // logs
-    public String kind;
-    public String suffix;
+    protected String kind;
+    protected String suffix;
 
     public String toString() {
         return kind + suffix + " " + path;
     }
 
-    public String parameterString() {
+    protected String parameterString() {
         try {
             String parameterString = "Parameters:";
             for (Map.Entry<String, String> entity : parameters.entrySet()) {
@@ -46,15 +46,15 @@ public class TrackingPackage implements Serializable {
         }
     }
 
-    public String getSuccessMessage() {
+    protected String getSuccessMessage() {
         return "Tracked " + kind + suffix;
     }
 
-    public String getFailureMessage() {
+    protected String getFailureMessage() {
         return "Failed to track " + kind + suffix;
     }
 
-    public HttpUriRequest getRequest() throws UnsupportedEncodingException {
+    protected HttpUriRequest getRequest() throws UnsupportedEncodingException {
         String url = AdjustIo.BASE_URL + path;
         HttpPost request = new HttpPost(url);
 
