@@ -4,12 +4,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,10 +23,15 @@ import android.os.Looper;
 import android.os.Message;
 
 public class RequestThread extends HandlerThread {
+    private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
+    private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
+
+    private static final int MESSAGE_ARG_INIT = 72401;
     private static final int MESSAGE_ARG_TRACK = 72400;
 
     private Handler trackingHandler;
     private QueueThread queueThread;
+    private HttpClient httpClient;
 
     public RequestThread(QueueThread queueThread) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -29,6 +40,10 @@ public class RequestThread extends HandlerThread {
 
         this.trackingHandler = new RequestHandler(getLooper(), this);
         this.queueThread = queueThread;
+
+        Message message = Message.obtain();
+        message.arg1 = MESSAGE_ARG_INIT;
+        trackingHandler.sendMessage(message);
     }
 
     public void trackPackage(TrackingPackage pack) {
@@ -52,18 +67,31 @@ public class RequestThread extends HandlerThread {
             RequestThread requestThread = requestThreadReference.get();
             if (requestThread == null) return;
 
-            if (message.arg1 == MESSAGE_ARG_TRACK) {
-                requestThread.trackInternal((TrackingPackage) message.obj);
+            switch (message.arg1) {
+            case MESSAGE_ARG_INIT:
+                requestThread.initInternal();
+                break;
+            case MESSAGE_ARG_TRACK:
+                TrackingPackage trackingPackage = (TrackingPackage) message.obj;
+                requestThread.trackInternal(trackingPackage);
+                break;
             }
         }
+    }
+
+    private void initInternal() {
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
+        httpClient = new DefaultHttpClient(httpParams);
+        Logger.error("init httpclient " + httpClient);
     }
 
     private void trackInternal(TrackingPackage trackingPackage) {
         // TODO: test all paths!
         try {
-            HttpClient httpClient = Util.getHttpClient(trackingPackage.userAgent);
-            HttpPost request = Util.getPostRequest(trackingPackage.path);
-            trackingPackage.injectEntity(request);
+            setUserAgent(trackingPackage.userAgent);
+            HttpUriRequest request = trackingPackage.getRequest();
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, trackingPackage);
         }
@@ -72,22 +100,34 @@ public class RequestThread extends HandlerThread {
             queueThread.trackNextPackage();
         }
         catch (ClientProtocolException e) {
-            Logger.error("client protocol error");
-            queueThread.closeFirstPackage();
+            closePackage(trackingPackage, "Client protocol error");
+        }
+        catch (SocketTimeoutException e) {
+            closePackage(trackingPackage, "Request timed out");
         }
         catch (IOException e) {
-            Logger.error(trackingPackage.getFailureMessage() + " Will retry later. (Request failed: " + e.getLocalizedMessage() + ")");
-            queueThread.closeFirstPackage();
+            closePackage(trackingPackage, "Request failed: " + e.getLocalizedMessage());
         }
-        catch (IllegalArgumentException e) {
-            Logger.error("Failed to track package (" + e.getLocalizedMessage() + ")");
-            queueThread.trackNextPackage();
+        catch (RuntimeException e) {
+            trackNextPackage(trackingPackage, "Runtime exception: " + e.getClass() + ": " + e.getLocalizedMessage());
         }
+    }
+
+    private void closePackage(TrackingPackage trackingPackage, String message) {
+        String failureMessage = trackingPackage.getFailureMessage();
+        Logger.error(failureMessage + " Will retry later. (" + message + ")");
+        queueThread.closeFirstPackage();
+    }
+
+    private void trackNextPackage(TrackingPackage trackingPackage, String message) {
+        String failureMessage = trackingPackage.getFailureMessage();
+        Logger.error(failureMessage + " (No parameters found)");
+        queueThread.trackNextPackage();
     }
 
     private void requestFinished(HttpResponse response, TrackingPackage trackingPackage) {
         if (response == null) { // TODO: test
-            Logger.debug(trackingPackage.getFailureMessage() + " (Request failed)"); // TODO: "will retry later" like on ios
+            Logger.debug(trackingPackage.getFailureMessage() + " (Missing response)"); // TODO: "will retry later" like on ios
             queueThread.closeFirstPackage();
             return;
         }
@@ -116,5 +156,10 @@ public class RequestThread extends HandlerThread {
             Logger.error("error parsing response", e);
             return "Failed parsing response";
         }
+    }
+
+    private void setUserAgent(String userAgent) {
+        HttpParams httpParams = httpClient.getParams();
+        httpParams.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
     }
 }

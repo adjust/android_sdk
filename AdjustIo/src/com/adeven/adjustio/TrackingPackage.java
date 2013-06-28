@@ -6,21 +6,24 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
+// TODO: change public to protected where possible
 public class TrackingPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
 
     // data
     public String path;
     public String userAgent;
-    Map<String, String> parameters;
+    public Map<String, String> parameters;
 
     // logs
     public String kind;
@@ -31,17 +34,33 @@ public class TrackingPackage implements Serializable {
     }
 
     public String parameterString() {
-        String parameterString = "parameters:";
-        for (Map.Entry<String, String> entity : parameters.entrySet()) {
-            parameterString += String.format("\n\t%-16s %s", entity.getKey(), entity.getValue());
+        try {
+            String parameterString = "Parameters:";
+            for (Map.Entry<String, String> entity : parameters.entrySet()) {
+                parameterString += String.format("\n\t%-16s %s", entity.getKey(), entity.getValue());
+            }
+            return parameterString;
         }
-        return parameterString;
+        catch (NullPointerException e) {
+            return "Parameters: null";
+        }
     }
 
-    public void injectEntity(HttpPost request) throws UnsupportedEncodingException {
-        if (parameters == null) {
-            return;
-        }
+    public String getSuccessMessage() {
+        return "Tracked " + kind + suffix;
+    }
+
+    public String getFailureMessage() {
+        return "Failed to track " + kind + suffix;
+    }
+
+    public HttpUriRequest getRequest() throws UnsupportedEncodingException {
+        String url = AdjustIo.BASE_URL + path;
+        HttpPost request = new HttpPost(url);
+
+        String language = Locale.getDefault().getLanguage();
+        request.addHeader("Accept-Language", language);
+        request.addHeader("Client-SDK", AdjustIo.CLIENT_SDK);
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (Map.Entry<String, String> entity : parameters.entrySet()) {
@@ -52,13 +71,7 @@ public class TrackingPackage implements Serializable {
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pairs);
         entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
         request.setEntity(entity);
-    }
 
-    public String getSuccessMessage() {
-        return "Tracked " + kind + suffix;
-    }
-
-    public String getFailureMessage() {
-        return "Failed to track " + kind + suffix;
+        return request;
     }
 }

@@ -15,13 +15,6 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.Locale;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -37,6 +30,7 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+// TODO: clean up, move functions to callers
 /**
  * Collects utility functions used by AdjustIo.
  *
@@ -44,9 +38,6 @@ import android.util.DisplayMetrics;
  * @since 11.10.12
  */
 public class Util {
-    private static final String BASEURL = "http://192.168.178.117:8509";    // TODO: change!
-    private static final String CLIENTSDK = "android1.6";
-
     private static final String UNKNOWN = "unknown";
 
     public static boolean checkPermissions(Context context) {
@@ -73,25 +64,6 @@ public class Util {
         int result = context.checkCallingOrSelfPermission(permission);
         boolean granted = (result == PackageManager.PERMISSION_GRANTED);
         return granted;
-    }
-
-    public static HttpClient getHttpClient(String userAgent) {
-        HttpParams httpParams = new BasicHttpParams();
-        HttpClient httpClient = new DefaultHttpClient(httpParams);
-        HttpParams params = httpClient.getParams();
-        params.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
-        return httpClient;
-    }
-
-    public static HttpPost getPostRequest(String path) {
-        String url = BASEURL + path;
-        HttpPost request = new HttpPost(url);
-
-        String language = Locale.getDefault().getLanguage();
-        request.addHeader("Accept-Language", language);
-        request.addHeader("Client-SDK", CLIENTSDK);
-
-        return request;
     }
 
     protected static String getUserAgent(Context context) {
