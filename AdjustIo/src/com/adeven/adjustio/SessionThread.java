@@ -18,6 +18,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -345,10 +346,36 @@ public class SessionThread extends HandlerThread {
     }
 
     private boolean checkState() {
-        if (!Util.checkPermissions(context)) return false;
-        if (!checkAppToken(appToken)) return false;
         if (!checkContext(context)) return false;
+        if (!checkAppToken(appToken)) return false;
+        if (!checkPermissions(context)) return false;
         return true;
+    }
+
+    private static boolean checkPermissions(Context context) {
+        boolean result = true;
+
+        if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
+            Logger.error(
+                "This SDK requires the INTERNET permission. " +
+                "See the README for details."
+            );
+            result = false;
+        }
+        if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+            Logger.warn(
+                "You can improve your tracking results by adding the " +
+                "ACCESS_WIFI_STATE permission. See the README for details."
+            );
+        }
+
+        return result;
+    }
+
+    private static boolean checkPermission(Context context, String permission) {
+        int result = context.checkCallingOrSelfPermission(permission);
+        boolean granted = (result == PackageManager.PERMISSION_GRANTED);
+        return granted;
     }
 
     private static boolean checkAppToken(String appToken) {

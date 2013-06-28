@@ -96,20 +96,19 @@ public class RequestThread extends HandlerThread {
             requestFinished(response, trackingPackage);
         }
         catch (UnsupportedEncodingException e) {
-            Logger.error("failed to encode parameters");
-            queueThread.trackNextPackage();
+            trackNextPackage(trackingPackage, "Failed to encode parameters", e);
         }
         catch (ClientProtocolException e) {
-            closePackage(trackingPackage, "Client protocol error");
+            closePackage(trackingPackage, "Client protocol error", e);
         }
         catch (SocketTimeoutException e) {
-            closePackage(trackingPackage, "Request timed out");
+            closePackage(trackingPackage, "Request timed out", e);
         }
         catch (IOException e) {
-            closePackage(trackingPackage, "Request failed: " + e.getLocalizedMessage());
+            closePackage(trackingPackage, "Request failed", e);
         }
         catch (Exception e) {
-            trackNextPackage(trackingPackage, e.getClass().toString());
+            trackNextPackage(trackingPackage, "Runtime exeption", e);
         }
     }
 
@@ -135,20 +134,32 @@ public class RequestThread extends HandlerThread {
             return responseString;
         }
         catch (Exception e) {
-            Logger.error("error parsing response", e);
+            Logger.error("Error parsing response: " + e);
             return "Failed parsing response";
         }
     }
 
-    private void closePackage(TrackingPackage trackingPackage, String message) {
+    private void closePackage(TrackingPackage trackingPackage, String message, Throwable e) {
         String failureMessage = trackingPackage.getFailureMessage();
-        Logger.error(failureMessage + " Will retry later. (" + message + ")");
+        String logMessage = failureMessage + " Will retry later. (" + message;
+        if (e != null) {
+            logMessage += ": " + e;
+        }
+        logMessage += ")";
+        Logger.error(logMessage);
+
         queueThread.closeFirstPackage();
     }
 
-    private void trackNextPackage(TrackingPackage trackingPackage, String message) {
+    private void trackNextPackage(TrackingPackage trackingPackage, String message, Throwable e) {
         String failureMessage = trackingPackage.getFailureMessage();
-        Logger.error(failureMessage + " (" + message + ")");
+        String logMessage = failureMessage + " (" + message;
+        if (e != null) {
+            logMessage += ": " + e;
+        }
+        logMessage += ")";
+        Logger.error(logMessage);
+
         queueThread.trackNextPackage();
     }
 

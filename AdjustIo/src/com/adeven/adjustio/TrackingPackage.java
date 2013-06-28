@@ -16,7 +16,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 
-// TODO: change public to protected where possible
 public class TrackingPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
 
