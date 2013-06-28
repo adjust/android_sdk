@@ -2,6 +2,7 @@ package com.adeven.adjustio;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Locale;
 
 public class SessionState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
@@ -62,19 +63,18 @@ public class SessionState implements Serializable {
     }
 
     public String toString() {
-        return "ec:" + eventCount +
-                " sc:" + sessionCount +
-                " ssc:" + subsessionCount +
-                " sl:" + sessionLength +
-                " ts:" + timeSpent +
-                " ca:" + stamp(createdAt) +
-                " la:" + stamp(lastActivity);
+        return String.format(Locale.US,
+                "ec:%d sc:%d ssc:%d sl:%d ts:%d ca:%s la:%s",
+                eventCount, sessionCount, subsessionCount, sessionLength,
+                timeSpent, stamp(createdAt), stamp(lastActivity));
     }
 
-    private static String stamp(long date) {
-        Date d = new Date(date);
-        return "" + d.getHours() +
-                ":" + d.getMinutes() +
-                ":" + d.getSeconds();
+    private static String stamp(long dateMillis) {
+        Date date = new Date(dateMillis);
+        return String.format(Locale.US,
+                "%2d:%2d:%2d",
+                date.getHours(),
+                date.getMinutes(),
+                date.getSeconds());
     }
 }

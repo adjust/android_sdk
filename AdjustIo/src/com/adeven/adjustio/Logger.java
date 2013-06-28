@@ -21,10 +21,6 @@ public class Logger {
         }
     }
 
-    protected static void verbose(String context, String name, String value) {
-        verbose("[" + context + "] " + name + ": '" + value + "'");
-    }
-
     protected static void debug(String message) {
         if (logLevel <= Log.DEBUG) {
             Log.d(LOGTAG, message);
@@ -46,12 +42,6 @@ public class Logger {
     protected static void error(String message) {
         if (logLevel <= Log.ERROR) {
             Log.e(LOGTAG, message);
-        }
-    }
-
-    protected static void error(String message, Throwable throwable) {
-        if (logLevel <= Log.ERROR) {
-            Log.e(LOGTAG, message, throwable);
         }
     }
 }

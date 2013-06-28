@@ -40,32 +40,6 @@ import android.util.DisplayMetrics;
 public class Util {
     private static final String UNKNOWN = "unknown";
 
-    protected static boolean checkPermissions(Context context) {
-        boolean result = true;
-
-        if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
-            Logger.error(
-                "This SDK requires the INTERNET permission. " +
-                "See the README for details."
-            );
-            result = false;
-        }
-        if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            Logger.warn(
-                "You can improve your tracking results by adding the " +
-                "ACCESS_WIFI_STATE permission. See the README for details."
-            );
-        }
-
-        return result;
-    }
-
-    private static boolean checkPermission(Context context, String permission) {
-        int result = context.checkCallingOrSelfPermission(permission);
-        boolean granted = (result == PackageManager.PERMISSION_GRANTED);
-        return granted;
-    }
-
     protected static String getUserAgent(Context context) {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();

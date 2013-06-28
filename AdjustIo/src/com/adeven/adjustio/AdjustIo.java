@@ -23,10 +23,10 @@ import android.app.Activity;
  * @since 11.10.12
  */
 public class AdjustIo {
-    protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: change!
+    protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: change url!
     protected static final String CLIENT_SDK = "android1.6";
 
-    // forwards everything to sessionThread
+    // every call gets forwarded to sessionThread
     private static SessionThread sessionThread;
 
     // TODO: update all comments
@@ -42,7 +42,7 @@ public class AdjustIo {
 
     public static void onResume(String appToken, Activity activity) {
         if (sessionThread == null) {
-            sessionThread = new SessionThread(appToken, activity.getApplication());
+            sessionThread = new SessionThread(appToken, activity);
         }
         sessionThread.trackSubsessionStart();
     }
