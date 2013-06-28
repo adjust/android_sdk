@@ -23,6 +23,8 @@ import android.app.Activity;
  * @since 11.10.12
  */
 public class AdjustIo {
+    protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: change!
+    protected static final String CLIENT_SDK = "android1.6";
 
     // forwards everything to sessionThread
     private static SessionThread sessionThread;

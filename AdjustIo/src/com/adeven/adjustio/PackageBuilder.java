@@ -37,15 +37,7 @@ public class PackageBuilder {
     public String suffix;
 
     public TrackingPackage buildSessionPackage() {
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        // general
-        addDate(parameters, "created_at", createdAt);
-        addString(parameters, "app_token", appToken);
-        addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShort);
-        addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id", attributionId);
+        Map<String, String> parameters = getDefaultParameters();
 
         // session specific
         addInt(parameters, "session_id", sessionCount); // TODO: rename?
@@ -65,15 +57,7 @@ public class PackageBuilder {
     }
 
     public TrackingPackage buildEventPackage() {
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        // general
-        addDate(parameters, "created_at", createdAt);
-        addString(parameters, "app_token", appToken);
-        addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShort);
-        addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id", attributionId);
+        Map<String, String> parameters = getDefaultParameters();
 
         // event specific
         addInt(parameters, "event_count", eventCount);
@@ -98,16 +82,7 @@ public class PackageBuilder {
     }
 
     public TrackingPackage buildRevenuePackage() {
-
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        // general
-        addDate(parameters, "created_at", createdAt);
-        addString(parameters, "app_token", appToken);
-        addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShort);
-        addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id", attributionId);
+        Map<String, String> parameters = getDefaultParameters();
 
         // event specific
         addInt(parameters, "event_count", eventCount);
@@ -131,7 +106,19 @@ public class PackageBuilder {
         revenuePackage.userAgent = userAgent;
 
         return revenuePackage;
+    }
 
+    private Map<String, String> getDefaultParameters() {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        addDate(parameters, "created_at", createdAt);
+        addString(parameters, "app_token", appToken);
+        addString(parameters, "mac_sha1", macSha1);
+        addString(parameters, "mac", macShort);
+        addString(parameters, "android_id", androidId);
+        addString(parameters, "fb_id", attributionId);
+
+        return parameters;
     }
 
     private String getAmountString() {

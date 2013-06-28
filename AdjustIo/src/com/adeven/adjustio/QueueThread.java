@@ -32,9 +32,9 @@ public class QueueThread extends HandlerThread {
     private static final int MESSAGE_ARG_READ = 72520;
 
     private Handler queueHandler;
+    private RequestThread requestThread;
     private Context context;
     private AtomicBoolean isTracking;
-    private RequestThread requestThread;
     private List<TrackingPackage> packages;
     private boolean paused;
 
@@ -130,7 +130,7 @@ public class QueueThread extends HandlerThread {
 
     private void addInternal(TrackingPackage newPackage) {
         packages.add(newPackage);
-        Logger.info("added package " + packages.size() + " (" + newPackage + ")");
+        Logger.debug("added package " + packages.size() + " (" + newPackage + ")");
         Logger.verbose(newPackage.parameterString());
 
         writePackagesInternal();
@@ -177,7 +177,7 @@ public class QueueThread extends HandlerThread {
                 Object object = objectStream.readObject();
                 @SuppressWarnings("unchecked")
                 List<TrackingPackage> packages = (List<TrackingPackage>) object;
-                Logger.debug("read " + packages.size() + " packages");
+                Logger.debug("queue thread read " + packages.size() + " packages");
                 this.packages = packages;
             }
             catch (ClassNotFoundException e) {
@@ -213,7 +213,7 @@ public class QueueThread extends HandlerThread {
 
             try {
                 objectStream.writeObject(packages);
-                Logger.debug("wrote " + packages.size() + " packages");
+                Logger.verbose("queue thread wrote " + packages.size() + " packages");
             }
             catch (NotSerializableException e) {
                 Logger.error("failed to serialize packages");
