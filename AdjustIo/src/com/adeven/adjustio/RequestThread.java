@@ -79,6 +79,8 @@ public class RequestThread extends HandlerThread {
         }
     }
 
+    // TODO: use SSLSessionCache?
+    // http://candrews.integralblue.com/2011/09/best-way-to-use-httpclient-in-android/
     private void initInternal() {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
@@ -88,7 +90,6 @@ public class RequestThread extends HandlerThread {
     }
 
     private void trackInternal(TrackingPackage trackingPackage) {
-        // TODO: test all paths!
         try {
             setUserAgent(trackingPackage.userAgent);
             HttpUriRequest request = trackingPackage.getRequest();

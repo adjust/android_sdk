@@ -25,7 +25,7 @@ import android.os.Looper;
 import android.os.Message;
 
 public class SessionThread extends HandlerThread {
-    private static final String SESSION_FILENAME = "sessionstate1";
+    private static final String SESSION_FILENAME = "sessionstate1"; // TODO: change filename
 
     private static final long UPDATE_INTERVAL  = 1000 * 10; // 10 second, TODO: one minute
     private static final long SESSION_INTERVAL = 1000 * 15; // 30 seconds, TODO: 30 minutes
@@ -136,7 +136,7 @@ public class SessionThread extends HandlerThread {
         }
     }
 
-    // TODO: rename internal methods
+    // TODO: rename internal methods?
 
     // called from outside
 
@@ -283,26 +283,26 @@ public class SessionThread extends HandlerThread {
 
             try {
                 sessionState = (SessionState) objectStream.readObject();
-                Logger.debug("read session state: " + sessionState);
+                Logger.debug("Read session state: " + sessionState);
             } catch (ClassNotFoundException e) {
-                Logger.error("failed to find session state class");
+                Logger.error("Failed to find session state class");
             } catch (OptionalDataException e) {} catch (IOException e) {
-                Logger.error("failed to read session states object");
+                Logger.error("Failed to read session states object");
             } catch (ClassCastException e) {
-                Logger.error("failed to cast session state object");
+                Logger.error("Failed to cast session state object");
             } finally {
                 objectStream.close();
             }
 
         } catch (FileNotFoundException e) {
-            Logger.verbose("session state file not found");
+            Logger.verbose("Session state file not found");
         } catch (IOException e) {
-            Logger.error("failed to read session state file");
+            Logger.error("Failed to read session state file");
         }
     }
 
     private void writeSessionStateInternal() {
-        try {
+        try { // TODO: remove sleeps!
             Thread.sleep(100);
         } catch (Exception e) {
         }
@@ -314,15 +314,15 @@ public class SessionThread extends HandlerThread {
 
             try {
                 objectStream.writeObject(sessionState);
-                Logger.debug("wrote session state: " + sessionState);
+                Logger.debug("Wrote session state: " + sessionState);
             } catch (NotSerializableException e) {
-                Logger.error("failed to serialize session state");
+                Logger.error("Failed to serialize session state");
             } finally {
                 objectStream.close();
             }
 
         } catch (IOException e) {
-            Logger.error("failed to write session state (" + e.getLocalizedMessage() + ")"); // TODO: improve log
+            Logger.error("Failed to write session state (" + e + ")");
         }
     }
 
@@ -341,7 +341,7 @@ public class SessionThread extends HandlerThread {
         try {
             executor.shutdown();
         } catch (NullPointerException e) {
-            // TODO: log?
+            Logger.error("No executor found");
         }
     }
 

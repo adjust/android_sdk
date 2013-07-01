@@ -1,4 +1,3 @@
-// TODO: add comments
 package com.adeven.adjustio;
 
 import java.io.BufferedInputStream;
@@ -24,7 +23,7 @@ import android.os.Message;
 
 // persistent
 public class QueueThread extends HandlerThread {
-    private static final String QUEUE_FILENAME = "testqueue3";
+    private static final String QUEUE_FILENAME = "testqueue3";  // TODO: change filename
 
     private static final int MESSAGE_ARG_ADD = 72500; // TODO: change constants!
     private static final int MESSAGE_ARG_TRACK_NEXT = 72510;
@@ -37,9 +36,6 @@ public class QueueThread extends HandlerThread {
     private AtomicBoolean isTracking;
     private List<TrackingPackage> packages;
     private boolean paused;
-
-    // TODO: on session end: stop current tracking loop
-    // add an attribute that gets read before trackInternal starts
 
     protected QueueThread(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -202,7 +198,7 @@ public class QueueThread extends HandlerThread {
     }
 
     private void writePackagesInternal() {
-        try {   // TODO: remove!
+        try {   // TODO: remove sleeps
             Thread.sleep(100);
         } catch (Exception e) {}
 
