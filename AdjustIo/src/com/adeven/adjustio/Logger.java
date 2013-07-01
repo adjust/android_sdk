@@ -3,7 +3,8 @@ package com.adeven.adjustio;
 
 import android.util.Log;
 
-// TODO: check if java.util.logging.Logger is an alternative
+// TODO: avoid string building in production?
+// http://stackoverflow.com/questions/2018263/android-logging
 // TODO: go through all log calls and set a proper log level
 
 public class Logger {

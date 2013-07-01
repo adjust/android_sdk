@@ -51,7 +51,7 @@ public class AdjustIo {
         try {
             sessionThread.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            // TODO: log
+            Logger.error("No session thread found");
         }
     }
 
@@ -77,7 +77,7 @@ public class AdjustIo {
         try {
             sessionThread.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            // TODO: log
+            Logger.error("No session thread found");
         }
     }
 
@@ -108,7 +108,7 @@ public class AdjustIo {
         try {
             sessionThread.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            // TODO: log
+            Logger.error("No session thread found");
         }
     }
 

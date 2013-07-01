@@ -15,6 +15,7 @@ public class PackageBuilder {
     protected String macShort; // TODO: md5!
     protected String androidId;
     protected String attributionId;
+    protected String userAgent;
 
     // sessions
     protected int sessionCount;
@@ -28,19 +29,13 @@ public class PackageBuilder {
     protected int eventCount;
     protected String eventToken;
     protected float amountInCents;
-    protected Map<String, String> callbackParameters;  // TODO: test!
-
-    // meta TODO: remove
-    protected String path;
-    protected String userAgent;
-    protected String kind;
-    protected String suffix;
+    protected Map<String, String> callbackParameters;
 
     protected TrackingPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
 
         // session specific
-        addInt(parameters, "session_id", sessionCount); // TODO: rename?
+        addInt(parameters, "session_id", sessionCount); // TODO: rename parameters
         addInt(parameters, "subsession_count", subsessionCount);
         addDuration(parameters, "session_length", sessionLength);
         addDuration(parameters, "time_spent", timeSpent);
@@ -61,7 +56,7 @@ public class PackageBuilder {
 
         // event specific
         addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_id", eventToken); // TODO: rename
+        addString(parameters, "event_id", eventToken); // TODO: rename parameters
         addMap(parameters, "params", callbackParameters);
 
         // session specific (current values at time of event)
@@ -159,7 +154,7 @@ public class PackageBuilder {
             return;
         }
         Date date = new Date(value);
-        String dateString = date.toString(); // TODO: format
+        String dateString = date.toString(); // TODO: format with DateFormat
         addString(parameters, key, dateString);
     }
 
