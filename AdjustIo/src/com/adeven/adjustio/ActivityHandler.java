@@ -39,7 +39,7 @@ public class ActivityHandler extends HandlerThread {
 
     private InternalHandler internalHandler;
     private ActivityState activityState;
-    private QueueHandler queueHandler;
+    private PackageHandler queueHandler;
     private static ScheduledExecutorService timer; // TODO: rename to timer
 
     private Context context;
@@ -159,7 +159,7 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
 
-        queueHandler = new QueueHandler(context);
+        queueHandler = new PackageHandler(context);
         readActivityState();
     }
 
@@ -220,7 +220,6 @@ public class ActivityHandler extends HandlerThread {
 
     // TODO: set session attributes to -1 for events after session end?
     private void eventInternal(PackageBuilder eventBuilder) {
-        Logger.error("event start");
         if (!checkAppTokenNotNull(appToken)) return;
         if (!checkActivityState(activityState)) return;
         if (!checkEventTokenNotNull(eventBuilder.eventToken)) return;
@@ -236,11 +235,9 @@ public class ActivityHandler extends HandlerThread {
 
         writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
-        Logger.error("event end");
     }
 
     private void revenueInternal(PackageBuilder revenueBuilder) {
-        Logger.error("revenue start");
         if (!checkAppTokenNotNull(appToken)) return;
         if (!checkActivityState(activityState)) return;
         if (!checkAmount(revenueBuilder.amountInCents)) return;
@@ -256,7 +253,6 @@ public class ActivityHandler extends HandlerThread {
 
         writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
-        Logger.error("revenue end");
     }
 
     // called from inside

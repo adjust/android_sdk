@@ -22,8 +22,8 @@ import android.os.Looper;
 import android.os.Message;
 
 // persistent
-public class QueueHandler extends HandlerThread {
-    private static final String QUEUE_FILENAME = "testqueue3";  // TODO: change filename
+public class PackageHandler extends HandlerThread {
+    private static final String PACKAGE_QUEUE_FILENAME = "testqueue3";  // TODO: change filename
 
     private static final int MESSAGE_ARG_ADD = 72500; // TODO: change constants!
     private static final int MESSAGE_ARG_SEND_NEXT = 72510;
@@ -34,10 +34,10 @@ public class QueueHandler extends HandlerThread {
     private RequestHandler requestHandler;
     private Context context;
     private AtomicBoolean isSending;
-    private List<ActivityPackage> packages;
+    private List<ActivityPackage> packageQueue;
     private boolean paused;
 
-    protected QueueHandler(Context context) {
+    protected PackageHandler(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -91,32 +91,32 @@ public class QueueHandler extends HandlerThread {
     }
 
     private static final class InternalHandler extends Handler {
-        private final WeakReference<QueueHandler> queueHandlerReference;
+        private final WeakReference<PackageHandler> packageHandlerReference;
 
-        protected InternalHandler(Looper looper, QueueHandler queueHandler) {
+        protected InternalHandler(Looper looper, PackageHandler packageHandler) {
             super(looper);
-            this.queueHandlerReference = new WeakReference<QueueHandler>(queueHandler);
+            this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
         }
 
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
-            QueueHandler queueHandler = queueHandlerReference.get();
-            if (queueHandler == null) return;
+            PackageHandler packageHandler = packageHandlerReference.get();
+            if (packageHandler == null) return;
 
             switch (message.arg1) {
             case MESSAGE_ARG_ADD:
                 ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                queueHandler.addInternal(activityPackage);
+                packageHandler.addInternal(activityPackage);
                 break;
             case MESSAGE_ARG_SEND_FIRST:
-                queueHandler.sendFirstInternal();
+                packageHandler.sendFirstInternal();
                 break;
             case MESSAGE_ARG_SEND_NEXT:
-                queueHandler.sendNextInternal();
+                packageHandler.sendNextInternal();
                 break;
             case MESSAGE_ARG_READ:
-                queueHandler.readPackagesInternal();
+                packageHandler.readPackageQueue();
                 break;
             }
         }
@@ -125,11 +125,11 @@ public class QueueHandler extends HandlerThread {
     // internal methods run in dedicated queue thread
 
     private void addInternal(ActivityPackage newPackage) {
-        packages.add(newPackage);
-        Logger.debug("added package " + packages.size() + " (" + newPackage + ")");
+        packageQueue.add(newPackage);
+        Logger.debug("added package " + packageQueue.size() + " (" + newPackage + ")");
         Logger.verbose(newPackage.parameterString());
 
-        writePackagesInternal();
+        writePackageQueue();
         sendFirstInternal();
     }
 
@@ -144,7 +144,7 @@ public class QueueHandler extends HandlerThread {
         }
 
         try {
-            ActivityPackage firstPackage = packages.get(0);
+            ActivityPackage firstPackage = packageQueue.get(0);
             requestHandler.sendPackage(firstPackage);
         }
         catch (IndexOutOfBoundsException e) {
@@ -153,28 +153,28 @@ public class QueueHandler extends HandlerThread {
     }
 
     private void sendNextInternal() {
-        packages.remove(0);
-        writePackagesInternal();
+        packageQueue.remove(0);
+        writePackageQueue();
         isSending.set(false);
         sendFirstInternal();
     }
 
-    private void readPackagesInternal() {
+    private void readPackageQueue() {
         // initialize with empty list; if any exception gets raised
         // while reading the queue file this list will be used
-        packages = new ArrayList<ActivityPackage>();
+        packageQueue = new ArrayList<ActivityPackage>();
 
         try {
-            FileInputStream inputStream = context.openFileInput(QUEUE_FILENAME);
+            FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
 
             try {
                 Object object = objectStream.readObject();
                 @SuppressWarnings("unchecked")
-                List<ActivityPackage> packages = (List<ActivityPackage>) object;
-                Logger.debug("queue handler read " + packages.size() + " packages");
-                this.packages = packages;
+                List<ActivityPackage> packageQueue = (List<ActivityPackage>) object;
+                Logger.debug("queue handler read " + packageQueue.size() + " packages");
+                this.packageQueue = packageQueue;
             }
             catch (ClassNotFoundException e) {
                 Logger.error("failed to find queue class");
@@ -197,19 +197,19 @@ public class QueueHandler extends HandlerThread {
         }
     }
 
-    private void writePackagesInternal() {
+    private void writePackageQueue() {
         try {   // TODO: remove sleeps
             Thread.sleep(100);
         } catch (Exception e) {}
 
         try {
-            FileOutputStream outputStream = context.openFileOutput(QUEUE_FILENAME, Context.MODE_PRIVATE);
+            FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
 
             try {
-                objectStream.writeObject(packages);
-                Logger.verbose("queue handler wrote " + packages.size() + " packages");
+                objectStream.writeObject(packageQueue);
+                Logger.verbose("queue handler wrote " + packageQueue.size() + " packages");
             }
             catch (NotSerializableException e) {
                 Logger.error("failed to serialize packages");
