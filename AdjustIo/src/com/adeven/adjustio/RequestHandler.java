@@ -30,10 +30,10 @@ public class RequestHandler extends HandlerThread {
     private static final int MESSAGE_ARG_SEND = 72400;
 
     private InternalHandler internalHandler;
-    private QueueHandler queueHandler;
+    private PackageHandler queueHandler;
     private HttpClient httpClient;
 
-    protected RequestHandler(QueueHandler queueHandler) {
+    protected RequestHandler(PackageHandler queueHandler) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
