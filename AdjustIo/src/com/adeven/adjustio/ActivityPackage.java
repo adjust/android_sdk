@@ -29,20 +29,18 @@ public class ActivityPackage implements Serializable {
     protected String suffix;
 
     public String toString() {
-        return kind + suffix + " " + path;
+        return String.format("%s%s %s", kind, suffix, path);
     }
 
-    protected String parameterString() {
-        try {
-            String parameterString = "Parameters:";
-            for (Map.Entry<String, String> entity : parameters.entrySet()) {
-                parameterString += String.format("\n\t%-16s %s", entity.getKey(), entity.getValue());
-            }
-            return parameterString;
+    protected String getParameterString() {
+        if (parameters == null) return "Parameters: null";
+
+        StringBuilder builder = new StringBuilder("Parameters:");
+
+        for (Map.Entry<String, String> entity : parameters.entrySet()) {
+            builder.append(String.format("\n\t%-16s %s", entity.getKey(), entity.getValue()));
         }
-        catch (NullPointerException e) {
-            return "Parameters: null";
-        }
+        return builder.toString();
     }
 
     protected String getSuccessMessage() {

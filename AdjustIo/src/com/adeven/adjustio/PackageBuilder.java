@@ -13,9 +13,9 @@ public class PackageBuilder {
     // general
     protected String appToken;
     protected String macSha1;
-    protected String macShort; // TODO: md5!
+    protected String macShortMd5;
     protected String androidId;
-    protected String attributionId;
+    protected String fbAttributionId;
     protected String userAgent;
 
     // sessions
@@ -81,9 +81,9 @@ public class PackageBuilder {
         addDate(parameters, "created_at", createdAt);
         addString(parameters, "app_token", appToken);
         addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShort);
+        addString(parameters, "mac", macShortMd5); // TODO: rename parameter
         addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id", attributionId);
+        addString(parameters, "fb_id", fbAttributionId);
 
         // session related (used for events as well)
         addInt(parameters, "session_id", sessionCount); // TODO: rename parameters
@@ -138,6 +138,7 @@ public class PackageBuilder {
 
         Date date = new Date(value);
         String dateString = date.toString(); // TODO: format with DateFormat
+        // TODO: nope, lets send the time since 1970 in rounded seconds (unix timestamp)
         addString(parameters, key, dateString);
     }
 

@@ -51,14 +51,14 @@ public class ActivityState implements Serializable {
         injectGeneralAttributes(builder);
         builder.eventCount = eventCount;
     }
-    
+
     public String toString() {
         return String.format(Locale.US,
                 "ec:%d sc:%d ssc:%d sl:%d ts:%d ca:%s la:%s",
                 eventCount, sessionCount, subsessionCount, sessionLength,
                 timeSpent, stamp(createdAt), stamp(lastActivity));
     }
-    
+
     private static String stamp(long dateMillis) {
         Date date = new Date(dateMillis);
         return String.format(Locale.US,

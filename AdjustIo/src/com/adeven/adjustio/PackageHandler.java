@@ -127,7 +127,7 @@ public class PackageHandler extends HandlerThread {
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         Logger.debug("added package " + packageQueue.size() + " (" + newPackage + ")");
-        Logger.verbose(newPackage.parameterString());
+        Logger.verbose(newPackage.getParameterString());
 
         writePackageQueue();
         sendFirstInternal();

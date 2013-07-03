@@ -38,15 +38,15 @@ public class ActivityHandler extends HandlerThread {
     private static final int MESSAGE_ARG_REVENUE = 72670;
 
     private InternalHandler internalHandler;
+    private PackageHandler packageHandler;
     private ActivityState activityState;
-    private PackageHandler queueHandler;
     private static ScheduledExecutorService timer; // TODO: rename to timer
 
     private Context context;
 
     private String appToken;
     private String macSha1;
-    private String macShort; // TODO: md5!!!
+    private String macShortMd5; // TODO: md5!!!
     private String androidId; // everything else here could be persisted
     private String fbAttributionId;
     private String userAgent; // changes, should be updated periodically
@@ -154,19 +154,19 @@ public class ActivityHandler extends HandlerThread {
 
         appToken = token;
         macSha1 = Util.sha1(macAddress);
-        macShort = macAddress.replaceAll(":", ""); // TODO: macMd5!!!
+        macShortMd5 = macAddress.replaceAll(":", ""); // TODO: macMd5!!!
         userAgent = Util.getUserAgent(context);
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
 
-        queueHandler = new PackageHandler(context);
+        packageHandler = new PackageHandler(context);
         readActivityState();
     }
 
     private void startInternal() {
         if (!checkAppTokenNotNull(appToken)) return;
 
-        queueHandler.resumeSending();
+        packageHandler.resumeSending();
         startTimer();
 
         long now = new Date().getTime();
@@ -178,7 +178,7 @@ public class ActivityHandler extends HandlerThread {
             activityState.sessionCount = 1; // this is the first session
             activityState.createdAt = now;  // starting now
 
-            enqueueSessionPackage();
+            transferSessionPackage();
             writeActivityState();
             return;
         }
@@ -194,7 +194,7 @@ public class ActivityHandler extends HandlerThread {
         // new session
         if (lastInterval > SESSION_INTERVAL) {
             activityState.lastInterval = lastInterval;
-            enqueueSessionPackage();
+            transferSessionPackage();
             activityState.startNextSession(now);
             writeActivityState();
             return;
@@ -212,7 +212,7 @@ public class ActivityHandler extends HandlerThread {
     private void endInternal() {
         if (!checkAppTokenNotNull(appToken)) return;
 
-        queueHandler.pauseSending();
+        packageHandler.pauseSending();
         stopTimer();
         updateActivityState();
         writeActivityState();
@@ -231,7 +231,7 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectEventAttributes(eventBuilder);
 
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
-        queueHandler.addPackage(eventPackage);
+        packageHandler.addPackage(eventPackage);
 
         writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
@@ -249,7 +249,7 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectEventAttributes(revenueBuilder);
 
         ActivityPackage revenuePackage = revenueBuilder.buildRevenuePackage();
-        queueHandler.addPackage(revenuePackage);
+        packageHandler.addPackage(revenuePackage);
 
         writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
@@ -322,12 +322,12 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void enqueueSessionPackage() {
+    private void transferSessionPackage() {
         PackageBuilder builder = new PackageBuilder();
         injectGeneralAttributes(builder);
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
-        queueHandler.addPackage(sessionPackage);
+        packageHandler.addPackage(sessionPackage);
     }
 
     // called from inside
@@ -354,10 +354,10 @@ public class ActivityHandler extends HandlerThread {
     private void injectGeneralAttributes(PackageBuilder builder) {
         builder.userAgent = userAgent;
         builder.appToken = appToken;
-        builder.macShort = macShort;
+        builder.macShortMd5 = macShortMd5;
         builder.macSha1 = macSha1;
         builder.androidId = androidId;
-        builder.attributionId = fbAttributionId;
+        builder.fbAttributionId = fbAttributionId;
     }
 
     private void startTimer() {
@@ -382,7 +382,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void timerFired() {
-        queueHandler.sendFirstPackage();
+        packageHandler.sendFirstPackage();
 
         updateActivityState();
         writeActivityState();
