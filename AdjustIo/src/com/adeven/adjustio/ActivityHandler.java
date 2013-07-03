@@ -25,7 +25,7 @@ import android.os.Looper;
 import android.os.Message;
 
 public class ActivityHandler extends HandlerThread {
-    private static final String SESSION_STATE_FILENAME = "sessionstate1"; // TODO: change filename
+    private static final String SESSION_STATE_FILENAME = "activitystate1"; // TODO: change filename
 
     private static final long TIMER_INTERVAL      = 1000 * 10; // 10 second, TODO: one minute
     private static final long SESSION_INTERVAL    = 1000 * 15; // 15 seconds, TODO: 30 minutes
@@ -38,7 +38,7 @@ public class ActivityHandler extends HandlerThread {
     private static final int MESSAGE_ARG_REVENUE = 72670;
 
     private InternalHandler internalHandler;
-    private SessionState sessionState;
+    private ActivityState activityState;
     private QueueHandler queueHandler;
     private static ScheduledExecutorService timer; // TODO: rename to timer
 
@@ -160,7 +160,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
 
         queueHandler = new QueueHandler(context);
-        readSessionState();
+        readActivityState();
     }
 
     private void startInternal() {
@@ -172,41 +172,41 @@ public class ActivityHandler extends HandlerThread {
         long now = new Date().getTime();
 
         // very first session
-        if (sessionState == null) {
+        if (activityState == null) {
             Logger.info("First session");
-            sessionState = new SessionState();
-            sessionState.sessionCount = 1; // this is the first session
-            sessionState.createdAt = now;  // starting now
+            activityState = new ActivityState();
+            activityState.sessionCount = 1; // this is the first session
+            activityState.createdAt = now;  // starting now
 
             enqueueSessionPackage();
-            writeSessionState();
+            writeActivityState();
             return;
         }
 
-        long lastInterval = now - sessionState.lastActivity;
+        long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             Logger.error("Time travel!");
-            sessionState.lastActivity = now;
-            writeSessionState();
+            activityState.lastActivity = now;
+            writeActivityState();
             return;
         }
 
         // new session
         if (lastInterval > SESSION_INTERVAL) {
-            sessionState.lastInterval = lastInterval;
+            activityState.lastInterval = lastInterval;
             enqueueSessionPackage();
-            sessionState.startNextSession(now);
-            writeSessionState();
+            activityState.startNextSession(now);
+            writeActivityState();
             return;
         }
 
         // new subsession
         if (lastInterval > SUBSESSION_INTERVAL) {
-            sessionState.subsessionCount++;
+            activityState.subsessionCount++;
         }
-        sessionState.sessionLength += lastInterval;
-        sessionState.lastActivity = now;
-        writeSessionState();
+        activityState.sessionLength += lastInterval;
+        activityState.lastActivity = now;
+        writeActivityState();
     }
 
     private void endInternal() {
@@ -214,26 +214,27 @@ public class ActivityHandler extends HandlerThread {
 
         queueHandler.pauseSending();
         stopTimer();
-        updateSessionState();
-        writeSessionState();
+        updateActivityState();
+        writeActivityState();
     }
 
+    // TODO: set session attributes to -1 for events after session end?
     private void eventInternal(PackageBuilder eventBuilder) {
         Logger.error("event start");
         if (!checkAppTokenNotNull(appToken)) return;
-        if (!checkSessionState(sessionState)) return;
+        if (!checkActivityState(activityState)) return;
         if (!checkEventTokenNotNull(eventBuilder.eventToken)) return;
         if (!checkEventTokenLength(eventBuilder.eventToken)) return;
 
-        sessionState.eventCount++;
-        updateSessionState();
+        activityState.eventCount++;
+        updateActivityState();
         injectGeneralAttributes(eventBuilder);
-        sessionState.injectEventAttributes(eventBuilder);
+        activityState.injectEventAttributes(eventBuilder);
 
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
         queueHandler.addPackage(eventPackage);
 
-        writeSessionState();
+        writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
         Logger.error("event end");
     }
@@ -241,28 +242,28 @@ public class ActivityHandler extends HandlerThread {
     private void revenueInternal(PackageBuilder revenueBuilder) {
         Logger.error("revenue start");
         if (!checkAppTokenNotNull(appToken)) return;
-        if (!checkSessionState(sessionState)) return;
+        if (!checkActivityState(activityState)) return;
         if (!checkAmount(revenueBuilder.amountInCents)) return;
         if (!checkEventTokenLength(revenueBuilder.eventToken)) return;
 
-        sessionState.eventCount++;
-        updateSessionState();
+        activityState.eventCount++;
+        updateActivityState();
         injectGeneralAttributes(revenueBuilder);
-        sessionState.injectEventAttributes(revenueBuilder);
+        activityState.injectEventAttributes(revenueBuilder);
 
         ActivityPackage revenuePackage = revenueBuilder.buildRevenuePackage();
         queueHandler.addPackage(revenuePackage);
 
-        writeSessionState();
+        writeActivityState();
         try { Thread.sleep(500); } catch(Exception e) {}
         Logger.error("revenue end");
     }
 
     // called from inside
 
-    private void readSessionState() {
-        // if any exception gets raised we start with a fresh sessionState
-        sessionState = null;
+    private void readActivityState() {
+        // if any exception gets raised we start with a fresh activity state
+        activityState = null;
 
         try {
             FileInputStream inputStream = context.openFileInput(SESSION_STATE_FILENAME);
@@ -270,18 +271,18 @@ public class ActivityHandler extends HandlerThread {
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
 
             try {
-                sessionState = (SessionState) objectStream.readObject();
-                Logger.debug("Read session state: " + sessionState);
+                activityState = (ActivityState) objectStream.readObject();
+                Logger.debug("Read activity state: " + activityState);
             }
             catch (ClassNotFoundException e) {
-                Logger.error("Failed to find session state class");
+                Logger.error("Failed to find activity state class");
             }
             catch (OptionalDataException e) {}
             catch (IOException e) {
-                Logger.error("Failed to read session states object");
+                Logger.error("Failed to read activity states object");
             }
             catch (ClassCastException e) {
-                Logger.error("Failed to cast session state object");
+                Logger.error("Failed to cast activity state object");
             }
             finally {
                 objectStream.close();
@@ -289,15 +290,15 @@ public class ActivityHandler extends HandlerThread {
 
         }
         catch (FileNotFoundException e) {
-            Logger.verbose("Session state file not found");
+            Logger.verbose("Activity state file not found");
         }
         catch (IOException e) {
-            Logger.error("Failed to read session state file");
+            Logger.error("Failed to read activity state file");
         }
     }
 
-    // TODO: move to sessionState?
-    private void writeSessionState() {
+    // TODO: move to activityState?
+    private void writeActivityState() {
         try { // TODO: remove sleeps!
             Thread.sleep(100);
         }
@@ -309,11 +310,11 @@ public class ActivityHandler extends HandlerThread {
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
 
             try {
-                objectStream.writeObject(sessionState);
-                Logger.debug("Wrote session state: " + sessionState);
+                objectStream.writeObject(activityState);
+                Logger.debug("Wrote activity state: " + activityState);
             }
             catch (NotSerializableException e) {
-                Logger.error("Failed to serialize session state");
+                Logger.error("Failed to serialize activity state");
             }
             finally {
                 objectStream.close();
@@ -321,37 +322,37 @@ public class ActivityHandler extends HandlerThread {
 
         }
         catch (IOException e) {
-            Logger.error("Failed to write session state (" + e + ")");
+            Logger.error("Failed to write activity state (" + e + ")");
         }
     }
 
     private void enqueueSessionPackage() {
         PackageBuilder builder = new PackageBuilder();
         injectGeneralAttributes(builder);
-        sessionState.injectSessionAttributes(builder);
+        activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         queueHandler.addPackage(sessionPackage);
     }
 
     // called from inside
 
-    private void updateSessionState() {
-        if (!checkSessionState(sessionState)) return;
+    private void updateActivityState() {
+        if (!checkActivityState(activityState)) return;
 
         long now = new Date().getTime();
-        long lastInterval = now - sessionState.lastActivity;
+        long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             Logger.error("Time travel");
-            sessionState.lastActivity = now;
+            activityState.lastActivity = now;
             return;
         }
 
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) return;
 
-        sessionState.sessionLength += lastInterval;
-        sessionState.timeSpent += lastInterval;
-        sessionState.lastActivity = now;
+        activityState.sessionLength += lastInterval;
+        activityState.timeSpent += lastInterval;
+        activityState.lastActivity = now;
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
@@ -387,8 +388,8 @@ public class ActivityHandler extends HandlerThread {
     private void timerFired() {
         queueHandler.sendFirstPackage();
 
-        updateSessionState();
-        writeSessionState();
+        updateActivityState();
+        writeActivityState();
     }
 
     private static boolean checkPermissions(Context context) {
@@ -425,9 +426,9 @@ public class ActivityHandler extends HandlerThread {
         return granted;
     }
 
-    private static boolean checkSessionState(SessionState sessionState) {
-        if (sessionState == null) {
-            Logger.error("Missing session state.");
+    private static boolean checkActivityState(ActivityState activityState) {
+        if (activityState == null) {
+            Logger.error("Missing activity state.");
             return false;
         }
         return true;
