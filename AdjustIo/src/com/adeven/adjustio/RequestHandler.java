@@ -22,58 +22,58 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-public class RequestThread extends HandlerThread {
+public class RequestHandler extends HandlerThread {
     private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
     private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
 
     private static final int MESSAGE_ARG_INIT = 72401;
-    private static final int MESSAGE_ARG_TRACK = 72400;
+    private static final int MESSAGE_ARG_SEND = 72400;
 
-    private Handler trackingHandler;
-    private QueueThread queueThread;
+    private InternalHandler internalHandler;
+    private QueueHandler queueHandler;
     private HttpClient httpClient;
 
-    protected RequestThread(QueueThread queueThread) {
+    protected RequestHandler(QueueHandler queueHandler) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
 
-        this.trackingHandler = new RequestHandler(getLooper(), this);
-        this.queueThread = queueThread;
+        this.internalHandler = new InternalHandler(getLooper(), this);
+        this.queueHandler = queueHandler;
 
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_INIT;
-        trackingHandler.sendMessage(message);
+        internalHandler.sendMessage(message);
     }
 
-    protected void trackPackage(TrackingPackage pack) {
+    protected void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_TRACK;
+        message.arg1 = MESSAGE_ARG_SEND;
         message.obj = pack;
-        trackingHandler.sendMessage(message);
+        internalHandler.sendMessage(message);
     }
 
-    private static final class RequestHandler extends Handler {
-        private final WeakReference<RequestThread> requestThreadReference;
+    private static final class InternalHandler extends Handler {
+        private final WeakReference<RequestHandler> requestHandlerReference;
 
-        protected RequestHandler(Looper looper, RequestThread requestThread) {
+        protected InternalHandler(Looper looper, RequestHandler requestHandler) {
             super(looper);
-            this.requestThreadReference = new WeakReference<RequestThread>(requestThread);
+            this.requestHandlerReference = new WeakReference<RequestHandler>(requestHandler);
         }
 
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
-            RequestThread requestThread = requestThreadReference.get();
-            if (requestThread == null) return;
+            RequestHandler requestHandler = requestHandlerReference.get();
+            if (requestHandler == null) return;
 
             switch (message.arg1) {
             case MESSAGE_ARG_INIT:
-                requestThread.initInternal();
+                requestHandler.initInternal();
                 break;
-            case MESSAGE_ARG_TRACK:
-                TrackingPackage trackingPackage = (TrackingPackage) message.obj;
-                requestThread.trackInternal(trackingPackage);
+            case MESSAGE_ARG_SEND:
+                ActivityPackage activityPackage = (ActivityPackage) message.obj;
+                requestHandler.sendInternal(activityPackage);
                 break;
             }
         }
@@ -89,41 +89,41 @@ public class RequestThread extends HandlerThread {
         Logger.error("init httpclient " + httpClient);
     }
 
-    private void trackInternal(TrackingPackage trackingPackage) {
+    private void sendInternal(ActivityPackage activityPackage) {
         try {
-            setUserAgent(trackingPackage.userAgent);
-            HttpUriRequest request = trackingPackage.getRequest();
+            setUserAgent(activityPackage.userAgent);
+            HttpUriRequest request = activityPackage.getRequest();
             HttpResponse response = httpClient.execute(request);
-            requestFinished(response, trackingPackage);
+            requestFinished(response, activityPackage);
         }
         catch (UnsupportedEncodingException e) {
-            trackNextPackage(trackingPackage, "Failed to encode parameters", e);
+            sendNextPackage(activityPackage, "Failed to encode parameters", e);
         }
         catch (ClientProtocolException e) {
-            closePackage(trackingPackage, "Client protocol error", e);
+            closePackage(activityPackage, "Client protocol error", e);
         }
         catch (SocketTimeoutException e) {
-            closePackage(trackingPackage, "Request timed out", e);
+            closePackage(activityPackage, "Request timed out", e);
         }
         catch (IOException e) {
-            closePackage(trackingPackage, "Request failed", e);
+            closePackage(activityPackage, "Request failed", e);
         }
         catch (Exception e) {
-            trackNextPackage(trackingPackage, "Runtime exeption", e);
+            sendNextPackage(activityPackage, "Runtime exeption", e);
         }
     }
 
-    private void requestFinished(HttpResponse response, TrackingPackage trackingPackage) {
+    private void requestFinished(HttpResponse response, ActivityPackage activityPackage) {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
 
         if (statusCode == HttpStatus.SC_OK) {
-            Logger.info(trackingPackage.getSuccessMessage());
+            Logger.info(activityPackage.getSuccessMessage());
         } else {
-            Logger.warn(trackingPackage.getFailureMessage() + " (" + responseString + ")");
+            Logger.warn(activityPackage.getFailureMessage() + " (" + responseString + ")");
         }
 
-        queueThread.trackNextPackage();
+        queueHandler.sendNextPackage();
     }
 
     private String parseResponse(HttpResponse response) {
@@ -140,8 +140,8 @@ public class RequestThread extends HandlerThread {
         }
     }
 
-    private void closePackage(TrackingPackage trackingPackage, String message, Throwable e) {
-        String failureMessage = trackingPackage.getFailureMessage();
+    private void closePackage(ActivityPackage activityPackage, String message, Throwable e) {
+        String failureMessage = activityPackage.getFailureMessage();
         String logMessage = failureMessage + " Will retry later. (" + message;
         if (e != null) {
             logMessage += ": " + e;
@@ -149,11 +149,11 @@ public class RequestThread extends HandlerThread {
         logMessage += ")";
         Logger.error(logMessage);
 
-        queueThread.closeFirstPackage();
+        queueHandler.closeFirstPackage();
     }
 
-    private void trackNextPackage(TrackingPackage trackingPackage, String message, Throwable e) {
-        String failureMessage = trackingPackage.getFailureMessage();
+    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable e) {
+        String failureMessage = activityPackage.getFailureMessage();
         String logMessage = failureMessage + " (" + message;
         if (e != null) {
             logMessage += ": " + e;
@@ -161,7 +161,7 @@ public class RequestThread extends HandlerThread {
         logMessage += ")";
         Logger.error(logMessage);
 
-        queueThread.trackNextPackage();
+        queueHandler.sendNextPackage();
     }
 
     private void setUserAgent(String userAgent) {
