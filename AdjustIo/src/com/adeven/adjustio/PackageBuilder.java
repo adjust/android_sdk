@@ -2,6 +2,7 @@ package com.adeven.adjustio;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -31,17 +32,10 @@ public class PackageBuilder {
     protected float amountInCents;
     protected Map<String, String> callbackParameters;
 
-    protected TrackingPackage buildSessionPackage() {
+    protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
 
-        // session specific
-        addInt(parameters, "session_id", sessionCount); // TODO: rename parameters
-        addInt(parameters, "subsession_count", subsessionCount);
-        addDuration(parameters, "session_length", sessionLength);
-        addDuration(parameters, "time_spent", timeSpent);
-        addDuration(parameters, "last_interval", lastInterval);
-
-        TrackingPackage sessionPackage = new TrackingPackage();
+        ActivityPackage sessionPackage = new ActivityPackage();
         sessionPackage.path = "/startup";
         sessionPackage.kind = "session start";
         sessionPackage.suffix = ".";
@@ -51,49 +45,26 @@ public class PackageBuilder {
         return sessionPackage;
     }
 
-    protected TrackingPackage buildEventPackage() {
+    protected ActivityPackage buildEventPackage() {
         Map<String, String> parameters = getDefaultParameters();
+        injectEventParameters(parameters);
 
-        // event specific
-        addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_id", eventToken); // TODO: rename parameters
-        addMap(parameters, "params", callbackParameters);
-
-        // session specific (current values at time of event)
-        addInt(parameters, "session_count", sessionCount);
-        addInt(parameters, "subsession_count", subsessionCount);
-        addDuration(parameters, "session_length", sessionLength);
-        addDuration(parameters, "time_spent", timeSpent);
-        addDuration(parameters, "last_interval", lastInterval);
-
-        TrackingPackage eventPackage = new TrackingPackage();
+        ActivityPackage eventPackage = new ActivityPackage();
         eventPackage.path = "/event";
         eventPackage.kind = "event";
-        eventPackage.suffix = " '" + eventToken + "'.";
+        eventPackage.suffix = getEventSuffix();
         eventPackage.parameters = parameters;
         eventPackage.userAgent = userAgent;
 
         return eventPackage;
     }
 
-    protected TrackingPackage buildRevenuePackage() {
+    protected ActivityPackage buildRevenuePackage() {
         Map<String, String> parameters = getDefaultParameters();
-
-        // event specific
-        addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_token", eventToken);
+        injectEventParameters(parameters);
         addString(parameters, "amount", getAmountString());
-        addMap(parameters, "params", callbackParameters);
 
-        // session specific (current values at time of event)
-        addInt(parameters, "event_count", eventCount);
-        addInt(parameters, "session_count", sessionCount);
-        addInt(parameters, "subsession_count", subsessionCount);
-        addDuration(parameters, "session_length", sessionLength);
-        addDuration(parameters, "time_spent", timeSpent);
-        addDuration(parameters, "last_interval", lastInterval);
-
-        TrackingPackage revenuePackage = new TrackingPackage();
+        ActivityPackage revenuePackage = new ActivityPackage();
         revenuePackage.path = "/revenue";
         revenuePackage.kind = "revenue";
         revenuePackage.suffix = getRevenueSuffix();
@@ -106,6 +77,7 @@ public class PackageBuilder {
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
+        // general
         addDate(parameters, "created_at", createdAt);
         addString(parameters, "app_token", appToken);
         addString(parameters, "mac_sha1", macSha1);
@@ -113,7 +85,20 @@ public class PackageBuilder {
         addString(parameters, "android_id", androidId);
         addString(parameters, "fb_id", attributionId);
 
+        // session related (used for events as well)
+        addInt(parameters, "session_id", sessionCount); // TODO: rename parameters
+        addInt(parameters, "subsession_count", subsessionCount);
+        addDuration(parameters, "session_length", sessionLength);
+        addDuration(parameters, "time_spent", timeSpent);
+        addDuration(parameters, "last_interval", lastInterval);
+
         return parameters;
+    }
+
+    private void injectEventParameters(Map<String, String> parameters) {
+        addInt(parameters, "event_count", eventCount);
+        addString(parameters, "event_id", eventToken); // TODO: rename parameters
+        addMap(parameters, "params", callbackParameters);
     }
 
     private String getAmountString() {
@@ -123,50 +108,49 @@ public class PackageBuilder {
         return amountString;
     }
 
-    // examples: " (12.5 cent)."
-    //           " (12.5 cent, 'abc123')."
+    private String getEventSuffix() {
+        return String.format(" '%s'", eventToken);
+    }
+
     private String getRevenueSuffix() {
-        String suffix = " (" + amountInCents + " cent";
         if (eventToken != null) {
-            suffix += ", '" + eventToken + "'";
+            return String.format(Locale.US, " (%.1f cent, '%s')", amountInCents, eventToken);
+        } else {
+            return String.format(Locale.US, " (%.1f cent)", amountInCents);
         }
-        suffix += ").";
-        return suffix;
     }
 
     private void addString(Map<String, String> parameters, String key, String value) {
-        if (value == null || value == "") {
-            return;
-        }
+        if (value == null || value == "") return;
+
         parameters.put(key, value);
     }
 
     private void addInt(Map<String, String> parameters, String key, long value) {
-        if (value == -1) {
-            return;
-        }
+        if (value < 0) return;
+
         String valueString = Long.toString(value);
         addString(parameters, key, valueString);
     }
 
     private void addDate(Map<String, String> parameters, String key, long value) {
-        if (value == -1) {
-            return;
-        }
+        if (value < 0) return;
+
         Date date = new Date(value);
         String dateString = date.toString(); // TODO: format with DateFormat
         addString(parameters, key, dateString);
     }
 
     private void addDuration(Map<String, String> parameters, String key, long durationInMilliSeconds) {
-        long durationInSeconds = durationInMilliSeconds / 1000;
+        if (durationInMilliSeconds < 0) return;
+
+        // TODO: test rounding
+        long durationInSeconds = (durationInMilliSeconds + 500) / 1000;
         addInt(parameters, key, durationInSeconds);
     }
 
     private void addMap(Map<String, String> parameters, String key, Map<String, String> map) {
-        if (map == null) {
-            return;
-        }
+        if (map == null) return;
 
         JSONObject jsonObject = new JSONObject(map);
         byte[] jsonBytes = jsonObject.toString().getBytes();

@@ -22,101 +22,101 @@ import android.os.Looper;
 import android.os.Message;
 
 // persistent
-public class QueueThread extends HandlerThread {
+public class QueueHandler extends HandlerThread {
     private static final String QUEUE_FILENAME = "testqueue3";  // TODO: change filename
 
     private static final int MESSAGE_ARG_ADD = 72500; // TODO: change constants!
-    private static final int MESSAGE_ARG_TRACK_NEXT = 72510;
-    private static final int MESSAGE_ARG_TRACK_FIRST = 72530;
+    private static final int MESSAGE_ARG_SEND_NEXT = 72510;
+    private static final int MESSAGE_ARG_SEND_FIRST = 72530;
     private static final int MESSAGE_ARG_READ = 72520;
 
-    private Handler queueHandler;
-    private RequestThread requestThread;
+    private InternalHandler internalHandler;
+    private RequestHandler requestHandler;
     private Context context;
-    private AtomicBoolean isTracking;
-    private List<TrackingPackage> packages;
+    private AtomicBoolean isSending;
+    private List<ActivityPackage> packages;
     private boolean paused;
 
-    protected QueueThread(Context context) {
+    protected QueueHandler(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        this.queueHandler = new PackageHandler(getLooper(), this);
+        this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.context = context;
-        this.isTracking = new AtomicBoolean();
-        this.requestThread = new RequestThread(this);
+        this.isSending = new AtomicBoolean();
+        this.requestHandler = new RequestHandler(this);
 
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_READ;
-        queueHandler.sendMessage(message);
+        internalHandler.sendMessage(message);
     }
 
-    // add a package to the queue, trigger tracking
-    protected void addPackage(TrackingPackage pack) {
+    // add a package to the queue, trigger sending
+    protected void addPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_ADD;
         message.obj = pack;
-        queueHandler.sendMessage(message);
+        internalHandler.sendMessage(message);
     }
 
-    // try to track the oldest package
-    protected void trackFirstPackage() {
+    // try to send the oldest package
+    protected void sendFirstPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_TRACK_FIRST;
-        queueHandler.sendMessage(message);
+        message.arg1 = MESSAGE_ARG_SEND_FIRST;
+        internalHandler.sendMessage(message);
     }
 
-    // remove oldest package and try to track the next one
+    // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
-    protected void trackNextPackage() {
+    protected void sendNextPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_TRACK_NEXT;
-        queueHandler.sendMessage(message);
+        message.arg1 = MESSAGE_ARG_SEND_NEXT;
+        internalHandler.sendMessage(message);
     }
 
     // close the package to retry in the future (after temporary failure)
     protected void closeFirstPackage() {
-        isTracking.set(false);
+        isSending.set(false);
     }
 
-    // interrupt the tracking loop after the current request has finished
-    protected void pauseTracking() {
+    // interrupt the sending loop after the current request has finished
+    protected void pauseSending() {
         paused = true;
     }
 
-    // allow tracking requests again
-    protected void resumeTracking() {
+    // allow sending requests again
+    protected void resumeSending() {
         paused = false;
     }
 
-    private static final class PackageHandler extends Handler {
-        private final WeakReference<QueueThread> queueThreadReference;
+    private static final class InternalHandler extends Handler {
+        private final WeakReference<QueueHandler> queueHandlerReference;
 
-        protected PackageHandler(Looper looper, QueueThread queueThread) {
+        protected InternalHandler(Looper looper, QueueHandler queueHandler) {
             super(looper);
-            this.queueThreadReference = new WeakReference<QueueThread>(queueThread);
+            this.queueHandlerReference = new WeakReference<QueueHandler>(queueHandler);
         }
 
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
-            QueueThread queueThread = queueThreadReference.get();
-            if (queueThread == null) return;
+            QueueHandler queueHandler = queueHandlerReference.get();
+            if (queueHandler == null) return;
 
             switch (message.arg1) {
             case MESSAGE_ARG_ADD:
-                TrackingPackage trackingPackage = (TrackingPackage) message.obj;
-                queueThread.addInternal(trackingPackage);
+                ActivityPackage activityPackage = (ActivityPackage) message.obj;
+                queueHandler.addInternal(activityPackage);
                 break;
-            case MESSAGE_ARG_TRACK_FIRST:
-                queueThread.trackFirstInternal();
+            case MESSAGE_ARG_SEND_FIRST:
+                queueHandler.sendFirstInternal();
                 break;
-            case MESSAGE_ARG_TRACK_NEXT:
-                queueThread.trackNextInternal();
+            case MESSAGE_ARG_SEND_NEXT:
+                queueHandler.sendNextInternal();
                 break;
             case MESSAGE_ARG_READ:
-                queueThread.readPackagesInternal();
+                queueHandler.readPackagesInternal();
                 break;
             }
         }
@@ -124,45 +124,45 @@ public class QueueThread extends HandlerThread {
 
     // internal methods run in dedicated queue thread
 
-    private void addInternal(TrackingPackage newPackage) {
+    private void addInternal(ActivityPackage newPackage) {
         packages.add(newPackage);
         Logger.debug("added package " + packages.size() + " (" + newPackage + ")");
         Logger.verbose(newPackage.parameterString());
 
         writePackagesInternal();
-        trackFirstInternal();
+        sendFirstInternal();
     }
 
-    private void trackFirstInternal() {
+    private void sendFirstInternal() {
         if (paused) {
             Logger.debug("paused");
             return;
         }
-        if (isTracking.getAndSet(true)) {
+        if (isSending.getAndSet(true)) {
             Logger.debug("locked");
             return;
         }
 
         try {
-            TrackingPackage firstPackage = packages.get(0);
-            requestThread.trackPackage(firstPackage);
+            ActivityPackage firstPackage = packages.get(0);
+            requestHandler.sendPackage(firstPackage);
         }
         catch (IndexOutOfBoundsException e) {
-            isTracking.set(false);
+            isSending.set(false);
         }
     }
 
-    private void trackNextInternal() {
+    private void sendNextInternal() {
         packages.remove(0);
         writePackagesInternal();
-        isTracking.set(false);
-        trackFirstInternal();
+        isSending.set(false);
+        sendFirstInternal();
     }
 
     private void readPackagesInternal() {
         // initialize with empty list; if any exception gets raised
         // while reading the queue file this list will be used
-        packages = new ArrayList<TrackingPackage>();
+        packages = new ArrayList<ActivityPackage>();
 
         try {
             FileInputStream inputStream = context.openFileInput(QUEUE_FILENAME);
@@ -172,8 +172,8 @@ public class QueueThread extends HandlerThread {
             try {
                 Object object = objectStream.readObject();
                 @SuppressWarnings("unchecked")
-                List<TrackingPackage> packages = (List<TrackingPackage>) object;
-                Logger.debug("queue thread read " + packages.size() + " packages");
+                List<ActivityPackage> packages = (List<ActivityPackage>) object;
+                Logger.debug("queue handler read " + packages.size() + " packages");
                 this.packages = packages;
             }
             catch (ClassNotFoundException e) {
@@ -209,7 +209,7 @@ public class QueueThread extends HandlerThread {
 
             try {
                 objectStream.writeObject(packages);
-                Logger.verbose("queue thread wrote " + packages.size() + " packages");
+                Logger.verbose("queue handler wrote " + packages.size() + " packages");
             }
             catch (NotSerializableException e) {
                 Logger.error("failed to serialize packages");

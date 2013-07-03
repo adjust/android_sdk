@@ -26,8 +26,8 @@ public class AdjustIo {
     protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: change url!
     protected static final String CLIENT_SDK = "android1.6";
 
-    // every call gets forwarded to sessionThread
-    private static SessionThread sessionThread;
+    // every call gets forwarded to activityHandler
+    private static ActivityHandler activityHandler;
 
     // TODO: update all comments
     /**
@@ -41,17 +41,17 @@ public class AdjustIo {
      */
 
     public static void onResume(String appToken, Activity activity) {
-        if (sessionThread == null) {
-            sessionThread = new SessionThread(appToken, activity);
+        if (activityHandler == null) {
+            activityHandler = new ActivityHandler(appToken, activity);
         }
-        sessionThread.trackSubsessionStart();
+        activityHandler.trackSubsessionStart();
     }
 
     public static void onPause() {
         try {
-            sessionThread.trackSubsessionEnd();
+            activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            Logger.error("No session thread found");
+            Logger.error("No activity handler found");
         }
     }
 
@@ -75,9 +75,9 @@ public class AdjustIo {
 
     public static void trackEvent(String eventToken, Map<String, String> parameters) {
         try {
-            sessionThread.trackEvent(eventToken, parameters);
+            activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error("No session thread found");
+            Logger.error("No activity handler found");
         }
     }
 
@@ -106,9 +106,9 @@ public class AdjustIo {
 
     public static void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
         try {
-            sessionThread.trackRevenue(amountInCents, eventToken, parameters);
+            activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error("No session thread found");
+            Logger.error("No activity handler found");
         }
     }
 
