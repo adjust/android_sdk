@@ -13,6 +13,7 @@ import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import android.content.Context;
@@ -21,20 +22,22 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
+// TODO: user String.format everywhere instead of "a" + "b"
+
 // persistent
 public class PackageHandler extends HandlerThread {
-    private static final String PACKAGE_QUEUE_FILENAME = "testqueue3";  // TODO: change filename
+    private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: change filename
 
-    private static final int MESSAGE_ARG_ADD = 72500; // TODO: change constants!
+    private static final int MESSAGE_ARG_INIT = 72501; // TODO: change constants!
+    private static final int MESSAGE_ARG_ADD = 72500;
     private static final int MESSAGE_ARG_SEND_NEXT = 72510;
     private static final int MESSAGE_ARG_SEND_FIRST = 72530;
-    private static final int MESSAGE_ARG_READ = 72520;
 
     private InternalHandler internalHandler;
     private RequestHandler requestHandler;
-    private Context context;
-    private AtomicBoolean isSending;
     private List<ActivityPackage> packageQueue;
+    private AtomicBoolean isSending;
+    private Context context;
     private boolean paused;
 
     protected PackageHandler(Context context) {
@@ -44,11 +47,9 @@ public class PackageHandler extends HandlerThread {
         this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.context = context;
-        this.isSending = new AtomicBoolean();
-        this.requestHandler = new RequestHandler(this);
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_READ;
+        message.arg1 = MESSAGE_ARG_INIT;
         internalHandler.sendMessage(message);
     }
 
@@ -105,6 +106,9 @@ public class PackageHandler extends HandlerThread {
             if (packageHandler == null) return;
 
             switch (message.arg1) {
+            case MESSAGE_ARG_INIT:
+                packageHandler.initInternal();
+                break;
             case MESSAGE_ARG_ADD:
                 ActivityPackage activityPackage = (ActivityPackage) message.obj;
                 packageHandler.addInternal(activityPackage);
@@ -115,18 +119,22 @@ public class PackageHandler extends HandlerThread {
             case MESSAGE_ARG_SEND_NEXT:
                 packageHandler.sendNextInternal();
                 break;
-            case MESSAGE_ARG_READ:
-                packageHandler.readPackageQueue();
-                break;
             }
         }
     }
 
     // internal methods run in dedicated queue thread
 
+    private void initInternal() {
+        requestHandler = new RequestHandler(this);
+        isSending = new AtomicBoolean();
+
+        readPackageQueue();
+    }
+
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
-        Logger.debug("added package " + packageQueue.size() + " (" + newPackage + ")");
+        Logger.debug(String.format(Locale.US, "Added package %d (%s)",  packageQueue.size(), newPackage));
         Logger.verbose(newPackage.getParameterString());
 
         writePackageQueue();
@@ -160,10 +168,6 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void readPackageQueue() {
-        // initialize with empty list; if any exception gets raised
-        // while reading the queue file this list will be used
-        packageQueue = new ArrayList<ActivityPackage>();
-
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -173,28 +177,32 @@ public class PackageHandler extends HandlerThread {
                 Object object = objectStream.readObject();
                 @SuppressWarnings("unchecked")
                 List<ActivityPackage> packageQueue = (List<ActivityPackage>) object;
-                Logger.debug("queue handler read " + packageQueue.size() + " packages");
+                Logger.debug(String.format(Locale.US, "Package handler read %d packages", packageQueue.size()));
                 this.packageQueue = packageQueue;
+                return;
             }
             catch (ClassNotFoundException e) {
-                Logger.error("failed to find queue class");
+                Logger.error("Failed to find package queue class");
             }
             catch (OptionalDataException e) {} catch (IOException e) {
-                Logger.error("failed to read queue object");
+                Logger.error("Failed to read package queue object");
             }
             catch (ClassCastException e) {
-                Logger.error("failed to cast queue object");
+                Logger.error("Failed to cast package queue object");
             }
             finally {
                 objectStream.close();
             }
         }
         catch (FileNotFoundException e) {
-            Logger.verbose("queue file not found");
+            Logger.verbose("Package queue file not found");
         }
         catch (IOException e) {
-            Logger.error("failed to read queue file");
+            Logger.error("Failed to read package queue file");
         }
+
+        // start with a fresh package queue in case of any exception
+        packageQueue = new ArrayList<ActivityPackage>();
     }
 
     private void writePackageQueue() {
@@ -209,17 +217,17 @@ public class PackageHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(packageQueue);
-                Logger.verbose("queue handler wrote " + packageQueue.size() + " packages");
+                Logger.verbose(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
             }
             catch (NotSerializableException e) {
-                Logger.error("failed to serialize packages");
+                Logger.error("Failed to serialize packages");
             }
             finally {
                 objectStream.close();
             }
         }
         catch (IOException e) {
-            Logger.error("failed to write packages (" + e.getLocalizedMessage() + ")");
+            Logger.error(String.format("Failed to write packages (%s)", e.getLocalizedMessage()));
             e.printStackTrace();
         }
     }

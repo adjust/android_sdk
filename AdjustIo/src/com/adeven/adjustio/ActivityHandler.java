@@ -252,15 +252,32 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(revenuePackage);
 
         writeActivityState();
-        try { Thread.sleep(500); } catch(Exception e) {}
     }
 
     // called from inside
 
-    private void readActivityState() {
-        // if any exception gets raised we start with a fresh activity state
-        activityState = null;
+    // called from inside
 
+    private void updateActivityState() {
+        if (!checkActivityState(activityState)) return;
+
+        long now = new Date().getTime();
+        long lastInterval = now - activityState.lastActivity;
+        if (lastInterval < 0) {
+            Logger.error("Time travel");
+            activityState.lastActivity = now;
+            return;
+        }
+
+        // ignore late updates
+        if (lastInterval > SESSION_INTERVAL) return;
+
+        activityState.sessionLength += lastInterval;
+        activityState.timeSpent += lastInterval;
+        activityState.lastActivity = now;
+    }
+
+    private void readActivityState() {
         try {
             FileInputStream inputStream = context.openFileInput(SESSION_STATE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -269,6 +286,7 @@ public class ActivityHandler extends HandlerThread {
             try {
                 activityState = (ActivityState) objectStream.readObject();
                 Logger.debug("Read activity state: " + activityState);
+                return;
             }
             catch (ClassNotFoundException e) {
                 Logger.error("Failed to find activity state class");
@@ -291,14 +309,14 @@ public class ActivityHandler extends HandlerThread {
         catch (IOException e) {
             Logger.error("Failed to read activity state file");
         }
+
+        // start with a fresh activity state in case of any exception
+        activityState = null;
     }
 
     // TODO: move to activityState?
     private void writeActivityState() {
-        try { // TODO: remove sleeps!
-            Thread.sleep(100);
-        }
-        catch (Exception e) {}
+        try { Thread.sleep(300); } catch(Exception e) {} // TODO: remove sleeps!
 
         try {
             FileOutputStream outputStream = context.openFileOutput(SESSION_STATE_FILENAME, Context.MODE_PRIVATE);
@@ -331,25 +349,6 @@ public class ActivityHandler extends HandlerThread {
     }
 
     // called from inside
-
-    private void updateActivityState() {
-        if (!checkActivityState(activityState)) return;
-
-        long now = new Date().getTime();
-        long lastInterval = now - activityState.lastActivity;
-        if (lastInterval < 0) {
-            Logger.error("Time travel");
-            activityState.lastActivity = now;
-            return;
-        }
-
-        // ignore late updates
-        if (lastInterval > SESSION_INTERVAL) return;
-
-        activityState.sessionLength += lastInterval;
-        activityState.timeSpent += lastInterval;
-        activityState.lastActivity = now;
-    }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
         builder.userAgent = userAgent;
