@@ -62,7 +62,7 @@ public class ActivityState implements Serializable {
     private static String stamp(long dateMillis) {
         Date date = new Date(dateMillis);
         return String.format(Locale.US,
-                "%2d:%2d:%2d",
+                "%02d:%02d:%02d",
                 date.getHours(),
                 date.getMinutes(),
                 date.getSeconds());
