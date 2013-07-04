@@ -38,7 +38,7 @@ public class PackageBuilder {
         ActivityPackage sessionPackage = new ActivityPackage();
         sessionPackage.path = "/startup";
         sessionPackage.kind = "session start";
-        sessionPackage.suffix = ".";
+        sessionPackage.suffix = "";
         sessionPackage.parameters = parameters;
         sessionPackage.userAgent = userAgent;
 

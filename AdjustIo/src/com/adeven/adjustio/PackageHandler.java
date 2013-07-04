@@ -37,8 +37,8 @@ public class PackageHandler extends HandlerThread {
     private RequestHandler requestHandler;
     private List<ActivityPackage> packageQueue;
     private AtomicBoolean isSending;
-    private Context context;
     private boolean paused;
+    private Context context;
 
     protected PackageHandler(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -142,22 +142,19 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void sendFirstInternal() {
+        if (packageQueue.size() == 0) return;
+
         if (paused) {
-            Logger.debug("paused");
+            Logger.debug("Package handler is paused");
             return;
         }
         if (isSending.getAndSet(true)) {
-            Logger.debug("locked");
+            Logger.debug("Package handler is already sending");
             return;
         }
 
-        try {
-            ActivityPackage firstPackage = packageQueue.get(0);
-            requestHandler.sendPackage(firstPackage);
-        }
-        catch (IndexOutOfBoundsException e) {
-            isSending.set(false);
-        }
+        ActivityPackage firstPackage = packageQueue.get(0);
+        requestHandler.sendPackage(firstPackage);
     }
 
     private void sendNextInternal() {

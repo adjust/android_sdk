@@ -41,7 +41,6 @@ public class ActivityHandler extends HandlerThread {
     private PackageHandler packageHandler;
     private ActivityState activityState;
     private static ScheduledExecutorService timer; // TODO: rename to timer
-
     private Context context;
 
     private String appToken;
