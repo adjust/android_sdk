@@ -5,13 +5,22 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
@@ -30,16 +39,16 @@ public class RequestHandler extends HandlerThread {
     private static final int MESSAGE_ARG_SEND = 72400;
 
     private InternalHandler internalHandler;
-    private PackageHandler queueHandler;
+    private PackageHandler packageHandler;
     private HttpClient httpClient;
 
-    protected RequestHandler(PackageHandler queueHandler) {
+    protected RequestHandler(PackageHandler packageHandler) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
 
         this.internalHandler = new InternalHandler(getLooper(), this);
-        this.queueHandler = queueHandler;
+        this.packageHandler = packageHandler;
 
         Message message = Message.obtain();
         message.arg1 = MESSAGE_ARG_INIT;
@@ -86,13 +95,12 @@ public class RequestHandler extends HandlerThread {
         HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
         httpClient = new DefaultHttpClient(httpParams);
-        Logger.error("init httpclient " + httpClient);
     }
 
     private void sendInternal(ActivityPackage activityPackage) {
         try {
             setUserAgent(activityPackage.userAgent);
-            HttpUriRequest request = activityPackage.getRequest();
+            HttpUriRequest request = getRequest(activityPackage);
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, activityPackage);
         }
@@ -120,10 +128,10 @@ public class RequestHandler extends HandlerThread {
         if (statusCode == HttpStatus.SC_OK) {
             Logger.info(activityPackage.getSuccessMessage());
         } else {
-            Logger.warn(activityPackage.getFailureMessage() + " (" + responseString + ")");
+            Logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));
         }
 
-        queueHandler.sendNextPackage();
+        packageHandler.sendNextPackage();
     }
 
     private String parseResponse(HttpResponse response) {
@@ -140,16 +148,14 @@ public class RequestHandler extends HandlerThread {
         }
     }
 
-    private void closePackage(ActivityPackage activityPackage, String message, Throwable e) {
+    private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         String failureMessage = activityPackage.getFailureMessage();
-        String logMessage = failureMessage + " Will retry later. (" + message;
-        if (e != null) {
-            logMessage += ": " + e;
+        if (throwable != null) {
+            Logger.error(String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable));
+        } else {
+            Logger.error(String.format("%s. (%s) Will retry later.", failureMessage, message));
         }
-        logMessage += ")";
-        Logger.error(logMessage);
-
-        queueHandler.closeFirstPackage();
+        packageHandler.closeFirstPackage();
     }
 
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable e) {
@@ -161,11 +167,32 @@ public class RequestHandler extends HandlerThread {
         logMessage += ")";
         Logger.error(logMessage);
 
-        queueHandler.sendNextPackage();
+        packageHandler.sendNextPackage();
     }
 
     private void setUserAgent(String userAgent) {
         HttpParams httpParams = httpClient.getParams();
         httpParams.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
+    }
+
+    private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
+        String url = AdjustIo.BASE_URL + activityPackage.path;
+        HttpPost request = new HttpPost(url);
+
+        String language = Locale.getDefault().getLanguage();
+        request.addHeader("Accept-Language", language);
+        request.addHeader("Client-SDK", AdjustIo.CLIENT_SDK);
+
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        for (Map.Entry<String, String> entity : activityPackage.parameters.entrySet()) {
+            NameValuePair pair = new BasicNameValuePair(entity.getKey(), entity.getValue());
+            pairs.add(pair);
+        }
+
+        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pairs);
+        entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
+        request.setEntity(entity);
+
+        return request;
     }
 }
