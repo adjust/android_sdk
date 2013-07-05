@@ -176,12 +176,12 @@ public class RequestHandler extends HandlerThread {
     }
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = AdjustIo.BASE_URL + activityPackage.path;
+        String url = Util.BASE_URL + activityPackage.path;
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
         request.addHeader("Accept-Language", language);
-        request.addHeader("Client-SDK", AdjustIo.CLIENT_SDK);
+        request.addHeader("Client-SDK", activityPackage.clientSdk); // TODO: set userAgent like this?
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (Map.Entry<String, String> entity : activityPackage.parameters.entrySet()) {

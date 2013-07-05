@@ -30,6 +30,8 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+
+
 // TODO: clean up, move functions to callers
 /**
  * Collects utility functions used by AdjustIo.
@@ -38,6 +40,9 @@ import android.util.DisplayMetrics;
  * @since 11.10.12
  */
 public class Util {
+    protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: change url!
+    protected static final String CLIENT_SDK = "android1.6";
+
     private static final String UNKNOWN = "unknown";
 
     protected static String getUserAgent(Context context) {

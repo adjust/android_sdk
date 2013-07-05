@@ -135,7 +135,7 @@ public class PackageHandler extends HandlerThread {
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         Logger.debug(String.format(Locale.US, "Added package %d (%s)",  packageQueue.size(), newPackage));
-        Logger.verbose(newPackage.getParameterString());
+        Logger.verbose(newPackage.getExtendedString());
 
         writePackageQueue();
         sendFirstInternal();
@@ -149,7 +149,7 @@ public class PackageHandler extends HandlerThread {
             return;
         }
         if (isSending.getAndSet(true)) {
-            Logger.debug("Package handler is already sending");
+            Logger.verbose("Package handler is already sending");
             return;
         }
 
@@ -203,10 +203,6 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void writePackageQueue() {
-        try {   // TODO: remove sleeps
-            Thread.sleep(100);
-        } catch (Exception e) {}
-
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
@@ -214,7 +210,7 @@ public class PackageHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(packageQueue);
-                Logger.verbose(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
+                Logger.debug(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
             }
             catch (NotSerializableException e) {
                 Logger.error("Failed to serialize packages");

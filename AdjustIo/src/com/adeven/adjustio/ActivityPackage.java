@@ -11,6 +11,7 @@ public class ActivityPackage implements Serializable {
     // data
     protected String path;
     protected String userAgent;
+    protected String clientSdk;
     protected Map<String, String> parameters;
 
     // logs
@@ -18,16 +19,20 @@ public class ActivityPackage implements Serializable {
     protected String suffix;
 
     public String toString() {
-        return String.format("%s%s %s", kind, suffix, path);
+        return String.format("%s%s", kind, suffix);
     }
 
-    protected String getParameterString() {
-        if (parameters == null) return "Parameters: null";
+    protected String getExtendedString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.format("Path:      %s\n", path));
+        builder.append(String.format("UserAgent: %s\n", userAgent));
+        builder.append(String.format("ClientSdk: %s\n", clientSdk));
 
-        StringBuilder builder = new StringBuilder("Parameters:");
-
-        for (Map.Entry<String, String> entity : parameters.entrySet()) {
-            builder.append(String.format("\n\t%-16s %s", entity.getKey(), entity.getValue()));
+        if (parameters != null) {
+            builder.append("Parameters:");
+            for (Map.Entry<String, String> entity : parameters.entrySet()) {
+                builder.append(String.format("\n\t%-16s %s", entity.getKey(), entity.getValue()));
+            }
         }
         return builder.toString();
     }
