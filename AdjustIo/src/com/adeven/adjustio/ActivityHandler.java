@@ -12,6 +12,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -25,7 +26,7 @@ import android.os.Looper;
 import android.os.Message;
 
 public class ActivityHandler extends HandlerThread {
-    private static final String SESSION_STATE_FILENAME = "activitystate1"; // TODO: change filename
+    private static final String SESSION_STATE_FILENAME = "activitystate2"; // TODO: change filename
 
     private static final long TIMER_INTERVAL      = 1000 * 10; // 10 second, TODO: one minute
     private static final long SESSION_INTERVAL    = 1000 * 15; // 15 seconds, TODO: 30 minutes
@@ -49,6 +50,7 @@ public class ActivityHandler extends HandlerThread {
     private String androidId; // everything else here could be persisted
     private String fbAttributionId;
     private String userAgent; // changes, should be updated periodically
+    private String clientSdk;
 
     protected ActivityHandler(String appToken, Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -154,9 +156,10 @@ public class ActivityHandler extends HandlerThread {
         appToken = token;
         macSha1 = Util.sha1(macAddress);
         macShortMd5 = macAddress.replaceAll(":", ""); // TODO: macMd5!!!
-        userAgent = Util.getUserAgent(context);
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
+        userAgent = Util.getUserAgent(context);
+        clientSdk = Util.CLIENT_SDK;
 
         packageHandler = new PackageHandler(context);
         readActivityState();
@@ -196,12 +199,15 @@ public class ActivityHandler extends HandlerThread {
             transferSessionPackage();
             activityState.startNextSession(now);
             writeActivityState();
+            Logger.debug(String.format(Locale.US, "Session %d", activityState.sessionCount));
             return;
         }
 
         // new subsession
         if (lastInterval > SUBSESSION_INTERVAL) {
             activityState.subsessionCount++;
+            Logger.debug(String.format(Locale.US, "Subsession %d.%d",
+                    activityState.sessionCount, activityState.subsessionCount));
         }
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
@@ -233,7 +239,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         writeActivityState();
-        try { Thread.sleep(500); } catch(Exception e) {}
+        Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
 
     private void revenueInternal(PackageBuilder revenueBuilder) {
@@ -251,6 +257,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(revenuePackage);
 
         writeActivityState();
+        Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
     }
 
     // called from inside
@@ -315,8 +322,6 @@ public class ActivityHandler extends HandlerThread {
 
     // TODO: move to activityState?
     private void writeActivityState() {
-        try { Thread.sleep(300); } catch(Exception e) {} // TODO: remove sleeps!
-
         try {
             FileOutputStream outputStream = context.openFileOutput(SESSION_STATE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
@@ -324,7 +329,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(activityState);
-                Logger.debug("Wrote activity state: " + activityState);
+                Logger.verbose("Wrote activity state: " + activityState);
             }
             catch (NotSerializableException e) {
                 Logger.error("Failed to serialize activity state");
@@ -350,12 +355,13 @@ public class ActivityHandler extends HandlerThread {
     // called from inside
 
     private void injectGeneralAttributes(PackageBuilder builder) {
-        builder.userAgent = userAgent;
         builder.appToken = appToken;
         builder.macShortMd5 = macShortMd5;
         builder.macSha1 = macSha1;
         builder.androidId = androidId;
         builder.fbAttributionId = fbAttributionId;
+        builder.userAgent = userAgent;
+        builder.clientSdk = clientSdk;
     }
 
     private void startTimer() {

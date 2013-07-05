@@ -17,6 +17,7 @@ public class PackageBuilder {
     protected String androidId;
     protected String fbAttributionId;
     protected String userAgent;
+    protected String clientSdk;
 
     // sessions
     protected int sessionCount;
@@ -35,12 +36,11 @@ public class PackageBuilder {
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
 
-        ActivityPackage sessionPackage = new ActivityPackage();
+        ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.path = "/startup";
         sessionPackage.kind = "session start";
         sessionPackage.suffix = "";
         sessionPackage.parameters = parameters;
-        sessionPackage.userAgent = userAgent;
 
         return sessionPackage;
     }
@@ -49,12 +49,11 @@ public class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         injectEventParameters(parameters);
 
-        ActivityPackage eventPackage = new ActivityPackage();
+        ActivityPackage eventPackage = getDefaultActivityPackage();
         eventPackage.path = "/event";
         eventPackage.kind = "event";
         eventPackage.suffix = getEventSuffix();
         eventPackage.parameters = parameters;
-        eventPackage.userAgent = userAgent;
 
         return eventPackage;
     }
@@ -64,14 +63,20 @@ public class PackageBuilder {
         injectEventParameters(parameters);
         addString(parameters, "amount", getAmountString());
 
-        ActivityPackage revenuePackage = new ActivityPackage();
+        ActivityPackage revenuePackage = getDefaultActivityPackage();
         revenuePackage.path = "/revenue";
         revenuePackage.kind = "revenue";
         revenuePackage.suffix = getRevenueSuffix();
         revenuePackage.parameters = parameters;
-        revenuePackage.userAgent = userAgent;
 
         return revenuePackage;
+    }
+
+    private ActivityPackage getDefaultActivityPackage() {
+        ActivityPackage activityPackage = new ActivityPackage();
+        activityPackage.userAgent = userAgent;
+        activityPackage.clientSdk = clientSdk;
+        return activityPackage;
     }
 
     private Map<String, String> getDefaultParameters() {
