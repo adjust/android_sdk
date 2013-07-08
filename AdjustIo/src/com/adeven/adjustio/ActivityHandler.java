@@ -196,8 +196,10 @@ public class ActivityHandler extends HandlerThread {
 
         // new session
         if (lastInterval > SESSION_INTERVAL) {
+            activityState.createdAt = now;
             activityState.lastInterval = lastInterval;
             transferSessionPackage();
+
             activityState.startNextSession(now);
             writeActivityState();
             Logger.debug(String.format(Locale.US, "Session %d", activityState.sessionCount));
@@ -231,17 +233,17 @@ public class ActivityHandler extends HandlerThread {
         if (!checkEventTokenNotNull(eventBuilder.eventToken)) return;
         if (!checkEventTokenLength(eventBuilder.eventToken)) return;
 
-        activityState.eventCount++;
+        long now = new Date().getTime();
         updateActivityState();
-        injectGeneralAttributes(eventBuilder);
-        activityState.injectEventAttributes(eventBuilder);
+        activityState.createdAt = now;
+        activityState.eventCount++;
 
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage();
-        packageHandler.addPackage(eventPackage);
+        transferEventPackage(eventBuilder);
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
+
 
     private void revenueInternal(PackageBuilder revenueBuilder) {
         if (!checkAppTokenNotNull(appToken)) return;
@@ -249,13 +251,12 @@ public class ActivityHandler extends HandlerThread {
         if (!checkAmount(revenueBuilder.amountInCents)) return;
         if (!checkEventTokenLength(revenueBuilder.eventToken)) return;
 
+        long now = new Date().getTime();
+        activityState.createdAt = now;
         activityState.eventCount++;
         updateActivityState();
-        injectGeneralAttributes(revenueBuilder);
-        activityState.injectEventAttributes(revenueBuilder);
 
-        ActivityPackage revenuePackage = revenueBuilder.buildRevenuePackage();
-        packageHandler.addPackage(revenuePackage);
+        transferEventPackage(revenueBuilder);
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
@@ -349,7 +350,12 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(sessionPackage);
     }
 
-    // called from inside
+    private void transferEventPackage(PackageBuilder eventBuilder) {
+        injectGeneralAttributes(eventBuilder);
+        activityState.injectEventAttributes(eventBuilder);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage();
+        packageHandler.addPackage(eventPackage);
+    }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
         builder.appToken = appToken;
@@ -468,8 +474,3 @@ public class ActivityHandler extends HandlerThread {
         return true;
     }
 }
-
-
-
-
-// TODO: remove trailing lines

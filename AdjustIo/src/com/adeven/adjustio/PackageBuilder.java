@@ -1,5 +1,6 @@
 package com.adeven.adjustio;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -10,6 +11,9 @@ import org.json.JSONObject;
 import android.util.Base64;
 
 public class PackageBuilder {
+
+    private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
+
     // general
     protected String appToken;
     protected String macSha1;
@@ -32,6 +36,8 @@ public class PackageBuilder {
     protected String eventToken;
     protected float amountInCents;
     protected Map<String, String> callbackParameters;
+
+    private static SimpleDateFormat dateFormat;
 
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
@@ -142,8 +148,7 @@ public class PackageBuilder {
         if (value < 0) return;
 
         Date date = new Date(value);
-        String dateString = date.toString(); // TODO: format with DateFormat
-        // TODO: nope, lets send the time since 1970 in rounded seconds (unix timestamp)
+        String dateString = getDateFormat().format(date);
         addString(parameters, key, dateString);
     }
 
@@ -163,5 +168,12 @@ public class PackageBuilder {
         String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
 
         addString(parameters, key, encodedMap);
+    }
+
+    private SimpleDateFormat getDateFormat() {
+        if (dateFormat == null) {
+            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        }
+        return dateFormat;
     }
 }

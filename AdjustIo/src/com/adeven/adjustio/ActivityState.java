@@ -15,10 +15,11 @@ public class ActivityState implements Serializable {
 
     // session attributes
     protected int subsessionCount;
-    protected long sessionLength;      // all durations in milliseconds
+    protected long sessionLength;   // all durations in milliseconds
     protected long timeSpent;
-    protected long createdAt;          // all times in milliseconds since 1970
-    protected long lastActivity;
+    protected long lastActivity;    // all times in milliseconds since 1970
+
+    protected long createdAt;
     protected long lastInterval;
 
     protected ActivityState() {
@@ -27,8 +28,8 @@ public class ActivityState implements Serializable {
         subsessionCount = -1; // we don't know how many subssessions this first  session will have
         sessionLength   = -1; // same for session length and time spent
         timeSpent       = -1; // this information will be collected and attached to the next session
-        createdAt       = -1;
         lastActivity    = -1;
+        createdAt       = -1;
         lastInterval    = -1;
     }
 
@@ -37,9 +38,9 @@ public class ActivityState implements Serializable {
         subsessionCount = 1; // first subsession
         sessionLength   = 0; // no session length yet
         timeSpent       = 0; // no time spent yet
-        createdAt       = now;
         lastActivity    = now;
-        lastInterval    = 0;
+        createdAt       = -1;
+        lastInterval    = -1;
     }
 
     protected void injectSessionAttributes(PackageBuilder builder) {
@@ -54,9 +55,9 @@ public class ActivityState implements Serializable {
 
     public String toString() {
         return String.format(Locale.US,
-                "ec:%d sc:%d ssc:%d sl:%d ts:%d ca:%s la:%s",
+                "ec:%d sc:%d ssc:%d sl:%d ts:%d la:%s",
                 eventCount, sessionCount, subsessionCount, sessionLength,
-                timeSpent, stamp(createdAt), stamp(lastActivity));
+                timeSpent, stamp(lastActivity));
     }
 
     private static String stamp(long dateMillis) {
