@@ -12,6 +12,7 @@ package com.adeven.adjustio;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Locale;
 
@@ -297,35 +298,28 @@ public class Util {
     }
 
     protected static String sha1(String text) {
+        return hash(text, "SHA-1");
+    }
+
+    protected static String md5(String text) {
+        return hash(text, "MD5");
+    }
+
+    private static String hash(String text, String method) {
         try {
-            MessageDigest mesd = MessageDigest.getInstance("SHA-1");
-            byte[] bytes = text.getBytes("iso-8859-1");
+            byte[] bytes = text.getBytes("UTF-8");
+            MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
-            byte[] sha2hash = mesd.digest();
-            return convertToHex(sha2hash);
+            byte[] hash = mesd.digest();
+            return convertToHex(hash);
         } catch (Exception e) {
             return "";
         }
     }
 
     private static String convertToHex(byte[] bytes) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < bytes.length; i++) {
-            int halfbyte = (bytes[i] >>> 4) & 0x0F;
-            int two_halfs = 0;
-
-            do {
-                if ((0 <= halfbyte) && (halfbyte <= 9)) {
-                    buffer.append((char) ('0' + halfbyte));
-                } else {
-                    buffer.append((char) ('a' + (halfbyte - 10)));
-                }
-
-                halfbyte = bytes[i] & 0x0F;
-            } while (two_halfs++ < 1);
-        }
-
-        String hex = buffer.toString();
-        return hex;
+        BigInteger bigInt = new BigInteger(1, bytes);
+        String formatString = "%0" + (bytes.length << 1) + "x";
+        return String.format(formatString, bigInt);
     }
 }

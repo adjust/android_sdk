@@ -152,10 +152,11 @@ public class ActivityHandler extends HandlerThread {
         if (!checkPermissions(context)) return;
 
         String macAddress = Util.getMacAddress(context);
+        String macShort = macAddress.replaceAll(":", "");
 
         appToken = token;
         macSha1 = Util.sha1(macAddress);
-        macShortMd5 = macAddress.replaceAll(":", ""); // TODO: macMd5!!!
+        macShortMd5 = Util.md5(macShort);
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
@@ -260,17 +261,13 @@ public class ActivityHandler extends HandlerThread {
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
     }
 
-    // called from inside
-
-    // called from inside
-
     private void updateActivityState() {
         if (!checkActivityState(activityState)) return;
 
         long now = new Date().getTime();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
-            Logger.error("Time travel");
+            Logger.error("Time travel!");
             activityState.lastActivity = now;
             return;
         }
@@ -291,7 +288,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 activityState = (ActivityState) objectStream.readObject();
-                Logger.debug("Read activity state: " + activityState);
+                Logger.debug(String.format("Read activity state: %s", activityState));
                 return;
             }
             catch (ClassNotFoundException e) {
@@ -329,7 +326,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(activityState);
-                Logger.verbose("Wrote activity state: " + activityState);
+                Logger.verbose(String.format("Wrote activity state: %s", activityState));
             }
             catch (NotSerializableException e) {
                 Logger.error("Failed to serialize activity state");
@@ -340,7 +337,7 @@ public class ActivityHandler extends HandlerThread {
 
         }
         catch (IOException e) {
-            Logger.error("Failed to write activity state (" + e + ")");
+            Logger.error(String.format("Failed to write activity state (%s)", e));
         }
     }
 
@@ -396,17 +393,11 @@ public class ActivityHandler extends HandlerThread {
         boolean result = true;
 
         if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
-            Logger.error(
-                    "This SDK requires the INTERNET permission. " +
-                            "See the README for details."
-                    );
+            Logger.error("Missing permission: INTERNET");
             result = false;
         }
         if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            Logger.warn(
-                    "You can improve your tracking results by adding the " +
-                            "ACCESS_WIFI_STATE permission. See the README for details."
-                    );
+            Logger.warn("Missing permission: ACCESS_WIFI_STATE");
         }
 
         return result;
@@ -414,7 +405,7 @@ public class ActivityHandler extends HandlerThread {
 
     private static boolean checkContext(Context context) {
         if (context == null) {
-            Logger.error("Missing context.");
+            Logger.error("Missing context");
             return false;
         }
         return true;
@@ -444,7 +435,7 @@ public class ActivityHandler extends HandlerThread {
 
     private static boolean checkAppTokenLength(String appToken) {
         if (appToken.length() != 12) {
-            Logger.error("Malformed App Token '" + appToken + "'");
+            Logger.error(String.format("Malformed App Token '%s'", appToken));
             return false;
         }
         return true;
@@ -463,7 +454,7 @@ public class ActivityHandler extends HandlerThread {
             return true;
 
         if (eventToken.length() != 6) {
-            Logger.error("Malformed Event Token '" + eventToken + "'");
+            Logger.error(String.format("Malformed Event Token '%s'", eventToken));
             return false;
         }
         return true;
@@ -471,7 +462,7 @@ public class ActivityHandler extends HandlerThread {
 
     private static boolean checkAmount(float amount) {
         if (amount <= 0.0f) {
-            Logger.error("Invalid amount " + amount);
+            Logger.error(String.format(Locale.US, "Invalid amount %f", amount));
             return false;
         }
         return true;
