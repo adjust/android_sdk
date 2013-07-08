@@ -22,8 +22,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-// TODO: user String.format everywhere instead of "a" + "b"
-
 // persistent
 public class PackageHandler extends HandlerThread {
     private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: change filename
