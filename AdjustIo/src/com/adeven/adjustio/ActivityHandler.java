@@ -41,15 +41,15 @@ public class ActivityHandler extends HandlerThread {
     private InternalHandler internalHandler;
     private PackageHandler packageHandler;
     private ActivityState activityState;
-    private static ScheduledExecutorService timer; // TODO: rename to timer
+    private static ScheduledExecutorService timer;
     private Context context;
 
     private String appToken;
     private String macSha1;
-    private String macShortMd5; // TODO: md5!!!
-    private String androidId; // everything else here could be persisted
+    private String macShortMd5;
+    private String androidId;       // everything else here could be persisted
     private String fbAttributionId;
-    private String userAgent; // changes, should be updated periodically
+    private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
 
     protected ActivityHandler(String appToken, Context context) {

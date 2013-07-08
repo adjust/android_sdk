@@ -7,8 +7,6 @@ import java.util.Locale;
 public class ActivityState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
 
-    // TODO: make attributes private?
-
     // global counters
     protected int eventCount;
     protected int sessionCount;

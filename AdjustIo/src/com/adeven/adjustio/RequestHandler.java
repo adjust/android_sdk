@@ -22,7 +22,6 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
@@ -99,7 +98,6 @@ public class RequestHandler extends HandlerThread {
 
     private void sendInternal(ActivityPackage activityPackage) {
         try {
-            setUserAgent(activityPackage.userAgent);
             HttpUriRequest request = getRequest(activityPackage);
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, activityPackage);
@@ -143,8 +141,8 @@ public class RequestHandler extends HandlerThread {
             return responseString;
         }
         catch (Exception e) {
-            Logger.error("Error parsing response: " + e);
-            return "Failed parsing response";
+            Logger.error(String.format("Failed to parse response (%s)", e));
+            return "Failed to parse response";
         }
     }
 
@@ -158,30 +156,26 @@ public class RequestHandler extends HandlerThread {
         packageHandler.closeFirstPackage();
     }
 
-    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable e) {
+    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         String failureMessage = activityPackage.getFailureMessage();
-        String logMessage = failureMessage + " (" + message;
-        if (e != null) {
-            logMessage += ": " + e;
+        if (throwable != null) {
+            Logger.error(String.format("%s (%s: %s)", failureMessage, message, throwable));
+        } else {
+            Logger.error(String.format("%s (%s)", failureMessage, message));
         }
-        logMessage += ")";
-        Logger.error(logMessage);
 
         packageHandler.sendNextPackage();
     }
 
-    private void setUserAgent(String userAgent) {
-        HttpParams httpParams = httpClient.getParams();
-        httpParams.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
-    }
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
         String url = Util.BASE_URL + activityPackage.path;
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
+        request.addHeader("User-Agent", activityPackage.userAgent);
+        request.addHeader("Client-SDK", activityPackage.clientSdk);
         request.addHeader("Accept-Language", language);
-        request.addHeader("Client-SDK", activityPackage.clientSdk); // TODO: set userAgent like this?
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         for (Map.Entry<String, String> entity : activityPackage.parameters.entrySet()) {
