@@ -34,13 +34,14 @@ public class PackageBuilder {
     // events
     protected int eventCount;
     protected String eventToken;
-    protected float amountInCents;
+    protected double amountInCents;
     protected Map<String, String> callbackParameters;
 
     private static SimpleDateFormat dateFormat;
 
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
+        addDuration(parameters, "last_interval", lastInterval);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.path = "/startup";
@@ -92,30 +93,29 @@ public class PackageBuilder {
         addDate(parameters, "created_at", createdAt);
         addString(parameters, "app_token", appToken);
         addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShortMd5); // TODO: rename parameter
+        addString(parameters, "mac", macShortMd5); // TODO: parameters
         addString(parameters, "android_id", androidId);
         addString(parameters, "fb_id", fbAttributionId);
 
         // session related (used for events as well)
-        addInt(parameters, "session_id", sessionCount); // TODO: rename parameters
+        addInt(parameters, "session_count", sessionCount);
         addInt(parameters, "subsession_count", subsessionCount);
         addDuration(parameters, "session_length", sessionLength);
         addDuration(parameters, "time_spent", timeSpent);
-        addDuration(parameters, "last_interval", lastInterval);
 
         return parameters;
     }
 
     private void injectEventParameters(Map<String, String> parameters) {
         addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_id", eventToken); // TODO: rename parameters
+        addString(parameters, "event_id", eventToken); // TODO: parameters
         addMap(parameters, "params", callbackParameters);
     }
 
     private String getAmountString() {
-        int amountInMillis = Math.round(10 * amountInCents);
-        amountInCents = amountInMillis / 10.0f; // now rounded to one decimal point
-        String amountString = Integer.toString(amountInMillis);
+        long amountInMillis = Math.round(10 * amountInCents);
+        amountInCents = amountInMillis / 10.0; // now rounded to one decimal point
+        String amountString = Long.toString(amountInMillis);
         return amountString;
     }
 

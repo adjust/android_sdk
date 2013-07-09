@@ -31,8 +31,8 @@ import android.os.Looper;
 import android.os.Message;
 
 public class RequestHandler extends HandlerThread {
-    private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
-    private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: 1 minute?
+    private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
+    private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
 
     private static final int MESSAGE_ARG_INIT = 72401;
     private static final int MESSAGE_ARG_SEND = 72400;
