@@ -28,15 +28,9 @@ import android.os.Message;
 public class ActivityHandler extends HandlerThread {
     private static final String SESSION_STATE_FILENAME = "activitystate2"; // TODO: filename
 
-    private static final long TIMER_INTERVAL      = 1000 * 10; // 10 second, TODO: time 1 minute
-    private static final long SESSION_INTERVAL    = 1000 * 15; // 15 seconds, TODO: time 30 minutes
-    private static final long SUBSESSION_INTERVAL = 1000 *  1; // one second
-
-    private static final int MESSAGE_ARG_INIT    = 72630;
-    private static final int MESSAGE_ARG_START   = 72640;
-    private static final int MESSAGE_ARG_END     = 72650;
-    private static final int MESSAGE_ARG_EVENT   = 72660;
-    private static final int MESSAGE_ARG_REVENUE = 72670;
+    private static final long TIMER_INTERVAL      = 1000 * 3; // 10 second, TODO: time 1 minute
+    private static final long SESSION_INTERVAL    = 1000 * 5; // 15 seconds, TODO: time 30 minutes
+    private static final long SUBSESSION_INTERVAL = 1000 * 1; // one second
 
     private InternalHandler internalHandler;
     private PackageHandler packageHandler;
@@ -61,20 +55,20 @@ public class ActivityHandler extends HandlerThread {
         this.context = context;
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_INIT;
+        message.arg1 = InternalHandler.INIT;
         message.obj = appToken;
         internalHandler.sendMessage(message);
     }
 
     protected void trackSubsessionStart() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_START;
+        message.arg1 = InternalHandler.START;
         internalHandler.sendMessage(message);
     }
 
     protected void trackSubsessionEnd() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_END;
+        message.arg1 = InternalHandler.END;
         internalHandler.sendMessage(message);
     }
 
@@ -84,7 +78,7 @@ public class ActivityHandler extends HandlerThread {
         builder.callbackParameters = parameters;
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_EVENT;
+        message.arg1 = InternalHandler.EVENT;
         message.obj = builder;
         internalHandler.sendMessage(message);
     }
@@ -96,12 +90,18 @@ public class ActivityHandler extends HandlerThread {
         builder.callbackParameters = parameters;
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_REVENUE;
+        message.arg1 = InternalHandler.REVENUE;
         message.obj = builder;
         internalHandler.sendMessage(message);
     }
 
     private static final class InternalHandler extends Handler {
+        private static final int INIT    = 72630;
+        private static final int START   = 72640;
+        private static final int END     = 72650;
+        private static final int EVENT   = 72660;
+        private static final int REVENUE = 72670;
+
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
         protected InternalHandler(Looper looper, ActivityHandler sessionHandler) {
@@ -116,21 +116,21 @@ public class ActivityHandler extends HandlerThread {
             if (sessionHandler == null) return;
 
             switch (message.arg1) {
-            case MESSAGE_ARG_INIT:
+            case INIT:
                 String appToken = (String) message.obj;
                 sessionHandler.initInternal(appToken);
                 break;
-            case MESSAGE_ARG_START:
+            case START:
                 sessionHandler.startInternal();
                 break;
-            case MESSAGE_ARG_END:
+            case END:
                 sessionHandler.endInternal();
                 break;
-            case MESSAGE_ARG_EVENT:
+            case EVENT:
                 PackageBuilder eventBuilder = (PackageBuilder) message.obj;
                 sessionHandler.eventInternal(eventBuilder);
                 break;
-            case MESSAGE_ARG_REVENUE:
+            case REVENUE:
                 PackageBuilder revenueBuilder = (PackageBuilder) message.obj;
                 sessionHandler.revenueInternal(revenueBuilder);
                 break;
