@@ -53,9 +53,10 @@ public class ActivityState implements Serializable {
 
     public String toString() {
         return String.format(Locale.US,
-                "ec:%d sc:%d ssc:%d sl:%d ts:%d la:%s",
-                eventCount, sessionCount, subsessionCount, sessionLength,
-                timeSpent, stamp(lastActivity));
+                "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s",
+                eventCount, sessionCount, subsessionCount,
+                sessionLength / 1000.0, timeSpent / 1000.0,
+                stamp(lastActivity));
     }
 
     private static String stamp(long dateMillis) {
