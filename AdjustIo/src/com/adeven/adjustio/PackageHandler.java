@@ -26,11 +26,6 @@ import android.os.Message;
 public class PackageHandler extends HandlerThread {
     private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: filename
 
-    private static final int MESSAGE_ARG_INIT = 72501; // TODO: constants
-    private static final int MESSAGE_ARG_ADD = 72500;
-    private static final int MESSAGE_ARG_SEND_NEXT = 72510;
-    private static final int MESSAGE_ARG_SEND_FIRST = 72530;
-
     private InternalHandler internalHandler;
     private RequestHandler requestHandler;
     private List<ActivityPackage> packageQueue;
@@ -47,14 +42,14 @@ public class PackageHandler extends HandlerThread {
         this.context = context;
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_INIT;
+        message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
     }
 
     // add a package to the queue, trigger sending
     protected void addPackage(ActivityPackage pack) {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_ADD;
+        message.arg1 = InternalHandler.ADD;
         message.obj = pack;
         internalHandler.sendMessage(message);
     }
@@ -62,7 +57,7 @@ public class PackageHandler extends HandlerThread {
     // try to send the oldest package
     protected void sendFirstPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_SEND_FIRST;
+        message.arg1 = InternalHandler.SEND_FIRST;
         internalHandler.sendMessage(message);
     }
 
@@ -70,7 +65,7 @@ public class PackageHandler extends HandlerThread {
     // (after success or possibly permanent failure)
     protected void sendNextPackage() {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_SEND_NEXT;
+        message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
     }
 
@@ -90,6 +85,11 @@ public class PackageHandler extends HandlerThread {
     }
 
     private static final class InternalHandler extends Handler {
+        private static final int INIT       = 1;
+        private static final int ADD        = 2;
+        private static final int SEND_NEXT  = 3;
+        private static final int SEND_FIRST = 4;
+
         private final WeakReference<PackageHandler> packageHandlerReference;
 
         protected InternalHandler(Looper looper, PackageHandler packageHandler) {
@@ -104,17 +104,17 @@ public class PackageHandler extends HandlerThread {
             if (packageHandler == null) return;
 
             switch (message.arg1) {
-            case MESSAGE_ARG_INIT:
+            case INIT:
                 packageHandler.initInternal();
                 break;
-            case MESSAGE_ARG_ADD:
+            case ADD:
                 ActivityPackage activityPackage = (ActivityPackage) message.obj;
                 packageHandler.addInternal(activityPackage);
                 break;
-            case MESSAGE_ARG_SEND_FIRST:
+            case SEND_FIRST:
                 packageHandler.sendFirstInternal();
                 break;
-            case MESSAGE_ARG_SEND_NEXT:
+            case SEND_NEXT:
                 packageHandler.sendNextInternal();
                 break;
             }

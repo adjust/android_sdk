@@ -90,26 +90,26 @@ public class PackageBuilder {
         Map<String, String> parameters = new HashMap<String, String>();
 
         // general
-        addDate(parameters, "created_at", createdAt);
-        addString(parameters, "app_token", appToken);
-        addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac", macShortMd5); // TODO: parameters
+        addDate(parameters,   "created_at", createdAt);
+        addString(parameters, "app_token",  appToken);
+        addString(parameters, "mac_sha1",   macSha1);
+        addString(parameters, "mac_md5",    macShortMd5);
         addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id", fbAttributionId);
+        addString(parameters, "fb_id",      fbAttributionId);
 
         // session related (used for events as well)
-        addInt(parameters, "session_count", sessionCount);
-        addInt(parameters, "subsession_count", subsessionCount);
-        addDuration(parameters, "session_length", sessionLength);
-        addDuration(parameters, "time_spent", timeSpent);
+        addInt(parameters,      "session_count",    sessionCount);
+        addInt(parameters,      "subsession_count", subsessionCount);
+        addDuration(parameters, "session_length",   sessionLength);
+        addDuration(parameters, "time_spent",       timeSpent);
 
         return parameters;
     }
 
     private void injectEventParameters(Map<String, String> parameters) {
-        addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_id", eventToken); // TODO: parameters
-        addMap(parameters, "params", callbackParameters);
+        addInt(parameters,    "event_count", eventCount);
+        addString(parameters, "event_token", eventToken);
+        addMap(parameters,    "params",      callbackParameters);
     }
 
     private String getAmountString() {

@@ -34,9 +34,6 @@ public class RequestHandler extends HandlerThread {
     private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
     private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
 
-    private static final int MESSAGE_ARG_INIT = 72401;
-    private static final int MESSAGE_ARG_SEND = 72400;
-
     private InternalHandler internalHandler;
     private PackageHandler packageHandler;
     private HttpClient httpClient;
@@ -50,18 +47,21 @@ public class RequestHandler extends HandlerThread {
         this.packageHandler = packageHandler;
 
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_INIT;
+        message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
     }
 
     protected void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
-        message.arg1 = MESSAGE_ARG_SEND;
+        message.arg1 = InternalHandler.SEND;
         message.obj = pack;
         internalHandler.sendMessage(message);
     }
 
     private static final class InternalHandler extends Handler {
+        private static final int INIT = 72401;
+        private static final int SEND = 72400;
+
         private final WeakReference<RequestHandler> requestHandlerReference;
 
         protected InternalHandler(Looper looper, RequestHandler requestHandler) {
@@ -76,10 +76,10 @@ public class RequestHandler extends HandlerThread {
             if (requestHandler == null) return;
 
             switch (message.arg1) {
-            case MESSAGE_ARG_INIT:
+            case INIT:
                 requestHandler.initInternal();
                 break;
-            case MESSAGE_ARG_SEND:
+            case SEND:
                 ActivityPackage activityPackage = (ActivityPackage) message.obj;
                 requestHandler.sendInternal(activityPackage);
                 break;
