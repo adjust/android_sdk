@@ -18,24 +18,19 @@ import android.app.Activity;
  *
  * Use the methods of this class to tell AdjustIo about the usage of your app.
  * See the README for details.
- *
- * @author wellle
- * @since 11.10.12
  */
 public class AdjustIo {
 
-    // every call gets forwarded to activityHandler
-    private static ActivityHandler activityHandler;
-
-    // TODO: update all comments
     /**
-     * Tell AdjustIo that the application did launch.
+     * Tell AdjustIo that an activity did resume.
      *
-     * This is required to initialize AdjustIo.
-     * Call this in the onCreate method of your launch activity.
+     * This is used to initialize AdjustIo and keep track of the current session state.
+     * Call this in the onResume method of every activity of your app.
      *
-     * @param context Your application context
-     *     Generally obtained by calling getApplication()
+     * @param appToken The App Token for your app. This unique identifier can
+     *     be found in your dashboard at http://adjust.io and should always
+     *     be 12 characters long.
+     * @param activity The activity that has just resumed.
      */
 
     public static void onResume(String appToken, Activity activity) {
@@ -45,6 +40,12 @@ public class AdjustIo {
         activityHandler.trackSubsessionStart();
     }
 
+    /**
+     * Tell AdjustIo that an activity will pause.
+     *
+     * This is used to calculate session attributes like session length and subsession count.
+     * Call this in the onPause method of every activity of your app.
+     */
     public static void onPause() {
         try {
             activityHandler.trackSubsessionEnd();
@@ -54,17 +55,17 @@ public class AdjustIo {
     }
 
     /**
-     * Track any kind of event.
+     * Tell AdjustIo that a particular event has happened.
      *
-     * You can assign a callback url to the event which
-     * will get called every time the event is reported. You can also provide
-     * parameters that will be forwarded to these callbacks.
+     * In your dashboard at http://adjust.io you can assign a callback URL to each
+     * event type. That URL will get called every time the event is triggered. On
+     * top of that you can pass a set of parameters to the following method that
+     * will be forwarded to these callbacks.
      *
-     * @param eventToken The token for this kind of event
-     *     It must be exactly six characters long
-     *     You create them in your dashboard at http://www.adjust.io
-     * @param parameters An optional dictionary containing callback parameters
-     *     Provide key-value-pairs to be forwarded to your callbacks
+     * @param eventToken The Event Token for this kind of event. They are created
+     *     in the dashboard at http://adjust.io and should be six characters long.
+     * @param parameters An optional dictionary containing the callback parameters.
+     *     Provide key-value-pairs to be forwarded to your callbacks.
      */
 
     public static void trackEvent(String eventToken) {
@@ -81,17 +82,17 @@ public class AdjustIo {
 
 
     /**
-     * Tell AdjustIo that the current user generated some revenue.
+     * Tell AdjustIo that a user generated some revenue.
      *
-     * The amount is measured in cents and rounded to on digit after the decimal
-     * point. If you want to differentiate between various types of specific revenues
-     * you can do so by using different event tokens. If your revenue events have
-     * callbacks, you can also pass in parameters that will be forwarded to your
-     * server.
+     * The amount is measured in cents and rounded to on digit after the
+     * decimal point. If you want to differentiate between several revenue
+     * types, you can do so by using different event tokens. If your revenue
+     * events have callbacks, you can also pass in parameters that will be
+     * forwarded to your end point.
      *
      * @param amountInCents The amount in cents (example: 1.5 means one and a half cents)
-     * @param eventToken The token for this revenue event (see above)
-     * @param parameters Parameters for this revenue event (see above)
+     * @param eventToken The token for this revenue event (optional, see above)
+     * @param parameters Parameters for this revenue event (optional, see above)
      */
 
     public static void trackRevenue(double amountInCents) {
@@ -114,10 +115,13 @@ public class AdjustIo {
     /**
      * Change the verbosity of AdjustIo's logs.
      *
+     * You can increase or reduce the amount of logs from AdjustIo by passing
+     * one of the following parameters. Use Log.ASSERT to disable all logging.
+     *
      * @param logLevel The desired minimum log level (default: info)
      *     Must be one of the following:
      *      - Log.VERBOSE (enable all logging)
-     *      - Log.DEBUG
+     *      - Log.DEBUG   (enable more logging)
      *      - Log.INFO    (the default)
      *      - Log.WARN    (disable info logging)
      *      - Log.ERROR   (disable warnings as well)
@@ -127,4 +131,11 @@ public class AdjustIo {
     public static void setLogLevel(int logLevel) {
         Logger.setLogLevel(logLevel);
     }
+
+
+    /**
+     * Every activity will get forwarded to this handler to be processed in the background.
+     */
+    private static ActivityHandler activityHandler;
+
 }
