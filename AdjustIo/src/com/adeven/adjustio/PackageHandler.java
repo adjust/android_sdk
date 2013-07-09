@@ -24,9 +24,9 @@ import android.os.Message;
 
 // persistent
 public class PackageHandler extends HandlerThread {
-    private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: change filename
+    private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: filename
 
-    private static final int MESSAGE_ARG_INIT = 72501; // TODO: change constants!
+    private static final int MESSAGE_ARG_INIT = 72501; // TODO: constants
     private static final int MESSAGE_ARG_ADD = 72500;
     private static final int MESSAGE_ARG_SEND_NEXT = 72510;
     private static final int MESSAGE_ARG_SEND_FIRST = 72530;

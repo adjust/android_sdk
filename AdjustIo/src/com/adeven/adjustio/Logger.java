@@ -2,10 +2,6 @@ package com.adeven.adjustio;
 
 import android.util.Log;
 
-// TODO: avoid string building in production?
-// http://stackoverflow.com/questions/2018263/android-logging
-// TODO: go through all log calls and set a proper log level
-
 public class Logger {
     protected static final String LOGTAG = "AdjustIo";
 

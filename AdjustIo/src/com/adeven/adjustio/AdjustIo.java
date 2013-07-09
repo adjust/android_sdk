@@ -89,20 +89,20 @@ public class AdjustIo {
      * callbacks, you can also pass in parameters that will be forwarded to your
      * server.
      *
-     * @param amountInCents The amount in cents (example: 1.5f means one and a half cents)
+     * @param amountInCents The amount in cents (example: 1.5 means one and a half cents)
      * @param eventToken The token for this revenue event (see above)
      * @param parameters Parameters for this revenue event (see above)
      */
 
-    public static void trackRevenue(float amountInCents) {
+    public static void trackRevenue(double amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
     }
 
-    public static void trackRevenue(float amountInCents, String eventToken) {
+    public static void trackRevenue(double amountInCents, String eventToken) {
         AdjustIo.trackRevenue(amountInCents, eventToken, null);
     }
 
-    public static void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
+    public static void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {

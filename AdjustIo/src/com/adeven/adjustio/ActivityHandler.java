@@ -26,10 +26,10 @@ import android.os.Looper;
 import android.os.Message;
 
 public class ActivityHandler extends HandlerThread {
-    private static final String SESSION_STATE_FILENAME = "activitystate2"; // TODO: change filename
+    private static final String SESSION_STATE_FILENAME = "activitystate2"; // TODO: filename
 
-    private static final long TIMER_INTERVAL      = 1000 * 10; // 10 second, TODO: one minute
-    private static final long SESSION_INTERVAL    = 1000 * 15; // 15 seconds, TODO: 30 minutes
+    private static final long TIMER_INTERVAL      = 1000 * 10; // 10 second, TODO: time 1 minute
+    private static final long SESSION_INTERVAL    = 1000 * 15; // 15 seconds, TODO: time 30 minutes
     private static final long SUBSESSION_INTERVAL = 1000 *  1; // one second
 
     private static final int MESSAGE_ARG_INIT    = 72630;
@@ -89,7 +89,7 @@ public class ActivityHandler extends HandlerThread {
         internalHandler.sendMessage(message);
     }
 
-    protected void trackRevenue(float amountInCents, String eventToken, Map<String, String> parameters) {
+    protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
         PackageBuilder builder = new PackageBuilder();
         builder.amountInCents = amountInCents;
         builder.eventToken = eventToken;
@@ -137,13 +137,6 @@ public class ActivityHandler extends HandlerThread {
             }
         }
     }
-
-    // TODO: rename internal methods?
-    // TODO: remove internal for all methods without external part
-    // TODO: move internal methods up to the public interface?
-    // like foo(), fooInternal(), bar(), barInternal(), etc.
-
-    // called from outside
 
     private void initInternal(String token) {
         if (!checkAppTokenNotNull(token)) return;
@@ -234,11 +227,14 @@ public class ActivityHandler extends HandlerThread {
         if (!checkEventTokenLength(eventBuilder.eventToken)) return;
 
         long now = new Date().getTime();
-        updateActivityState();
         activityState.createdAt = now;
         activityState.eventCount++;
+        updateActivityState();
 
-        transferEventPackage(eventBuilder);
+        injectGeneralAttributes(eventBuilder);
+        activityState.injectEventAttributes(eventBuilder);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage();
+        packageHandler.addPackage(eventPackage);
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
@@ -256,7 +252,10 @@ public class ActivityHandler extends HandlerThread {
         activityState.eventCount++;
         updateActivityState();
 
-        transferEventPackage(revenueBuilder);
+        injectGeneralAttributes(revenueBuilder);
+        activityState.injectEventAttributes(revenueBuilder);
+        ActivityPackage eventPackage = revenueBuilder.buildRevenuePackage();
+        packageHandler.addPackage(eventPackage);
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
@@ -318,7 +317,6 @@ public class ActivityHandler extends HandlerThread {
         activityState = null;
     }
 
-    // TODO: move to activityState?
     private void writeActivityState() {
         try {
             FileOutputStream outputStream = context.openFileOutput(SESSION_STATE_FILENAME, Context.MODE_PRIVATE);
@@ -348,13 +346,6 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
-    }
-
-    private void transferEventPackage(PackageBuilder eventBuilder) {
-        injectGeneralAttributes(eventBuilder);
-        activityState.injectEventAttributes(eventBuilder);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage();
-        packageHandler.addPackage(eventPackage);
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
@@ -466,8 +457,8 @@ public class ActivityHandler extends HandlerThread {
         return true;
     }
 
-    private static boolean checkAmount(float amount) {
-        if (amount <= 0.0f) {
+    private static boolean checkAmount(double amount) {
+        if (amount <= 0.0) {
             Logger.error(String.format(Locale.US, "Invalid amount %f", amount));
             return false;
         }
