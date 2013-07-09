@@ -2,7 +2,7 @@
 //  Util.java
 //  AdjustIo
 //
-//  Created by Christian Wellenbrock on 11.10.12.
+//  Created by Christian Wellenbrock on 2012-10-11.
 //  Copyright (c) 2012 adeven. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
@@ -39,8 +39,8 @@ import android.util.DisplayMetrics;
  * @since 11.10.12
  */
 public class Util {
-    protected static final String BASE_URL = "http://192.168.178.117:8509";    // TODO: url
-    protected static final String CLIENT_SDK = "android1.6";
+    protected static final String BASE_URL = "http://192.168.178.117:8509"; // TODO: change url
+    protected static final String CLIENT_SDK = "android1.6";                // TODO: change sdk
 
     private static final String UNKNOWN = "unknown";
 

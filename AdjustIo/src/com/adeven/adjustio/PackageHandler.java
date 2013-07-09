@@ -1,3 +1,12 @@
+//
+//  PackageHandler.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-06-25.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
+
 package com.adeven.adjustio;
 
 import java.io.BufferedInputStream;
@@ -24,7 +33,7 @@ import android.os.Message;
 
 // persistent
 public class PackageHandler extends HandlerThread {
-    private static final String PACKAGE_QUEUE_FILENAME = "testqueue6";  // TODO: filename
+    private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
     private InternalHandler internalHandler;
     private RequestHandler requestHandler;

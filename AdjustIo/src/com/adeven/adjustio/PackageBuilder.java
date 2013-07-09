@@ -1,3 +1,12 @@
+//
+//  PackageBuilder.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-06-25.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
+
 package com.adeven.adjustio;
 
 import java.text.SimpleDateFormat;
@@ -155,7 +164,6 @@ public class PackageBuilder {
     private void addDuration(Map<String, String> parameters, String key, long durationInMilliSeconds) {
         if (durationInMilliSeconds < 0) return;
 
-        // TODO: test rounding
         long durationInSeconds = (durationInMilliSeconds + 500) / 1000;
         addInt(parameters, key, durationInSeconds);
     }
