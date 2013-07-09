@@ -1,3 +1,12 @@
+//
+//  Logger.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-04-18.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
+
 package com.adeven.adjustio;
 
 import android.util.Log;

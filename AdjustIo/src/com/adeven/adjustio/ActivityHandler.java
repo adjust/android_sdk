@@ -1,3 +1,12 @@
+//
+//  ActivityHandler.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-06-25.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
+
 package com.adeven.adjustio;
 
 import java.io.BufferedInputStream;
@@ -26,11 +35,11 @@ import android.os.Looper;
 import android.os.Message;
 
 public class ActivityHandler extends HandlerThread {
-    private static final String SESSION_STATE_FILENAME = "activitystate2"; // TODO: filename
+    private static final String SESSION_STATE_FILENAME = "AdjustIoActivityState";
 
-    private static final long TIMER_INTERVAL      = 1000 * 3; // 10 second, TODO: time 1 minute
-    private static final long SESSION_INTERVAL    = 1000 * 5; // 15 seconds, TODO: time 30 minutes
-    private static final long SUBSESSION_INTERVAL = 1000 * 1; // one second
+    private static final long TIMER_INTERVAL      = 1000 * 60 * 1;  // 1 minute
+    private static final long SESSION_INTERVAL    = 1000 * 60 * 30; // 30 minutes
+    private static final long SUBSESSION_INTERVAL = 1000 * 1;       // one second
 
     private InternalHandler internalHandler;
     private PackageHandler packageHandler;
@@ -219,7 +228,6 @@ public class ActivityHandler extends HandlerThread {
         writeActivityState();
     }
 
-    // TODO: set session attributes to -1 for events after session end?
     private void eventInternal(PackageBuilder eventBuilder) {
         if (!checkAppTokenNotNull(appToken)) return;
         if (!checkActivityState(activityState)) return;

@@ -1,3 +1,12 @@
+//
+//  RequestHandler.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-06-25.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
+
 package com.adeven.adjustio;
 
 import java.io.ByteArrayOutputStream;
@@ -31,8 +40,8 @@ import android.os.Looper;
 import android.os.Message;
 
 public class RequestHandler extends HandlerThread {
-    private static final int CONNECTION_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
-    private static final int SOCKET_TIMEOUT = 1000 * 5; // 5 seconds TODO: time 1 minute
+    private static final int CONNECTION_TIMEOUT = 1000 * 60 * 1; // 1 minute
+    private static final int SOCKET_TIMEOUT     = 1000 * 60 * 1; // 1 minute
 
     private InternalHandler internalHandler;
     private PackageHandler packageHandler;
@@ -87,8 +96,6 @@ public class RequestHandler extends HandlerThread {
         }
     }
 
-    // TODO: use SSLSessionCache?
-    // http://candrews.integralblue.com/2011/09/best-way-to-use-httpclient-in-android/
     private void initInternal() {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);

@@ -2,7 +2,7 @@
 //  AdjustIo.java
 //  AdjustIo
 //
-//  Created by Christian Wellenbrock on 11.10.12.
+//  Created by Christian Wellenbrock on 2012-10-11.
 //  Copyright (c) 2012 adeven. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //

@@ -1,4 +1,11 @@
-// TODO: comments: add header comments
+//
+//  ActivityPackage.java
+//  AdjustIo
+//
+//  Created by Christian Wellenbrock on 2013-06-25.
+//  Copyright (c) 2013 adeven. All rights reserved.
+//  See the file MIT-LICENSE for copying permission.
+//
 
 package com.adeven.adjustio;
 
