@@ -34,9 +34,6 @@ import android.util.DisplayMetrics;
 
 /**
  * Collects utility functions used by AdjustIo.
- *
- * @author wellle
- * @since 11.10.12
  */
 public class Util {
     protected static final String BASE_URL = "http://192.168.178.117:8509"; // TODO: change url
