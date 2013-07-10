@@ -36,8 +36,8 @@ import android.util.DisplayMetrics;
  * Collects utility functions used by AdjustIo.
  */
 public class Util {
-    protected static final String BASE_URL = "http://192.168.178.117:8509"; // TODO: change url
-    protected static final String CLIENT_SDK = "android1.6";                // TODO: change sdk
+    protected static final String BASE_URL   = "http://192.168.178.117:8509"; // TODO: change url
+    protected static final String CLIENT_SDK = "android1.6";                  // TODO: change sdk
 
     private static final String UNKNOWN = "unknown";
 

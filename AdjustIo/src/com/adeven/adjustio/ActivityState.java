@@ -40,8 +40,7 @@ public class ActivityState implements Serializable {
         lastInterval    = -1;
     }
 
-    protected void startNextSession(long now) {
-        sessionCount++;      // the next session just started
+    protected void resetSessionAttributes(long now) {
         subsessionCount = 1; // first subsession
         sessionLength   = 0; // no session length yet
         timeSpent       = 0; // no time spent yet
