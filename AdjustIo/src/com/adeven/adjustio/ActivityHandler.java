@@ -178,13 +178,14 @@ public class ActivityHandler extends HandlerThread {
 
         // very first session
         if (activityState == null) {
-            Logger.info("First session");
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
             activityState.createdAt = now;  // starting now
 
             transferSessionPackage();
+            activityState.resetSessionAttributes(now);
             writeActivityState();
+            Logger.info("First session");
             return;
         }
 
@@ -198,21 +199,25 @@ public class ActivityHandler extends HandlerThread {
 
         // new session
         if (lastInterval > SESSION_INTERVAL) {
+            activityState.sessionCount++;
             activityState.createdAt = now;
             activityState.lastInterval = lastInterval;
-            transferSessionPackage();
 
-            activityState.startNextSession(now);
+            transferSessionPackage();
+            activityState.resetSessionAttributes(now);
             writeActivityState();
-            Logger.debug(String.format(Locale.US, "Session %d", activityState.sessionCount));
+            Logger.debug(String.format(Locale.US,
+                    "Session %d", activityState.sessionCount));
             return;
         }
 
         // new subsession
         if (lastInterval > SUBSESSION_INTERVAL) {
             activityState.subsessionCount++;
-            Logger.debug(String.format(Locale.US, "Subsession %d.%d",
-                    activityState.sessionCount, activityState.subsessionCount));
+            Logger.info(String.format(Locale.US,
+                    "Started subsession %d of session %d",
+                    activityState.subsessionCount,
+                    activityState.sessionCount));
         }
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
