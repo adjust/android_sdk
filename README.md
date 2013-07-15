@@ -43,7 +43,6 @@ In the left pane select `Android`. In the bottom right group `Library` click
 the `Add...` button. From the list select the AdjustIo library project and
 click `OK`. Save your changed project properties by clicking `OK` again.
 
-<!--- TODO: update this image with AdjustIo being in the library list -->
 ![][library]
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
@@ -87,12 +86,11 @@ public class YourActivity extends Activity {
 }
 ```
 
+![][activity]
+
 Repeat this for **every** Activity of your app. Don't forget these steps when
 you create new Activities in the future. Depending on your coding style you
 might want to implement this in a common superclass of all your Activities.
-
-<!--- TODO: update the following image -->
-![][activity]
 
 ### 4. Build your app
 
@@ -199,8 +197,8 @@ AdjustIo.trackRevenue(1.0, "abc123", parameters);
 [properties]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/properties.png
 [library]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/library.png
 [permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions.png
-[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity.png
-[log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log.png
+[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity2.png
+[log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log2.png
 
 
 ## License
