@@ -14,14 +14,14 @@
    the SDK might miss a session start or session end. In order to do so you
    should follow these steps for **each** Activity of your app:
 
-    - Open the source file of your Activity.
-    - Add the `import` statement at the top of the file.
-    - In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
-      method if needed.
-    - Replace `{YourAppToken}` with your App Token. You can find in your
-      [dashboard].
-    - In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
-      method if needed.
+   - Open the source file of your Activity.
+   - Add the `import` statement at the top of the file.
+   - In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
+     method if needed.
+   - Replace `{YourAppToken}` with your App Token. You can find in your
+     [dashboard].
+   - In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
+     method if needed.
 
     After these steps your activity should look like this:
 
