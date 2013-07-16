@@ -14,7 +14,7 @@ development.
 Download the latest version from our [releases page][releases]. Extract the
 archive in a folder of your choice.
 
-### 2. Add it to your project
+### 2. Create the AdjustIo project
 
 In the Eclipse menu select `File|New|Project...`.
 
@@ -32,7 +32,7 @@ the option `Copy projects into workspace` and click `Finish`.
 
 ![][import]
 
-### 3. Integrate AdjustIo into your app
+### 3. Add the AdjustIo library to your project
 
 In the Package Explorer right click on your Android project and select
 `Properties`.
@@ -45,6 +45,8 @@ click `OK`. Save your changed project properties by clicking `OK` again.
 
 ![][library]
 
+### 4. Add permissions
+
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they
 aren't present already.
@@ -56,6 +58,8 @@ aren't present already.
 
 ![][permissions]
 
+### 5. Integrate AdjustIo into your app
+
 To provide proper session tracking it is required to call certain AdjustIo
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
 a session start or session end. In order to do so you should follow these steps
@@ -63,12 +67,14 @@ for **each** Activity of your app:
 
 - Open the source file of your Activity.
 - Add the `import` statement at the top of the file.
-- Call `AdjustIo.onResume` in your Activity's `onResume` method. Create the
+- In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
   method if needed.
 - Replace `{YourAppToken}` with your App Token. You can find in your
   [dashboard].
-- Call `AdjustIo.onPause` in your Activity's `onPause` method. Create the
+- In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
   method if needed.
+
+After these steps your activity should look like this:
 
 ```java
 import com.adeven.adjustio.AdjustIo;
@@ -88,11 +94,11 @@ public class YourActivity extends Activity {
 
 ![][activity]
 
-Repeat this for **every** Activity of your app. Don't forget these steps when
-you create new Activities in the future. Depending on your coding style you
-might want to implement this in a common superclass of all your Activities.
+Repeat these steps for **every** Activity of your app. Don't forget these steps
+when you create new Activities in the future. Depending on your coding style
+you might want to implement this in a common superclass of all your Activities.
 
-### 4. Build your app
+### 6. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
 `tag:AdjustIo` to hide all other logs. After your app has launched you should
@@ -100,13 +106,13 @@ see the following AdjustIo log: `Tracked session start`
 
 ![][log]
 
-### 5. Adjust Logging
+### 7. Adjust Logging
 
 You can increase or decrease the amount of logs you see by calling
 `setLogLevel` with one of the following parameters. Make sure to import
 `android.util.Log`.
 
-```objc
+```java
 AdjustIo.setLogLevel(Log.VERBOSE); // enable all logging
 AdjustIo.setLogLevel(Log.DEBUG);   // enable more logging
 AdjustIo.setLogLevel(Log.INFO);    // the default
@@ -208,21 +214,20 @@ The adjust-sdk is licensed under the MIT License.
 Copyright (c) 2012 adeven GmbH,
 http://www.adeven.com
 
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
