@@ -27,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Handler;
@@ -55,13 +56,13 @@ public class ActivityHandler extends HandlerThread {
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
 
-    protected ActivityHandler(String appToken, Context context) {
+    protected ActivityHandler(String appToken, Activity activity) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         internalHandler = new InternalHandler(getLooper(), this);
 
-        this.context = context;
+        this.context = activity.getApplicationContext();
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
