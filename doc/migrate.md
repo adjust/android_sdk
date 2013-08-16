@@ -1,7 +1,7 @@
-## Migrate to AdjustIo SDK for Android v2.0
+## Migrate to AdjustIo SDK for Android v2.0.1
 
 1. Delete the old `AdjustIo` project from your `Package Explorer`. Download
-   version v2.0 and create a new `Android Project from Existing Code` as
+   version v2.0.1 and create a new `Android Project from Existing Code` as
    described in the [README].
 
     ![][import]
