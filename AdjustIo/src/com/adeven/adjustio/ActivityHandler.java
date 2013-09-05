@@ -51,6 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private ActivityState activityState;
     private static ScheduledExecutorService timer;
     private Context context;
+    private boolean bufferEvents;
 
     private String appToken;
     private String macSha1;
@@ -253,6 +254,12 @@ public class ActivityHandler extends HandlerThread {
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
         packageHandler.addPackage(eventPackage);
 
+        if (bufferEvents) {
+            Logger.info(String.format("Buffered event%s", eventPackage.suffix));
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
@@ -273,6 +280,12 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectEventAttributes(revenueBuilder);
         ActivityPackage eventPackage = revenueBuilder.buildRevenuePackage();
         packageHandler.addPackage(eventPackage);
+
+        if (bufferEvents) {
+            Logger.info(String.format("Buffered revenue%s", eventPackage.suffix));
+        } else {
+            packageHandler.sendFirstPackage();
+        }
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
@@ -434,6 +447,9 @@ public class ActivityHandler extends HandlerThread {
         else if (logLevel.equalsIgnoreCase("error"))   Logger.setLogLevel(Log.ERROR);
         else if (logLevel.equalsIgnoreCase("assert"))  Logger.setLogLevel(Log.ASSERT);
         else Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+
+        // eventBuffering
+        bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
     }
 
     private Bundle getApplicationBundle() {
