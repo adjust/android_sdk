@@ -29,11 +29,15 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 public class ActivityHandler extends HandlerThread {
     private static final String SESSION_STATE_FILENAME = "AdjustIoActivityState";
@@ -56,7 +60,7 @@ public class ActivityHandler extends HandlerThread {
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
 
-    protected ActivityHandler(String appToken, Activity activity) {
+    protected ActivityHandler(Activity activity) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -66,7 +70,6 @@ public class ActivityHandler extends HandlerThread {
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
-        message.obj = appToken;
         internalHandler.sendMessage(message);
     }
 
@@ -127,8 +130,7 @@ public class ActivityHandler extends HandlerThread {
 
             switch (message.arg1) {
             case INIT:
-                String appToken = (String) message.obj;
-                sessionHandler.initInternal(appToken);
+                sessionHandler.initInternal();
                 break;
             case START:
                 sessionHandler.startInternal();
@@ -148,16 +150,17 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void initInternal(String token) {
-        if (!checkAppTokenNotNull(token)) return;
-        if (!checkAppTokenLength(token)) return;
+    private void initInternal() {
+        processApplicationBundle();
+
+        if (!checkAppTokenNotNull(appToken)) return;
+        if (!checkAppTokenLength(appToken)) return;
         if (!checkContext(context)) return;
         if (!checkPermissions(context)) return;
 
         String macAddress = Util.getMacAddress(context);
         String macShort = macAddress.replaceAll(":", "");
 
-        appToken = token;
         macSha1 = Util.sha1(macAddress);
         macShortMd5 = Util.md5(macShort);
         androidId = Util.getAndroidId(context);
@@ -412,6 +415,36 @@ public class ActivityHandler extends HandlerThread {
         }
 
         return result;
+    }
+
+    private void processApplicationBundle() {
+        Bundle bundle = getApplicationBundle();
+        if (bundle == null) return;
+
+        // appToken
+        appToken = bundle.getString("AdjustIoAppToken");
+
+        // logLevel
+        String logLevel = bundle.getString("AdjustIoLogLevel");
+        if (logLevel == null);
+        else if (logLevel.equalsIgnoreCase("verbose")) Logger.setLogLevel(Log.VERBOSE);
+        else if (logLevel.equalsIgnoreCase("debug"))   Logger.setLogLevel(Log.DEBUG);
+        else if (logLevel.equalsIgnoreCase("info"))    Logger.setLogLevel(Log.INFO);
+        else if (logLevel.equalsIgnoreCase("warn"))    Logger.setLogLevel(Log.WARN);
+        else if (logLevel.equalsIgnoreCase("error"))   Logger.setLogLevel(Log.ERROR);
+        else if (logLevel.equalsIgnoreCase("assert"))  Logger.setLogLevel(Log.ASSERT);
+        else Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+    }
+
+    private Bundle getApplicationBundle() {
+        ApplicationInfo applicationInfo = null;
+        try {
+            String packageName = this.context.getPackageName();
+            applicationInfo = this.context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        } catch (NameNotFoundException e) {
+            Logger.error("ApplicationInfo not found");
+        }
+        return applicationInfo.metaData;
     }
 
     private static boolean checkContext(Context context) {
