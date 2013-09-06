@@ -376,6 +376,7 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
