@@ -31,6 +31,7 @@ public class PackageBuilder {
     protected String fbAttributionId;
     protected String userAgent;
     protected String clientSdk;
+    protected String environment;
 
     // sessions
     protected int sessionCount;
@@ -99,12 +100,13 @@ public class PackageBuilder {
         Map<String, String> parameters = new HashMap<String, String>();
 
         // general
-        addDate(parameters,   "created_at", createdAt);
-        addString(parameters, "app_token",  appToken);
-        addString(parameters, "mac_sha1",   macSha1);
-        addString(parameters, "mac_md5",    macShortMd5);
-        addString(parameters, "android_id", androidId);
-        addString(parameters, "fb_id",      fbAttributionId);
+        addDate(parameters,   "created_at",  createdAt);
+        addString(parameters, "app_token",   appToken);
+        addString(parameters, "mac_sha1",    macSha1);
+        addString(parameters, "mac_md5",     macShortMd5);
+        addString(parameters, "android_id",  androidId);
+        addString(parameters, "fb_id",       fbAttributionId);
+        addString(parameters, "environment", environment);
 
         // session related (used for events as well)
         addInt(parameters,      "session_count",    sessionCount);

@@ -20,6 +20,10 @@ public class Logger {
         Logger.logLevel = logLevel;
     }
 
+    protected static int getLogLevel() {
+        return logLevel;
+    }
+
     protected static void verbose(String message) {
         if (logLevel <= Log.VERBOSE) {
             Log.v(LOGTAG, message);
