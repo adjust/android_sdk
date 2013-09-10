@@ -440,25 +440,6 @@ public class ActivityHandler extends HandlerThread {
         // appToken
         appToken = bundle.getString("AdjustIoAppToken");
 
-        // environment
-        environment = bundle.getString("AdjustIoEnvironment");
-        if (environment.equalsIgnoreCase("sandbox")) {
-            int logLevel = Logger.getLogLevel();
-            Logger.setLogLevel(Log.WARN);
-            Logger.warn("SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
-            Logger.setLogLevel(logLevel);
-        } else if (environment.equalsIgnoreCase("production")) {
-            Logger.setLogLevel(Log.WARN);
-            Logger.warn("PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
-            Logger.setLogLevel(Log.ASSERT);
-        } else {
-            Logger.error(String.format("Malformed environment '%s'", environment));
-            environment = "production"; // TODO: third state?
-        }
-
-        // eventBuffering
-        bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
-
         // logLevel
         String logLevel = bundle.getString("AdjustIoLogLevel");
         if (logLevel == null);
@@ -469,6 +450,26 @@ public class ActivityHandler extends HandlerThread {
         else if (logLevel.equalsIgnoreCase("error"))   Logger.setLogLevel(Log.ERROR);
         else if (logLevel.equalsIgnoreCase("assert"))  Logger.setLogLevel(Log.ASSERT);
         else Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+
+        // environment
+        environment = bundle.getString("AdjustIoEnvironment");
+        if (environment == null) {
+            Logger.Assert("Missing environment");
+            Logger.setLogLevel(Log.ASSERT);
+            environment = "unknown";
+        } else if (environment.equalsIgnoreCase("sandbox")) {
+            Logger.Assert("SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
+        } else if (environment.equalsIgnoreCase("production")) {
+            Logger.Assert("PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
+            Logger.setLogLevel(Log.ASSERT);
+        } else {
+            Logger.Assert(String.format("Malformed environment '%s'", environment));
+            Logger.setLogLevel(Log.ASSERT);
+            environment = "malformed";
+        }
+
+        // eventBuffering
+        bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
     }
 
     private Bundle getApplicationBundle() {

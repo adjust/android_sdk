@@ -53,4 +53,8 @@ public class Logger {
             Log.e(LOGTAG, message);
         }
     }
+
+    protected static void Assert(String message) {
+        Log.println(Log.ASSERT, LOGTAG, message);
+    }
 }
