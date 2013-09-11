@@ -32,6 +32,7 @@ public class PackageBuilder {
     protected String userAgent;
     protected String clientSdk;
     protected String environment;
+    protected String defaultTracker;
 
     // sessions
     protected int sessionCount;
@@ -51,7 +52,8 @@ public class PackageBuilder {
 
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
-        addDuration(parameters, "last_interval", lastInterval);
+        addDuration(parameters, "last_interval",   lastInterval);
+        addString(parameters,   "default_tracker", defaultTracker);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.path = "/startup";
