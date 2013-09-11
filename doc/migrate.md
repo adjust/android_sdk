@@ -1,3 +1,4 @@
+<!--- TODO: use appToken instead of appId (applies to both SDKs!) -->
 ## Migrate to AdjustIo SDK for Android v2.0.1
 
 1. Delete the old `AdjustIo` project from your `Package Explorer`. Download
