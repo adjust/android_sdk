@@ -52,6 +52,7 @@ public class ActivityHandler extends HandlerThread {
     private static ScheduledExecutorService timer;
     private Context context;
     private String environment;
+    private String defaultTracker;
     private boolean bufferEvents;
 
     private String appToken;
@@ -389,6 +390,7 @@ public class ActivityHandler extends HandlerThread {
         builder.userAgent = userAgent;
         builder.clientSdk = clientSdk;
         builder.environment = environment;
+        builder.defaultTracker = defaultTracker;
     }
 
     private void startTimer() {
@@ -470,6 +472,9 @@ public class ActivityHandler extends HandlerThread {
 
         // eventBuffering
         bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
+
+        // defaultTracker
+        defaultTracker = bundle.getString("AdjustIoDefaultTracker");
     }
 
     private Bundle getApplicationBundle() {
