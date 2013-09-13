@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -37,6 +38,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class ActivityHandler extends HandlerThread {
@@ -375,6 +377,7 @@ public class ActivityHandler extends HandlerThread {
     private void transferSessionPackage() {
         PackageBuilder builder = new PackageBuilder();
         injectGeneralAttributes(builder);
+        injectReferrer(builder);
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
@@ -391,6 +394,11 @@ public class ActivityHandler extends HandlerThread {
         builder.clientSdk = clientSdk;
         builder.environment = environment;
         builder.defaultTracker = defaultTracker;
+    }
+
+    private void injectReferrer(PackageBuilder builder) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        builder.referrer = preferences.getString(ReferrerReceiver.REFERRER_KEY, null);
     }
 
     private void startTimer() {
