@@ -32,7 +32,6 @@ public class PackageBuilder {
     protected String userAgent;
     protected String clientSdk;
     protected String environment;
-    protected String defaultTracker;
 
     // sessions
     protected int sessionCount;
@@ -41,6 +40,8 @@ public class PackageBuilder {
     protected long sessionLength;
     protected long timeSpent;
     protected long lastInterval;
+    protected String defaultTracker;
+    protected String referrer;
 
     // events
     protected int eventCount;
@@ -54,6 +55,7 @@ public class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval",   lastInterval);
         addString(parameters,   "default_tracker", defaultTracker);
+        addString(parameters,   "referrer",        referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.path = "/startup";
