@@ -73,7 +73,8 @@ the `application` tag.
 
 Replace `{YourAppToken}` with your App Token. You can find in your [dashboard].
 
-You can increase or decrease the amount of logs you see by changing the value of `AdjustIoLogLevel` to one of the following:
+You can increase or decrease the amount of logs you see by changing the value
+of `AdjustIoLogLevel` to one of the following:
 
 - `verbose` - enable all logging
 - `debug` - enable more logging
@@ -82,18 +83,25 @@ You can increase or decrease the amount of logs you see by changing the value of
 - `error` - disable warnings as well
 - `assert` - disable errors as well
 
-Depending on whether or not you build your app for testing or for production you must adjust the `AdjustIoEnvironment` setting:
+Depending on whether or not you build your app for testing or for production
+you must adjust the `AdjustIoEnvironment` setting:
 
 - `sandbox` - for testing
 - `production` - before publishing
 
-**Important:** This value should be set to `sandbox` if and only if you or someone else is testing your app. Make sure to set the environment to `production` just before you publish the app. Set it back to `sandbox` when you start testing it again.
+**Important:** This value should be set to `sandbox` if and only if you or
+someone else is testing your app. Make sure to set the environment to
+`production` just before you publish the app. Set it back to `sandbox` when you
+start testing it again.
 
-We use this environment to distinguish between real traffic and artificial traffic from test devices. It is very important that you keep this value meaningful at all times! Especially if you are tracking revenue.
+We use this environment to distinguish between real traffic and artificial
+traffic from test devices. It is very important that you keep this value
+meaningful at all times! Especially if you are tracking revenue.
 
 ### 6. Add broadcast receiver
 
-Still in your `AndroidManifest.xml`, add the following `receiver` tag inside the `application` tag.
+Still in your `AndroidManifest.xml`, add the following `receiver` tag inside
+the `application` tag.
 
 ```xml
 <receiver
@@ -107,7 +115,8 @@ Still in your `AndroidManifest.xml`, add the following `receiver` tag inside the
 
 ![][receiver]
 
-We use this broadcast receiver to retrieve the install referrer to improve conversion tracking.
+We use this broadcast receiver to retrieve the install referrer to improve
+conversion tracking.
 
 ### 7. Integrate AdjustIo into your app
 
@@ -230,7 +239,10 @@ AdjustIo.trackRevenue(1.0, "abc123", parameters);
 
 ### Enable event buffering
 
-If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering by adding the following line to your AdjustIo settings in your `AndroidManifest.xml` file.
+If your app makes heavy use of event tracking, you might want to delay some
+HTTP requests in order to send them in one batch every minute. You can enable
+event buffering by adding the following line to your AdjustIo settings in your
+`AndroidManifest.xml` file.
 
 ```xml
 <meta-data android:name="AdjustIoEventBuffering" android:value="true" />
