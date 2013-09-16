@@ -1,4 +1,3 @@
-<!-- TODO: Explain how to configure AdjustIo in the AndroidManifest.xml -->
 ## Summary
 
 This is the Android SDK of AdjustIo. You ca read more about AdjustIo at
