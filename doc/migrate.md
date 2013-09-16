@@ -27,12 +27,12 @@
 
     The log level is now set globally by `AdjustIoLogLevel`. Possible values:
 
-    - `verbose` - enable all logging
-    - `debug` - enable more logging
-    - `info` - the default
-    - `warn` - disable info logging
-    - `error` - disable warnings as well
-    - `assert` - disable errors as well
+   - `verbose` - enable all logging
+   - `debug` - enable more logging
+   - `info` - the default
+   - `warn` - disable info logging
+   - `error` - disable warnings as well
+   - `assert` - disable errors as well
 
     Depending on whether or not you build your app for testing or for
     production you must adjust the `AdjustIoEnvironment` setting:
