@@ -52,14 +52,65 @@ In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they
 aren't present already.
 
-```java
+```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
 ![][permissions]
 
-### 5. Integrate AdjustIo into your app
+### 5. Add AdjustIo settings
+
+Still in the `AndroidManifest.xml`, add the following `meta-data` tags inside
+the `application` tag.
+
+```xml
+<meta-data android:name="AdjustIoAppToken"    android:value="{YourAppToken}" />
+<meta-data android:name="AdjustIoLogLevel"    android:value="info" />
+<meta-data android:name="AdjustIoEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
+```
+
+![][settings]
+
+Replace `{YourAppToken}` with your App Token. You can find in your [dashboard].
+
+You can increase or decrease the amount of logs you see by changing the value of `AdjustIoLogLevel` to one of the following:
+
+- `verbose` - enable all logging
+- `debug` - enable more logging
+- `info` - the default
+- `warn` - disable info logging
+- `error` - disable warnings as well
+- `assert` - disable errors as well
+
+Depending on whether or not you build your app for testing or for production you must adjust the `AdjustIoEnvironment` setting:
+
+- `sandbox` - for testing
+- `production` - before publishing
+
+**Important:** This value should be set to `sandbox` if and only if you or someone else is testing your app. Make sure to set the environment to `production` just before you publish the app. Set it back to `sandbox` when you start testing it again.
+
+We use this environment to distinguish between real traffic and artificial traffic from test devices. It is very important that you keep this value meaningful at all times! Especially if you are tracking revenue.
+
+### 6. Add broadcast receiver
+
+Still in your `AndroidManifest.xml`, add the following `receiver` tag inside the `application` tag.
+
+```xml
+<receiver
+    android:name="com.adeven.adjustio.ReferrerReceiver"
+    android:exported="true" >
+    <intent-filter>
+        <action android:name="com.android.vending.INSTALL_REFERRER" />
+    </intent-filter>
+</receiver>
+```
+
+![][receiver]
+
+We use this broadcast receiver to retrieve the install referrer to improve conversion tracking.
+
+### 7. Integrate AdjustIo into your app
 
 To provide proper session tracking it is required to call certain AdjustIo
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
@@ -70,8 +121,6 @@ for **each** Activity of your app:
 - Add the `import` statement at the top of the file.
 - In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
   method if needed.
-- Replace `{YourAppToken}` with your App Token. You can find in your
-  [dashboard].
 - In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
   method if needed.
 
@@ -83,7 +132,7 @@ import com.adeven.adjustio.AdjustIo;
 public class YourActivity extends Activity {
     protected void onResume() {
         super.onResume();
-        AdjustIo.onResume("{YourAppToken}", this);
+        AdjustIo.onResume(this);
     }
     protected void onPause() {
         super.onPause();
@@ -99,28 +148,13 @@ Repeat these steps for **every** Activity of your app. Don't forget these steps
 when you create new Activities in the future. Depending on your coding style
 you might want to implement this in a common superclass of all your Activities.
 
-### 6. Build your app
+### 8. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
 `tag:AdjustIo` to hide all other logs. After your app has launched you should
 see the following AdjustIo log: `Tracked session start`
 
 ![][log]
-
-### 7. Adjust Logging
-
-You can increase or decrease the amount of logs you see by calling
-`setLogLevel` with one of the following parameters. Make sure to import
-`android.util.Log`.
-
-```java
-AdjustIo.setLogLevel(Log.VERBOSE); // enable all logging
-AdjustIo.setLogLevel(Log.DEBUG);   // enable more logging
-AdjustIo.setLogLevel(Log.INFO);    // the default
-AdjustIo.setLogLevel(Log.WARN);    // disable info logging
-AdjustIo.setLogLevel(Log.ERROR);   // disable warnings as well
-AdjustIo.setLogLevel(Log.ASSERT);  // disable errors as well
-```
 
 ## Additional Features
 
@@ -195,6 +229,14 @@ parameters.put("foo", "bar");
 AdjustIo.trackRevenue(1.0, "abc123", parameters);
 ```
 
+### Enable event buffering
+
+If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch every minute. You can enable event buffering by adding the following line to your AdjustIo settings in your `AndroidManifest.xml` file.
+
+```xml
+<meta-data android:name="AdjustIoEventBuffering" android:value="true" />
+```
+
 [adjust.io]: http://adjust.io
 [dashboard]: http://adjust.io
 [releases]: https://github.com/adeven/adjust_android_sdk/releases
@@ -202,10 +244,12 @@ AdjustIo.trackRevenue(1.0, "abc123", parameters);
 [android]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/android.png
 [import]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/import.png
 [properties]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/properties.png
+[settings]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/settings.png
+[receiver]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/receiver.png
 [library]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/library.png
 [permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions.png
-[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity2.png
-[log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log2.png
+[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity3.png
+[log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log3.png
 
 
 ## License
