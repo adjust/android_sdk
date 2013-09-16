@@ -145,7 +145,6 @@ public class PackageHandler extends HandlerThread {
         Logger.verbose(newPackage.getExtendedString());
 
         writePackageQueue();
-        sendFirstInternal();
     }
 
     private void sendFirstInternal() {

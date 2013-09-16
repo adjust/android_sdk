@@ -3,7 +3,7 @@
 //  AdjustIo
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
-//  Copyright (c) 2012 adeven. All rights reserved.
+//  Copyright (c) 2012-2013 adeven. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -33,9 +33,9 @@ public class AdjustIo {
      * @param activity The activity that has just resumed.
      */
 
-    public static void onResume(String appToken, Activity activity) {
+    public static void onResume(Activity activity) {
         if (activityHandler == null) {
-            activityHandler = new ActivityHandler(appToken, activity);
+            activityHandler = new ActivityHandler(activity);
         }
         activityHandler.trackSubsessionStart();
     }
@@ -109,27 +109,6 @@ public class AdjustIo {
         } catch (NullPointerException e) {
             Logger.error("No activity handler found");
         }
-    }
-
-
-    /**
-     * Change the verbosity of AdjustIo's logs.
-     *
-     * You can increase or reduce the amount of logs from AdjustIo by passing
-     * one of the following parameters. Use Log.ASSERT to disable all logging.
-     *
-     * @param logLevel The desired minimum log level (default: info)
-     *     Must be one of the following:
-     *      - Log.VERBOSE (enable all logging)
-     *      - Log.DEBUG   (enable more logging)
-     *      - Log.INFO    (the default)
-     *      - Log.WARN    (disable info logging)
-     *      - Log.ERROR   (disable warnings as well)
-     *      - Log.ASSERT  (disable errors as well)
-     */
-
-    public static void setLogLevel(int logLevel) {
-        Logger.setLogLevel(logLevel);
     }
 
 

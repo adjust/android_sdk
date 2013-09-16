@@ -3,7 +3,7 @@
 //  AdjustIo
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
-//  Copyright (c) 2012 adeven. All rights reserved.
+//  Copyright (c) 2012-2013 adeven. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -37,7 +37,7 @@ import android.util.DisplayMetrics;
  */
 public class Util {
     protected static final String BASE_URL   = "https://app.adjust.io";
-    protected static final String CLIENT_SDK = "android2.0.1";
+    protected static final String CLIENT_SDK = "android2.1.0";
 
     private static final String UNKNOWN = "unknown";
 

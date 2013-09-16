@@ -20,6 +20,10 @@ public class Logger {
         Logger.logLevel = logLevel;
     }
 
+    protected static int getLogLevel() {
+        return logLevel;
+    }
+
     protected static void verbose(String message) {
         if (logLevel <= Log.VERBOSE) {
             Log.v(LOGTAG, message);
@@ -48,5 +52,9 @@ public class Logger {
         if (logLevel <= Log.ERROR) {
             Log.e(LOGTAG, message);
         }
+    }
+
+    protected static void Assert(String message) {
+        Log.println(Log.ASSERT, LOGTAG, message);
     }
 }
