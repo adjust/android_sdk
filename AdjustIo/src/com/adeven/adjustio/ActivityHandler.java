@@ -29,11 +29,17 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class ActivityHandler extends HandlerThread {
     private static final String SESSION_STATE_FILENAME = "AdjustIoActivityState";
@@ -47,6 +53,9 @@ public class ActivityHandler extends HandlerThread {
     private ActivityState activityState;
     private static ScheduledExecutorService timer;
     private Context context;
+    private String environment;
+    private String defaultTracker;
+    private boolean bufferEvents;
 
     private String appToken;
     private String macSha1;
@@ -56,7 +65,7 @@ public class ActivityHandler extends HandlerThread {
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
 
-    protected ActivityHandler(String appToken, Activity activity) {
+    protected ActivityHandler(Activity activity) {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -66,7 +75,6 @@ public class ActivityHandler extends HandlerThread {
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
-        message.obj = appToken;
         internalHandler.sendMessage(message);
     }
 
@@ -127,8 +135,7 @@ public class ActivityHandler extends HandlerThread {
 
             switch (message.arg1) {
             case INIT:
-                String appToken = (String) message.obj;
-                sessionHandler.initInternal(appToken);
+                sessionHandler.initInternal();
                 break;
             case START:
                 sessionHandler.startInternal();
@@ -148,16 +155,17 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void initInternal(String token) {
-        if (!checkAppTokenNotNull(token)) return;
-        if (!checkAppTokenLength(token)) return;
+    private void initInternal() {
+        processApplicationBundle();
+
+        if (!checkAppTokenNotNull(appToken)) return;
+        if (!checkAppTokenLength(appToken)) return;
         if (!checkContext(context)) return;
         if (!checkPermissions(context)) return;
 
         String macAddress = Util.getMacAddress(context);
         String macShort = macAddress.replaceAll(":", "");
 
-        appToken = token;
         macSha1 = Util.sha1(macAddress);
         macShortMd5 = Util.md5(macShort);
         androidId = Util.getAndroidId(context);
@@ -250,6 +258,12 @@ public class ActivityHandler extends HandlerThread {
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
         packageHandler.addPackage(eventPackage);
 
+        if (bufferEvents) {
+            Logger.info(String.format("Buffered event%s", eventPackage.suffix));
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
@@ -270,6 +284,12 @@ public class ActivityHandler extends HandlerThread {
         activityState.injectEventAttributes(revenueBuilder);
         ActivityPackage eventPackage = revenueBuilder.buildRevenuePackage();
         packageHandler.addPackage(eventPackage);
+
+        if (bufferEvents) {
+            Logger.info(String.format("Buffered revenue%s", eventPackage.suffix));
+        } else {
+            packageHandler.sendFirstPackage();
+        }
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
@@ -357,9 +377,11 @@ public class ActivityHandler extends HandlerThread {
     private void transferSessionPackage() {
         PackageBuilder builder = new PackageBuilder();
         injectGeneralAttributes(builder);
+        injectReferrer(builder);
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
@@ -370,6 +392,13 @@ public class ActivityHandler extends HandlerThread {
         builder.fbAttributionId = fbAttributionId;
         builder.userAgent = userAgent;
         builder.clientSdk = clientSdk;
+        builder.environment = environment;
+        builder.defaultTracker = defaultTracker;
+    }
+
+    private void injectReferrer(PackageBuilder builder) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        builder.referrer = preferences.getString(ReferrerReceiver.REFERRER_KEY, null);
     }
 
     private void startTimer() {
@@ -412,6 +441,59 @@ public class ActivityHandler extends HandlerThread {
         }
 
         return result;
+    }
+
+    private void processApplicationBundle() {
+        Bundle bundle = getApplicationBundle();
+        if (bundle == null) return;
+
+        // appToken
+        appToken = bundle.getString("AdjustIoAppToken");
+
+        // logLevel
+        String logLevel = bundle.getString("AdjustIoLogLevel");
+        if (logLevel == null);
+        else if (logLevel.equalsIgnoreCase("verbose")) Logger.setLogLevel(Log.VERBOSE);
+        else if (logLevel.equalsIgnoreCase("debug"))   Logger.setLogLevel(Log.DEBUG);
+        else if (logLevel.equalsIgnoreCase("info"))    Logger.setLogLevel(Log.INFO);
+        else if (logLevel.equalsIgnoreCase("warn"))    Logger.setLogLevel(Log.WARN);
+        else if (logLevel.equalsIgnoreCase("error"))   Logger.setLogLevel(Log.ERROR);
+        else if (logLevel.equalsIgnoreCase("assert"))  Logger.setLogLevel(Log.ASSERT);
+        else Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+
+        // environment
+        environment = bundle.getString("AdjustIoEnvironment");
+        if (environment == null) {
+            Logger.Assert("Missing environment");
+            Logger.setLogLevel(Log.ASSERT);
+            environment = "unknown";
+        } else if (environment.equalsIgnoreCase("sandbox")) {
+            Logger.Assert("SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
+        } else if (environment.equalsIgnoreCase("production")) {
+            Logger.Assert("PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
+            Logger.setLogLevel(Log.ASSERT);
+        } else {
+            Logger.Assert(String.format("Malformed environment '%s'", environment));
+            Logger.setLogLevel(Log.ASSERT);
+            environment = "malformed";
+        }
+
+        // eventBuffering
+        bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
+
+        // defaultTracker
+        defaultTracker = bundle.getString("AdjustIoDefaultTracker");
+    }
+
+    private Bundle getApplicationBundle() {
+        ApplicationInfo applicationInfo = null;
+        try {
+            String packageName = this.context.getPackageName();
+            applicationInfo = this.context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+        } catch (NameNotFoundException e) {
+            Logger.error("ApplicationInfo not found");
+        }
+        return applicationInfo.metaData;
     }
 
     private static boolean checkContext(Context context) {
