@@ -37,8 +37,8 @@
     Depending on whether or not you build your app for testing or for
     production you must adjust the `AdjustIoEnvironment` setting:
 
-    - `sandbox` - for testing
-    - `production` - before publishing
+   - `sandbox` - for testing
+   - `production` - before publishing
 
     **Important:** This value should be set to `sandbox` if and only if you or
     someone else is testing your app. Make sure to set the environment to
