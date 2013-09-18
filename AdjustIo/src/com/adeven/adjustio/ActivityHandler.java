@@ -480,9 +480,15 @@ public class ActivityHandler extends HandlerThread {
 
         // eventBuffering
         bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
+        if (bufferEvents) {
+            Logger.info("Event buffering is enabled");
+        }
 
         // defaultTracker
         defaultTracker = bundle.getString("AdjustIoDefaultTracker");
+        if (defaultTracker != null) {
+            Logger.info(String.format("Default tracker: '%s'", defaultTracker));
+        }
     }
 
     private Bundle getApplicationBundle() {
