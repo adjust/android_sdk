@@ -16,3 +16,7 @@ gen/
 local.properties
 
 *.remote
+
+AdjustIo/.classpath
+AdjustIo/.project
+AdjustIo/.settings

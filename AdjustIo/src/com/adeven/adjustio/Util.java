@@ -2,8 +2,8 @@
 //  Util.java
 //  AdjustIo
 //
-//  Created by Christian Wellenbrock on 11.10.12.
-//  Copyright (c) 2012 adeven. All rights reserved.
+//  Created by Christian Wellenbrock on 2012-10-11.
+//  Copyright (c) 2012-2013 adeven. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -12,21 +12,9 @@ package com.adeven.adjustio;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.params.HttpParams;
-import org.json.JSONObject;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -41,80 +29,17 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.DisplayMetrics;
+
 
 /**
  * Collects utility functions used by AdjustIo.
- *
- * @author wellle
- * @since 11.10.12
  */
 public class Util {
-    private static final String BASEURL = "https://app.adjust.io";
-    private static final String CLIENTSDK = "android1.6";
+    protected static final String BASE_URL   = "https://app.adjust.io";
+    protected static final String CLIENT_SDK = "android2.1.1";
 
     private static final String UNKNOWN = "unknown";
-
-    public static boolean checkPermissions(Context context) {
-        boolean result = true;
-
-        if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
-            Logger.error(
-                "This SDK requires the INTERNET permission. " +
-                "See the README for details."
-            );
-            result = false;
-        }
-        if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            Logger.warn(
-                "You can improve your tracking results by adding the " +
-                "ACCESS_WIFI_STATE permission. See the README for details."
-            );
-        }
-
-        return result;
-    }
-
-    private static boolean checkPermission(Context context, String permission) {
-        int result = context.checkCallingOrSelfPermission(permission);
-        boolean granted = (result == PackageManager.PERMISSION_GRANTED);
-        return granted;
-    }
-
-    public static String getBase64EncodedParameters(Map<String, String> parameters) {
-        if (parameters == null) {
-            return null;
-        }
-
-        JSONObject jsonObject = new JSONObject(parameters);
-        byte[] bytes = jsonObject.toString().getBytes();
-        String encoded = Base64.encodeToString(bytes, Base64.NO_WRAP);
-        return encoded;
-    }
-
-    public static StringEntity getEntityEncodedParameters(List<NameValuePair> parameters) throws UnsupportedEncodingException {
-        StringEntity entity = new UrlEncodedFormEntity(parameters);
-        return entity;
-    }
-
-    public static HttpClient getHttpClient(String userAgent) {
-        HttpClient httpClient = new DefaultHttpClient();
-        HttpParams params = httpClient.getParams();
-        params.setParameter(CoreProtocolPNames.USER_AGENT, userAgent);
-        return httpClient;
-    }
-
-    public static HttpPost getPostRequest(String path) {
-        String url = BASEURL + path;
-        HttpPost request = new HttpPost(url);
-
-        String language = Locale.getDefault().getLanguage();
-        request.addHeader("Accept-Language", language);
-        request.addHeader("Client-SDK", CLIENTSDK);
-
-        return request;
-    }
 
     protected static String getUserAgent(Context context) {
         Resources resources = context.getResources();
@@ -317,7 +242,7 @@ public class Util {
         return result;
     }
 
-    public static String loadAddress(String interfaceName) {
+    protected static String loadAddress(String interfaceName) {
         try {
             String filePath = "/sys/class/net/" + interfaceName + "/address";
             StringBuffer fileData = new StringBuffer(1000);
@@ -339,11 +264,11 @@ public class Util {
         }
     }
 
-    public static String getAndroidId(Context context) {
+    protected static String getAndroidId(Context context) {
         return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
     }
 
-    public static String getAttributionId(Context context) {
+    protected static String getAttributionId(Context context) {
         try {
             ContentResolver contentResolver = context.getContentResolver();
             Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
@@ -367,36 +292,29 @@ public class Util {
         }
     }
 
-    public static String sha1(String text) {
+    protected static String sha1(String text) {
+        return hash(text, "SHA-1");
+    }
+
+    protected static String md5(String text) {
+        return hash(text, "MD5");
+    }
+
+    private static String hash(String text, String method) {
         try {
-            MessageDigest mesd = MessageDigest.getInstance("SHA-1");
-            byte[] bytes = text.getBytes("iso-8859-1");
+            byte[] bytes = text.getBytes("UTF-8");
+            MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
-            byte[] sha2hash = mesd.digest();
-            return convertToHex(sha2hash);
+            byte[] hash = mesd.digest();
+            return convertToHex(hash);
         } catch (Exception e) {
             return "";
         }
     }
 
     private static String convertToHex(byte[] bytes) {
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < bytes.length; i++) {
-            int halfbyte = (bytes[i] >>> 4) & 0x0F;
-            int two_halfs = 0;
-
-            do {
-                if ((0 <= halfbyte) && (halfbyte <= 9)) {
-                    buffer.append((char) ('0' + halfbyte));
-                } else {
-                    buffer.append((char) ('a' + (halfbyte - 10)));
-                }
-
-                halfbyte = bytes[i] & 0x0F;
-            } while (two_halfs++ < 1);
-        }
-
-        String hex = buffer.toString();
-        return hex;
+        BigInteger bigInt = new BigInteger(1, bytes);
+        String formatString = "%0" + (bytes.length << 1) + "x";
+        return String.format(formatString, bigInt);
     }
 }
