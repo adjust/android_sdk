@@ -295,7 +295,7 @@ public class PackageBuilder {
     }
 
     private void addMap(Map<String, String> parameters, String key, Map<String, String> map) {
-        if (map == null) {
+        if (null == map) {
             return;
         }
 
@@ -307,7 +307,7 @@ public class PackageBuilder {
     }
 
     private SimpleDateFormat getDateFormat() {
-        if (dateFormat == null) {
+        if (null == dateFormat) {
             dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
         }
         return dateFormat;

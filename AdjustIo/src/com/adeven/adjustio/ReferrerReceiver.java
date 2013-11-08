@@ -21,7 +21,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String rawReferrer = intent.getStringExtra(REFERRER);
-        if (rawReferrer == null) {
+        if (null == rawReferrer) {
             return;
         }
 

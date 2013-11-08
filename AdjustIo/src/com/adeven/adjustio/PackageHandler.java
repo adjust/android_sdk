@@ -110,7 +110,7 @@ public class PackageHandler extends HandlerThread {
             super.handleMessage(message);
 
             PackageHandler packageHandler = packageHandlerReference.get();
-            if (packageHandler == null) {
+            if (null == packageHandler) {
                 return;
             }
 
@@ -150,7 +150,7 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void sendFirstInternal() {
-        if (packageQueue.size() == 0) {
+        if (0 == packageQueue.size()) {
             return;
         }
 

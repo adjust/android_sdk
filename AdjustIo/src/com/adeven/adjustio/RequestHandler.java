@@ -81,7 +81,7 @@ public class RequestHandler extends HandlerThread {
             super.handleMessage(message);
 
             RequestHandler requestHandler = requestHandlerReference.get();
-            if (requestHandler == null) {
+            if (null == requestHandler) {
                 return;
             }
 
@@ -126,7 +126,7 @@ public class RequestHandler extends HandlerThread {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
 
-        if (statusCode == HttpStatus.SC_OK) {
+        if (HttpStatus.SC_OK == statusCode) {
             Logger.info(activityPackage.getSuccessMessage());
         } else {
             Logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));

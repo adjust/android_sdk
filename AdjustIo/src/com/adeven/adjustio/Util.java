@@ -167,7 +167,7 @@ public class Util {
         int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
 
-        if (density == 0) {
+        if (0 == density) {
             return UNKNOWN;
         } else if (density < low) {
             return LOW;
@@ -231,12 +231,12 @@ public class Util {
     }
 
     private static String sanitizeString(String string, String defaultString) {
-        if (string == null) {
+        if (TextUtils.isEmpty(string)) {
             string = defaultString;
         }
 
         String result = string.replaceAll("\\s", "");
-        if (result.length() == 0) {
+        if (TextUtils.isEmpty(result)) {
             result = defaultString;
         }
 
@@ -276,7 +276,7 @@ public class Util {
             String[] projection = {columnName};
             Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
-            if (cursor == null) {
+            if (null == cursor) {
                 return null;
             }
             if (!cursor.moveToFirst()) {

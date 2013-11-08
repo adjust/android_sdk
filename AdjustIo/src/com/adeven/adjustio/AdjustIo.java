@@ -31,7 +31,7 @@ public class AdjustIo {
      * @param activity The activity that has just resumed.
      */
     public static void onResume(Activity activity) {
-        if (activityHandler == null) {
+        if (null == activityHandler) {
             activityHandler = new ActivityHandler(activity);
         }
         activityHandler.trackSubsessionStart();
