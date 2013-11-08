@@ -76,6 +76,7 @@ public class RequestHandler extends HandlerThread {
             this.requestHandlerReference = new WeakReference<RequestHandler>(requestHandler);
         }
 
+        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 

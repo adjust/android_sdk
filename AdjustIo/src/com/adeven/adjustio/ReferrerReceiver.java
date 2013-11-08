@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import static com.adeven.adjustio.Constants.MALFORMED;
+import static com.adeven.adjustio.Constants.REFERRER;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
@@ -17,7 +19,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String rawReferrer = intent.getStringExtra("referrer");
+        String rawReferrer = intent.getStringExtra(REFERRER);
         if (rawReferrer == null) {
             return;
         }
@@ -26,7 +28,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
         try {
             referrer = URLDecoder.decode(rawReferrer, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            referrer = "malformed";
+            referrer = MALFORMED;
         }
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);

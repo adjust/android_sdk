@@ -212,6 +212,7 @@ public class Util {
                 return wifiAddress;
             }
         } catch (Exception e) {
+            /* no-op */
         }
 
         return "";

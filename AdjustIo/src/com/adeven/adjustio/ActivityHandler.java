@@ -52,11 +52,11 @@ public class ActivityHandler extends HandlerThread {
     private static final long SESSION_INTERVAL    = THIRTY_SECONDS;
     private static final long SUBSESSION_INTERVAL = ONE_SECOND;
 
-    private        InternalHandler          internalHandler;
+    private final  InternalHandler          internalHandler;
     private        PackageHandler           packageHandler;
     private        ActivityState            activityState;
     private static ScheduledExecutorService timer;
-    private        Context                  context;
+    private final  Context                  context;
     private        String                   environment;
     private        String                   defaultTracker;
     private        boolean                  bufferEvents;
@@ -131,6 +131,7 @@ public class ActivityHandler extends HandlerThread {
             this.sessionHandlerReference = new WeakReference<ActivityHandler>(sessionHandler);
         }
 
+        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
@@ -365,6 +366,7 @@ public class ActivityHandler extends HandlerThread {
             } catch (ClassNotFoundException e) {
                 Logger.error("Failed to find activity state class");
             } catch (OptionalDataException e) {
+                /* no-op */
             } catch (IOException e) {
                 Logger.error("Failed to read activity states object");
             } catch (ClassCastException e) {
@@ -436,6 +438,7 @@ public class ActivityHandler extends HandlerThread {
         }
         timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleWithFixedDelay(new Runnable() {
+            @Override
             public void run() {
                 timerFired();
             }
@@ -516,7 +519,7 @@ public class ActivityHandler extends HandlerThread {
         } else {
             Logger.Assert(String.format("Malformed environment '%s'", environment));
             Logger.setLogLevel(Log.ASSERT);
-            environment = "malformed";
+            environment = Constants.MALFORMED;
         }
 
         // eventBuffering
@@ -527,13 +530,14 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private Bundle getApplicationBundle() {
-        ApplicationInfo applicationInfo = null;
+        final ApplicationInfo applicationInfo;
         try {
             String packageName = this.context.getPackageName();
             applicationInfo =
               this.context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
         } catch (NameNotFoundException e) {
             Logger.error("ApplicationInfo not found");
+            return new Bundle();
         }
         return applicationInfo.metaData;
     }
@@ -548,8 +552,7 @@ public class ActivityHandler extends HandlerThread {
 
     private static boolean checkPermission(Context context, String permission) {
         int result = context.checkCallingOrSelfPermission(permission);
-        boolean granted = (result == PackageManager.PERMISSION_GRANTED);
-        return granted;
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 
     private static boolean checkActivityState(ActivityState activityState) {

@@ -34,12 +34,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PackageHandler extends HandlerThread {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
-    private InternalHandler       internalHandler;
-    private RequestHandler        requestHandler;
-    private List<ActivityPackage> packageQueue;
-    private AtomicBoolean         isSending;
-    private boolean               paused;
-    private Context               context;
+    private final InternalHandler       internalHandler;
+    private       RequestHandler        requestHandler;
+    private       List<ActivityPackage> packageQueue;
+    private       AtomicBoolean         isSending;
+    private       boolean               paused;
+    private final Context               context;
 
     protected PackageHandler(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -105,6 +105,7 @@ public class PackageHandler extends HandlerThread {
             this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
         }
 
+        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
@@ -189,6 +190,7 @@ public class PackageHandler extends HandlerThread {
             } catch (ClassNotFoundException e) {
                 Logger.error("Failed to find package queue class");
             } catch (OptionalDataException e) {
+                /* no-op */
             } catch (IOException e) {
                 Logger.error("Failed to read package queue object");
             } catch (ClassCastException e) {
