@@ -27,12 +27,8 @@ public class AdjustIo {
      * This is used to initialize AdjustIo and keep track of the current session state.
      * Call this in the onResume method of every activity of your app.
      *
-     * @param appToken The App Token for your app. This unique identifier can
-     *     be found in your dashboard at http://adjust.io and should always
-     *     be 12 characters long.
      * @param activity The activity that has just resumed.
      */
-
     public static void onResume(Activity activity) {
         if (activityHandler == null) {
             activityHandler = new ActivityHandler(activity);
@@ -64,10 +60,7 @@ public class AdjustIo {
      *
      * @param eventToken The Event Token for this kind of event. They are created
      *     in the dashboard at http://adjust.io and should be six characters long.
-     * @param parameters An optional dictionary containing the callback parameters.
-     *     Provide key-value-pairs to be forwarded to your callbacks.
      */
-
     public static void trackEvent(String eventToken) {
         trackEvent(eventToken, null);
     }
@@ -91,10 +84,7 @@ public class AdjustIo {
      * forwarded to your end point.
      *
      * @param amountInCents The amount in cents (example: 1.5 means one and a half cents)
-     * @param eventToken The token for this revenue event (optional, see above)
-     * @param parameters Parameters for this revenue event (optional, see above)
      */
-
     public static void trackRevenue(double amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
     }
@@ -110,7 +100,6 @@ public class AdjustIo {
             Logger.error("No activity handler found");
         }
     }
-
 
     /**
      * Every activity will get forwarded to this handler to be processed in the background.
