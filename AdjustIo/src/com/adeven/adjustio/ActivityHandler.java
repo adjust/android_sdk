@@ -51,7 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final long   SUBSESSION_INTERVAL = ONE_SECOND;
     private static final String TIME_TRAVEL         = "Time travel!";
 
-    private final  InternalHandler          internalHandler;
+    private final  SessionHandler           sessionHandler;
     private        PackageHandler           packageHandler;
     private        ActivityState            activityState;
     private static ScheduledExecutorService timer;
@@ -72,25 +72,25 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        internalHandler = new InternalHandler(getLooper(), this);
+        sessionHandler = new SessionHandler(getLooper(), this);
 
         this.context = activity.getApplicationContext();
 
         Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
+        message.arg1 = SessionHandler.INIT;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackSubsessionStart() {
         Message message = Message.obtain();
-        message.arg1 = InternalHandler.START;
-        internalHandler.sendMessage(message);
+        message.arg1 = SessionHandler.START;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackSubsessionEnd() {
         Message message = Message.obtain();
-        message.arg1 = InternalHandler.END;
-        internalHandler.sendMessage(message);
+        message.arg1 = SessionHandler.END;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackEvent(String eventToken, Map<String, String> parameters) {
@@ -99,9 +99,9 @@ public class ActivityHandler extends HandlerThread {
         builder.setCallbackParameters(parameters);
 
         Message message = Message.obtain();
-        message.arg1 = InternalHandler.EVENT;
+        message.arg1 = SessionHandler.EVENT;
         message.obj = builder;
-        internalHandler.sendMessage(message);
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
@@ -111,12 +111,12 @@ public class ActivityHandler extends HandlerThread {
         builder.setCallbackParameters(parameters);
 
         Message message = Message.obtain();
-        message.arg1 = InternalHandler.REVENUE;
+        message.arg1 = SessionHandler.REVENUE;
         message.obj = builder;
-        internalHandler.sendMessage(message);
+        sessionHandler.sendMessage(message);
     }
 
-    private static final class InternalHandler extends Handler {
+    private static final class SessionHandler extends Handler {
         private static final int INIT    = 72630;
         private static final int START   = 72640;
         private static final int END     = 72650;
@@ -125,7 +125,7 @@ public class ActivityHandler extends HandlerThread {
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
-        protected InternalHandler(Looper looper, ActivityHandler sessionHandler) {
+        protected SessionHandler(Looper looper, ActivityHandler sessionHandler) {
             super(looper);
             this.sessionHandlerReference = new WeakReference<ActivityHandler>(sessionHandler);
         }
