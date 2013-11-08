@@ -13,9 +13,23 @@ import android.util.Log;
 
 
 public class Logger {
-    
-    protected static final String LOGTAG = "AdjustIo";
-    private static int logLevel = Log.INFO;
+
+    public enum LogLevel {
+        VERBOSE(Log.VERBOSE), DEBUG(Log.DEBUG), INFO(Log.INFO), WARN(Log.WARN), ERROR(Log.ERROR), ASSERT(Log.ASSERT);
+        private final int androidLogLevel;
+
+        LogLevel(final int androidLogLevel) {
+            this.androidLogLevel = androidLogLevel;
+        }
+        
+        public int getAndroidLogLevel() {
+            return androidLogLevel;
+        }
+
+    }
+
+    protected static final String LOGTAG   = "AdjustIo";
+    private static         int    logLevel = Log.INFO;
 
     protected static void setLogLevel(int logLevel) {
         Logger.logLevel = logLevel;
