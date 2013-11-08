@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 public class PackageBuilder {
 
-    private static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     // general
     protected String appToken;

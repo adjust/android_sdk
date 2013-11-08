@@ -24,7 +24,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
             return;
         }
 
-        String referrer = "";
+        String referrer;
         try {
             referrer = URLDecoder.decode(rawReferrer, "UTF-8");
         } catch (UnsupportedEncodingException e) {

@@ -247,7 +247,7 @@ public class Util {
             BufferedReader reader;
             reader = new BufferedReader(new FileReader(filePath), 1024);
             char[] buf = new char[1024];
-            int numRead = 0;
+            int numRead;
 
             while ((numRead = reader.read(buf)) != -1) {
                 String readData = String.valueOf(buf, 0, numRead);
@@ -255,8 +255,7 @@ public class Util {
             }
 
             reader.close();
-            String address = fileData.toString();
-            return address;
+            return fileData.toString();
         } catch (IOException e) {
             return null;
         }
