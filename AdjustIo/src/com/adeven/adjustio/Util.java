@@ -9,13 +9,6 @@
 
 package com.adeven.adjustio;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.Locale;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -30,6 +23,24 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import static com.adeven.adjustio.Constants.ENCODING;
+import static com.adeven.adjustio.Constants.HIGH;
+import static com.adeven.adjustio.Constants.LARGE;
+import static com.adeven.adjustio.Constants.LONG;
+import static com.adeven.adjustio.Constants.LOW;
+import static com.adeven.adjustio.Constants.MD5;
+import static com.adeven.adjustio.Constants.MEDIUM;
+import static com.adeven.adjustio.Constants.NORMAL;
+import static com.adeven.adjustio.Constants.SHA1;
+import static com.adeven.adjustio.Constants.SMALL;
+import static com.adeven.adjustio.Constants.UNKNOWN;
+import static com.adeven.adjustio.Constants.XLARGE;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Locale;
 
 
 /**
@@ -39,7 +50,6 @@ public class Util {
     protected static final String BASE_URL   = "https://app.adjust.io";
     protected static final String CLIENT_SDK = "android2.1.1";
 
-    private static final String UNKNOWN = "unknown";
 
     protected static String getUserAgent(Context context) {
         Resources resources = context.getResources();
@@ -49,28 +59,26 @@ public class Util {
         int screenLayout = configuration.screenLayout;
 
         String[] parts = {
-            getPackageName(context),
-            getAppVersion(context),
-            getDeviceType(screenLayout),
-            getDeviceName(),
-            getOsName(),
-            getOsVersion(),
-            getLanguage(locale),
-            getCountry(locale),
-            getScreenSize(screenLayout),
-            getScreenFormat(screenLayout),
-            getScreenDensity(displayMetrics),
-            getDisplayWidth(displayMetrics),
-            getDisplayHeight(displayMetrics)
+          getPackageName(context),
+          getAppVersion(context),
+          getDeviceType(screenLayout),
+          getDeviceName(),
+          getOsName(),
+          getOsVersion(),
+          getLanguage(locale),
+          getCountry(locale),
+          getScreenSize(screenLayout),
+          getScreenFormat(screenLayout),
+          getScreenDensity(displayMetrics),
+          getDisplayWidth(displayMetrics),
+          getDisplayHeight(displayMetrics)
         };
-        String userAgent = TextUtils.join(" ", parts);
-        return userAgent;
+        return TextUtils.join(" ", parts);
     }
 
     private static String getPackageName(Context context) {
         String packageName = context.getPackageName();
-        String sanitized = sanitizeString(packageName);
-        return sanitized;
+        return sanitizeString(packageName);
     }
 
     private static String getAppVersion(Context context) {
@@ -79,8 +87,7 @@ public class Util {
             String name = context.getPackageName();
             PackageInfo info = packageManager.getPackageInfo(name, 0);
             String versionName = info.versionName;
-            String result = sanitizeString(versionName);
-            return result;
+            return sanitizeString(versionName);
         } catch (NameNotFoundException e) {
             return UNKNOWN;
         }
@@ -103,8 +110,7 @@ public class Util {
 
     private static String getDeviceName() {
         String deviceName = Build.MODEL;
-        String sanitized = sanitizeString(deviceName);
-        return sanitized;
+        return sanitizeString(deviceName);
     }
 
     private static String getOsName() {
@@ -113,20 +119,17 @@ public class Util {
 
     private static String getOsVersion() {
         String osVersion = "" + Build.VERSION.SDK_INT;
-        String sanitized = sanitizeString(osVersion);
-        return sanitized;
+        return sanitizeString(osVersion);
     }
 
     private static String getLanguage(Locale locale) {
         String language = locale.getLanguage();
-        String sanitized = sanitizeStringShort(language);
-        return sanitized;
+        return sanitizeStringShort(language);
     }
 
     private static String getCountry(Locale locale) {
         String country = locale.getCountry();
-        String sanitized = sanitizeStringShort(country);
-        return sanitized;
+        return sanitizeStringShort(country);
     }
 
     private static String getScreenSize(int screenLayout) {
@@ -134,13 +137,13 @@ public class Util {
 
         switch (screenSize) {
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                return "small";
+                return SMALL;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                return "normal";
+                return NORMAL;
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                return "large";
+                return LARGE;
             case 4:
-                return "xlarge";
+                return XLARGE;
             default:
                 return UNKNOWN;
         }
@@ -151,9 +154,9 @@ public class Util {
 
         switch (screenFormat) {
             case Configuration.SCREENLAYOUT_LONG_YES:
-                return "long";
+                return LONG;
             case Configuration.SCREENLAYOUT_LONG_NO:
-                return "normal";
+                return NORMAL;
             default:
                 return UNKNOWN;
         }
@@ -164,34 +167,31 @@ public class Util {
         int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
 
-        if (density == 0) {
+        if (0 == density) {
             return UNKNOWN;
         } else if (density < low) {
-            return "low";
+            return LOW;
         } else if (density > high) {
-            return "high";
+            return HIGH;
         } else {
-            return "medium";
+            return MEDIUM;
         }
     }
 
     private static String getDisplayWidth(DisplayMetrics displayMetrics) {
         String displayWidth = String.valueOf(displayMetrics.widthPixels);
-        String sanitized = sanitizeString(displayWidth);
-        return sanitized;
+        return sanitizeString(displayWidth);
     }
 
     private static String getDisplayHeight(DisplayMetrics displayMetrics) {
         String displayHeight = String.valueOf(displayMetrics.heightPixels);
-        String sanitized = sanitizeString(displayHeight);
-        return sanitized;
+        return sanitizeString(displayHeight);
     }
 
     protected static String getMacAddress(Context context) {
         String rawAddress = getRawMacAddress(context);
         String upperAddress = rawAddress.toUpperCase(Locale.US);
-        String sanitized = sanitizeString(upperAddress);
-        return sanitized;
+        return sanitizeString(upperAddress);
     }
 
     private static String getRawMacAddress(Context context) {
@@ -215,6 +215,7 @@ public class Util {
                 return wifiAddress;
             }
         } catch (Exception e) {
+            /* no-op */
         }
 
         return "";
@@ -230,12 +231,12 @@ public class Util {
     }
 
     private static String sanitizeString(String string, String defaultString) {
-        if (string == null) {
+        if (TextUtils.isEmpty(string)) {
             string = defaultString;
         }
 
         String result = string.replaceAll("\\s", "");
-        if (result.length() == 0) {
+        if (TextUtils.isEmpty(result)) {
             result = defaultString;
         }
 
@@ -245,11 +246,11 @@ public class Util {
     protected static String loadAddress(String interfaceName) {
         try {
             String filePath = "/sys/class/net/" + interfaceName + "/address";
-            StringBuffer fileData = new StringBuffer(1000);
+            StringBuilder fileData = new StringBuilder(1000);
             BufferedReader reader;
             reader = new BufferedReader(new FileReader(filePath), 1024);
             char[] buf = new char[1024];
-            int numRead = 0;
+            int numRead;
 
             while ((numRead = reader.read(buf)) != -1) {
                 String readData = String.valueOf(buf, 0, numRead);
@@ -257,8 +258,7 @@ public class Util {
             }
 
             reader.close();
-            String address = fileData.toString();
-            return address;
+            return fileData.toString();
         } catch (IOException e) {
             return null;
         }
@@ -276,7 +276,7 @@ public class Util {
             String[] projection = {columnName};
             Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
-            if (cursor == null) {
+            if (null == cursor) {
                 return null;
             }
             if (!cursor.moveToFirst()) {
@@ -293,16 +293,16 @@ public class Util {
     }
 
     protected static String sha1(String text) {
-        return hash(text, "SHA-1");
+        return hash(text, SHA1);
     }
 
     protected static String md5(String text) {
-        return hash(text, "MD5");
+        return hash(text, MD5);
     }
 
     private static String hash(String text, String method) {
         try {
-            byte[] bytes = text.getBytes("UTF-8");
+            byte[] bytes = text.getBytes(ENCODING);
             MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
             byte[] hash = mesd.digest();
