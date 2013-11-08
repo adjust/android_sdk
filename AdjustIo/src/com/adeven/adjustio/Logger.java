@@ -44,7 +44,7 @@ public class Logger {
     /**
      * Use {@link Logger#setLogLevel(com.adeven.adjustio.Logger.LogLevel)} instead
      *
-     * @param androidLogLevel
+     * @param androidLogLevel The log level which can be obtained from one of the {@link Log} constants.
      */
     @Deprecated
     protected static void setLogLevel(int androidLogLevel) {
