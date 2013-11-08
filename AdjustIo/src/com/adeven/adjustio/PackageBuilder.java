@@ -23,32 +23,192 @@ public class PackageBuilder {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     // general
-    protected String appToken;
-    protected String macSha1;
-    protected String macShortMd5;
-    protected String androidId;
-    protected String fbAttributionId;
-    protected String userAgent;
-    protected String clientSdk;
-    protected String environment;
+    private   String appToken;
+    private   String macSha1;
+    private   String macShortMd5;
+    private String androidId;
+    private String fbAttributionId;
+    private String userAgent;
+    private String clientSdk;
+    private String environment;
 
     // sessions
-    protected int    sessionCount;
-    protected int    subsessionCount;
-    protected long   createdAt;
-    protected long   sessionLength;
-    protected long   timeSpent;
-    protected long   lastInterval;
-    protected String defaultTracker;
-    protected String referrer;
+    private int    sessionCount;
+    private int    subsessionCount;
+    private long   createdAt;
+    private long   sessionLength;
+    private long   timeSpent;
+    private long   lastInterval;
+    private String defaultTracker;
+    private String referrer;
 
     // events
-    protected int                 eventCount;
-    protected String              eventToken;
-    protected double              amountInCents;
-    protected Map<String, String> callbackParameters;
+    private int                 eventCount;
+    private String              eventToken;
+    private double              amountInCents;
+    private Map<String, String> callbackParameters;
 
     private static SimpleDateFormat dateFormat;
+
+    public String getAppToken() {
+        return appToken;
+    }
+
+    public void setAppToken(String appToken) {
+        this.appToken = appToken;
+    }
+
+    public String getMacSha1() {
+        return macSha1;
+    }
+
+    public void setMacSha1(String macSha1) {
+        this.macSha1 = macSha1;
+    }
+
+    public String getMacShortMd5() {
+        return macShortMd5;
+    }
+
+    public void setMacShortMd5(String macShortMd5) {
+        this.macShortMd5 = macShortMd5;
+    }
+
+    public String getAndroidId() {
+        return androidId;
+    }
+
+    public void setAndroidId(String androidId) {
+        this.androidId = androidId;
+    }
+
+    public String getFbAttributionId() {
+        return fbAttributionId;
+    }
+
+    public void setFbAttributionId(String fbAttributionId) {
+        this.fbAttributionId = fbAttributionId;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getClientSdk() {
+        return clientSdk;
+    }
+
+    public void setClientSdk(String clientSdk) {
+        this.clientSdk = clientSdk;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(String environment) {
+        this.environment = environment;
+    }
+
+    public int getSessionCount() {
+        return sessionCount;
+    }
+
+    public void setSessionCount(int sessionCount) {
+        this.sessionCount = sessionCount;
+    }
+
+    public int getSubsessionCount() {
+        return subsessionCount;
+    }
+
+    public void setSubsessionCount(int subsessionCount) {
+        this.subsessionCount = subsessionCount;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public long getSessionLength() {
+        return sessionLength;
+    }
+
+    public void setSessionLength(long sessionLength) {
+        this.sessionLength = sessionLength;
+    }
+
+    public long getTimeSpent() {
+        return timeSpent;
+    }
+
+    public void setTimeSpent(long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+
+    public long getLastInterval() {
+        return lastInterval;
+    }
+
+    public void setLastInterval(long lastInterval) {
+        this.lastInterval = lastInterval;
+    }
+
+    public String getDefaultTracker() {
+        return defaultTracker;
+    }
+
+    public void setDefaultTracker(String defaultTracker) {
+        this.defaultTracker = defaultTracker;
+    }
+
+    public String getReferrer() {
+        return referrer;
+    }
+
+    public void setReferrer(String referrer) {
+        this.referrer = referrer;
+    }
+
+    public int getEventCount() {
+        return eventCount;
+    }
+
+    public void setEventCount(int eventCount) {
+        this.eventCount = eventCount;
+    }
+
+    public String getEventToken() {
+        return eventToken;
+    }
+
+    public void setEventToken(String eventToken) {
+        this.eventToken = eventToken;
+    }
+
+    public double getAmountInCents() {
+        return amountInCents;
+    }
+
+    public void setAmountInCents(double amountInCents) {
+        this.amountInCents = amountInCents;
+    }
+
+    public Map<String, String> getCallbackParameters() {
+        return callbackParameters;
+    }
+
+    public void setCallbackParameters(Map<String, String> callbackParameters) {
+        this.callbackParameters = callbackParameters;
+    }
 
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
@@ -57,10 +217,10 @@ public class PackageBuilder {
         addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
-        sessionPackage.path = "/startup";
-        sessionPackage.kind = "session start";
-        sessionPackage.suffix = "";
-        sessionPackage.parameters = parameters;
+        sessionPackage.setPath("/startup");
+        sessionPackage.setKind("session start");
+        sessionPackage.setSuffix("");
+        sessionPackage.setParameters(parameters);
 
         return sessionPackage;
     }
@@ -70,10 +230,10 @@ public class PackageBuilder {
         injectEventParameters(parameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage();
-        eventPackage.path = "/event";
-        eventPackage.kind = "event";
-        eventPackage.suffix = getEventSuffix();
-        eventPackage.parameters = parameters;
+        eventPackage.setPath("/event");
+        eventPackage.setKind("event");
+        eventPackage.setSuffix(getEventSuffix());
+        eventPackage.setParameters(parameters);
 
         return eventPackage;
     }
@@ -84,18 +244,18 @@ public class PackageBuilder {
         addString(parameters, "amount", getAmountString());
 
         ActivityPackage revenuePackage = getDefaultActivityPackage();
-        revenuePackage.path = "/revenue";
-        revenuePackage.kind = "revenue";
-        revenuePackage.suffix = getRevenueSuffix();
-        revenuePackage.parameters = parameters;
+        revenuePackage.setPath("/revenue");
+        revenuePackage.setKind("revenue");
+        revenuePackage.setSuffix(getRevenueSuffix());
+        revenuePackage.setParameters(parameters);
 
         return revenuePackage;
     }
 
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
-        activityPackage.userAgent = userAgent;
-        activityPackage.clientSdk = clientSdk;
+        activityPackage.setUserAgent(userAgent);
+        activityPackage.setClientSdk(clientSdk);
         return activityPackage;
     }
 

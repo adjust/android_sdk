@@ -14,16 +14,60 @@ import java.util.Map;
 
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
-
+    
     // data
-    protected String path;
-    protected String userAgent;
-    protected String clientSdk;
-    protected Map<String, String> parameters;
+    private String path;
+    private String userAgent;
+    private String clientSdk;
+    private Map<String, String> parameters;
 
     // logs
-    protected String kind;
-    protected String suffix;
+    private String kind;
+    private String suffix;
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
+
+    public String getClientSdk() {
+        return clientSdk;
+    }
+
+    public void setClientSdk(String clientSdk) {
+        this.clientSdk = clientSdk;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
+
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+    public void setSuffix(String suffix) {
+        this.suffix = suffix;
+    }
 
     public String toString() {
         return String.format("%s%s", kind, suffix);
