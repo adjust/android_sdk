@@ -54,7 +54,7 @@ public class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", lastInterval);
         addString(parameters, "default_tracker", defaultTracker);
-        addString(parameters, "referrer", referrer);
+        addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.path = "/startup";

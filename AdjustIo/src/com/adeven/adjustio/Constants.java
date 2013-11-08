@@ -30,4 +30,6 @@ public class Constants {
     protected static final String MEDIUM                    = "medium";
     protected static final String HIGH                      = "high";
     protected static final String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";
+    protected static final String MALFORMED                 = "malformed";
+    protected static final String REFERRER                  = "referrer";
 }
