@@ -96,8 +96,8 @@ public class ActivityHandler extends HandlerThread {
 
     protected void trackEvent(String eventToken, Map<String, String> parameters) {
         PackageBuilder builder = new PackageBuilder();
-        builder.eventToken = eventToken;
-        builder.callbackParameters = parameters;
+        builder.setEventToken(eventToken);
+        builder.setCallbackParameters(parameters);
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.EVENT;
@@ -107,9 +107,9 @@ public class ActivityHandler extends HandlerThread {
 
     protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
         PackageBuilder builder = new PackageBuilder();
-        builder.amountInCents = amountInCents;
-        builder.eventToken = eventToken;
-        builder.callbackParameters = parameters;
+        builder.setAmountInCents(amountInCents);
+        builder.setEventToken(eventToken);
+        builder.setCallbackParameters(parameters);
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.REVENUE;
@@ -268,10 +268,10 @@ public class ActivityHandler extends HandlerThread {
         if (!checkActivityState(activityState)) {
             return;
         }
-        if (!checkEventTokenNotNull(eventBuilder.eventToken)) {
+        if (!checkEventTokenNotNull(eventBuilder.getEventToken())) {
             return;
         }
-        if (!checkEventTokenLength(eventBuilder.eventToken)) {
+        if (!checkEventTokenLength(eventBuilder.getEventToken())) {
             return;
         }
 
@@ -285,7 +285,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (bufferEvents) {
-            Logger.info(String.format("Buffered event%s", eventPackage.suffix));
+            Logger.info(String.format("Buffered event%s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
         }
@@ -302,10 +302,10 @@ public class ActivityHandler extends HandlerThread {
         if (!checkActivityState(activityState)) {
             return;
         }
-        if (!checkAmount(revenueBuilder.amountInCents)) {
+        if (!checkAmount(revenueBuilder.getAmountInCents())) {
             return;
         }
-        if (!checkEventTokenLength(revenueBuilder.eventToken)) {
+        if (!checkEventTokenLength(revenueBuilder.getEventToken())) {
             return;
         }
 
@@ -319,7 +319,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (bufferEvents) {
-            Logger.info(String.format("Buffered revenue %s", eventPackage.suffix));
+            Logger.info(String.format("Buffered revenue %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
         }
@@ -414,20 +414,20 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
-        builder.appToken = appToken;
-        builder.macShortMd5 = macShortMd5;
-        builder.macSha1 = macSha1;
-        builder.androidId = androidId;
-        builder.fbAttributionId = fbAttributionId;
-        builder.userAgent = userAgent;
-        builder.clientSdk = clientSdk;
-        builder.environment = environment;
-        builder.defaultTracker = defaultTracker;
+        builder.setAppToken(appToken);
+        builder.setMacShortMd5(macShortMd5);
+        builder.setMacSha1(macSha1);
+        builder.setAndroidId(androidId);
+        builder.setFbAttributionId(fbAttributionId);
+        builder.setUserAgent(userAgent);
+        builder.setClientSdk(clientSdk);
+        builder.setEnvironment(environment);
+        builder.setDefaultTracker(defaultTracker);
     }
 
     private void injectReferrer(PackageBuilder builder) {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        builder.referrer = preferences.getString(ReferrerReceiver.REFERRER_KEY, null);
+        builder.setReferrer(preferences.getString(ReferrerReceiver.REFERRER_KEY, null));
     }
 
     private void startTimer() {

@@ -51,12 +51,12 @@ public class ActivityState implements Serializable {
 
     protected void injectSessionAttributes(PackageBuilder builder) {
         injectGeneralAttributes(builder);
-        builder.lastInterval = lastInterval;
+        builder.setLastInterval(lastInterval);
     }
 
     protected void injectEventAttributes(PackageBuilder builder) {
         injectGeneralAttributes(builder);
-        builder.eventCount = eventCount;
+        builder.setEventCount(eventCount);
     }
 
     public String toString() {
@@ -77,10 +77,10 @@ public class ActivityState implements Serializable {
     }
 
     private void injectGeneralAttributes(PackageBuilder builder) {
-        builder.sessionCount = sessionCount;
-        builder.subsessionCount = subsessionCount;
-        builder.sessionLength = sessionLength;
-        builder.timeSpent = timeSpent;
-        builder.createdAt = createdAt;
+        builder.setSessionCount(sessionCount);
+        builder.setSubsessionCount(subsessionCount);
+        builder.setSessionLength(sessionLength);
+        builder.setTimeSpent(timeSpent);
+        builder.setCreatedAt(createdAt);
     }
 }

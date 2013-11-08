@@ -172,16 +172,16 @@ public class RequestHandler extends HandlerThread {
 
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = Util.BASE_URL + activityPackage.path;
+        String url = Util.BASE_URL + activityPackage.getPath();
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
-        request.addHeader("User-Agent", activityPackage.userAgent);
-        request.addHeader("Client-SDK", activityPackage.clientSdk);
+        request.addHeader("User-Agent", activityPackage.getUserAgent());
+        request.addHeader("Client-SDK", activityPackage.getClientSdk());
         request.addHeader("Accept-Language", language);
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entity : activityPackage.parameters.entrySet()) {
+        for (Map.Entry<String, String> entity : activityPackage.getParameters().entrySet()) {
             NameValuePair pair = new BasicNameValuePair(entity.getKey(), entity.getValue());
             pairs.add(pair);
         }
