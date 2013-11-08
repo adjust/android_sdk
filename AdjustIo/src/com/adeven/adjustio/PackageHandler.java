@@ -10,10 +10,7 @@
 package com.adeven.adjustio;
 
 import android.content.Context;
-import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -24,7 +21,6 @@ import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -34,7 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PackageHandler extends HandlerThread {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
-    private final InternalHandler       internalHandler;
     private       RequestHandler        requestHandler;
     private       List<ActivityPackage> packageQueue;
     private       AtomicBoolean         isSending;
@@ -45,36 +40,24 @@ public class PackageHandler extends HandlerThread {
         super(Logger.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        this.internalHandler = new InternalHandler(getLooper(), this);
-
         this.context = context;
-
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
+        initInternal();
     }
 
     // add a package to the queue, trigger sending
     protected void addPackage(ActivityPackage pack) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.ADD;
-        message.obj = pack;
-        internalHandler.sendMessage(message);
+        addInternal(pack);
     }
 
     // try to send the oldest package
     protected void sendFirstPackage() {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_FIRST;
-        internalHandler.sendMessage(message);
+        sendFirstInternal();
     }
 
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     protected void sendNextPackage() {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_NEXT;
-        internalHandler.sendMessage(message);
+        sendNextInternal();
     }
 
     // close the package to retry in the future (after temporary failure)
@@ -90,46 +73,6 @@ public class PackageHandler extends HandlerThread {
     // allow sending requests again
     protected void resumeSending() {
         paused = false;
-    }
-
-    private static final class InternalHandler extends Handler {
-        private static final int INIT       = 1;
-        private static final int ADD        = 2;
-        private static final int SEND_NEXT  = 3;
-        private static final int SEND_FIRST = 4;
-
-        private final WeakReference<PackageHandler> packageHandlerReference;
-
-        protected InternalHandler(Looper looper, PackageHandler packageHandler) {
-            super(looper);
-            this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            PackageHandler packageHandler = packageHandlerReference.get();
-            if (null == packageHandler) {
-                return;
-            }
-
-            switch (message.arg1) {
-                case INIT:
-                    packageHandler.initInternal();
-                    break;
-                case ADD:
-                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    packageHandler.addInternal(activityPackage);
-                    break;
-                case SEND_FIRST:
-                    packageHandler.sendFirstInternal();
-                    break;
-                case SEND_NEXT:
-                    packageHandler.sendNextInternal();
-                    break;
-            }
-        }
     }
 
     // internal methods run in dedicated queue thread
