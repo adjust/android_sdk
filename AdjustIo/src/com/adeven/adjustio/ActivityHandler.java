@@ -16,10 +16,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import static com.adeven.adjustio.Constants.ONE_MINUTE;
 import static com.adeven.adjustio.Constants.ONE_SECOND;
@@ -37,7 +34,6 @@ import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
-import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -51,7 +47,6 @@ public class ActivityHandler extends HandlerThread {
     private static final long   SUBSESSION_INTERVAL = ONE_SECOND;
     private static final String TIME_TRAVEL         = "Time travel!";
 
-    private final  SessionHandler           sessionHandler;
     private        PackageHandler           packageHandler;
     private        ActivityState            activityState;
     private static ScheduledExecutorService timer;
@@ -72,25 +67,17 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        sessionHandler = new SessionHandler(getLooper(), this);
 
         this.context = activity.getApplicationContext();
-
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.INIT;
-        sessionHandler.sendMessage(message);
+        initInternal();
     }
 
     protected void trackSubsessionStart() {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.START;
-        sessionHandler.sendMessage(message);
+        startInternal();
     }
 
     protected void trackSubsessionEnd() {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.END;
-        sessionHandler.sendMessage(message);
+        endInternal();
     }
 
     protected void trackEvent(String eventToken, Map<String, String> parameters) {
@@ -98,10 +85,7 @@ public class ActivityHandler extends HandlerThread {
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.EVENT;
-        message.obj = builder;
-        sessionHandler.sendMessage(message);
+        trackEventInternal(builder);
     }
 
     protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
@@ -110,70 +94,13 @@ public class ActivityHandler extends HandlerThread {
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.REVENUE;
-        message.obj = builder;
-        sessionHandler.sendMessage(message);
-    }
-
-    private static final class SessionHandler extends Handler {
-        private static final int INIT    = 72630;
-        private static final int START   = 72640;
-        private static final int END     = 72650;
-        private static final int EVENT   = 72660;
-        private static final int REVENUE = 72670;
-
-        private final WeakReference<ActivityHandler> sessionHandlerReference;
-
-        protected SessionHandler(Looper looper, ActivityHandler sessionHandler) {
-            super(looper);
-            this.sessionHandlerReference = new WeakReference<ActivityHandler>(sessionHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            ActivityHandler sessionHandler = sessionHandlerReference.get();
-            if (sessionHandler == null) {
-                return;
-            }
-
-            switch (message.arg1) {
-                case INIT:
-                    sessionHandler.initInternal();
-                    break;
-                case START:
-                    sessionHandler.startInternal();
-                    break;
-                case END:
-                    sessionHandler.endInternal();
-                    break;
-                case EVENT:
-                    PackageBuilder eventBuilder = (PackageBuilder) message.obj;
-                    sessionHandler.eventInternal(eventBuilder);
-                    break;
-                case REVENUE:
-                    PackageBuilder revenueBuilder = (PackageBuilder) message.obj;
-                    sessionHandler.revenueInternal(revenueBuilder);
-                    break;
-            }
-        }
+        trackRevenueInternal(builder);
     }
 
     private void initInternal() {
         processApplicationBundle();
 
-        if (!checkAppTokenNotNull(appToken)) {
-            return;
-        }
-        if (!checkAppTokenLength(appToken)) {
-            return;
-        }
-        if (!checkContext(context)) {
-            return;
-        }
-        if (!checkPermissions(context)) {
+        if (!canInit()) {
             return;
         }
 
@@ -189,6 +116,11 @@ public class ActivityHandler extends HandlerThread {
 
         packageHandler = new PackageHandler(context);
         readActivityState();
+    }
+
+    private boolean canInit() {
+        return checkAppTokenNotNull(appToken) && checkAppTokenLength(appToken) && checkContext(context) &&
+          checkPermissions(context);
     }
 
     private void startInternal() {
@@ -260,17 +192,8 @@ public class ActivityHandler extends HandlerThread {
         writeActivityState();
     }
 
-    private void eventInternal(PackageBuilder eventBuilder) {
-        if (!checkAppTokenNotNull(appToken)) {
-            return;
-        }
-        if (!checkActivityState(activityState)) {
-            return;
-        }
-        if (!checkEventTokenNotNull(eventBuilder.getEventToken())) {
-            return;
-        }
-        if (!checkEventTokenLength(eventBuilder.getEventToken())) {
+    private void trackEventInternal(PackageBuilder eventBuilder) {
+        if (!canTrackRevenueOrEvent(eventBuilder)) {
             return;
         }
 
@@ -294,17 +217,8 @@ public class ActivityHandler extends HandlerThread {
     }
 
 
-    private void revenueInternal(PackageBuilder revenueBuilder) {
-        if (!checkAppTokenNotNull(appToken)) {
-            return;
-        }
-        if (!checkActivityState(activityState)) {
-            return;
-        }
-        if (!checkAmount(revenueBuilder.getAmountInCents())) {
-            return;
-        }
-        if (!checkEventTokenLength(revenueBuilder.getEventToken())) {
+    private void trackRevenueInternal(PackageBuilder revenueBuilder) {
+        if (!canTrackRevenueOrEvent(revenueBuilder)) {
             return;
         }
 
@@ -325,6 +239,12 @@ public class ActivityHandler extends HandlerThread {
 
         writeActivityState();
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
+    }
+
+    private boolean canTrackRevenueOrEvent(PackageBuilder revenueBuilder) {
+        return checkAppTokenNotNull(appToken) && checkActivityState(activityState) &&
+          checkAmount(revenueBuilder.getAmountInCents()) && checkEventToken(revenueBuilder.getEventToken());
+
     }
 
     private void updateActivityState() {
@@ -572,17 +492,11 @@ public class ActivityHandler extends HandlerThread {
         return true;
     }
 
-    private static boolean checkEventTokenNotNull(String eventToken) {
+    private static boolean checkEventToken(String eventToken) {
         if (eventToken == null) {
             Logger.error("Missing Event Token");
-            return false;
-        }
-        return true;
-    }
 
-    private static boolean checkEventTokenLength(String eventToken) {
-        if (eventToken == null) {
-            return true;
+            return false;
         }
 
         if (eventToken.length() != 6) {
