@@ -51,6 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final long TIMER_INTERVAL      = ONE_MINUTE;
     private static final long SESSION_INTERVAL    = THIRTY_SECONDS;
     private static final long SUBSESSION_INTERVAL = ONE_SECOND;
+    private static final String TIME_TRAVEL = "Time travel!";
 
     private final  InternalHandler          internalHandler;
     private        PackageHandler           packageHandler;
@@ -217,7 +218,7 @@ public class ActivityHandler extends HandlerThread {
 
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
-            Logger.error("Time travel!");
+            Logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             writeActivityState();
             return;
@@ -275,8 +276,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        long now = new Date().getTime();
-        activityState.createdAt = now;
+        activityState.createdAt = System.currentTimeMillis();
         activityState.eventCount++;
         updateActivityState();
 
@@ -310,8 +310,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        long now = new Date().getTime();
-        activityState.createdAt = now;
+        activityState.createdAt = System.currentTimeMillis();
         activityState.eventCount++;
         updateActivityState();
 
@@ -338,7 +337,7 @@ public class ActivityHandler extends HandlerThread {
         long now = new Date().getTime();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
-            Logger.error("Time travel!");
+            Logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             return;
         }
@@ -499,10 +498,10 @@ public class ActivityHandler extends HandlerThread {
             Logger.Assert("Missing environment");
             Logger.setLogLevel(Log.ASSERT);
             environment = UNKNOWN;
-        } else if (environment.equalsIgnoreCase("sandbox")) {
+        } else if ("sandbox".equalsIgnoreCase(environment)) {
             Logger.Assert(
               "SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
-        } else if (environment.equalsIgnoreCase("production")) {
+        } else if ("production".equalsIgnoreCase(environment)) {
             Logger.Assert(
               "PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
             Logger.setLogLevel(Log.ASSERT);
