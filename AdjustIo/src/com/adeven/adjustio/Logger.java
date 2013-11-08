@@ -11,9 +11,10 @@ package com.adeven.adjustio;
 
 import android.util.Log;
 
-public class Logger {
-    protected static final String LOGTAG = "AdjustIo";
 
+public class Logger {
+    
+    protected static final String LOGTAG = "AdjustIo";
     private static int logLevel = Log.INFO;
 
     protected static void setLogLevel(int logLevel) {

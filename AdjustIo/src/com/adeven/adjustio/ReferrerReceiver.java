@@ -12,6 +12,7 @@ import java.net.URLDecoder;
 // http://blog.appington.com/2012/08/01/giving-credit-for-android-app-installs
 
 public class ReferrerReceiver extends BroadcastReceiver {
+
     protected static final String REFERRER_KEY = "AdjustIoInstallReferrer";
 
     @Override
