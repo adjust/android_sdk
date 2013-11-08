@@ -39,7 +39,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -48,10 +47,10 @@ import java.util.concurrent.TimeUnit;
 
 public class ActivityHandler extends HandlerThread {
 
-    private static final long TIMER_INTERVAL      = ONE_MINUTE;
-    private static final long SESSION_INTERVAL    = THIRTY_SECONDS;
-    private static final long SUBSESSION_INTERVAL = ONE_SECOND;
-    private static final String TIME_TRAVEL = "Time travel!";
+    private static final long   TIMER_INTERVAL      = ONE_MINUTE;
+    private static final long   SESSION_INTERVAL    = THIRTY_SECONDS;
+    private static final long   SUBSESSION_INTERVAL = ONE_SECOND;
+    private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  InternalHandler          internalHandler;
     private        PackageHandler           packageHandler;
@@ -201,7 +200,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.resumeSending();
         startTimer();
 
-        long now = new Date().getTime();
+        long now = System.currentTimeMillis();
 
         // very first session
         if (activityState == null) {
@@ -334,7 +333,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        long now = new Date().getTime();
+        long now = System.currentTimeMillis();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             Logger.error(TIME_TRAVEL);
