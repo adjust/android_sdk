@@ -485,22 +485,12 @@ public class ActivityHandler extends HandlerThread {
 
         // logLevel
         String logLevel = bundle.getString("AdjustIoLogLevel");
-        if (logLevel == null) {
-            ;
-        } else if (logLevel.equalsIgnoreCase("verbose")) {
-            Logger.setLogLevel(Log.VERBOSE);
-        } else if (logLevel.equalsIgnoreCase("debug")) {
-            Logger.setLogLevel(Log.DEBUG);
-        } else if (logLevel.equalsIgnoreCase("info")) {
-            Logger.setLogLevel(Log.INFO);
-        } else if (logLevel.equalsIgnoreCase("warn")) {
-            Logger.setLogLevel(Log.WARN);
-        } else if (logLevel.equalsIgnoreCase("error")) {
-            Logger.setLogLevel(Log.ERROR);
-        } else if (logLevel.equalsIgnoreCase("assert")) {
-            Logger.setLogLevel(Log.ASSERT);
-        } else {
-            Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+        if (null != logLevel) {
+            try {
+                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel).getAndroidLogLevel());
+            } catch (IllegalArgumentException iae) {
+                /* no-op */
+            }
         }
 
         // environment
