@@ -285,7 +285,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (bufferEvents) {
-            Logger.info(String.format("Buffered event%s", eventPackage.getSuffix()));
+            Logger.info(String.format("Buffered event %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
         }
