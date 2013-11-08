@@ -32,4 +32,8 @@ public class Constants {
     protected static final String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";
     protected static final String MALFORMED                 = "malformed";
     protected static final String REFERRER                  = "referrer";
+    
+    protected static final String ENCODING = "UTF-8";
+    protected static final String MD5 = "MD5";
+    protected static final String SHA1 = "SHA-1";
 }

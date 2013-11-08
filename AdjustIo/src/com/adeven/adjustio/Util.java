@@ -23,12 +23,15 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import static com.adeven.adjustio.Constants.ENCODING;
 import static com.adeven.adjustio.Constants.HIGH;
 import static com.adeven.adjustio.Constants.LARGE;
 import static com.adeven.adjustio.Constants.LONG;
 import static com.adeven.adjustio.Constants.LOW;
+import static com.adeven.adjustio.Constants.MD5;
 import static com.adeven.adjustio.Constants.MEDIUM;
 import static com.adeven.adjustio.Constants.NORMAL;
+import static com.adeven.adjustio.Constants.SHA1;
 import static com.adeven.adjustio.Constants.SMALL;
 import static com.adeven.adjustio.Constants.UNKNOWN;
 import static com.adeven.adjustio.Constants.XLARGE;
@@ -290,16 +293,16 @@ public class Util {
     }
 
     protected static String sha1(String text) {
-        return hash(text, "SHA-1");
+        return hash(text, SHA1);
     }
 
     protected static String md5(String text) {
-        return hash(text, "MD5");
+        return hash(text, MD5);
     }
 
     private static String hash(String text, String method) {
         try {
-            byte[] bytes = text.getBytes("UTF-8");
+            byte[] bytes = text.getBytes(ENCODING);
             MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
             byte[] hash = mesd.digest();
