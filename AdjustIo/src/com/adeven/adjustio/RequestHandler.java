@@ -38,9 +38,8 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 public class RequestHandler extends HandlerThread {
-    private static final int ONE_MINUTE         = 1000 * 60;
-    private static final int CONNECTION_TIMEOUT = ONE_MINUTE;
-    private static final int SOCKET_TIMEOUT     = ONE_MINUTE;
+    private static final int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
+    private static final int SOCKET_TIMEOUT     = Constants.ONE_MINUTE;
 
     private InternalHandler internalHandler;
     private PackageHandler  packageHandler;

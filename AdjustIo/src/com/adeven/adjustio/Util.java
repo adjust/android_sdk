@@ -23,6 +23,15 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import static com.adeven.adjustio.Constants.HIGH;
+import static com.adeven.adjustio.Constants.LARGE;
+import static com.adeven.adjustio.Constants.LONG;
+import static com.adeven.adjustio.Constants.LOW;
+import static com.adeven.adjustio.Constants.MEDIUM;
+import static com.adeven.adjustio.Constants.NORMAL;
+import static com.adeven.adjustio.Constants.SMALL;
+import static com.adeven.adjustio.Constants.UNKNOWN;
+import static com.adeven.adjustio.Constants.XLARGE;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,7 +47,6 @@ public class Util {
     protected static final String BASE_URL   = "https://app.adjust.io";
     protected static final String CLIENT_SDK = "android2.1.1";
 
-    private static final String UNKNOWN = "unknown";
 
     protected static String getUserAgent(Context context) {
         Resources resources = context.getResources();
@@ -126,13 +134,13 @@ public class Util {
 
         switch (screenSize) {
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                return "small";
+                return SMALL;
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                return "normal";
+                return NORMAL;
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                return "large";
+                return LARGE;
             case 4:
-                return "xlarge";
+                return XLARGE;
             default:
                 return UNKNOWN;
         }
@@ -143,9 +151,9 @@ public class Util {
 
         switch (screenFormat) {
             case Configuration.SCREENLAYOUT_LONG_YES:
-                return "long";
+                return LONG;
             case Configuration.SCREENLAYOUT_LONG_NO:
-                return "normal";
+                return NORMAL;
             default:
                 return UNKNOWN;
         }
@@ -159,11 +167,11 @@ public class Util {
         if (density == 0) {
             return UNKNOWN;
         } else if (density < low) {
-            return "low";
+            return LOW;
         } else if (density > high) {
-            return "high";
+            return HIGH;
         } else {
-            return "medium";
+            return MEDIUM;
         }
     }
 
