@@ -21,7 +21,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import static com.adeven.adjustio.Constants.ONE_MINUTE;
 import static com.adeven.adjustio.Constants.ONE_SECOND;
 import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
@@ -485,7 +484,7 @@ public class ActivityHandler extends HandlerThread {
         String logLevel = bundle.getString("AdjustIoLogLevel");
         if (null != logLevel) {
             try {
-                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel).getAndroidLogLevel());
+                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel));
             } catch (IllegalArgumentException iae) {
                 /* no-op */
             }
@@ -495,7 +494,7 @@ public class ActivityHandler extends HandlerThread {
         environment = bundle.getString("AdjustIoEnvironment");
         if (environment == null) {
             Logger.Assert("Missing environment");
-            Logger.setLogLevel(Log.ASSERT);
+            Logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = UNKNOWN;
         } else if ("sandbox".equalsIgnoreCase(environment)) {
             Logger.Assert(
@@ -503,10 +502,10 @@ public class ActivityHandler extends HandlerThread {
         } else if ("production".equalsIgnoreCase(environment)) {
             Logger.Assert(
               "PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
-            Logger.setLogLevel(Log.ASSERT);
+            Logger.setLogLevel(Logger.LogLevel.ASSERT);
         } else {
             Logger.Assert(String.format("Malformed environment '%s'", environment));
-            Logger.setLogLevel(Log.ASSERT);
+            Logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = Constants.MALFORMED;
         }
 
