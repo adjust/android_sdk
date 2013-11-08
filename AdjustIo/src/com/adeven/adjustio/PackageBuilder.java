@@ -106,80 +106,41 @@ public class PackageBuilder {
         this.clientSdk = clientSdk;
     }
 
-    public String getEnvironment() {
-        return environment;
-    }
-
     public void setEnvironment(String environment) {
         this.environment = environment;
     }
 
-    public int getSessionCount() {
-        return sessionCount;
-    }
 
     public void setSessionCount(int sessionCount) {
         this.sessionCount = sessionCount;
-    }
-
-    public int getSubsessionCount() {
-        return subsessionCount;
     }
 
     public void setSubsessionCount(int subsessionCount) {
         this.subsessionCount = subsessionCount;
     }
 
-    public long getCreatedAt() {
-        return createdAt;
-    }
-
     public void setCreatedAt(long createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public long getSessionLength() {
-        return sessionLength;
     }
 
     public void setSessionLength(long sessionLength) {
         this.sessionLength = sessionLength;
     }
 
-    public long getTimeSpent() {
-        return timeSpent;
-    }
-
     public void setTimeSpent(long timeSpent) {
         this.timeSpent = timeSpent;
-    }
-
-    public long getLastInterval() {
-        return lastInterval;
     }
 
     public void setLastInterval(long lastInterval) {
         this.lastInterval = lastInterval;
     }
 
-    public String getDefaultTracker() {
-        return defaultTracker;
-    }
-
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
     }
 
-    public String getReferrer() {
-        return referrer;
-    }
-
     public void setReferrer(String referrer) {
         this.referrer = referrer;
-    }
-
-    public int getEventCount() {
-        return eventCount;
     }
 
     public void setEventCount(int eventCount) {
@@ -202,10 +163,6 @@ public class PackageBuilder {
         this.amountInCents = amountInCents;
     }
 
-    public Map<String, String> getCallbackParameters() {
-        return callbackParameters;
-    }
-
     public void setCallbackParameters(Map<String, String> callbackParameters) {
         this.callbackParameters = callbackParameters;
     }
@@ -217,8 +174,7 @@ public class PackageBuilder {
         addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
-        sessionPackage.setPath("/startup");
-        sessionPackage.setKind("session start");
+        sessionPackage.setType(ActivityPackage.PackageType.SESSION_START);
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
 
@@ -230,8 +186,7 @@ public class PackageBuilder {
         injectEventParameters(parameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage();
-        eventPackage.setPath("/event");
-        eventPackage.setKind("event");
+        eventPackage.setType(ActivityPackage.PackageType.EVENT);
         eventPackage.setSuffix(getEventSuffix());
         eventPackage.setParameters(parameters);
 
@@ -244,8 +199,7 @@ public class PackageBuilder {
         addString(parameters, "amount", getAmountString());
 
         ActivityPackage revenuePackage = getDefaultActivityPackage();
-        revenuePackage.setPath("/revenue");
-        revenuePackage.setKind("revenue");
+        revenuePackage.setType(ActivityPackage.PackageType.REVENUE);
         revenuePackage.setSuffix(getRevenueSuffix());
         revenuePackage.setParameters(parameters);
 
