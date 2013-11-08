@@ -134,7 +134,7 @@ public class ActivityHandler extends HandlerThread {
         long now = System.currentTimeMillis();
 
         // very first session
-        if (activityState == null) {
+        if (null == activityState) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
             activityState.createdAt = now;  // starting now
@@ -393,7 +393,7 @@ public class ActivityHandler extends HandlerThread {
 
     private void processApplicationBundle() {
         Bundle bundle = getApplicationBundle();
-        if (bundle == null) {
+        if (null == bundle) {
             return;
         }
 
@@ -412,7 +412,7 @@ public class ActivityHandler extends HandlerThread {
 
         // environment
         environment = bundle.getString("AdjustIoEnvironment");
-        if (environment == null) {
+        if (null == environment) {
             Logger.Assert("Missing environment");
             Logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = UNKNOWN;
@@ -450,7 +450,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkContext(Context context) {
-        if (context == null) {
+        if (null == context) {
             Logger.error("Missing context");
             return false;
         }
@@ -463,7 +463,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkActivityState(ActivityState activityState) {
-        if (activityState == null) {
+        if (null == activityState) {
             Logger.error("Missing activity state.");
             return false;
         }
@@ -471,7 +471,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkAppTokenNotNull(String appToken) {
-        if (appToken == null) {
+        if (null == appToken) {
             Logger.error("Missing App Token.");
             return false;
         }
@@ -479,7 +479,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkAppTokenLength(String appToken) {
-        if (appToken.length() != 12) {
+        if (12 != appToken.length()) {
             Logger.error(String.format("Malformed App Token '%s'", appToken));
             return false;
         }
@@ -487,7 +487,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkEventToken(String eventToken) {
-        if (eventToken == null) {
+        if (null == eventToken) {
             Logger.error("Missing Event Token");
 
             return false;
