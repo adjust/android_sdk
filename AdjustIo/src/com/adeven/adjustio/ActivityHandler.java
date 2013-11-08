@@ -320,7 +320,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (bufferEvents) {
-            Logger.info(String.format("Buffered revenue%s", eventPackage.suffix));
+            Logger.info(String.format("Buffered revenue %s", eventPackage.suffix));
         } else {
             packageHandler.sendFirstPackage();
         }
