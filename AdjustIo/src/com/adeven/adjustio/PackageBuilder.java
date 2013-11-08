@@ -50,56 +50,28 @@ public class PackageBuilder {
 
     private static SimpleDateFormat dateFormat;
 
-    public String getAppToken() {
-        return appToken;
-    }
-
     public void setAppToken(String appToken) {
         this.appToken = appToken;
-    }
-
-    public String getMacSha1() {
-        return macSha1;
     }
 
     public void setMacSha1(String macSha1) {
         this.macSha1 = macSha1;
     }
 
-    public String getMacShortMd5() {
-        return macShortMd5;
-    }
-
     public void setMacShortMd5(String macShortMd5) {
         this.macShortMd5 = macShortMd5;
-    }
-
-    public String getAndroidId() {
-        return androidId;
     }
 
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
     }
 
-    public String getFbAttributionId() {
-        return fbAttributionId;
-    }
-
     public void setFbAttributionId(String fbAttributionId) {
         this.fbAttributionId = fbAttributionId;
     }
 
-    public String getUserAgent() {
-        return userAgent;
-    }
-
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-
-    public String getClientSdk() {
-        return clientSdk;
     }
 
     public void setClientSdk(String clientSdk) {
