@@ -23,9 +23,9 @@ public class PackageBuilder {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     // general
-    private   String appToken;
-    private   String macSha1;
-    private   String macShortMd5;
+    private String appToken;
+    private String macSha1;
+    private String macShortMd5;
     private String androidId;
     private String fbAttributionId;
     private String userAgent;
