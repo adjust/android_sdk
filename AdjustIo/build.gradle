@@ -21,12 +21,12 @@ dependencies {
 
 android {
   buildToolsVersion '18.1'
-  compileSdkVersion 18
+  compileSdkVersion 19
   defaultConfig {
     versionCode 11
     versionName '2.1.1'
     minSdkVersion 8
-    targetSdkVersion 18
+    targetSdkVersion 19
   }
   sourceSets {
     main {
