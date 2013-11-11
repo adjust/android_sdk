@@ -93,7 +93,7 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void sendFirstInternal() {
-        if (0 == packageQueue.size()) {
+        if (packageQueue.isEmpty()) {
             return;
         }
 

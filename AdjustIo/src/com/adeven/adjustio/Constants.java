@@ -14,26 +14,29 @@ package com.adeven.adjustio;
  * @author keyboardsurfer
  * @since 8.11.13
  */
-public class Constants {
-    protected static final int ONE_SECOND     = 1000;
-    protected static final int THIRTY_SECONDS = ONE_SECOND * 30;
-    protected static final int ONE_MINUTE     = 60 * ONE_SECOND;
+public interface Constants {
+    int ONE_SECOND     = 1000;
+    int THIRTY_SECONDS = ONE_SECOND * 30;
+    int ONE_MINUTE     = 60 * ONE_SECOND;
+ 
+    String BASE_URL   = "https://app.adjust.io";
+    String CLIENT_SDK = "android2.1.1";
 
-    protected static final String UNKNOWN                   = "unknown";
-    protected static final String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
-    protected static final String SMALL                     = "small";
-    protected static final String NORMAL                    = "normal";
-    protected static final String LONG                      = "long";
-    protected static final String LARGE                     = "large";
-    protected static final String XLARGE                    = "xlarge";
-    protected static final String LOW                       = "low";
-    protected static final String MEDIUM                    = "medium";
-    protected static final String HIGH                      = "high";
-    protected static final String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";
-    protected static final String MALFORMED                 = "malformed";
-    protected static final String REFERRER                  = "referrer";
+    String UNKNOWN                   = "unknown";
+    String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
+    String SMALL                     = "small";
+    String NORMAL                    = "normal";
+    String LONG                      = "long";
+    String LARGE                     = "large";
+    String XLARGE                    = "xlarge";
+    String LOW                       = "low";
+    String MEDIUM                    = "medium";
+    String HIGH                      = "high";
+    String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";
+    String MALFORMED                 = "malformed";
+    String REFERRER                  = "referrer";
 
-    protected static final String ENCODING = "UTF-8";
-    protected static final String MD5      = "MD5";
-    protected static final String SHA1     = "SHA-1";
+    String ENCODING = "UTF-8";
+    String MD5      = "MD5";
+    String SHA1     = "SHA-1";
 }
