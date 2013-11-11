@@ -172,7 +172,7 @@ public class RequestHandler extends HandlerThread {
 
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = Util.BASE_URL + activityPackage.getPath();
+        String url = Constants.BASE_URL + activityPackage.getPath();
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
