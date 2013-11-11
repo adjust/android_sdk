@@ -112,7 +112,7 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
-        clientSdk = Util.CLIENT_SDK;
+        clientSdk = Constants.CLIENT_SDK;
 
         packageHandler = new PackageHandler(context);
         readActivityState();
