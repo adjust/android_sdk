@@ -9,6 +9,11 @@
 
 package com.adeven.adjustio;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -25,22 +30,16 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-
 // persistent
 public class PackageHandler extends HandlerThread {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
-    private InternalHandler internalHandler;
-    private RequestHandler requestHandler;
-    private List<ActivityPackage> packageQueue;
-    private AtomicBoolean isSending;
-    private boolean paused;
-    private Context context;
+    private final InternalHandler       internalHandler;
+    private       RequestHandler        requestHandler;
+    private       List<ActivityPackage> packageQueue;
+    private       AtomicBoolean         isSending;
+    private       boolean               paused;
+    private final Context               context;
 
     protected PackageHandler(Context context) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -106,26 +105,29 @@ public class PackageHandler extends HandlerThread {
             this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
         }
 
+        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
             PackageHandler packageHandler = packageHandlerReference.get();
-            if (packageHandler == null) return;
+            if (null == packageHandler) {
+                return;
+            }
 
             switch (message.arg1) {
-            case INIT:
-                packageHandler.initInternal();
-                break;
-            case ADD:
-                ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                packageHandler.addInternal(activityPackage);
-                break;
-            case SEND_FIRST:
-                packageHandler.sendFirstInternal();
-                break;
-            case SEND_NEXT:
-                packageHandler.sendNextInternal();
-                break;
+                case INIT:
+                    packageHandler.initInternal();
+                    break;
+                case ADD:
+                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
+                    packageHandler.addInternal(activityPackage);
+                    break;
+                case SEND_FIRST:
+                    packageHandler.sendFirstInternal();
+                    break;
+                case SEND_NEXT:
+                    packageHandler.sendNextInternal();
+                    break;
             }
         }
     }
@@ -141,14 +143,16 @@ public class PackageHandler extends HandlerThread {
 
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
-        Logger.debug(String.format(Locale.US, "Added package %d (%s)",  packageQueue.size(), newPackage));
+        Logger.debug(String.format(Locale.US, "Added package %d (%s)", packageQueue.size(), newPackage));
         Logger.verbose(newPackage.getExtendedString());
 
         writePackageQueue();
     }
 
     private void sendFirstInternal() {
-        if (packageQueue.size() == 0) return;
+        if (packageQueue.isEmpty()) {
+            return;
+        }
 
         if (paused) {
             Logger.debug("Package handler is paused");
@@ -183,24 +187,20 @@ public class PackageHandler extends HandlerThread {
                 Logger.debug(String.format(Locale.US, "Package handler read %d packages", packageQueue.size()));
                 this.packageQueue = packageQueue;
                 return;
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 Logger.error("Failed to find package queue class");
-            }
-            catch (OptionalDataException e) {} catch (IOException e) {
+            } catch (OptionalDataException e) {
+                /* no-op */
+            } catch (IOException e) {
                 Logger.error("Failed to read package queue object");
-            }
-            catch (ClassCastException e) {
+            } catch (ClassCastException e) {
                 Logger.error("Failed to cast package queue object");
-            }
-            finally {
+            } finally {
                 objectStream.close();
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             Logger.verbose("Package queue file not found");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Logger.error("Failed to read package queue file");
         }
 
@@ -217,15 +217,12 @@ public class PackageHandler extends HandlerThread {
             try {
                 objectStream.writeObject(packageQueue);
                 Logger.debug(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
-            }
-            catch (NotSerializableException e) {
+            } catch (NotSerializableException e) {
                 Logger.error("Failed to serialize packages");
-            }
-            finally {
+            } finally {
                 objectStream.close();
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Logger.error(String.format("Failed to write packages (%s)", e.getLocalizedMessage()));
             e.printStackTrace();
         }

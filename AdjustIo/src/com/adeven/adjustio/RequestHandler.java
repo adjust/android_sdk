@@ -9,6 +9,10 @@
 
 package com.adeven.adjustio;
 
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -34,18 +37,13 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-
 public class RequestHandler extends HandlerThread {
-    private static final int CONNECTION_TIMEOUT = 1000 * 60 * 1; // 1 minute
-    private static final int SOCKET_TIMEOUT     = 1000 * 60 * 1; // 1 minute
+    private static final int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
+    private static final int SOCKET_TIMEOUT     = Constants.ONE_MINUTE;
 
     private InternalHandler internalHandler;
-    private PackageHandler packageHandler;
-    private HttpClient httpClient;
+    private PackageHandler  packageHandler;
+    private HttpClient      httpClient;
 
     protected RequestHandler(PackageHandler packageHandler) {
         super(Logger.LOGTAG, MIN_PRIORITY);
@@ -78,20 +76,23 @@ public class RequestHandler extends HandlerThread {
             this.requestHandlerReference = new WeakReference<RequestHandler>(requestHandler);
         }
 
+        @Override
         public void handleMessage(Message message) {
             super.handleMessage(message);
 
             RequestHandler requestHandler = requestHandlerReference.get();
-            if (requestHandler == null) return;
+            if (null == requestHandler) {
+                return;
+            }
 
             switch (message.arg1) {
-            case INIT:
-                requestHandler.initInternal();
-                break;
-            case SEND:
-                ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                requestHandler.sendInternal(activityPackage);
-                break;
+                case INIT:
+                    requestHandler.initInternal();
+                    break;
+                case SEND:
+                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
+                    requestHandler.sendInternal(activityPackage);
+                    break;
             }
         }
     }
@@ -108,20 +109,15 @@ public class RequestHandler extends HandlerThread {
             HttpUriRequest request = getRequest(activityPackage);
             HttpResponse response = httpClient.execute(request);
             requestFinished(response, activityPackage);
-        }
-        catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
-        }
-        catch (ClientProtocolException e) {
+        } catch (ClientProtocolException e) {
             closePackage(activityPackage, "Client protocol error", e);
-        }
-        catch (SocketTimeoutException e) {
+        } catch (SocketTimeoutException e) {
             closePackage(activityPackage, "Request timed out", e);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             closePackage(activityPackage, "Request failed", e);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             sendNextPackage(activityPackage, "Runtime exeption", e);
         }
     }
@@ -130,7 +126,7 @@ public class RequestHandler extends HandlerThread {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
 
-        if (statusCode == HttpStatus.SC_OK) {
+        if (HttpStatus.SC_OK == statusCode) {
             Logger.info(activityPackage.getSuccessMessage());
         } else {
             Logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));
@@ -144,22 +140,22 @@ public class RequestHandler extends HandlerThread {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             response.getEntity().writeTo(out);
             out.close();
-            String responseString = out.toString().trim();
-            return responseString;
-        }
-        catch (Exception e) {
+            return out.toString().trim();
+        } catch (Exception e) {
             Logger.error(String.format("Failed to parse response (%s)", e));
             return "Failed to parse response";
         }
     }
 
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
-        String failureMessage = activityPackage.getFailureMessage();
+        final String failureMessage = activityPackage.getFailureMessage();
+        final String errorMessage;
         if (throwable != null) {
-            Logger.error(String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable));
+            errorMessage = String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable);
         } else {
-            Logger.error(String.format("%s. (%s) Will retry later.", failureMessage, message));
+            errorMessage = String.format("%s. (%s) Will retry later.", failureMessage, message);
         }
+        Logger.error(errorMessage);
         packageHandler.closeFirstPackage();
     }
 
@@ -176,16 +172,16 @@ public class RequestHandler extends HandlerThread {
 
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = Util.BASE_URL + activityPackage.path;
+        String url = Constants.BASE_URL + activityPackage.getPath();
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
-        request.addHeader("User-Agent", activityPackage.userAgent);
-        request.addHeader("Client-SDK", activityPackage.clientSdk);
+        request.addHeader("User-Agent", activityPackage.getUserAgent());
+        request.addHeader("Client-SDK", activityPackage.getClientSdk());
         request.addHeader("Accept-Language", language);
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entity : activityPackage.parameters.entrySet()) {
+        for (Map.Entry<String, String> entity : activityPackage.getParameters().entrySet()) {
             NameValuePair pair = new BasicNameValuePair(entity.getKey(), entity.getValue());
             pairs.add(pair);
         }
