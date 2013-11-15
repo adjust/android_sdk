@@ -9,13 +9,13 @@
 
 package com.adeven.adjustio;
 
-import java.util.Map;
-
 import android.app.Activity;
+import static com.adeven.adjustio.Constants.NO_ACTIVITY_HANDLER_FOUND;
+import java.util.Map;
 
 /**
  * The main interface to AdjustIo.
- *
+ * <p/>
  * Use the methods of this class to tell AdjustIo about the usage of your app.
  * See the README for details.
  */
@@ -23,18 +23,14 @@ public class AdjustIo {
 
     /**
      * Tell AdjustIo that an activity did resume.
-     *
+     * <p/>
      * This is used to initialize AdjustIo and keep track of the current session state.
      * Call this in the onResume method of every activity of your app.
      *
-     * @param appToken The App Token for your app. This unique identifier can
-     *     be found in your dashboard at http://adjust.io and should always
-     *     be 12 characters long.
      * @param activity The activity that has just resumed.
      */
-
     public static void onResume(Activity activity) {
-        if (activityHandler == null) {
+        if (null == activityHandler) {
             activityHandler = new ActivityHandler(activity);
         }
         activityHandler.trackSubsessionStart();
@@ -42,7 +38,7 @@ public class AdjustIo {
 
     /**
      * Tell AdjustIo that an activity will pause.
-     *
+     * <p/>
      * This is used to calculate session attributes like session length and subsession count.
      * Call this in the onPause method of every activity of your app.
      */
@@ -50,24 +46,23 @@ public class AdjustIo {
         try {
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            Logger.error("No activity handler found");
+            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
     /**
      * Tell AdjustIo that a particular event has happened.
-     *
+     * <p/>
      * In your dashboard at http://adjust.io you can assign a callback URL to each
      * event type. That URL will get called every time the event is triggered. On
      * top of that you can pass a set of parameters to the following method that
      * will be forwarded to these callbacks.
      *
      * @param eventToken The Event Token for this kind of event. They are created
-     *     in the dashboard at http://adjust.io and should be six characters long.
+     *                   in the dashboard at http://adjust.io and should be six characters long.
      * @param parameters An optional dictionary containing the callback parameters.
-     *     Provide key-value-pairs to be forwarded to your callbacks.
+     *                   Provide key-value-pairs to be forwarded to your callbacks.
      */
-
     public static void trackEvent(String eventToken) {
         trackEvent(eventToken, null);
     }
@@ -76,14 +71,14 @@ public class AdjustIo {
         try {
             activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error("No activity handler found");
+            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
 
     /**
      * Tell AdjustIo that a user generated some revenue.
-     *
+     * <p/>
      * The amount is measured in cents and rounded to on digit after the
      * decimal point. If you want to differentiate between several revenue
      * types, you can do so by using different event tokens. If your revenue
@@ -94,7 +89,6 @@ public class AdjustIo {
      * @param eventToken The token for this revenue event (optional, see above)
      * @param parameters Parameters for this revenue event (optional, see above)
      */
-
     public static void trackRevenue(double amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
     }
@@ -107,10 +101,9 @@ public class AdjustIo {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error("No activity handler found");
+            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
-
 
     /**
      * Every activity will get forwarded to this handler to be processed in the background.
