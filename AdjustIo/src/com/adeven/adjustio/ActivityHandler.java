@@ -501,7 +501,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static boolean checkAmount(double amount) {
-        if (amount <= 0.0) {
+        if (amount < 0.0) {
             Logger.error(String.format(Locale.US, "Invalid amount %f", amount));
             return false;
         }
