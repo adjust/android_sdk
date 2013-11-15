@@ -506,11 +506,11 @@ public class ActivityHandler extends HandlerThread {
             String packageName = this.context.getPackageName();
             applicationInfo =
               this.context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            return applicationInfo.metaData;
         } catch (NameNotFoundException e) {
             Logger.error("ApplicationInfo not found");
-            return new Bundle();
         }
-        return applicationInfo.metaData;
+        return null;
     }
 
     private static boolean checkContext(Context context) {

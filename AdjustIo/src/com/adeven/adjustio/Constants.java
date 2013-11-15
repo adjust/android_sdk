@@ -16,7 +16,7 @@ package com.adeven.adjustio;
  */
 public interface Constants {
     int ONE_SECOND     = 1000;
-    int THIRTY_SECONDS = ONE_SECOND * 30;
+    int THIRTY_SECONDS = 30 * ONE_SECOND;
     int ONE_MINUTE     = 60 * ONE_SECOND;
 
     String BASE_URL   = "https://app.adjust.io";
