@@ -470,7 +470,7 @@ public class ActivityHandler extends HandlerThread {
             try {
                 Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel));
             } catch (IllegalArgumentException iae) {
-                /* no-op */
+                Logger.error(String.format("Malformed logLevel '%s'", logLevel));
             }
         }
 
