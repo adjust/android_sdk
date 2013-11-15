@@ -9,24 +9,13 @@
 
 package com.adeven.adjustio;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.preference.PreferenceManager;
+import static com.adeven.adjustio.Constants.LOGTAG;
 import static com.adeven.adjustio.Constants.ONE_MINUTE;
 import static com.adeven.adjustio.Constants.ONE_SECOND;
 import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
 import static com.adeven.adjustio.Constants.THIRTY_SECONDS;
 import static com.adeven.adjustio.Constants.UNKNOWN;
-import static com.adeven.adjustio.Constants.LOGTAG;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -43,6 +32,19 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.preference.PreferenceManager;
 
 public class ActivityHandler extends HandlerThread {
 
@@ -183,8 +185,10 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private boolean canInit() {
-        return checkAppTokenNotNull(appToken) && checkAppTokenLength(appToken) && checkContext(context) &&
-          checkPermissions(context);
+        return checkAppTokenNotNull(appToken)
+            && checkAppTokenLength(appToken)
+            && checkContext(context)
+            && checkPermissions(context);
     }
 
     private void startInternal() {
@@ -257,7 +261,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void trackEventInternal(PackageBuilder eventBuilder) {
-        if (!canTrackRevenueOrEvent(eventBuilder)) {
+        if (!canTrackEvent(eventBuilder)) {
             return;
         }
 
@@ -282,7 +286,7 @@ public class ActivityHandler extends HandlerThread {
 
 
     private void trackRevenueInternal(PackageBuilder revenueBuilder) {
-        if (!canTrackRevenueOrEvent(revenueBuilder)) {
+        if (!canTrackRevenue(revenueBuilder)) {
             return;
         }
 
@@ -305,10 +309,16 @@ public class ActivityHandler extends HandlerThread {
         Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
     }
 
-    private boolean canTrackRevenueOrEvent(PackageBuilder revenueBuilder) {
-        return checkAppTokenNotNull(appToken) && checkActivityState(activityState) &&
-          checkAmount(revenueBuilder.getAmountInCents()) && checkEventTokenNotNull(revenueBuilder.getEventToken());
+    private boolean canTrackEvent(PackageBuilder revenueBuilder) {
+        return checkAppTokenNotNull(appToken)
+            && checkActivityState(activityState)
+            && revenueBuilder.isValidForEvent();
+    }
 
+    private boolean canTrackRevenue(PackageBuilder revenueBuilder) {
+        return checkAppTokenNotNull(appToken)
+            && checkActivityState(activityState)
+            && revenueBuilder.isValidForRevenue();
     }
 
     private void updateActivityState() {
@@ -468,9 +478,9 @@ public class ActivityHandler extends HandlerThread {
         String logLevel = bundle.getString("AdjustIoLogLevel");
         if (null != logLevel) {
             try {
-                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel));
+                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel.toUpperCase(Locale.US)));
             } catch (IllegalArgumentException iae) {
-                Logger.error(String.format("Malformed logLevel '%s'", logLevel));
+                Logger.error(String.format("Malformed logLevel '%s', falling back to 'info'", logLevel));
             }
         }
 
@@ -545,34 +555,6 @@ public class ActivityHandler extends HandlerThread {
     private static boolean checkAppTokenLength(String appToken) {
         if (12 != appToken.length()) {
             Logger.error(String.format("Malformed App Token '%s'", appToken));
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkEventTokenNotNull(String eventToken) {
-        if (null == eventToken) {
-            Logger.error("Missing Event Token");
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkEventTokenLength(String eventToken) {
-        if (eventToken == null) {
-            return true;
-        }
-
-        if (eventToken.length() != 6) {
-            Logger.error(String.format("Malformed Event Token '%s'", eventToken));
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkAmount(double amount) {
-        if (amount < 0.0) {
-            Logger.error(String.format(Locale.US, "Invalid amount %f", amount));
             return false;
         }
         return true;

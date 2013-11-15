@@ -26,67 +26,40 @@ public class Logger {
         public int getAndroidLogLevel() {
             return androidLogLevel;
         }
-
-        public boolean isEnabled() {
-            return androidLogLevel <= Logger.androidLogLevel;
-        }
     }
 
-    private static         int      androidLogLevel = Log.INFO;
-    private static         LogLevel logLevel        = LogLevel.INFO;
+    private static LogLevel logLevel = LogLevel.INFO;
 
     protected static void setLogLevel(LogLevel logLevel) {
         Logger.logLevel = logLevel;
-        Logger.androidLogLevel = logLevel.getAndroidLogLevel();
-    }
-
-    /**
-     * Use {@link Logger#setLogLevel(com.adeven.adjustio.Logger.LogLevel)} instead
-     *
-     * @param androidLogLevel The log level which can be obtained from one of the {@link Log} constants.
-     */
-    @Deprecated
-    protected static void setLogLevel(int androidLogLevel) {
-        Logger.androidLogLevel = androidLogLevel;
-        //For the sake of compatibility. Only required until setLogLevel is being removed.
-        for (LogLevel logLevel : LogLevel.values()) {
-            if (logLevel.androidLogLevel == androidLogLevel) {
-                Logger.logLevel = logLevel;
-                return;
-            }
-        }
-    }
-
-    protected static int getLogLevel() {
-        return androidLogLevel;
     }
 
     protected static void verbose(String message) {
-        if (logLevel.isEnabled()) {
+        if (logLevel.androidLogLevel <= Log.VERBOSE) {
             Log.v(LOGTAG, message);
         }
     }
 
     protected static void debug(String message) {
-        if (logLevel.isEnabled()) {
+        if (logLevel.androidLogLevel <= Log.DEBUG) {
             Log.d(LOGTAG, message);
         }
     }
 
     protected static void info(String message) {
-        if (logLevel.isEnabled()) {
+        if (logLevel.androidLogLevel <= Log.INFO) {
             Log.i(LOGTAG, message);
         }
     }
 
     protected static void warn(String message) {
-        if (logLevel.isEnabled()) {
+        if (logLevel.androidLogLevel <= Log.WARN) {
             Log.w(LOGTAG, message);
         }
     }
 
     protected static void error(String message) {
-        if (logLevel.isEnabled()) {
+        if (logLevel.androidLogLevel <= Log.ERROR) {
             Log.e(LOGTAG, message);
         }
     }

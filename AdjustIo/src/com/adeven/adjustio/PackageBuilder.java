@@ -139,6 +139,33 @@ public class PackageBuilder {
         this.callbackParameters = callbackParameters;
     }
 
+    public boolean isValidForEvent() {
+        if (null == eventToken) {
+            Logger.error("Missing Event Token");
+            return false; // non revenue events need event tokens
+        }
+        return isEventTokenValid(); // and they must be valid
+    }
+
+    public boolean isValidForRevenue() {
+        if (amountInCents < 0.0) {
+            Logger.error(String.format(Locale.US, "Invalid amount %f", amountInCents));
+            return false;
+        }
+        if (eventToken == null) {
+            return true; // revenue events don't need event tokens
+        }
+        return isEventTokenValid(); // but if they have one, it must be valid
+    }
+
+    private boolean isEventTokenValid() {
+        if (6 != eventToken.length()) {
+            Logger.error(String.format("Malformed Event Token '%s'", eventToken));
+            return false;
+        }
+        return true;
+    }
+
     protected ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", lastInterval);
