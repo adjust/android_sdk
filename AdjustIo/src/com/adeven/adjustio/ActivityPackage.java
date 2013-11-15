@@ -14,12 +14,12 @@ import java.util.Map;
 
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
-    
+
     public enum PackageType {
         EVENT("/event", "event"), REVENUE("/revenue", "revenue"), SESSION_START("/startup", "session start");
         private final String path;
         private final String kind;
-        
+
         PackageType(final String path, final String kind) {
             this.path = path;
             this.kind = kind;
@@ -35,9 +35,9 @@ public class ActivityPackage implements Serializable {
     }
 
     // data
-    private PackageType type;
-    private String userAgent;
-    private String clientSdk;
+    private PackageType         type;
+    private String              userAgent;
+    private String              clientSdk;
     private Map<String, String> parameters;
 
     // logs

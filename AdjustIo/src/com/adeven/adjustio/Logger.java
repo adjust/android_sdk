@@ -25,11 +25,11 @@ public class Logger {
         public int getAndroidLogLevel() {
             return androidLogLevel;
         }
-        
+
         public boolean isEnabled() {
-             return androidLogLevel <= Logger.androidLogLevel;
+            return androidLogLevel <= Logger.androidLogLevel;
         }
-        
+
     }
 
     protected static final String   LOGTAG          = "AdjustIo";
