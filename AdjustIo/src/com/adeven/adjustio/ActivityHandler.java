@@ -26,7 +26,7 @@ import static com.adeven.adjustio.Constants.ONE_SECOND;
 import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
 import static com.adeven.adjustio.Constants.THIRTY_SECONDS;
 import static com.adeven.adjustio.Constants.UNKNOWN;
-import static com.adeven.adjustio.Logger.LOGTAG;
+import static com.adeven.adjustio.Constants.LOGTAG;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;

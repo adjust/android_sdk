@@ -46,7 +46,7 @@ public class RequestHandler extends HandlerThread {
     private HttpClient      httpClient;
 
     protected RequestHandler(PackageHandler packageHandler) {
-        super(Logger.LOGTAG, MIN_PRIORITY);
+        super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
 

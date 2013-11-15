@@ -11,6 +11,7 @@ package com.adeven.adjustio;
 
 import android.util.Log;
 
+import static com.adeven.adjustio.Constants.LOGTAG;
 
 public class Logger {
 
@@ -29,10 +30,8 @@ public class Logger {
         public boolean isEnabled() {
             return androidLogLevel <= Logger.androidLogLevel;
         }
-
     }
 
-    protected static final String   LOGTAG          = "AdjustIo";
     private static         int      androidLogLevel = Log.INFO;
     private static         LogLevel logLevel        = LogLevel.INFO;
 

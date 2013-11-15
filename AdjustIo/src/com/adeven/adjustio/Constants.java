@@ -21,20 +21,22 @@ public interface Constants {
 
     String BASE_URL   = "https://app.adjust.io";
     String CLIENT_SDK = "android2.1.1";
+    String LOGTAG     = "AdjustIo";
 
-    String UNKNOWN                   = "unknown";
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
-    String SMALL                     = "small";
-    String NORMAL                    = "normal";
-    String LONG                      = "long";
-    String LARGE                     = "large";
-    String XLARGE                    = "xlarge";
-    String LOW                       = "low";
-    String MEDIUM                    = "medium";
-    String HIGH                      = "high";
     String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";
-    String MALFORMED                 = "malformed";
-    String REFERRER                  = "referrer";
+
+    String UNKNOWN   = "unknown";
+    String MALFORMED = "malformed";
+    String SMALL     = "small";
+    String NORMAL    = "normal";
+    String LONG      = "long";
+    String LARGE     = "large";
+    String XLARGE    = "xlarge";
+    String LOW       = "low";
+    String MEDIUM    = "medium";
+    String HIGH      = "high";
+    String REFERRER  = "referrer";
 
     String ENCODING = "UTF-8";
     String MD5      = "MD5";

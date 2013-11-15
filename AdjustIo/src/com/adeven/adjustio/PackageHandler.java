@@ -42,7 +42,7 @@ public class PackageHandler extends HandlerThread {
     private final Context               context;
 
     protected PackageHandler(Context context) {
-        super(Logger.LOGTAG, MIN_PRIORITY);
+        super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
