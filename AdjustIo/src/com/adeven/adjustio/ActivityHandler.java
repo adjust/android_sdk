@@ -76,7 +76,7 @@ public class ActivityHandler extends HandlerThread {
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
 
-        this.context = activity.getApplicationContext();
+        context = activity.getApplicationContext();
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT;
@@ -368,8 +368,8 @@ public class ActivityHandler extends HandlerThread {
 
         } catch (FileNotFoundException e) {
             Logger.verbose("Activity state file not found");
-        } catch (IOException e) {
-            Logger.error("Failed to read activity state file");
+        } catch (Exception e) {
+            Logger.error(String.format("Failed to open activity state file for reading (%s)", e));
         }
 
         // start with a fresh activity state in case of any exception
@@ -391,8 +391,8 @@ public class ActivityHandler extends HandlerThread {
                 objectStream.close();
             }
 
-        } catch (IOException e) {
-            Logger.error(String.format("Failed to write activity state (%s)", e));
+        } catch (Exception e) {
+            Logger.error(String.format("Failed to open activity state for writing (%s)", e));
         }
     }
 
@@ -419,8 +419,13 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void injectReferrer(PackageBuilder builder) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        builder.setReferrer(preferences.getString(ReferrerReceiver.REFERRER_KEY, null));
+        try {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+            builder.setReferrer(preferences.getString(ReferrerReceiver.REFERRER_KEY, null));
+        }
+        catch (Exception e) {
+            Logger.error(String.format("Failed to inject referrer (%s)", e));
+        }
     }
 
     private void startTimer() {
@@ -519,12 +524,13 @@ public class ActivityHandler extends HandlerThread {
     private Bundle getApplicationBundle() {
         final ApplicationInfo applicationInfo;
         try {
-            String packageName = this.context.getPackageName();
-            applicationInfo =
-              this.context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            String packageName = context.getPackageName();
+            applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             return applicationInfo.metaData;
         } catch (NameNotFoundException e) {
             Logger.error("ApplicationInfo not found");
+        } catch (Exception e) {
+            Logger.error(String.format("Failed to get ApplicationBundle (%s)", e));
         }
         return null;
     }
