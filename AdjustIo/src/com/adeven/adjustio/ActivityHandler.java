@@ -16,7 +16,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import static com.adeven.adjustio.Constants.ONE_MINUTE;
 import static com.adeven.adjustio.Constants.ONE_SECOND;
@@ -34,6 +37,7 @@ import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -47,6 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final long   SUBSESSION_INTERVAL = ONE_SECOND;
     private static final String TIME_TRAVEL         = "Time travel!";
 
+    private final  SessionHandler           sessionHandler;
     private        PackageHandler           packageHandler;
     private        ActivityState            activityState;
     private static ScheduledExecutorService timer;
@@ -67,17 +72,25 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
+        sessionHandler = new SessionHandler(getLooper(), this);
 
         this.context = activity.getApplicationContext();
-        initInternal();
+
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.INIT;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackSubsessionStart() {
-        startInternal();
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.START;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackSubsessionEnd() {
-        endInternal();
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.END;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackEvent(String eventToken, Map<String, String> parameters) {
@@ -85,7 +98,10 @@ public class ActivityHandler extends HandlerThread {
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
-        trackEventInternal(builder);
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.EVENT;
+        message.obj = builder;
+        sessionHandler.sendMessage(message);
     }
 
     protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
@@ -94,7 +110,55 @@ public class ActivityHandler extends HandlerThread {
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
-        trackRevenueInternal(builder);
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.REVENUE;
+        message.obj = builder;
+        sessionHandler.sendMessage(message);
+    }
+
+    private static final class SessionHandler extends Handler {
+        private static final int INIT    = 72630;
+        private static final int START   = 72640;
+        private static final int END     = 72650;
+        private static final int EVENT   = 72660;
+        private static final int REVENUE = 72670;
+
+        private final WeakReference<ActivityHandler> sessionHandlerReference;
+
+        protected SessionHandler(Looper looper, ActivityHandler sessionHandler) {
+            super(looper);
+            this.sessionHandlerReference = new WeakReference<ActivityHandler>(sessionHandler);
+        }
+
+        @Override
+        public void handleMessage(Message message) {
+            super.handleMessage(message);
+
+            ActivityHandler sessionHandler = sessionHandlerReference.get();
+            if (sessionHandler == null) {
+                return;
+            }
+
+            switch (message.arg1) {
+                case INIT:
+                    sessionHandler.initInternal();
+                    break;
+                case START:
+                    sessionHandler.startInternal();
+                    break;
+                case END:
+                    sessionHandler.endInternal();
+                    break;
+                case EVENT:
+                    PackageBuilder eventBuilder = (PackageBuilder) message.obj;
+                    sessionHandler.trackEventInternal(eventBuilder);
+                    break;
+                case REVENUE:
+                    PackageBuilder revenueBuilder = (PackageBuilder) message.obj;
+                    sessionHandler.trackRevenueInternal(revenueBuilder);
+                    break;
+            }
+        }
     }
 
     private void initInternal() {
@@ -243,7 +307,7 @@ public class ActivityHandler extends HandlerThread {
 
     private boolean canTrackRevenueOrEvent(PackageBuilder revenueBuilder) {
         return checkAppTokenNotNull(appToken) && checkActivityState(activityState) &&
-          checkAmount(revenueBuilder.getAmountInCents()) && checkEventToken(revenueBuilder.getEventToken());
+          checkAmount(revenueBuilder.getAmountInCents()) && checkEventTokenNotNull(revenueBuilder.getEventToken());
 
     }
 
@@ -486,11 +550,17 @@ public class ActivityHandler extends HandlerThread {
         return true;
     }
 
-    private static boolean checkEventToken(String eventToken) {
+    private static boolean checkEventTokenNotNull(String eventToken) {
         if (null == eventToken) {
             Logger.error("Missing Event Token");
-
             return false;
+        }
+        return true;
+    }
+
+    private static boolean checkEventTokenLength(String eventToken) {
+        if (eventToken == null) {
+            return true;
         }
 
         if (eventToken.length() != 6) {
