@@ -60,6 +60,8 @@ public class AdjustIo {
      *
      * @param eventToken The Event Token for this kind of event. They are created
      *                   in the dashboard at http://adjust.io and should be six characters long.
+     * @param parameters An optional dictionary containing the callback parameters.
+     *                   Provide key-value-pairs to be forwarded to your callbacks.
      */
     public static void trackEvent(String eventToken) {
         trackEvent(eventToken, null);
@@ -84,6 +86,8 @@ public class AdjustIo {
      * forwarded to your end point.
      *
      * @param amountInCents The amount in cents (example: 1.5 means one and a half cents)
+     * @param eventToken The token for this revenue event (optional, see above)
+     * @param parameters Parameters for this revenue event (optional, see above)
      */
     public static void trackRevenue(double amountInCents) {
         AdjustIo.trackRevenue(amountInCents, null);
