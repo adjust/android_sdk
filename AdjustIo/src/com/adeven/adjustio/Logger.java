@@ -9,6 +9,8 @@
 
 package com.adeven.adjustio;
 
+import java.util.Locale;
+
 import android.util.Log;
 
 import static com.adeven.adjustio.Constants.LOGTAG;
@@ -32,6 +34,16 @@ public class Logger {
 
     public static void setLogLevel(LogLevel logLevel) {
         Logger.logLevel = logLevel;
+    }
+
+    public static void setLogLevelString(String logLevelString) {
+        if (null != logLevelString) {
+            try {
+                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
+            } catch (IllegalArgumentException iae) {
+                Logger.error(String.format("Malformed logLevel '%s', falling back to 'info'", logLevelString));
+            }
+        }
     }
 
     public static void verbose(String message) {

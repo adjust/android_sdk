@@ -106,6 +106,15 @@ public class AdjustIo {
     }
 
     /**
+     * Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
+     */
+    protected static void appDidLaunch(Activity activity, String appToken, String environment, Logger.LogLevel logLevel, boolean eventBuffering) {
+        Logger.setLogLevel(logLevel);
+        activityHandler = new ActivityHandler(activity, appToken, environment, eventBuffering);
+        activityHandler.trackSubsessionStart();
+    }
+
+    /**
      * Every activity will get forwarded to this handler to be processed in the background.
      */
     private static ActivityHandler activityHandler;
