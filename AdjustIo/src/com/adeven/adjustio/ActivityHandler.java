@@ -75,8 +75,8 @@ public class ActivityHandler extends HandlerThread {
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
-
         context = activity.getApplicationContext();
+        clientSdk = Constants.CLIENT_SDK;
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
@@ -88,16 +88,20 @@ public class ActivityHandler extends HandlerThread {
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
+        context = activity.getApplicationContext();
+        clientSdk = Constants.CLIENT_SDK;
 
         this.appToken = appToken;
         this.environment = environment;
         this.eventBuffering = eventBuffering;
 
-        context = activity.getApplicationContext();
-
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_PRESET;
         sessionHandler.sendMessage(message);
+    }
+
+    protected void setSdkPrefix(String sdkPrefx) {
+        clientSdk = String.format("%s@%s", sdkPrefx, clientSdk);
     }
 
     protected void trackSubsessionStart() {
@@ -204,7 +208,6 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
-        clientSdk = Constants.CLIENT_SDK;
 
         packageHandler = new PackageHandler(context);
         readActivityState();

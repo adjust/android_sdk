@@ -105,12 +105,15 @@ public class AdjustIo {
         }
     }
 
-    /**
-     * Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
-     */
+    // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
     protected static void appDidLaunch(Activity activity, String appToken, String environment, boolean eventBuffering) {
         activityHandler = new ActivityHandler(activity, appToken, environment, eventBuffering);
         activityHandler.trackSubsessionStart();
+    }
+
+    // Special method used by SDK wrappers such as our Adobe Air SDK.
+    protected static void setSdkPrefix(String sdkPrefix) {
+        activityHandler.setSdkPrefix(sdkPrefix);
     }
 
     /**
