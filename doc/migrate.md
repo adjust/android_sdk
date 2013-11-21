@@ -1,4 +1,4 @@
-## Migrate to AdjustIo SDK for Android v2.1.2
+## Migrate to AdjustIo SDK for Android v2.1.3
 
 0. In order to save some time later on you might want to check your current SDK
    Version. You can find that value in a constant named `CLIENT_SDK` (or
@@ -6,7 +6,7 @@
    `android1.6` or similar.
 
 1. Delete the old `AdjustIo` project from your `Package Explorer`. Download
-   version v2.1.2 and create a new `Android Project from Existing Code` as
+   version v2.1.3 and create a new `Android Project from Existing Code` as
    described in the [README].
 
     ![][import]
