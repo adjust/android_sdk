@@ -103,10 +103,18 @@ public class ActivityPackage implements Serializable {
     }
 
     protected String getSuccessMessage() {
-        return String.format("Tracked %s%s", type.getKind(), suffix);
+        try {
+            return String.format("Tracked %s%s", type.getKind(), suffix);
+        } catch (NullPointerException e) {
+            return "Tracked ???";
+        }
     }
 
     protected String getFailureMessage() {
-        return String.format("Failed to track %s%s", type.getKind(), suffix);
+        try {
+            return String.format("Failed to track %s%s", type.getKind(), suffix);
+        } catch (NullPointerException e) {
+            return "Failed to track ???";
+        }
     }
 }

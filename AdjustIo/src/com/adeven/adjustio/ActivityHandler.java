@@ -60,7 +60,7 @@ public class ActivityHandler extends HandlerThread {
     private final  Context                  context;
     private        String                   environment;
     private        String                   defaultTracker;
-    private        boolean                  bufferEvents;
+    private        boolean                  eventBuffering;
 
     private String appToken;
     private String macSha1;
@@ -75,12 +75,33 @@ public class ActivityHandler extends HandlerThread {
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
-
         context = activity.getApplicationContext();
+        clientSdk = Constants.CLIENT_SDK;
 
         Message message = Message.obtain();
-        message.arg1 = SessionHandler.INIT;
+        message.arg1 = SessionHandler.INIT_BUNDLE;
         sessionHandler.sendMessage(message);
+    }
+
+    protected ActivityHandler(Activity activity, String appToken, String environment, boolean eventBuffering) {
+        super(LOGTAG, MIN_PRIORITY);
+        setDaemon(true);
+        start();
+        sessionHandler = new SessionHandler(getLooper(), this);
+        context = activity.getApplicationContext();
+        clientSdk = Constants.CLIENT_SDK;
+
+        this.appToken = appToken;
+        this.environment = environment;
+        this.eventBuffering = eventBuffering;
+
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.INIT_PRESET;
+        sessionHandler.sendMessage(message);
+    }
+
+    protected void setSdkPrefix(String sdkPrefx) {
+        clientSdk = String.format("%s@%s", sdkPrefx, clientSdk);
     }
 
     protected void trackSubsessionStart() {
@@ -119,11 +140,12 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static final class SessionHandler extends Handler {
-        private static final int INIT    = 72630;
-        private static final int START   = 72640;
-        private static final int END     = 72650;
-        private static final int EVENT   = 72660;
-        private static final int REVENUE = 72670;
+        private static final int INIT_BUNDLE = 72630;
+        private static final int INIT_PRESET = 72633;
+        private static final int START       = 72640;
+        private static final int END         = 72650;
+        private static final int EVENT       = 72660;
+        private static final int REVENUE     = 72670;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -142,8 +164,11 @@ public class ActivityHandler extends HandlerThread {
             }
 
             switch (message.arg1) {
-                case INIT:
-                    sessionHandler.initInternal();
+                case INIT_BUNDLE:
+                    sessionHandler.initInternal(true);
+                    break;
+                case INIT_PRESET:
+                    sessionHandler.initInternal(false);
                     break;
                 case START:
                     sessionHandler.startInternal();
@@ -163,8 +188,13 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void initInternal() {
-        processApplicationBundle();
+    private void initInternal(boolean fromBundle) {
+        if (fromBundle) {
+            processApplicationBundle();
+        } else {
+            setEnvironment(environment);
+            setEventBuffering(eventBuffering);
+        }
 
         if (!canInit()) {
             return;
@@ -178,7 +208,6 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
-        clientSdk = Constants.CLIENT_SDK;
 
         packageHandler = new PackageHandler(context);
         readActivityState();
@@ -274,7 +303,7 @@ public class ActivityHandler extends HandlerThread {
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
         packageHandler.addPackage(eventPackage);
 
-        if (bufferEvents) {
+        if (eventBuffering) {
             Logger.info(String.format("Buffered event %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
@@ -299,7 +328,7 @@ public class ActivityHandler extends HandlerThread {
         ActivityPackage eventPackage = revenueBuilder.buildRevenuePackage();
         packageHandler.addPackage(eventPackage);
 
-        if (bufferEvents) {
+        if (eventBuffering) {
             Logger.info(String.format("Buffered revenue %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
@@ -476,21 +505,14 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        // appToken
         appToken = bundle.getString("AdjustIoAppToken");
+        setEnvironment(bundle.getString("AdjustIoEnvironment"));
+        setDefaultTracker(bundle.getString("AdjustIoDefaultTracker"));
+        setEventBuffering(bundle.getBoolean("AdjustIoEventBuffering"));
+        Logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
+    }
 
-        // logLevel
-        String logLevel = bundle.getString("AdjustIoLogLevel");
-        if (null != logLevel) {
-            try {
-                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevel.toUpperCase(Locale.US)));
-            } catch (IllegalArgumentException iae) {
-                Logger.error(String.format("Malformed logLevel '%s', falling back to 'info'", logLevel));
-            }
-        }
-
-        // environment
-        environment = bundle.getString("AdjustIoEnvironment");
+    private void setEnvironment(String environment) {
         if (null == environment) {
             Logger.Assert("Missing environment");
             Logger.setLogLevel(Logger.LogLevel.ASSERT);
@@ -507,15 +529,15 @@ public class ActivityHandler extends HandlerThread {
             Logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = Constants.MALFORMED;
         }
+    }
 
-        // eventBuffering
-        bufferEvents = bundle.getBoolean("AdjustIoEventBuffering");
-        if (bufferEvents) {
+    private void setEventBuffering(boolean eventBuffering) {
+        if (eventBuffering) {
             Logger.info("Event buffering is enabled");
         }
+    }
 
-        // defaultTracker
-        defaultTracker = bundle.getString("AdjustIoDefaultTracker");
+    private void setDefaultTracker(String defaultTracker) {
         if (defaultTracker != null) {
             Logger.info(String.format("Default tracker: '%s'", defaultTracker));
         }
