@@ -200,7 +200,7 @@ public class PackageHandler extends HandlerThread {
             }
         } catch (FileNotFoundException e) {
             Logger.verbose("Package queue file not found");
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error("Failed to read package queue file");
         }
 
@@ -222,7 +222,7 @@ public class PackageHandler extends HandlerThread {
             } finally {
                 objectStream.close();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             Logger.error(String.format("Failed to write packages (%s)", e.getLocalizedMessage()));
             e.printStackTrace();
         }
