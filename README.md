@@ -118,6 +118,10 @@ the `application` tag.
 We use this broadcast receiver to retrieve the install referrer to improve
 conversion tracking.
 
+If you are already using a different broadcast receiver for the
+`INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the
+AdjustIo receiver.
+
 ### 7. Integrate AdjustIo into your app
 
 To provide proper session tracking it is required to call certain AdjustIo
@@ -261,6 +265,7 @@ event buffering by adding the following line to your AdjustIo settings in your
 [permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions.png
 [activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity3.png
 [log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log3.png
+[referrer]: doc/referrer.md
 
 
 ## License
