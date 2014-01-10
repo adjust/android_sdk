@@ -79,6 +79,7 @@ public class PackageHandler extends HandlerThread {
 
     // close the package to retry in the future (after temporary failure)
     protected void closeFirstPackage() {
+        // TODO#542 call sendNextPackage instead if offline tracking is disabled
         isSending.set(false);
     }
 
@@ -175,6 +176,7 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void readPackageQueue() {
+        // TODO#542 skip if offline tracking is disabled
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -209,6 +211,7 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void writePackageQueue() {
+        // TODO#542 skip if offline tracking is disabled
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);

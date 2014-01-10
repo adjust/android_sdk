@@ -151,6 +151,7 @@ public class RequestHandler extends HandlerThread {
         final String failureMessage = activityPackage.getFailureMessage();
         final String errorMessage;
         if (throwable != null) {
+            // TODO#542 log "Ignoring offline activity." instead
             errorMessage = String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable);
         } else {
             errorMessage = String.format("%s. (%s) Will retry later.", failureMessage, message);
