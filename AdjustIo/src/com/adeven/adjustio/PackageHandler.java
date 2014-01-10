@@ -81,8 +81,11 @@ public class PackageHandler extends HandlerThread {
 
     // close the package to retry in the future (after temporary failure)
     protected void closeFirstPackage() {
-        // TODO#542 call sendNextPackage instead if offline tracking is disabled
-        isSending.set(false);
+        if (dropOfflineActivities) {
+            sendNextPackage();
+        } else {
+            isSending.set(false);
+        }
     }
 
     // interrupt the sending loop after the current request has finished
