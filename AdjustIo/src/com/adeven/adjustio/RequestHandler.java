@@ -150,27 +150,25 @@ public class RequestHandler extends HandlerThread {
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String handlerMessage = packageHandler.getFailureMessage();
-        final String errorMessage;
-        if (throwable != null) {
-            errorMessage = String.format("%s. (%s: %s) %s", packageMessage, message, throwable, handlerMessage);
-        } else {
-            errorMessage = String.format("%s. (%s) %s", packageMessage, message, handlerMessage);
-        }
-        Logger.error(errorMessage);
+        final String reasonString = getReasonString(message, throwable);
+        Logger.error(String.format("%s. (%s) %s", packageMessage, reasonString, handlerMessage));
         packageHandler.closeFirstPackage();
     }
 
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
-        String failureMessage = activityPackage.getFailureMessage();
-        if (throwable != null) {
-            Logger.error(String.format("%s (%s: %s)", failureMessage, message, throwable));
-        } else {
-            Logger.error(String.format("%s (%s)", failureMessage, message));
-        }
-
+        final String failureMessage = activityPackage.getFailureMessage();
+        final String reasonString = getReasonString(message, throwable);
+        Logger.error(String.format("%s. (%s)", failureMessage, reasonString));
         packageHandler.sendNextPackage();
     }
 
+    private String getReasonString(String message, Throwable throwable) {
+        if (throwable != null) {
+            return String.format("%s: %s", message, throwable);
+        } else {
+            return String.format("%s", message);
+        }
+    }
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
         String url = Constants.BASE_URL + activityPackage.getPath();
