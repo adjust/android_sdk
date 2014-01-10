@@ -535,7 +535,8 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void setDefaultTracker(String defaultTracker) {
+    private void setDefaultTracker(String tracker) {
+        defaultTracker = tracker;
         if (defaultTracker != null) {
             Logger.info(String.format("Default tracker: '%s'", defaultTracker));
         }
