@@ -220,7 +220,10 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void writePackageQueue() {
-        // TODO#542 skip if offline tracking is disabled
+        if (dropOfflineActivities) {
+            return; // don't write packages when offline tracking is disabled
+        }
+
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
