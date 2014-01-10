@@ -509,7 +509,8 @@ public class ActivityHandler extends HandlerThread {
         Logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
     }
 
-    private void setEnvironment(String environment) {
+    private void setEnvironment(String env) {
+        environment = env;
         if (null == environment) {
             Logger.Assert("Missing environment");
             Logger.setLogLevel(Logger.LogLevel.ASSERT);
