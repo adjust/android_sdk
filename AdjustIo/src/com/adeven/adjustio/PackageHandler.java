@@ -181,7 +181,11 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void readPackageQueue() {
-        // TODO#542 skip if offline tracking is disabled
+        if (dropOfflineActivities) {
+            packageQueue = new ArrayList<ActivityPackage>();
+            return; // don't read old packages when offline tracking is disabled
+        }
+
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
