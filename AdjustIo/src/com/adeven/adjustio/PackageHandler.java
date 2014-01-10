@@ -40,14 +40,16 @@ public class PackageHandler extends HandlerThread {
     private       AtomicBoolean         isSending;
     private       boolean               paused;
     private final Context               context;
+    private final boolean               dropOfflineActivities;
 
-    protected PackageHandler(Context context) {
+    protected PackageHandler(Context context, boolean dropOfflineActivities) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.context = context;
+        this.dropOfflineActivities = dropOfflineActivities;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
