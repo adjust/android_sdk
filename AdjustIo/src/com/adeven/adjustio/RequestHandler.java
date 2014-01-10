@@ -148,13 +148,13 @@ public class RequestHandler extends HandlerThread {
     }
 
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
-        final String failureMessage = activityPackage.getFailureMessage();
+        final String packageMessage = activityPackage.getFailureMessage();
+        final String handlerMessage = packageHandler.getFailureMessage();
         final String errorMessage;
         if (throwable != null) {
-            // TODO#542 log "Ignoring offline activity." instead
-            errorMessage = String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable);
+            errorMessage = String.format("%s. (%s: %s) %s", packageMessage, message, throwable, handlerMessage);
         } else {
-            errorMessage = String.format("%s. (%s) Will retry later.", failureMessage, message);
+            errorMessage = String.format("%s. (%s) %s", packageMessage, message, handlerMessage);
         }
         Logger.error(errorMessage);
         packageHandler.closeFirstPackage();

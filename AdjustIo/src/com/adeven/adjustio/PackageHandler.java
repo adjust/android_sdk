@@ -98,6 +98,15 @@ public class PackageHandler extends HandlerThread {
         paused = false;
     }
 
+    // short info about how failing packages are handled
+    protected String getFailureMessage() {
+        if (dropOfflineActivities) {
+            return "Dropping offline activity.";
+        } else {
+            return "Will retry later.";
+        }
+    }
+
     private static final class InternalHandler extends Handler {
         private static final int INIT       = 1;
         private static final int ADD        = 2;
