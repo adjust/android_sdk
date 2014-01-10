@@ -10,10 +10,7 @@
 package com.adeven.adjustio;
 
 import static com.adeven.adjustio.Constants.LOGTAG;
-import static com.adeven.adjustio.Constants.ONE_MINUTE;
-import static com.adeven.adjustio.Constants.ONE_SECOND;
 import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
-import static com.adeven.adjustio.Constants.THIRTY_SECONDS;
 import static com.adeven.adjustio.Constants.UNKNOWN;
 
 import java.io.BufferedInputStream;
@@ -48,9 +45,9 @@ import android.preference.PreferenceManager;
 
 public class ActivityHandler extends HandlerThread {
 
-    private static final long   TIMER_INTERVAL      = ONE_MINUTE;
-    private static final long   SESSION_INTERVAL    = THIRTY_SECONDS;
-    private static final long   SUBSESSION_INTERVAL = ONE_SECOND;
+    private static final long   TIMER_INTERVAL      = Constants.ONE_MINUTE;
+    private static final long   SESSION_INTERVAL    = Constants.THIRTY_MINUTES;
+    private static final long   SUBSESSION_INTERVAL = Constants.ONE_SECOND;
     private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
@@ -512,7 +509,8 @@ public class ActivityHandler extends HandlerThread {
         Logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
     }
 
-    private void setEnvironment(String environment) {
+    private void setEnvironment(String env) {
+        environment = env;
         if (null == environment) {
             Logger.Assert("Missing environment");
             Logger.setLogLevel(Logger.LogLevel.ASSERT);
@@ -531,13 +529,15 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void setEventBuffering(boolean eventBuffering) {
+    private void setEventBuffering(boolean buffering) {
+        eventBuffering = buffering;
         if (eventBuffering) {
             Logger.info("Event buffering is enabled");
         }
     }
 
-    private void setDefaultTracker(String defaultTracker) {
+    private void setDefaultTracker(String tracker) {
+        defaultTracker = tracker;
         if (defaultTracker != null) {
             Logger.info(String.format("Default tracker: '%s'", defaultTracker));
         }

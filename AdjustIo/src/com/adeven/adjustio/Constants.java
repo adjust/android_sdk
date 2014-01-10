@@ -16,11 +16,11 @@ package com.adeven.adjustio;
  */
 public interface Constants {
     int ONE_SECOND     = 1000;
-    int THIRTY_SECONDS = 30 * ONE_SECOND;
     int ONE_MINUTE     = 60 * ONE_SECOND;
+    int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
     String BASE_URL   = "https://app.adjust.io";
-    String CLIENT_SDK = "android2.1.4";
+    String CLIENT_SDK = "android2.1.5";
     String LOGTAG     = "AdjustIo";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
