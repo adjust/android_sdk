@@ -528,7 +528,8 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void setEventBuffering(boolean eventBuffering) {
+    private void setEventBuffering(boolean buffering) {
+        eventBuffering = buffering;
         if (eventBuffering) {
             Logger.info("Event buffering is enabled");
         }
