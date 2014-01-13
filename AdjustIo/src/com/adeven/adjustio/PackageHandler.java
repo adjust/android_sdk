@@ -40,14 +40,16 @@ public class PackageHandler extends HandlerThread {
     private       AtomicBoolean         isSending;
     private       boolean               paused;
     private final Context               context;
+    private final boolean               dropOfflineActivities;
 
-    protected PackageHandler(Context context) {
+    protected PackageHandler(Context context, boolean dropOfflineActivities) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.context = context;
+        this.dropOfflineActivities = dropOfflineActivities;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
@@ -79,7 +81,11 @@ public class PackageHandler extends HandlerThread {
 
     // close the package to retry in the future (after temporary failure)
     protected void closeFirstPackage() {
-        isSending.set(false);
+        if (dropOfflineActivities) {
+            sendNextPackage();
+        } else {
+            isSending.set(false);
+        }
     }
 
     // interrupt the sending loop after the current request has finished
@@ -90,6 +96,15 @@ public class PackageHandler extends HandlerThread {
     // allow sending requests again
     protected void resumeSending() {
         paused = false;
+    }
+
+    // short info about how failing packages are handled
+    protected String getFailureMessage() {
+        if (dropOfflineActivities) {
+            return "Dropping offline activity.";
+        } else {
+            return "Will retry later.";
+        }
     }
 
     private static final class InternalHandler extends Handler {
@@ -175,6 +190,11 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void readPackageQueue() {
+        if (dropOfflineActivities) {
+            packageQueue = new ArrayList<ActivityPackage>();
+            return; // don't read old packages when offline tracking is disabled
+        }
+
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -209,6 +229,10 @@ public class PackageHandler extends HandlerThread {
     }
 
     private void writePackageQueue() {
+        if (dropOfflineActivities) {
+            return; // don't write packages when offline tracking is disabled
+        }
+
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);

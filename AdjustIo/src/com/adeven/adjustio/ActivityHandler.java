@@ -58,6 +58,7 @@ public class ActivityHandler extends HandlerThread {
     private        String                   environment;
     private        String                   defaultTracker;
     private        boolean                  eventBuffering;
+    private        boolean                  dropOfflineActivities;
 
     private String appToken;
     private String macSha1;
@@ -206,7 +207,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
-        packageHandler = new PackageHandler(context);
+        packageHandler = new PackageHandler(context, dropOfflineActivities);
         readActivityState();
     }
 
@@ -507,6 +508,7 @@ public class ActivityHandler extends HandlerThread {
         setDefaultTracker(bundle.getString("AdjustIoDefaultTracker"));
         setEventBuffering(bundle.getBoolean("AdjustIoEventBuffering"));
         Logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
+        setDropOfflineActivities(bundle.getBoolean("AdjustIoDropOfflineActivities"));
     }
 
     private void setEnvironment(String env) {
@@ -540,6 +542,13 @@ public class ActivityHandler extends HandlerThread {
         defaultTracker = tracker;
         if (defaultTracker != null) {
             Logger.info(String.format("Default tracker: '%s'", defaultTracker));
+        }
+    }
+
+    private void setDropOfflineActivities(boolean drop) {
+        dropOfflineActivities = drop;
+        if (dropOfflineActivities) {
+            Logger.info("Offline activities will get dropped");
         }
     }
 
