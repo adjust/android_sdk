@@ -117,8 +117,8 @@ public class RequestHandler extends HandlerThread {
             closePackage(activityPackage, "Request timed out", e);
         } catch (IOException e) {
             closePackage(activityPackage, "Request failed", e);
-        } catch (Exception e) {
-            sendNextPackage(activityPackage, "Runtime exeption", e);
+        } catch (Throwable e) {
+            sendNextPackage(activityPackage, "Runtime exception", e);
         }
     }
 
