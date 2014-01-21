@@ -53,6 +53,7 @@ public class ActivityHandler extends HandlerThread {
     private final  SessionHandler           sessionHandler;
     private        PackageHandler           packageHandler;
     private        ActivityState            activityState;
+    private        Logger					logger;
     private static ScheduledExecutorService timer;
     private final  Context                  context;
     private        String                   environment;
@@ -67,10 +68,11 @@ public class ActivityHandler extends HandlerThread {
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
 
-    protected ActivityHandler(Activity activity) {
+    public ActivityHandler(Activity activity) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
+        logger = new LogCatLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
@@ -114,7 +116,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     protected void trackEvent(String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(logger);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
@@ -125,7 +127,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(logger);
         builder.setAmountInCents(amountInCents);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
@@ -206,7 +208,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
-        packageHandler = new PackageHandler(context);
+        packageHandler = new PackageHandler(context, logger);
         readActivityState();
     }
 
@@ -236,13 +238,13 @@ public class ActivityHandler extends HandlerThread {
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             writeActivityState();
-            Logger.info("First session");
+            logger.info("First session");
             return;
         }
 
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
-            Logger.error(TIME_TRAVEL);
+            logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             writeActivityState();
             return;
@@ -257,7 +259,7 @@ public class ActivityHandler extends HandlerThread {
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             writeActivityState();
-            Logger.debug(String.format(Locale.US,
+            logger.debug(String.format(Locale.US,
                                        "Session %d", activityState.sessionCount));
             return;
         }
@@ -265,7 +267,7 @@ public class ActivityHandler extends HandlerThread {
         // new subsession
         if (lastInterval > SUBSESSION_INTERVAL) {
             activityState.subsessionCount++;
-            Logger.info(String.format(Locale.US,
+            logger.info(String.format(Locale.US,
                                       "Started subsession %d of session %d",
                                       activityState.subsessionCount,
                                       activityState.sessionCount));
@@ -301,13 +303,13 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (eventBuffering) {
-            Logger.info(String.format("Buffered event %s", eventPackage.getSuffix()));
+            logger.info(String.format("Buffered event %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
         }
 
         writeActivityState();
-        Logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
+        logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
 
 
@@ -326,13 +328,13 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.addPackage(eventPackage);
 
         if (eventBuffering) {
-            Logger.info(String.format("Buffered revenue %s", eventPackage.getSuffix()));
+            logger.info(String.format("Buffered revenue %s", eventPackage.getSuffix()));
         } else {
             packageHandler.sendFirstPackage();
         }
 
         writeActivityState();
-        Logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
+        logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
     }
 
     private boolean canTrackEvent(PackageBuilder revenueBuilder) {
@@ -355,7 +357,7 @@ public class ActivityHandler extends HandlerThread {
         long now = System.currentTimeMillis();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
-            Logger.error(TIME_TRAVEL);
+            logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             return;
         }
@@ -378,24 +380,24 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 activityState = (ActivityState) objectStream.readObject();
-                Logger.debug(String.format("Read activity state: %s", activityState));
+                logger.debug(String.format("Read activity state: %s", activityState));
                 return;
             } catch (ClassNotFoundException e) {
-                Logger.error("Failed to find activity state class");
+                logger.error("Failed to find activity state class");
             } catch (OptionalDataException e) {
                 /* no-op */
             } catch (IOException e) {
-                Logger.error("Failed to read activity states object");
+                logger.error("Failed to read activity states object");
             } catch (ClassCastException e) {
-                Logger.error("Failed to cast activity state object");
+                logger.error("Failed to cast activity state object");
             } finally {
                 objectStream.close();
             }
 
         } catch (FileNotFoundException e) {
-            Logger.verbose("Activity state file not found");
+            logger.verbose("Activity state file not found");
         } catch (Exception e) {
-            Logger.error(String.format("Failed to open activity state file for reading (%s)", e));
+            logger.error(String.format("Failed to open activity state file for reading (%s)", e));
         }
 
         // start with a fresh activity state in case of any exception
@@ -410,20 +412,20 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(activityState);
-                Logger.verbose(String.format("Wrote activity state: %s", activityState));
+                logger.verbose(String.format("Wrote activity state: %s", activityState));
             } catch (NotSerializableException e) {
-                Logger.error("Failed to serialize activity state");
+                logger.error("Failed to serialize activity state");
             } finally {
                 objectStream.close();
             }
 
         } catch (Exception e) {
-            Logger.error(String.format("Failed to open activity state for writing (%s)", e));
+            logger.error(String.format("Failed to open activity state for writing (%s)", e));
         }
     }
 
     private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(logger);
         injectGeneralAttributes(builder);
         injectReferrer(builder);
         activityState.injectSessionAttributes(builder);
@@ -450,7 +452,7 @@ public class ActivityHandler extends HandlerThread {
             builder.setReferrer(preferences.getString(ReferrerReceiver.REFERRER_KEY, null));
         }
         catch (Exception e) {
-            Logger.error(String.format("Failed to inject referrer (%s)", e));
+            logger.error(String.format("Failed to inject referrer (%s)", e));
         }
     }
 
@@ -471,7 +473,7 @@ public class ActivityHandler extends HandlerThread {
         try {
             timer.shutdown();
         } catch (NullPointerException e) {
-            Logger.error("No timer found");
+            logger.error("No timer found");
         }
     }
 
@@ -482,15 +484,15 @@ public class ActivityHandler extends HandlerThread {
         writeActivityState();
     }
 
-    private static boolean checkPermissions(Context context) {
+    private boolean checkPermissions(Context context) {
         boolean result = true;
 
         if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
-            Logger.error("Missing permission: INTERNET");
+            logger.error("Missing permission: INTERNET");
             result = false;
         }
         if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            Logger.warn("Missing permission: ACCESS_WIFI_STATE");
+            logger.warn("Missing permission: ACCESS_WIFI_STATE");
         }
 
         return result;
@@ -506,25 +508,25 @@ public class ActivityHandler extends HandlerThread {
         setEnvironment(bundle.getString("AdjustIoEnvironment"));
         setDefaultTracker(bundle.getString("AdjustIoDefaultTracker"));
         setEventBuffering(bundle.getBoolean("AdjustIoEventBuffering"));
-        Logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
+        logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
     }
 
     private void setEnvironment(String env) {
         environment = env;
         if (null == environment) {
-            Logger.Assert("Missing environment");
-            Logger.setLogLevel(Logger.LogLevel.ASSERT);
+            logger.Assert("Missing environment");
+            logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = UNKNOWN;
         } else if ("sandbox".equalsIgnoreCase(environment)) {
-            Logger.Assert(
+            logger.Assert(
               "SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
         } else if ("production".equalsIgnoreCase(environment)) {
-            Logger.Assert(
+            logger.Assert(
               "PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
-            Logger.setLogLevel(Logger.LogLevel.ASSERT);
+            logger.setLogLevel(Logger.LogLevel.ASSERT);
         } else {
-            Logger.Assert(String.format("Malformed environment '%s'", environment));
-            Logger.setLogLevel(Logger.LogLevel.ASSERT);
+            logger.Assert(String.format("Malformed environment '%s'", environment));
+            logger.setLogLevel(Logger.LogLevel.ASSERT);
             environment = Constants.MALFORMED;
         }
     }
@@ -532,14 +534,14 @@ public class ActivityHandler extends HandlerThread {
     private void setEventBuffering(boolean buffering) {
         eventBuffering = buffering;
         if (eventBuffering) {
-            Logger.info("Event buffering is enabled");
+            logger.info("Event buffering is enabled");
         }
     }
 
     private void setDefaultTracker(String tracker) {
         defaultTracker = tracker;
         if (defaultTracker != null) {
-            Logger.info(String.format("Default tracker: '%s'", defaultTracker));
+            logger.info(String.format("Default tracker: '%s'", defaultTracker));
         }
     }
 
@@ -550,16 +552,16 @@ public class ActivityHandler extends HandlerThread {
             applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             return applicationInfo.metaData;
         } catch (NameNotFoundException e) {
-            Logger.error("ApplicationInfo not found");
+            logger.error("ApplicationInfo not found");
         } catch (Exception e) {
-            Logger.error(String.format("Failed to get ApplicationBundle (%s)", e));
+            logger.error(String.format("Failed to get ApplicationBundle (%s)", e));
         }
         return null;
     }
 
-    private static boolean checkContext(Context context) {
+    private boolean checkContext(Context context) {
         if (null == context) {
-            Logger.error("Missing context");
+            logger.error("Missing context");
             return false;
         }
         return true;
@@ -570,25 +572,25 @@ public class ActivityHandler extends HandlerThread {
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
-    private static boolean checkActivityState(ActivityState activityState) {
+    private boolean checkActivityState(ActivityState activityState) {
         if (null == activityState) {
-            Logger.error("Missing activity state.");
+            logger.error("Missing activity state.");
             return false;
         }
         return true;
     }
 
-    private static boolean checkAppTokenNotNull(String appToken) {
+    private boolean checkAppTokenNotNull(String appToken) {
         if (null == appToken) {
-            Logger.error("Missing App Token.");
+            logger.error("Missing App Token.");
             return false;
         }
         return true;
     }
 
-    private static boolean checkAppTokenLength(String appToken) {
+    private boolean checkAppTokenLength(String appToken) {
         if (12 != appToken.length()) {
-            Logger.error(String.format("Malformed App Token '%s'", appToken));
+            logger.error(String.format("Malformed App Token '%s'", appToken));
             return false;
         }
         return true;

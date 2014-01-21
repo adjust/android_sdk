@@ -9,9 +9,11 @@
 
 package com.adeven.adjustio;
 
-import android.app.Activity;
 import static com.adeven.adjustio.Constants.NO_ACTIVITY_HANDLER_FOUND;
+
 import java.util.Map;
+
+import android.app.Activity;
 
 /**
  * The main interface to AdjustIo.
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 public class AdjustIo {
 
+	private static Logger logger = new LogCatLogger();
+	
     /**
      * Tell AdjustIo that an activity did resume.
      * <p/>
@@ -46,7 +50,7 @@ public class AdjustIo {
         try {
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -71,7 +75,7 @@ public class AdjustIo {
         try {
             activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -101,7 +105,7 @@ public class AdjustIo {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            Logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 

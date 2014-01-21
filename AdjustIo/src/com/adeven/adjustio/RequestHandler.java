@@ -44,6 +44,7 @@ public class RequestHandler extends HandlerThread {
     private InternalHandler internalHandler;
     private PackageHandler  packageHandler;
     private HttpClient      httpClient;
+    private Logger			logger;
 
     protected RequestHandler(PackageHandler packageHandler) {
         super(Constants.LOGTAG, MIN_PRIORITY);
@@ -52,6 +53,7 @@ public class RequestHandler extends HandlerThread {
 
         this.internalHandler = new InternalHandler(getLooper(), this);
         this.packageHandler = packageHandler;
+        this.logger = logger;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
@@ -127,9 +129,9 @@ public class RequestHandler extends HandlerThread {
         String responseString = parseResponse(response);
 
         if (HttpStatus.SC_OK == statusCode) {
-            Logger.info(activityPackage.getSuccessMessage());
+            logger.info(activityPackage.getSuccessMessage());
         } else {
-            Logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));
+            logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));
         }
 
         packageHandler.sendNextPackage();
@@ -142,7 +144,7 @@ public class RequestHandler extends HandlerThread {
             out.close();
             return out.toString().trim();
         } catch (Exception e) {
-            Logger.error(String.format("Failed to parse response (%s)", e));
+            logger.error(String.format("Failed to parse response (%s)", e));
             return "Failed to parse response";
         }
     }
@@ -155,16 +157,16 @@ public class RequestHandler extends HandlerThread {
         } else {
             errorMessage = String.format("%s. (%s) Will retry later.", failureMessage, message);
         }
-        Logger.error(errorMessage);
+        logger.error(errorMessage);
         packageHandler.closeFirstPackage();
     }
 
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         String failureMessage = activityPackage.getFailureMessage();
         if (throwable != null) {
-            Logger.error(String.format("%s (%s: %s)", failureMessage, message, throwable));
+            logger.error(String.format("%s (%s: %s)", failureMessage, message, throwable));
         } else {
-            Logger.error(String.format("%s (%s)", failureMessage, message));
+            logger.error(String.format("%s (%s)", failureMessage, message));
         }
 
         packageHandler.sendNextPackage();

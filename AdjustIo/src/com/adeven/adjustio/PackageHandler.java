@@ -40,14 +40,16 @@ public class PackageHandler extends HandlerThread {
     private       AtomicBoolean         isSending;
     private       boolean               paused;
     private final Context               context;
+    private 	  Logger				logger;
 
-    protected PackageHandler(Context context) {
+    protected PackageHandler(Context context, Logger logger) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.context = context;
+        this.logger = logger;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
@@ -143,8 +145,8 @@ public class PackageHandler extends HandlerThread {
 
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
-        Logger.debug(String.format(Locale.US, "Added package %d (%s)", packageQueue.size(), newPackage));
-        Logger.verbose(newPackage.getExtendedString());
+        logger.debug(String.format(Locale.US, "Added package %d (%s)", packageQueue.size(), newPackage));
+        logger.verbose(newPackage.getExtendedString());
 
         writePackageQueue();
     }
@@ -155,11 +157,11 @@ public class PackageHandler extends HandlerThread {
         }
 
         if (paused) {
-            Logger.debug("Package handler is paused");
+            logger.debug("Package handler is paused");
             return;
         }
         if (isSending.getAndSet(true)) {
-            Logger.verbose("Package handler is already sending");
+            logger.verbose("Package handler is already sending");
             return;
         }
 
@@ -184,24 +186,24 @@ public class PackageHandler extends HandlerThread {
                 Object object = objectStream.readObject();
                 @SuppressWarnings("unchecked")
                 List<ActivityPackage> packageQueue = (List<ActivityPackage>) object;
-                Logger.debug(String.format(Locale.US, "Package handler read %d packages", packageQueue.size()));
+                logger.debug(String.format(Locale.US, "Package handler read %d packages", packageQueue.size()));
                 this.packageQueue = packageQueue;
                 return;
             } catch (ClassNotFoundException e) {
-                Logger.error("Failed to find package queue class");
+                logger.error("Failed to find package queue class");
             } catch (OptionalDataException e) {
                 /* no-op */
             } catch (IOException e) {
-                Logger.error("Failed to read package queue object");
+                logger.error("Failed to read package queue object");
             } catch (ClassCastException e) {
-                Logger.error("Failed to cast package queue object");
+                logger.error("Failed to cast package queue object");
             } finally {
                 objectStream.close();
             }
         } catch (FileNotFoundException e) {
-            Logger.verbose("Package queue file not found");
+            logger.verbose("Package queue file not found");
         } catch (Exception e) {
-            Logger.error("Failed to read package queue file");
+            logger.error("Failed to read package queue file");
         }
 
         // start with a fresh package queue in case of any exception
@@ -216,14 +218,14 @@ public class PackageHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(packageQueue);
-                Logger.debug(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
+                logger.debug(String.format(Locale.US, "Package handler wrote %d packages", packageQueue.size()));
             } catch (NotSerializableException e) {
-                Logger.error("Failed to serialize packages");
+                logger.error("Failed to serialize packages");
             } finally {
                 objectStream.close();
             }
         } catch (Exception e) {
-            Logger.error(String.format("Failed to write packages (%s)", e.getLocalizedMessage()));
+            logger.error(String.format("Failed to write packages (%s)", e.getLocalizedMessage()));
             e.printStackTrace();
         }
     }

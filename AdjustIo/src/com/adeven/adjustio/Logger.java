@@ -1,25 +1,12 @@
-//
-//  Logger.java
-//  AdjustIo
-//
-//  Created by Christian Wellenbrock on 2013-04-18.
-//  Copyright (c) 2013 adeven. All rights reserved.
-//  See the file MIT-LICENSE for copying permission.
-//
-
 package com.adeven.adjustio;
-
-import java.util.Locale;
 
 import android.util.Log;
 
-import static com.adeven.adjustio.Constants.LOGTAG;
-
-public class Logger {
-
-    public enum LogLevel {
+public interface Logger {
+	
+	public enum LogLevel {
         VERBOSE(Log.VERBOSE), DEBUG(Log.DEBUG), INFO(Log.INFO), WARN(Log.WARN), ERROR(Log.ERROR), ASSERT(Log.ASSERT);
-        private final int androidLogLevel;
+        final int androidLogLevel;
 
         LogLevel(final int androidLogLevel) {
             this.androidLogLevel = androidLogLevel;
@@ -30,53 +17,20 @@ public class Logger {
         }
     }
 
-    private static LogLevel logLevel = LogLevel.INFO;
+	public void setLogLevel(LogLevel logLevel);
 
-    public static void setLogLevel(LogLevel logLevel) {
-        Logger.logLevel = logLevel;
-    }
+	public void setLogLevelString(String logLevelString);
 
-    public static void setLogLevelString(String logLevelString) {
-        if (null != logLevelString) {
-            try {
-                Logger.setLogLevel(Logger.LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
-            } catch (IllegalArgumentException iae) {
-                Logger.error(String.format("Malformed logLevel '%s', falling back to 'info'", logLevelString));
-            }
-        }
-    }
+	public void verbose(String message);
 
-    public static void verbose(String message) {
-        if (logLevel.androidLogLevel <= Log.VERBOSE) {
-            Log.v(LOGTAG, message);
-        }
-    }
+	public void debug(String message);
 
-    public static void debug(String message) {
-        if (logLevel.androidLogLevel <= Log.DEBUG) {
-            Log.d(LOGTAG, message);
-        }
-    }
+	public void info(String message);
 
-    public static void info(String message) {
-        if (logLevel.androidLogLevel <= Log.INFO) {
-            Log.i(LOGTAG, message);
-        }
-    }
+	public void warn(String message);
 
-    public static void warn(String message) {
-        if (logLevel.androidLogLevel <= Log.WARN) {
-            Log.w(LOGTAG, message);
-        }
-    }
+	public void error(String message);
 
-    public static void error(String message) {
-        if (logLevel.androidLogLevel <= Log.ERROR) {
-            Log.e(LOGTAG, message);
-        }
-    }
+	public void Assert(String message);
 
-    public static void Assert(String message) {
-        Log.println(Log.ASSERT, LOGTAG, message);
-    }
 }
