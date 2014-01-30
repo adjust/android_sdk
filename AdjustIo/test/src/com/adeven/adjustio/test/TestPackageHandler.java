@@ -8,10 +8,9 @@ import android.content.Context;
 import com.adeven.adjustio.ActivityPackage;
 import com.adeven.adjustio.AdjustIoFactory;
 import com.adeven.adjustio.Logger;
-import com.adeven.adjustio.PackageHandler;
-import com.adeven.adjustio.RequestHandler;
+import com.adeven.adjustio.IPackageHandler;
 
-public class TestPackageHandler implements PackageHandler {
+public class TestPackageHandler implements IPackageHandler {
 	
 	private Logger logger;
 	private String prefix = "TestPackageHandler ";
@@ -54,8 +53,15 @@ public class TestPackageHandler implements PackageHandler {
 	}
 
 	@Override
-	public void setContext(Context context) {
-		logger.debug(prefix +  "setContext");
+	public void setConstructorArguments(Context context,
+			boolean dropOfflineActivities) {
+		logger.debug(prefix +  "setConstructorArguments");
+	}
+
+	@Override
+	public String getFailureMessage() {
+		logger.debug(prefix +  "getFailureMessage");
+		return null;
 	}
 
 }

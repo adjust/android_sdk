@@ -40,28 +40,29 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private       AtomicBoolean         isSending;
     private       boolean               paused;
     private       Context               context;
-    private       Logger				logger;
+    private       boolean               dropOfflineActivities;
+    private       Logger                logger;
 
     public PackageHandler() {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
-    }
-    public void setContext(Context context) {
-        this.context = context;
         this.logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
         
-        this.requestHandler = (IRequestHandler) AdjustIoFactory.getInstance(IRequestHandler.class);
-        this.requestHandler.setPackageHandler(this);
-        
+    }
+    
+	@Override public void setConstructorArguments(Context context, boolean dropOfflineActivities) {
+        this.context = context;
+        this.dropOfflineActivities = dropOfflineActivities;
+
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
-    }
+	}
 
     // add a package to the queue, trigger sending
-    public void addPackage(ActivityPackage pack) {
+	@Override public void addPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.ADD;
         message.obj = pack;
@@ -69,7 +70,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     // try to send the oldest package
-    public void sendFirstPackage() {
+	@Override public void sendFirstPackage() {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_FIRST;
         internalHandler.sendMessage(message);
@@ -77,25 +78,38 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
-    public void sendNextPackage() {
+	@Override public void sendNextPackage() {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
     }
 
     // close the package to retry in the future (after temporary failure)
-    public void closeFirstPackage() {
-        isSending.set(false);
+	@Override public void closeFirstPackage() {
+        if (dropOfflineActivities) {
+            sendNextPackage();
+        } else {
+            isSending.set(false);
+        }
     }
 
     // interrupt the sending loop after the current request has finished
-    public void pauseSending() {
+	@Override public void pauseSending() {
         paused = true;
     }
 
     // allow sending requests again
-    public void resumeSending() {
+	@Override public void resumeSending() {
         paused = false;
+    }
+
+    // short info about how failing packages are handled
+	@Override public String getFailureMessage() {
+        if (dropOfflineActivities) {
+            return "Dropping offline activity.";
+        } else {
+            return "Will retry later.";
+        }
     }
 
     private static final class InternalHandler extends Handler {
@@ -141,6 +155,9 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // internal methods run in dedicated queue thread
 
     private void initInternal() {
+        requestHandler = (IRequestHandler) AdjustIoFactory.getInstance(IRequestHandler.class);
+        requestHandler.setPackageHandler(this);
+
         isSending = new AtomicBoolean();
 
         readPackageQueue();
@@ -180,6 +197,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void readPackageQueue() {
+        if (dropOfflineActivities) {
+            packageQueue = new ArrayList<ActivityPackage>();
+            return; // don't read old packages when offline tracking is disabled
+        }
+
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -214,6 +236,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void writePackageQueue() {
+        if (dropOfflineActivities) {
+            return; // don't write packages when offline tracking is disabled
+        }
+
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
@@ -232,4 +258,5 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
             e.printStackTrace();
         }
     }
+
 }

@@ -9,6 +9,7 @@
 
 package com.adeven.adjustio;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -41,29 +42,30 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private static final int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
     private static final int SOCKET_TIMEOUT     = Constants.ONE_MINUTE;
 
-    private       InternalHandler       internalHandler;
-    private       IPackageHandler        packageHandler;
-    private HttpClient                  httpClient;
-    private       Logger                logger;
-    
+    private InternalHandler internalHandler;
+    private IPackageHandler packageHandler;
+    private HttpClient      httpClient;
+    private Logger          logger;
+
     public RequestHandler() {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
+
+        this.logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
+        this.internalHandler = new InternalHandler(getLooper(), this);
     }
     
-    public void setPackageHandler(IPackageHandler packageHandler) {
-        this.internalHandler = new InternalHandler(getLooper(), this);
+    @Override public void setPackageHandler(IPackageHandler packageHandler) {
         this.packageHandler = packageHandler;
-        this.logger = (Logger)AdjustIoFactory.getInstance(Logger.class);
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
+    	
     }
 
-    @Override
-	public void sendPackage(ActivityPackage pack) {
+    @Override public void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND;
         message.obj = pack;
@@ -122,8 +124,8 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             closePackage(activityPackage, "Request timed out", e);
         } catch (IOException e) {
             closePackage(activityPackage, "Request failed", e);
-        } catch (Exception e) {
-            sendNextPackage(activityPackage, "Runtime exeption", e);
+        } catch (Throwable e) {
+            sendNextPackage(activityPackage, "Runtime exception", e);
         }
     }
 
@@ -153,28 +155,27 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
-        final String failureMessage = activityPackage.getFailureMessage();
-        final String errorMessage;
-        if (throwable != null) {
-            errorMessage = String.format("%s. (%s: %s) Will retry later.", failureMessage, message, throwable);
-        } else {
-            errorMessage = String.format("%s. (%s) Will retry later.", failureMessage, message);
-        }
-        logger.error(errorMessage);
+        final String packageMessage = activityPackage.getFailureMessage();
+        final String handlerMessage = packageHandler.getFailureMessage();
+        final String reasonString = getReasonString(message, throwable);
+        logger.error(String.format("%s. (%s) %s", packageMessage, reasonString, handlerMessage));
         packageHandler.closeFirstPackage();
     }
 
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
-        String failureMessage = activityPackage.getFailureMessage();
-        if (throwable != null) {
-            logger.error(String.format("%s (%s: %s)", failureMessage, message, throwable));
-        } else {
-            logger.error(String.format("%s (%s)", failureMessage, message));
-        }
-
+        final String failureMessage = activityPackage.getFailureMessage();
+        final String reasonString = getReasonString(message, throwable);
+        logger.error(String.format("%s. (%s)", failureMessage, reasonString));
         packageHandler.sendNextPackage();
     }
 
+    private String getReasonString(String message, Throwable throwable) {
+        if (throwable != null) {
+            return String.format("%s: %s", message, throwable);
+        } else {
+            return String.format("%s", message);
+        }
+    }
 
     private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
         String url = Constants.BASE_URL + activityPackage.getPath();

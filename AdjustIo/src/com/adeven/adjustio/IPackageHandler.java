@@ -3,7 +3,7 @@ package com.adeven.adjustio;
 import android.content.Context;
 
 public interface IPackageHandler {
-	public void setContext(Context context);
+	public void setConstructorArguments(Context context, boolean dropOfflineActivities);
 			
 	public void addPackage(ActivityPackage pack);
 	
@@ -16,5 +16,7 @@ public interface IPackageHandler {
 	public void pauseSending();
 	
 	public void resumeSending();
+	
+	public String getFailureMessage();
 	
 }

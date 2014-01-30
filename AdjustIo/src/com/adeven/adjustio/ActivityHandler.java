@@ -51,7 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
-    private final  IPackageHandler      	    packageHandler;
+    private        IPackageHandler      	    packageHandler;
     private        ActivityState            activityState;
     private final  Logger					logger;
     private static ScheduledExecutorService timer;
@@ -74,12 +74,8 @@ public class ActivityHandler extends HandlerThread {
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
-
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
-
-        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
-        packageHandler.setContext(context);
         
         logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
 
@@ -93,13 +89,9 @@ public class ActivityHandler extends HandlerThread {
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
-        
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
-        packageHandler.setContext(context);
-        
         logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
 
         this.appToken = appToken;
@@ -219,7 +211,9 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
-        
+
+        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
+        packageHandler.setConstructorArguments(context, dropOfflineActivities);
         readActivityState();
     }
 

@@ -1,11 +1,8 @@
 package com.adeven.adjustio.test;
 
 import com.adeven.adjustio.AdjustIoFactory;
-import com.adeven.adjustio.HttpRequestHandler;
-import com.adeven.adjustio.LogCatLogger;
 import com.adeven.adjustio.Logger;
 import com.adeven.adjustio.PackageHandler;
-import com.adeven.adjustio.QueuePackageHandler;
 import com.adeven.adjustio.RequestHandler;
 
 public class TestModule {
