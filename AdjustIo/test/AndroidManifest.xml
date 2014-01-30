@@ -4,16 +4,45 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="8" />
+    <uses-sdk android:minSdkVersion="8"
+        android:targetSdkVersion="19" />
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <instrumentation
         android:name="android.test.InstrumentationTestRunner"
-        android:targetPackage="com.adeven.adjustio" />
+        android:targetPackage="com.adeven.adjustio.test" />
 
     <application
+        android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name" >
         <uses-library android:name="android.test.runner" />
+
+        <meta-data
+            android:name="AdjustIoAppToken"
+            android:value="3g6x5plnaqd8" />
+        <meta-data
+            android:name="AdjustIoLogLevel"
+            android:value="verbose" />
+        <meta-data
+            android:name="AdjustIoEnvironment"
+            android:value="sandbox" />
+
+        <meta-data
+            android:name="AdjustIoEventBuffering"
+            android:value="false" />
+        
+        <activity
+            android:name="com.adeven.adjustio.test.MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
