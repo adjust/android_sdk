@@ -51,7 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
-    private final  PackageHandler      	    packageHandler;
+    private final  IPackageHandler      	    packageHandler;
     private        ActivityState            activityState;
     private final  Logger					logger;
     private static ScheduledExecutorService timer;
@@ -59,6 +59,7 @@ public class ActivityHandler extends HandlerThread {
     private        String                   environment;
     private        String                   defaultTracker;
     private        boolean                  eventBuffering;
+    private        boolean                  dropOfflineActivities;
 
     private String appToken;
     private String macSha1;
@@ -77,7 +78,7 @@ public class ActivityHandler extends HandlerThread {
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        packageHandler = (PackageHandler) AdjustIoFactory.getInstance(PackageHandler.class); 
+        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
         packageHandler.setContext(context);
         
         logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
@@ -96,7 +97,7 @@ public class ActivityHandler extends HandlerThread {
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        packageHandler = (PackageHandler) AdjustIoFactory.getInstance(PackageHandler.class); 
+        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
         packageHandler.setContext(context);
         
         logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
@@ -519,6 +520,7 @@ public class ActivityHandler extends HandlerThread {
         setDefaultTracker(bundle.getString("AdjustIoDefaultTracker"));
         setEventBuffering(bundle.getBoolean("AdjustIoEventBuffering"));
         logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
+        setDropOfflineActivities(bundle.getBoolean("AdjustIoDropOfflineActivities"));
     }
 
     private void setEnvironment(String env) {
@@ -552,6 +554,13 @@ public class ActivityHandler extends HandlerThread {
         defaultTracker = tracker;
         if (defaultTracker != null) {
             logger.info(String.format("Default tracker: '%s'", defaultTracker));
+        }
+    }
+
+    private void setDropOfflineActivities(boolean drop) {
+        dropOfflineActivities = drop;
+        if (dropOfflineActivities) {
+            logger.info("Offline activities will get dropped");
         }
     }
 

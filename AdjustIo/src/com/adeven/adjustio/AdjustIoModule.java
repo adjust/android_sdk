@@ -4,8 +4,8 @@ public class AdjustIoModule  {
 	
 	public static void registerAdjustIoModule() {
 		AdjustIoFactory.registerType(Logger.class, new LogCatLogger());
-		AdjustIoFactory.registerType(PackageHandler.class, new QueuePackageHandler());
-		AdjustIoFactory.registerType(RequestHandler.class, new HttpRequestHandler());
+		AdjustIoFactory.registerType(IPackageHandler.class, new PackageHandler());
+		AdjustIoFactory.registerType(IRequestHandler.class, new RequestHandler());
 	}
 	
 }
