@@ -63,7 +63,7 @@ public class FirstRunTest extends ActivityInstrumentationTestCase2<MainActivity>
 
 	public void testEnvironment() {
 		// test if the environment was set to Sandbox from the bundle
-		assertFalse(testLogger.toString(), 
+		assertTrue(testLogger.toString(), 
 			testLogger.containsMessage("SANDBOX: AdjustIo is running in Sandbox mode"));
 	}
 

@@ -1,16 +1,16 @@
 package com.adeven.adjustio.test;
 
 import com.adeven.adjustio.AdjustIoFactory;
+import com.adeven.adjustio.IPackageHandler;
+import com.adeven.adjustio.IRequestHandler;
 import com.adeven.adjustio.Logger;
-import com.adeven.adjustio.PackageHandler;
-import com.adeven.adjustio.RequestHandler;
 
 public class TestModule {
 
 	public static void registerAdjustIoModule() {
 		AdjustIoFactory.registerType(Logger.class, new TestLogger());
-		AdjustIoFactory.registerType(PackageHandler.class, new TestPackageHandler());
-		AdjustIoFactory.registerType(RequestHandler.class, new TestRequestHandler());
+		AdjustIoFactory.registerType(IPackageHandler.class, new TestPackageHandler());
+		AdjustIoFactory.registerType(IRequestHandler.class, new TestRequestHandler());
 	}
 	
 }
