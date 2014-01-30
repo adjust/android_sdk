@@ -23,7 +23,14 @@ import android.app.Activity;
  */
 public class AdjustIo {
 
-	private static Logger logger = new LogCatLogger();
+	private static Logger logger;
+	
+	static {
+		AdjustIoModule.registerAdjustIoModule();
+		logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
+		//Injector injector = Guice.createInjector(new AdjustIoModule());
+		//logger = injector.getInstance(Logger.class);
+	}
 	
     /**
      * Tell AdjustIo that an activity did resume.

@@ -51,9 +51,9 @@ public class ActivityHandler extends HandlerThread {
     private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
-    private        PackageHandler           packageHandler;
+    private final  PackageHandler      	    packageHandler;
     private        ActivityState            activityState;
-    private        Logger					logger;
+    private final  Logger					logger;
     private static ScheduledExecutorService timer;
     private final  Context                  context;
     private        String                   environment;
@@ -72,23 +72,34 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        logger = new LogCatLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
+
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+
+        packageHandler = (PackageHandler) AdjustIoFactory.getInstance(PackageHandler.class); 
+        packageHandler.setContext(context);
+        
+        logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
         sessionHandler.sendMessage(message);
     }
 
-    protected ActivityHandler(Activity activity, String appToken, String environment, boolean eventBuffering) {
+    public ActivityHandler(Activity activity, String appToken, String environment, boolean eventBuffering)  {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         sessionHandler = new SessionHandler(getLooper(), this);
+        
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+
+        packageHandler = (PackageHandler) AdjustIoFactory.getInstance(PackageHandler.class); 
+        packageHandler.setContext(context);
+        
+        logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
 
         this.appToken = appToken;
         this.environment = environment;
@@ -99,24 +110,24 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    protected void setSdkPrefix(String sdkPrefx) {
+    public void setSdkPrefix(String sdkPrefx) {
         clientSdk = String.format("%s@%s", sdkPrefx, clientSdk);
     }
 
-    protected void trackSubsessionStart() {
+    public void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
         sessionHandler.sendMessage(message);
     }
 
-    protected void trackSubsessionEnd() {
+    public void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
         sessionHandler.sendMessage(message);
     }
 
-    protected void trackEvent(String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder(logger);
+    public void trackEvent(String eventToken, Map<String, String> parameters) {
+        PackageBuilder builder = new PackageBuilder();
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
@@ -126,8 +137,8 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    protected void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder(logger);
+    public void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
+        PackageBuilder builder = new PackageBuilder();
         builder.setAmountInCents(amountInCents);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
@@ -207,8 +218,7 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
-
-        packageHandler = new PackageHandler(context, logger);
+        
         readActivityState();
     }
 
@@ -425,7 +435,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder(logger);
+        PackageBuilder builder = new PackageBuilder();
         injectGeneralAttributes(builder);
         injectReferrer(builder);
         activityState.injectSessionAttributes(builder);

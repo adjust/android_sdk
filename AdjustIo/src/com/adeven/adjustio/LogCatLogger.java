@@ -10,9 +10,7 @@
 package com.adeven.adjustio;
 
 import java.util.Locale;
-
 import android.util.Log;
-
 import static com.adeven.adjustio.Constants.LOGTAG;
 
 public class LogCatLogger implements Logger {
@@ -23,10 +21,6 @@ public class LogCatLogger implements Logger {
     	setLogLevel(LogLevel.INFO);
 	} 
     
-    public LogCatLogger(LogLevel loglevel) {
-    	setLogLevel(loglevel);
-	}
-
     @Override
 	public void setLogLevel(LogLevel logLevel) {
         this.logLevel = logLevel;
