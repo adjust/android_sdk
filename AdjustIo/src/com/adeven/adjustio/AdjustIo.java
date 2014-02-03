@@ -22,15 +22,6 @@ import android.app.Activity;
  * See the README for details.
  */
 public class AdjustIo {
-
-	private static Logger logger;
-	
-	static {
-		AdjustIoModule.registerAdjustIoModule();
-		logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
-		//Injector injector = Guice.createInjector(new AdjustIoModule());
-		//logger = injector.getInstance(Logger.class);
-	}
 	
     /**
      * Tell AdjustIo that an activity did resume.
@@ -44,6 +35,7 @@ public class AdjustIo {
         if (null == activityHandler) {
             activityHandler = new ActivityHandler(activity);
         }
+        logger = AdjustIoFactory.getLogger();
         activityHandler.trackSubsessionStart();
     }
 
@@ -130,5 +122,6 @@ public class AdjustIo {
      * Every activity will get forwarded to this handler to be processed in the background.
      */
     private static ActivityHandler activityHandler;
+    private static Logger logger;
 
 }

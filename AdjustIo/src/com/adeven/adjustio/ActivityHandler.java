@@ -77,7 +77,7 @@ public class ActivityHandler extends HandlerThread {
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
         
-        logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
+        logger = AdjustIoFactory.getLogger();
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
@@ -92,7 +92,7 @@ public class ActivityHandler extends HandlerThread {
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
+        logger = AdjustIoFactory.getLogger();
 
         this.appToken = appToken;
         this.environment = environment;
@@ -212,8 +212,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
-        packageHandler = (IPackageHandler) AdjustIoFactory.getInstance(IPackageHandler.class); 
-        packageHandler.setConstructorArguments(context, dropOfflineActivities);
+        packageHandler = AdjustIoFactory.getPackageHandler(context, dropOfflineActivities);
         readActivityState();
     }
 

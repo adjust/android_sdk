@@ -87,7 +87,7 @@ public class ActivityPackage implements Serializable {
         return String.format("%s%s", type.getKind(), suffix);
     }
 
-    protected String getExtendedString() {
+    public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("Path:      %s\n", type.getPath()));
         builder.append(String.format("UserAgent: %s\n", userAgent));

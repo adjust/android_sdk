@@ -9,7 +9,6 @@
 
 package com.adeven.adjustio;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -47,16 +46,14 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private HttpClient      httpClient;
     private Logger          logger;
 
-    public RequestHandler() {
+    public RequestHandler(IPackageHandler packageHandler) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
 
-        this.logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
+        this.logger = AdjustIoFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
-    }
-    
-    @Override public void setPackageHandler(IPackageHandler packageHandler) {
+
         this.packageHandler = packageHandler;
 
         Message message = Message.obtain();

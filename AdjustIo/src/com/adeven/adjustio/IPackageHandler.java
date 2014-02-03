@@ -1,10 +1,6 @@
 package com.adeven.adjustio;
 
-import android.content.Context;
-
-public interface IPackageHandler {
-	public void setConstructorArguments(Context context, boolean dropOfflineActivities);
-			
+public interface IPackageHandler {			
 	public void addPackage(ActivityPackage pack);
 	
 	public void sendFirstPackage();

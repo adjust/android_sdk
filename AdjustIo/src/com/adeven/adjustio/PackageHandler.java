@@ -43,16 +43,13 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private       boolean               dropOfflineActivities;
     private       Logger                logger;
 
-    public PackageHandler() {
+    public PackageHandler(Context context, boolean dropOfflineActivities) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
-        this.logger = (Logger) AdjustIoFactory.getInstance(Logger.class);
-        
-    }
-    
-	@Override public void setConstructorArguments(Context context, boolean dropOfflineActivities) {
+        this.logger = AdjustIoFactory.getLogger();
+
         this.context = context;
         this.dropOfflineActivities = dropOfflineActivities;
 
@@ -155,8 +152,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // internal methods run in dedicated queue thread
 
     private void initInternal() {
-        requestHandler = (IRequestHandler) AdjustIoFactory.getInstance(IRequestHandler.class);
-        requestHandler.setPackageHandler(this);
+        requestHandler = AdjustIoFactory.getRequestHandler(this);
 
         isSending = new AtomicBoolean();
 
