@@ -1,5 +1,6 @@
 package com.adeven.adjustio.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.adeven.adjustio.ActivityPackage;
@@ -16,6 +17,7 @@ public class MockRequestHandler implements IRequestHandler {
 	
 	public MockRequestHandler(MockLogger testLogger) {
 		this.testLogger = testLogger;  
+		queue = new ArrayList<ActivityPackage>();
 	}
 	
 	@Override

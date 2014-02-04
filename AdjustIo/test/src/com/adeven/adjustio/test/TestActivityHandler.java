@@ -1,6 +1,11 @@
 package com.adeven.adjustio.test;
 
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -11,25 +16,27 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.adeven.adjustio.ActivityHandler;
 import com.adeven.adjustio.ActivityPackage;
+import com.adeven.adjustio.AdjustIo;
 import com.adeven.adjustio.AdjustIoFactory;
 import com.adeven.adjustio.IPackageHandler;
 import com.adeven.adjustio.IRequestHandler;
 import com.adeven.adjustio.Logger;
 import com.adeven.adjustio.Logger.LogLevel;
+import com.adeven.adjustio.PackageHandler;
 
-public class TestActivityHandler extends ActivityInstrumentationTestCase2<MainActivity> {
+public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
 
 	protected MockLogger testLogger;
 	protected MockPackageHandler testPackageHandler;
 	protected MockRequestHandler testRequestHandler;
-	protected MainActivity activity;
+	protected UnitTestActivity activity;
 
 
 	public TestActivityHandler(){
-		super(MainActivity.class);
+		super(UnitTestActivity.class);
 	}
 	
-	public TestActivityHandler(Class<MainActivity> mainActivity){
+	public TestActivityHandler(Class<UnitTestActivity> mainActivity){
 		super(mainActivity);
 	}
 	
@@ -42,17 +49,19 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<MainAc
 		AdjustIoFactory.setPackageHandler(testPackageHandler);
 		AdjustIoFactory.setRequestHandler(testRequestHandler);
 		
+		//getInstrumentation().addMonitor(UnitTestActivity.class.getName(), null, false);
 		activity = getActivity();
 	}
 
 	@Override protected void tearDown() {
-		AdjustIoFactory.setLogger(null);
 		AdjustIoFactory.setPackageHandler(null);
 		AdjustIoFactory.setRequestHandler(null);
+		AdjustIoFactory.setLogger(null);
+		activity.finish();
 	}
 	
 	public void testActivityHandlerFirstSession() {
-		setUpFirstRun(activity);
+		setUpFirstRun(activity, testLogger);
 
 		// test if the environment was set to Sandbox from the bundle
 		assertTrue(testLogger.toString(),
@@ -76,15 +85,59 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<MainAc
 				testLogger.containsMessage(LogLevel.INFO, "First session"));
 	}
 	
-	public static ActivityHandler setUpFirstRun(Activity activity) {
-		
+	public static ActivityHandler setUpFirstRun(Activity activity, MockLogger testLogger) {
 		Context context = activity.getApplicationContext();
-		
-		//delete Activity and Package queue files
-		context.deleteFile("AdjustIoActivityState");
-		context.deleteFile("AdjustIoPackageQueue");
 
-		//throw new AssertionError(Arrays.toString(context.fileList()));
+		testLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+		testLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
+		
+		//deleteFiles(context, testLogger);
+		
+		testLogger.test("before creating ActivityHandler");
+		ActivityHandler activityHandler = new ActivityHandler(activity);
+
+		testLogger.test("after creating ActivityHandler/ before subsession");
+		activityHandler.trackSubsessionStart();
+
+		SystemClock.sleep(3000);
+		testLogger.test("after subsession");
+		
+		return activityHandler;
+	}
+	
+	private static void deleteFiles(Context context, MockLogger testLogger) {
+		//  steps needed to delete file
+		//   open file in write mode in the application context to create them if it does not exist
+		try {
+			FileOutputStream outputStream = context.openFileOutput("AdjustIoActivityState", Context.MODE_PRIVATE);
+            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
+            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+            objectStream.writeObject("invalid object");
+		} catch (FileNotFoundException fnf) {
+			testLogger.test("AdjustIoPackageQueue did not exist begore");
+		} catch (Exception e) {
+			throw new AssertionError(e.getMessage());
+		}
+		testLogger.test("file List before deleting " + Arrays.toString(context.fileList()));
+		
+		//   delete the file from the application context
+		Boolean fileDeleted = context.deleteFile("AdjustIoActivityState");
+		testLogger.test("Was AdjustIoActivityState deleted? " + fileDeleted);
+		
+		try {
+			FileOutputStream outputStream = context.openFileOutput("AdjustIoPackageQueue", Context.MODE_PRIVATE);
+            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
+            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+            objectStream.writeObject("invalid object");
+		} catch (FileNotFoundException fnf) {
+			testLogger.test("AdjustIoPackageQueue did not exist begore");
+		} catch (Exception e) {
+			throw new AssertionError(e.getMessage());
+		}
+		fileDeleted = context.deleteFile("AdjustIoPackageQueue");
+		testLogger.test("Was AdjustIoPackageQueue deleted? " + fileDeleted);
+
+		testLogger.test("file List after deleting " + Arrays.toString(context.fileList()));
 		
 		for (String fileName : context.fileList()) {
 			if (fileName == "AdjustIoActivityState") {
@@ -95,12 +148,13 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<MainAc
 				throw new AssertionError("AdjustIoPackageQueue " + Arrays.toString(context.fileList()));
 			}
 		}
-				
+		
 		try {
 			context.openFileInput("AdjustIoActivityState");
 			throw new AssertionError("AdjustIoActivityState " + Arrays.toString(context.fileList()));
 		} catch (FileNotFoundException fne) {
 			// the file should not exist
+			testLogger.test("AdjustIoActivityState not found");
 		}
 		
 		try {
@@ -108,13 +162,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<MainAc
 			throw new AssertionError("AdjustIoPackageQueue " + Arrays.toString(context.fileList()));
 		} catch (FileNotFoundException fne) {
 			/// the file should not exist
+			testLogger.test("AdjustIoPackageQueue not found");
 		}
-		
-		ActivityHandler activityHandler = new ActivityHandler(activity);
-		
-		activityHandler.trackSubsessionStart();
-		
-		return activityHandler;
 	}
 	
 	private void checkPackageHandler() {

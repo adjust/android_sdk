@@ -51,7 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static final String TIME_TRAVEL         = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
-    private        IPackageHandler      	    packageHandler;
+    private        IPackageHandler      	packageHandler;
     private        ActivityState            activityState;
     private final  Logger					logger;
     private static ScheduledExecutorService timer;
@@ -213,6 +213,7 @@ public class ActivityHandler extends HandlerThread {
         userAgent = Util.getUserAgent(context);
 
         packageHandler = AdjustIoFactory.getPackageHandler(context, dropOfflineActivities);
+        
         readActivityState();
     }
 
@@ -285,7 +286,7 @@ public class ActivityHandler extends HandlerThread {
         if (!checkAppTokenNotNull(appToken)) {
             return;
         }
-
+        
         packageHandler.pauseSending();
         stopTimer();
         updateActivityState();
@@ -426,6 +427,10 @@ public class ActivityHandler extends HandlerThread {
         } catch (Exception e) {
             logger.error(String.format("Failed to open activity state for writing (%s)", e));
         }
+    }
+    
+    public static Boolean deleteActivityState(Context context) {
+    	return context.deleteFile(SESSION_STATE_FILENAME);
     }
 
     private void transferSessionPackage() {

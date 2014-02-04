@@ -9,6 +9,7 @@
 
 package com.adeven.adjustio;
 
+import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -92,11 +93,13 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // interrupt the sending loop after the current request has finished
 	@Override public void pauseSending() {
+		logger.debug("Pause package handler");
         paused = true;
     }
 
     // allow sending requests again
 	@Override public void resumeSending() {
+		logger.debug("Resume package handler");
         paused = false;
     }
 
@@ -230,6 +233,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         // start with a fresh package queue in case of any exception
         packageQueue = new ArrayList<ActivityPackage>();
     }
+    
+    public static Boolean deletePackageQueue(Context context) {
+    	return context.deleteFile(PACKAGE_QUEUE_FILENAME);
+    }
+    
 
     private void writePackageQueue() {
         if (dropOfflineActivities) {

@@ -47,6 +47,7 @@ public class AdjustIo {
      */
     public static void onPause() {
         try {
+        	logger.debug("onPause");
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
             logger.error(NO_ACTIVITY_HANDLER_FOUND);

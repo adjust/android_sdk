@@ -31,7 +31,7 @@ public class MockLogger implements Logger {
 	@Override
 	public String toString() {
 		String logging = logBuffer.toString();
-		Log.v("TestLogger ", logging);
+		//Log.v("TestLogger ", logging);
 		return logging;
 	}
 	
@@ -96,11 +96,14 @@ public class MockLogger implements Logger {
 	}
 	
 	private Boolean listContainsMessage(List<String> list, String beginsWith) {
+		String sList = Arrays.toString(list.toArray());
 		for (String log : list) {
 			if (log.startsWith(beginsWith)) {
+				test(log + " found");
 				return true;
 			}
 		}
+		test(beginsWith + " is not in " + sList);
 		return false;
 	}
 

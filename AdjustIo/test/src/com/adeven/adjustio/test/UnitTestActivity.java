@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
 
-public class MainActivity extends Activity {
+public class UnitTestActivity extends Activity {
 	
-	public MainActivity() {
+	public UnitTestActivity() {
 		super();
 	}
 	
@@ -30,20 +30,20 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        AdjustIo.onResume(this);
+        //AdjustIo.onResume(this);
     }
     
     @Override
     protected void onPause() {
         super.onPause();
-        AdjustIo.onPause();
+        //AdjustIo.onPause();
     }
     
     protected void trackEvent(String eventToken) {
-    	AdjustIo.trackEvent(eventToken);
+    	//AdjustIo.trackEvent(eventToken);
     }
 
     protected void trackEvent(String eventToken, Map<String,String> parameters) {
-    	AdjustIo.trackEvent(eventToken, parameters);
+    	//AdjustIo.trackEvent(eventToken, parameters);
     }
 }
