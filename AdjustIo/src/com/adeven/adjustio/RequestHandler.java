@@ -105,7 +105,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
-        httpClient = new DefaultHttpClient(httpParams);
+        httpClient = AdjustIoFactory.getHttpClient(httpParams);
     }
 
     private void sendInternal(ActivityPackage activityPackage) {

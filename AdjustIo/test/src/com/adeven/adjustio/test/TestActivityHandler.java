@@ -31,7 +31,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 	protected MockRequestHandler testRequestHandler;
 	protected UnitTestActivity activity;
 
-
 	public TestActivityHandler(){
 		super(UnitTestActivity.class);
 	}
@@ -40,29 +39,34 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 		super(mainActivity);
 	}
 	
-	@Override protected void setUp() {
+	@Override protected void setUp() throws Exception {
+		super.setUp();
 		testLogger = new MockLogger();
 		testPackageHandler = new MockPackageHandler(testLogger);
-		testRequestHandler = new MockRequestHandler(testLogger);
 
 		AdjustIoFactory.setLogger(testLogger);
 		AdjustIoFactory.setPackageHandler(testPackageHandler);
-		AdjustIoFactory.setRequestHandler(testRequestHandler);
 		
-		//getInstrumentation().addMonitor(UnitTestActivity.class.getName(), null, false);
 		activity = getActivity();
 	}
 
-	@Override protected void tearDown() {
+	@Override protected void tearDown() throws Exception{
+		super.tearDown();
+		
 		AdjustIoFactory.setPackageHandler(null);
-		AdjustIoFactory.setRequestHandler(null);
 		AdjustIoFactory.setLogger(null);
-		activity.finish();
 	}
 	
 	public void testActivityHandlerFirstSession() {
-		setUpFirstRun(activity, testLogger);
+		Context context = activity.getApplicationContext();
 
+		testLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+		
+		ActivityHandler activityHandler = new ActivityHandler(activity);
+		// it's necessary to sleep the activity for a while after each handler call
+		//  to let the internal queue act 
+		SystemClock.sleep(1000);
+		
 		// test if the environment was set to Sandbox from the bundle
 		assertTrue(testLogger.toString(),
 			testLogger.containsMessage(LogLevel.ASSERT, "SANDBOX: AdjustIo is running in Sandbox mode"));
@@ -70,7 +74,11 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 		// test that the file did not exist in the first run of the application
 		assertTrue(testLogger.toString(), 
 			testLogger.containsMessage(LogLevel.VERBOSE, "Activity state file not found"));
-		
+
+		//  start the first session
+		activityHandler.trackSubsessionStart();
+		SystemClock.sleep(1000);
+
 		// a new session package 
 		checkPackageHandler();
 		
@@ -85,26 +93,62 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 				testLogger.containsMessage(LogLevel.INFO, "First session"));
 	}
 	
-	public static ActivityHandler setUpFirstRun(Activity activity, MockLogger testLogger) {
-		Context context = activity.getApplicationContext();
-
-		testLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
-		testLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
+	private void checkPackageHandler() {
+		// when a session package is being sent the package handler should resume sending
+		assertTrue(testLogger.toString(), 
+			testLogger.containsTestMessage("PackageHandler resumeSending"));
 		
-		//deleteFiles(context, testLogger);
+		// if the package was build, it was sent to the Package Handler
+		assertTrue(testLogger.toString(), 
+				testLogger.containsTestMessage("PackageHandler addPackage"));
 		
-		testLogger.test("before creating ActivityHandler");
-		ActivityHandler activityHandler = new ActivityHandler(activity);
-
-		testLogger.test("after creating ActivityHandler/ before subsession");
-		activityHandler.trackSubsessionStart();
-
-		SystemClock.sleep(3000);
-		testLogger.test("after subsession");
+		// checking the default values of the first session package
+		//  should only have one package
+		assertEquals(1, testPackageHandler.queue.size());
 		
-		return activityHandler;
+		ActivityPackage activityPackage = testPackageHandler.queue.get(0);
+		
+		//  check the Sdk version is being tested
+		assertEquals(activityPackage.getExtendedString(),
+			"android2.1.6", activityPackage.getClientSdk());
+		
+		Map<String, String> parameters = activityPackage.getParameters();
+		
+		//  check appToken? 
+		//  device specific attributes: setMacShortMd5, setMacSha1, setAndroidId, setUserAgent
+		//  how to test setFbAttributionId, defaultTracker?
+
+		//  session atributes
+		//   sessionCount 1, because is the first session
+		assertEquals(activityPackage.getExtendedString(),
+			1, Integer.parseInt(parameters.get("session_count")));
+		//   subSessionCount -1, because we didn't had any subsessions yet
+		//   because only values > 0 are added to parameters, therefore is not present
+		assertNull(activityPackage.getExtendedString(),
+			parameters.get("subsession_count"));
+		//   sessionLenght -1, same as before
+		assertNull(activityPackage.getExtendedString(),
+			parameters.get("session_length"));
+		//   timeSpent -1, same as before
+		assertNull(activityPackage.getExtendedString(), 
+			parameters.get("time_spent"));
+		//   createdAt
+		//    test diff with current now?
+		//   lastInterval -1, same as before
+		assertNull(activityPackage.getExtendedString(), 
+			parameters.get("last_interval"));
+		//   packageType should be SESSION_START
+		assertEquals(activityPackage.getExtendedString(), 
+			"/startup", activityPackage.getPath());
+		
+		
+		// after adding, the activity handler ping the Package handler to send the package
+		assertTrue(testLogger.toString(), 
+				testLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+		
 	}
 	
+
 	private static void deleteFiles(Context context, MockLogger testLogger) {
 		//  steps needed to delete file
 		//   open file in write mode in the application context to create them if it does not exist
@@ -164,60 +208,5 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 			/// the file should not exist
 			testLogger.test("AdjustIoPackageQueue not found");
 		}
-	}
-	
-	private void checkPackageHandler() {
-		// when a session package is being sent the package handler should resume sending
-		assertTrue(testLogger.toString(), 
-			testLogger.containsTestMessage("PackageHandler resumeSending"));
-		
-		// if the package was build, it was sent to the Package Handler
-		assertTrue(testLogger.toString(), 
-				testLogger.containsTestMessage("PackageHandler addPackage"));
-		
-		// checking the default values of the first session package
-		//  should only have one package
-		assertEquals(1, testPackageHandler.queue.size());
-		
-		ActivityPackage activityPackage = testPackageHandler.queue.get(0);
-		
-		//  check the Sdk version is being tested
-		assertEquals(activityPackage.getExtendedString(),
-			"android2.1.6", activityPackage.getClientSdk());
-		
-		Map<String, String> parameters = activityPackage.getParameters();
-		
-		//  check appToken? 
-		//  device specific attributes: setMacShortMd5, setMacSha1, setAndroidId, setUserAgent
-		//  how to test setFbAttributionId, defaultTracker?
-
-		//  session atributes
-		//   sessionCount 1, because is the first session
-		assertEquals(activityPackage.getExtendedString(),
-			1, Integer.parseInt(parameters.get("session_count")));
-		//   subSessionCount -1, because we didn't had any subsessions yet
-		//   because only values > 0 are added to parameters, therefore is not present
-		assertNull(activityPackage.getExtendedString(),
-			parameters.get("subsession_count"));
-		//   sessionLenght -1, same as before
-		assertNull(activityPackage.getExtendedString(),
-			parameters.get("session_length"));
-		//   timeSpent -1, same as before
-		assertNull(activityPackage.getExtendedString(), 
-			parameters.get("time_spent"));
-		//   createdAt
-		//    test diff with current now?
-		//   lastInterval -1, same as before
-		assertNull(activityPackage.getExtendedString(), 
-			parameters.get("last_interval"));
-		//   packageType should be SESSION_START
-		assertEquals(activityPackage.getExtendedString(), 
-			"/startup", activityPackage.getPath());
-		
-		
-		// after adding, the activity handler ping the Package handler to send the package
-		assertTrue(testLogger.toString(), 
-				testLogger.containsTestMessage("PackageHandler sendFirstPackage"));
-		
 	}
 }

@@ -13,18 +13,23 @@ public class MockRequestHandler implements IRequestHandler {
 
 	private MockLogger testLogger;
 	private String prefix = "RequestHandler ";
-	public List<ActivityPackage> queue;
+	private IPackageHandler packageHandler;
 	
 	public MockRequestHandler(MockLogger testLogger) {
 		this.testLogger = testLogger;  
-		queue = new ArrayList<ActivityPackage>();
 	}
 	
 	@Override
 	public void sendPackage(ActivityPackage pack) {
 		testLogger.test(prefix +  "sendPackage");
-		queue.add(pack);
+		
+		//  respond successfully to the package handler
+		if (packageHandler != null) {
+			packageHandler.sendNextPackage();
+		}
 	}
 
-
+	public void setPackageHandler(IPackageHandler packageHandler) {
+		this.packageHandler = packageHandler;
+	}
 }

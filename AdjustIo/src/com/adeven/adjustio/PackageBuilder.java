@@ -163,16 +163,7 @@ public class PackageBuilder {
         return isEventTokenValid(); // but if they have one, it must be valid
     }
 
-    private boolean isEventTokenValid() {
-        if (6 != eventToken.length()) {
-        	Logger logger = AdjustIoFactory.getLogger();
-            logger.error(String.format("Malformed Event Token '%s'", eventToken));
-            return false;
-        }
-        return true;
-    }
-
-    protected ActivityPackage buildSessionPackage() {
+    public ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", lastInterval);
         addString(parameters, "default_tracker", defaultTracker);
@@ -186,7 +177,7 @@ public class PackageBuilder {
         return sessionPackage;
     }
 
-    protected ActivityPackage buildEventPackage() {
+    public ActivityPackage buildEventPackage() {
         Map<String, String> parameters = getDefaultParameters();
         injectEventParameters(parameters);
 
@@ -198,7 +189,7 @@ public class PackageBuilder {
         return eventPackage;
     }
 
-    protected ActivityPackage buildRevenuePackage() {
+    public ActivityPackage buildRevenuePackage() {
         Map<String, String> parameters = getDefaultParameters();
         injectEventParameters(parameters);
         addString(parameters, "amount", getAmountString());
@@ -211,6 +202,15 @@ public class PackageBuilder {
         return revenuePackage;
     }
 
+    private boolean isEventTokenValid() {
+        if (6 != eventToken.length()) {
+        	Logger logger = AdjustIoFactory.getLogger();
+            logger.error(String.format("Malformed Event Token '%s'", eventToken));
+            return false;
+        }
+        return true;
+    }
+    
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
         activityPackage.setUserAgent(userAgent);
