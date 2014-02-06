@@ -5,19 +5,18 @@ import static com.adeven.adjustio.Constants.LOGTAG;
 import java.util.*;
 
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.adeven.adjustio.Logger;
 
 public class MockLogger implements Logger {
 
 	private StringBuffer logBuffer;
-	private Map<Integer, List<String>> logMap;
-	private List<String> logList;
+	private SparseArray<ArrayList<String>> logMap;
 	
 	public MockLogger() {
 		logBuffer = new StringBuffer();
-		logList = new ArrayList<String>();
-		logMap = new HashMap<Integer, List<String>>();
+		logMap = new SparseArray<ArrayList<String>>(7);
 		logMap.put(LogLevel.ASSERT.getAndroidLogLevel(), new ArrayList<String>());
 		logMap.put(LogLevel.DEBUG.getAndroidLogLevel(), new ArrayList<String>());
 		logMap.put(LogLevel.ERROR.getAndroidLogLevel(), new ArrayList<String>());
@@ -48,9 +47,8 @@ public class MockLogger implements Logger {
 	}
 	
 	private void logMessage(String message, Integer iLoglevel, String messagePrefix) {
-		logBuffer.append(messagePrefix + message);
+		logBuffer.append(messagePrefix + message + System.getProperty("line.separator"));
 		Log.d(messagePrefix, message);
-		logList.add(message);
 		
 		List<String> prefixedList = logMap.get(iLoglevel);
 		prefixedList.add(message);
@@ -90,34 +88,32 @@ public class MockLogger implements Logger {
 		logMessage(message, 1, "t ");
 	}
 	
-	public Boolean hasAnyError()
-	{
-		return !logMap.get(LogLevel.ERROR).isEmpty();
-	}
-	
-	private Boolean listContainsMessage(List<String> list, String beginsWith) {
+	private Boolean mapContainsMessage(int level, String beginsWith) {
+		ArrayList<String> list = logMap.get(level);
+		@SuppressWarnings("unchecked")
+		ArrayList<String> listCopy = (ArrayList<String>) list.clone();
 		String sList = Arrays.toString(list.toArray());
 		for (String log : list) {
+			listCopy.remove(0);
 			if (log.startsWith(beginsWith)) {
 				test(log + " found");
+				logMap.put(level, listCopy);
 				return true;
 			}
 		}
 		test(beginsWith + " is not in " + sList);
 		return false;
 	}
-
-	public Boolean containsMessage(String beginsWith) {
-		return listContainsMessage(logList, beginsWith);
-	}
 	
 	public Boolean containsMessage(LogLevel level, String beginsWith) {
-		List<String> messageList = logMap.get(level.getAndroidLogLevel());
-		return listContainsMessage(messageList, beginsWith);	
+		return mapContainsMessage(level.getAndroidLogLevel(), beginsWith);	
 	}
 	
 	public Boolean containsTestMessage(String beginsWith) {
-		List<String> testMessages = logMap.get(1);
-		return listContainsMessage(testMessages, beginsWith);
+		return mapContainsMessage(1, beginsWith);
+	}
+	
+	public Boolean doesNotContain(String message) {
+		return logBuffer.lastIndexOf(message) == -1;
 	}
 }

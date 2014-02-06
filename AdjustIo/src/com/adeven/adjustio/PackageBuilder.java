@@ -85,7 +85,6 @@ public class PackageBuilder {
         this.environment = environment;
     }
 
-
     public void setSessionCount(int sessionCount) {
         this.sessionCount = sessionCount;
     }

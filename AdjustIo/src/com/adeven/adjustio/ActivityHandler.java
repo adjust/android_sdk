@@ -45,10 +45,10 @@ import android.preference.PreferenceManager;
 
 public class ActivityHandler extends HandlerThread {
 
-    private static final long   TIMER_INTERVAL      = Constants.ONE_MINUTE;
-    private static final long   SESSION_INTERVAL    = Constants.THIRTY_MINUTES;
-    private static final long   SUBSESSION_INTERVAL = Constants.ONE_SECOND;
-    private static final String TIME_TRAVEL         = "Time travel!";
+	private static long TIMER_INTERVAL;
+    private static long SESSION_INTERVAL;
+    private static long SUBSESSION_INTERVAL;
+    private static final String TIME_TRAVEL = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
     private        IPackageHandler      	packageHandler;
@@ -73,6 +73,9 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
+        TIMER_INTERVAL = AdjustIoFactory.getTimerInterval();
+        SESSION_INTERVAL = AdjustIoFactory.getSessionInterval();
+        SUBSESSION_INTERVAL = AdjustIoFactory.getSubsessionInterval();
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
@@ -88,6 +91,9 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
+        TIMER_INTERVAL = AdjustIoFactory.getTimerInterval();
+        SESSION_INTERVAL = AdjustIoFactory.getSessionInterval();
+        SUBSESSION_INTERVAL = AdjustIoFactory.getSubsessionInterval();
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
@@ -248,6 +254,8 @@ public class ActivityHandler extends HandlerThread {
         }
 
         long lastInterval = now - activityState.lastActivity;
+        logger.debug("TODO lastInterval: " + lastInterval + ", Session Interval " + SESSION_INTERVAL + "SubSession Interval " + SUBSESSION_INTERVAL);
+        
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;

@@ -93,13 +93,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // interrupt the sending loop after the current request has finished
 	@Override public void pauseSending() {
-		logger.debug("Pause package handler");
         paused = true;
     }
 
     // allow sending requests again
 	@Override public void resumeSending() {
-		logger.debug("Resume package handler");
         paused = false;
     }
 

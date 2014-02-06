@@ -21,16 +21,27 @@ public class MockHttpClient implements HttpClient {
 
 	private MockLogger testLogger;
 	private String prefix = "HttpClient ";
+	private String messageError;
 
 	public MockHttpClient(MockLogger testLogger) {
-		this.testLogger = testLogger;  
+		this.testLogger = testLogger;
+		messageError = null;
 	}
 
 	@Override
 	public HttpResponse execute(HttpUriRequest request) throws IOException,
 			ClientProtocolException {
 		testLogger.test(prefix +  "execute HttpUriRequest request");
+		
+		if (messageError != null) {
+			throw new ClientProtocolException(messageError);
+		}
+		
 		return new MockHttpResponse();
+	}
+
+	public void setMessageError(String messageError) {
+		this.messageError = messageError;
 	}
 
 	@Override

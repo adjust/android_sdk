@@ -55,7 +55,7 @@ public class MockPackageHandler implements IPackageHandler {
 	@Override
 	public String getFailureMessage() {
 		testLogger.debug(prefix +  "getFailureMessage");
-		return null;
+		return "Will retry later.";
 	}
 
 }

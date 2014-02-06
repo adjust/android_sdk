@@ -14,7 +14,10 @@ public class AdjustIoFactory {
 	private static IRequestHandler requestHandler = null;
 	private static Logger logger = null;
 	private static HttpClient httpClient = null;
-	private static HttpParams httpParams = null;
+	
+	private static long timerInterval = -1;
+	private static long sessionInterval = -1;
+	private static long subsessionInterval = -1;
 	
 	public static IPackageHandler getPackageHandler(Context context, boolean dropOfflineActivities) {
 		if (packageHandler == null) {
@@ -42,12 +45,28 @@ public class AdjustIoFactory {
 		if (httpClient == null) {
 			return new DefaultHttpClient(params);
 		}
-		AdjustIoFactory.httpParams = params;
 		return httpClient;
 	}
 	
-	public static HttpParams getHttpParams() {
-		return httpParams;
+	public static long getTimerInterval() {
+		if (timerInterval == -1) {
+			return Constants.ONE_MINUTE;
+		}
+		return timerInterval;
+	}
+
+	public static long getSessionInterval() {
+		if (sessionInterval == -1) {
+			return Constants.THIRTY_MINUTES;
+		}
+		return sessionInterval;
+	}
+
+	public static long getSubsessionInterval() {
+		if (subsessionInterval == -1) {
+			return Constants.ONE_SECOND;
+		}
+		return subsessionInterval;
 	}
 	
 	public static void setPackageHandler(IPackageHandler packageHandler) {
@@ -64,6 +83,18 @@ public class AdjustIoFactory {
 	
 	public static void setHttpClient(HttpClient httpClient) {
 		AdjustIoFactory.httpClient = httpClient;
+	}
+
+	public static void setTimerInterval(long timerInterval) {
+		AdjustIoFactory.timerInterval = timerInterval;
+	}
+
+	public static void setSessionInterval(long sessionInterval) {
+		AdjustIoFactory.sessionInterval = sessionInterval;
+	}
+
+	public static void setSubsessionInterval(long subsessionInterval) {
+		AdjustIoFactory.subsessionInterval = subsessionInterval;
 	}
 	
 }

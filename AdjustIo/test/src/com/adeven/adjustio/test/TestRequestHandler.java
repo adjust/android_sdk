@@ -17,6 +17,9 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 	protected MockPackageHandler mockPackageHandler;
 	protected MockHttpClient mockHttpClient;
 	
+	protected RequestHandler requestHandler;
+	protected ActivityPackage sessionPackage;
+	
 	public TestRequestHandler() {
 		super(UnitTestActivity.class);
 	}
@@ -31,9 +34,21 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 		mockLogger = new MockLogger();
 		mockPackageHandler = new MockPackageHandler(mockLogger);
 		mockHttpClient = new MockHttpClient(mockLogger);
-
+		
+		//  inject the mocks used in the request handler
 		AdjustIoFactory.setLogger(mockLogger);
 		AdjustIoFactory.setHttpClient(mockHttpClient);
+		
+		//  inject the mock package handler to our request handler
+		requestHandler = new RequestHandler(mockPackageHandler);
+		
+		// it's necessary to sleep the activity for a while after each handler call
+		//  to let the internal queue act 
+		SystemClock.sleep(1000);
+
+		// build a default session package 
+		PackageBuilder builder = new PackageBuilder();
+		sessionPackage = builder.buildSessionPackage();
 	}
 
 	protected void tearDown() throws Exception {
@@ -44,24 +59,10 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 	}
 	
 	public void testSendFirstPackage() {
-		//  create the mock package handler and inject to our request handler
-		MockPackageHandler mockPackageHandler = new MockPackageHandler(mockLogger);
-		RequestHandler requestHandler = new RequestHandler(mockPackageHandler);
-		// it's necessary to sleep the activity for a while after each handler call
-		//  to let the internal queue act 
-		SystemClock.sleep(1000);
-		
-		HttpParams httpParams = AdjustIoFactory.getHttpParams();
-		
-		//TODO test params
-		mockLogger.test("httpParams: " + httpParams.toString());
-		
-		// build and send a package 
-		PackageBuilder builder = new PackageBuilder();
-		ActivityPackage sessionPackage = builder.buildSessionPackage();
+		//  send a default session package
 		requestHandler.sendPackage(sessionPackage);
 		SystemClock.sleep(1000);
-
+		
 		//  check that the http client was called
 		assertTrue(mockLogger.toString(),
 			mockLogger.containsTestMessage("HttpClient execute HttpUriRequest request"));
@@ -73,6 +74,28 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 		//  check that the package handler was called to send the next package
 		assertTrue(mockLogger.toString(),
 			mockLogger.containsTestMessage("PackageHandler sendNextPackage"));
+	}
+	
+	public void testErrorSendPackage() {
+		//  set the mock http client to throw an Exception
+		mockHttpClient.setMessageError("testErrorSendPackage");
+		
+		//  send a default session package
+		requestHandler.sendPackage(sessionPackage);
+		SystemClock.sleep(1000);
+
+		//  check that the http client was called
+		assertTrue(mockLogger.toString(),
+			mockLogger.containsTestMessage("HttpClient execute HttpUriRequest request"));
+		
+		//  check the error message
+		assertTrue(mockLogger.toString(),
+			mockLogger.containsMessage(LogLevel.ERROR,
+				"Failed to track session start. (Client protocol error: org.apache.http.client.ClientProtocolException: testErrorSendPackage) Will retry later."));
+		
+		//  check that the package handler was called to close the failed package
+		assertTrue(mockLogger.toString(),
+			mockLogger.containsTestMessage("PackageHandler closeFirstPackage"));
 	}
 
 }
