@@ -1,8 +1,8 @@
 package com.adeven.adjustio.test;
 
-import static com.adeven.adjustio.Constants.LOGTAG;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import android.util.Log;
 import android.util.SparseArray;

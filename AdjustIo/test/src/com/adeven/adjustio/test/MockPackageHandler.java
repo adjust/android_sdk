@@ -3,11 +3,7 @@ package com.adeven.adjustio.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
-
 import com.adeven.adjustio.ActivityPackage;
-import com.adeven.adjustio.AdjustIoFactory;
-import com.adeven.adjustio.Logger;
 import com.adeven.adjustio.IPackageHandler;
 
 public class MockPackageHandler implements IPackageHandler {

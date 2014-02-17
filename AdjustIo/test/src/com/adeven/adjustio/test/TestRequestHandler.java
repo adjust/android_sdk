@@ -1,15 +1,13 @@
 package com.adeven.adjustio.test;
 
-import org.apache.http.params.HttpParams;
+import android.os.SystemClock;
+import android.test.ActivityInstrumentationTestCase2;
 
 import com.adeven.adjustio.ActivityPackage;
 import com.adeven.adjustio.AdjustIoFactory;
 import com.adeven.adjustio.Logger.LogLevel;
 import com.adeven.adjustio.PackageBuilder;
 import com.adeven.adjustio.RequestHandler;
-
-import android.os.SystemClock;
-import android.test.ActivityInstrumentationTestCase2;
 
 public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
 
