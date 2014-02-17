@@ -9,12 +9,6 @@
 
 package com.adeven.adjustio;
 
-import static com.adeven.adjustio.Constants.SESSION_STATE_FILENAME;
-import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -30,6 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
 
 // persistent
 public class PackageHandler extends HandlerThread implements IPackageHandler {

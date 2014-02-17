@@ -1,8 +1,5 @@
 package com.adeven.adjustio;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
