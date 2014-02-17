@@ -254,7 +254,6 @@ public class ActivityHandler extends HandlerThread {
         }
 
         long lastInterval = now - activityState.lastActivity;
-        logger.debug("TODO lastInterval: " + lastInterval + ", Session Interval " + SESSION_INTERVAL + "SubSession Interval " + SUBSESSION_INTERVAL);
 
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
