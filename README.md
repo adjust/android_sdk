@@ -16,7 +16,7 @@ archive in a folder of your choice.
 
 ### 2. Create the AdjustIo project
 
-In the Eclipse menu select `File|New|Project...`.
+In the Eclipse menu select `File → New → Project...`.
 
 ![][project]
 
