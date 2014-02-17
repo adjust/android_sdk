@@ -63,7 +63,8 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
     }
 
-    @Override public void sendPackage(ActivityPackage pack) {
+    @Override
+    public void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND;
         message.obj = pack;

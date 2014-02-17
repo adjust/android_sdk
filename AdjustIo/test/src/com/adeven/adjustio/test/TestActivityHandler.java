@@ -26,7 +26,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         super(mainActivity);
     }
 
-    @Override protected void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
         mockLogger = new MockLogger();
         mockPackageHandler = new MockPackageHandler(mockLogger);
@@ -37,7 +38,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activity = getActivity();
     }
 
-    @Override protected void tearDown() throws Exception{
+    @Override
+    protected void tearDown() throws Exception{
         super.tearDown();
 
         AdjustIoFactory.setPackageHandler(null);

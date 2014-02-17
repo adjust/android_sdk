@@ -60,7 +60,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     // add a package to the queue, trigger sending
-    @Override public void addPackage(ActivityPackage pack) {
+    @Override
+    public void addPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.ADD;
         message.obj = pack;
@@ -68,7 +69,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     // try to send the oldest package
-    @Override public void sendFirstPackage() {
+    @Override
+    public void sendFirstPackage() {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_FIRST;
         internalHandler.sendMessage(message);
@@ -76,14 +78,16 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
-    @Override public void sendNextPackage() {
+    @Override
+    public void sendNextPackage() {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
     }
 
     // close the package to retry in the future (after temporary failure)
-    @Override public void closeFirstPackage() {
+    @Override
+    public void closeFirstPackage() {
         if (dropOfflineActivities) {
             sendNextPackage();
         } else {
@@ -92,17 +96,20 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     // interrupt the sending loop after the current request has finished
-    @Override public void pauseSending() {
+    @Override
+    public void pauseSending() {
         paused = true;
     }
 
     // allow sending requests again
-    @Override public void resumeSending() {
+    @Override
+    public void resumeSending() {
         paused = false;
     }
 
     // short info about how failing packages are handled
-    @Override public String getFailureMessage() {
+    @Override
+    public String getFailureMessage() {
         if (dropOfflineActivities) {
             return "Dropping offline activity.";
         } else {

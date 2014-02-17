@@ -29,7 +29,8 @@ public class TestPackageHandler extends
         super(activityClass);
     }
 
-    @Override protected void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
         super.setUp();
 
         mockLogger = new MockLogger();
@@ -41,7 +42,8 @@ public class TestPackageHandler extends
         context = getActivity().getApplicationContext();
     }
 
-    @Override protected void tearDown() throws Exception {
+    @Override
+    protected void tearDown() throws Exception {
         super.tearDown();
 
         AdjustIoFactory.setRequestHandler(null);
