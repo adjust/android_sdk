@@ -49,7 +49,7 @@ public class PackageBuilder {
     private Map<String, String> callbackParameters;
 
     private static SimpleDateFormat dateFormat;
-    
+
     public PackageBuilder()
     { }
 
@@ -209,7 +209,7 @@ public class PackageBuilder {
         }
         return true;
     }
-    
+
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
         activityPackage.setUserAgent(userAgent);

@@ -13,7 +13,7 @@ public class MockLogger implements Logger {
 
 	private StringBuffer logBuffer;
 	private SparseArray<ArrayList<String>> logMap;
-	
+
 	public MockLogger() {
 		logBuffer = new StringBuffer();
 		logMap = new SparseArray<ArrayList<String>>(7);
@@ -26,14 +26,14 @@ public class MockLogger implements Logger {
 		//  logging test level == 1
 		logMap.put(1, new ArrayList<String>());
 	}
-	
+
 	@Override
 	public String toString() {
 		String logging = logBuffer.toString();
 		//Log.v("TestLogger ", logging);
 		return logging;
 	}
-	
+
 	@Override
 	public void setLogLevel(LogLevel logLevel) {
 
@@ -43,11 +43,11 @@ public class MockLogger implements Logger {
 	public void setLogLevelString(String logLevelString) {
 
 	}
-	
+
 	private void logMessage(String message, Integer iLoglevel, String messagePrefix) {
 		logBuffer.append(messagePrefix + message + System.getProperty("line.separator"));
 		Log.d(messagePrefix, message);
-		
+
 		List<String> prefixedList = logMap.get(iLoglevel);
 		prefixedList.add(message);
 	}
@@ -81,11 +81,11 @@ public class MockLogger implements Logger {
 	public void Assert(String message) {
 		logMessage(message, LogLevel.ASSERT.getAndroidLogLevel(), "a ");
 	}
-	
+
 	public void test(String message) {
 		logMessage(message, 1, "t ");
 	}
-	
+
 	private Boolean mapContainsMessage(int level, String beginsWith) {
 		ArrayList<String> list = logMap.get(level);
 		@SuppressWarnings("unchecked")
@@ -102,15 +102,15 @@ public class MockLogger implements Logger {
 		test(beginsWith + " is not in " + sList);
 		return false;
 	}
-	
+
 	public Boolean containsMessage(LogLevel level, String beginsWith) {
-		return mapContainsMessage(level.getAndroidLogLevel(), beginsWith);	
+		return mapContainsMessage(level.getAndroidLogLevel(), beginsWith);
 	}
-	
+
 	public Boolean containsTestMessage(String beginsWith) {
 		return mapContainsMessage(1, beginsWith);
 	}
-	
+
 	public Boolean doesNotContain(String message) {
 		return logBuffer.lastIndexOf(message) == -1;
 	}

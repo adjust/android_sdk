@@ -9,11 +9,11 @@ import android.app.Activity;
 import android.view.Menu;
 
 public class UnitTestActivity extends Activity {
-	
+
 	public UnitTestActivity() {
 		super();
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,19 +26,19 @@ public class UnitTestActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-    
+
     @Override
     protected void onResume() {
         super.onResume();
         //AdjustIo.onResume(this);
     }
-    
+
     @Override
     protected void onPause() {
         super.onPause();
         //AdjustIo.onPause();
     }
-    
+
     protected void trackEvent(String eventToken) {
     	//AdjustIo.trackEvent(eventToken);
     }

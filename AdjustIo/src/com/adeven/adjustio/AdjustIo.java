@@ -22,7 +22,7 @@ import android.app.Activity;
  * See the README for details.
  */
 public class AdjustIo {
-	
+
     /**
      * Tell AdjustIo that an activity did resume.
      * <p/>

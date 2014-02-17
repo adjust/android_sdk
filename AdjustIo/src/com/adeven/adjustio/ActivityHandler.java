@@ -79,7 +79,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
-        
+
         logger = AdjustIoFactory.getLogger();
 
         Message message = Message.obtain();
@@ -219,7 +219,7 @@ public class ActivityHandler extends HandlerThread {
         userAgent = Util.getUserAgent(context);
 
         packageHandler = AdjustIoFactory.getPackageHandler(context, dropOfflineActivities);
-        
+
         readActivityState();
     }
 
@@ -255,7 +255,7 @@ public class ActivityHandler extends HandlerThread {
 
         long lastInterval = now - activityState.lastActivity;
         logger.debug("TODO lastInterval: " + lastInterval + ", Session Interval " + SESSION_INTERVAL + "SubSession Interval " + SUBSESSION_INTERVAL);
-        
+
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
@@ -294,7 +294,7 @@ public class ActivityHandler extends HandlerThread {
         if (!checkAppTokenNotNull(appToken)) {
             return;
         }
-        
+
         packageHandler.pauseSending();
         stopTimer();
         updateActivityState();
@@ -436,7 +436,7 @@ public class ActivityHandler extends HandlerThread {
             logger.error(String.format("Failed to open activity state for writing (%s)", e));
         }
     }
-    
+
     public static Boolean deleteActivityState(Context context) {
     	return context.deleteFile(SESSION_STATE_FILENAME);
     }

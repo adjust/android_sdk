@@ -231,11 +231,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         // start with a fresh package queue in case of any exception
         packageQueue = new ArrayList<ActivityPackage>();
     }
-    
+
     public static Boolean deletePackageQueue(Context context) {
     	return context.deleteFile(PACKAGE_QUEUE_FILENAME);
     }
-    
+
 
     private void writePackageQueue() {
         if (dropOfflineActivities) {

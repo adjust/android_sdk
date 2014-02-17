@@ -16,11 +16,11 @@ import static com.adeven.adjustio.Constants.LOGTAG;
 public class LogCatLogger implements Logger {
 
     private LogLevel logLevel;
-    
+
     public LogCatLogger() {
     	setLogLevel(LogLevel.INFO);
-	} 
-    
+	}
+
     @Override
 	public void setLogLevel(LogLevel logLevel) {
         this.logLevel = logLevel;

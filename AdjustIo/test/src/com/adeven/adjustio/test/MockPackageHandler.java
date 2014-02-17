@@ -11,16 +11,16 @@ import com.adeven.adjustio.Logger;
 import com.adeven.adjustio.IPackageHandler;
 
 public class MockPackageHandler implements IPackageHandler {
-	
+
 	private MockLogger testLogger;
 	private String prefix = "PackageHandler ";
 	public List<ActivityPackage> queue;
-	
+
 	public MockPackageHandler(MockLogger testLogger) {
 		this.testLogger = testLogger;
 		queue = new ArrayList<ActivityPackage>();
 	}
-	
+
 	@Override
 	public void addPackage(ActivityPackage pack) {
 		testLogger.test(prefix +  "addPackage");

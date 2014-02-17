@@ -32,11 +32,11 @@ public class MockHttpClient implements HttpClient {
 	public HttpResponse execute(HttpUriRequest request) throws IOException,
 			ClientProtocolException {
 		testLogger.test(prefix +  "execute HttpUriRequest request");
-		
+
 		if (messageError != null) {
 			throw new ClientProtocolException(messageError);
 		}
-		
+
 		return new MockHttpResponse();
 	}
 

@@ -60,7 +60,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
-    	
+
     }
 
     @Override public void sendPackage(ActivityPackage pack) {

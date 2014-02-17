@@ -3,7 +3,7 @@ package com.adeven.adjustio;
 import android.util.Log;
 
 public interface Logger {
-	
+
 	public enum LogLevel {
         VERBOSE(Log.VERBOSE), DEBUG(Log.DEBUG), INFO(Log.INFO), WARN(Log.WARN), ERROR(Log.ERROR), ASSERT(Log.ASSERT);
         final int androidLogLevel;
