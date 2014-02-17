@@ -36,13 +36,11 @@ public class MockLogger implements Logger {
 	
 	@Override
 	public void setLogLevel(LogLevel logLevel) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void setLogLevelString(String logLevelString) {
-		// TODO Auto-generated method stub
 
 	}
 	
