@@ -45,15 +45,15 @@ import android.preference.PreferenceManager;
 
 public class ActivityHandler extends HandlerThread {
 
-	private static long TIMER_INTERVAL;
+    private static long TIMER_INTERVAL;
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
 
     private final  SessionHandler           sessionHandler;
-    private        IPackageHandler      	packageHandler;
+    private        IPackageHandler          packageHandler;
     private        ActivityState            activityState;
-    private final  Logger					logger;
+    private final  Logger                   logger;
     private static ScheduledExecutorService timer;
     private final  Context                  context;
     private        String                   environment;
@@ -438,7 +438,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public static Boolean deleteActivityState(Context context) {
-    	return context.deleteFile(SESSION_STATE_FILENAME);
+        return context.deleteFile(SESSION_STATE_FILENAME);
     }
 
     private void transferSessionPackage() {

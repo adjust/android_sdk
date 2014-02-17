@@ -18,16 +18,16 @@ public class LogCatLogger implements Logger {
     private LogLevel logLevel;
 
     public LogCatLogger() {
-    	setLogLevel(LogLevel.INFO);
-	}
+        setLogLevel(LogLevel.INFO);
+    }
 
     @Override
-	public void setLogLevel(LogLevel logLevel) {
+    public void setLogLevel(LogLevel logLevel) {
         this.logLevel = logLevel;
     }
 
     @Override
-	public void setLogLevelString(String logLevelString) {
+    public void setLogLevelString(String logLevelString) {
         if (null != logLevelString) {
             try {
                 setLogLevel(LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
@@ -38,42 +38,42 @@ public class LogCatLogger implements Logger {
     }
 
     @Override
-	public void verbose(String message) {
+    public void verbose(String message) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             Log.v(LOGTAG, message);
         }
     }
 
     @Override
-	public void debug(String message) {
+    public void debug(String message) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             Log.d(LOGTAG, message);
         }
     }
 
     @Override
-	public void info(String message) {
+    public void info(String message) {
         if (logLevel.androidLogLevel <= Log.INFO) {
             Log.i(LOGTAG, message);
         }
     }
 
     @Override
-	public void warn(String message) {
+    public void warn(String message) {
         if (logLevel.androidLogLevel <= Log.WARN) {
             Log.w(LOGTAG, message);
         }
     }
 
     @Override
-	public void error(String message) {
+    public void error(String message) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
             Log.e(LOGTAG, message);
         }
     }
 
     @Override
-	public void Assert(String message) {
+    public void Assert(String message) {
         Log.println(Log.ASSERT, LOGTAG, message);
     }
 }

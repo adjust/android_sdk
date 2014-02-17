@@ -11,37 +11,37 @@ import com.adeven.adjustio.Logger;
 
 public class MockRequestHandler implements IRequestHandler {
 
-	private MockLogger testLogger;
-	private String prefix = "RequestHandler ";
-	private IPackageHandler packageHandler;
-	private Boolean errorNextSend;
+    private MockLogger testLogger;
+    private String prefix = "RequestHandler ";
+    private IPackageHandler packageHandler;
+    private Boolean errorNextSend;
 
-	public MockRequestHandler(MockLogger testLogger) {
-		this.testLogger = testLogger;
-		this.errorNextSend = false;
-	}
+    public MockRequestHandler(MockLogger testLogger) {
+        this.testLogger = testLogger;
+        this.errorNextSend = false;
+    }
 
-	@Override
-	public void sendPackage(ActivityPackage pack) {
-		testLogger.test(prefix +  "sendPackage");
+    @Override
+    public void sendPackage(ActivityPackage pack) {
+        testLogger.test(prefix +  "sendPackage");
 
-		//  respond successfully to the package handler
-		if (packageHandler != null && !errorNextSend) {
-			packageHandler.sendNextPackage();
-		}
+        //  respond successfully to the package handler
+        if (packageHandler != null && !errorNextSend) {
+            packageHandler.sendNextPackage();
+        }
 
-		if (packageHandler != null && errorNextSend) {
-			testLogger.test(packageHandler.getFailureMessage());
-			packageHandler.closeFirstPackage();
-		}
-	}
+        if (packageHandler != null && errorNextSend) {
+            testLogger.test(packageHandler.getFailureMessage());
+            packageHandler.closeFirstPackage();
+        }
+    }
 
-	public void setPackageHandler(IPackageHandler packageHandler) {
-		this.packageHandler = packageHandler;
-	}
+    public void setPackageHandler(IPackageHandler packageHandler) {
+        this.packageHandler = packageHandler;
+    }
 
-	public void setErrorNextSend(Boolean errorNextSend) {
-		this.errorNextSend = errorNextSend;
-	}
+    public void setErrorNextSend(Boolean errorNextSend) {
+        this.errorNextSend = errorNextSend;
+    }
 
 }

@@ -6,22 +6,22 @@ import org.apache.http.StatusLine;
 
 public class MockStatusLine implements StatusLine {
 
-	public MockStatusLine() {
-	}
+    public MockStatusLine() {
+    }
 
-	@Override
-	public int getStatusCode() {
-		return HttpStatus.SC_OK;
-	}
+    @Override
+    public int getStatusCode() {
+        return HttpStatus.SC_OK;
+    }
 
-	@Override
-	public ProtocolVersion getProtocolVersion() {
-		return null;
-	}
+    @Override
+    public ProtocolVersion getProtocolVersion() {
+        return null;
+    }
 
-	@Override
-	public String getReasonPhrase() {
-		return null;
-	}
+    @Override
+    public String getReasonPhrase() {
+        return null;
+    }
 
 }
