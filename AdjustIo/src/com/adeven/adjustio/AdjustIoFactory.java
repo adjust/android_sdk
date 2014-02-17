@@ -32,7 +32,7 @@ public class AdjustIoFactory {
 
     public static Logger getLogger() {
         if (logger == null) {
-            //  Logger needs to be "static" to retain the configuration throughout the app
+            // Logger needs to be "static" to retain the configuration throughout the app
             logger = new LogCatLogger();
         }
         return logger;

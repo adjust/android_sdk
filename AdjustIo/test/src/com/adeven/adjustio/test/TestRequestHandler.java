@@ -35,15 +35,15 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         mockPackageHandler = new MockPackageHandler(mockLogger);
         mockHttpClient = new MockHttpClient(mockLogger);
 
-        //  inject the mocks used in the request handler
+        // inject the mocks used in the request handler
         AdjustIoFactory.setLogger(mockLogger);
         AdjustIoFactory.setHttpClient(mockHttpClient);
 
-        //  inject the mock package handler to our request handler
+        // inject the mock package handler to our request handler
         requestHandler = new RequestHandler(mockPackageHandler);
 
         // it's necessary to sleep the activity for a while after each handler call
-        //  to let the internal queue act
+        // to let the internal queue act
         SystemClock.sleep(1000);
 
         // build a default session package
@@ -59,41 +59,41 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     public void testSendFirstPackage() {
-        //  send a default session package
+        // send a default session package
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        //  check that the http client was called
+        // check that the http client was called
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("HttpClient execute HttpUriRequest request"));
 
-        //  check the status received is ok
+        // check the status received is ok
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.INFO, "Tracked session start"));
 
-        //  check that the package handler was called to send the next package
+        // check that the package handler was called to send the next package
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler sendNextPackage"));
     }
 
     public void testErrorSendPackage() {
-        //  set the mock http client to throw an Exception
+        // set the mock http client to throw an Exception
         mockHttpClient.setMessageError("testErrorSendPackage");
 
-        //  send a default session package
+        // send a default session package
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        //  check that the http client was called
+        // check that the http client was called
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("HttpClient execute HttpUriRequest request"));
 
-        //  check the error message
+        // check the error message
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.ERROR,
                 "Failed to track session start. (Client protocol error: org.apache.http.client.ClientProtocolException: testErrorSendPackage) Will retry later."));
 
-        //  check that the package handler was called to close the failed package
+        // check that the package handler was called to close the failed package
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler closeFirstPackage"));
     }

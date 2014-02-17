@@ -25,7 +25,7 @@ public class MockRequestHandler implements IRequestHandler {
     public void sendPackage(ActivityPackage pack) {
         testLogger.test(prefix +  "sendPackage");
 
-        //  respond successfully to the package handler
+        // respond successfully to the package handler
         if (packageHandler != null && !errorNextSend) {
             packageHandler.sendNextPackage();
         }

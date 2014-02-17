@@ -23,7 +23,7 @@ public class MockLogger implements Logger {
         logMap.put(LogLevel.INFO.getAndroidLogLevel(), new ArrayList<String>());
         logMap.put(LogLevel.VERBOSE.getAndroidLogLevel(), new ArrayList<String>());
         logMap.put(LogLevel.WARN.getAndroidLogLevel(), new ArrayList<String>());
-        //  logging test level == 1
+        // logging test level == 1
         logMap.put(1, new ArrayList<String>());
     }
 
