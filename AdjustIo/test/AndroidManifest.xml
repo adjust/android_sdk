@@ -6,7 +6,7 @@
 
     <uses-sdk android:minSdkVersion="8"
         android:targetSdkVersion="19" />
-    
+
     <uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
@@ -33,7 +33,7 @@
         <meta-data
             android:name="AdjustIoEventBuffering"
             android:value="false" />
-        
+
         <activity
             android:name="com.adeven.adjustio.test.UnitTestActivity"
             android:label="@string/title_activity_main" >
