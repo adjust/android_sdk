@@ -97,4 +97,12 @@ public class ResponseData {
                 trackerToken,
                 Util.quote(trackerName));
     }
+
+    public void setWasSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public void setWillRetry(boolean willRetry) {
+        this.willRetry = willRetry;
+    }
 }

@@ -131,13 +131,18 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private void requestFinished(HttpResponse response, ActivityPackage activityPackage) {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
+        ResponseData responseData = ResponseData.fromJson(responseString);
 
         if (HttpStatus.SC_OK == statusCode) {
+            // success
+            responseData.setWasSuccess(true);
             logger.info(activityPackage.getSuccessMessage());
         } else {
-            logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseString));
+            // wrong status code
+            logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseData.getError()));
         }
 
+        packageHandler.finishedTrackingActivity(activityPackage, responseData);
         packageHandler.sendNextPackage();
     }
 
@@ -153,18 +158,27 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
+    // close current package because it failed
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String handlerMessage = packageHandler.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
         logger.error(String.format("%s. (%s) %s", packageMessage, reasonString, handlerMessage));
+
+        ResponseData responseData = ResponseData.fromError(reasonString);
+        responseData.setWillRetry(!packageHandler.dropsOfflineActivities());
+        packageHandler.finishedTrackingActivity(activityPackage, responseData);
         packageHandler.closeFirstPackage();
     }
 
+    // send next package because the current package failed
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
         logger.error(String.format("%s. (%s)", failureMessage, reasonString));
+
+        ResponseData responseData = ResponseData.fromError(reasonString);
+        packageHandler.finishedTrackingActivity(activityPackage, responseData);
         packageHandler.sendNextPackage();
     }
 
