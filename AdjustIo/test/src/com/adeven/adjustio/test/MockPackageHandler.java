@@ -56,6 +56,11 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
+    public boolean dropsOfflineActivities() {
+        return false; // TODO: implement?
+    }
+
+    @Override
     public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
         // TODO: implement
     }

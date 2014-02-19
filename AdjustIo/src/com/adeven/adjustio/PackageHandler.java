@@ -117,6 +117,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
     }
 
+    public boolean dropsOfflineActivities() {
+        return dropOfflineActivities;
+    }
+
     @Override
     public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
         logger.Assert(String.format("finished %s %s", activityPackage, responseData));

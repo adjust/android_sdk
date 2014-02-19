@@ -15,5 +15,7 @@ public interface IPackageHandler {
 
     public String getFailureMessage();
 
+    public boolean dropsOfflineActivities();
+
     public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData);
 }
