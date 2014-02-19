@@ -2,6 +2,9 @@ package com.adeven.adjustio;
 
 import java.util.Locale;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /*
  * Information about the result of a tracking attempt
  *
@@ -63,9 +66,19 @@ public class ResponseData {
     private String trackerName;
 
     public static ResponseData fromJson(String jsonString) {
-        ResponseData data = new ResponseData();
-        // TODO: parse jsonString
-        return data;
+        try {
+            ResponseData data = new ResponseData();
+            JSONObject jsonObject = new JSONObject(jsonString);
+
+            data.error = jsonObject.optString("error", null);
+            data.trackerToken = jsonObject.optString("tracker_token", null);
+            data.trackerName = jsonObject.optString("tracker_name", null);
+
+            return data;
+        } catch (JSONException e) {
+            String error = String.format("Failed to parse json response: %s", jsonString.trim());
+            return ResponseData.fromError(error);
+        }
     }
 
     public static ResponseData fromError(String error) {
