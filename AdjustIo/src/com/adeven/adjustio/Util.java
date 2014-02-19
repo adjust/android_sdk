@@ -9,6 +9,28 @@
 
 package com.adeven.adjustio;
 
+import static com.adeven.adjustio.Constants.ENCODING;
+import static com.adeven.adjustio.Constants.HIGH;
+import static com.adeven.adjustio.Constants.LARGE;
+import static com.adeven.adjustio.Constants.LONG;
+import static com.adeven.adjustio.Constants.LOW;
+import static com.adeven.adjustio.Constants.MD5;
+import static com.adeven.adjustio.Constants.MEDIUM;
+import static com.adeven.adjustio.Constants.NORMAL;
+import static com.adeven.adjustio.Constants.SHA1;
+import static com.adeven.adjustio.Constants.SMALL;
+import static com.adeven.adjustio.Constants.UNKNOWN;
+import static com.adeven.adjustio.Constants.XLARGE;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -23,24 +45,6 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import static com.adeven.adjustio.Constants.ENCODING;
-import static com.adeven.adjustio.Constants.HIGH;
-import static com.adeven.adjustio.Constants.LARGE;
-import static com.adeven.adjustio.Constants.LONG;
-import static com.adeven.adjustio.Constants.LOW;
-import static com.adeven.adjustio.Constants.MD5;
-import static com.adeven.adjustio.Constants.MEDIUM;
-import static com.adeven.adjustio.Constants.NORMAL;
-import static com.adeven.adjustio.Constants.SHA1;
-import static com.adeven.adjustio.Constants.SMALL;
-import static com.adeven.adjustio.Constants.UNKNOWN;
-import static com.adeven.adjustio.Constants.XLARGE;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.util.Locale;
 
 
 /**
@@ -313,5 +317,19 @@ public class Util {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
         return String.format(formatString, bigInt);
+    }
+
+    public static String quote(String string) {
+        if (string == null) {
+            return null;
+        }
+
+        Pattern pattern = Pattern.compile("\\s");
+        Matcher matcher = pattern.matcher(string);
+        if (!matcher.find()) {
+            return string;
+        }
+
+        return String.format("'%s'", string);
     }
 }

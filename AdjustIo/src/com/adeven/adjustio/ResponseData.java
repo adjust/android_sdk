@@ -80,8 +80,8 @@ public class ResponseData {
                 getActivityKindString(),
                 success,
                 willRetry,
-                error,
+                Util.quote(error),
                 trackerToken,
-                trackerName);
+                Util.quote(trackerName));
     }
 }
