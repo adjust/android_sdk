@@ -117,6 +117,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
     }
 
+    @Override
+    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
+        logger.Assert(String.format("finished %s %s", activityPackage, responseData));
+    }
+
     private static final class InternalHandler extends Handler {
         private static final int INIT       = 1;
         private static final int ADD        = 2;

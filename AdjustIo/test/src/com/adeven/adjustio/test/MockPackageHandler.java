@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.adeven.adjustio.ActivityPackage;
 import com.adeven.adjustio.IPackageHandler;
+import com.adeven.adjustio.ResponseData;
 
 public class MockPackageHandler implements IPackageHandler {
 
@@ -54,4 +55,8 @@ public class MockPackageHandler implements IPackageHandler {
         return "Will retry later.";
     }
 
+    @Override
+    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
+        // TODO: implement
+    }
 }

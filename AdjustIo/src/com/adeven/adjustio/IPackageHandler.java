@@ -15,4 +15,5 @@ public interface IPackageHandler {
 
     public String getFailureMessage();
 
+    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData);
 }
