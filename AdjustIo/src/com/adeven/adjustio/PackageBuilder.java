@@ -169,7 +169,8 @@ public class PackageBuilder {
         addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
-        sessionPackage.setType(ActivityPackage.PackageType.SESSION_START);
+        sessionPackage.setPath("/startup");
+        sessionPackage.setActivityKind(ActivityKind.SESSION);
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
 
@@ -181,7 +182,8 @@ public class PackageBuilder {
         injectEventParameters(parameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage();
-        eventPackage.setType(ActivityPackage.PackageType.EVENT);
+        eventPackage.setPath("/event");
+        eventPackage.setActivityKind(ActivityKind.EVENT);
         eventPackage.setSuffix(getEventSuffix());
         eventPackage.setParameters(parameters);
 
@@ -194,7 +196,8 @@ public class PackageBuilder {
         addString(parameters, "amount", getAmountString());
 
         ActivityPackage revenuePackage = getDefaultActivityPackage();
-        revenuePackage.setType(ActivityPackage.PackageType.REVENUE);
+        revenuePackage.setPath("/revenue");
+        revenuePackage.setActivityKind(ActivityKind.REVENUE);
         revenuePackage.setSuffix(getRevenueSuffix());
         revenuePackage.setParameters(parameters);
 

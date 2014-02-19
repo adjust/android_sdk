@@ -15,40 +15,22 @@ import java.util.Map;
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
 
-    public enum PackageType {
-        EVENT("/event", "event"), REVENUE("/revenue", "revenue"), SESSION_START("/startup", "session start");
-        private final String path;
-        private final String kind;
-
-        PackageType(final String path, final String kind) {
-            this.path = path;
-            this.kind = kind;
-        }
-
-        public String getPath() {
-            return path;
-        }
-
-        public String getKind() {
-            return kind;
-        }
-    }
-
     // data
-    private PackageType         type;
+    private String              path;
     private String              userAgent;
     private String              clientSdk;
     private Map<String, String> parameters;
 
     // logs
-    private String suffix;
-
-    public void setType(PackageType type) {
-        this.type = type;
-    }
+    private ActivityKind activityKind;
+    private String       suffix;
 
     public String getPath() {
-        return type.getPath();
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public String getUserAgent() {
@@ -75,6 +57,14 @@ public class ActivityPackage implements Serializable {
         this.parameters = parameters;
     }
 
+    public ActivityKind getActivityKind() {
+        return activityKind;
+    }
+
+    public void setActivityKind(ActivityKind activityKind ) {
+        this.activityKind = activityKind;
+    }
+
     public String getSuffix() {
         return suffix;
     }
@@ -84,12 +74,12 @@ public class ActivityPackage implements Serializable {
     }
 
     public String toString() {
-        return String.format("%s%s", type.getKind(), suffix);
+        return String.format("%s%s", activityKind.toString(), suffix);
     }
 
     public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("Path:      %s\n", type.getPath()));
+        builder.append(String.format("Path:      %s\n", path));
         builder.append(String.format("UserAgent: %s\n", userAgent));
         builder.append(String.format("ClientSdk: %s\n", clientSdk));
 
@@ -104,7 +94,7 @@ public class ActivityPackage implements Serializable {
 
     protected String getSuccessMessage() {
         try {
-            return String.format("Tracked %s%s", type.getKind(), suffix);
+            return String.format("Tracked %s%s", activityKind.toString(), suffix);
         } catch (NullPointerException e) {
             return "Tracked ???";
         }
@@ -112,7 +102,7 @@ public class ActivityPackage implements Serializable {
 
     protected String getFailureMessage() {
         try {
-            return String.format("Failed to track %s%s", type.getKind(), suffix);
+            return String.format("Failed to track %s%s", activityKind.toString(), suffix);
         } catch (NullPointerException e) {
             return "Failed to track ???";
         }
