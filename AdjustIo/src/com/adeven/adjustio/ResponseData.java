@@ -1,5 +1,7 @@
 package com.adeven.adjustio;
 
+import java.util.Locale;
+
 /*
  * Information about the result of a tracking attempt
  *
@@ -53,7 +55,7 @@ public class ResponseData {
 
     // internals
 
-    private ActivityKind activityKind;
+    private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private boolean success;
     private boolean willRetry;
     private String error;
@@ -70,5 +72,16 @@ public class ResponseData {
         ResponseData data = new ResponseData();
         data.error = error;
         return data;
+    }
+
+    public String toString() {
+        return String.format(Locale.US,
+                "[kind:%s success:%b willRetry:%b error:%s trackerToken:%s trackerName:%s]",
+                getActivityKindString(),
+                success,
+                willRetry,
+                error,
+                trackerToken,
+                trackerName);
     }
 }
