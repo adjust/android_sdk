@@ -54,6 +54,14 @@ public class AdjustIo {
         }
     }
 
+    public static void setOnFinishedListener(OnFinishedListener listener) {
+        try {
+            activityHandler.setOnFinishedListener(listener);
+        } catch (NullPointerException e) {
+            logger.error(NO_ACTIVITY_HANDLER_FOUND);
+        }
+    }
+
     /**
      * Tell AdjustIo that a particular event has happened.
      * <p/>

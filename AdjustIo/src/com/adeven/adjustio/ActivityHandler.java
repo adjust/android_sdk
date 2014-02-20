@@ -52,6 +52,7 @@ public class ActivityHandler extends HandlerThread {
 
     private final  SessionHandler           sessionHandler;
     private        IPackageHandler          packageHandler;
+    private        OnFinishedListener       onFinishedListener;
     private        ActivityState            activityState;
     private final  Logger                   logger;
     private static ScheduledExecutorService timer;
@@ -113,6 +114,10 @@ public class ActivityHandler extends HandlerThread {
         clientSdk = String.format("%s@%s", sdkPrefx, clientSdk);
     }
 
+    public void setOnFinishedListener(OnFinishedListener listener) {
+        onFinishedListener = listener;
+    }
+
     public void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
@@ -148,8 +153,22 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void finishedTrackingActivity(ResponseData responseData) {
-        logger.Assert("finished " + responseData);
+    public void finishedTrackingActivity(final ResponseData responseData) {
+        if (onFinishedListener == null) {
+            return;
+        }
+
+        Handler handler = new Handler(context.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    onFinishedListener.onFinishedTracking(responseData);
+                } catch (NullPointerException e) {
+                }
+            }
+        };
+        handler.post(runnable);
     }
 
     private static final class SessionHandler extends Handler {
