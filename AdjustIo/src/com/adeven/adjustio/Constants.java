@@ -21,7 +21,7 @@ public interface Constants {
 
     String BASE_URL   = "https://app.adjust.io";
     String CLIENT_SDK = "android3.0.0";
-    String LOGTAG     = "AdjustIo";
+    String LOGTAG     = "Adjust";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
     String NO_ACTIVITY_HANDLER_FOUND = "No activity handler found";

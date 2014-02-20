@@ -16,7 +16,7 @@ import java.net.URLDecoder;
 
 public class ReferrerReceiver extends BroadcastReceiver {
 
-    protected static final String REFERRER_KEY = "AdjustIoInstallReferrer";
+    protected static final String REFERRER_KEY = "AdjustInstallReferrer";
 
     @Override
     public void onReceive(Context context, Intent intent) {

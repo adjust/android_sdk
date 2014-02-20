@@ -21,17 +21,17 @@
         <uses-library android:name="android.test.runner" />
 
         <meta-data
-            android:name="AdjustIoAppToken"
+            android:name="AdjustAppToken"
             android:value="3g6x5plnaqd8" />
         <meta-data
-            android:name="AdjustIoLogLevel"
+            android:name="AdjustLogLevel"
             android:value="verbose" />
         <meta-data
-            android:name="AdjustIoEnvironment"
+            android:name="AdjustEnvironment"
             android:value="sandbox" />
 
         <meta-data
-            android:name="AdjustIoEventBuffering"
+            android:name="AdjustEventBuffering"
             android:value="false" />
 
         <activity

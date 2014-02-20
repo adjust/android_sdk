@@ -64,9 +64,9 @@ Still in the `AndroidManifest.xml`, add the following `meta-data` tags inside
 the `application` tag.
 
 ```xml
-<meta-data android:name="AdjustIoAppToken"    android:value="{YourAppToken}" />
-<meta-data android:name="AdjustIoLogLevel"    android:value="info" />
-<meta-data android:name="AdjustIoEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
+<meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
+<meta-data android:name="AdjustLogLevel"    android:value="info" />
+<meta-data android:name="AdjustEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
 ```
 
 ![][settings]
@@ -74,7 +74,7 @@ the `application` tag.
 Replace `{YourAppToken}` with your App Token. You can find in your [dashboard].
 
 You can increase or decrease the amount of logs you see by changing the value
-of `AdjustIoLogLevel` to one of the following:
+of `AdjustLogLevel` to one of the following:
 
 - `verbose` - enable all logging
 - `debug` - enable more logging
@@ -84,7 +84,7 @@ of `AdjustIoLogLevel` to one of the following:
 - `assert` - disable errors as well
 
 Depending on whether or not you build your app for testing or for production
-you must adjust the `AdjustIoEnvironment` setting:
+you must adjust the `AdjustEnvironment` setting:
 
 - `sandbox` - for testing
 - `production` - before publishing
@@ -249,7 +249,7 @@ event buffering by adding the following line to your Adjust settings in your
 `AndroidManifest.xml` file.
 
 ```xml
-<meta-data android:name="AdjustIoEventBuffering" android:value="true" />
+<meta-data android:name="AdjustEventBuffering" android:value="true" />
 ```
 
 [adjust.io]: http://adjust.io

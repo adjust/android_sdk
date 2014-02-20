@@ -543,12 +543,12 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        appToken = bundle.getString("AdjustIoAppToken");
-        setEnvironment(bundle.getString("AdjustIoEnvironment"));
-        setDefaultTracker(bundle.getString("AdjustIoDefaultTracker"));
-        setEventBuffering(bundle.getBoolean("AdjustIoEventBuffering"));
-        logger.setLogLevelString(bundle.getString("AdjustIoLogLevel"));
-        setDropOfflineActivities(bundle.getBoolean("AdjustIoDropOfflineActivities"));
+        appToken = bundle.getString("AdjustAppToken");
+        setEnvironment(bundle.getString("AdjustEnvironment"));
+        setDefaultTracker(bundle.getString("AdjustDefaultTracker"));
+        setEventBuffering(bundle.getBoolean("AdjustEventBuffering"));
+        logger.setLogLevelString(bundle.getString("AdjustLogLevel"));
+        setDropOfflineActivities(bundle.getBoolean("AdjustDropOfflineActivities"));
     }
 
     private void setEnvironment(String env) {

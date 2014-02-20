@@ -15,9 +15,9 @@
     `meta-data` tags inside the `application` tag.
 
     ```xml
-    <meta-data android:name="AdjustIoAppToken"    android:value="{YourAppToken}" />
-    <meta-data android:name="AdjustIoLogLevel"    android:value="info" />
-    <meta-data android:name="AdjustIoEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
+    <meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
+    <meta-data android:name="AdjustLogLevel"    android:value="info" />
+    <meta-data android:name="AdjustEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
     ```
 
     ![][settings]
@@ -25,7 +25,7 @@
     Replace `{YourAppToken}` with your App Token. You can find it in your
     [dashboard].
 
-    The log level is now set globally by `AdjustIoLogLevel`. Possible values:
+    The log level is now set globally by `AdjustLogLevel`. Possible values:
 
    - `verbose` - enable all logging
    - `debug` - enable more logging
@@ -35,7 +35,7 @@
    - `assert` - disable errors as well
 
     Depending on whether or not you build your app for testing or for
-    production you must adjust the `AdjustIoEnvironment` setting:
+    production you must adjust the `AdjustEnvironment` setting:
 
    - `sandbox` - for testing
    - `production` - before publishing
