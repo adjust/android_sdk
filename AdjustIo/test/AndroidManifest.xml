@@ -35,7 +35,7 @@
             android:value="false" />
 
         <activity
-            android:name="com.adeven.adjustio.test.UnitTestActivity"
+            android:name="com.adjust.sdk.test.UnitTestActivity"
             android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
