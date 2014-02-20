@@ -36,7 +36,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
     private final InternalHandler       internalHandler;
-    private       IRequestHandler        requestHandler;
+    private       IRequestHandler       requestHandler;
+    private       ActivityHandler       activityHandler;
     private       List<ActivityPackage> packageQueue;
     private       AtomicBoolean         isSending;
     private       boolean               paused;
@@ -44,13 +45,14 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private       boolean               dropOfflineActivities;
     private       Logger                logger;
 
-    public PackageHandler(Context context, boolean dropOfflineActivities) {
+    public PackageHandler(ActivityHandler activityHandler, Context context, boolean dropOfflineActivities) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
         this.logger = AdjustIoFactory.getLogger();
 
+        this.activityHandler = activityHandler;
         this.context = context;
         this.dropOfflineActivities = dropOfflineActivities;
 

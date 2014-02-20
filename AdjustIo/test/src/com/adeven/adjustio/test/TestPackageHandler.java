@@ -51,7 +51,8 @@ public class TestPackageHandler extends
         mockLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
 
         // initialize Package Handler
-        PackageHandler packageHandler = new PackageHandler(context, false);
+        // TODO: create and inject activityHandler
+        PackageHandler packageHandler = new PackageHandler(null, context, false);
         // it's necessary to sleep the activity for a while after each handler call
         // to let the internal queue act
         SystemClock.sleep(1000);
@@ -98,7 +99,8 @@ public class TestPackageHandler extends
 
     public void testPause() {
         // initialize Package Handler
-        PackageHandler packageHandler = new PackageHandler(context, false);
+        // TODO: create and inject activityHandler
+        PackageHandler packageHandler = new PackageHandler(null, context, false);
         SystemClock.sleep(1000);
 
         // disable sending packages to Request Handler
@@ -133,7 +135,8 @@ public class TestPackageHandler extends
 
     public void testDropOfflineActivities() {
         // initialize Package Handler with
-        PackageHandler packageHandler = new PackageHandler(context, true);
+        // TODO: create and inject activityHandler
+        PackageHandler packageHandler = new PackageHandler(null, context, true);
         SystemClock.sleep(1000);
 
         // check that it did NOT try to read the package queue file
@@ -191,7 +194,8 @@ public class TestPackageHandler extends
         mockLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
 
         // initialize Package Handler
-        PackageHandler packageHandler = new PackageHandler(context, false);
+        // TODO: create and inject activityHandler
+        PackageHandler packageHandler = new PackageHandler(null, context, false);
         SystemClock.sleep(1000);
 
         // test that the file did not exist in the first run of the application
@@ -226,7 +230,8 @@ public class TestPackageHandler extends
             mockLogger.containsMessage(LogLevel.VERBOSE, "Package handler is already sending"));
 
         // create a new package handler to simulate a new launch
-        packageHandler = new PackageHandler(context, false);
+        // TODO: create and inject activityHandler
+        packageHandler = new PackageHandler(null, context, false);
         SystemClock.sleep(1000);
 
         // check that it reads the same 3 packages in the file

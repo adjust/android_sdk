@@ -16,9 +16,9 @@ public class AdjustIoFactory {
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
 
-    public static IPackageHandler getPackageHandler(Context context, boolean dropOfflineActivities) {
+    public static IPackageHandler getPackageHandler(ActivityHandler activityHandler, Context context, boolean dropOfflineActivities) {
         if (packageHandler == null) {
-            return new PackageHandler(context, dropOfflineActivities);
+            return new PackageHandler(activityHandler, context, dropOfflineActivities);
         }
         return packageHandler;
     }

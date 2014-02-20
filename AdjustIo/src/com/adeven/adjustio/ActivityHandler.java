@@ -218,7 +218,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
-        packageHandler = AdjustIoFactory.getPackageHandler(context, dropOfflineActivities);
+        packageHandler = AdjustIoFactory.getPackageHandler(this, context, dropOfflineActivities);
 
         readActivityState();
     }
