@@ -2,7 +2,7 @@
 
 0. In order to save some time later on you might want to check your current SDK
    Version. You can find that value in a constant named `CLIENT_SDK` (or
-   `CLIENTSDK`) in `com.adeven.adjustio/Util.java`. It should look like
+   `CLIENTSDK`) in `com.adjust.sdk/Util.java`. It should look like
    `android1.6` or similar.
 
 1. Delete the old `AdjustIo` project from your `Package Explorer`. Download
@@ -84,7 +84,7 @@
     After these steps your activity should look like this:
 
     ```java
-    import com.adeven.adjustio.Adjust;
+    import com.adjust.sdk.Adjust;
     // ...
     public class YourActivity extends Activity {
         protected void onResume() {

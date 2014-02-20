@@ -2,7 +2,7 @@ package com.adjust.sdk.test;
 
 import java.util.Map;
 
-import com.adeven.adjustio.test.R;
+import com.adjust.sdk.test.R;
 
 import android.app.Activity;
 import android.os.Bundle;

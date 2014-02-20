@@ -105,7 +105,7 @@ the `application` tag.
 
 ```xml
 <receiver
-    android:name="com.adeven.adjustio.ReferrerReceiver"
+    android:name="com.adjust.sdk.ReferrerReceiver"
     android:exported="true" >
     <intent-filter>
         <action android:name="com.android.vending.INSTALL_REFERRER" />
@@ -139,7 +139,7 @@ for **each** Activity of your app:
 After these steps your activity should look like this:
 
 ```java
-import com.adeven.adjustio.Adjust;
+import com.adjust.sdk.Adjust;
 // ...
 public class YourActivity extends Activity {
     protected void onResume() {
