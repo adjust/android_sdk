@@ -111,8 +111,8 @@
    becomes `12.3`).
 
 [README]: ../README.md
-[import]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/import.png
-[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity3.png
 [dashboard]: http://adjust.io
-[settings]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/settings.png
+[import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import.png
+[activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity3.png
+[settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
 

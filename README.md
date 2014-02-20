@@ -191,7 +191,7 @@ case you can also put some key-value-pairs in a dictionary and pass it to the
 callback URL.
 
 For example, suppose you have registered the URL
-`http://www.adeven.com/callback` for your event with Event Token `abc123` and
+`http://www.adjust.com/callback` for your event with Event Token `abc123` and
 execute the following lines:
 
 ```java
@@ -203,7 +203,7 @@ Adjust.trackEvent("abc123", parameters);
 
 In that case we would track the event and send a request to:
 
-    http://www.adeven.com/callback?key=value&foo=bar
+    http://www.adjust.com/callback?key=value&foo=bar
 
 It should be mentioned that we support a variety of placeholders like
 `{android_id}` that can be used as parameter values. In the resulting callback
@@ -254,17 +254,17 @@ event buffering by adding the following line to your Adjust settings in your
 
 [adjust.io]: http://adjust.io
 [dashboard]: http://adjust.io
-[releases]: https://github.com/adeven/adjust_android_sdk/releases
-[project]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/project.png
-[android]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/android.png
-[import]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/import.png
-[properties]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/properties.png
-[settings]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/settings.png
-[receiver]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/receiver.png
-[library]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/library.png
-[permissions]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/permissions.png
-[activity]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/activity3.png
-[log]: https://raw.github.com/adeven/adjust_sdk/master/Resources/android/log3.png
+[releases]: https://github.com/adjust/adjust_android_sdk/releases
+[project]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/project.png
+[android]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android.png
+[import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import.png
+[properties]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/properties.png
+[settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
+[receiver]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/receiver.png
+[library]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/library.png
+[permissions]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/permissions.png
+[activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity3.png
+[log]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/log3.png
 [referrer]: doc/referrer.md
 
 
