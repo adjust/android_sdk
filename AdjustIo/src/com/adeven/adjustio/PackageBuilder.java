@@ -143,7 +143,7 @@ public class PackageBuilder {
 
     public boolean isValidForEvent() {
         if (null == eventToken) {
-            Logger logger = AdjustIoFactory.getLogger();
+            Logger logger = AdjustFactory.getLogger();
             logger.error("Missing Event Token");
             return false; // non revenue events need event tokens
         }
@@ -152,7 +152,7 @@ public class PackageBuilder {
 
     public boolean isValidForRevenue() {
         if (amountInCents < 0.0) {
-            Logger logger = AdjustIoFactory.getLogger();
+            Logger logger = AdjustFactory.getLogger();
             logger.error(String.format(Locale.US, "Invalid amount %f", amountInCents));
             return false;
         }
@@ -206,7 +206,7 @@ public class PackageBuilder {
 
     private boolean isEventTokenValid() {
         if (6 != eventToken.length()) {
-            Logger logger = AdjustIoFactory.getLogger();
+            Logger logger = AdjustFactory.getLogger();
             logger.error(String.format("Malformed Event Token '%s'", eventToken));
             return false;
         }

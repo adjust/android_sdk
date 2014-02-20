@@ -4,7 +4,7 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.adeven.adjustio.ActivityPackage;
-import com.adeven.adjustio.AdjustIoFactory;
+import com.adeven.adjustio.AdjustFactory;
 import com.adeven.adjustio.Logger.LogLevel;
 import com.adeven.adjustio.PackageBuilder;
 import com.adeven.adjustio.RequestHandler;
@@ -34,8 +34,8 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         mockHttpClient = new MockHttpClient(mockLogger);
 
         // inject the mocks used in the request handler
-        AdjustIoFactory.setLogger(mockLogger);
-        AdjustIoFactory.setHttpClient(mockHttpClient);
+        AdjustFactory.setLogger(mockLogger);
+        AdjustFactory.setHttpClient(mockHttpClient);
 
         // inject the mock package handler to our request handler
         requestHandler = new RequestHandler(mockPackageHandler);
@@ -52,8 +52,8 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        AdjustIoFactory.setHttpClient(null);
-        AdjustIoFactory.setLogger(null);
+        AdjustFactory.setHttpClient(null);
+        AdjustFactory.setLogger(null);
     }
 
     public void testSendFirstPackage() {

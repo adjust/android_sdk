@@ -35,7 +35,7 @@ public class Adjust {
         if (null == activityHandler) {
             activityHandler = new ActivityHandler(activity);
         }
-        logger = AdjustIoFactory.getLogger();
+        logger = AdjustFactory.getLogger();
         activityHandler.trackSubsessionStart();
     }
 

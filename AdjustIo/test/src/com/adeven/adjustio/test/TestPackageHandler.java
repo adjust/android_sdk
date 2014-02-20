@@ -5,7 +5,7 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.adeven.adjustio.ActivityPackage;
-import com.adeven.adjustio.AdjustIoFactory;
+import com.adeven.adjustio.AdjustFactory;
 import com.adeven.adjustio.Logger.LogLevel;
 import com.adeven.adjustio.PackageBuilder;
 import com.adeven.adjustio.PackageHandler;
@@ -32,8 +32,8 @@ public class TestPackageHandler extends
         mockLogger = new MockLogger();
         mockRequestHandler = new MockRequestHandler(mockLogger);
 
-        AdjustIoFactory.setLogger(mockLogger);
-        AdjustIoFactory.setRequestHandler(mockRequestHandler);
+        AdjustFactory.setLogger(mockLogger);
+        AdjustFactory.setRequestHandler(mockRequestHandler);
 
         context = getActivity().getApplicationContext();
     }
@@ -42,8 +42,8 @@ public class TestPackageHandler extends
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        AdjustIoFactory.setRequestHandler(null);
-        AdjustIoFactory.setLogger(null);
+        AdjustFactory.setRequestHandler(null);
+        AdjustFactory.setLogger(null);
     }
 
     public void testFirstPackage() {

@@ -50,7 +50,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         setDaemon(true);
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
-        this.logger = AdjustIoFactory.getLogger();
+        this.logger = AdjustFactory.getLogger();
 
         this.activityHandler = activityHandler;
         this.context = context;
@@ -172,7 +172,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // internal methods run in dedicated queue thread
 
     private void initInternal() {
-        requestHandler = AdjustIoFactory.getRequestHandler(this);
+        requestHandler = AdjustFactory.getRequestHandler(this);
 
         isSending = new AtomicBoolean();
 

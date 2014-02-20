@@ -74,14 +74,14 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        TIMER_INTERVAL = AdjustIoFactory.getTimerInterval();
-        SESSION_INTERVAL = AdjustIoFactory.getSessionInterval();
-        SUBSESSION_INTERVAL = AdjustIoFactory.getSubsessionInterval();
+        TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        SESSION_INTERVAL = AdjustFactory.getSessionInterval();
+        SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        logger = AdjustIoFactory.getLogger();
+        logger = AdjustFactory.getLogger();
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
@@ -92,14 +92,14 @@ public class ActivityHandler extends HandlerThread {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        TIMER_INTERVAL = AdjustIoFactory.getTimerInterval();
-        SESSION_INTERVAL = AdjustIoFactory.getSessionInterval();
-        SUBSESSION_INTERVAL = AdjustIoFactory.getSubsessionInterval();
+        TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        SESSION_INTERVAL = AdjustFactory.getSessionInterval();
+        SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
 
-        logger = AdjustIoFactory.getLogger();
+        logger = AdjustFactory.getLogger();
 
         this.appToken = appToken;
         this.environment = environment;
@@ -241,7 +241,7 @@ public class ActivityHandler extends HandlerThread {
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
-        packageHandler = AdjustIoFactory.getPackageHandler(this, context, dropOfflineActivities);
+        packageHandler = AdjustFactory.getPackageHandler(this, context, dropOfflineActivities);
 
         readActivityState();
     }

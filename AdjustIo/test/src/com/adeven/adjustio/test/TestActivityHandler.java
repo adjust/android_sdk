@@ -9,7 +9,7 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import com.adeven.adjustio.ActivityHandler;
 import com.adeven.adjustio.ActivityPackage;
-import com.adeven.adjustio.AdjustIoFactory;
+import com.adeven.adjustio.AdjustFactory;
 import com.adeven.adjustio.Logger.LogLevel;
 
 public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
@@ -32,8 +32,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         mockLogger = new MockLogger();
         mockPackageHandler = new MockPackageHandler(mockLogger);
 
-        AdjustIoFactory.setLogger(mockLogger);
-        AdjustIoFactory.setPackageHandler(mockPackageHandler);
+        AdjustFactory.setLogger(mockLogger);
+        AdjustFactory.setPackageHandler(mockPackageHandler);
 
         activity = getActivity();
     }
@@ -42,8 +42,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
     protected void tearDown() throws Exception{
         super.tearDown();
 
-        AdjustIoFactory.setPackageHandler(null);
-        AdjustIoFactory.setLogger(null);
+        AdjustFactory.setPackageHandler(null);
+        AdjustFactory.setLogger(null);
     }
 
     public void testFirstSession() {
@@ -141,8 +141,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         mockLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         // adjust the intervals for testing
-        AdjustIoFactory.setSessionInterval(2000);
-        AdjustIoFactory.setSubsessionInterval(100);
+        AdjustFactory.setSessionInterval(2000);
+        AdjustFactory.setSubsessionInterval(100);
 
         ActivityHandler activityHandler = new ActivityHandler(activity);
 

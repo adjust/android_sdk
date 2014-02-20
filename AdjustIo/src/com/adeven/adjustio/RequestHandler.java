@@ -52,7 +52,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         setDaemon(true);
         start();
 
-        this.logger = AdjustIoFactory.getLogger();
+        this.logger = AdjustFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
 
         this.packageHandler = packageHandler;
@@ -107,7 +107,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         HttpParams httpParams = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
-        httpClient = AdjustIoFactory.getHttpClient(httpParams);
+        httpClient = AdjustFactory.getHttpClient(httpParams);
     }
 
     private void sendInternal(ActivityPackage activityPackage) {

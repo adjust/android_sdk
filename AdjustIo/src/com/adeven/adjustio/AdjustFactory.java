@@ -6,7 +6,7 @@ import org.apache.http.params.HttpParams;
 
 import android.content.Context;
 
-public class AdjustIoFactory {
+public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
     private static IRequestHandler requestHandler = null;
     private static Logger logger = null;
@@ -67,31 +67,31 @@ public class AdjustIoFactory {
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
-        AdjustIoFactory.packageHandler = packageHandler;
+        AdjustFactory.packageHandler = packageHandler;
     }
 
     public static void setRequestHandler(IRequestHandler requestHandler) {
-        AdjustIoFactory.requestHandler = requestHandler;
+        AdjustFactory.requestHandler = requestHandler;
     }
 
     public static void setLogger(Logger logger) {
-        AdjustIoFactory.logger = logger;
+        AdjustFactory.logger = logger;
     }
 
     public static void setHttpClient(HttpClient httpClient) {
-        AdjustIoFactory.httpClient = httpClient;
+        AdjustFactory.httpClient = httpClient;
     }
 
     public static void setTimerInterval(long timerInterval) {
-        AdjustIoFactory.timerInterval = timerInterval;
+        AdjustFactory.timerInterval = timerInterval;
     }
 
     public static void setSessionInterval(long sessionInterval) {
-        AdjustIoFactory.sessionInterval = sessionInterval;
+        AdjustFactory.sessionInterval = sessionInterval;
     }
 
     public static void setSubsessionInterval(long subsessionInterval) {
-        AdjustIoFactory.subsessionInterval = subsessionInterval;
+        AdjustFactory.subsessionInterval = subsessionInterval;
     }
 
 }
