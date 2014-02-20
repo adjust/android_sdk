@@ -21,7 +21,7 @@ import android.app.Activity;
  * Use the methods of this class to tell AdjustIo about the usage of your app.
  * See the README for details.
  */
-public class AdjustIo {
+public class Adjust {
 
     /**
      * Tell AdjustIo that an activity did resume.
@@ -102,11 +102,11 @@ public class AdjustIo {
      * @param parameters Parameters for this revenue event (optional, see above)
      */
     public static void trackRevenue(double amountInCents) {
-        AdjustIo.trackRevenue(amountInCents, null);
+        Adjust.trackRevenue(amountInCents, null);
     }
 
     public static void trackRevenue(double amountInCents, String eventToken) {
-        AdjustIo.trackRevenue(amountInCents, eventToken, null);
+        Adjust.trackRevenue(amountInCents, eventToken, null);
     }
 
     public static void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
