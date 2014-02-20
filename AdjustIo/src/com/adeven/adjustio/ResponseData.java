@@ -98,6 +98,10 @@ public class ResponseData {
                 Util.quote(trackerName));
     }
 
+    public void setActivityKind(ActivityKind activityKind) {
+        this.activityKind = activityKind;
+    }
+
     public void setWasSuccess(boolean success) {
         this.success = success;
     }

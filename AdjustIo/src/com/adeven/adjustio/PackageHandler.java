@@ -125,7 +125,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     @Override
     public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
-        logger.Assert(String.format("finished %s %s", activityPackage, responseData));
+        responseData.setActivityKind(activityPackage.getActivityKind());
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     private static final class InternalHandler extends Handler {

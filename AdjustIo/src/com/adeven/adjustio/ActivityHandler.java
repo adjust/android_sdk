@@ -148,6 +148,10 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
+    public void finishedTrackingActivity(ResponseData responseData) {
+        logger.Assert("finished " + responseData);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int INIT_BUNDLE = 72630;
         private static final int INIT_PRESET = 72633;
