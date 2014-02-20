@@ -50,7 +50,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         Context context = activity.getApplicationContext();
 
         // deleting the activity state file to simulate a first session
-        mockLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         ActivityHandler activityHandler = new ActivityHandler(activity);
         // start the first session
@@ -61,7 +61,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // test if the environment was set to Sandbox from the bundle
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.ASSERT, "SANDBOX: AdjustIo is running in Sandbox mode"));
+            mockLogger.containsMessage(LogLevel.ASSERT, "SANDBOX: Adjust is running in Sandbox mode"));
 
         // test that the file did not exist in the first run of the application
         assertTrue(mockLogger.toString(),
@@ -138,7 +138,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         Context context = activity.getApplicationContext();
 
         // starting from a clean slate
-        mockLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         // adjust the intervals for testing
         AdjustFactory.setSessionInterval(2000);
@@ -194,7 +194,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         Context context = activity.getApplicationContext();
 
         // starting from a clean slate
-        mockLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", true);
         // start the first session
@@ -301,7 +301,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         Context context = activity.getApplicationContext();
 
         // starting from a clean slate
-        mockLogger.test("Was AdjustIoActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         ActivityHandler activityHandler = new ActivityHandler(activity);
         // start the first session
@@ -457,7 +457,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.ASSERT,
-                "PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!"));
+                "PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!"));
 
         // check that event token can not be null for event
         assertTrue(mockLogger.toString(),

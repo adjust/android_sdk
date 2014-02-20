@@ -1,11 +1,11 @@
 ## Summary
 
-This is the Android SDK of AdjustIo. You ca read more about AdjustIo at
+This is the Android SDK of Adjust. You ca read more about Adjust at
 [adjust.io].
 
 ## Basic Installation
 
-These are the minimal steps required to integrate the AdjustIo SDK into your
+These are the minimal steps required to integrate the Adjust SDK into your
 Android project. We are going to assume that you use Eclipse for your Android
 development.
 
@@ -14,7 +14,7 @@ development.
 Download the latest version from our [releases page][releases]. Extract the
 archive in a folder of your choice.
 
-### 2. Create the AdjustIo project
+### 2. Create the Adjust project
 
 In the Eclipse menu select `File → New → Project...`.
 
@@ -26,13 +26,13 @@ Existing Code` and click `Next`.
 ![][android]
 
 On the top of the next screen click the `Browse...` button and locate the
-folder you extracted in step 1. Select the AdjustIo subfolder and click `Open`.
-In the `Projects:` group make sure the AdjustIo project is selected. Also tick
+folder you extracted in step 1. Select the Adjust subfolder and click `Open`.
+In the `Projects:` group make sure the Adjust project is selected. Also tick
 the option `Copy projects into workspace` and click `Finish`.
 
 ![][import]
 
-### 3. Add the AdjustIo library to your project
+### 3. Add the Adjust library to your project
 
 In the Package Explorer right click on your Android project and select
 `Properties`.
@@ -40,7 +40,7 @@ In the Package Explorer right click on your Android project and select
 ![][properties]
 
 In the left pane select `Android`. In the bottom right group `Library` click
-the `Add...` button. From the list select the AdjustIo library project and
+the `Add...` button. From the list select the Adjust library project and
 click `OK`. Save your changed project properties by clicking `OK` again.
 
 ![][library]
@@ -58,7 +58,7 @@ aren't present already.
 
 ![][permissions]
 
-### 5. Add AdjustIo settings
+### 5. Add Adjust settings
 
 Still in the `AndroidManifest.xml`, add the following `meta-data` tags inside
 the `application` tag.
@@ -120,35 +120,35 @@ conversion tracking.
 
 If you are already using a different broadcast receiver for the
 `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the
-AdjustIo receiver.
+Adjust receiver.
 
-### 7. Integrate AdjustIo into your app
+### 7. Integrate Adjust into your app
 
-To provide proper session tracking it is required to call certain AdjustIo
+To provide proper session tracking it is required to call certain Adjust
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
 a session start or session end. In order to do so you should follow these steps
 for **each** Activity of your app:
 
 - Open the source file of your Activity.
 - Add the `import` statement at the top of the file.
-- In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
+- In your Activity's `onResume` method call `Adjust.onResume`. Create the
   method if needed.
-- In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
+- In your Activity's `orPause` method call `Adjust.onPause`. Create the
   method if needed.
 
 After these steps your activity should look like this:
 
 ```java
-import com.adeven.adjustio.AdjustIo;
+import com.adeven.adjustio.Adjust;
 // ...
 public class YourActivity extends Activity {
     protected void onResume() {
         super.onResume();
-        AdjustIo.onResume(this);
+        Adjust.onResume(this);
     }
     protected void onPause() {
         super.onPause();
-        AdjustIo.onPause();
+        Adjust.onPause();
     }
     // ...
 }
@@ -163,25 +163,25 @@ you might want to implement this in a common superclass of all your Activities.
 ### 8. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
-`tag:AdjustIo` to hide all other logs. After your app has launched you should
-see the following AdjustIo log: `Tracked session start`
+`tag:Adjust` to hide all other logs. After your app has launched you should
+see the following Adjust log: `Tracked session start`
 
 ![][log]
 
 ## Additional Features
 
-Once you have integrated the AdjustIo SDK into your project, you can take
+Once you have integrated the Adjust SDK into your project, you can take
 advantage of the following features.
 
 ### Add tracking of custom events.
 
-You can tell AdjustIo about every event you want. Suppose you want to track
+You can tell Adjust about every event you want. Suppose you want to track
 every tap on a button. You would have to create a new Event Token in your
 [dashboard]. Let's say that Event Token is `abc123`. In your button's `onClick`
 method you could then add the following line to track the click:
 
 ```java
-AdjustIo.trackEvent("abc123");
+Adjust.trackEvent("abc123");
 ```
 
 You can also register a callback URL for that event in your [dashboard] and we
@@ -198,7 +198,7 @@ execute the following lines:
 Map<String, String> parameters = new HashMap<String, String>();
 parameters.put("key", "value");
 parameters.put("foo", "bar");
-AdjustIo.trackEvent("abc123", parameters);
+Adjust.trackEvent("abc123", parameters);
 ```
 
 In that case we would track the event and send a request to:
@@ -219,7 +219,7 @@ purchases you can track those revenues. If, for example, a click is worth one
 cent, you could make the following call to track that revenue:
 
 ```java
-AdjustIo.trackRevenue(1.0);
+Adjust.trackRevenue(1.0);
 ```
 
 The parameter is supposed to be in cents and will get rounded to one decimal
@@ -228,7 +228,7 @@ get different Event Tokens for each kind. Again, you need to create those Event
 Tokens in your [dashboard]. In that case you would make a call like this:
 
 ```java
-AdjustIo.trackRevenue(1.0, "abc123");
+Adjust.trackRevenue(1.0, "abc123");
 ```
 
 Again, you can register a callback and provide a dictionary of named
@@ -238,14 +238,14 @@ parameters, just like it worked with normal events.
 Map<String, String> parameters = new HashMap<String, String>();
 parameters.put("key", "value");
 parameters.put("foo", "bar");
-AdjustIo.trackRevenue(1.0, "abc123", parameters);
+Adjust.trackRevenue(1.0, "abc123", parameters);
 ```
 
 ### Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
-event buffering by adding the following line to your AdjustIo settings in your
+event buffering by adding the following line to your Adjust settings in your
 `AndroidManifest.xml` file.
 
 ```xml

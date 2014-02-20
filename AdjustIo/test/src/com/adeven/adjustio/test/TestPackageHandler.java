@@ -48,7 +48,7 @@ public class TestPackageHandler extends
 
     public void testFirstPackage() {
         // delete previously created Package queue file to make a new queue
-        mockLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
+        mockLogger.test("Was AdjustPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
 
         // initialize Package Handler
         // TODO: create and inject activityHandler
@@ -191,7 +191,7 @@ public class TestPackageHandler extends
 
     public void testMultiplePackages() {
         // delete previously created Package queue file to make a new queue
-        mockLogger.test("Was AdjustIoPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
+        mockLogger.test("Was AdjustPackageQueue deleted? " + PackageHandler.deletePackageQueue(context));
 
         // initialize Package Handler
         // TODO: create and inject activityHandler

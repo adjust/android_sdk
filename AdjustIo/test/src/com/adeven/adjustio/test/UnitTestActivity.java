@@ -29,20 +29,20 @@ public class UnitTestActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        //AdjustIo.onResume(this);
+        //Adjust.onResume(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        //AdjustIo.onPause();
+        //Adjust.onPause();
     }
 
     protected void trackEvent(String eventToken) {
-        //AdjustIo.trackEvent(eventToken);
+        //Adjust.trackEvent(eventToken);
     }
 
     protected void trackEvent(String eventToken, Map<String,String> parameters) {
-        //AdjustIo.trackEvent(eventToken, parameters);
+        //Adjust.trackEvent(eventToken, parameters);
     }
 }

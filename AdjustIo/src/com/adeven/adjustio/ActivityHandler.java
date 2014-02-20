@@ -1,6 +1,6 @@
 //
 //  ActivityHandler.java
-//  AdjustIo
+//  Adjust
 //
 //  Created by Christian Wellenbrock on 2013-06-25.
 //  Copyright (c) 2013 adeven. All rights reserved.
@@ -559,10 +559,10 @@ public class ActivityHandler extends HandlerThread {
             environment = UNKNOWN;
         } else if ("sandbox".equalsIgnoreCase(environment)) {
             logger.Assert(
-              "SANDBOX: AdjustIo is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
+              "SANDBOX: Adjust is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
         } else if ("production".equalsIgnoreCase(environment)) {
             logger.Assert(
-              "PRODUCTION: AdjustIo is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
+              "PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
             logger.setLogLevel(Logger.LogLevel.ASSERT);
         } else {
             logger.Assert(String.format("Malformed environment '%s'", environment));

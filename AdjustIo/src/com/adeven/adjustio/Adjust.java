@@ -1,6 +1,6 @@
 //
-//  AdjustIo.java
-//  AdjustIo
+//  Adjust.java
+//  Adjust
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
 //  Copyright (c) 2012-2013 adeven. All rights reserved.
@@ -16,17 +16,17 @@ import java.util.Map;
 import android.app.Activity;
 
 /**
- * The main interface to AdjustIo.
+ * The main interface to Adjust.
  * <p/>
- * Use the methods of this class to tell AdjustIo about the usage of your app.
+ * Use the methods of this class to tell Adjust about the usage of your app.
  * See the README for details.
  */
 public class Adjust {
 
     /**
-     * Tell AdjustIo that an activity did resume.
+     * Tell Adjust that an activity did resume.
      * <p/>
-     * This is used to initialize AdjustIo and keep track of the current session state.
+     * This is used to initialize Adjust and keep track of the current session state.
      * Call this in the onResume method of every activity of your app.
      *
      * @param activity The activity that has just resumed.
@@ -40,7 +40,7 @@ public class Adjust {
     }
 
     /**
-     * Tell AdjustIo that an activity will pause.
+     * Tell Adjust that an activity will pause.
      * <p/>
      * This is used to calculate session attributes like session length and subsession count.
      * Call this in the onPause method of every activity of your app.
@@ -63,7 +63,7 @@ public class Adjust {
     }
 
     /**
-     * Tell AdjustIo that a particular event has happened.
+     * Tell Adjust that a particular event has happened.
      * <p/>
      * In your dashboard at http://adjust.io you can assign a callback URL to each
      * event type. That URL will get called every time the event is triggered. On
@@ -89,7 +89,7 @@ public class Adjust {
 
 
     /**
-     * Tell AdjustIo that a user generated some revenue.
+     * Tell Adjust that a user generated some revenue.
      * <p/>
      * The amount is measured in cents and rounded to on digit after the
      * decimal point. If you want to differentiate between several revenue

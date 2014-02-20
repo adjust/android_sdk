@@ -1,10 +1,10 @@
-## Using AdjustIo for pre-installed apps
+## Using Adjust for pre-installed apps
 
-If you want to use the AdjustIo SDK to recognize users that found your app pre-installed on their device, follow these steps.
+If you want to use the Adjust SDK to recognize users that found your app pre-installed on their device, follow these steps.
 
-1. Integrate AdjustIo as described in our [README].
+1. Integrate Adjust as described in our [README].
 2. Create a new tracker in your [dashboard].
-3. Open your `AndroidManifest.xml` and add the following line to your AdjustIo settings:
+3. Open your `AndroidManifest.xml` and add the following line to your Adjust settings:
 
     ```xml
     <meta-data android:name="AdjustIoDefaultTracker" android:value="{Tracker}" />

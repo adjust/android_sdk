@@ -1,4 +1,4 @@
-## Migrate to AdjustIo SDK for Android v2.1.6
+## Migrate to Adjust SDK for Android v2.1.6
 
 0. In order to save some time later on you might want to check your current SDK
    Version. You can find that value in a constant named `CLIENT_SDK` (or
@@ -11,7 +11,7 @@
 
     ![][import]
 
-2.  Add AdjustIo settings to your `AndroidManifest.xml`. Add the following
+2.  Add Adjust settings to your `AndroidManifest.xml`. Add the following
     `meta-data` tags inside the `application` tag.
 
     ```xml
@@ -51,49 +51,49 @@
 
 ## Additional steps if you come from v2.0.x
 
-1. Every activity of your app should call `AdjustIo.onResume` in its own
+1. Every activity of your app should call `Adjust.onResume` in its own
    `onResume` method. Remove the `appToken` parameter in all those calls.
    Afterwards it should look like this:
 
     ```java
     protected void onResume() {
         super.onResume();
-        AdjustIo.onResume(this);
+        Adjust.onResume(this);
     }
     ```
 
-2. Remove all calls to `AdjustIo.setLogLevel`.
+2. Remove all calls to `Adjust.setLogLevel`.
 
 ## Additional steps if you come from v1.x
 
-3. We no longer use the `AdjustIo.appDidLaunch()` method for initialization.
+3. We no longer use the `Adjust.appDidLaunch()` method for initialization.
    Delete the call in your launch activity's `onCreate` method.
 
 4. Instead, to provide proper session tracking, it is required to call certain
-   new AdjustIo methods every time any Activity resumes or pauses. Otherwise
+   new Adjust methods every time any Activity resumes or pauses. Otherwise
    the SDK might miss a session start or session end. In order to do so you
    should follow these steps for **each** Activity of your app:
 
    - Open the source file of your Activity.
    - Add the `import` statement at the top of the file.
-   - In your Activity's `onResume` method call `AdjustIo.onResume`. Create the
+   - In your Activity's `onResume` method call `Adjust.onResume`. Create the
      method if needed.
-   - In your Activity's `orPause` method call `AdjustIo.onPause`. Create the
+   - In your Activity's `orPause` method call `Adjust.onPause`. Create the
      method if needed.
 
     After these steps your activity should look like this:
 
     ```java
-    import com.adeven.adjustio.AdjustIo;
+    import com.adeven.adjustio.Adjust;
     // ...
     public class YourActivity extends Activity {
         protected void onResume() {
             super.onResume();
-            AdjustIo.onResume(this);
+            Adjust.onResume(this);
         }
         protected void onPause() {
             super.onPause();
-            AdjustIo.onPause();
+            Adjust.onPause();
         }
         // ...
     }

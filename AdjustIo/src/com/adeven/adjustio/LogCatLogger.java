@@ -1,6 +1,6 @@
 //
 //  Logger.java
-//  AdjustIo
+//  Adjust
 //
 //  Created by Christian Wellenbrock on 2013-04-18.
 //  Copyright (c) 2013 adeven. All rights reserved.

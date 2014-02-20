@@ -1,6 +1,6 @@
 //
 //  Util.java
-//  AdjustIo
+//  Adjust
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
 //  Copyright (c) 2012-2013 adeven. All rights reserved.
@@ -48,7 +48,7 @@ import android.util.DisplayMetrics;
 
 
 /**
- * Collects utility functions used by AdjustIo.
+ * Collects utility functions used by Adjust.
  */
 public class Util {
 
