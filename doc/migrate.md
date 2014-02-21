@@ -1,53 +1,78 @@
-## Migrate to Adjust SDK for Android v2.1.6
+## Migrate your adjust SDK for Android to 3.0.0 from v2.1.x
 
-0. In order to save some time later on you might want to check your current SDK
-   Version. You can find that value in a constant named `CLIENT_SDK` (or
-   `CLIENTSDK`) in `com.adjust.sdk/Util.java`. It should look like
-   `android1.6` or similar.
+We renamed the main class `com.adeven.adjustio.AdjustIo` to
+`com.adjust.sdk.Adjust`. Follow these steps to update all adjust SDK calls.
 
-1. Delete the old `AdjustIo` project from your `Package Explorer`. Download
-   version v2.1.6 and create a new `Android Project from Existing Code` as
-   described in the [README].
+1. Right click on the old `AdjustIo` project in the `Package Explorer` and
+   select `Delete`. Check the box `Delete project contents on disk` and confirm
+   `OK`.
+
+2. From the Eclipse menu select `Search → File...`, select the tab `File
+   Search`, enter the search text `AdjustIo` and check the box `Case
+   sensitive`. Make sure the file name pattern is `*` and the scope is
+   `Workspace`. Click `Replace...`, enter the replacement text `Adjust` and
+   click `Preview >`. All adjust calls in java files and all adjust settings in
+   manifest files should be replaced. After you reviewed these changes confirm
+   with `OK`.
+
+3. In the same fashion, replace `adeven.adjustio` with `adjust.sdk` in all
+   manifest files to update the package name of the `ReferrerReceiver`.
+
+4. Download version v3.0.0 and create a new Android project from the `Adjust` folder.
 
     ![][import]
 
-2.  Add Adjust settings to your `AndroidManifest.xml`. Add the following
-    `meta-data` tags inside the `application` tag.
+5. Open the Android properties of your apps and make sure that the new `Adjust`
+   library is selected.
 
-    ```xml
-    <meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
-    <meta-data android:name="AdjustLogLevel"    android:value="info" />
-    <meta-data android:name="AdjustEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
-    ```
+6. For each of your apps, right click on it in the `Package Explorer` and
+   select `Source → Organize Imports`.
 
-    ![][settings]
+7. Build your project to confirm that everything is properly connected again.
 
-    Replace `{YourAppToken}` with your App Token. You can find it in your
-    [dashboard].
+The adjust SDK v3.0.0 added delegate notifications. Check out the [README] for
+details.
 
-    The log level is now set globally by `AdjustLogLevel`. Possible values:
 
-   - `verbose` - enable all logging
-   - `debug` - enable more logging
-   - `info` - the default
-   - `warn` - disable info logging
-   - `error` - disable warnings as well
-   - `assert` - disable errors as well
+## Additional steps if you come from v2.0.x
 
-    Depending on whether or not you build your app for testing or for
-    production you must adjust the `AdjustEnvironment` setting:
+Add adjust settings to your `AndroidManifest.xml`. Add the following
+`meta-data` tags inside the `application` tag.
 
-   - `sandbox` - for testing
-   - `production` - before publishing
+```xml
+<meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
+<meta-data android:name="AdjustLogLevel"    android:value="info" />
+<meta-data android:name="AdjustEnvironment" android:value="sandbox" /> <!-- TODO: change to 'production' -->
+```
 
-    **Important:** This value should be set to `sandbox` if and only if you or
-    someone else is testing your app. Make sure to set the environment to
-    `production` just before you publish the app. Set it back to `sandbox` when
-    you start testing it again.
+![][settings]
 
-    We use this environment to distinguish between real traffic and artificial
-    traffic from test devices. It is very important that you keep this value
-    meaningful at all times! Especially if you are tracking revenue.
+Replace `{YourAppToken}` with your App Token. You can find it in your
+[dashboard].
+
+The log level is now set globally by `AdjustLogLevel`. Possible values:
+
+- `verbose` - enable all logging
+- `debug` - enable more logging
+- `info` - the default
+- `warn` - disable info logging
+- `error` - disable warnings as well
+- `assert` - disable errors as well
+
+Depending on whether or not you build your app for testing or for
+production you must adjust the `AdjustEnvironment` setting:
+
+- `sandbox` - for testing
+- `production` - before publishing
+
+**Important:** This value should be set to `sandbox` if and only if you or
+someone else is testing your app. Make sure to set the environment to
+`production` just before you publish the app. Set it back to `sandbox` when
+you start testing it again.
+
+We use this environment to distinguish between real traffic and artificial
+traffic from test devices. It is very important that you keep this value
+meaningful at all times! Especially if you are tracking revenue.
 
 ## Additional steps if you come from v2.0.x
 
@@ -70,7 +95,7 @@
    Delete the call in your launch activity's `onCreate` method.
 
 4. Instead, to provide proper session tracking, it is required to call certain
-   new Adjust methods every time any Activity resumes or pauses. Otherwise
+   new adjust methods every time any Activity resumes or pauses. Otherwise
    the SDK might miss a session start or session end. In order to do so you
    should follow these steps for **each** Activity of your app:
 
