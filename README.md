@@ -173,7 +173,7 @@ see the following Adjust log: `Tracked session start`
 Once you have integrated the adjust SDK into your project, you can take
 advantage of the following features.
 
-### Add tracking of custom events.
+### 9. Add tracking of custom events.
 
 You can tell adjust about every event you want. Suppose you want to track
 every tap on a button. You would have to create a new Event Token in your
@@ -212,7 +212,7 @@ Also note that we don't store any of your custom parameters, but only append
 them to your callbacks. If you haven't registered a callback for an event,
 these parameters won't even be read.
 
-### Add tracking of revenue
+### 10. Add tracking of revenue
 
 If your users can generate revenue by clicking on advertisements or making
 purchases you can track those revenues. If, for example, a click is worth one
@@ -241,7 +241,73 @@ parameters.put("foo", "bar");
 Adjust.trackRevenue(1.0, "abc123", parameters);
 ```
 
-### Enable event buffering
+### 11. Set listener for delegate notifications
+
+Every time your app tries to track a session, an event or some revenue, you can
+be notified about the success of that operation and receive additional
+information about the current install.
+
+The simplest way is to create a single anonymous listener for these notifications.
+
+- Open the source file of your main activity, find its `onResume` method and
+  add the following code below your `Adjust.onResume` call:
+
+    ```java
+    Adjust.onResume(this);
+
+    Adjust.setOnFinishedListener(new OnFinishedListener() {
+        public void onFinishedTracking(ResponseData responseData) {
+        }
+    });
+    ```
+
+- Alternatively, you could implement the `OnFinishedListener` interface in your
+  activity and pass the activity:
+
+    ```java
+    Adjust.setOnFinishedListener(this);
+    ```
+
+This `OnClickListener` will only be set if this activity has been active
+before. You can set it in all activities to make sure that it is always set,
+regardless of what activities have been active. In this case it makes sense to
+implement the `OnClickListener` interface in one class and set the listener to
+the same object in every `onResume` method.
+
+The listener method `onFinishedTracking` will get called every time any
+activity was tracked or failed to track. Within this listener function you have
+access to the `responseData` parameter. Here is a quick summary of its
+interface:
+
+- `ActivityKind getActivityKind()` indicates what kind of activity
+  was tracked. Returns one of these values:
+
+    ```java
+    ActivityKind.SESSION
+    ActivityKind.EVENT
+    ActivityKind.REVENUE
+    ```
+
+- `String getActivityKindString()` human readable version of the activity kind. Possible values:
+
+    ```
+    session
+    event
+    revenue
+    ```
+
+- `boolean wasSuccess()` indicates whether or not the tracking attempt was
+  successful.
+- `boolean willRetry()` is true when the request failed, but will be
+  retried.
+- `String getError()` an error message when the activity failed to track or
+  the response could not be parsed. Is `null` otherwise.
+- `String getTrackerToken()` the tracker token of the current install. Is `null` if
+  request failed or response could not be parsed.
+- `String getTrackerName()` the tracker name of the current install. Is `null` if
+  request failed or response could not be parsed.
+
+### 12. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
