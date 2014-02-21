@@ -415,7 +415,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 activityState = (ActivityState) objectStream.readObject();
-                logger.debug(String.format("Read activity state: %s", activityState));
+                logger.debug(String.format("Read activity state: %s uuid:%s", activityState, activityState.uuid));
                 return;
             } catch (ClassNotFoundException e) {
                 logger.error("Failed to find activity state class");

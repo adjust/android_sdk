@@ -9,12 +9,21 @@
 
 package com.adjust.sdk;
 
+import java.io.IOException;
+import java.io.NotActiveException;
+import java.io.ObjectInputStream;
+import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
 
+import android.util.Log;
+
 public class ActivityState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
+
+    // persistent data
+    protected String uuid;
 
     // global counters
     protected int eventCount;
@@ -30,6 +39,9 @@ public class ActivityState implements Serializable {
     protected long lastInterval;
 
     protected ActivityState() {
+        // create UUID for new devices
+        uuid = Util.createUuid();
+
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
         subsessionCount = -1; // we don't know how many subsessions this first  session will have
@@ -65,6 +77,26 @@ public class ActivityState implements Serializable {
                              eventCount, sessionCount, subsessionCount,
                              sessionLength / 1000.0, timeSpent / 1000.0,
                              stamp(lastActivity));
+    }
+
+    private void readObject(ObjectInputStream stream) throws NotActiveException, IOException, ClassNotFoundException {
+        GetField fields = stream.readFields();
+
+        eventCount = fields.get("eventCount", 0);
+        sessionCount = fields.get("sessionCount", 0);
+        subsessionCount = fields.get("subsessionCount", -1);
+        sessionLength = fields.get("sessionLength", -1l);
+        timeSpent = fields.get("timeSpent", -1l);
+        lastActivity = fields.get("lastActivity", -1l);
+        createdAt = fields.get("createdAt", -1l);
+        lastInterval = fields.get("lastInterval", -1l);
+        uuid = (String)fields.get("uuid", null);
+
+        // create UUID for migrating devices
+        if (uuid == null) {
+            uuid = Util.createUuid();
+            Log.d("XXX", "migrate " + uuid);
+        }
     }
 
     private static String stamp(long dateMillis) {

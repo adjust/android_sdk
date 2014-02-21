@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -186,6 +187,10 @@ public class Util {
     private static String getDisplayHeight(DisplayMetrics displayMetrics) {
         final String displayHeight = String.valueOf(displayMetrics.heightPixels);
         return sanitizeString(displayHeight);
+    }
+
+    protected static String createUuid() {
+        return UUID.randomUUID().toString();
     }
 
     protected static String getMacAddress(Context context) {
