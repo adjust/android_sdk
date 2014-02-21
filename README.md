@@ -1,11 +1,11 @@
 ## Summary
 
-This is the Android SDK of Adjust. You ca read more about Adjust at
-[adjust.io].
+This is the Android SDK of adjust.io™. You can read more about adjust.io™ at
+adjust.io.
 
 ## Basic Installation
 
-These are the minimal steps required to integrate the Adjust SDK into your
+These are the minimal steps required to integrate the adjust SDK into your
 Android project. We are going to assume that you use Eclipse for your Android
 development.
 
@@ -32,7 +32,7 @@ the option `Copy projects into workspace` and click `Finish`.
 
 ![][import]
 
-### 3. Add the Adjust library to your project
+### 3. Add the adjust library to your project
 
 In the Package Explorer right click on your Android project and select
 `Properties`.
@@ -122,7 +122,7 @@ If you are already using a different broadcast receiver for the
 `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the
 Adjust receiver.
 
-### 7. Integrate Adjust into your app
+### 7. Integrate adjust into your app
 
 To provide proper session tracking it is required to call certain Adjust
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
@@ -170,12 +170,12 @@ see the following Adjust log: `Tracked session start`
 
 ## Additional Features
 
-Once you have integrated the Adjust SDK into your project, you can take
+Once you have integrated the adjust SDK into your project, you can take
 advantage of the following features.
 
 ### Add tracking of custom events.
 
-You can tell Adjust about every event you want. Suppose you want to track
+You can tell adjust about every event you want. Suppose you want to track
 every tap on a button. You would have to create a new Event Token in your
 [dashboard]. Let's say that Event Token is `abc123`. In your button's `onClick`
 method you could then add the following line to track the click:
@@ -270,7 +270,7 @@ event buffering by adding the following line to your Adjust settings in your
 
 ## License
 
-The adjust-sdk is licensed under the MIT License.
+The adjust SDK is licensed under the MIT License.
 
 Copyright (c) 2012-2013 adeven GmbH,
 http://www.adeven.com
