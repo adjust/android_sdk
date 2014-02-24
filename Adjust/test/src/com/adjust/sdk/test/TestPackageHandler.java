@@ -73,7 +73,7 @@ public class TestPackageHandler extends
         // check that added first package to a previous empty queue
         //TODO add the toString of the activity package
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.DEBUG, "Added package 1 (session start)"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Added package 1 (session)"));
 
         //TODO add the verbose message
 

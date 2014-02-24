@@ -67,7 +67,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         // check the status received is ok
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.INFO, "Tracked session start"));
+            mockLogger.containsMessage(LogLevel.INFO, "Tracked session"));
 
         // check that the package handler was called to send the next package
         assertTrue(mockLogger.toString(),
@@ -89,7 +89,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         // check the error message
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.ERROR,
-                "Failed to track session start. (Client protocol error: org.apache.http.client.ClientProtocolException: testErrorSendPackage) Will retry later."));
+                "Failed to track session. (Client protocol error: org.apache.http.client.ClientProtocolException: testErrorSendPackage) Will retry later."));
 
         // check that the package handler was called to close the failed package
         assertTrue(mockLogger.toString(),
