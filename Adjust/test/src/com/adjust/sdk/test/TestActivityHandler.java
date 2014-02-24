@@ -87,7 +87,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android2.1.6", activityPackage.getClientSdk());
+            "android3.0.0", activityPackage.getClientSdk());
 
         Map<String, String> parameters = activityPackage.getParameters();
 
