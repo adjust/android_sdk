@@ -8,7 +8,7 @@ support. It should look like this [1]:
 public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        // AdjustIo
+        // Adjust
         new ReferrerReceiver().onReceive(context, intent);
 
         // Google Analytics
