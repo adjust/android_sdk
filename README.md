@@ -318,20 +318,20 @@ event buffering by adding the following line to your Adjust settings in your
 <meta-data android:name="AdjustEventBuffering" android:value="true" />
 ```
 
-[adjust.io]: http://adjust.io
-[dashboard]: http://adjust.io
-[releases]: https://github.com/adjust/adjust_android_sdk/releases
-[project]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/project.png
-[android]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android.png
-[import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import.png
-[properties]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/properties.png
-[settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
-[receiver]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/receiver.png
-[library]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/library.png
+[adjust.io]:   http://adjust.io
+[dashboard]:   http://adjust.io
+[releases]:    https://github.com/adjust/adjust_android_sdk/releases
+[project]:     https://raw.github.com/adjust/adjust_sdk/master/Resources/android/project.png
+[android]:     https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android.png
+[import]:      https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import2.png
+[properties]:  https://raw.github.com/adjust/adjust_sdk/master/Resources/android/properties.png
+[library]:     https://raw.github.com/adjust/adjust_sdk/master/Resources/android/library.png
 [permissions]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/permissions.png
-[activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity3.png
-[log]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/log3.png
-[referrer]: doc/referrer.md
+[settings]:    https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
+[receiver]:    https://raw.github.com/adjust/adjust_sdk/master/Resources/android/receiver.png
+[activity]:    https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity4.png
+[log]:         https://raw.github.com/adjust/adjust_sdk/master/Resources/android/log4.png
+[referrer]:    doc/referrer.md
 
 
 ## License
