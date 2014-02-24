@@ -10,25 +10,31 @@ We renamed the main class `com.adeven.adjustio.AdjustIo` to
 2. From the Eclipse menu select `Search → File...`, select the tab `File
    Search`, enter the search text `AdjustIo` and check the box `Case
    sensitive`. Make sure the file name pattern is `*` and the scope is
-   `Workspace`. Click `Replace...`, enter the replacement text `Adjust` and
+   `Workspace`.
+
+   ![][search]
+
+3. Click `Replace...`, enter the replacement text `Adjust` and
    click `Preview >`. All adjust calls in java files and all adjust settings in
    manifest files should be replaced. After you reviewed these changes confirm
    with `OK`.
 
-3. In the same fashion, replace `adeven.adjustio` with `adjust.sdk` in all
+   ![][replace]
+
+4. In the same fashion, replace `adeven.adjustio` with `adjust.sdk` in all
    manifest files to update the package name of the `ReferrerReceiver`.
 
-4. Download version v3.0.0 and create a new Android project from the `Adjust` folder.
+5. Download version v3.0.0 and create a new Android project from the `Adjust` folder.
 
     ![][import]
 
-5. Open the Android properties of your apps and make sure that the new `Adjust`
+6. Open the Android properties of your apps and make sure that the new `Adjust`
    library is selected.
 
-6. For each of your apps, right click on it in the `Package Explorer` and
+7. For each of your apps, right click on it in the `Package Explorer` and
    select `Source → Organize Imports`.
 
-7. Build your project to confirm that everything is properly connected again.
+8. Build your project to confirm that everything is properly connected again.
 
 The adjust SDK v3.0.0 added delegate notifications. Check out the [README] for
 details.
@@ -137,6 +143,8 @@ meaningful at all times! Especially if you are tracking revenue.
 
 [README]: ../README.md
 [dashboard]: http://adjust.io
+[search]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/search.png
+[replace]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/replace.png
 [import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import.png
 [activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity3.png
 [settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
