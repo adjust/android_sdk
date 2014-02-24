@@ -145,7 +145,7 @@ meaningful at all times! Especially if you are tracking revenue.
 [dashboard]: http://adjust.io
 [search]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/search.png
 [replace]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/replace.png
-[import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import.png
-[activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity3.png
+[import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import2.png
+[activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity4.png
 [settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
 
