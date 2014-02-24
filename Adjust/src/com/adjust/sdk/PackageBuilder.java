@@ -30,6 +30,7 @@ public class PackageBuilder {
     private String fbAttributionId;
     private String userAgent;
     private String clientSdk;
+    private String uuid;
     private String environment;
 
     // sessions
@@ -67,6 +68,10 @@ public class PackageBuilder {
 
     public void setAndroidId(String androidId) {
         this.androidId = androidId;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public void setFbAttributionId(String fbAttributionId) {
@@ -229,6 +234,7 @@ public class PackageBuilder {
         addString(parameters, "mac_sha1", macSha1);
         addString(parameters, "mac_md5", macShortMd5);
         addString(parameters, "android_id", androidId);
+        addString(parameters, "android_uuid", uuid);
         addString(parameters, "fb_id", fbAttributionId);
         addString(parameters, "environment", environment);
 

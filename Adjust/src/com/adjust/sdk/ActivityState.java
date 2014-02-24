@@ -114,5 +114,6 @@ public class ActivityState implements Serializable {
         builder.setSessionLength(sessionLength);
         builder.setTimeSpent(timeSpent);
         builder.setCreatedAt(createdAt);
+        builder.setUuid(uuid);
     }
 }
