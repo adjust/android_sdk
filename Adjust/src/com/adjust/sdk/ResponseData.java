@@ -1,9 +1,13 @@
 package com.adjust.sdk;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.text.TextUtils;
 
 /*
  * Information about the result of a tracking attempt
@@ -108,5 +112,27 @@ public class ResponseData {
 
     public void setWillRetry(boolean willRetry) {
         this.willRetry = willRetry;
+    }
+
+    public Map<String, String> toDic() {
+        Map<String, String> responseDataDic = new HashMap<String, String>();
+
+        responseDataDic.put("activityKind", activityKind.toString());
+        responseDataDic.put("success", success ? "true" : "false");
+        responseDataDic.put("willRetry", willRetry ? "true" : "false");
+
+        if (!TextUtils.isEmpty(error)) {
+            responseDataDic.put("error", error);
+        }
+
+        if (!TextUtils.isEmpty(trackerToken)) {
+            responseDataDic.put("trackerToken", trackerToken);
+        }
+
+        if (!TextUtils.isEmpty(trackerName)) {
+            responseDataDic.put("trackerName", trackerName);
+        }
+
+        return responseDataDic;
     }
 }
