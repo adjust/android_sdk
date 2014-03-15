@@ -50,7 +50,8 @@ public class Adjust {
             logger.debug("onPause");
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            if(logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -58,7 +59,8 @@ public class Adjust {
         try {
             activityHandler.setOnFinishedListener(listener);
         } catch (NullPointerException e) {
-            logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            if(logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -83,7 +85,8 @@ public class Adjust {
         try {
             activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            if(logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -113,7 +116,8 @@ public class Adjust {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            if(logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
