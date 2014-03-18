@@ -18,7 +18,7 @@ The following steps were taken from a [stack overflow] question.
 ```
     Module name: Adjust
     Package name: com.adjust.sdk
-    Minimum required SDK*: API 8: Android 2.2 (Froyo)
+    Minimum required SDK: API 8: Android 2.2 (Froyo)
     Theme: None
 ```
 Select the `target SDK` and `Compile with` android SDK options according to your project.
@@ -69,7 +69,7 @@ Press `Next`.
 [empty]: https://raw.github.com/adjust/sdks/master/Resources/android/android_studio_04_empty.png
 [copy]: https://raw.github.com/adjust/sdks/master/Resources/android/android_studio_05_copy.png
 [paste]: https://raw.github.com/adjust/sdks/master/Resources/android/android_studio_06_paste.png
-[confirm_copy]: https://raw.github.com/sdks/adjust_sdk/master/Resources/android/android_studio_07_confirm_copy.png
+[confirm_copy]: https://raw.github.com/adjust/sdks/master/Resources/android/android_studio_07_confirm_copy.png
 [project_structure]: https://raw.github.com/adjust/sdks/master/Resources/android/android_studio_08_project_structure.png
 [dependencies]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android_studio_09_dependencies.png
 [modules]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android_studio_10_modules.png
