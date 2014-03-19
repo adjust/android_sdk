@@ -88,7 +88,8 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public ActivityHandler(Activity activity, String appToken, String environment, boolean eventBuffering)  {
+    public ActivityHandler(Activity activity, String appToken,
+            String environment, String logLevel, boolean eventBuffering) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -104,6 +105,7 @@ public class ActivityHandler extends HandlerThread {
         this.appToken = appToken;
         this.environment = environment;
         this.eventBuffering = eventBuffering;
+        logger.setLogLevelString(logLevel);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_PRESET;
@@ -346,7 +348,6 @@ public class ActivityHandler extends HandlerThread {
         writeActivityState();
         logger.debug(String.format(Locale.US, "Event %d", activityState.eventCount));
     }
-
 
     private void trackRevenueInternal(PackageBuilder revenueBuilder) {
         if (!canTrackRevenue(revenueBuilder)) {

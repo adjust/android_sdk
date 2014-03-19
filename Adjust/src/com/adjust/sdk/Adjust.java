@@ -122,8 +122,8 @@ public class Adjust {
     }
 
     // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
-    protected static void appDidLaunch(Activity activity, String appToken, String environment, boolean eventBuffering) {
-        activityHandler = new ActivityHandler(activity, appToken, environment, eventBuffering);
+    protected static void appDidLaunch(Activity activity, String appToken, String environment, String logLevel, boolean eventBuffering) {
+        activityHandler = new ActivityHandler(activity, appToken, environment, logLevel, eventBuffering);
     }
 
     // Special method used by SDK wrappers such as our Adobe Air SDK.
