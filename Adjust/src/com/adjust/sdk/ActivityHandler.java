@@ -187,6 +187,14 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
+    public Boolean isEnabled() {
+        if (checkActivityState(activityState)) {
+            return activityState.enabled;
+        } else {
+            return this.enabled;
+        }
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int INIT_BUNDLE = 72630;
         private static final int INIT_PRESET = 72633;
