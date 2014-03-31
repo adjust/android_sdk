@@ -490,6 +490,15 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustFactory.setTimerInterval(700);
 
         ActivityHandler activityHandler = new ActivityHandler(activity, "qwerty123456", "sandbox", "verbose", false);
+
+        // verify the default value, when not started
+        assertTrue(activityHandler.isEnabled());
+
+        activityHandler.setEnabled(false);
+
+        // verify the default value, when not started
+        assertFalse(activityHandler.isEnabled());
+
         // start the first session
         activityHandler.trackSubsessionStart();
         activityHandler.setEnabled(false);
@@ -499,6 +508,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackSubsessionStart();
 
         SystemClock.sleep(1000);
+
+        // verify the changed value after the activity handler is started
+        assertFalse(activityHandler.isEnabled());
 
         // making sure the first session was sent
         assertTrue(mockLogger.toString(),
@@ -526,7 +538,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertFalse(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler resumeSending"));
 
-
         // enable again
         activityHandler.setEnabled(true);
 
@@ -541,6 +552,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackSubsessionEnd();
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(1000);
+
+        // verify the changed value, when the activity state is started
+        assertTrue(activityHandler.isEnabled());
 
         // test that the event was triggered
         assertTrue(mockLogger.toString(),
