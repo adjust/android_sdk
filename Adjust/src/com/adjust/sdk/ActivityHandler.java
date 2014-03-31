@@ -180,6 +180,11 @@ public class ActivityHandler extends HandlerThread {
         this.enabled = enabled;
         if (checkActivityState(activityState))
             activityState.enabled = enabled;
+        if (enabled) {
+            this.trackSubsessionStart();
+        } else {
+            this.trackSubsessionEnd();
+        }
     }
 
     private static final class SessionHandler extends Handler {
