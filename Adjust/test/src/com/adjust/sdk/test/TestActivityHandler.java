@@ -196,7 +196,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // starting from a clean slate
         mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
-        ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", true);
+        ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", "verbose", true);
         // start the first session
         activityHandler.trackSubsessionStart();
 
@@ -404,7 +404,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
     public void testChecks() {
 
         // activity with null environment and app token
-        ActivityHandler activityHandler = new ActivityHandler(activity, null, null, false);
+        ActivityHandler activityHandler = new ActivityHandler(activity, null, null, null, false);
         activityHandler.trackSubsessionStart();
         activityHandler.trackSubsessionEnd();
         activityHandler.trackEvent("123456", null);
@@ -437,7 +437,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.containsMessage(LogLevel.ERROR, "Missing App Token."));
 
         // activity with invalid app token and environment
-        new ActivityHandler(activity, "12345678901", "notValid", false);
+        new ActivityHandler(activity, "12345678901", "notValid", "verbose", false);
         SystemClock.sleep(1000);
 
         assertTrue(mockLogger.toString(),
@@ -448,7 +448,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.containsMessage(LogLevel.ERROR, "Malformed App Token '12345678901'"));
 
         // activity handler with production environment, invalid event and revenue
-        activityHandler = new ActivityHandler(activity, "123456789012", "production", false);
+        activityHandler = new ActivityHandler(activity, "123456789012", "production", "verbose", false);
         activityHandler.trackSubsessionStart();
         activityHandler.trackEvent(null, null);
         activityHandler.trackRevenue(-0.1, null, null);
