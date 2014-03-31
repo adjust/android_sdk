@@ -331,7 +331,7 @@ public class ActivityHandler extends HandlerThread {
 
         packageHandler.pauseSending();
         stopTimer();
-        updateActivityState();
+        updateActivityState(System.currentTimeMillis());
         writeActivityState();
     }
 
@@ -345,9 +345,10 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        activityState.createdAt = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+        activityState.createdAt = now;
         activityState.eventCount++;
-        updateActivityState();
+        updateActivityState(now);
 
         injectGeneralAttributes(eventBuilder);
         activityState.injectEventAttributes(eventBuilder);
@@ -374,9 +375,11 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        activityState.createdAt = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
+
+        activityState.createdAt = now;
         activityState.eventCount++;
-        updateActivityState();
+        updateActivityState(now);
 
         injectGeneralAttributes(revenueBuilder);
         activityState.injectEventAttributes(revenueBuilder);
@@ -405,12 +408,11 @@ public class ActivityHandler extends HandlerThread {
             && revenueBuilder.isValidForRevenue();
     }
 
-    private void updateActivityState() {
+    private void updateActivityState(long now) {
         if (!checkActivityState(activityState)) {
             return;
         }
 
-        long now = System.currentTimeMillis();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
@@ -545,7 +547,7 @@ public class ActivityHandler extends HandlerThread {
 
         packageHandler.sendFirstPackage();
 
-        updateActivityState();
+        updateActivityState(System.currentTimeMillis());
         writeActivityState();
     }
 
