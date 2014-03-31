@@ -173,6 +173,11 @@ public class ActivityHandler extends HandlerThread {
         handler.post(runnable);
     }
 
+    public void setEnabled(Boolean enabled) {
+        if (checkActivityState(activityState))
+            activityState.enabled = enabled;
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int INIT_BUNDLE = 72630;
         private static final int INIT_PRESET = 72633;
@@ -260,6 +265,11 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
+        if (null != activityState
+            && !activityState.enabled) {
+            return;
+        }
+
         packageHandler.resumeSending();
         startTimer();
 
@@ -330,6 +340,11 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
+        if (null != activityState
+            && !activityState.enabled) {
+            return;
+        }
+
         activityState.createdAt = System.currentTimeMillis();
         activityState.eventCount++;
         updateActivityState();
@@ -351,6 +366,11 @@ public class ActivityHandler extends HandlerThread {
 
     private void trackRevenueInternal(PackageBuilder revenueBuilder) {
         if (!canTrackRevenue(revenueBuilder)) {
+            return;
+        }
+
+        if (null != activityState
+            && !activityState.enabled) {
             return;
         }
 
@@ -518,6 +538,11 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void timerFired() {
+        if (null != activityState
+            && !activityState.enabled) {
+            return;
+        }
+
         packageHandler.sendFirstPackage();
 
         updateActivityState();

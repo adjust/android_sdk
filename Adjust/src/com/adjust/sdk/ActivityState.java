@@ -24,6 +24,7 @@ public class ActivityState implements Serializable {
 
     // persistent data
     protected String uuid;
+    protected Boolean enabled;
 
     // global counters
     protected int eventCount;
@@ -41,6 +42,7 @@ public class ActivityState implements Serializable {
     protected ActivityState() {
         // create UUID for new devices
         uuid = Util.createUuid();
+        enabled = true;
 
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -71,6 +73,7 @@ public class ActivityState implements Serializable {
         builder.setEventCount(eventCount);
     }
 
+    @Override
     public String toString() {
         return String.format(Locale.US,
                              "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s",
