@@ -61,6 +61,7 @@ public class ActivityHandler extends HandlerThread {
     private        String                   defaultTracker;
     private        boolean                  eventBuffering;
     private        boolean                  dropOfflineActivities;
+    private        boolean                  enabled;
 
     private String appToken;
     private String macSha1;
@@ -80,6 +81,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+        enabled = true;
 
         logger = AdjustFactory.getLogger();
 
@@ -99,6 +101,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+        enabled = true;
 
         logger = AdjustFactory.getLogger();
 
@@ -174,6 +177,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
         if (checkActivityState(activityState))
             activityState.enabled = enabled;
     }
@@ -265,7 +269,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        if (null != activityState
+        if (activityState != null
             && !activityState.enabled) {
             return;
         }
@@ -283,6 +287,7 @@ public class ActivityHandler extends HandlerThread {
 
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
+            activityState.enabled = this.enabled;
             writeActivityState();
             logger.info("First session");
             return;
