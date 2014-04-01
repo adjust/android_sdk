@@ -9,18 +9,18 @@
 
 package com.adjust.sdk;
 
-import android.text.TextUtils;
-import android.util.Base64;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.json.JSONObject;
+
+import android.text.TextUtils;
+import android.util.Base64;
 
 public class PackageBuilder {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     // general
     private String appToken;
@@ -48,8 +48,6 @@ public class PackageBuilder {
     private String              eventToken;
     private double              amountInCents;
     private Map<String, String> callbackParameters;
-
-    private static SimpleDateFormat dateFormat;
 
     public PackageBuilder()
     { }
@@ -294,7 +292,7 @@ public class PackageBuilder {
         }
 
         Date date = new Date(value);
-        String dateString = getDateFormat().format(date);
+        String dateString = Util.dateFormat(value);
         addString(parameters, key, dateString);
     }
 
@@ -317,12 +315,5 @@ public class PackageBuilder {
         String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
 
         addString(parameters, key, encodedMap);
-    }
-
-    private SimpleDateFormat getDateFormat() {
-        if (null == dateFormat) {
-            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        }
-        return dateFormat;
     }
 }
