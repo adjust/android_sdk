@@ -501,7 +501,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // start the first session
         activityHandler.trackSubsessionStart();
-        activityHandler.setEnabled(false);
         activityHandler.trackEvent("123456", null);
         activityHandler.trackRevenue(0.1, null, null);
         activityHandler.trackSubsessionEnd();

@@ -358,8 +358,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        if (null != activityState
-            && !activityState.enabled) {
+        if (!activityState.enabled) {
             return;
         }
 
@@ -388,8 +387,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        if (null != activityState
-            && !activityState.enabled) {
+        if (!activityState.enabled) {
             return;
         }
 
