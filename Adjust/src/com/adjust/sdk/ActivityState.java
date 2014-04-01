@@ -94,6 +94,7 @@ public class ActivityState implements Serializable {
         createdAt = fields.get("createdAt", -1l);
         lastInterval = fields.get("lastInterval", -1l);
         uuid = (String)fields.get("uuid", null);
+        enabled = fields.get("enabled", true);
 
         // create UUID for migrating devices
         if (uuid == null) {
