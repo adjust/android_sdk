@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -52,6 +53,9 @@ import android.util.DisplayMetrics;
  * Collects utility functions used by Adjust.
  */
 public class Util {
+
+    private static SimpleDateFormat dateFormat;
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     protected static String getUserAgent(final Context context) {
         final Resources resources = context.getResources();
@@ -336,5 +340,12 @@ public class Util {
         }
 
         return String.format("'%s'", string);
+    }
+
+    public static String dateFormat(long date) {
+        if (null == dateFormat) {
+            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        }
+        return dateFormat.format(date);
     }
 }

@@ -205,6 +205,11 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             pairs.add(pair);
         }
 
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+        NameValuePair sentAtPair = new BasicNameValuePair("sent_at", dateString);
+        pairs.add(sentAtPair);
+
         UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pairs);
         entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
         request.setEntity(entity);
