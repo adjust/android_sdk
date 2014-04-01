@@ -136,9 +136,7 @@ public class Adjust {
     }
 
     /**
-     * Enable or disable the adjust SDK
-     *
-     * @param enabled The flag to enable or disable the adjust SDK
+     * Check if the SDK is enabled or disabled
      */
     public static Boolean isEnabled() {
         try {
