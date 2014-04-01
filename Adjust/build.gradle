@@ -24,7 +24,7 @@ android {
   compileSdkVersion 19
   defaultConfig {
     versionCode 11
-    versionName '3.0.0'
+    versionName '3.2.0'
     minSdkVersion 8
     targetSdkVersion 19
   }
