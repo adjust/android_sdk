@@ -48,6 +48,8 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+
 
 /**
  * Collects utility functions used by Adjust.
@@ -348,4 +350,19 @@ public class Util {
         }
         return dateFormat.format(date);
     }
+
+	public static String getGpsAdid(Context context) {
+		String gpsAdid = null;
+		try {
+			AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+			if (!info.isLimitAdTrackingEnabled()) {
+                gpsAdid = info.getId();
+			}
+		} catch (Exception e) {
+            Logger logger = AdjustFactory.getLogger();
+		    logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
+		}
+
+		return gpsAdid;
+	}
 }
