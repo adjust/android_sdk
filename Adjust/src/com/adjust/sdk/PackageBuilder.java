@@ -9,18 +9,19 @@
 
 package com.adjust.sdk;
 
-import android.text.TextUtils;
-import android.util.Base64;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import org.json.JSONObject;
+
+import android.content.Context;
+import android.text.TextUtils;
+import android.util.Base64;
 
 public class PackageBuilder {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
+	private Context context;
 
     // general
     private String appToken;
@@ -49,10 +50,10 @@ public class PackageBuilder {
     private double              amountInCents;
     private Map<String, String> callbackParameters;
 
-    private static SimpleDateFormat dateFormat;
-
-    public PackageBuilder()
-    { }
+    public PackageBuilder(Context context)
+    {
+        this.context = context;
+    }
 
     public void setAppToken(String appToken) {
         this.appToken = appToken;
@@ -237,6 +238,8 @@ public class PackageBuilder {
         addString(parameters, "android_uuid", uuid);
         addString(parameters, "fb_id", fbAttributionId);
         addString(parameters, "environment", environment);
+        String gpsAdid = Util.getGpsAdid(context);
+        addString(parameters, "gps_adid", gpsAdid);
 
         // session related (used for events as well)
         addInt(parameters, "session_count", sessionCount);
@@ -293,8 +296,7 @@ public class PackageBuilder {
             return;
         }
 
-        Date date = new Date(value);
-        String dateString = getDateFormat().format(date);
+        String dateString = Util.dateFormat(value);
         addString(parameters, key, dateString);
     }
 
@@ -317,12 +319,5 @@ public class PackageBuilder {
         String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
 
         addString(parameters, key, encodedMap);
-    }
-
-    private SimpleDateFormat getDateFormat() {
-        if (null == dateFormat) {
-            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        }
-        return dateFormat;
     }
 }

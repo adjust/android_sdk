@@ -65,7 +65,7 @@ public class TestPackageHandler extends
         packageHandler.resumeSending();
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -108,7 +108,7 @@ public class TestPackageHandler extends
         SystemClock.sleep(1000);
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -125,8 +125,8 @@ public class TestPackageHandler extends
         SystemClock.sleep(1000);
 
         // check that the mock request handler was NOT called to send the package
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("RequestHandler sendPackage"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsTestMessage("RequestHandler sendPackage"));
 
         // check that the package handler is paused
         assertTrue(mockLogger.toString(),
@@ -140,18 +140,18 @@ public class TestPackageHandler extends
         SystemClock.sleep(1000);
 
         // check that it did NOT try to read the package queue file
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Package handler read "));
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Package queue file not found"));
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Failed to"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Package handler read "));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.VERBOSE, "Package queue file not found"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.ERROR, "Failed to"));
 
         // enable sending packages to Request Handler
         packageHandler.resumeSending();
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -161,12 +161,12 @@ public class TestPackageHandler extends
         SystemClock.sleep(1000);
 
         // check that it did NOT try to write the package queue file
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Package handler wrote"));
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Failed to serialize packages"));
-        assertTrue(mockLogger.toString(),
-            mockLogger.doesNotContain("Failed to write packages"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Package handler wrote"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.ERROR, "Failed to serialize packages"));
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.ERROR, "Failed to write packages"));
 
         // set the mock request handler to simulate an error sending the package
         mockRequestHandler.setPackageHandler(packageHandler);
@@ -206,7 +206,7 @@ public class TestPackageHandler extends
         packageHandler.resumeSending();
 
         // build and add 3 packages the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
 
         packageHandler.addPackage(sessionPackage);

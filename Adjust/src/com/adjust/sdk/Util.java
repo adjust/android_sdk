@@ -27,6 +27,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -47,11 +48,16 @@ import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+
 
 /**
  * Collects utility functions used by Adjust.
  */
 public class Util {
+
+    private static SimpleDateFormat dateFormat;
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
     protected static String getUserAgent(final Context context) {
         final Resources resources = context.getResources();
@@ -337,4 +343,26 @@ public class Util {
 
         return String.format("'%s'", string);
     }
+
+    public static String dateFormat(long date) {
+        if (null == dateFormat) {
+            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        }
+        return dateFormat.format(date);
+    }
+
+	public static String getGpsAdid(Context context) {
+		String gpsAdid = null;
+		try {
+			AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+			if (!info.isLimitAdTrackingEnabled()) {
+                gpsAdid = info.getId();
+			}
+		} catch (Exception e) {
+            Logger logger = AdjustFactory.getLogger();
+		    logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
+		}
+
+		return gpsAdid;
+	}
 }

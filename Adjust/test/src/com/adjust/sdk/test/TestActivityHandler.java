@@ -44,6 +44,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         AdjustFactory.setPackageHandler(null);
         AdjustFactory.setLogger(null);
+        AdjustFactory.setTimerInterval(-1);
+        AdjustFactory.setSessionInterval(-1);
+        AdjustFactory.setSubsessionInterval(-1);
     }
 
     public void testFirstSession() {
@@ -87,7 +90,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.0.0", activityPackage.getClientSdk());
+            "android3.2.0", activityPackage.getClientSdk());
 
         Map<String, String> parameters = activityPackage.getParameters();
 
@@ -196,7 +199,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // starting from a clean slate
         mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
-        ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", true);
+        ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", "verbose", true);
         // start the first session
         activityHandler.trackSubsessionStart();
 
@@ -402,9 +405,13 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
     }
 
     public void testChecks() {
+        Context context = activity.getApplicationContext();
+
+        // starting from a clean slate
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         // activity with null environment and app token
-        ActivityHandler activityHandler = new ActivityHandler(activity, null, null, false);
+        ActivityHandler activityHandler = new ActivityHandler(activity, null, null, null, false);
         activityHandler.trackSubsessionStart();
         activityHandler.trackSubsessionEnd();
         activityHandler.trackEvent("123456", null);
@@ -437,7 +444,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.containsMessage(LogLevel.ERROR, "Missing App Token."));
 
         // activity with invalid app token and environment
-        new ActivityHandler(activity, "12345678901", "notValid", false);
+        new ActivityHandler(activity, "12345678901", "notValid", "verbose", false);
         SystemClock.sleep(1000);
 
         assertTrue(mockLogger.toString(),
@@ -448,7 +455,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.containsMessage(LogLevel.ERROR, "Malformed App Token '12345678901'"));
 
         // activity handler with production environment, invalid event and revenue
-        activityHandler = new ActivityHandler(activity, "123456789012", "production", false);
+        activityHandler = new ActivityHandler(activity, "qwerty123456", "production", "verbose", false);
         activityHandler.trackSubsessionStart();
         activityHandler.trackEvent(null, null);
         activityHandler.trackRevenue(-0.1, null, null);
@@ -470,6 +477,97 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // check the lenght of the event token
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.ERROR, "Malformed Event Token '12345'"));
+
     }
 
+    public void testDisable() {
+        Context context = activity.getApplicationContext();
+
+        // starting from a clean slate
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+
+        // set the timer for a shorter time for testing
+        AdjustFactory.setTimerInterval(700);
+
+        ActivityHandler activityHandler = new ActivityHandler(activity, "qwerty123456", "sandbox", "verbose", false);
+
+        // verify the default value, when not started
+        assertTrue(activityHandler.isEnabled());
+
+        activityHandler.setEnabled(false);
+
+        // verify the default value, when not started
+        assertFalse(activityHandler.isEnabled());
+
+        // start the first session
+        activityHandler.trackSubsessionStart();
+        activityHandler.trackEvent("123456", null);
+        activityHandler.trackRevenue(0.1, null, null);
+        activityHandler.trackSubsessionEnd();
+        activityHandler.trackSubsessionStart();
+
+        SystemClock.sleep(1000);
+
+        // verify the changed value after the activity handler is started
+        assertFalse(activityHandler.isEnabled());
+
+        // making sure the first session was sent
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.INFO, "First session"));
+
+        // delete the first session package from the log
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+
+        // making sure the timer fired did not call the package handler
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+
+        // test if the event was not triggered
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Event 1"));
+        // test if the revenue was not triggered
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Event 1 (revenue)"));
+
+        // verify that the application was paused
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler pauseSending"));
+        // verify that it was not resumed
+        assertFalse(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler resumeSending"));
+
+        // enable again
+        activityHandler.setEnabled(true);
+
+        SystemClock.sleep(1000);
+
+        // verify that the timer was able to resume sending
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler resumeSending"));
+
+        activityHandler.trackEvent("123456", null);
+        activityHandler.trackRevenue(0.1, null, null);
+        activityHandler.trackSubsessionEnd();
+        activityHandler.trackSubsessionStart();
+        SystemClock.sleep(1000);
+
+        // verify the changed value, when the activity state is started
+        assertTrue(activityHandler.isEnabled());
+
+        // test that the event was triggered
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Event 1"));
+        // test that the revenue was triggered
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Event 2 (revenue)"));
+
+        // verify that the application was paused
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler pauseSending"));
+        // verify that it was also resumed
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler resumeSending"));
+            // */
+    }
 }
