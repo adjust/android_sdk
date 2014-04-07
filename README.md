@@ -320,12 +320,12 @@ event buffering by adding the following line to your Adjust settings in your
 
 ### 13. Disable tracking
 
-You can disable the adjust SDK from tracking by invoking the method `setEnable` 
+You can disable the adjust SDK from tracking by invoking the method `setEnabled` 
 with the enabled parameter as `false`. This setting is remembered between sessions, but it can only
 be activated after the first session.
 
 ```java
-Adjust.setEnable(false);
+Adjust.setEnabled(false);
 ```
 
 You can verify if the adjust SDK is currently active with the method `isEnabled`. It is always possible
