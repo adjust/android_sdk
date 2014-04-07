@@ -318,6 +318,19 @@ event buffering by adding the following line to your Adjust settings in your
 <meta-data android:name="AdjustEventBuffering" android:value="true" />
 ```
 
+### 13. Disable tracking
+
+You can disable the adjust SDK from tracking by invoking the method `setEnable` 
+with the enabled parameter as `false`. This setting is remembered between sessions, but it can only
+be activated after the first session.
+
+```java
+Adjust.setEnable(false);
+```
+
+You can verify if the adjust SDK is currently active with the method `isEnabled`. It is always possible
+to activate the adjust SDK by invoking `setEnable` with the enabled parameter as `true`.
+
 [adjust.io]:   http://adjust.io
 [dashboard]:   http://adjust.io
 [releases]:    https://github.com/adjust/adjust_android_sdk/releases
