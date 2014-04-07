@@ -65,7 +65,7 @@ public class TestPackageHandler extends
         packageHandler.resumeSending();
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -108,7 +108,7 @@ public class TestPackageHandler extends
         SystemClock.sleep(1000);
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -151,7 +151,7 @@ public class TestPackageHandler extends
         packageHandler.resumeSending();
 
         // build and add a package the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         SystemClock.sleep(1000);
@@ -206,7 +206,7 @@ public class TestPackageHandler extends
         packageHandler.resumeSending();
 
         // build and add 3 packages the queue
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
 
         packageHandler.addPackage(sessionPackage);

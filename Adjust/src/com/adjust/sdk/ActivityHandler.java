@@ -136,7 +136,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void trackEvent(String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
@@ -147,7 +147,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         builder.setAmountInCents(amountInCents);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
@@ -503,7 +503,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         injectGeneralAttributes(builder);
         injectReferrer(builder);
         activityState.injectSessionAttributes(builder);
