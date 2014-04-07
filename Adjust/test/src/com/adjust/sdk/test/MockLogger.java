@@ -99,7 +99,7 @@ public class MockLogger implements Logger {
                 return true;
             }
         }
-        test(beginsWith + " is not in " + sList);
+        test(sList + " does not contain " + beginsWith);
         return false;
     }
 
@@ -109,9 +109,5 @@ public class MockLogger implements Logger {
 
     public Boolean containsTestMessage(String beginsWith) {
         return mapContainsMessage(1, beginsWith);
-    }
-
-    public Boolean doesNotContain(String message) {
-        return logBuffer.lastIndexOf(message) == -1;
     }
 }

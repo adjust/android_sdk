@@ -121,6 +121,34 @@ public class Adjust {
         }
     }
 
+    /**
+     * Enable or disable the adjust SDK
+     *
+     * @param enabled The flag to enable or disable the adjust SDK
+     */
+    public static void setEnabled(Boolean enabled) {
+        try {
+            activityHandler.setEnabled(enabled);
+        } catch (NullPointerException e) {
+            if (logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+        }
+    }
+
+    /**
+     * Check if the SDK is enabled or disabled
+     */
+    public static Boolean isEnabled() {
+        try {
+            return activityHandler.isEnabled();
+        } catch (NullPointerException e) {
+            if (logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+        }
+        return false;
+    }
+
+
     // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
     protected static void appDidLaunch(Activity activity, String appToken, String environment, String logLevel, boolean eventBuffering) {
         activityHandler = new ActivityHandler(activity, appToken, environment, logLevel, eventBuffering);

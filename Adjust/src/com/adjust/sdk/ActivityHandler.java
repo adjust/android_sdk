@@ -61,6 +61,7 @@ public class ActivityHandler extends HandlerThread {
     private        String                   defaultTracker;
     private        boolean                  eventBuffering;
     private        boolean                  dropOfflineActivities;
+    private        boolean                  enabled;
 
     private String appToken;
     private String macSha1;
@@ -80,6 +81,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+        enabled = true;
 
         logger = AdjustFactory.getLogger();
 
@@ -99,6 +101,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+        enabled = true;
 
         logger = AdjustFactory.getLogger();
 
@@ -133,7 +136,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void trackEvent(String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
 
@@ -144,7 +147,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         builder.setAmountInCents(amountInCents);
         builder.setEventToken(eventToken);
         builder.setCallbackParameters(parameters);
@@ -171,6 +174,25 @@ public class ActivityHandler extends HandlerThread {
             }
         };
         handler.post(runnable);
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+        if (checkActivityState(activityState))
+            activityState.enabled = enabled;
+        if (enabled) {
+            this.trackSubsessionStart();
+        } else {
+            this.trackSubsessionEnd();
+        }
+    }
+
+    public Boolean isEnabled() {
+        if (checkActivityState(activityState)) {
+            return activityState.enabled;
+        } else {
+            return this.enabled;
+        }
     }
 
     private static final class SessionHandler extends Handler {
@@ -260,6 +282,11 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
+        if (activityState != null
+            && !activityState.enabled) {
+            return;
+        }
+
         packageHandler.resumeSending();
         startTimer();
 
@@ -273,6 +300,7 @@ public class ActivityHandler extends HandlerThread {
 
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
+            activityState.enabled = this.enabled;
             writeActivityState();
             logger.info("First session");
             return;
@@ -321,7 +349,7 @@ public class ActivityHandler extends HandlerThread {
 
         packageHandler.pauseSending();
         stopTimer();
-        updateActivityState();
+        updateActivityState(System.currentTimeMillis());
         writeActivityState();
     }
 
@@ -330,9 +358,14 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        activityState.createdAt = System.currentTimeMillis();
+        if (!activityState.enabled) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        activityState.createdAt = now;
         activityState.eventCount++;
-        updateActivityState();
+        updateActivityState(now);
 
         injectGeneralAttributes(eventBuilder);
         activityState.injectEventAttributes(eventBuilder);
@@ -354,9 +387,15 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        activityState.createdAt = System.currentTimeMillis();
+        if (!activityState.enabled) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+
+        activityState.createdAt = now;
         activityState.eventCount++;
-        updateActivityState();
+        updateActivityState(now);
 
         injectGeneralAttributes(revenueBuilder);
         activityState.injectEventAttributes(revenueBuilder);
@@ -385,12 +424,11 @@ public class ActivityHandler extends HandlerThread {
             && revenueBuilder.isValidForRevenue();
     }
 
-    private void updateActivityState() {
+    private void updateActivityState(long now) {
         if (!checkActivityState(activityState)) {
             return;
         }
 
-        long now = System.currentTimeMillis();
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
@@ -465,7 +503,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         injectGeneralAttributes(builder);
         injectReferrer(builder);
         activityState.injectSessionAttributes(builder);
@@ -518,9 +556,14 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void timerFired() {
+        if (null != activityState
+            && !activityState.enabled) {
+            return;
+        }
+
         packageHandler.sendFirstPackage();
 
-        updateActivityState();
+        updateActivityState(System.currentTimeMillis());
         writeActivityState();
     }
 

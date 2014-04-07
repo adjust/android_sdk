@@ -1,5 +1,6 @@
 package com.adjust.sdk.test;
 
+import android.content.Context;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
@@ -26,6 +27,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         super(activityClass);
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
 
@@ -44,11 +46,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         // to let the internal queue act
         SystemClock.sleep(1000);
 
+        Context context = getActivity().getApplicationContext();
+
         // build a default session package
-        PackageBuilder builder = new PackageBuilder();
+        PackageBuilder builder = new PackageBuilder(context);
         sessionPackage = builder.buildSessionPackage();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
 
