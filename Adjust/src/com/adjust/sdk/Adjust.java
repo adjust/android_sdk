@@ -14,6 +14,7 @@ import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
 import java.util.Map;
 
 import android.app.Activity;
+import android.net.Uri;
 
 /**
  * The main interface to Adjust.
@@ -146,6 +147,16 @@ public class Adjust {
                 logger.error(NO_ACTIVITY_HANDLER_FOUND);
         }
         return false;
+    }
+
+    public static void appWillOpenUrl(Uri url) {
+        try {
+            activityHandler.readOpenUrl(url);
+        } catch (NullPointerException e) {
+            if (logger != null)
+                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+        }
+
     }
 
 

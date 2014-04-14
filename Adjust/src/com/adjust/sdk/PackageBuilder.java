@@ -50,6 +50,9 @@ public class PackageBuilder {
     private double              amountInCents;
     private Map<String, String> callbackParameters;
 
+    // reattributions
+    private Map<String, String> deepLinkParameters;
+
     public PackageBuilder(Context context)
     {
         this.context = context;
@@ -147,6 +150,10 @@ public class PackageBuilder {
         this.callbackParameters = callbackParameters;
     }
 
+    public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
+        this.deepLinkParameters = deepLinkParameters;
+    }
+
     public boolean isValidForEvent() {
         if (null == eventToken) {
             Logger logger = AdjustFactory.getLogger();
@@ -208,6 +215,19 @@ public class PackageBuilder {
         revenuePackage.setParameters(parameters);
 
         return revenuePackage;
+    }
+
+    public ActivityPackage buildReattributionPackage() {
+        Map<String, String> parameters = getDefaultParameters();
+        addMap(parameters, "deeplink_parameters", deepLinkParameters);
+
+        ActivityPackage reattributionPackage = getDefaultActivityPackage();
+        reattributionPackage.setPath("/reattribute");
+        reattributionPackage.setActivityKind(ActivityKind.REATTRIBUTION);
+        reattributionPackage.setSuffix("");
+        reattributionPackage.setParameters(parameters);
+
+        return reattributionPackage;
     }
 
     private boolean isEventTokenValid() {

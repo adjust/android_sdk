@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -365,4 +366,27 @@ public class Util {
 
 		return gpsAdid;
 	}
+
+	public static String splitUrlUntil(String url, int splitIdx) {
+	    String leftSide = null;
+	    try {
+            leftSide = URLDecoder.decode(url.substring(0, splitIdx), "UTF-8");
+        } catch (Exception e) {
+            Logger logger = AdjustFactory.getLogger();
+            logger.error(String.format("Unable to split url %s until %d index (%s)", url, splitIdx, e.getMessage()));
+        }
+	    return leftSide;
+	}
+
+	   public static String splitUrlFrom(String url, int splitIdx) {
+	        String rightSide = null;
+	        try {
+	            rightSide = URLDecoder.decode(url.substring(splitIdx), "UTF-8");
+	        } catch (Exception e) {
+	            Logger logger = AdjustFactory.getLogger();
+	            logger.error(String.format("Unable to split url %s from %d index (%s)", url, splitIdx, e.getMessage()));
+	        }
+	        return rightSide;
+	    }
+
 }
