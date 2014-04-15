@@ -127,7 +127,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that the activity state is written by the first session or timer
         assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state"));
+                mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state"));
 
         // ending of first session
         assertTrue(mockLogger.toString(),
@@ -253,7 +253,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:1"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:1"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -295,7 +295,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:2"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:2"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -357,7 +357,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:1"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:1"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -399,7 +399,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:2"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:2"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -636,5 +636,14 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertEquals(activityPackage.getExtendedString(),
             "eyJmb28iOiJiYXIiLCJrZXkiOiJ2YWx1ZSJ9", parameters.get("deeplink_parameters"));
 
+        // check that added and set both session and reattribution package
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler addPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler addPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+
+        // check that sent the reattribution package
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.INFO, "Reattribution {key=value, foo=bar}"));
     }
 }

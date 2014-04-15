@@ -462,7 +462,7 @@ public class ActivityHandler extends HandlerThread {
             packageHandler.addPackage(reattributionPackage);
             packageHandler.sendFirstPackage();
 
-            logger.debug(String.format("Reattribution %s", adjustDeepLinks.toString()));
+            logger.info(String.format("Reattribution %s", adjustDeepLinks.toString()));
         }
     }
 
@@ -540,7 +540,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(activityState);
-                logger.verbose(String.format("Wrote activity state: %s", activityState));
+                logger.debug(String.format("Wrote activity state: %s", activityState));
             } catch (NotSerializableException e) {
                 logger.error("Failed to serialize activity state");
             } finally {
