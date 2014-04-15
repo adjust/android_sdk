@@ -456,6 +456,7 @@ public class ActivityHandler extends HandlerThread {
         if (adjustDeepLinks.size() > 0) {
             PackageBuilder builder = new PackageBuilder(context);
             injectGeneralAttributes(builder);
+            builder.setDeepLinkParameters(adjustDeepLinks);
 
             ActivityPackage reattributionPackage = builder.buildReattributionPackage();
             packageHandler.addPackage(reattributionPackage);
