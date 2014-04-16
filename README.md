@@ -320,27 +320,32 @@ event buffering by adding the following line to your Adjust settings in your
 
 ### 13. Disable tracking
 
-You can disable the adjust SDK from tracking by invoking the method `setEnabled` 
-with the enabled parameter as `false`. This setting is remembered between sessions, but it can only
-be activated after the first session.
+You can disable the adjust SDK from tracking by invoking the method
+`setEnabled` with the enabled parameter as `false`. This setting is remembered
+between sessions, but it can only be activated after the first session.
 
 ```java
 Adjust.setEnabled(false);
 ```
 
-You can verify if the adjust SDK is currently active with the method `isEnabled`. It is always possible
-to activate the adjust SDK by invoking `setEnable` with the enabled parameter as `true`.
+You can verify if the adjust SDK is currently active with the method
+`isEnabled`. It is always possible to activate the adjust SDK by invoking
+`setEnable` with the enabled parameter as `true`.
 
 ### 14. Handle deep linking
 
-You can also set up the adjust sdk to read deep links that come to your app. We will read only the data that is injected by adjust when you use deep links with adjust tracker URLs. This is a core feature if you are planning to run retargeting or re-engagement campaigns with deep links.
+You can also set up the adjust SDK to read deep links that come to your app. We
+will only read the data that is injected by adjust tracker URLs. This is
+essential if you are planning to run retargeting or re-engagement campaigns
+with deep links.
 
-On the activities that accept deep links, find the `onCreate` method and add the folowing call to adjust:
+For each activity that accepts deep links, find the `onCreate` method and add
+the folowing call to adjust:
 
 ```java
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    
+
     Intent intent = getIntent();
     Uri data = intent.getData();
     Adjust.appWillOpenUrl(data);
