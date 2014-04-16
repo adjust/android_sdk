@@ -24,6 +24,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -36,6 +37,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -49,6 +51,7 @@ public class ActivityHandler extends HandlerThread {
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
+    private static final String ADJUST_PREFIX = "adjust_";
 
     private final  SessionHandler           sessionHandler;
     private        IPackageHandler          packageHandler;
@@ -195,6 +198,13 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
+    public void readOpenUrl(Uri url) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.DEEP_LINK;
+        message.obj = url;
+        sessionHandler.sendMessage(message);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int INIT_BUNDLE = 72630;
         private static final int INIT_PRESET = 72633;
@@ -202,6 +212,8 @@ public class ActivityHandler extends HandlerThread {
         private static final int END         = 72650;
         private static final int EVENT       = 72660;
         private static final int REVENUE     = 72670;
+        private static final int DEEP_LINK   = 72680;
+
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -239,6 +251,10 @@ public class ActivityHandler extends HandlerThread {
                 case REVENUE:
                     PackageBuilder revenueBuilder = (PackageBuilder) message.obj;
                     sessionHandler.trackRevenueInternal(revenueBuilder);
+                    break;
+                case DEEP_LINK:
+                    Uri url = (Uri) message.obj;
+                    sessionHandler.readOpenUrlInternal(url);
                     break;
             }
         }
@@ -412,6 +428,49 @@ public class ActivityHandler extends HandlerThread {
         logger.debug(String.format(Locale.US, "Event %d (revenue)", activityState.eventCount));
     }
 
+    private void readOpenUrlInternal(Uri url) {
+        if (url == null) {
+            return;
+        }
+
+        String queryString = url.getQuery();
+        if (queryString == null) {
+            return;
+        }
+
+        Map<String, String> adjustDeepLinks = new HashMap<String, String>();
+
+        String[] queryPairs = queryString.split("&");
+        for (String pair : queryPairs) {
+            String[] pairComponents = pair.split("=");
+            if (pairComponents.length != 2) continue;
+
+            String key = pairComponents[0];
+            if (!key.startsWith(ADJUST_PREFIX)) continue;
+
+            String value = pairComponents[1];
+            if (value.length() == 0) continue;
+
+            String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
+            if (keyWOutPrefix.length() == 0) continue;
+
+            adjustDeepLinks.put(keyWOutPrefix, value);
+        }
+
+        if (adjustDeepLinks.size() == 0) {
+            return;
+        }
+
+        PackageBuilder builder = new PackageBuilder(context);
+        builder.setDeepLinkParameters(adjustDeepLinks);
+        injectGeneralAttributes(builder);
+        ActivityPackage reattributionPackage = builder.buildReattributionPackage();
+        packageHandler.addPackage(reattributionPackage);
+        packageHandler.sendFirstPackage();
+
+        logger.debug(String.format("Reattribution %s", adjustDeepLinks.toString()));
+    }
+
     private boolean canTrackEvent(PackageBuilder revenueBuilder) {
         return checkAppTokenNotNull(appToken)
             && checkActivityState(activityState)
@@ -486,7 +545,7 @@ public class ActivityHandler extends HandlerThread {
 
             try {
                 objectStream.writeObject(activityState);
-                logger.verbose(String.format("Wrote activity state: %s", activityState));
+                logger.debug(String.format("Wrote activity state: %s", activityState));
             } catch (NotSerializableException e) {
                 logger.error("Failed to serialize activity state");
             } finally {

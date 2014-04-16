@@ -21,7 +21,7 @@ import android.util.Base64;
 
 public class PackageBuilder {
 
-	private Context context;
+    private Context context;
 
     // general
     private String appToken;
@@ -49,6 +49,9 @@ public class PackageBuilder {
     private String              eventToken;
     private double              amountInCents;
     private Map<String, String> callbackParameters;
+
+    // reattributions
+    private Map<String, String> deepLinkParameters;
 
     public PackageBuilder(Context context)
     {
@@ -147,6 +150,10 @@ public class PackageBuilder {
         this.callbackParameters = callbackParameters;
     }
 
+    public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
+        this.deepLinkParameters = deepLinkParameters;
+    }
+
     public boolean isValidForEvent() {
         if (null == eventToken) {
             Logger logger = AdjustFactory.getLogger();
@@ -210,6 +217,19 @@ public class PackageBuilder {
         return revenuePackage;
     }
 
+    public ActivityPackage buildReattributionPackage() {
+        Map<String, String> parameters = getDefaultParameters();
+        addMapJson(parameters, "deeplink_parameters", deepLinkParameters);
+
+        ActivityPackage reattributionPackage = getDefaultActivityPackage();
+        reattributionPackage.setPath("/reattribute");
+        reattributionPackage.setActivityKind(ActivityKind.REATTRIBUTION);
+        reattributionPackage.setSuffix("");
+        reattributionPackage.setParameters(parameters);
+
+        return reattributionPackage;
+    }
+
     private boolean isEventTokenValid() {
         if (6 != eventToken.length()) {
             Logger logger = AdjustFactory.getLogger();
@@ -253,7 +273,7 @@ public class PackageBuilder {
     private void injectEventParameters(Map<String, String> parameters) {
         addInt(parameters, "event_count", eventCount);
         addString(parameters, "event_token", eventToken);
-        addMap(parameters, "params", callbackParameters);
+        addMapBase64(parameters, "params", callbackParameters);
     }
 
     private String getAmountString() {
@@ -309,7 +329,7 @@ public class PackageBuilder {
         addInt(parameters, key, durationInSeconds);
     }
 
-    private void addMap(Map<String, String> parameters, String key, Map<String, String> map) {
+    private void addMapBase64(Map<String, String> parameters, String key, Map<String, String> map) {
         if (null == map) {
             return;
         }
@@ -319,5 +339,16 @@ public class PackageBuilder {
         String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
 
         addString(parameters, key, encodedMap);
+    }
+
+    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+        if (null == map) {
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject(map);
+        String jsonString = jsonObject.toString();
+
+        addString(parameters, key, jsonString);
     }
 }

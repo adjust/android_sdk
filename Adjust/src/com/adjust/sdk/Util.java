@@ -67,19 +67,19 @@ public class Util {
         final int screenLayout = configuration.screenLayout;
 
         final String[] parts = {
-          getPackageName(context),
-          getAppVersion(context),
-          getDeviceType(screenLayout),
-          getDeviceName(),
-          getOsName(),
-          getOsVersion(),
-          getLanguage(locale),
-          getCountry(locale),
-          getScreenSize(screenLayout),
-          getScreenFormat(screenLayout),
-          getScreenDensity(displayMetrics),
-          getDisplayWidth(displayMetrics),
-          getDisplayHeight(displayMetrics)
+            getPackageName(context),
+            getAppVersion(context),
+            getDeviceType(screenLayout),
+            getDeviceName(),
+            getOsName(),
+            getOsVersion(),
+            getLanguage(locale),
+            getCountry(locale),
+            getScreenSize(screenLayout),
+            getScreenFormat(screenLayout),
+            getScreenDensity(displayMetrics),
+            getDisplayWidth(displayMetrics),
+            getDisplayHeight(displayMetrics)
         };
         return TextUtils.join(" ", parts);
     }
@@ -351,18 +351,18 @@ public class Util {
         return dateFormat.format(date);
     }
 
-	public static String getGpsAdid(Context context) {
-		String gpsAdid = null;
-		try {
-			AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-			if (!info.isLimitAdTrackingEnabled()) {
+    public static String getGpsAdid(Context context) {
+        String gpsAdid = null;
+        try {
+            AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+            if (!info.isLimitAdTrackingEnabled()) {
                 gpsAdid = info.getId();
-			}
-		} catch (Exception e) {
+            }
+        } catch (Exception e) {
             Logger logger = AdjustFactory.getLogger();
-		    logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
-		}
+            logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
+        }
 
-		return gpsAdid;
-	}
+        return gpsAdid;
+    }
 }

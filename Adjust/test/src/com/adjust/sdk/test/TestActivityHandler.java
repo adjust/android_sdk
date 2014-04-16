@@ -4,10 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.adjust.sdk.ActivityHandler;
+import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Logger.LogLevel;
@@ -90,7 +92,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.2.0", activityPackage.getClientSdk());
+            "android3.3.0", activityPackage.getClientSdk());
 
         Map<String, String> parameters = activityPackage.getParameters();
 
@@ -125,7 +127,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that the activity state is written by the first session or timer
         assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state"));
+                mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state"));
 
         // ending of first session
         assertTrue(mockLogger.toString(),
@@ -251,7 +253,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:1"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:1"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -293,7 +295,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:2"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:2"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -355,7 +357,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:1"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:1"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -397,7 +399,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the event count in the written activity state
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.VERBOSE, "Wrote activity state: ec:2"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Wrote activity state: ec:2"));
 
         // check the event count in the logger
         assertTrue(mockLogger.toString(),
@@ -569,5 +571,79 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler resumeSending"));
             // */
+    }
+
+    public void testOpenUrl() {
+        Context context = activity.getApplicationContext();
+
+        // starting from a clean slate
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+
+        ActivityHandler activityHandler = new ActivityHandler(activity);
+        activityHandler.trackSubsessionStart();
+
+        Uri normal = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=bar&other=stuff&adjust_key=value");
+        Uri emptyQueryString = Uri.parse("AdjustTests://");
+        Uri emptyString = Uri.parse("");
+        Uri nullString = null;
+        Uri single = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo");
+        Uri prefix = Uri.parse("AdjustTests://example.com/path/inApp?adjust_=bar");
+        Uri incomplete = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=");
+
+        activityHandler.readOpenUrl(normal);
+        activityHandler.readOpenUrl(emptyQueryString);
+        activityHandler.readOpenUrl(emptyString);
+        activityHandler.readOpenUrl(nullString);
+        activityHandler.readOpenUrl(single);
+        activityHandler.readOpenUrl(prefix);
+        activityHandler.readOpenUrl(incomplete);
+
+        SystemClock.sleep(1000);
+
+        // check that all supposed packages were sent
+        // 1 session + 1 reattributions
+        assertEquals(2, mockPackageHandler.queue.size());
+
+        // check that the normal url was parsed and sent
+        ActivityPackage activityPackage = mockPackageHandler.queue.get(1);
+
+        // testing the activity kind is the correct one
+        ActivityKind activityKind = activityPackage.getActivityKind();
+        assertEquals(activityPackage.getExtendedString(),
+            ActivityKind.REATTRIBUTION, activityKind);
+
+        // testing the conversion from activity kind to string
+        String activityKindString = activityKind.toString();
+        assertEquals(activityPackage.getExtendedString(),
+            "reattribution", activityKindString);
+
+        // testing the conversion from string to activity kind
+        activityKind = ActivityKind.fromString(activityKindString);
+        assertEquals(activityPackage.getExtendedString(),
+            ActivityKind.REATTRIBUTION, activityKind);
+
+        // package type should be reattribute
+        assertEquals(activityPackage.getExtendedString(),
+            "/reattribute", activityPackage.getPath());
+
+        // suffix should be empty
+        assertEquals(activityPackage.getExtendedString(),
+            "", activityPackage.getSuffix());
+
+        Map<String,String> parameters = activityPackage.getParameters();
+
+        // check that deep link parameters contains the base64 with the 2 keys
+        assertEquals(activityPackage.getExtendedString(),
+            "{\"foo\":\"bar\",\"key\":\"value\"}", parameters.get("deeplink_parameters"));
+
+        // check that added and set both session and reattribution package
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler addPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler addPackage"));
+        assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler sendFirstPackage"));
+
+        // check that sent the reattribution package
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.DEBUG, "Reattribution {key=value, foo=bar}"));
     }
 }
