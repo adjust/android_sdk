@@ -21,7 +21,7 @@ import android.util.Base64;
 
 public class PackageBuilder {
 
-	private Context context;
+    private Context context;
 
     // general
     private String appToken;
@@ -219,7 +219,7 @@ public class PackageBuilder {
 
     public ActivityPackage buildReattributionPackage() {
         Map<String, String> parameters = getDefaultParameters();
-        addMap(parameters, "deeplink_parameters", deepLinkParameters);
+        addMapJson(parameters, "deeplink_parameters", deepLinkParameters);
 
         ActivityPackage reattributionPackage = getDefaultActivityPackage();
         reattributionPackage.setPath("/reattribute");
@@ -273,7 +273,7 @@ public class PackageBuilder {
     private void injectEventParameters(Map<String, String> parameters) {
         addInt(parameters, "event_count", eventCount);
         addString(parameters, "event_token", eventToken);
-        addMap(parameters, "params", callbackParameters);
+        addMapBase64(parameters, "params", callbackParameters);
     }
 
     private String getAmountString() {
@@ -329,7 +329,7 @@ public class PackageBuilder {
         addInt(parameters, key, durationInSeconds);
     }
 
-    private void addMap(Map<String, String> parameters, String key, Map<String, String> map) {
+    private void addMapBase64(Map<String, String> parameters, String key, Map<String, String> map) {
         if (null == map) {
             return;
         }
@@ -339,5 +339,16 @@ public class PackageBuilder {
         String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
 
         addString(parameters, key, encodedMap);
+    }
+
+    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+        if (null == map) {
+            return;
+        }
+
+        JSONObject jsonObject = new JSONObject(map);
+        String jsonString = jsonObject.toString();
+
+        addString(parameters, key, jsonString);
     }
 }

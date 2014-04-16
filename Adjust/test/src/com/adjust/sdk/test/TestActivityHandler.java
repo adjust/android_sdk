@@ -634,7 +634,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that deep link parameters contains the base64 with the 2 keys
         assertEquals(activityPackage.getExtendedString(),
-            "eyJmb28iOiJiYXIiLCJrZXkiOiJ2YWx1ZSJ9", parameters.get("deeplink_parameters"));
+            "{\"foo\":\"bar\",\"key\":\"value\"}", parameters.get("deeplink_parameters"));
 
         // check that added and set both session and reattribution package
         assertTrue(mockLogger.toString(), mockLogger.containsTestMessage("PackageHandler addPackage"));
