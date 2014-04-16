@@ -93,8 +93,19 @@ public class ActivityState implements Serializable {
         lastActivity = fields.get("lastActivity", -1l);
         createdAt = fields.get("createdAt", -1l);
         lastInterval = fields.get("lastInterval", -1l);
-        uuid = (String)fields.get("uuid", null);
-        enabled = fields.get("enabled", true);
+
+        // default values for migrating devices
+        uuid = null;
+        enabled = true;
+        // try to read in order of less recent new fields
+        try {
+            uuid = (String)fields.get("uuid", null);
+            enabled = fields.get("enabled", true);
+        } catch (Exception e) {
+            Logger logger = AdjustFactory.getLogger();
+            logger.debug(String.format("Unable to read new field in migration device with error (%s)",
+                    e.getMessage()));
+        }
 
         // create UUID for migrating devices
         if (uuid == null) {
