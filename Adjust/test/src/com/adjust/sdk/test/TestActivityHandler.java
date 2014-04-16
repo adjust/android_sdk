@@ -644,6 +644,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that sent the reattribution package
         assertTrue(mockLogger.toString(),
-            mockLogger.containsMessage(LogLevel.INFO, "Reattribution {key=value, foo=bar}"));
+            mockLogger.containsMessage(LogLevel.DEBUG, "Reattribution {key=value, foo=bar}"));
     }
 }

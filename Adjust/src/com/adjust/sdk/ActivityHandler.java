@@ -429,41 +429,46 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void readOpenUrlInternal(Uri url) {
-        if (url == null)
+        if (url == null) {
             return;
+        }
+
+        String queryString = url.getQuery();
+        if (queryString == null) {
+            return;
+        }
 
         Map<String, String> adjustDeepLinks = new HashMap<String, String>();
-        String queryString = url.getQuery();
-        if (queryString == null)
-            return;
 
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
-            int splitIdx = pair.indexOf("=");
-            if (splitIdx == -1)
-                continue;
-            String key = Util.splitUrlUntil(pair, splitIdx);
-            if (key == null || !key.startsWith(ADJUST_PREFIX))
-                continue;
-            String keyWoutPrefix = key.substring(ADJUST_PREFIX.length());
-            String value = Util.splitUrlFrom(pair, splitIdx + 1);
-            if (keyWoutPrefix.length() > 0
-                && value != null
-                && value.length() > 0) {
-                adjustDeepLinks.put(keyWoutPrefix, value);
-            }
-        }
-        if (adjustDeepLinks.size() > 0) {
-            PackageBuilder builder = new PackageBuilder(context);
-            injectGeneralAttributes(builder);
-            builder.setDeepLinkParameters(adjustDeepLinks);
+            String[] pairComponents = pair.split("=");
+            if (pairComponents.length != 2) continue;
 
-            ActivityPackage reattributionPackage = builder.buildReattributionPackage();
-            packageHandler.addPackage(reattributionPackage);
-            packageHandler.sendFirstPackage();
+            String key = pairComponents[0];
+            if (!key.startsWith(ADJUST_PREFIX)) continue;
 
-            logger.info(String.format("Reattribution %s", adjustDeepLinks.toString()));
+            String value = pairComponents[1];
+            if (value.length() == 0) continue;
+
+            String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
+            if (keyWOutPrefix.length() == 0) continue;
+
+            adjustDeepLinks.put(keyWOutPrefix, value);
         }
+
+        if (adjustDeepLinks.size() == 0) {
+            return;
+        }
+
+        PackageBuilder builder = new PackageBuilder(context);
+        builder.setDeepLinkParameters(adjustDeepLinks);
+        injectGeneralAttributes(builder);
+        ActivityPackage reattributionPackage = builder.buildReattributionPackage();
+        packageHandler.addPackage(reattributionPackage);
+        packageHandler.sendFirstPackage();
+
+        logger.debug(String.format("Reattribution %s", adjustDeepLinks.toString()));
     }
 
     private boolean canTrackEvent(PackageBuilder revenueBuilder) {
