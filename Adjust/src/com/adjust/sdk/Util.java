@@ -26,7 +26,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URLDecoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -68,19 +67,19 @@ public class Util {
         final int screenLayout = configuration.screenLayout;
 
         final String[] parts = {
-          getPackageName(context),
-          getAppVersion(context),
-          getDeviceType(screenLayout),
-          getDeviceName(),
-          getOsName(),
-          getOsVersion(),
-          getLanguage(locale),
-          getCountry(locale),
-          getScreenSize(screenLayout),
-          getScreenFormat(screenLayout),
-          getScreenDensity(displayMetrics),
-          getDisplayWidth(displayMetrics),
-          getDisplayHeight(displayMetrics)
+            getPackageName(context),
+            getAppVersion(context),
+            getDeviceType(screenLayout),
+            getDeviceName(),
+            getOsName(),
+            getOsVersion(),
+            getLanguage(locale),
+            getCountry(locale),
+            getScreenSize(screenLayout),
+            getScreenFormat(screenLayout),
+            getScreenDensity(displayMetrics),
+            getDisplayWidth(displayMetrics),
+            getDisplayHeight(displayMetrics)
         };
         return TextUtils.join(" ", parts);
     }
@@ -352,40 +351,18 @@ public class Util {
         return dateFormat.format(date);
     }
 
-	public static String getGpsAdid(Context context) {
-		String gpsAdid = null;
-		try {
-			AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-			if (!info.isLimitAdTrackingEnabled()) {
+    public static String getGpsAdid(Context context) {
+        String gpsAdid = null;
+        try {
+            AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
+            if (!info.isLimitAdTrackingEnabled()) {
                 gpsAdid = info.getId();
-			}
-		} catch (Exception e) {
-            Logger logger = AdjustFactory.getLogger();
-		    logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
-		}
-
-		return gpsAdid;
-	}
-
-	public static String splitUrlUntil(String url, int splitIdx) {
-        String leftSide = null;
-        try {
-            leftSide = URLDecoder.decode(url.substring(0, splitIdx), "UTF-8");
+            }
         } catch (Exception e) {
             Logger logger = AdjustFactory.getLogger();
-            logger.error(String.format("Unable to split url %s until %d index (%s)", url, splitIdx, e.getMessage()));
+            logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
         }
-        return leftSide;
-    }
 
-    public static String splitUrlFrom(String url, int splitIdx) {
-        String rightSide = null;
-        try {
-            rightSide = URLDecoder.decode(url.substring(splitIdx), "UTF-8");
-        } catch (Exception e) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.error(String.format("Unable to split url %s from %d index (%s)", url, splitIdx, e.getMessage()));
-        }
-        return rightSide;
+        return gpsAdid;
     }
 }
