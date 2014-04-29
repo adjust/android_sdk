@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
   compile 'com.android.support:support-v4:19.1.+'
+  compile files('libs/google-play-services.jar')
 }
 
 android {
