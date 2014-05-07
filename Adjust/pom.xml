@@ -19,6 +19,18 @@
       <groupId>com.google.android</groupId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+        <groupId>com.google.android.gms</groupId>
+        <artifactId>google-play-services</artifactId>
+        <version>4.3.23</version>
+        <type>apklib</type>
+    </dependency>
+    <dependency>
+        <groupId>com.google.android.gms</groupId>
+        <artifactId>google-play-services</artifactId>
+        <version>4.3.23</version>
+        <type>jar</type>
+    </dependency>
   </dependencies>
   <build>
     <sourceDirectory>src</sourceDirectory>
