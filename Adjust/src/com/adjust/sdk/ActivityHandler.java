@@ -53,13 +53,13 @@ public class ActivityHandler extends HandlerThread {
     private static final String TIME_TRAVEL = "Time travel!";
     private static final String ADJUST_PREFIX = "adjust_";
 
-    private final  SessionHandler           sessionHandler;
+    private        SessionHandler           sessionHandler;
     private        IPackageHandler          packageHandler;
     private        OnFinishedListener       onFinishedListener;
     private        ActivityState            activityState;
-    private final  Logger                   logger;
+    private        Logger                   logger;
     private static ScheduledExecutorService timer;
-    private final  Context                  context;
+    private        Context                  context;
     private        String                   environment;
     private        String                   defaultTracker;
     private        boolean                  eventBuffering;
@@ -76,17 +76,8 @@ public class ActivityHandler extends HandlerThread {
 
     public ActivityHandler(Activity activity) {
         super(LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-        TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        SESSION_INTERVAL = AdjustFactory.getSessionInterval();
-        SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
-        sessionHandler = new SessionHandler(getLooper(), this);
-        context = activity.getApplicationContext();
-        clientSdk = Constants.CLIENT_SDK;
-        enabled = true;
 
-        logger = AdjustFactory.getLogger();
+        initActivityHandler(activity);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
@@ -96,8 +87,23 @@ public class ActivityHandler extends HandlerThread {
     public ActivityHandler(Activity activity, String appToken,
             String environment, String logLevel, boolean eventBuffering) {
         super(LOGTAG, MIN_PRIORITY);
+
+        initActivityHandler(activity);
+
+        this.appToken = appToken;
+        this.environment = environment;
+        this.eventBuffering = eventBuffering;
+        logger.setLogLevelString(logLevel);
+
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.INIT_PRESET;
+        sessionHandler.sendMessage(message);
+    }
+
+    private void initActivityHandler(Activity activity) {
         setDaemon(true);
         start();
+
         TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
@@ -108,14 +114,10 @@ public class ActivityHandler extends HandlerThread {
 
         logger = AdjustFactory.getLogger();
 
-        this.appToken = appToken;
-        this.environment = environment;
-        this.eventBuffering = eventBuffering;
-        logger.setLogLevelString(logLevel);
-
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.INIT_PRESET;
-        sessionHandler.sendMessage(message);
+        String gpsAdid = Util.getGpsAdid(context);
+        if (gpsAdid == null) {
+            logger.info("Unable to get Google Play Services Advertising ID at start time");
+        }
     }
 
     public void setSdkPrefix(String sdkPrefx) {
