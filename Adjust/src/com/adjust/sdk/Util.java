@@ -25,6 +25,7 @@ import static com.adjust.sdk.Constants.XLARGE;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -47,9 +48,6 @@ import android.os.Build;
 import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-
-import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-
 
 /**
  * Collects utility functions used by Adjust.
@@ -352,17 +350,36 @@ public class Util {
     }
 
     public static String getGpsAdid(Context context) {
-        String gpsAdid = null;
         try {
-            AdvertisingIdClient.Info info = AdvertisingIdClient.getAdvertisingIdInfo(context);
-            if (!info.isLimitAdTrackingEnabled()) {
-                gpsAdid = info.getId();
+            Class AdvertisingIdClientClass = Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient");
+
+            Class[] cArg = new Class[1];
+            cArg[0] = Context.class;
+            Method getAdvertisingInfoMethod = AdvertisingIdClientClass.getMethod("getAdvertisingIdInfo", cArg);
+
+            Object AdvertisingInfoObject = getAdvertisingInfoMethod.invoke(null, context);
+
+            Class AdvertisingInfoClass = AdvertisingInfoObject.getClass();
+
+            Method isLimitedTrackingEnabledMethod = AdvertisingInfoClass.getMethod("isLimitAdTrackingEnabled");
+
+            Object isLimitedTrackingEnabledObject = isLimitedTrackingEnabledMethod.invoke(AdvertisingInfoObject);
+
+            Boolean isLimitedTrackingEnabled = (Boolean) isLimitedTrackingEnabledObject;
+
+            if (!isLimitedTrackingEnabled) {
+                Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
+
+                Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
+
+                String gpsAdid = (String) getIdObject;
             }
-        } catch (Exception e) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.error(String.format("Error getting Google Play Services advertising ID, (%s)", e.getMessage()));
+        }
+        catch (Exception e) {
+        }
+        catch (NoClassDefFoundError ncdffe) {
         }
 
-        return gpsAdid;
+        return null;
     }
 }

@@ -12,6 +12,7 @@ import com.adjust.sdk.ActivityHandler;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.Constants;
 import com.adjust.sdk.Logger.LogLevel;
 
 public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
@@ -92,7 +93,10 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.3.2", activityPackage.getClientSdk());
+            "android3.3.3", activityPackage.getClientSdk());
+
+        // check the server url
+        assertEquals(Constants.BASE_URL, "https://app.adjust.io");
 
         Map<String, String> parameters = activityPackage.getParameters();
 

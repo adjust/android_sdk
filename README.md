@@ -133,7 +133,7 @@ for **each** Activity of your app:
 - Add the `import` statement at the top of the file.
 - In your Activity's `onResume` method call `Adjust.onResume`. Create the
   method if needed.
-- In your Activity's `orPause` method call `Adjust.onPause`. Create the
+- In your Activity's `onPause` method call `Adjust.onPause`. Create the
   method if needed.
 
 After these steps your activity should look like this:
