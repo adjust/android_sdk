@@ -3,7 +3,7 @@
 //  Adjust
 //
 //  Created by keyboardsurfer on 2013-11-08.
-//  Copyright (c) 2012-2013 adeven. All rights reserved.
+//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 

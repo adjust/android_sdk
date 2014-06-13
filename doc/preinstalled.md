@@ -20,4 +20,4 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
 
 
 [README]: ../README.md
-[dashboard]: http://adjust.io
+[dashboard]: http://adjust.com

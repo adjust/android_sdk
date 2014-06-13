@@ -3,7 +3,7 @@
 //  Adjust
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
-//  Copyright (c) 2012-2013 adeven. All rights reserved.
+//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -68,13 +68,13 @@ public class Adjust {
     /**
      * Tell Adjust that a particular event has happened.
      * <p/>
-     * In your dashboard at http://adjust.io you can assign a callback URL to each
+     * In your dashboard at http://adjust.com you can assign a callback URL to each
      * event type. That URL will get called every time the event is triggered. On
      * top of that you can pass a set of parameters to the following method that
      * will be forwarded to these callbacks.
      *
      * @param eventToken The Event Token for this kind of event. They are created
-     *                   in the dashboard at http://adjust.io and should be six characters long.
+     *                   in the dashboard at http://adjust.com and should be six characters long.
      * @param parameters An optional dictionary containing the callback parameters.
      *                   Provide key-value-pairs to be forwarded to your callbacks.
      */

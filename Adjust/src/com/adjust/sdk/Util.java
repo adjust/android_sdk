@@ -3,7 +3,7 @@
 //  Adjust
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
-//  Copyright (c) 2012-2013 adeven. All rights reserved.
+//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 

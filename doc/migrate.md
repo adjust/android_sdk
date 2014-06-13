@@ -142,7 +142,7 @@ meaningful at all times! Especially if you are tracking revenue.
    becomes `12.3`).
 
 [README]: ../README.md
-[dashboard]: http://adjust.io
+[dashboard]: http://adjust.com
 [search]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/search.png
 [replace]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/replace.png
 [import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import2.png

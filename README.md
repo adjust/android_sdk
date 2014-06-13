@@ -1,7 +1,7 @@
 ## Summary
 
-This is the Android SDK of adjust.io™. You can read more about adjust.io™ at
-adjust.io.
+This is the Android SDK of adjust™. You can read more about adjust™ at
+adjust.com.
 
 ## Basic Installation
 
@@ -353,8 +353,8 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-[adjust.io]:   http://adjust.io
-[dashboard]:   http://adjust.io
+[adjust.com]:   http://adjust.com
+[dashboard]:   http://adjust.com
 [releases]:    https://github.com/adjust/adjust_android_sdk/releases
 [project]:     https://raw.github.com/adjust/adjust_sdk/master/Resources/android/project.png
 [android]:     https://raw.github.com/adjust/adjust_sdk/master/Resources/android/android.png
@@ -373,8 +373,8 @@ protected void onCreate(Bundle savedInstanceState) {
 
 The adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2013 adeven GmbH,
-http://www.adeven.com
+Copyright (c) 2012-2013 adjust GmbH,
+http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
