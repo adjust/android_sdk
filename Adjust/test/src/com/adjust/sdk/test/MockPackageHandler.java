@@ -62,6 +62,7 @@ public class MockPackageHandler implements IPackageHandler {
 
     @Override
     public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
-        // TODO: implement
+        testLogger.test(prefix + "finishedTrackingActivity");
+        testLogger.test(responseData.toString());
     }
 }
