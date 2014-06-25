@@ -3,7 +3,7 @@
 //  Adjust
 //
 //  Created by keyboardsurfer on 2013-11-08.
-//  Copyright (c) 2012-2013 adeven. All rights reserved.
+//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -19,7 +19,7 @@ public interface Constants {
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
     String BASE_URL   = "https://app.adjust.io";
-    String CLIENT_SDK = "android3.3.3";
+    String CLIENT_SDK = "android3.3.4";
     String LOGTAG     = "Adjust";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";

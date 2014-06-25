@@ -60,6 +60,26 @@ public class ResponseData {
         return trackerName;
     }
 
+    // network of the tracker
+    public String getNetwork() {
+        return network;
+    }
+
+    // campaign of the tracker
+    public String getCampaign() {
+        return campaign;
+    }
+
+    // adgroup of the tracker
+    public String getAdgroup() {
+        return adgroup;
+    }
+
+    // creative of the tracker
+    public String getCreative() {
+        return creative;
+    }
+
     // internals
 
     private ActivityKind activityKind = ActivityKind.UNKNOWN;
@@ -68,6 +88,10 @@ public class ResponseData {
     private String error;
     private String trackerToken;
     private String trackerName;
+    private String network;
+    private String campaign;
+    private String adgroup;
+    private String creative;
 
     public static ResponseData fromJson(String jsonString) {
         try {
@@ -77,6 +101,10 @@ public class ResponseData {
             data.error = jsonObject.optString("error", null);
             data.trackerToken = jsonObject.optString("tracker_token", null);
             data.trackerName = jsonObject.optString("tracker_name", null);
+            data.network = jsonObject.optString("network", null);
+            data.campaign = jsonObject.optString("campaign", null);
+            data.adgroup = jsonObject.optString("adgroup", null);
+            data.creative = jsonObject.optString("creative", null);
 
             return data;
         } catch (JSONException e) {
@@ -91,15 +119,22 @@ public class ResponseData {
         return data;
     }
 
+    @Override
     public String toString() {
         return String.format(Locale.US,
-                "[kind:%s success:%b willRetry:%b error:%s trackerToken:%s trackerName:%s]",
+                "[kind:%s success:%b willRetry:%b "
+                + "error:%s trackerToken:%s trackerName:%s "
+                + "network:%s campaign:%s adgroup:%s creative:%s]",
                 getActivityKindString(),
                 success,
                 willRetry,
                 Util.quote(error),
                 trackerToken,
-                Util.quote(trackerName));
+                Util.quote(trackerName),
+                Util.quote(network),
+                Util.quote(campaign),
+                Util.quote(adgroup),
+                Util.quote(creative));
     }
 
     public void setActivityKind(ActivityKind activityKind) {
@@ -131,6 +166,22 @@ public class ResponseData {
 
         if (!TextUtils.isEmpty(trackerName)) {
             responseDataDic.put("trackerName", trackerName);
+        }
+
+        if (!TextUtils.isEmpty(network)) {
+            responseDataDic.put("network", network);
+        }
+
+        if (!TextUtils.isEmpty(campaign)) {
+            responseDataDic.put("campaign", campaign);
+        }
+
+        if (!TextUtils.isEmpty(adgroup)) {
+            responseDataDic.put("adgroup", adgroup);
+        }
+
+        if (!TextUtils.isEmpty(creative)) {
+            responseDataDic.put("creative", creative);
         }
 
         return responseDataDic;

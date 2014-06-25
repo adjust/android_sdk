@@ -3,7 +3,7 @@
 //  Adjust
 //
 //  Created by Christian Wellenbrock on 2012-10-11.
-//  Copyright (c) 2012-2013 adeven. All rights reserved.
+//  Copyright (c) 2012-2014 adjust GmbH. All rights reserved.
 //  See the file MIT-LICENSE for copying permission.
 //
 
@@ -367,13 +367,17 @@ public class Util {
 
             Boolean isLimitedTrackingEnabled = (Boolean) isLimitedTrackingEnabledObject;
 
-            if (!isLimitedTrackingEnabled) {
-                Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
-
-                Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
-
-                String gpsAdid = (String) getIdObject;
+            if (isLimitedTrackingEnabled) {
+                return null;
             }
+
+            Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
+
+            Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
+
+            String gpsAdid = (String) getIdObject;
+
+            return gpsAdid;
         }
         catch (Exception e) {
         }

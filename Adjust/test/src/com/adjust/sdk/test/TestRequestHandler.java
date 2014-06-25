@@ -74,6 +74,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.INFO, "Tracked session"));
 
+        // calls delegate
+        assertTrue(mockLogger.toString(),
+                mockLogger.containsTestMessage("PackageHandler finishedTrackingActivity"));
+
+        // check the response data
+        assertTrue(mockLogger.toString(),
+                mockLogger.containsTestMessage("[kind:unknown success:true willRetry:false error:null trackerToken:token trackerName:name network:network campaign:campaign adgroup:adgroup creative:creative]"));
+
         // check that the package handler was called to send the next package
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler sendNextPackage"));
@@ -99,6 +107,37 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         // check that the package handler was called to close the failed package
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler closeFirstPackage"));
+    }
+
+    public void testResponseError() {
+        // set the mock http client to send an error response
+        mockHttpClient.setResponseError("testResponseError");
+
+        // send a default session package
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
+
+        // check that the http client was called
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("HttpClient execute HttpUriRequest request"));
+
+        // check the status received is not ok
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.ERROR, "Failed to track session. (testResponseError)"));
+
+        // calls delegate
+        assertTrue(mockLogger.toString(),
+                mockLogger.containsTestMessage("PackageHandler finishedTrackingActivity"));
+
+        // check the response data
+        assertTrue(mockLogger.toString(),
+                mockLogger.containsTestMessage("[kind:unknown success:false willRetry:false error:testResponseError trackerToken:null trackerName:null network:null campaign:null adgroup:null creative:null]"));
+
+        // check that the package handler was called to send the next package
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsTestMessage("PackageHandler sendNextPackage"));
+
+
     }
 
 }
