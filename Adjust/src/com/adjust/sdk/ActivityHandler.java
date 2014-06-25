@@ -113,11 +113,6 @@ public class ActivityHandler extends HandlerThread {
         enabled = true;
 
         logger = AdjustFactory.getLogger();
-
-        String gpsAdid = Util.getGpsAdid(context);
-        if (gpsAdid == null) {
-            logger.info("Unable to get Google Play Services Advertising ID at start time");
-        }
     }
 
     public void setSdkPrefix(String sdkPrefx) {
@@ -282,6 +277,11 @@ public class ActivityHandler extends HandlerThread {
         androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
+
+        String gpsAdid = Util.getGpsAdid(context);
+        if (gpsAdid == null) {
+            logger.info("Unable to get Google Play Services Advertising ID at start time");
+        }
 
         packageHandler = AdjustFactory.getPackageHandler(this, context, dropOfflineActivities);
 

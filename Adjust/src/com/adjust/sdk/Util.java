@@ -367,13 +367,17 @@ public class Util {
 
             Boolean isLimitedTrackingEnabled = (Boolean) isLimitedTrackingEnabledObject;
 
-            if (!isLimitedTrackingEnabled) {
-                Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
-
-                Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
-
-                String gpsAdid = (String) getIdObject;
+            if (isLimitedTrackingEnabled) {
+                return null;
             }
+
+            Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
+
+            Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
+
+            String gpsAdid = (String) getIdObject;
+
+            return gpsAdid;
         }
         catch (Exception e) {
         }
