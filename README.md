@@ -247,6 +247,8 @@ Every time your app tries to track a session, an event or some revenue, you can
 be notified about the success of that operation and receive additional
 information about the current install.
 
+Please make sure to consider [applicable attribution data policies.][attribution-data]
+
 The simplest way is to create a single anonymous listener for these notifications.
 
 - Open the source file of your main activity, find its `onResume` method and
@@ -367,7 +369,7 @@ protected void onCreate(Bundle savedInstanceState) {
 [activity]:    https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity4.png
 [log]:         https://raw.github.com/adjust/adjust_sdk/master/Resources/android/log4.png
 [referrer]:    doc/referrer.md
-
+[attribution-data]: https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 
 ## License
 
