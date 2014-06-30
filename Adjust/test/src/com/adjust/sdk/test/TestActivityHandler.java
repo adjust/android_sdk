@@ -93,7 +93,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.3.4", activityPackage.getClientSdk());
+            "android3.3.5", activityPackage.getClientSdk());
 
         // check the server url
         assertEquals(Constants.BASE_URL, "https://app.adjust.io");
