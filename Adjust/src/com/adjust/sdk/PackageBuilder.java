@@ -258,8 +258,8 @@ public class PackageBuilder {
         addString(parameters, "android_uuid", uuid);
         addString(parameters, "fb_id", fbAttributionId);
         addString(parameters, "environment", environment);
-        String gpsAdid = Util.getGpsAdid(context);
-        addString(parameters, "gps_adid", gpsAdid);
+        String playAdId = Util.getPlayAdId(context);
+        addString(parameters, "gps_adid", playAdId);
 
         // session related (used for events as well)
         addInt(parameters, "session_count", sessionCount);

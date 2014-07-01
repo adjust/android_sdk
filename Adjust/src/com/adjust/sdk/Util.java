@@ -349,7 +349,7 @@ public class Util {
         return dateFormat.format(date);
     }
 
-    public static String getGpsAdid(Context context) {
+    public static String getPlayAdId(Context context) {
         try {
             Class AdvertisingIdClientClass = Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient");
 
