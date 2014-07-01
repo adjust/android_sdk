@@ -1,4 +1,4 @@
-## Migrate your adjust SDK for Android to 3.3.4 from v2.1.x
+## Migrate your adjust SDK for Android to 3.3.5 from v2.1.x
 
 We renamed the main class `com.adeven.adjustio.AdjustIo` to
 `com.adjust.sdk.Adjust`. Follow these steps to update all adjust SDK calls.
@@ -24,7 +24,7 @@ We renamed the main class `com.adeven.adjustio.AdjustIo` to
 4. In the same fashion, replace `adeven.adjustio` with `adjust.sdk` in all
    manifest files to update the package name of the `ReferrerReceiver`.
 
-5. Download version v3.3.4 and create a new Android project from the `Adjust` folder.
+5. Download version v3.3.5 and create a new Android project from the `Adjust` folder.
 
     ![][import]
 
@@ -36,7 +36,7 @@ We renamed the main class `com.adeven.adjustio.AdjustIo` to
 
 8. Build your project to confirm that everything is properly connected again.
 
-The adjust SDK v3.3.4 added delegate notifications. Check out the [README] for
+The adjust SDK v3.3.5 added delegate notifications. Check out the [README] for
 details.
 
 

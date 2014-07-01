@@ -93,7 +93,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.3.4", activityPackage.getClientSdk());
+            "android3.3.5", activityPackage.getClientSdk());
 
         // check the server url
         assertEquals(Constants.BASE_URL, "https://app.adjust.io");
@@ -334,6 +334,11 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // check the first event
         ActivityPackage activityPackage = mockPackageHandler.queue.get(1);
         Map<String, String> packageParameters = activityPackage.getParameters();
+
+        // check that it contains the information of the tracking being enabled
+        assertNotNull(activityPackage.getExtendedString(),
+            packageParameters.get("tracking_enabled"));
+
 
         // check the event count in the package parameters
         assertEquals(activityPackage.getExtendedString(),
