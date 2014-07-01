@@ -260,6 +260,8 @@ public class PackageBuilder {
         addString(parameters, "environment", environment);
         String playAdId = Util.getPlayAdId(context);
         addString(parameters, "gps_adid", playAdId);
+        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+        addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
 
         // session related (used for events as well)
         addInt(parameters, "session_count", sessionCount);
@@ -350,5 +352,15 @@ public class PackageBuilder {
         String jsonString = jsonObject.toString();
 
         addString(parameters, key, jsonString);
+    }
+
+    private void addBoolean(Map<String, String> parameters, String key, Boolean value) {
+        if (value == null) {
+            return;
+        }
+
+        int intValue = value? 1 : 0;
+
+        addInt(parameters, key, intValue);
     }
 }

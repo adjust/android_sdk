@@ -335,6 +335,11 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         ActivityPackage activityPackage = mockPackageHandler.queue.get(1);
         Map<String, String> packageParameters = activityPackage.getParameters();
 
+        // check that it contains the information of the tracking being enabled
+        assertNotNull(activityPackage.getExtendedString(),
+            packageParameters.get("tracking_enabled"));
+
+
         // check the event count in the package parameters
         assertEquals(activityPackage.getExtendedString(),
             1, Integer.parseInt(packageParameters.get("event_count")));
