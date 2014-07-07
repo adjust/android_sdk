@@ -45,7 +45,7 @@ public class MockHttpClient implements HttpClient {
         if (responseError != null)
             return getMockResponse(HttpStatus.SC_INTERNAL_SERVER_ERROR, "{ \"error\": \"" + responseError + "\"}");
         else
-            return getMockResponse(HttpStatus.SC_OK, "{ \"tracker_token\": \"token\", \"tracker_name\": \"name\", \"network\": \"network\", \"campaign\": \"campaign\", \"adgroup\": \"adgroup\", \"creative\": \"creative\"}");
+            return getMockResponse(HttpStatus.SC_OK, "{ \"tracker_token\": \"token\", \"tracker_name\": \"name\", \"network\": \"network\", \"campaign\": \"campaign\", \"adgroup\": \"adgroup\", \"creative\": \"creative\", \"deeplink\": \"testApp://\"}");
     }
 
     private HttpResponse getMockResponse(int statusCode, String responseData) throws IOException {

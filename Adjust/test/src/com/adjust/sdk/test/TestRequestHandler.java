@@ -85,6 +85,10 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         // check that the package handler was called to send the next package
         assertTrue(mockLogger.toString(),
             mockLogger.containsTestMessage("PackageHandler sendNextPackage"));
+
+        //  check the deep link from the response
+        assertTrue(mockLogger.toString(),
+            mockLogger.containsMessage(LogLevel.ERROR, "Unable to open deep link (testApp://)"));
     }
 
     public void testErrorSendPackage() {
