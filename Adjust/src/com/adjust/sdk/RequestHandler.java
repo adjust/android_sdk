@@ -32,6 +32,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -131,7 +132,8 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private void requestFinished(HttpResponse response, ActivityPackage activityPackage) {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
-        ResponseData responseData = ResponseData.fromJson(responseString);
+        JSONObject jsonObject = Util.buildJsonObject(responseString);
+        ResponseData responseData = ResponseData.fromJson(jsonObject, responseString);
 
         if (HttpStatus.SC_OK == statusCode) {
             // success

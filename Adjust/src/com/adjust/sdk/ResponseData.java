@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.text.TextUtils;
@@ -93,24 +92,24 @@ public class ResponseData {
     private String adgroup;
     private String creative;
 
-    public static ResponseData fromJson(String jsonString) {
-        try {
-            ResponseData data = new ResponseData();
-            JSONObject jsonObject = new JSONObject(jsonString);
+    public static ResponseData fromJson(JSONObject jsonObject, String jsonString) {
 
-            data.error = jsonObject.optString("error", null);
-            data.trackerToken = jsonObject.optString("tracker_token", null);
-            data.trackerName = jsonObject.optString("tracker_name", null);
-            data.network = jsonObject.optString("network", null);
-            data.campaign = jsonObject.optString("campaign", null);
-            data.adgroup = jsonObject.optString("adgroup", null);
-            data.creative = jsonObject.optString("creative", null);
-
-            return data;
-        } catch (JSONException e) {
+        if (jsonObject == null) {
             String error = String.format("Failed to parse json response: %s", jsonString.trim());
             return ResponseData.fromError(error);
         }
+
+        ResponseData data = new ResponseData();
+
+        data.error = jsonObject.optString("error", null);
+        data.trackerToken = jsonObject.optString("tracker_token", null);
+        data.trackerName = jsonObject.optString("tracker_name", null);
+        data.network = jsonObject.optString("network", null);
+        data.campaign = jsonObject.optString("campaign", null);
+        data.adgroup = jsonObject.optString("adgroup", null);
+        data.creative = jsonObject.optString("creative", null);
+
+        return data;
     }
 
     public static ResponseData fromError(String error) {
