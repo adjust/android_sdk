@@ -658,4 +658,21 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.DEBUG, "Reattribution {key=value, foo=bar}"));
     }
+
+    public void testFinishedTrackingActivity() {
+        Context context = activity.getApplicationContext();
+
+        // starting from a clean slate
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+
+        ActivityHandler activityHandler = new ActivityHandler(activity);
+        activityHandler.trackSubsessionStart();
+
+        activityHandler.finishedTrackingActivity(null, "testFinishedTrackingActivity://");
+
+        SystemClock.sleep(1000);
+
+        assertTrue(mockLogger.toString(), mockLogger.containsMessage(LogLevel.ERROR, "Unable to open deep link (testFinishedTrackingActivity://)"));
+
+    }
 }

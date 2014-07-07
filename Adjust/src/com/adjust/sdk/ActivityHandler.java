@@ -25,6 +25,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -33,10 +34,12 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -158,8 +161,8 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void finishedTrackingActivity(final ResponseData responseData) {
-        if (onFinishedListener == null) {
+    public void finishedTrackingActivity(final ResponseData responseData, final String deepLink) {
+        if (onFinishedListener == null && deepLink == null) {
             return;
         }
 
@@ -168,7 +171,8 @@ public class ActivityHandler extends HandlerThread {
             @Override
             public void run() {
                 try {
-                    onFinishedListener.onFinishedTracking(responseData);
+                    runDelegateMain(responseData);
+                    launchDeepLinkMain(deepLink);
                 } catch (NullPointerException e) {
                 }
             }
@@ -473,6 +477,34 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.sendFirstPackage();
 
         logger.debug(String.format("Reattribution %s", adjustDeepLinks.toString()));
+    }
+
+    private void runDelegateMain(ResponseData responseData) {
+        if (onFinishedListener == null) return;
+        if (responseData == null) return;
+        onFinishedListener.onFinishedTracking(responseData);
+    }
+
+    private void launchDeepLinkMain(String deepLink) {
+        if (deepLink == null) return;
+
+        Uri location = Uri.parse(deepLink);
+        Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
+        mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Verify it resolves
+        PackageManager packageManager = context.getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+
+        // Start an activity if it's safe
+        if (!isIntentSafe) {
+            logger.error(String.format("Unable to open deep link (%s)", deepLink));
+            return;
+        }
+
+        logger.info(String.format("Open deep link (%s)", deepLink));
+        context.startActivity(mapIntent);
     }
 
     private boolean canTrackEvent(PackageBuilder revenueBuilder) {

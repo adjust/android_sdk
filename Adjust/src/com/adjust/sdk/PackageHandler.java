@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -119,14 +121,22 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
     }
 
+    @Override
     public boolean dropsOfflineActivities() {
         return dropOfflineActivities;
     }
 
     @Override
-    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
+    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData, JSONObject jsonResponse) {
         responseData.setActivityKind(activityPackage.getActivityKind());
-        activityHandler.finishedTrackingActivity(responseData);
+
+        String deepLink = null;
+
+        if (jsonResponse != null) {
+            deepLink = jsonResponse.optString("deeplink", null);
+        }
+
+        activityHandler.finishedTrackingActivity(responseData, deepLink);
     }
 
     private static final class InternalHandler extends Handler {
@@ -279,5 +289,4 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
             e.printStackTrace();
         }
     }
-
 }

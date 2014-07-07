@@ -39,14 +39,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setHttpClient(mockHttpClient);
 
+        Context context = getActivity().getApplicationContext();
+
         // inject the mock package handler to our request handler
         requestHandler = new RequestHandler(mockPackageHandler);
 
         // it's necessary to sleep the activity for a while after each handler call
         // to let the internal queue act
         SystemClock.sleep(1000);
-
-        Context context = getActivity().getApplicationContext();
 
         // build a default session package
         PackageBuilder builder = new PackageBuilder(context);
