@@ -21,16 +21,16 @@ public interface Logger {
 
     public void setLogLevelString(String logLevelString);
 
-    public void verbose(String message);
+    public void verbose(String message, Object ...parameters);
 
-    public void debug(String message);
+    public void debug(String message, Object ...parameters);
 
-    public void info(String message);
+    public void info(String message, Object ...parameters);
 
-    public void warn(String message);
+    public void warn(String message, Object ...parameters);
 
-    public void error(String message);
+    public void error(String message, Object ...parameters);
 
-    public void Assert(String message);
+    public void Assert(String message, Object ...parameters);
 
 }
