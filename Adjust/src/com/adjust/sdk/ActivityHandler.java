@@ -90,13 +90,13 @@ public class ActivityHandler extends HandlerThread {
 
         initActivityHandler(activity);
 
-        this.appToken = appToken;
         this.environment = environment;
         this.eventBuffering = eventBuffering;
         logger.setLogLevelString(logLevel);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_PRESET;
+        message.obj = appToken;
         sessionHandler.sendMessage(message);
     }
 
@@ -230,10 +230,11 @@ public class ActivityHandler extends HandlerThread {
 
             switch (message.arg1) {
                 case INIT_BUNDLE:
-                    sessionHandler.initInternal(true);
+                    sessionHandler.initInternal(true, null);
                     break;
                 case INIT_PRESET:
-                    sessionHandler.initInternal(false);
+                    String appToken = (String) message.obj;
+                    sessionHandler.initInternal(false, appToken);
                     break;
                 case START:
                     sessionHandler.startInternal();
@@ -257,21 +258,22 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void initInternal(boolean fromBundle) {
+    private void initInternal(boolean fromBundle, String appToken) {
         if (fromBundle) {
-            processApplicationBundle();
+            appToken = processApplicationBundle();
         } else {
             setEnvironment(environment);
             setEventBuffering(eventBuffering);
         }
 
-        if (!canInit()) {
+        if (!canInit(appToken)) {
             return;
         }
 
         String macAddress = Util.getMacAddress(context);
         String macShort = macAddress.replaceAll(":", "");
 
+        this.appToken = appToken;
         macSha1 = Util.sha1(macAddress);
         macShortMd5 = Util.md5(macShort);
         androidId = Util.getAndroidId(context);
@@ -288,7 +290,7 @@ public class ActivityHandler extends HandlerThread {
         readActivityState();
     }
 
-    private boolean canInit() {
+    private boolean canInit(String appToken) {
         return checkAppTokenNotNull(appToken)
             && checkAppTokenLength(appToken)
             && checkContext(context)
@@ -642,18 +644,20 @@ public class ActivityHandler extends HandlerThread {
         return result;
     }
 
-    private void processApplicationBundle() {
+    private String processApplicationBundle() {
         Bundle bundle = getApplicationBundle();
         if (null == bundle) {
-            return;
+            return null;
         }
 
-        appToken = bundle.getString("AdjustAppToken");
+        String appToken = bundle.getString("AdjustAppToken");
         setEnvironment(bundle.getString("AdjustEnvironment"));
         setDefaultTracker(bundle.getString("AdjustDefaultTracker"));
         setEventBuffering(bundle.getBoolean("AdjustEventBuffering"));
         logger.setLogLevelString(bundle.getString("AdjustLogLevel"));
         setDropOfflineActivities(bundle.getBoolean("AdjustDropOfflineActivities"));
+
+        return appToken;
     }
 
     private void setEnvironment(String env) {
