@@ -288,6 +288,7 @@ interface:
     ActivityKind.SESSION
     ActivityKind.EVENT
     ActivityKind.REVENUE
+    ActivityKind.REATTRIBUTION
     ```
 
 - `String getActivityKindString()` human readable version of the activity kind. Possible values:
@@ -296,6 +297,7 @@ interface:
     session
     event
     revenue
+    reattribution
     ```
 
 - `boolean wasSuccess()` indicates whether or not the tracking attempt was
@@ -308,6 +310,14 @@ interface:
   request failed or response could not be parsed.
 - `String getTrackerName()` the tracker name of the current install. Is `null` if
   request failed or response could not be parsed.
+- `String getNetwork()` the network grouping level of the current install. Is `null` if
+  request failed, unavailable, or response could not be parsed.
+- `String getCampaign()` the campaign grouping level of the current install. Is `null` if
+  request failed, unavailable or response could not be parsed.
+- `String getAdgroup()` the ad group grouping level of the current install. Is `null` if
+  request failed, unavailable or response could not be parsed.
+- `String getCreative()` the creative grouping level of the current install. Is `null` if
+  request failed, unavailable or response could not be parsed.
 
 ### 12. Enable event buffering
 
