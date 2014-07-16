@@ -206,6 +206,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
 
         ActivityHandler activityHandler = new ActivityHandler(activity, "123456789012", "sandbox", "verbose", true);
+
         // start the first session
         activityHandler.trackSubsessionStart();
 
@@ -455,7 +456,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.containsMessage(LogLevel.ERROR, "Missing App Token."));
 
         // activity with invalid app token and environment
-        new ActivityHandler(activity, "12345678901", "notValid", "verbose", false);
+        activityHandler = new ActivityHandler(activity, "12345678901", "notValid", "verbose", false);
+        activityHandler.trackSubsessionStart();
+
         SystemClock.sleep(1000);
 
         assertTrue(mockLogger.toString(),
