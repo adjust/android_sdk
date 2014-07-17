@@ -166,7 +166,7 @@ public class PackageBuilder {
     public boolean isValidForRevenue() {
         if (amountInCents < 0.0) {
             Logger logger = AdjustFactory.getLogger();
-            logger.error(String.format(Locale.US, "Invalid amount %f", amountInCents));
+            logger.error("Invalid amount %f", amountInCents);
             return false;
         }
         if (eventToken == null) {
@@ -233,7 +233,7 @@ public class PackageBuilder {
     private boolean isEventTokenValid() {
         if (6 != eventToken.length()) {
             Logger logger = AdjustFactory.getLogger();
-            logger.error(String.format("Malformed Event Token '%s'", eventToken));
+            logger.error("Malformed Event Token '%s'", eventToken);
             return false;
         }
         return true;

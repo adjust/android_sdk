@@ -93,7 +93,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check the Sdk version is being tested
         assertEquals(activityPackage.getExtendedString(),
-            "android3.3.6", activityPackage.getClientSdk());
+            "android3.4.0", activityPackage.getClientSdk());
 
         // check the server url
         assertEquals(Constants.BASE_URL, "https://app.adjust.io");
@@ -657,5 +657,22 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // check that sent the reattribution package
         assertTrue(mockLogger.toString(),
             mockLogger.containsMessage(LogLevel.DEBUG, "Reattribution {key=value, foo=bar}"));
+    }
+
+    public void testFinishedTrackingActivity() {
+        Context context = activity.getApplicationContext();
+
+        // starting from a clean slate
+        mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
+
+        ActivityHandler activityHandler = new ActivityHandler(activity);
+        activityHandler.trackSubsessionStart();
+
+        activityHandler.finishedTrackingActivity(null, "testFinishedTrackingActivity://");
+
+        SystemClock.sleep(1000);
+
+        assertTrue(mockLogger.toString(), mockLogger.containsMessage(LogLevel.ERROR, "Unable to open deep link (testFinishedTrackingActivity://)"));
+
     }
 }

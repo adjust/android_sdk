@@ -3,6 +3,8 @@ package com.adjust.sdk.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.IPackageHandler;
 import com.adjust.sdk.ResponseData;
@@ -61,7 +63,7 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData) {
+    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData, JSONObject jsonResponse) {
         testLogger.test(prefix + "finishedTrackingActivity");
         testLogger.test(responseData.toString());
     }

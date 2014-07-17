@@ -104,8 +104,8 @@ public class ActivityState implements Serializable {
             // add new fields here
         } catch (Exception e) {
             Logger logger = AdjustFactory.getLogger();
-            logger.debug(String.format("Unable to read new field in migration device with error (%s)",
-                    e.getMessage()));
+            logger.debug("Unable to read new field in migration device with error (%s)",
+                    e.getMessage());
         }
 
         // create UUID for migrating devices

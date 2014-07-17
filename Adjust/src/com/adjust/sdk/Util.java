@@ -34,6 +34,9 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -403,5 +406,16 @@ public class Util {
         Object AdvertisingInfoObject = getAdvertisingInfoMethod.invoke(null, context);
 
         return AdvertisingInfoObject;
+    }
+
+    public static JSONObject buildJsonObject(String jsonString) {
+        JSONObject jsonObject = null;
+
+        try {
+            jsonObject = new JSONObject(jsonString);
+        } catch (JSONException e){
+        }
+
+        return jsonObject;
     }
 }

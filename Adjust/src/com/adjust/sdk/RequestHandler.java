@@ -32,6 +32,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONObject;
 
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -54,13 +55,11 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
         this.logger = AdjustFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
-
         this.packageHandler = packageHandler;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
-
     }
 
     @Override
@@ -131,7 +130,8 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private void requestFinished(HttpResponse response, ActivityPackage activityPackage) {
         int statusCode = response.getStatusLine().getStatusCode();
         String responseString = parseResponse(response);
-        ResponseData responseData = ResponseData.fromJson(responseString);
+        JSONObject jsonResponse = Util.buildJsonObject(responseString);
+        ResponseData responseData = ResponseData.fromJson(jsonResponse, responseString);
 
         if (HttpStatus.SC_OK == statusCode) {
             // success
@@ -139,10 +139,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             logger.info(activityPackage.getSuccessMessage());
         } else {
             // wrong status code
-            logger.error(String.format("%s. (%s)", activityPackage.getFailureMessage(), responseData.getError()));
+            logger.error("%s. (%s)", activityPackage.getFailureMessage(), responseData.getError());
         }
 
-        packageHandler.finishedTrackingActivity(activityPackage, responseData);
+        packageHandler.finishedTrackingActivity(activityPackage, responseData, jsonResponse);
         packageHandler.sendNextPackage();
     }
 
@@ -153,7 +153,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             out.close();
             return out.toString().trim();
         } catch (Exception e) {
-            logger.error(String.format("Failed to parse response (%s)", e));
+            logger.error("Failed to parse response (%s)", e);
             return "Failed to parse response";
         }
     }
@@ -163,11 +163,11 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         final String packageMessage = activityPackage.getFailureMessage();
         final String handlerMessage = packageHandler.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
-        logger.error(String.format("%s. (%s) %s", packageMessage, reasonString, handlerMessage));
+        logger.error("%s. (%s) %s", packageMessage, reasonString, handlerMessage);
 
         ResponseData responseData = ResponseData.fromError(reasonString);
         responseData.setWillRetry(!packageHandler.dropsOfflineActivities());
-        packageHandler.finishedTrackingActivity(activityPackage, responseData);
+        packageHandler.finishedTrackingActivity(activityPackage, responseData, null);
         packageHandler.closeFirstPackage();
     }
 
@@ -175,10 +175,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
-        logger.error(String.format("%s. (%s)", failureMessage, reasonString));
+        logger.error("%s. (%s)", failureMessage, reasonString);
 
         ResponseData responseData = ResponseData.fromError(reasonString);
-        packageHandler.finishedTrackingActivity(activityPackage, responseData);
+        packageHandler.finishedTrackingActivity(activityPackage, responseData, null);
         packageHandler.sendNextPackage();
     }
 

@@ -9,9 +9,11 @@
 
 package com.adjust.sdk;
 
-import java.util.Locale;
-import android.util.Log;
 import static com.adjust.sdk.Constants.LOGTAG;
+
+import java.util.Locale;
+
+import android.util.Log;
 
 public class LogCatLogger implements Logger {
 
@@ -32,48 +34,47 @@ public class LogCatLogger implements Logger {
             try {
                 setLogLevel(LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
             } catch (IllegalArgumentException iae) {
-                error(String.format("Malformed logLevel '%s', falling back to 'info'", logLevelString));
+                error("Malformed logLevel '%s', falling back to 'info'", logLevelString);
             }
         }
     }
 
     @Override
-    public void verbose(String message) {
+    public void verbose(String message, Object ...parameters) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
-            Log.v(LOGTAG, message);
+            Log.v(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void debug(String message) {
+    public void debug(String message, Object ...parameters) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
-            Log.d(LOGTAG, message);
+            Log.d(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void info(String message) {
+    public void info(String message, Object ...parameters) {
         if (logLevel.androidLogLevel <= Log.INFO) {
-            Log.i(LOGTAG, message);
+            Log.i(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void warn(String message) {
+    public void warn(String message, Object ...parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
-            Log.w(LOGTAG, message);
+            Log.w(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void error(String message) {
+    public void error(String message, Object ...parameters) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
-            Log.e(LOGTAG, message);
+            Log.e(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void Assert(String message) {
-        Log.println(Log.ASSERT, LOGTAG, message);
+    public void Assert(String message, Object ...parameters) {
     }
 }
