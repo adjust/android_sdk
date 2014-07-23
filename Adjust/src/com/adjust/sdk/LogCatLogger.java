@@ -76,5 +76,6 @@ public class LogCatLogger implements Logger {
 
     @Override
     public void Assert(String message, Object ...parameters) {
+        Log.println(Log.ASSERT, LOGTAG, String.format(message, parameters));
     }
 }
