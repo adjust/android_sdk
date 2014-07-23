@@ -25,7 +25,6 @@ import static com.adjust.sdk.Constants.XLARGE;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -352,61 +351,6 @@ public class Util {
         return dateFormat.format(date);
     }
 
-    public static String getPlayAdId(Context context) {
-        try {
-            Object AdvertisingInfoObject = getPlayAdvertisingInfoObject(context);
-
-            Class AdvertisingInfoClass = AdvertisingInfoObject.getClass();
-
-            Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
-
-            Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
-
-            String playAdid = (String) getIdObject;
-
-            return playAdid;
-        }
-        catch (Exception e) {
-        }
-        catch (NoClassDefFoundError ncdffe) {
-        }
-
-        return null;
-    }
-
-    public static boolean isPlayTrackingEnabled(Context context) {
-        try {
-            Object AdvertisingInfoObject = getPlayAdvertisingInfoObject(context);
-
-            Class AdvertisingInfoClass = AdvertisingInfoObject.getClass();
-
-            Method isLimitedTrackingEnabledMethod = AdvertisingInfoClass.getMethod("isLimitAdTrackingEnabled");
-
-            Object isLimitedTrackingEnabledObject = isLimitedTrackingEnabledMethod.invoke(AdvertisingInfoObject);
-
-            Boolean isLimitedTrackingEnabled = (Boolean) isLimitedTrackingEnabledObject;
-
-            return !isLimitedTrackingEnabled;
-        }
-        catch (Exception e) {
-        }
-        catch (NoClassDefFoundError ncdffe) {
-        }
-
-        return false;
-    }
-
-    private static Object getPlayAdvertisingInfoObject(Context context) throws Exception {
-        Class AdvertisingIdClientClass = Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient");
-
-        Class[] cArg = new Class[1];
-        cArg[0] = Context.class;
-        Method getAdvertisingInfoMethod = AdvertisingIdClientClass.getMethod("getAdvertisingIdInfo", cArg);
-
-        Object AdvertisingInfoObject = getAdvertisingInfoMethod.invoke(null, context);
-
-        return AdvertisingInfoObject;
-    }
 
     public static JSONObject buildJsonObject(String jsonString) {
         JSONObject jsonObject = null;
@@ -417,5 +361,13 @@ public class Util {
         }
 
         return jsonObject;
+    }
+
+    public static String getPlayAdId(Context context) {
+        return Reflection.getPlayAdId(context);
+    }
+
+    public static Boolean isPlayTrackingEnabled(Context context) {
+        return Reflection.isPlayTrackingEnabled(context);
     }
 }
