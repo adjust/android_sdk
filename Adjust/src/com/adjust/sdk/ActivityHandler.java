@@ -273,19 +273,20 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        String macAddress = Util.getMacAddress(context);
-        String macShort = macAddress.replaceAll(":", "");
-
         this.appToken = appToken;
-        macSha1 = Util.sha1(macAddress);
-        macShortMd5 = Util.md5(macShort);
-        androidId = Util.getAndroidId(context);
         fbAttributionId = Util.getAttributionId(context);
         userAgent = Util.getUserAgent(context);
 
         String playAdId = Util.getPlayAdId(context);
         if (playAdId == null) {
             logger.info("Unable to get Google Play Services Advertising ID at start time");
+        }
+
+        if  (!Util.isGooglePlayServicesAvailable(context)) {
+            String macAddress = Util.getMacAddress(context);
+            macSha1 = Util.getMacSha1(macAddress);
+            macShortMd5 = Util.getMacShortMd5(macAddress);
+            androidId = Util.getAndroidId(context);
         }
 
         packageHandler = AdjustFactory.getPackageHandler(this, context, dropOfflineActivities);
