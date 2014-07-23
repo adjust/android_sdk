@@ -89,9 +89,14 @@
     <!-- version-tag: 1 -->
     <import file="${sdk.dir}/tools/ant/build.xml" />
 
-	<target name="jar">
-		<jar destfile="adjust-lib.jar" basedir="bin/classes/">
-			<include name="com/**" />
-		</jar>
-	</target>
+    <target name="jar">
+        <jar destfile="adjust-lib.jar" basedir="bin/classes/">
+            <include name="com/**" />
+        </jar>
+    </target>
+    <target name="jar-sources">
+        <jar destfile="adjust-lib-sources.jar" basedir="src/">
+            <include name="**/*.java" />
+        </jar>
+    </target>
 </project>
