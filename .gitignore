@@ -64,5 +64,4 @@ build/
 .jira-url
 atlassian-ide-plugin.xml
 
-# add exception of google play services jar
-!google-play-services.jar
+# add exception for private libraries 

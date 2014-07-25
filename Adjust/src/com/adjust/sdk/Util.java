@@ -22,10 +22,6 @@ import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.UNKNOWN;
 import static com.adjust.sdk.Constants.XLARGE;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -46,9 +42,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.provider.Settings.Secure;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
@@ -200,39 +194,6 @@ public class Util {
         return UUID.randomUUID().toString();
     }
 
-    protected static String getMacAddress(Context context) {
-        final String rawAddress = getRawMacAddress(context);
-        final String upperAddress = rawAddress.toUpperCase(Locale.US);
-        return sanitizeString(upperAddress);
-    }
-
-    private static String getRawMacAddress(Context context) {
-        // android devices should have a wlan address
-        final String wlanAddress = loadAddress("wlan0");
-        if (wlanAddress != null) {
-            return wlanAddress;
-        }
-
-        // emulators should have an ethernet address
-        final String ethAddress = loadAddress("eth0");
-        if (ethAddress != null) {
-            return ethAddress;
-        }
-
-        // query the wifi manager (requires the ACCESS_WIFI_STATE permission)
-        try {
-            final WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            final String wifiAddress = wifiManager.getConnectionInfo().getMacAddress();
-            if (wifiAddress != null) {
-                return wifiAddress;
-            }
-        } catch (Exception e) {
-            /* no-op */
-        }
-
-        return "";
-    }
-
     // removes spaces and replaces empty string with "unknown"
     private static String sanitizeString(final String string) {
         return sanitizeString(string, UNKNOWN);
@@ -254,31 +215,6 @@ public class Util {
         }
 
         return result;
-    }
-
-    protected static String loadAddress(final String interfaceName) {
-        try {
-            final String filePath = "/sys/class/net/" + interfaceName + "/address";
-            final StringBuilder fileData = new StringBuilder(1000);
-            final BufferedReader reader = new BufferedReader(new FileReader(filePath), 1024);
-            final char[] buf = new char[1024];
-            int numRead;
-
-            String readData;
-            while ((numRead = reader.read(buf)) != -1) {
-                readData = String.valueOf(buf, 0, numRead);
-                fileData.append(readData);
-            }
-
-            reader.close();
-            return fileData.toString();
-        } catch (IOException e) {
-            return null;
-        }
-    }
-
-    protected static String getAndroidId(final Context context) {
-        return Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
     }
 
     protected static String getAttributionId(final Context context) {
@@ -305,32 +241,6 @@ public class Util {
         }
     }
 
-    protected static String sha1(final String text) {
-        return hash(text, SHA1);
-    }
-
-    protected static String md5(final String text) {
-        return hash(text, MD5);
-    }
-
-    private static String hash(final String text, final String method) {
-        try {
-            final byte[] bytes = text.getBytes(ENCODING);
-            final MessageDigest mesd = MessageDigest.getInstance(method);
-            mesd.update(bytes, 0, bytes.length);
-            final byte[] hash = mesd.digest();
-            return convertToHex(hash);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    private static String convertToHex(final byte[] bytes) {
-        final BigInteger bigInt = new BigInteger(1, bytes);
-        final String formatString = "%0" + (bytes.length << 1) + "x";
-        return String.format(formatString, bigInt);
-    }
-
     public static String quote(String string) {
         if (string == null) {
             return null;
@@ -352,61 +262,6 @@ public class Util {
         return dateFormat.format(date);
     }
 
-    public static String getPlayAdId(Context context) {
-        try {
-            Object AdvertisingInfoObject = getPlayAdvertisingInfoObject(context);
-
-            Class AdvertisingInfoClass = AdvertisingInfoObject.getClass();
-
-            Method getIdMethod = AdvertisingInfoClass.getMethod("getId");
-
-            Object getIdObject = getIdMethod.invoke(AdvertisingInfoObject);
-
-            String playAdid = (String) getIdObject;
-
-            return playAdid;
-        }
-        catch (Exception e) {
-        }
-        catch (NoClassDefFoundError ncdffe) {
-        }
-
-        return null;
-    }
-
-    public static boolean isPlayTrackingEnabled(Context context) {
-        try {
-            Object AdvertisingInfoObject = getPlayAdvertisingInfoObject(context);
-
-            Class AdvertisingInfoClass = AdvertisingInfoObject.getClass();
-
-            Method isLimitedTrackingEnabledMethod = AdvertisingInfoClass.getMethod("isLimitAdTrackingEnabled");
-
-            Object isLimitedTrackingEnabledObject = isLimitedTrackingEnabledMethod.invoke(AdvertisingInfoObject);
-
-            Boolean isLimitedTrackingEnabled = (Boolean) isLimitedTrackingEnabledObject;
-
-            return !isLimitedTrackingEnabled;
-        }
-        catch (Exception e) {
-        }
-        catch (NoClassDefFoundError ncdffe) {
-        }
-
-        return false;
-    }
-
-    private static Object getPlayAdvertisingInfoObject(Context context) throws Exception {
-        Class AdvertisingIdClientClass = Class.forName("com.google.android.gms.ads.identifier.AdvertisingIdClient");
-
-        Class[] cArg = new Class[1];
-        cArg[0] = Context.class;
-        Method getAdvertisingInfoMethod = AdvertisingIdClientClass.getMethod("getAdvertisingIdInfo", cArg);
-
-        Object AdvertisingInfoObject = getAdvertisingInfoMethod.invoke(null, context);
-
-        return AdvertisingInfoObject;
-    }
 
     public static JSONObject buildJsonObject(String jsonString) {
         JSONObject jsonObject = null;
@@ -417,5 +272,70 @@ public class Util {
         }
 
         return jsonObject;
+    }
+
+    public static String getPlayAdId(Context context) {
+        return Reflection.getPlayAdId(context);
+    }
+
+    public static Boolean isPlayTrackingEnabled(Context context) {
+        return Reflection.isPlayTrackingEnabled(context);
+    }
+
+    public static boolean isGooglePlayServicesAvailable(Context context) {
+        return Reflection.isGooglePlayServicesAvailable(context);
+    }
+
+    public static String getMacAddress(Context context) {
+        return Reflection.getMacAddress(context);
+    }
+
+    public static String getMacSha1(String macAddress) {
+        if (macAddress == null) {
+            return null;
+        }
+        String macSha1 = sha1(macAddress);
+
+        return macSha1;
+    }
+
+    public static String getMacShortMd5(String macAddress) {
+        if (macAddress == null) {
+            return null;
+        }
+        String macShort = macAddress.replaceAll(":", "");
+        String macShortMd5 = md5(macShort);
+
+        return macShortMd5;
+    }
+
+    public static String getAndroidId(Context context) {
+        return Reflection.getAndroidId(context);
+    }
+
+    private static String sha1(final String text) {
+        return hash(text, SHA1);
+    }
+
+    private static String md5(final String text) {
+        return hash(text, MD5);
+    }
+
+    private static String hash(final String text, final String method) {
+        try {
+            final byte[] bytes = text.getBytes(ENCODING);
+            final MessageDigest mesd = MessageDigest.getInstance(method);
+            mesd.update(bytes, 0, bytes.length);
+            final byte[] hash = mesd.digest();
+            return convertToHex(hash);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private static String convertToHex(final byte[] bytes) {
+        final BigInteger bigInt = new BigInteger(1, bytes);
+        final String formatString = "%0" + (bytes.length << 1) + "x";
+        return String.format(formatString, bigInt);
     }
 }
