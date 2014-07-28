@@ -20,7 +20,7 @@ public class Reflection {
         }
     }
 
-    public static boolean isPlayTrackingEnabled(Context context) {
+    public static Boolean isPlayTrackingEnabled(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
 
@@ -29,7 +29,7 @@ public class Reflection {
             return !isLimitedTrackingEnabled;
         }
         catch (Throwable t) {
-            return false;
+            return null;
         }
     }
 
