@@ -33,11 +33,8 @@ public class Adjust {
      * @param activity The activity that has just resumed.
      */
     public static void onResume(Activity activity) {
-        if (null == activityHandler) {
-            activityHandler = new ActivityHandler(activity);
-        }
-        logger = AdjustFactory.getLogger();
-        activityHandler.trackSubsessionStart();
+       startActivityHandler(activity);
+       activityHandler.trackSubsessionStart();
     }
 
     /**
@@ -149,14 +146,9 @@ public class Adjust {
         return false;
     }
 
-    public static void appWillOpenUrl(Uri url) {
-        try {
-            activityHandler.readOpenUrl(url);
-        } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-
+    public static void appWillOpenUrl(Activity activity, Uri url) {
+        startActivityHandler(activity);
+        activityHandler.readOpenUrl(url);
     }
 
 
@@ -176,4 +168,10 @@ public class Adjust {
     private static ActivityHandler activityHandler;
     private static Logger logger;
 
+    private static void startActivityHandler(Activity activity) {
+        if (null == activityHandler) {
+            activityHandler = new ActivityHandler(activity);
+        }
+        logger = AdjustFactory.getLogger();
+    }
 }
