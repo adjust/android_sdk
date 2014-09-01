@@ -45,11 +45,10 @@ public class Adjust {
      */
     public static void onPause() {
         try {
-            logger.debug("onPause");
+            getLogger().debug("onPause");
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -57,8 +56,7 @@ public class Adjust {
         try {
             activityHandler.setOnFinishedListener(listener);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -83,8 +81,7 @@ public class Adjust {
         try {
             activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -114,8 +111,7 @@ public class Adjust {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -128,8 +124,7 @@ public class Adjust {
         try {
             activityHandler.setEnabled(enabled);
         } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -140,8 +135,7 @@ public class Adjust {
         try {
             return activityHandler.isEnabled();
         } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
         return false;
     }
@@ -166,12 +160,13 @@ public class Adjust {
      * Every activity will get forwarded to this handler to be processed in the background.
      */
     private static ActivityHandler activityHandler;
-    private static Logger logger;
+    private static Logger getLogger() {
+        return AdjustFactory.getLogger();
+    }
 
     private static void startActivityHandler(Activity activity) {
         if (null == activityHandler) {
             activityHandler = new ActivityHandler(activity);
         }
-        logger = AdjustFactory.getLogger();
     }
 }
