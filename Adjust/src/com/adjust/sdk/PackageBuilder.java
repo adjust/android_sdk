@@ -51,7 +51,8 @@ public class PackageBuilder {
     private Map<String, String> callbackParameters;
 
     // reattributions
-    private Map<String, String> deepLinkParameters;
+    private Map<String, String> deeplinkParameters;
+    private long                deeplinkTime;
 
     public PackageBuilder(Context context)
     {
@@ -150,8 +151,12 @@ public class PackageBuilder {
         this.callbackParameters = callbackParameters;
     }
 
-    public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
-        this.deepLinkParameters = deepLinkParameters;
+    public void setDeeplinkParameters(Map<String, String> deepLinkParameters) {
+        this.deeplinkParameters = deepLinkParameters;
+    }
+
+    public void setDeeplinkTime(long time) {
+        this.deeplinkTime = time;
     }
 
     public boolean isValidForEvent() {
@@ -219,7 +224,6 @@ public class PackageBuilder {
 
     public ActivityPackage buildReattributionPackage() {
         Map<String, String> parameters = getDefaultParameters();
-        addMapJson(parameters, "deeplink_parameters", deepLinkParameters);
 
         ActivityPackage reattributionPackage = getDefaultActivityPackage();
         reattributionPackage.setPath("/reattribute");
@@ -269,6 +273,10 @@ public class PackageBuilder {
         addDuration(parameters, "session_length", sessionLength);
         addDuration(parameters, "time_spent", timeSpent);
 
+        // reatributions
+        addMapJson(parameters, "deeplink_parameters", deeplinkParameters);
+        addDate(parameters, "deeplink_time", deeplinkTime);
+
         return parameters;
     }
 
@@ -314,7 +322,7 @@ public class PackageBuilder {
     }
 
     private void addDate(Map<String, String> parameters, String key, long value) {
-        if (value < 0) {
+        if (value <= 0) {
             return;
         }
 
