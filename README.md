@@ -58,6 +58,14 @@ aren't present already.
 
 ![][permissions]
 
+If you are using Proguard, add these lines to your Proguard file:
+
+````
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.ads.identifier.** { *; }
+```
+
 ### 5. Add Adjust settings
 
 Still in the `AndroidManifest.xml`, add the following `meta-data` tags inside
