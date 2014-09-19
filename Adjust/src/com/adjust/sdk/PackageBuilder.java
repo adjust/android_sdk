@@ -33,6 +33,7 @@ public class PackageBuilder {
     private String clientSdk;
     private String uuid;
     private String environment;
+    private Map<String, String> pluginsKeys;
 
     // sessions
     private int    sessionCount;
@@ -154,6 +155,10 @@ public class PackageBuilder {
         this.deepLinkParameters = deepLinkParameters;
     }
 
+    public void setPluginKeys(Map<String, String> pluginKeys) {
+        this.pluginsKeys = pluginKeys;
+    }
+
     public boolean isValidForEvent() {
         if (null == eventToken) {
             Logger logger = AdjustFactory.getLogger();
@@ -262,6 +267,7 @@ public class PackageBuilder {
         addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+        fillPluginKeys(parameters);
 
         // session related (used for events as well)
         addInt(parameters, "session_count", sessionCount);
@@ -270,6 +276,16 @@ public class PackageBuilder {
         addDuration(parameters, "time_spent", timeSpent);
 
         return parameters;
+    }
+
+    private void fillPluginKeys(Map<String, String> parameters) {
+        if (pluginsKeys == null) {
+            return;
+        }
+
+        for (Map.Entry<String, String> pluginEntry : pluginsKeys.entrySet()) {
+            addString(parameters, pluginEntry.getKey(), pluginEntry.getValue());
+        }
     }
 
     private void injectEventParameters(Map<String, String> parameters) {
