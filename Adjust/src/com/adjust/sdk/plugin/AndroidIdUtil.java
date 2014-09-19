@@ -1,4 +1,4 @@
-package com.adjust.sdk.deviceIds;
+package com.adjust.sdk.plugin;
 
 import android.content.Context;
 import android.provider.Settings.Secure;

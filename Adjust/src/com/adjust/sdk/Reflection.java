@@ -53,7 +53,7 @@ public class Reflection {
     public static String getMacAddress(Context context) {
         try {
             String macSha1 = (String) invokeStaticMethod(
-                    "com.adjust.sdk.deviceIds.MacAddressUtil",
+                    "com.adjust.sdk.plugin.MacAddressUtil",
                     "getMacAddress",
                     new Class[] {Context.class}, context
             );
@@ -67,7 +67,7 @@ public class Reflection {
 
     public static String getAndroidId(Context context) {
         try {
-            String androidId = (String) invokeStaticMethod("com.adjust.sdk.deviceIds.AndroidIdUtil", "getAndroidId"
+            String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
                     ,new Class[] {Context.class}, context);
 
             return androidId;
