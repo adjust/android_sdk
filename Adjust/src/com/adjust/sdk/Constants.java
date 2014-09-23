@@ -46,5 +46,5 @@ public interface Constants {
     String SHA1     = "SHA-1";
 
     // List of known plugins, possibly not active
-    List<String> PLUGINS = Arrays.asList();
+    List<String> PLUGINS = Arrays.asList("com.adjust.sdk.plugin.Vulcun");
 }

@@ -676,7 +676,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private String processApplicationBundle() {
-        Bundle bundle = getApplicationBundle();
+        Bundle bundle = Util.getApplicationBundle(this.context, logger);
         if (null == bundle) {
             return null;
         }
@@ -730,20 +730,6 @@ public class ActivityHandler extends HandlerThread {
         if (dropOfflineActivities) {
             logger.info("Offline activities will get dropped");
         }
-    }
-
-    private Bundle getApplicationBundle() {
-        final ApplicationInfo applicationInfo;
-        try {
-            String packageName = context.getPackageName();
-            applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            return applicationInfo.metaData;
-        } catch (NameNotFoundException e) {
-            logger.error("ApplicationInfo not found");
-        } catch (Exception e) {
-            logger.error("Failed to get ApplicationBundle (%s)", e);
-        }
-        return null;
     }
 
     private boolean checkContext(Context context) {

@@ -322,7 +322,7 @@ public class Util {
         return Reflection.getAndroidId(context);
     }
 
-    private static String sha1(final String text) {
+    public static String sha1(final String text) {
         return hash(text, SHA1);
     }
 
@@ -331,15 +331,16 @@ public class Util {
     }
 
     private static String hash(final String text, final String method) {
+        String hashString = null;
         try {
             final byte[] bytes = text.getBytes(ENCODING);
             final MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
             final byte[] hash = mesd.digest();
-            return convertToHex(hash);
+            hashString = convertToHex(hash);
         } catch (Exception e) {
-            return null;
         }
+        return hashString;
     }
 
     private static String convertToHex(final byte[] bytes) {
@@ -376,5 +377,19 @@ public class Util {
         }
 
         return plugins;
+    }
+
+    public static Bundle getApplicationBundle(Context context, Logger logger) {
+        final ApplicationInfo applicationInfo;
+        try {
+            String packageName = context.getPackageName();
+            applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            return applicationInfo.metaData;
+        } catch (NameNotFoundException e) {
+            logger.error("ApplicationInfo not found");
+        } catch (Exception e) {
+            logger.error("Failed to get ApplicationBundle (%s)", e);
+        }
+        return null;
     }
 }
