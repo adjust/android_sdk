@@ -23,7 +23,7 @@ public interface Constants {
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
     String BASE_URL   = "https://app.adjust.io";
-    String CLIENT_SDK = "android3.5.0";
+    String CLIENT_SDK = "android3.6.0";
     String LOGTAG     = "Adjust";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
