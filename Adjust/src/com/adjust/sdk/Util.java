@@ -17,6 +17,7 @@ import static com.adjust.sdk.Constants.LOW;
 import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.MEDIUM;
 import static com.adjust.sdk.Constants.NORMAL;
+import static com.adjust.sdk.Constants.PLUGINS;
 import static com.adjust.sdk.Constants.SHA1;
 import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.UNKNOWN;
@@ -25,7 +26,11 @@ import static com.adjust.sdk.Constants.XLARGE;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +40,7 @@ import org.json.JSONObject;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -43,8 +49,11 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+
+import com.adjust.sdk.plugin.Plugin;
 
 /**
  * Collects utility functions used by Adjust.
@@ -313,7 +322,7 @@ public class Util {
         return Reflection.getAndroidId(context);
     }
 
-    private static String sha1(final String text) {
+    public static String sha1(final String text) {
         return hash(text, SHA1);
     }
 
@@ -322,20 +331,65 @@ public class Util {
     }
 
     private static String hash(final String text, final String method) {
+        String hashString = null;
         try {
             final byte[] bytes = text.getBytes(ENCODING);
             final MessageDigest mesd = MessageDigest.getInstance(method);
             mesd.update(bytes, 0, bytes.length);
             final byte[] hash = mesd.digest();
-            return convertToHex(hash);
+            hashString = convertToHex(hash);
         } catch (Exception e) {
-            return null;
         }
+        return hashString;
     }
 
     private static String convertToHex(final byte[] bytes) {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
         return String.format(formatString, bigInt);
+    }
+
+    public static Map<String, String> getPluginKeys(Context context) {
+        Map<String, String> pluginKeys = new HashMap<String, String>();
+
+        for (Plugin plugin : getPlugins()) {
+            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
+            if (pluginEntry != null) {
+                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
+            }
+        }
+
+        if (pluginKeys.size() == 0) {
+            return null;
+        } else {
+            return pluginKeys;
+        }
+    }
+
+    private static List<Plugin> getPlugins() {
+        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
+
+        for (String pluginName : PLUGINS) {
+            Object pluginObject = Reflection.createDefaultInstance(pluginName);
+            if (pluginObject != null && pluginObject instanceof Plugin) {
+                plugins.add((Plugin) pluginObject);
+            }
+        }
+
+        return plugins;
+    }
+
+    public static Bundle getApplicationBundle(Context context, Logger logger) {
+        final ApplicationInfo applicationInfo;
+        try {
+            String packageName = context.getPackageName();
+            applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            return applicationInfo.metaData;
+        } catch (NameNotFoundException e) {
+            logger.error("ApplicationInfo not found");
+        } catch (Exception e) {
+            logger.error("Failed to get ApplicationBundle (%s)", e);
+        }
+        return null;
     }
 }

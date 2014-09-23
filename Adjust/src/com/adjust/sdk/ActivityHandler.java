@@ -9,9 +9,19 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.LOGTAG;
-import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
-import static com.adjust.sdk.Constants.UNKNOWN;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+import android.preference.PreferenceManager;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -31,21 +41,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.preference.PreferenceManager;
+import static com.adjust.sdk.Constants.LOGTAG;
+import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
+import static com.adjust.sdk.Constants.UNKNOWN;
 
 public class ActivityHandler extends HandlerThread {
 
@@ -75,6 +73,7 @@ public class ActivityHandler extends HandlerThread {
     private String fbAttributionId;
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
+    private Map<String,String> pluginKeys;
 
     public ActivityHandler(Activity activity) {
         super(LOGTAG, MIN_PRIORITY);
@@ -112,6 +111,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler = new SessionHandler(getLooper(), this);
         context = activity.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
+        pluginKeys = Util.getPluginKeys(context);
         enabled = true;
 
         logger = AdjustFactory.getLogger();
@@ -615,6 +615,7 @@ public class ActivityHandler extends HandlerThread {
         builder.setClientSdk(clientSdk);
         builder.setEnvironment(environment);
         builder.setDefaultTracker(defaultTracker);
+        builder.setPluginKeys(pluginKeys);
     }
 
     private void injectReferrer(PackageBuilder builder) {
@@ -675,7 +676,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private String processApplicationBundle() {
-        Bundle bundle = getApplicationBundle();
+        Bundle bundle = Util.getApplicationBundle(this.context, logger);
         if (null == bundle) {
             return null;
         }
@@ -729,20 +730,6 @@ public class ActivityHandler extends HandlerThread {
         if (dropOfflineActivities) {
             logger.info("Offline activities will get dropped");
         }
-    }
-
-    private Bundle getApplicationBundle() {
-        final ApplicationInfo applicationInfo;
-        try {
-            String packageName = context.getPackageName();
-            applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
-            return applicationInfo.metaData;
-        } catch (NameNotFoundException e) {
-            logger.error("ApplicationInfo not found");
-        } catch (Exception e) {
-            logger.error("Failed to get ApplicationBundle (%s)", e);
-        }
-        return null;
     }
 
     private boolean checkContext(Context context) {
