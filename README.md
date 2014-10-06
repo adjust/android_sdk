@@ -47,6 +47,27 @@ click `OK`. Save your changed project properties by clicking `OK` again.
 
 ### 4. Add permissions
 
+#### Google Play Store
+
+Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify the devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services].
+
+In the Package Explorer open the `AndroidManifest.xml` of your Android project.
+Add the `uses-permission` tag for `INTERNET` if it's not present already.
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
+If you are using Proguard, add these lines to your Proguard file:
+
+````
+-keep class com.adjust.sdk.** { *; }
+-keep class com.google.android.gms.common.** { *; }
+-keep class com.google.android.gms.ads.identifier.** { *; }
+```
+
+#### Other Stores
+
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they
 aren't present already.
@@ -62,8 +83,6 @@ If you are using Proguard, add these lines to your Proguard file:
 
 ````
 -keep class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.** { *; }
--keep class com.google.android.gms.ads.identifier.** { *; }
 ```
 
 ### 5. Add Adjust settings
@@ -388,6 +407,8 @@ protected void onCreate(Bundle savedInstanceState) {
 [log]:         https://raw.github.com/adjust/adjust_sdk/master/Resources/android/log4.png
 [referrer]:    doc/referrer.md
 [attribution-data]: https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[google_play_services]: http://developer.android.com/google/play-services/index.html
+[google_ad_id]: https://developer.android.com/google/play-services/id.html
 
 ## License
 
