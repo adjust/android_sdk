@@ -297,10 +297,10 @@ The simplest way is to create a single anonymous listener for these notification
     Adjust.setOnFinishedListener(this);
     ```
 
-This `OnClickListener` will only be set if this activity has been active
+This `OnFinishedListener` will only be set if this activity has been active
 before. You can set it in all activities to make sure that it is always set,
 regardless of what activities have been active. In this case it makes sense to
-implement the `OnClickListener` interface in one class and set the listener to
+implement the `OnFinishedListener` interface in one class and set the listener to
 the same object in every `onResume` method.
 
 The listener method `onFinishedTracking` will get called every time any
