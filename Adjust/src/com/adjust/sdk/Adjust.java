@@ -9,12 +9,12 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
+import android.content.Context;
+import android.net.Uri;
 
 import java.util.Map;
 
-import android.app.Activity;
-import android.net.Uri;
+import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
 
 /**
  * The main interface to Adjust.
@@ -30,13 +30,12 @@ public class Adjust {
      * This is used to initialize Adjust and keep track of the current session state.
      * Call this in the onResume method of every activity of your app.
      *
-     * @param activity The activity that has just resumed.
+     * @param context The context of the activity that has just resumed.
      */
-    public static void onResume(Activity activity) {
+    public static void onResume(Context context) {
         if (null == activityHandler) {
-            activityHandler = new ActivityHandler(activity);
+            activityHandler = new ActivityHandler(context);
         }
-        logger = AdjustFactory.getLogger();
         activityHandler.trackSubsessionStart();
     }
 
@@ -48,11 +47,10 @@ public class Adjust {
      */
     public static void onPause() {
         try {
-            logger.debug("onPause");
+            getLogger().debug("onPause");
             activityHandler.trackSubsessionEnd();
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -60,8 +58,7 @@ public class Adjust {
         try {
             activityHandler.setOnFinishedListener(listener);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -86,8 +83,7 @@ public class Adjust {
         try {
             activityHandler.trackEvent(eventToken, parameters);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -117,8 +113,7 @@ public class Adjust {
         try {
             activityHandler.trackRevenue(amountInCents, eventToken, parameters);
         } catch (NullPointerException e) {
-            if(logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -131,8 +126,7 @@ public class Adjust {
         try {
             activityHandler.setEnabled(enabled);
         } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
     }
 
@@ -143,8 +137,7 @@ public class Adjust {
         try {
             return activityHandler.isEnabled();
         } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
         return false;
     }
@@ -153,16 +146,15 @@ public class Adjust {
         try {
             activityHandler.readOpenUrl(url);
         } catch (NullPointerException e) {
-            if (logger != null)
-                logger.error(NO_ACTIVITY_HANDLER_FOUND);
+            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
 
     }
 
 
     // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
-    public static void appDidLaunch(Activity activity, String appToken, String environment, String logLevel, boolean eventBuffering) {
-        activityHandler = new ActivityHandler(activity, appToken, environment, logLevel, eventBuffering);
+    public static void appDidLaunch(Context context, String appToken, String environment, String logLevel, boolean eventBuffering) {
+        activityHandler = new ActivityHandler(context, appToken, environment, logLevel, eventBuffering);
     }
 
     // Special method used by SDK wrappers such as our Adobe Air SDK.
@@ -174,6 +166,7 @@ public class Adjust {
      * Every activity will get forwarded to this handler to be processed in the background.
      */
     private static ActivityHandler activityHandler;
-    private static Logger logger;
-
+    private static Logger getLogger() {
+        return AdjustFactory.getLogger();
+    };
 }
