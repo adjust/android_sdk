@@ -65,6 +65,8 @@ public class ActivityHandler extends HandlerThread {
     private        boolean                  eventBuffering;
     private        boolean                  dropOfflineActivities;
     private        boolean                  enabled;
+    private        Map<String, String>      deeplinkParameters;
+    private        long                     deeplinkTime;
 
     private String appToken;
     private String macSha1;
@@ -74,6 +76,7 @@ public class ActivityHandler extends HandlerThread {
     private String userAgent;       // changes, should be updated periodically
     private String clientSdk;
     private Map<String,String> pluginKeys;
+
 
     public ActivityHandler(Activity activity) {
         super(LOGTAG, MIN_PRIORITY);
@@ -359,6 +362,11 @@ public class ActivityHandler extends HandlerThread {
                     activityState.subsessionCount,
                     activityState.sessionCount);
         }
+
+        if (deeplinkParameters != null) {
+            transferDeeplinkPackage();
+        }
+
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
         writeActivityState();
@@ -467,12 +475,8 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        PackageBuilder builder = new PackageBuilder(context);
-        builder.setDeepLinkParameters(adjustDeepLinks);
-        injectGeneralAttributes(builder);
-        ActivityPackage reattributionPackage = builder.buildReattributionPackage();
-        packageHandler.addPackage(reattributionPackage);
-        packageHandler.sendFirstPackage();
+        deeplinkParameters = adjustDeepLinks;
+        deeplinkTime = System.currentTimeMillis();
 
         logger.debug("Reattribution %s", adjustDeepLinks.toString());
     }
@@ -599,6 +603,7 @@ public class ActivityHandler extends HandlerThread {
         PackageBuilder builder = new PackageBuilder(context);
         injectGeneralAttributes(builder);
         injectReferrer(builder);
+        injectDeeplink(builder);
         activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
@@ -626,6 +631,22 @@ public class ActivityHandler extends HandlerThread {
         catch (Exception e) {
             logger.error("Failed to inject referrer (%s)", e);
         }
+    }
+
+    private void transferDeeplinkPackage() {
+        PackageBuilder builder = new PackageBuilder(context);
+        injectDeeplink(builder);
+        injectGeneralAttributes(builder);
+        ActivityPackage reattributionPackage = builder.buildReattributionPackage();
+        packageHandler.addPackage(reattributionPackage);
+        packageHandler.sendFirstPackage();
+    }
+
+    private void injectDeeplink(PackageBuilder builder) {
+        builder.setDeeplinkParameters(deeplinkParameters);
+        builder.setDeeplinkTime(deeplinkTime);
+        deeplinkParameters = null;
+        deeplinkTime = 0;
     }
 
     private void startTimer() {
