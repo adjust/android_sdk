@@ -9,12 +9,12 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
+import android.content.Context;
+import android.net.Uri;
 
 import java.util.Map;
 
-import android.app.Activity;
-import android.net.Uri;
+import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
 
 /**
  * The main interface to Adjust.
@@ -30,11 +30,11 @@ public class Adjust {
      * This is used to initialize Adjust and keep track of the current session state.
      * Call this in the onResume method of every activity of your app.
      *
-     * @param activity The activity that has just resumed.
+     * @param context The context of the activity that has just resumed.
      */
-    public static void onResume(Activity activity) {
+    public static void onResume(Context context) {
         if (null == activityHandler) {
-            activityHandler = new ActivityHandler(activity);
+            activityHandler = new ActivityHandler(context);
         }
         logger = AdjustFactory.getLogger();
         activityHandler.trackSubsessionStart();
@@ -161,8 +161,8 @@ public class Adjust {
 
 
     // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
-    public static void appDidLaunch(Activity activity, String appToken, String environment, String logLevel, boolean eventBuffering) {
-        activityHandler = new ActivityHandler(activity, appToken, environment, logLevel, eventBuffering);
+    public static void appDidLaunch(Context context, String appToken, String environment, String logLevel, boolean eventBuffering) {
+        activityHandler = new ActivityHandler(context, appToken, environment, logLevel, eventBuffering);
     }
 
     // Special method used by SDK wrappers such as our Adobe Air SDK.
