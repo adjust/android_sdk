@@ -18,6 +18,7 @@ public class AdjustConfig {
     Boolean eventBufferingEnabled;
     Map<String, String> callbackPermanentParameters;
     Map<String, String> partnerPermanentParameters;
+    String defaultTracker;
 
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";
@@ -68,6 +69,10 @@ public class AdjustConfig {
         }
 
         partnerPermanentParameters.put(key, value);
+    }
+
+    public void setDefaultTracker(String defaultTracker) {
+        this.defaultTracker = defaultTracker;
     }
 
     private static boolean canInit(Context context, String appToken, String environment) {

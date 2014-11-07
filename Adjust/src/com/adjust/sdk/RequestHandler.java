@@ -195,7 +195,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         HttpPost request = new HttpPost(url);
 
         String language = Locale.getDefault().getLanguage();
-        request.addHeader("User-Agent", activityPackage.getUserAgent());
         request.addHeader("Client-SDK", activityPackage.getClientSdk());
         request.addHeader("Accept-Language", language);
 

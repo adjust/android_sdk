@@ -63,29 +63,29 @@ public class Util {
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
 
-    protected static String getUserAgent(final Context context) {
+    protected static UserAgent getUserAgent(final Context context) {
         final Resources resources = context.getResources();
         final DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         final Configuration configuration = resources.getConfiguration();
         final Locale locale = configuration.locale;
         final int screenLayout = configuration.screenLayout;
 
-        final String[] parts = {
-            getPackageName(context),
-            getAppVersion(context),
-            getDeviceType(screenLayout),
-            getDeviceName(),
-            getOsName(),
-            getOsVersion(),
-            getLanguage(locale),
-            getCountry(locale),
-            getScreenSize(screenLayout),
-            getScreenFormat(screenLayout),
-            getScreenDensity(displayMetrics),
-            getDisplayWidth(displayMetrics),
-            getDisplayHeight(displayMetrics)
-        };
-        return TextUtils.join(" ", parts);
+        UserAgent userAgent = new UserAgent();
+        userAgent.packageName = getPackageName(context);
+        userAgent.appVersion = getAppVersion(context);
+        userAgent.deviceType = getDeviceType(screenLayout);
+        userAgent.deviceName = getDeviceName();
+        userAgent.osName = getOsName();
+        userAgent.osVersion = getOsVersion();
+        userAgent.language = getLanguage(locale);
+        userAgent.country = getCountry(locale);
+        userAgent.screenSize = getScreenSize(screenLayout);
+        userAgent.screenFormat = getScreenFormat(screenLayout);
+        userAgent.screenDensity = getScreenDensity(displayMetrics);
+        userAgent.displayWidth = getDisplayWidth(displayMetrics);
+        userAgent.displayHeight = getDisplayHeight(displayMetrics);
+
+        return userAgent;
     }
 
     private static String getPackageName(final Context context) {

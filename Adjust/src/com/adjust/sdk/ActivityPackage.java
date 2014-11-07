@@ -17,7 +17,6 @@ public class ActivityPackage implements Serializable {
 
     // data
     private String              path;
-    private String              userAgent;
     private String              clientSdk;
     private Map<String, String> parameters;
 
@@ -31,14 +30,6 @@ public class ActivityPackage implements Serializable {
 
     public void setPath(String path) {
         this.path = path;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
     }
 
     public String getClientSdk() {
@@ -80,7 +71,6 @@ public class ActivityPackage implements Serializable {
     public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
         builder.append(String.format("Path:      %s\n", path));
-        builder.append(String.format("UserAgent: %s\n", userAgent));
         builder.append(String.format("ClientSdk: %s\n", clientSdk));
 
         if (parameters != null) {

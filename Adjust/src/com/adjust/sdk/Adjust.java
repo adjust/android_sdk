@@ -78,7 +78,6 @@ public class Adjust {
         activityHandler.readOpenUrl(url);
     }
 
-
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Please initialize Adjust by calling 'onCreate' before");

@@ -10,7 +10,7 @@ class DeviceInfo {
     String macShortMd5;
     String androidId;
     String fbAttributionId;
-    String userAgent;
+    UserAgent userAgent;
     String clientSdk;
     Map<String,String> pluginKeys;
 }

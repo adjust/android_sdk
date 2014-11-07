@@ -20,7 +20,6 @@ import java.util.Map;
 
 class PackageBuilder {
 
-    private String defaultTracker;
     private String referrer;
 
     Event event;
@@ -37,10 +36,6 @@ class PackageBuilder {
         this.activityState = activityState.clone();
     }
 
-    public void setDefaultTracker(String defaultTracker) {
-        this.defaultTracker = defaultTracker;
-    }
-
     public void setReferrer(String referrer) {
         this.referrer = referrer;
     }
@@ -52,7 +47,7 @@ class PackageBuilder {
     public ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", activityState.lastInterval);
-        addString(parameters, "default_tracker", defaultTracker);
+        addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
@@ -92,7 +87,6 @@ class PackageBuilder {
 
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
-        activityPackage.setUserAgent(deviceInfo.userAgent);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
     }
@@ -100,32 +94,57 @@ class PackageBuilder {
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
+        constructDeviceInfo(parameters);
+        constructActivityState(parameters);
+        constructUserAgent(parameters, deviceInfo.userAgent);
+
         // general
-        addDate(parameters, "created_at", activityState.createdAt);
-        addString(parameters, "app_token", adjustConfig.appToken);
-        addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        addString(parameters, "android_id", deviceInfo.androidId);
-        addString(parameters, "android_uuid", activityState.uuid);
-        addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        addString(parameters, "environment", adjustConfig.environment);
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        addString(parameters, "gps_adid", playAdId);
-        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
-        addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         fillPluginKeys(parameters);
         checkDeviceIds(parameters);
-
-        // session related (used for events as well)
-        addInt(parameters, "session_count", activityState.sessionCount);
-        addInt(parameters, "subsession_count", activityState.subsessionCount);
-        addDuration(parameters, "session_length", activityState.sessionLength);
-        addDuration(parameters, "time_spent", activityState.timeSpent);
 
         return parameters;
     }
 
-    private void checkDeviceIds(Map<String, String> parameters) {
+    private void constructDeviceInfo(Map<String, String> parameters) {
+        addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        addString(parameters, "android_id", deviceInfo.androidId);
+        addString(parameters, "fb_id", deviceInfo.fbAttributionId);
+        String playAdId = Util.getPlayAdId(adjustConfig.context);
+        addString(parameters, "gps_adid", playAdId);
+        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
+        addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+
+        addString(parameters, "app_token", adjustConfig.appToken);
+        addString(parameters, "environment", adjustConfig.environment);
+    }
+
+    private void constructActivityState(Map<String, String> parameters) {
+        addDate(parameters, "created_at", activityState.createdAt);
+        addString(parameters, "android_uuid", activityState.uuid);
+        addInt(parameters, "session_count", activityState.sessionCount);
+        addInt(parameters, "subsession_count", activityState.subsessionCount);
+        addDuration(parameters, "session_length", activityState.sessionLength);
+        addDuration(parameters, "time_spent", activityState.timeSpent);
+    }
+
+    private void constructUserAgent(Map<String, String> parameters, UserAgent userAgent) {
+        addString(parameters, "package_name", userAgent.packageName);
+        addString(parameters, "app_version", userAgent.appVersion);
+        addString(parameters, "device_type", userAgent.deviceType);
+        addString(parameters, "device_name", userAgent.deviceName);
+        addString(parameters, "os_name", userAgent.osName);
+        addString(parameters, "os_version", userAgent.osVersion);
+        addString(parameters, "language", userAgent.language);
+        addString(parameters, "country", userAgent.country);
+        addString(parameters, "screen_size", userAgent.screenSize);
+        addString(parameters, "screen_format", userAgent.screenFormat);
+        addString(parameters, "screen_density", userAgent.screenDensity);
+        addString(parameters, "display_width", userAgent.displayWidth);
+        addString(parameters, "display_height", userAgent.displayHeight);
+    }
+
+        private void checkDeviceIds(Map<String, String> parameters) {
         if (!parameters.containsKey("mac_sha1")
             && !parameters.containsKey("mac_md5")
             && !parameters.containsKey("android_id")
