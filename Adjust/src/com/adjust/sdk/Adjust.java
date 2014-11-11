@@ -58,11 +58,6 @@ public class Adjust {
         activityHandler.trackSubsessionEnd();
     }
 
-    public void setOnFinishedListener(OnFinishedListener listener) {
-        if (!checkActivityHandler()) return;
-        activityHandler.setOnFinishedListener(listener);
-    }
-
     public void setEnabled(Boolean enabled) {
         if (!checkActivityHandler()) return;
         activityHandler.setEnabled(enabled);

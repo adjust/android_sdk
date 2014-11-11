@@ -58,7 +58,6 @@ public class ActivityHandler extends HandlerThread {
 
     private        SessionHandler           sessionHandler;
     private        IPackageHandler          packageHandler;
-    private        OnFinishedListener       onFinishedListener;
     private        ActivityState            activityState;
     private        Logger                   logger;
     private static ScheduledExecutorService timer;
@@ -82,10 +81,6 @@ public class ActivityHandler extends HandlerThread {
         message.arg1 = SessionHandler.INIT;
         message.obj = adjustConfig;
         sessionHandler.sendMessage(message);
-    }
-
-    public void setOnFinishedListener(OnFinishedListener listener) {
-        onFinishedListener = listener;
     }
 
     public void trackSubsessionStart() {
@@ -156,14 +151,14 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public void launchAttributionDelegate() {
-        if (onFinishedListener == null) {
+        if (adjustConfig.onFinishedListener == null) {
             return;
         }
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                onFinishedListener.onFinishedTracking(attribution);
+                adjustConfig.onFinishedListener.onFinishedTracking(attribution);
             }
         };
         handler.post(runnable);

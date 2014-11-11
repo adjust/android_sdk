@@ -21,14 +21,28 @@ import java.util.concurrent.TimeUnit;
 class AttributionHandler {
     private static final String url = Constants.BASE_URL + "/attribution";
     private ScheduledExecutorService scheduler;
+    private ScheduledExecutorService maxTimeScheduler;
     private ActivityHandler activityHandler;
     private Logger logger;
 
-
-    AttributionHandler(ActivityHandler activityHandler) {
+    AttributionHandler(ActivityHandler activityHandler, Integer maxTimeMilliseconds) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
+
+        if (maxTimeMilliseconds != null) {
+            maxTimeScheduler = Executors.newSingleThreadScheduledExecutor();
+            maxTimeScheduler.schedule(new Runnable() {
+                @Override
+                public void run() {
+                    launchAttributionDelegate();
+                }
+            }, maxTimeMilliseconds, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void launchAttributionDelegate() {
+        this.activityHandler.launchAttributionDelegate();
     }
 
     void getAttribution(int delayInMilliseconds) {

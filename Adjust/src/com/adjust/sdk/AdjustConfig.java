@@ -19,6 +19,8 @@ public class AdjustConfig {
     Map<String, String> callbackPermanentParameters;
     Map<String, String> partnerPermanentParameters;
     String defaultTracker;
+    OnFinishedListener onFinishedListener;
+    Integer attributionMaxTimeMilliseconds;
 
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";
@@ -73,6 +75,14 @@ public class AdjustConfig {
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
+    }
+
+    public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
+        this.onFinishedListener = onFinishedListener;
+    }
+
+    public void setAttributionMaxTime(int milliseconds) {
+        this.attributionMaxTimeMilliseconds = milliseconds;
     }
 
     private static boolean canInit(Context context, String appToken, String environment) {
