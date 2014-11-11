@@ -9,6 +9,10 @@
 
 package com.adjust.sdk;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author keyboardsurfer
  * @since 8.11.13
@@ -19,7 +23,7 @@ public interface Constants {
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
     String BASE_URL   = "https://app.adjust.io";
-    String CLIENT_SDK = "android3.4.0";
+    String CLIENT_SDK = "android3.6.1";
     String LOGTAG     = "Adjust";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
@@ -40,4 +44,7 @@ public interface Constants {
     String ENCODING = "UTF-8";
     String MD5      = "MD5";
     String SHA1     = "SHA-1";
+
+    // List of known plugins, possibly not active
+    List<String> PLUGINS = Arrays.asList("com.adjust.sdk.plugin.Vulcun");
 }
