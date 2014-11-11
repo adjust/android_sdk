@@ -7,10 +7,10 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
 3. Open your `AndroidManifest.xml` and add the following line to your Adjust settings:
 
     ```xml
-    <meta-data android:name="AdjustDefaultTracker" android:value="{Tracker}" />
+    <meta-data android:name="AdjustDefaultTracker" android:value="{TrackerToken}" />
     ```
 
-    Replace `{Tracker}` with the tracker token you created in step 2. Please note that the dashboard displays a tracker URL (including `http://app.adjust.io/`). In your source code, you should specify only the six-character token and not the entire URL.
+    Replace `{TrackerToken}` with the tracker token you created in step 2. Please note that the dashboard displays a tracker URL (including `http://app.adjust.io/`). In your source code, you should specify only the six-character token and not the entire URL.
 
 4. Build and run your app. You should see a line like the following in LogCat:
 
