@@ -43,10 +43,9 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private       AtomicBoolean         isSending;
     private       boolean               paused;
     private       Context               context;
-    private       boolean               dropOfflineActivities;
     private       Logger                logger;
 
-    public PackageHandler(ActivityHandler activityHandler, Context context, boolean dropOfflineActivities) {
+    public PackageHandler(ActivityHandler activityHandler, Context context) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -55,7 +54,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
         this.activityHandler = activityHandler;
         this.context = context;
-        this.dropOfflineActivities = dropOfflineActivities;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
@@ -91,11 +89,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // close the package to retry in the future (after temporary failure)
     @Override
     public void closeFirstPackage() {
-        if (dropOfflineActivities) {
-            sendNextPackage();
-        } else {
-            isSending.set(false);
-        }
+        isSending.set(false);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -113,16 +107,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // short info about how failing packages are handled
     @Override
     public String getFailureMessage() {
-        if (dropOfflineActivities) {
-            return "Dropping offline activity.";
-        } else {
-            return "Will retry later.";
-        }
-    }
-
-    @Override
-    public boolean dropsOfflineActivities() {
-        return dropOfflineActivities;
+        return "Will retry later.";
     }
 
     @Override
@@ -219,11 +204,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void readPackageQueue() {
-        if (dropOfflineActivities) {
-            packageQueue = new ArrayList<ActivityPackage>();
-            return; // don't read old packages when offline tracking is disabled
-        }
-
         try {
             FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -263,10 +243,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
 
     private void writePackageQueue() {
-        if (dropOfflineActivities) {
-            return; // don't write packages when offline tracking is disabled
-        }
-
         try {
             FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);

@@ -84,6 +84,11 @@ public class Adjust {
         }
     }
 
+    public void setOfflineMode(boolean enabled) {
+        if (!checkActivityHandler()) return;
+        activityHandler.setOfflineMode(enabled);
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Please initialize Adjust by calling 'onCreate' before");

@@ -51,7 +51,6 @@ public class ActivityHandler extends HandlerThread {
     private        ActivityState            activityState;
     private        Logger                   logger;
     private static ScheduledExecutorService timer;
-    private        boolean                  dropOfflineActivities;
     private        boolean                  enabled;
 
     private DeviceInfo deviceInfo;
@@ -59,7 +58,7 @@ public class ActivityHandler extends HandlerThread {
     private Attribution attribution;
     private AttributionHandler attributionHandler;
 
-    ActivityHandler(AdjustConfig adjustConfig) {
+    public ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -73,26 +72,26 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    void trackSubsessionStart() {
+    public void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
         sessionHandler.sendMessage(message);
     }
 
-    void trackSubsessionEnd() {
+    public void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
         sessionHandler.sendMessage(message);
     }
 
-    void trackEvent(Event event) {
+    public void trackEvent(Event event) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
         message.obj = event;
         sessionHandler.sendMessage(message);
     }
 
-    void finishedTrackingActivity(JSONObject jsonResponse) {
+    public void finishedTrackingActivity(JSONObject jsonResponse) {
         if (jsonResponse == null) {
             return;
         }
@@ -102,7 +101,7 @@ public class ActivityHandler extends HandlerThread {
         attributionHandler.checkAttribution(jsonResponse);
     }
 
-    void setEnabled(Boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
@@ -114,7 +113,7 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    Boolean isEnabled() {
+    public Boolean isEnabled() {
         if (activityState != null) {
             return activityState.enabled;
         } else {
@@ -122,14 +121,14 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    void readOpenUrl(Uri url) {
+    public void readOpenUrl(Uri url) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
         message.obj = url;
         sessionHandler.sendMessage(message);
     }
 
-    void updateAttribution(Attribution attribution) {
+    public void updateAttribution(Attribution attribution) {
         if (attribution == null) return;
 
         if (attribution.equals(this.attribution)) {
@@ -140,7 +139,7 @@ public class ActivityHandler extends HandlerThread {
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
-    void launchAttributionDelegate() {
+    public void launchAttributionDelegate() {
         if (adjustConfig.onFinishedListener == null) {
             return;
         }
@@ -154,13 +153,21 @@ public class ActivityHandler extends HandlerThread {
         handler.post(runnable);
     }
 
-    void setReferrer (String referrer) {
+    public void setReferrer (String referrer) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         builder.referrer = referrer;
         ActivityPackage clickPackage = builder.buildClickPackage();
         packageHandler.sendClickPackage(clickPackage);
     }
 
+    public void setOfflineMode(boolean enabled) {
+        if (enabled) {
+            endInternal();
+        } else {
+            packageHandler.resumeSending();
+            startTimer();
+        }
+    }
 
     private static final class SessionHandler extends Handler {
         private static final int INIT        = 72630;
@@ -257,7 +264,7 @@ public class ActivityHandler extends HandlerThread {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, dropOfflineActivities);
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
         attributionHandler = new AttributionHandler(this, adjustConfig.attributionMaxTimeMilliseconds);
         activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
 
@@ -479,11 +486,12 @@ public class ActivityHandler extends HandlerThread {
     }
 
     // TODO validate if this is equal with an offline mode
+    /*
     private void setDropOfflineActivities(boolean drop) {
         dropOfflineActivities = drop;
         if (dropOfflineActivities) {
             logger.info("Offline activities will get dropped");
         }
     }
-
+    */
 }
