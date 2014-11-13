@@ -103,7 +103,7 @@ public class ActivityState implements Serializable, Cloneable {
             // add new fields here
         } catch (Exception e) {
             Logger logger = AdjustFactory.getLogger();
-            logger.debug("Unable to read new field in migration device with error (%s)",
+            logger.debug("Unable to read new field in migration device with message (%s)",
                     e.getMessage());
         }
 

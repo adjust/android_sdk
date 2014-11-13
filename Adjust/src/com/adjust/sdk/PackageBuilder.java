@@ -109,6 +109,7 @@ class PackageBuilder {
 
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "environment", adjustConfig.environment);
+        addBoolean(parameters, "device_known", adjustConfig.knowDevice);
     }
 
     private void constructActivityState(Map<String, String> parameters) {
@@ -125,6 +126,7 @@ class PackageBuilder {
         addString(parameters, "app_version", userAgent.appVersion);
         addString(parameters, "device_type", userAgent.deviceType);
         addString(parameters, "device_name", userAgent.deviceName);
+        addString(parameters, "device_manufacturer", userAgent.deviceManufacturer);
         addString(parameters, "os_name", userAgent.osName);
         addString(parameters, "os_version", userAgent.osVersion);
         addString(parameters, "language", userAgent.language);
@@ -134,6 +136,9 @@ class PackageBuilder {
         addString(parameters, "screen_density", userAgent.screenDensity);
         addString(parameters, "display_width", userAgent.displayWidth);
         addString(parameters, "display_height", userAgent.displayHeight);
+        addString(parameters, "network_type", userAgent.networkType);
+        addString(parameters, "network_subtype", userAgent.networkSubtype);
+        addString(parameters, "sim_operator", userAgent.simOperator);
     }
 
         private void checkDeviceIds(Map<String, String> parameters) {

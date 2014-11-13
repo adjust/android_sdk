@@ -247,7 +247,7 @@ public class ActivityHandler extends HandlerThread {
 
         deviceInfo.androidId= Util.getAndroidId(adjustConfig.context);
         deviceInfo.fbAttributionId = Util.getAttributionId(adjustConfig.context);
-        deviceInfo.userAgent = Util.getUserAgent(adjustConfig.context);
+        deviceInfo.userAgent = UserAgent.getUserAgent(adjustConfig.context);
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         if (playAdId == null) {

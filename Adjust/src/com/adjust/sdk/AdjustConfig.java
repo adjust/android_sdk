@@ -22,6 +22,7 @@ public class AdjustConfig {
     OnFinishedListener onFinishedListener;
     Integer attributionMaxTimeMilliseconds;
     String referrer;
+    Boolean knowDevice;
 
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";
@@ -84,6 +85,10 @@ public class AdjustConfig {
 
     public void setAttributionMaxTime(int milliseconds) {
         this.attributionMaxTimeMilliseconds = milliseconds;
+    }
+
+    public void markKnownDevice() {
+        this.knowDevice = true;
     }
 
     private static boolean canInit(Context context, String appToken, String environment) {
