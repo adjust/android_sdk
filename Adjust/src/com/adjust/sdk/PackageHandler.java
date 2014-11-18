@@ -62,7 +62,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.sendMessage(message);
     }
 
-    // add a package to the queue, trigger sending
+    // add a package to the queue
     @Override
     public void addPackage(ActivityPackage pack) {
         Message message = Message.obtain();
