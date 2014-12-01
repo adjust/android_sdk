@@ -122,7 +122,7 @@ public class Adjust {
      *
      * @param enabled The flag to enable or disable the adjust SDK
      */
-    public static void setEnabled(Boolean enabled) {
+    public static void setEnabled(boolean enabled) {
         try {
             activityHandler.setEnabled(enabled);
         } catch (NullPointerException e) {
@@ -133,7 +133,7 @@ public class Adjust {
     /**
      * Check if the SDK is enabled or disabled
      */
-    public static Boolean isEnabled() {
+    public static boolean isEnabled() {
         try {
             return activityHandler.isEnabled();
         } catch (NullPointerException e) {

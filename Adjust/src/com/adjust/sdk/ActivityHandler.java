@@ -9,7 +9,6 @@
 
 package com.adjust.sdk;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -179,7 +178,7 @@ public class ActivityHandler extends HandlerThread {
         handler.post(runnable);
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         if (checkActivityState(activityState))
             activityState.enabled = enabled;
@@ -190,7 +189,7 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         if (checkActivityState(activityState)) {
             return activityState.enabled;
         } else {
