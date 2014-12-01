@@ -7,6 +7,7 @@ The delegate function can be set as the following, to use the Mixpanel API:
 
 ```java
     Adjust.setOnFinishedListener(new OnFinishedListener() {
+        @Override
         public void onFinishedTracking(ResponseData responseData) {
             MixpanelAPI mixpanel =
                 MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
@@ -15,17 +16,21 @@ The delegate function can be set as the following, to use the Mixpanel API:
             // with all future track calls.
             JSONObject props = new JSONObject();
             
-            if (responseData.getNetwork() != null)
-                props.put("[Adjust]Network", responseData.getNetwork());
+            try {
+                if (responseData.getNetwork() != null)
+                    props.put("[Adjust]Network", responseData.getNetwork());
                 
-            if (responseData.getCampaign() != null)
-                props.put("[Adjust]Campaign", responseData.getCampaign());
-            
-            if (responseData.getAdgroup() != null)
-                props.put("[Adjust]Adgroup", responseData.getAdgroup());
-            
-            if (responseData.getCreative() != null)
-                props.put("[Adjust]Creative", responseData.getCreative());
+                if (responseData.getCampaign() != null)
+                    props.put("[Adjust]Campaign", responseData.getCampaign());
+                
+                if (responseData.getAdgroup() != null)
+                    props.put("[Adjust]Adgroup", responseData.getAdgroup());
+                
+                if (responseData.getCreative() != null)
+                    props.put("[Adjust]Creative", responseData.getCreative());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             
             if (props.length() > 0)
                 mixpanel.registerSuperProperties(props);
