@@ -75,21 +75,21 @@ public class ActivityHandler extends HandlerThread {
     private String clientSdk;
     private Map<String,String> pluginKeys;
 
-    public ActivityHandler(Activity activity) {
+    public ActivityHandler(Context context) {
         super(LOGTAG, MIN_PRIORITY);
 
-        initActivityHandler(activity);
+        initActivityHandler(context);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT_BUNDLE;
         sessionHandler.sendMessage(message);
     }
 
-    public ActivityHandler(Activity activity, String appToken,
+    public ActivityHandler(Context context, String appToken,
             String environment, String logLevel, boolean eventBuffering) {
         super(LOGTAG, MIN_PRIORITY);
 
-        initActivityHandler(activity);
+        initActivityHandler(context);
 
         this.environment = environment;
         this.eventBuffering = eventBuffering;
@@ -101,7 +101,7 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    private void initActivityHandler(Activity activity) {
+    private void initActivityHandler(Context context) {
         setDaemon(true);
         start();
 
@@ -109,9 +109,9 @@ public class ActivityHandler extends HandlerThread {
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
         sessionHandler = new SessionHandler(getLooper(), this);
-        context = activity.getApplicationContext();
+        this.context = context.getApplicationContext();
         clientSdk = Constants.CLIENT_SDK;
-        pluginKeys = Util.getPluginKeys(context);
+        pluginKeys = Util.getPluginKeys(this.context);
         enabled = true;
 
         logger = AdjustFactory.getLogger();
