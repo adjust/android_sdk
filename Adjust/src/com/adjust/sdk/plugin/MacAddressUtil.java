@@ -1,4 +1,4 @@
-package com.adjust.sdk.deviceIds;
+package com.adjust.sdk.plugin;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
