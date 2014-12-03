@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -738,7 +739,7 @@ public class ActivityHandler extends HandlerThread {
             String packageName = context.getPackageName();
             applicationInfo = context.getPackageManager().getApplicationInfo(packageName, PackageManager.GET_META_DATA);
             return applicationInfo.metaData;
-        } catch (NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
             logger.error("ApplicationInfo not found");
         } catch (Exception e) {
             logger.error("Failed to get ApplicationBundle (%s)", e);
