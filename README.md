@@ -49,7 +49,7 @@ click `OK`. Save your changed project properties by clicking `OK` again.
 
 #### Google Play Store
 
-Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify the devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services].
+Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services].
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tag for `INTERNET` if it's not present already.
@@ -123,7 +123,7 @@ start testing it again.
 
 We use this environment to distinguish between real traffic and artificial
 traffic from test devices. It is very important that you keep this value
-meaningful at all times! Especially if you are tracking revenue.
+meaningful at all times! This is especially important if you are tracking revenue.
 
 ### 6. Add broadcast receiver
 
@@ -142,8 +142,8 @@ the `application` tag.
 
 ![][receiver]
 
-We use this broadcast receiver to retrieve the install referrer to improve
-conversion tracking.
+We use this broadcast receiver to retrieve the install referrer, in order to 
+improve conversion tracking.
 
 If you are already using a different broadcast receiver for the
 `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the
@@ -202,9 +202,9 @@ advantage of the following features.
 
 ### 9. Add tracking of custom events.
 
-You can tell adjust about every event you want. Suppose you want to track
-every tap on a button. You would have to create a new Event Token in your
-[dashboard]. Let's say that Event Token is `abc123`. In your button's `onClick`
+You can use adjust to track any event in your app. Suppose you want to track
+every tap on a button. You would have to create a new event token in your
+[dashboard]. Let's say that event token is `abc123`. In your button's `onClick`
 method you could then add the following line to track the click:
 
 ```java
@@ -218,7 +218,7 @@ case you can also put some key-value-pairs in a dictionary and pass it to the
 callback URL.
 
 For example, suppose you have registered the URL
-`http://www.adjust.com/callback` for your event with Event Token `abc123` and
+`http://www.adjust.com/callback` for your event with event token `abc123` and
 execute the following lines:
 
 ```java
@@ -239,10 +239,13 @@ Also note that we don't store any of your custom parameters, but only append
 them to your callbacks. If you haven't registered a callback for an event,
 these parameters won't even be read.
 
+You can read more about using URL callbacks, including a full list of available 
+values, in our [callbacks guide][callbacks-guide].
+
 ### 10. Add tracking of revenue
 
 If your users can generate revenue by clicking on advertisements or making
-purchases you can track those revenues. If, for example, a click is worth one
+purchases, you can track those revenues. If, for example, a click is worth one
 cent, you could make the following call to track that revenue:
 
 ```java
@@ -409,6 +412,7 @@ protected void onCreate(Bundle savedInstanceState) {
 [attribution-data]: https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [google_play_services]: http://developer.android.com/google/play-services/index.html
 [google_ad_id]: https://developer.android.com/google/play-services/id.html
+[callbacks-guide]: https://docs.adjust.com/en/callbacks
 
 ## License
 
