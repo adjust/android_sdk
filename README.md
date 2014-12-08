@@ -254,8 +254,8 @@ Adjust.trackRevenue(1.0);
 
 The parameter is supposed to be in cents and will get rounded to one decimal
 point. If you want to differentiate between different kinds of revenue you can
-get different Event Tokens for each kind. Again, you need to create those Event
-Tokens in your [dashboard]. In that case you would make a call like this:
+get different event tokens for each kind. Again, you need to create those event
+tokens in your [dashboard]. In that case you would make a call like this:
 
 ```java
 Adjust.trackRevenue(1.0, "abc123");
