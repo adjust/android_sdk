@@ -19,82 +19,62 @@ import android.net.Uri;
  */
 public class Adjust {
 
-    private ActivityHandler activityHandler;
-    private String referrer;
-    private static Adjust defaultInstance;
-    private static Logger getLogger() {
-        return AdjustFactory.getLogger();
-    };
+    private static AdjustInstance defaultInstance;
 
-    private Adjust() {};
+    private Adjust() {
+    }
 
-    public static synchronized Adjust getInstance() {
+    public static synchronized AdjustInstance getInstance() {
         if (defaultInstance == null) {
-            defaultInstance = new Adjust();
+            defaultInstance = new AdjustInstance();
         }
         return defaultInstance;
     }
 
-    public void onCreate(AdjustConfig adjustConfig) {
-        if (activityHandler != null) {
-            getLogger().error("Adjust already initialized");
-            return;
-        }
-
-        adjustConfig.referrer = this.referrer;
-
-        activityHandler = new ActivityHandler(adjustConfig);
+    public static void onCreate(AdjustConfig adjustConfig) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.onCreate(adjustConfig);
     }
 
-    public void trackEvent(Event event) {
-        if (!checkActivityHandler()) return;
-        activityHandler.trackEvent(event);
+    public static void trackEvent(Event event) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.trackEvent(event);
     }
 
-    public void onResume() {
-        if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionStart();
+    public static void onResume() {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.onResume();
     }
 
-    public void onPause() {
-        if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionEnd();
+    public static void onPause() {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.onPause();
     }
 
-    public void setEnabled(Boolean enabled) {
-        if (!checkActivityHandler()) return;
-        activityHandler.setEnabled(enabled);
+    public static void setEnabled(Boolean enabled) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
-        if (!checkActivityHandler()) return false;
-        return activityHandler.isEnabled();
+    public static boolean isEnabled() {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        return adjustInstance.isEnabled();
     }
 
-    public void appWillOpenUrl(Uri url) {
-        if (!checkActivityHandler()) return;
-        activityHandler.readOpenUrl(url);
+    public static void appWillOpenUrl(Uri url) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.appWillOpenUrl(url);
     }
 
-    public void setReferrer(String referrer) {
-        if (activityHandler == null) {
-            this.referrer = referrer;
-        } else {
-            activityHandler.setReferrer(referrer);
-        }
+    public static void setReferrer(String referrer) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.setReferrer(referrer);
     }
 
-    public void setOfflineMode(boolean enabled) {
-        if (!checkActivityHandler()) return;
-        activityHandler.setOfflineMode(enabled);
-    }
-
-    private boolean checkActivityHandler() {
-        if (activityHandler == null) {
-            getLogger().error("Please initialize Adjust by calling 'onCreate' before");
-            return false;
-        } else {
-            return true;
-        }
+    public static void setOfflineMode(boolean enabled) {
+        AdjustInstance adjustInstance = Adjust.getInstance();
+        adjustInstance.setOfflineMode(enabled);
     }
 }
+
+
