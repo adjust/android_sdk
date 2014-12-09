@@ -86,9 +86,9 @@ class PackageBuilder {
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        constructDeviceInfo(parameters);
+        injectDeviceInfo(parameters);
+        injectConfig(parameters);
         constructActivityState(parameters);
-        constructUserAgent(parameters, deviceInfo.userAgent);
 
         // general
         fillPluginKeys(parameters);
@@ -97,16 +97,36 @@ class PackageBuilder {
         return parameters;
     }
 
-    private void constructDeviceInfo(Map<String, String> parameters) {
+    private void injectDeviceInfo(Map<String, String> parameters) {
         addString(parameters, "mac_sha1", deviceInfo.macSha1);
         addString(parameters, "mac_md5", deviceInfo.macShortMd5);
         addString(parameters, "android_id", deviceInfo.androidId);
         addString(parameters, "fb_id", deviceInfo.fbAttributionId);
+        addString(parameters, "package_name", deviceInfo.packageName);
+        addString(parameters, "app_version", deviceInfo.appVersion);
+        addString(parameters, "device_type", deviceInfo.deviceType);
+        addString(parameters, "device_name", deviceInfo.deviceName);
+        addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
+        addString(parameters, "os_name", deviceInfo.osName);
+        addString(parameters, "os_version", deviceInfo.osVersion);
+        addString(parameters, "language", deviceInfo.language);
+        addString(parameters, "country", deviceInfo.country);
+        addString(parameters, "screen_size", deviceInfo.screenSize);
+        addString(parameters, "screen_format", deviceInfo.screenFormat);
+        addString(parameters, "screen_density", deviceInfo.screenDensity);
+        addString(parameters, "display_width", deviceInfo.displayWidth);
+        addString(parameters, "display_height", deviceInfo.displayHeight);
+        addString(parameters, "network_type", deviceInfo.networkType);
+        addString(parameters, "network_subtype", deviceInfo.networkSubtype);
+        addString(parameters, "sim_operator", deviceInfo.simOperator);
+
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+    }
 
+    private void injectConfig(Map<String, String> parameters) {
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "environment", adjustConfig.environment);
         addBoolean(parameters, "device_known", adjustConfig.knowDevice);
@@ -121,27 +141,7 @@ class PackageBuilder {
         addDuration(parameters, "time_spent", activityState.timeSpent);
     }
 
-    private void constructUserAgent(Map<String, String> parameters, UserAgent userAgent) {
-        addString(parameters, "package_name", userAgent.packageName);
-        addString(parameters, "app_version", userAgent.appVersion);
-        addString(parameters, "device_type", userAgent.deviceType);
-        addString(parameters, "device_name", userAgent.deviceName);
-        addString(parameters, "device_manufacturer", userAgent.deviceManufacturer);
-        addString(parameters, "os_name", userAgent.osName);
-        addString(parameters, "os_version", userAgent.osVersion);
-        addString(parameters, "language", userAgent.language);
-        addString(parameters, "country", userAgent.country);
-        addString(parameters, "screen_size", userAgent.screenSize);
-        addString(parameters, "screen_format", userAgent.screenFormat);
-        addString(parameters, "screen_density", userAgent.screenDensity);
-        addString(parameters, "display_width", userAgent.displayWidth);
-        addString(parameters, "display_height", userAgent.displayHeight);
-        addString(parameters, "network_type", userAgent.networkType);
-        addString(parameters, "network_subtype", userAgent.networkSubtype);
-        addString(parameters, "sim_operator", userAgent.simOperator);
-    }
-
-        private void checkDeviceIds(Map<String, String> parameters) {
+    private void checkDeviceIds(Map<String, String> parameters) {
         if (!parameters.containsKey("mac_sha1")
             && !parameters.containsKey("mac_md5")
             && !parameters.containsKey("android_id")

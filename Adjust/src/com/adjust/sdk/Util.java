@@ -80,29 +80,6 @@ public class Util {
         return UUID.randomUUID().toString();
     }
 
-    // removes spaces and replaces empty string with "unknown"
-    static String sanitizeString(final String string) {
-        return sanitizeString(string, UNKNOWN);
-    }
-
-    static String sanitizeStringShort(final String string) {
-        return sanitizeString(string, "zz");
-    }
-
-    private static String sanitizeString(final String string, final String defaultString) {
-        String result = string;
-        if (TextUtils.isEmpty(result)) {
-            result = defaultString;
-        }
-
-        result = result.replaceAll("\\s", "");
-        if (TextUtils.isEmpty(result)) {
-            result = defaultString;
-        }
-
-        return result;
-    }
-
     protected static String getAttributionId(final Context context) {
         try {
             final ContentResolver contentResolver = context.getContentResolver();

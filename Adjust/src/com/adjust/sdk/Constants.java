@@ -29,8 +29,6 @@ public interface Constants {
     String SESSION_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME   = "AdjustAttribution";
 
-
-    String UNKNOWN   = "unknown";
     String MALFORMED = "malformed";
     String SMALL     = "small";
     String NORMAL    = "normal";
