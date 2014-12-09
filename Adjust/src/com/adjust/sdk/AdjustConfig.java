@@ -35,10 +35,9 @@ public class AdjustConfig {
         }
         AdjustConfig adjustConfig = new AdjustConfig();
 
-        adjustConfig.context = context.getApplicationContext();
+        adjustConfig.context = context;
         adjustConfig.appToken = appToken;
         adjustConfig.environment = environment;
-
 
         // default values
         adjustConfig.logLevel = Logger.LogLevel.INFO;
@@ -108,7 +107,6 @@ public class AdjustConfig {
             return false;
         }
 
-        context = context.getApplicationContext();
         if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
             logger.error("Missing permission: INTERNET");
             return false;
