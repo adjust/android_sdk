@@ -51,11 +51,6 @@ public class Event {
             return null;
         }
 
-        if (currency.length() != 3) {
-            logger.error("Invalid currency length '%s'", event.currency);
-            return null;
-        }
-
         event.revenue = revenue;
         event.currency = currency;
 
