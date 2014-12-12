@@ -40,7 +40,7 @@ android {
 }
 
 task jar(type: Jar) {
-  from android.sourceSets.main.java
+  from 'src/main/java'
 }
 
 task wrapper(type: Wrapper) {
