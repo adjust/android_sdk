@@ -254,7 +254,8 @@ public class ActivityHandler extends HandlerThread {
         }
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
-        attributionHandler = new AttributionHandler(this, adjustConfig.attributionMaxTimeMilliseconds);
+        attributionHandler = buildAttributionHandler();
+
         activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
 
         startInternal();
@@ -474,13 +475,12 @@ public class ActivityHandler extends HandlerThread {
         Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
-    // TODO validate if this is equal with an offline mode
-    /*
-    private void setDropOfflineActivities(boolean drop) {
-        dropOfflineActivities = drop;
-        if (dropOfflineActivities) {
-            logger.info("Offline activities will get dropped");
-        }
+    private AttributionHandler buildAttributionHandler() {
+        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
+        AttributionHandler attributionHandler = new AttributionHandler(this, attributionPackage, null);
+
+        return attributionHandler;
     }
-    */
+
 }

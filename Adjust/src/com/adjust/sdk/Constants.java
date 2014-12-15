@@ -22,6 +22,8 @@ public interface Constants {
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
     String BASE_URL = "https://app.adjust.com";
+    String SCHEME = "https";
+    String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android3.6.1";
     String LOGTAG = "Adjust";
 

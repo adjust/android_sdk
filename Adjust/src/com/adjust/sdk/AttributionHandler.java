@@ -1,13 +1,18 @@
 package com.adjust.sdk;
 
+import android.net.Uri;
+
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,16 +21,17 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 07/11/14.
  */
 class AttributionHandler {
-    private static final String url = Constants.BASE_URL + "/attribution";
     private ScheduledExecutorService scheduler;
     private ScheduledExecutorService maxTimeScheduler;
     private ActivityHandler activityHandler;
     private Logger logger;
+    private String url;
 
-    AttributionHandler(ActivityHandler activityHandler, Integer maxTimeMilliseconds) {
+    AttributionHandler(ActivityHandler activityHandler, ActivityPackage attributionPackage, Integer maxTimeMilliseconds) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
+        url = buildUrl(attributionPackage).toString();
 
         if (maxTimeMilliseconds != null) {
             maxTimeScheduler = Executors.newSingleThreadScheduledExecutor();
@@ -115,5 +121,19 @@ class AttributionHandler {
             return;
         }
         checkAttributionInternal(jsonResponse);
+    }
+
+    private Uri buildUrl(ActivityPackage attributionPackage) {
+        Uri.Builder uriBuilder = new Uri.Builder();
+
+        uriBuilder.scheme(Constants.SCHEME);
+        uriBuilder.authority(Constants.AUTHORITY);
+        uriBuilder.appendPath(attributionPackage.getPath());
+
+        for (Map.Entry<String, String> entity : attributionPackage.getParameters().entrySet()) {
+            uriBuilder.appendQueryParameter(entity.getKey(), entity.getValue());
+        }
+
+        return uriBuilder.build();
     }
 }

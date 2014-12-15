@@ -77,6 +77,16 @@ class PackageBuilder {
         return clickPackage;
     }
 
+    public ActivityPackage buildAttributionPackage() {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        ActivityPackage attributionPackage = getDefaultActivityPackage();
+        attributionPackage.setPath("/attribution");
+        attributionPackage.setParameters(parameters);
+
+        return attributionPackage;
+    }
+
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
         activityPackage.setClientSdk(deviceInfo.clientSdk);
@@ -85,6 +95,18 @@ class PackageBuilder {
 
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
+
+        addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        addString(parameters, "android_id", deviceInfo.androidId);
+        addString(parameters, "fb_id", deviceInfo.fbAttributionId);
+        String playAdId = Util.getPlayAdId(adjustConfig.context);
+        addString(parameters, "gps_adid", playAdId);
+
+        addString(parameters, "app_token", adjustConfig.appToken);
+        addString(parameters, "environment", adjustConfig.environment);
+        addString(parameters, "android_uuid", activityState.uuid);
+        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
 
         injectDeviceInfo(parameters);
         injectConfig(parameters);
