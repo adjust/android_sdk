@@ -9,6 +9,8 @@ import org.apache.http.params.HttpParams;
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
     private static IRequestHandler requestHandler = null;
+    private static IAttributionHandler attributionHandler = null;
+    private static IActivityHandler activityHandler = null;
     private static Logger logger = null;
     private static HttpClient httpClient = null;
 
@@ -66,6 +68,22 @@ public class AdjustFactory {
         return subsessionInterval;
     }
 
+    public static IActivityHandler getActivityHandler(AdjustConfig config) {
+        if (activityHandler == null) {
+            return ActivityHandler.getInstance(config);
+        }
+        return activityHandler;
+    }
+
+    public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
+                                                            ActivityPackage attributionPackage,
+                                                            Integer maxTimeMilliseconds) {
+        if (attributionHandler == null) {
+            return new AttributionHandler(activityHandler, attributionPackage, maxTimeMilliseconds);
+        }
+        return attributionHandler;
+    }
+
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
@@ -92,6 +110,14 @@ public class AdjustFactory {
 
     public static void setSubsessionInterval(long subsessionInterval) {
         AdjustFactory.subsessionInterval = subsessionInterval;
+    }
+
+    public static void setActivityHandler(IActivityHandler activityHandler) {
+        AdjustFactory.activityHandler = activityHandler;
+    }
+
+    public static void setAttributionHandler(IAttributionHandler attributionHandler) {
+        AdjustFactory.attributionHandler = attributionHandler;
     }
 
 }

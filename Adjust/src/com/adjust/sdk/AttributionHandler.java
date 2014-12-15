@@ -20,35 +20,34 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by pfms on 07/11/14.
  */
-class AttributionHandler {
+public class AttributionHandler implements IAttributionHandler{
     private ScheduledExecutorService scheduler;
     private ScheduledExecutorService maxTimeScheduler;
-    private ActivityHandler activityHandler;
+    private IActivityHandler activityHandler;
     private Logger logger;
     private String url;
 
-    AttributionHandler(ActivityHandler activityHandler, ActivityPackage attributionPackage, Integer maxTimeMilliseconds) {
+    public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage, Integer maxTimeMilliseconds) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
         url = buildUrl(attributionPackage).toString();
-
-        if (maxTimeMilliseconds != null) {
-            maxTimeScheduler = Executors.newSingleThreadScheduledExecutor();
-            maxTimeScheduler.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    launchAttributionDelegate();
-                }
-            }, maxTimeMilliseconds, TimeUnit.MILLISECONDS);
-        }
     }
 
-    private void launchAttributionDelegate() {
-        this.activityHandler.launchAttributionDelegate();
+    public void getAttribution() {
+        getAttribution(0);
     }
 
-    void getAttribution(int delayInMilliseconds) {
+    public void checkAttribution(final JSONObject jsonResponse) {
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                checkAttributionInternal(jsonResponse);
+            }
+        }, 0, TimeUnit.MILLISECONDS);
+    }
+
+    private void getAttribution(int delayInMilliseconds) {
         scheduler.schedule(new Runnable() {
             @Override
             public void run() {
@@ -56,24 +55,6 @@ class AttributionHandler {
             }
         }, delayInMilliseconds, TimeUnit.MILLISECONDS);
     }
-
-    void getAttribution() {
-        getAttribution(0);
-    }
-
-    void checkAttribution(final JSONObject jsonResponse, int delayInMilliseconds) {
-        scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                checkAttributionInternal(jsonResponse);
-            }
-        }, delayInMilliseconds, TimeUnit.MILLISECONDS);
-    }
-
-    void checkAttribution(final JSONObject jsonResponse) {
-        checkAttribution(jsonResponse, 0);
-    }
-
 
     private void checkAttributionInternal(JSONObject jsonResponse) {
         if (jsonResponse == null) return;

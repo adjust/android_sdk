@@ -33,7 +33,7 @@ import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
 import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
 
-public class ActivityHandler extends HandlerThread {
+public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     private static long TIMER_INTERVAL;
     private static long SESSION_INTERVAL;
@@ -53,7 +53,7 @@ public class ActivityHandler extends HandlerThread {
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
     private Attribution attribution;
-    private AttributionHandler attributionHandler;
+    private IAttributionHandler attributionHandler;
 
     private ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
@@ -125,7 +125,7 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    public Boolean isEnabled() {
+    public boolean isEnabled() {
         if (activityState != null) {
             return activityState.enabled;
         } else {
@@ -475,10 +475,10 @@ public class ActivityHandler extends HandlerThread {
         Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
-    private AttributionHandler buildAttributionHandler() {
+    private IAttributionHandler buildAttributionHandler() {
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
-        AttributionHandler attributionHandler = new AttributionHandler(this, attributionPackage, null);
+        IAttributionHandler attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage, null);
 
         return attributionHandler;
     }
