@@ -55,18 +55,33 @@ public class ActivityHandler extends HandlerThread {
     private Attribution attribution;
     private AttributionHandler attributionHandler;
 
-    public ActivityHandler(AdjustConfig adjustConfig) {
+    private ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
 
+        logger = AdjustFactory.getLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
         enabled = true;
+        this.adjustConfig = adjustConfig;
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT;
-        message.obj = adjustConfig;
         sessionHandler.sendMessage(message);
+    }
+
+    public static ActivityHandler getInstance(AdjustConfig adjustConfig) {
+        if (adjustConfig == null) {
+            AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
+            return null;
+        }
+
+        if (!adjustConfig.isValid()) {
+            return null;
+        }
+
+        ActivityHandler activityHandler = new ActivityHandler(adjustConfig);
+        return activityHandler;
     }
 
     public void trackSubsessionStart() {
@@ -192,8 +207,7 @@ public class ActivityHandler extends HandlerThread {
 
             switch (message.arg1) {
                 case INIT:
-                    AdjustConfig adjustConfig = (AdjustConfig) message.obj;
-                    sessionHandler.initInternal(adjustConfig);
+                    sessionHandler.initInternal();
                     break;
                 case START:
                     sessionHandler.startInternal();
@@ -213,15 +227,12 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private void initInternal(AdjustConfig adjustConfig) {
+    private void initInternal() {
         TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
-        this.adjustConfig = adjustConfig;
-
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
-        logger = AdjustFactory.getLogger();
 
         if (adjustConfig.environment == AdjustConfig.PRODUCTION_ENVIRONMENT) {
             logger.setLogLevel(Logger.LogLevel.ASSERT);

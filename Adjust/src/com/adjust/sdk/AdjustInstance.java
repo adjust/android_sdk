@@ -24,7 +24,7 @@ public class AdjustInstance {
 
         adjustConfig.referrer = this.referrer;
 
-        activityHandler = new ActivityHandler(adjustConfig);
+        activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
 
     public void trackEvent(Event event) {
