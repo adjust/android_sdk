@@ -43,7 +43,7 @@ class PackageBuilder {
         addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
-        sessionPackage.setPath("/startup");
+        sessionPackage.setPath("/session");
         sessionPackage.setActivityKind(ActivityKind.SESSION);
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
