@@ -482,7 +482,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             public void run() {
                 timerFired();
             }
-        }, 1000, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+        }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     private void stopTimer() {
