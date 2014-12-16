@@ -71,8 +71,6 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         String macAddress = getMacAddress(context);
 
         packageName = getPackageName(context);
@@ -89,9 +87,6 @@ class DeviceInfo {
         screenDensity = getScreenDensity(displayMetrics);
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
-        networkType = getNetworkType(networkInfo);
-        networkSubtype = getNetworkSubtype(networkInfo);
-        simOperator = getSimOperator(context);
         clientSdk = getClientSdk(sdkPrefix);
         androidId = getAndroidId(context);
         fbAttributionId = getAttributionId(context);
@@ -213,19 +208,6 @@ class DeviceInfo {
 
     private String getDisplayHeight(DisplayMetrics displayMetrics) {
         return String.valueOf(displayMetrics.heightPixels);
-    }
-
-    private String getNetworkType(NetworkInfo networkInfo) {
-        return networkInfo.getTypeName();
-    }
-
-    private String getNetworkSubtype(NetworkInfo networkInfo) {
-        return networkInfo.getSubtypeName();
-    }
-
-    private String getSimOperator(Context context) {
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        return telephonyManager.getSimOperator();
     }
 
     private String getClientSdk(String sdkPrefix) {
