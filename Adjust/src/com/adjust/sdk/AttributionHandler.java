@@ -67,21 +67,24 @@ public class AttributionHandler implements IAttributionHandler{
         JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
         Attribution attribution = Attribution.fromJson(attributionJson);
 
-        Integer timerMilliseconds = null;
-        try {
-            timerMilliseconds = jsonResponse.getInt("ask_in");
-        } catch (JSONException e) {
-        }
+        int timerMilliseconds = jsonResponse.optInt("ask_in", -1);
 
-        if (attribution != null && timerMilliseconds == null) {
-            attribution.finalAttribution = true;
-        }
+        if (timerMilliseconds < 0) {
+            boolean updated = activityHandler.updateAttribution(attribution);
 
-        activityHandler.updateAttribution(attribution);
+            if (updated) {
+                activityHandler.launchAttributionDelegate();
+            }
 
-        if (timerMilliseconds == null) {
-            activityHandler.launchAttributionDelegate();
+            activityHandler.setAskingAttribution(false);
+
             return;
+        }
+
+        activityHandler.setAskingAttribution(true);
+
+        if (waitingTask != null) {
+            waitingTask.cancel(false);
         }
 
         getAttribution(timerMilliseconds);
