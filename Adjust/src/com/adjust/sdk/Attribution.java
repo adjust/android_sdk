@@ -10,41 +10,12 @@ import java.io.Serializable;
 public class Attribution implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    protected String trackerToken;
-    protected String trackerName;
-    protected String network;
-    protected String campaign;
-    protected String adgroup;
-    protected String creative;
-    protected boolean finalAttribution;
-
-    public String getTrackerToken() {
-        return trackerToken;
-    }
-
-    public String getTrackerName() {
-        return trackerName;
-    }
-
-    public String getNetwork() {
-        return network;
-    }
-
-    public String getCampaign() {
-        return campaign;
-    }
-
-    public String getAdgroup() {
-        return adgroup;
-    }
-
-    public String getCreative() {
-        return creative;
-    }
-
-    public boolean isFinalAttribution() {
-        return finalAttribution;
-    }
+    public String trackerToken;
+    public String trackerName;
+    public String network;
+    public String campaign;
+    public String adgroup;
+    public String creative;
 
     public static Attribution fromJson(JSONObject jsonObject) {
         if (jsonObject == null) return null;
@@ -67,13 +38,13 @@ public class Attribution implements Serializable {
         if (getClass() != other.getClass()) return false;
         Attribution otherAttribution = (Attribution) other;
 
-        if (!equalString(trackerToken, otherAttribution.trackerToken)) return false;
-        if (!equalString(trackerName, otherAttribution.trackerName)) return false;
-        if (!equalString(network, otherAttribution.network)) return false;
-        if (!equalString(campaign, otherAttribution.campaign)) return false;
-        if (!equalString(adgroup, otherAttribution.adgroup)) return false;
-        if (!equalString(creative, otherAttribution.creative)) return false;
-        return finalAttribution == otherAttribution.finalAttribution;
+        if (!equalString(trackerToken,  otherAttribution.trackerToken)) return false;
+        if (!equalString(trackerName,   otherAttribution.trackerName)) return false;
+        if (!equalString(network,       otherAttribution.network)) return false;
+        if (!equalString(campaign,      otherAttribution.campaign)) return false;
+        if (!equalString(adgroup,       otherAttribution.adgroup)) return false;
+        if (!equalString(creative,      otherAttribution.creative)) return false;
+        return true;
     }
 
     private boolean equalString(String first, String second) {
@@ -81,5 +52,11 @@ public class Attribution implements Serializable {
             return first == null && second == null;
         }
         return first.equals(second);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
+                trackerToken, trackerName, network, campaign, adgroup, creative);
     }
 }
