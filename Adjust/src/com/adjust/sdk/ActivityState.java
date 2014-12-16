@@ -25,6 +25,7 @@ public class ActivityState implements Serializable, Cloneable {
     // persistent data
     protected String uuid;
     protected Boolean enabled;
+    protected Boolean askingAttribution;
 
     // global counters
     protected int eventCount;
@@ -43,6 +44,7 @@ public class ActivityState implements Serializable, Cloneable {
         // create UUID for new devices
         uuid = Util.createUuid();
         enabled = true;
+        askingAttribution = false;
 
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -96,10 +98,13 @@ public class ActivityState implements Serializable, Cloneable {
         // default values for migrating devices
         uuid = null;
         enabled = true;
+        askingAttribution = false;
+
         // try to read in order of less recent new fields
         try {
             uuid = (String) fields.get("uuid", null);
             enabled = fields.get("enabled", true);
+            askingAttribution = fields.get("askingAttribution", false);
             // add new fields here
         } catch (Exception e) {
             Logger logger = AdjustFactory.getLogger();
@@ -110,7 +115,6 @@ public class ActivityState implements Serializable, Cloneable {
         // create UUID for migrating devices
         if (uuid == null) {
             uuid = Util.createUuid();
-            Log.d("XXX", "migrate " + uuid);
         }
     }
 

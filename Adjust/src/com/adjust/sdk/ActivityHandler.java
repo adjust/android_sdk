@@ -49,6 +49,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private Logger logger;
     private static ScheduledExecutorService timer;
     private boolean enabled;
+    private boolean shouldGetAttribution;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
@@ -181,6 +182,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
     }
 
+    public void setAskingAttribution(boolean askingAttribution) {
+        activityState.askingAttribution = askingAttribution;
+        writeActivityState();
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int INIT = 72630;
         private static final int START = 72640;
@@ -259,6 +265,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
         attributionHandler = buildAttributionHandler();
 
+        shouldGetAttribution = true;
 
         startInternal();
     }
@@ -321,6 +328,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
         writeActivityState();
+
+        if (attribution == null || activityState.askingAttribution) {
+            if (shouldGetAttribution) {
+                attributionHandler.getAttribution();
+            }
+        }
+
     }
 
     private void endInternal() {
@@ -444,6 +458,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
+        shouldGetAttribution = false;
     }
 
     private void startTimer() {
