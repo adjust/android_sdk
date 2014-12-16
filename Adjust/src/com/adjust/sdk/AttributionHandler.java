@@ -27,7 +27,7 @@ public class AttributionHandler implements IAttributionHandler{
     private Logger logger;
     private String url;
 
-    public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage, Integer maxTimeMilliseconds) {
+    public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
@@ -53,7 +53,7 @@ public class AttributionHandler implements IAttributionHandler{
             public void run() {
                 getAttributionInternal();
             }
-        }, delayInMilliseconds, TimeUnit.MILLISECONDS);
+        }, 0, TimeUnit.MILLISECONDS);
     }
 
     private void checkAttributionInternal(JSONObject jsonResponse) {

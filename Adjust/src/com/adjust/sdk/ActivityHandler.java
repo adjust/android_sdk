@@ -478,7 +478,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private IAttributionHandler buildAttributionHandler() {
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
-        IAttributionHandler attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage, null);
+        IAttributionHandler attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage);
 
         return attributionHandler;
     }

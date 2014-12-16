@@ -76,10 +76,9 @@ public class AdjustFactory {
     }
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
-                                                            ActivityPackage attributionPackage,
-                                                            Integer maxTimeMilliseconds) {
+                                                            ActivityPackage attributionPackage) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, maxTimeMilliseconds);
+            return new AttributionHandler(activityHandler, attributionPackage);
         }
         return attributionHandler;
     }
