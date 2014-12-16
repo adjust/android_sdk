@@ -87,10 +87,6 @@ public class AdjustConfig {
         this.attributionMaxTimeMilliseconds = milliseconds;
     }
 
-    public void markKnownDevice() {
-        this.knowDevice = true;
-    }
-
     public boolean hasDelegate() { return onFinishedListener != null; }
 
     public boolean isValid() {
