@@ -3,6 +3,7 @@ package com.adjust.sdk;
 import android.net.Uri;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -91,6 +92,7 @@ public class AttributionHandler implements IAttributionHandler{
     }
 
     private void getAttributionInternal() {
+        logger.verbose("click package url: %s", url);
         HttpResponse httpResponse = null;
         try {
             HttpClient client = new DefaultHttpClient();
@@ -104,7 +106,19 @@ public class AttributionHandler implements IAttributionHandler{
 
         JSONObject jsonResponse = Util.parseJsonResponse(httpResponse, logger);
 
+        String message = jsonResponse.optString("message");
+
+        if (message == null) {
+            message = "No message found";
         }
+
+        if (httpResponse != null &&
+            httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            logger.debug(message);
+        } else {
+            logger.error(message);
+        }
+
         checkAttributionInternal(jsonResponse);
     }
 
