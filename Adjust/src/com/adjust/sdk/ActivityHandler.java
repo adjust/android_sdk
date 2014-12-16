@@ -141,15 +141,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sessionHandler.sendMessage(message);
     }
 
-    public void updateAttribution(Attribution attribution) {
-        if (attribution == null) return;
+    public boolean updateAttribution(Attribution attribution) {
+        if (attribution == null) return false;
 
         if (attribution.equals(this.attribution)) {
-            return;
+            return false;
         }
 
         this.attribution = attribution;
         writeAttribution();
+
+        return true;
     }
 
     public void launchAttributionDelegate() {

@@ -15,7 +15,7 @@ public interface IActivityHandler {
     public void setEnabled(Boolean enabled);
     public boolean isEnabled();
     public void readOpenUrl(Uri url);
-    public void updateAttribution(Attribution attribution);
+    public boolean updateAttribution(Attribution attribution);
     public void launchAttributionDelegate();
     public void setReferrer(String referrer);
     public void setOfflineMode(boolean enabled);
