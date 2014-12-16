@@ -40,8 +40,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
     private static final String ADJUST_PREFIX = "adjust_";
-    private static final String ACTIVITY_STATE_NAME = "activity state";
-    private static final String ATTRIBUTION_NAME = "attribution";
+    private static final String ACTIVITY_STATE_NAME = "Activity state";
+    private static final String ATTRIBUTION_NAME = "Attribution";
 
     private SessionHandler sessionHandler;
     private IPackageHandler packageHandler;
@@ -148,7 +148,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
 
         this.attribution = attribution;
-        Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+        writeAttribution();
     }
 
     public void launchAttributionDelegate() {
@@ -253,10 +253,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
+        readAttribution();
+        readActivityState();
+
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
         attributionHandler = buildAttributionHandler();
 
-        activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
 
         startInternal();
     }
@@ -281,7 +283,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
-            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+            writeActivityState();
             if (adjustConfig.referrer != null) {
                 setReferrer(adjustConfig.referrer);
             }
@@ -293,7 +295,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
-            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+            writeActivityState();
             return;
         }
 
@@ -305,7 +307,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
-            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+            writeActivityState();
             return;
         }
 
@@ -318,14 +320,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
-        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        writeActivityState();
     }
 
     private void endInternal() {
         packageHandler.pauseSending();
         stopTimer();
         updateActivityState(System.currentTimeMillis());
-        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        writeActivityState();
     }
 
     private void trackEventInternal(Event event) {
@@ -349,7 +351,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             packageHandler.sendFirstPackage();
         }
 
-        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        writeActivityState();
     }
 
     private void readOpenUrlInternal(Uri url) {
@@ -472,7 +474,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         packageHandler.sendFirstPackage();
 
         updateActivityState(System.currentTimeMillis());
-        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        writeActivityState();
     }
 
     private IAttributionHandler buildAttributionHandler() {
@@ -482,5 +484,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         return attributionHandler;
     }
+
+    private void readActivityState() {
+        activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+    }
+
+    private void readAttribution() {
+        attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    }
+
+    private void writeActivityState() {
+        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+    }
+
+    private void writeAttribution() {
+        Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    }
+
 
 }
