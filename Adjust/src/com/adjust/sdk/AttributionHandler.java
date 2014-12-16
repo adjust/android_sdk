@@ -94,12 +94,8 @@ public class AttributionHandler implements IAttributionHandler{
             return;
         }
 
-        String response = Util.parseResponse(httpResponse, logger);
-        JSONObject jsonResponse = Util.buildJsonObject(response);
+        JSONObject jsonResponse = Util.parseJsonResponse(httpResponse, logger);
 
-        if (jsonResponse == null) {
-            logger.error("Failed to parse json attribution response: %s", response);
-            return;
         }
         checkAttributionInternal(jsonResponse);
     }

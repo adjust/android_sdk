@@ -139,8 +139,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void requestFinished(HttpResponse response, boolean sendToPackageHandler) {
-        String responseString = Util.parseResponse(response, logger);
-        JSONObject jsonResponse = Util.buildJsonObject(responseString);
+        JSONObject jsonResponse = Util.parseJsonResponse(response, logger);
 
         if (sendToPackageHandler) {
             packageHandler.finishedTrackingActivity(jsonResponse);

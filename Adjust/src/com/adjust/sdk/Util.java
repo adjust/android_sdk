@@ -140,17 +140,25 @@ public class Util {
         }
     }
 
-    public static JSONObject buildJsonObject(String jsonString) {
-        if (jsonString == null) return null;
-
+    public static JSONObject parseJsonResponse(HttpResponse httpResponse, Logger logger) {
+        if (httpResponse == null) {
+            return null;
+        }
+        String response = null;
         try {
-            JSONObject jsonObject = new JSONObject(jsonString);
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            httpResponse.getEntity().writeTo(out);
+            out.close();
+            response = out.toString().trim();
+            logger.verbose("Response: %s", response);
+            if (response == null) return null;
+            JSONObject jsonObject = new JSONObject(response);
             return jsonObject;
         } catch (JSONException e) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.error("Failed to parse json response: %s (%s)", jsonString, e.getMessage());
+            logger.error("Failed to parse json response: %s (%s)", response, e.getMessage());
+        } catch (Exception e) {
+            logger.error("Failed to parse response (%s)", e);
         }
-
         return null;
     }
 }
