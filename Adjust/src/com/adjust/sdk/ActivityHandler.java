@@ -50,6 +50,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private static ScheduledExecutorService timer;
     private boolean enabled;
     private boolean shouldGetAttribution;
+    private boolean offline;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
@@ -177,10 +178,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     public void setOfflineMode(boolean enabled) {
         if (enabled) {
+            offline = true;
             endInternal();
+            logger.info("Pausing package handler to put in offline mode");
         } else {
+            offline = false;
             packageHandler.resumeSending();
             startTimer();
+            logger.info("Resuming package handler to put in online mode");
         }
     }
 
@@ -273,12 +278,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void startInternal() {
+        // it shouldn't start if it was disabled after a first session
         if (activityState != null
                 && !activityState.enabled) {
             return;
         }
 
-        packageHandler.resumeSending();
+        if (!offline) {
+            packageHandler.resumeSending();
+
+        }
         startTimer();
 
         long now = System.currentTimeMillis();
