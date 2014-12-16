@@ -15,6 +15,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -26,6 +27,7 @@ public class AttributionHandler implements IAttributionHandler{
     private IActivityHandler activityHandler;
     private Logger logger;
     private String url;
+    private ScheduledFuture waitingTask;
 
     public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
@@ -35,6 +37,9 @@ public class AttributionHandler implements IAttributionHandler{
     }
 
     public void getAttribution() {
+        if (waitingTask != null) {
+            waitingTask.cancel(false);
+        }
         getAttribution(0);
     }
 
@@ -48,7 +53,7 @@ public class AttributionHandler implements IAttributionHandler{
     }
 
     private void getAttribution(int delayInMilliseconds) {
-        scheduler.schedule(new Runnable() {
+        waitingTask = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 getAttributionInternal();
