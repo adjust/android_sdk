@@ -45,12 +45,12 @@ public class AttributionHandler implements IAttributionHandler{
     }
 
     public void checkAttribution(final JSONObject jsonResponse) {
-        scheduler.schedule(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 checkAttributionInternal(jsonResponse);
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        });
     }
 
     private void getAttribution(int delayInMilliseconds) {
@@ -59,7 +59,7 @@ public class AttributionHandler implements IAttributionHandler{
             public void run() {
                 getAttributionInternal();
             }
-        }, 0, TimeUnit.MILLISECONDS);
+        }, delayInMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     private void checkAttributionInternal(JSONObject jsonResponse) {
@@ -88,6 +88,8 @@ public class AttributionHandler implements IAttributionHandler{
             waitingTask.cancel(false);
         }
 
+        logger.debug("Waiting to query attribution in %d milliseconds", timerMilliseconds);
+
         getAttribution(timerMilliseconds);
     }
 
@@ -105,6 +107,7 @@ public class AttributionHandler implements IAttributionHandler{
         }
 
         JSONObject jsonResponse = Util.parseJsonResponse(httpResponse, logger);
+        if (jsonResponse == null) return;
 
         String message = jsonResponse.optString("message");
 
@@ -112,8 +115,7 @@ public class AttributionHandler implements IAttributionHandler{
             message = "No message found";
         }
 
-        if (httpResponse != null &&
-            httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
             logger.debug(message);
         } else {
             logger.error(message);
