@@ -13,64 +13,112 @@ public class Event {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
-    private Event() {
+    private Logger logger;
+
+    private Event(String eventToken, Logger logger) {
+        this.eventToken = eventToken;
+        this.logger = logger;
     }
 
     public static Event getInstance(String eventToken) {
         Logger logger = AdjustFactory.getLogger();
 
-        if (eventToken == null) {
-            logger.error("Missing Event Token");
-            return null;
-        }
-        if (eventToken.length() != 6) {
-            logger.error("Malformed Event Token '%s'", eventToken);
-            return null;
-        }
+        if (!checkEventToken(eventToken, logger)) return null;
 
-        Event event = new Event();
-        event.eventToken = eventToken;
+        Event event = new Event(eventToken, logger);
 
         return event;
     }
 
-    public static Event getInstance(String eventToken, double revenue, String currency) {
-        Event event = getInstance(eventToken);
-        if (event == null) {
-            return null;
-        }
+    public void setRevenue(double revenue, String currency) {
+        if(!checkRevenue(revenue, currency)) return;
 
-        Logger logger = AdjustFactory.getLogger();
-
-        if (revenue < 0.0) {
-            logger.error("Invalid amount %f", revenue);
-            return null;
-        }
-
-        if (currency == null) {
-            logger.error("Currency must be set with revenue");
-            return null;
-        }
-
-        event.revenue = revenue;
-        event.currency = currency;
-
-        return event;
+        this.revenue = revenue;
+        this.currency = currency;
     }
 
     public void addCallbackParameter(String key, String value) {
+        if (!isValidParameter(key, "key", "Callback")) return;
+        if (!isValidParameter(value, "value", "Callback")) return;
+
         if (callbackParameters == null) {
             callbackParameters = new HashMap<String, String>();
         }
 
-        callbackParameters.put(key, value);
+        String previousValue = callbackParameters.put(key, value);
+
+        if (previousValue != null) {
+            logger.warn("key %s was overwritten", key);
+        }
     }
 
     public void addPartnerParameter(String key, String value) {
+        if (!isValidParameter(key, "key", "Partner")) return;
+        if (!isValidParameter(value, "value", "Partner")) return;
+
         if (partnerParameters == null) {
             partnerParameters = new HashMap<String, String>();
         }
 
-        partnerParameters.put(key, value);
+        String previousValue = partnerParameters.put(key, value);
+
+        if (previousValue != null) {
+            logger.warn("key %s was overwritten", key);
+        }
+    }
+
+    public boolean isValid() {
+        if (!checkEventToken(eventToken, logger)) return false;
+        if (!checkRevenue(revenue, currency)) return false;
+
+        return true;
+    }
+
+    private static boolean checkEventToken(String eventToken, Logger logger) {
+        if (eventToken == null) {
+            logger.error("Missing Event Token");
+            return false;
+        }
+        if (eventToken.length() != 6) {
+            logger.error("Malformed Event Token '%s'", eventToken);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkRevenue(Double revenue, String currency) {
+        if (revenue != null) {
+            if (revenue < 0.0) {
+                logger.error("Invalid amount %.4f", revenue);
+                return false;
+            }
+
+            if (currency == null) {
+                logger.error("Currency must be set with revenue");
+                return false;
+            }
+            if (currency == null) {
+                logger.error("Currency is empty");
+                return false;
+            }
+
+        } else if (currency != null) {
+            logger.error("Revenue must be set with currency");
+            return  false;
+        }
+        return true;
+    }
+
+    private boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+        if (attribute == null) {
+            logger.error("%s parameter %s is missing", parameterName, attributeType);
+            return false;
+        }
+        if (attribute == "") {
+            logger.error("%s parameter %s is empty", parameterName, attributeType);
+            return false;
+        }
+
+        return true;
     }
 }
