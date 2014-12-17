@@ -38,14 +38,14 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     private final InternalHandler internalHandler;
     private IRequestHandler requestHandler;
-    private ActivityHandler activityHandler;
+    private IActivityHandler activityHandler;
     private List<ActivityPackage> packageQueue;
     private AtomicBoolean isSending;
     private boolean paused;
     private Context context;
     private Logger logger;
 
-    public PackageHandler(ActivityHandler activityHandler, Context context) {
+    public PackageHandler(IActivityHandler activityHandler, Context context) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
