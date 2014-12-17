@@ -19,9 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 
 class PackageBuilder {
-
-    String referrer;
-
     Event event;
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
@@ -40,7 +37,6 @@ class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", activityState.lastInterval);
         addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        addString(parameters, Constants.REFERRER, referrer);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage();
         sessionPackage.setPath("/session");
@@ -64,9 +60,12 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage() {
+    public ActivityPackage buildClickPackage(String source) {
         Map<String, String> parameters = getDefaultParameters();
-        addMapJson(parameters, "deeplink_parameters", deepLinkParameters);
+        addString(parameters, "source", source);
+
+        addString(parameters, "referrer", adjustConfig.referrer);
+        addMapJson(parameters, "params", deepLinkParameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage();
         clickPackage.setPath("/sdk_click");
