@@ -14,8 +14,6 @@ public class AdjustInstance {
         return AdjustFactory.getLogger();
     }
 
-    ;
-
     public void onCreate(AdjustConfig adjustConfig) {
         if (activityHandler != null) {
             getLogger().error("Adjust already initialized");
@@ -58,7 +56,9 @@ public class AdjustInstance {
     }
 
     public void setReferrer(String referrer) {
+        // setReferrer might be triggered before Adjust
         if (activityHandler == null) {
+            // save it to inject in the config before launch
             this.referrer = referrer;
         } else {
             activityHandler.setReferrer(referrer);
