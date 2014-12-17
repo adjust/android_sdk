@@ -83,6 +83,19 @@ class PackageBuilder {
     public ActivityPackage buildAttributionPackage() {
         Map<String, String> parameters = new HashMap<String, String>();
 
+        // device info fields
+        addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        addString(parameters, "android_id", deviceInfo.androidId);
+        // config fields
+        addString(parameters, "app_token", adjustConfig.appToken);
+        addString(parameters, "environment", adjustConfig.environment);
+        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
+        String playAdId = Util.getPlayAdId(adjustConfig.context);
+        addString(parameters, "gps_adid", playAdId);
+        // activity state fields
+        addString(parameters, "android_uuid", activityState.uuid);
+
         ActivityPackage attributionPackage = getDefaultActivityPackage();
         attributionPackage.setPath("/attribution");
         attributionPackage.setParameters(parameters);
@@ -99,24 +112,11 @@ class PackageBuilder {
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        addString(parameters, "android_id", deviceInfo.androidId);
-        addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        addString(parameters, "gps_adid", playAdId);
-
-        addString(parameters, "app_token", adjustConfig.appToken);
-        addString(parameters, "environment", adjustConfig.environment);
-        addString(parameters, "android_uuid", activityState.uuid);
-        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
-
         injectDeviceInfo(parameters);
         injectConfig(parameters);
-        constructActivityState(parameters);
+        injectActivityState(parameters);
 
         // general
-        fillPluginKeys(parameters);
         checkDeviceIds(parameters);
 
         return parameters;
@@ -144,6 +144,14 @@ class PackageBuilder {
         addString(parameters, "network_type", deviceInfo.networkType);
         addString(parameters, "network_subtype", deviceInfo.networkSubtype);
         addString(parameters, "sim_operator", deviceInfo.simOperator);
+        fillPluginKeys(parameters);
+    }
+
+    private void injectConfig(Map<String, String> parameters) {
+        addString(parameters, "app_token", adjustConfig.appToken);
+        addString(parameters, "environment", adjustConfig.environment);
+        addBoolean(parameters, "device_known", adjustConfig.knowDevice);
+        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         addString(parameters, "gps_adid", playAdId);
@@ -151,13 +159,7 @@ class PackageBuilder {
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
     }
 
-    private void injectConfig(Map<String, String> parameters) {
-        addString(parameters, "app_token", adjustConfig.appToken);
-        addString(parameters, "environment", adjustConfig.environment);
-        addBoolean(parameters, "device_known", adjustConfig.knowDevice);
-    }
-
-    private void constructActivityState(Map<String, String> parameters) {
+    private void injectActivityState(Map<String, String> parameters) {
         addDate(parameters, "created_at", activityState.createdAt);
         addString(parameters, "android_uuid", activityState.uuid);
         addInt(parameters, "session_count", activityState.sessionCount);
