@@ -19,7 +19,6 @@ import java.util.Locale;
 import java.util.Map;
 
 class PackageBuilder {
-    Event event;
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
     private ActivityState activityState;
@@ -47,14 +46,19 @@ class PackageBuilder {
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage() {
+    public ActivityPackage buildEventPackage(Event event) {
         Map<String, String> parameters = getDefaultParameters();
-        injectEventParameters(parameters);
+        addInt(parameters, "event_count", activityState.eventCount);
+        addString(parameters, "event_token", event.eventToken);
+        addDouble(parameters, "revenue", event.revenue);
+        addString(parameters, "currency", event.currency);
+        addMapBase64(parameters, "callback_params", event.callbackParameters);
+        addMapBase64(parameters, "partner_params", event.partnerParameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage();
         eventPackage.setPath("/event");
         eventPackage.setActivityKind(ActivityKind.EVENT);
-        eventPackage.setSuffix(getEventSuffix());
+        eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
 
         return eventPackage;
@@ -182,27 +186,11 @@ class PackageBuilder {
         }
     }
 
-    private void injectEventParameters(Map<String, String> parameters) {
-        addInt(parameters, "event_count", activityState.eventCount);
-        addString(parameters, "event_token", event.eventToken);
-        addMapBase64(parameters, "params", event.callbackParameters);
-    }
-
-    private String getAmountString() {
-        long amountInMillis = Math.round(1000 * event.revenue);
-        event.revenue = amountInMillis / 1000.0; // now rounded to one decimal point
-        return Long.toString(amountInMillis);
-    }
-
-    private String getEventSuffix() {
-        return String.format(" '%s'", event.eventToken);
-    }
-
-    private String getRevenueSuffix() {
+    private String getEventSuffix(Event event) {
         if (event.revenue == null) {
             return String.format(" '%s'", event.eventToken);
         } else {
-            return String.format(Locale.US, " (%.1f cent, '%s')", event.revenue, event.eventToken);
+            return String.format(Locale.US, " (%.4f cent, '%s')", event.revenue, event.eventToken);
         }
     }
 
@@ -272,5 +260,13 @@ class PackageBuilder {
         int intValue = value ? 1 : 0;
 
         addInt(parameters, key, intValue);
+    }
+
+    private void addDouble(Map<String, String> parameters, String key, Double value) {
+        if (value == null) return;
+
+        String doubleString = value.toString();
+
+        addString(parameters, key, doubleString);
     }
 }
