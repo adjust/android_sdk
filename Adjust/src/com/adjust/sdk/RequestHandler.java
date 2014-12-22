@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.os.Message;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -139,12 +140,37 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void requestFinished(HttpResponse response, boolean sendToPackageHandler) {
-        JSONObject jsonResponse = Util.parseJsonResponse(response, logger);
+        JSONObject jsonResponse = processResponse(response);
 
+        if (jsonResponse == null) {
+            if (sendToPackageHandler) {
+                packageHandler.closeFirstPackage();
+            }
+            return;
+        }
+
+        packageHandler.finishedTrackingActivity(jsonResponse);
         if (sendToPackageHandler) {
-            packageHandler.finishedTrackingActivity(jsonResponse);
             packageHandler.sendNextPackage();
         }
+    }
+
+    private JSONObject processResponse(HttpResponse response) {
+        JSONObject jsonResponse = Util.parseJsonResponse(response, logger);
+        if (jsonResponse == null) return null;
+
+        String message = jsonResponse.optString("message");
+        if (message == null) {
+            message = "No message found";
+        }
+
+        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            logger.debug(message);
+        } else {
+            logger.error(message);
+        }
+
+        return jsonResponse;
     }
 
     // close current package because it failed
