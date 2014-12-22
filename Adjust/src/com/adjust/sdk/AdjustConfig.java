@@ -16,11 +16,8 @@ public class AdjustConfig {
     Logger.LogLevel logLevel;
     String sdkPrefix;
     Boolean eventBufferingEnabled;
-    Map<String, String> callbackPermanentParameters;
-    Map<String, String> partnerPermanentParameters;
     String defaultTracker;
     OnFinishedListener onFinishedListener;
-    Integer attributionMaxTimeMilliseconds;
     String referrer;
     Boolean knowDevice;
 
