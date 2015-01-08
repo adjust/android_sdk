@@ -27,14 +27,14 @@ public class AttributionHandler implements IAttributionHandler{
     private ScheduledExecutorService maxTimeScheduler;
     private IActivityHandler activityHandler;
     private Logger logger;
-    private String url;
+    private ActivityPackage attributionPackage;
     private ScheduledFuture waitingTask;
 
     public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
-        url = buildUrl(attributionPackage).toString();
+        this.attributionPackage = attributionPackage;
     }
 
     public void getAttribution() {
@@ -94,11 +94,12 @@ public class AttributionHandler implements IAttributionHandler{
     }
 
     private void getAttributionInternal() {
-        logger.verbose("click package url: %s", url);
+        logger.verbose("%s", attributionPackage.getExtendedString());
         HttpResponse httpResponse = null;
         try {
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet();
+            String url = buildUrl(attributionPackage).toString();
             request.setURI(new URI(url));
             httpResponse = client.execute(request);
         } catch (Exception e) {
