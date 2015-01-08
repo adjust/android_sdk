@@ -4,12 +4,9 @@ import android.net.Uri;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -22,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by pfms on 07/11/14.
  */
-public class AttributionHandler implements IAttributionHandler{
+public class AttributionHandler implements IAttributionHandler {
     private ScheduledExecutorService scheduler;
     private ScheduledExecutorService maxTimeScheduler;
     private IActivityHandler activityHandler;
@@ -99,8 +96,8 @@ public class AttributionHandler implements IAttributionHandler{
         try {
             HttpClient client = new DefaultHttpClient();
             HttpGet request = new HttpGet();
-            String url = buildUrl(attributionPackage).toString();
-            request.setURI(new URI(url));
+            Uri uri = buildUri(attributionPackage);
+            request.setURI(new URI(uri.toString()));
             httpResponse = client.execute(request);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
@@ -125,7 +122,7 @@ public class AttributionHandler implements IAttributionHandler{
         checkAttributionInternal(jsonResponse);
     }
 
-    private Uri buildUrl(ActivityPackage attributionPackage) {
+    private Uri buildUri(ActivityPackage attributionPackage) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);
