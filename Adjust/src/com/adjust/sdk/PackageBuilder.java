@@ -97,7 +97,7 @@ class PackageBuilder {
         addString(parameters, "android_uuid", activityState.uuid);
 
         ActivityPackage attributionPackage = getDefaultActivityPackage();
-        attributionPackage.setPath("/attribution");
+        attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setParameters(parameters);
 
         return attributionPackage;
