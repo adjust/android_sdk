@@ -56,32 +56,12 @@ public class AdjustConfig {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void addCallbackParameter(String key, String value) {
-        if (callbackPermanentParameters == null) {
-            callbackPermanentParameters = new HashMap<String, String>();
-        }
-
-        callbackPermanentParameters.put(key, value);
-    }
-
-    public void addPartnerParameter(String key, String value) {
-        if (partnerPermanentParameters == null) {
-            partnerPermanentParameters = new HashMap<String, String>();
-        }
-
-        partnerPermanentParameters.put(key, value);
-    }
-
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
     }
 
     public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
         this.onFinishedListener = onFinishedListener;
-    }
-
-    public void setAttributionMaxTime(int milliseconds) {
-        this.attributionMaxTimeMilliseconds = milliseconds;
     }
 
     public boolean hasDelegate() { return onFinishedListener != null; }
