@@ -10,6 +10,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -95,9 +96,7 @@ public class AttributionHandler implements IAttributionHandler {
         HttpResponse httpResponse = null;
         try {
             HttpClient client = new DefaultHttpClient();
-            HttpGet request = new HttpGet();
-            Uri uri = buildUri(attributionPackage);
-            request.setURI(new URI(uri.toString()));
+            HttpGet request = getRequest(attributionPackage);
             httpResponse = client.execute(request);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
@@ -134,5 +133,15 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         return uriBuilder.build();
+    }
+
+    private HttpGet getRequest(ActivityPackage attributionPackage) throws URISyntaxException {
+        HttpGet request = new HttpGet();
+        Uri uri = buildUri(attributionPackage);
+        request.setURI(new URI(uri.toString()));
+
+        request.addHeader("Client-SDK", attributionPackage.getClientSdk());
+
+        return request;
     }
 }
