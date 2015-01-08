@@ -112,7 +112,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         String deepLink = jsonResponse.optString("deeplink", null);
         launchDeepLinkMain(deepLink);
-        attributionHandler.checkAttribution(jsonResponse);
+        getAttributionHandler().checkAttribution(jsonResponse);
     }
 
     public void setEnabled(Boolean enabled) {
