@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.14.0'
+        classpath 'com.android.tools.build:gradle:1.0.0'
     }
 }
 repositories {
@@ -14,13 +14,12 @@ repositories {
     mavenLocal()
 }
 android {
-    buildToolsVersion '19.1'
-    compileSdkVersion 19
+    buildToolsVersion '21.1.2'
+    compileSdkVersion 21
     defaultConfig {
-        versionCode 11
-        versionName '3.6.1'
+        versionName '4.0.0'
         minSdkVersion 8
-        targetSdkVersion 19
+        targetSdkVersion 21
     }
     sourceSets {
         main {
@@ -35,7 +34,7 @@ android {
     }
 }
 task jar(type: Jar) {
-    from android.sourceSets.main.java
+    from android.sourceSets.main.java.sourceFiles
 }
 task wrapper(type: Wrapper) {
     gradleVersion = '1.8'
