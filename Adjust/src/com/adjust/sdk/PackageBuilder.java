@@ -141,9 +141,6 @@ class PackageBuilder {
         addString(parameters, "screen_density", deviceInfo.screenDensity);
         addString(parameters, "display_width", deviceInfo.displayWidth);
         addString(parameters, "display_height", deviceInfo.displayHeight);
-        addString(parameters, "network_type", deviceInfo.networkType);
-        addString(parameters, "network_subtype", deviceInfo.networkSubtype);
-        addString(parameters, "sim_operator", deviceInfo.simOperator);
         fillPluginKeys(parameters);
     }
 
