@@ -19,5 +19,5 @@ public interface IPackageHandler {
 
     public void finishedTrackingActivity(JSONObject jsonResponse);
 
-    void sendClickPackage(ActivityPackage clickPackage);
+    public void sendClickPackage(ActivityPackage clickPackage);
 }

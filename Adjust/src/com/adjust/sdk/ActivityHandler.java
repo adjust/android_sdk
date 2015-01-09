@@ -57,7 +57,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private Attribution attribution;
     private IAttributionHandler attributionHandler;
 
-    private ActivityHandler(AdjustConfig adjustConfig) {
+    public ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -187,15 +187,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sendReferrer();
     }
 
+    public void setAskingAttribution(boolean askingAttribution) {
+        activityState.askingAttribution = askingAttribution;
+        writeActivityState();
+    }
+
     private void sendReferrer() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SEND_REFERRER;
         sessionHandler.sendMessage(message);
-    }
-
-    public void setAskingAttribution(boolean askingAttribution) {
-        activityState.askingAttribution = askingAttribution;
-        writeActivityState();
     }
 
     private static final class SessionHandler extends Handler {
@@ -476,6 +476,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     public static Boolean deleteActivityState(Context context) {
         return context.deleteFile(SESSION_STATE_FILENAME);
+    }
+
+    public static Boolean deleteAttribution(Context context) {
+        return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
     private void transferSessionPackage() {
