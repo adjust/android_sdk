@@ -321,12 +321,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         processSession();
 
+        checkAttributionState();
+
         startTimer();
-        if (attribution == null || activityState.askingAttribution) {
-            if (shouldGetAttribution) {
-                getAttributionHandler().getAttribution();
-            }
-        }
     }
 
     private void processSession() {
@@ -375,6 +372,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             logger.info("Started subsession %d of session %d",
                     activityState.subsessionCount,
                     activityState.sessionCount);
+        }
+    }
+
+    private void checkAttributionState() {
+        // if there is no attribution saved, or there is one being asked
+        if (attribution == null || activityState.askingAttribution) {
+            // and it was triggered the first time as a subsession
+            // (prevents sessions that did not save the attribution due to an interruption)
+            if (shouldGetAttribution) {
+                getAttributionHandler().getAttribution();
+            }
         }
     }
 
