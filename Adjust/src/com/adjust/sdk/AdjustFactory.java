@@ -15,6 +15,7 @@ public class AdjustFactory {
     private static HttpClient httpClient = null;
 
     private static long timerInterval = -1;
+    private static long timerStart = -1;
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
 
@@ -52,6 +53,13 @@ public class AdjustFactory {
             return Constants.ONE_MINUTE;
         }
         return timerInterval;
+    }
+
+    public static long getTimerStart() {
+        if (timerStart == -1) {
+            return 0;
+        }
+        return timerStart;
     }
 
     public static long getSessionInterval() {
@@ -101,6 +109,10 @@ public class AdjustFactory {
 
     public static void setTimerInterval(long timerInterval) {
         AdjustFactory.timerInterval = timerInterval;
+    }
+
+    public static void setTimerStart(long timerStart) {
+        AdjustFactory.timerStart = timerStart;
     }
 
     public static void setSessionInterval(long sessionInterval) {

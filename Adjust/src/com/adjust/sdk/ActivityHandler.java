@@ -36,6 +36,7 @@ import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
 public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     private static long TIMER_INTERVAL;
+    private static long TIMER_START;
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
@@ -249,6 +250,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     private void initInternal() {
         TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        TIMER_START = AdjustFactory.getTimerStart();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
@@ -500,7 +502,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             public void run() {
                 timerFired();
             }
-        }, 0, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+        }, TIMER_START, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
     }
 
     private void stopTimer() {
