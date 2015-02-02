@@ -98,6 +98,8 @@ class PackageBuilder {
 
         ActivityPackage attributionPackage = getDefaultActivityPackage();
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
+        attributionPackage.setActivityKind(ActivityKind.ATTRIBUTION);
+        attributionPackage.setSuffix("");
         attributionPackage.setParameters(parameters);
 
         return attributionPackage;
