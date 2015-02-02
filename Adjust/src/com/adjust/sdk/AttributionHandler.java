@@ -26,12 +26,14 @@ public class AttributionHandler implements IAttributionHandler {
     private Logger logger;
     private ActivityPackage attributionPackage;
     private ScheduledFuture waitingTask;
+    private HttpClient httpClient;
 
     public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
         this.attributionPackage = attributionPackage;
+        httpClient = Util.getHttpClient();
     }
 
     public void getAttribution() {
@@ -67,6 +69,7 @@ public class AttributionHandler implements IAttributionHandler {
 
         int timerMilliseconds = jsonResponse.optInt("ask_in", -1);
 
+        // without ask_in attribute
         if (timerMilliseconds < 0) {
             boolean updated = activityHandler.updateAttribution(attribution);
 
@@ -94,28 +97,14 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
         HttpResponse httpResponse = null;
         try {
-            HttpClient client = new DefaultHttpClient();
             HttpGet request = getRequest(attributionPackage);
-            httpResponse = client.execute(request);
+            httpResponse = httpClient.execute(request);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
 
         JSONObject jsonResponse = Util.parseJsonResponse(httpResponse, logger);
-        if (jsonResponse == null) return;
-
-        String message = jsonResponse.optString("message");
-
-        if (message == null) {
-            message = "No message found";
-        }
-
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.debug(message);
-        } else {
-            logger.error(message);
-        }
 
         checkAttributionInternal(jsonResponse);
     }

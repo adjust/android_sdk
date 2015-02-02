@@ -12,6 +12,11 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -144,21 +149,47 @@ public class Util {
         if (httpResponse == null) {
             return null;
         }
-        String response = null;
+        String stringResponse = null;
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             httpResponse.getEntity().writeTo(out);
             out.close();
-            response = out.toString().trim();
-            logger.verbose("Response: %s", response);
-            if (response == null) return null;
-            JSONObject jsonObject = new JSONObject(response);
-            return jsonObject;
-        } catch (JSONException e) {
-            logger.error("Failed to parse json response: %s (%s)", response, e.getMessage());
-        } catch (Exception e) {
-            logger.error("Failed to parse response (%s)", e);
+            stringResponse = out.toString().trim();
+        }  catch (Exception e) {
+            logger.error("Failed to parse response (%s)", e.getMessage());
         }
-        return null;
+
+        logger.verbose("Response: %s", stringResponse);
+        if (stringResponse == null) return null;
+
+        JSONObject jsonResponse = null;
+        try {
+            jsonResponse = new JSONObject(stringResponse);
+        } catch (JSONException e) {
+            logger.error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
+        }
+
+        if (jsonResponse == null) return null;
+
+        String message = jsonResponse.optString("message", null);
+
+        if (message == null) {
+            message = "No message found";
+        }
+
+        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            logger.debug(message);
+        } else {
+            logger.error(message);
+        }
+
+        return jsonResponse;
+    }
+
+    public static HttpClient getHttpClient() {
+        HttpParams httpParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
+        HttpConnectionParams.setSoTimeout(httpParams, Constants.SOCKET_TIMEOUT);
+        return AdjustFactory.getHttpClient(httpParams);
     }
 }

@@ -115,10 +115,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void initInternal() {
-        HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, CONNECTION_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(httpParams, SOCKET_TIMEOUT);
-        httpClient = AdjustFactory.getHttpClient(httpParams);
+        httpClient = Util.getHttpClient();
     }
 
     private void sendInternal(ActivityPackage activityPackage, boolean sendToPackageHandler) {
@@ -140,7 +137,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void requestFinished(HttpResponse response, boolean sendToPackageHandler) {
-        JSONObject jsonResponse = processResponse(response);
+        JSONObject jsonResponse = Util.parseJsonResponse(response, logger);
 
         if (jsonResponse == null) {
             if (sendToPackageHandler) {
@@ -153,24 +150,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         if (sendToPackageHandler) {
             packageHandler.sendNextPackage();
         }
-    }
-
-    private JSONObject processResponse(HttpResponse response) {
-        JSONObject jsonResponse = Util.parseJsonResponse(response, logger);
-        if (jsonResponse == null) return null;
-
-        String message = jsonResponse.optString("message");
-        if (message == null) {
-            message = "No message found";
-        }
-
-        if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.debug(message);
-        } else {
-            logger.error(message);
-        }
-
-        return jsonResponse;
     }
 
     // close current package because it failed
