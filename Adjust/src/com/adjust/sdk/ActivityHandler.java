@@ -134,11 +134,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     public void setOfflineMode(boolean offline) {
         this.offline = offline;
         if (offline) {
-            trackSubsessionEnd();
             logger.info("Pausing package handler to put in offline mode");
+            trackSubsessionEnd();
         } else {
-            trackSubsessionStart();
             logger.info("Resuming package handler to put in online mode");
+            trackSubsessionStart();
+            startTimer();
         }
     }
 
