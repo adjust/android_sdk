@@ -407,34 +407,77 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
 
         Map<String, String> adjustDeepLinks = new HashMap<String, String>();
+        Attribution deeplinkAttribution = new Attribution();
+        boolean hasDeeplink = false;
 
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
-            String[] pairComponents = pair.split("=");
-            if (pairComponents.length != 2) continue;
+            if (readDeeplinkQueryString(pair, adjustDeepLinks, deeplinkAttribution) && !hasDeeplink) {
+                hasDeeplink = true;
+            }
+        }
 
-            String key = pairComponents[0];
-            if (!key.startsWith(ADJUST_PREFIX)) continue;
-
-            String value = pairComponents[1];
-            if (value.length() == 0) continue;
-
-            String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
-            if (keyWOutPrefix.length() == 0) continue;
-
-            adjustDeepLinks.put(keyWOutPrefix, value);
+        if (!hasDeeplink) {
+            return;
         }
 
         getAttributionHandler().getAttribution();
 
-        if (adjustDeepLinks.size() == 0) {
-            return;
-        }
+        // TODO check if createdAt should be updated in click package
 
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        builder.deepLinkParameters = adjustDeepLinks;
+        builder.deeplinkParameters = adjustDeepLinks;
+        builder.deeplinkAttribution = deeplinkAttribution;
         ActivityPackage clickPackage = builder.buildClickPackage("deeplink");
         packageHandler.sendClickPackage(clickPackage);
+    }
+
+    private boolean readDeeplinkQueryString(String queryString,
+                                         Map<String, String> adjustDeepLinks,
+                                         Attribution deeplinkAttribution) {
+        String[] pairComponents = queryString.split("=");
+        if (pairComponents.length != 2) return false;
+
+        String key = pairComponents[0];
+        if (!key.startsWith(ADJUST_PREFIX)) return false;
+
+        String value = pairComponents[1];
+        if (value.length() == 0) return false;
+
+        String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
+        if (keyWOutPrefix.length() == 0) return false;
+
+        if (!trySetAttributionDeeplink(deeplinkAttribution, keyWOutPrefix, value)) {
+            adjustDeepLinks.put(keyWOutPrefix, value);
+        }
+
+        return  true;
+    }
+
+    private boolean trySetAttributionDeeplink(Attribution deeplinkAttribution,
+                                              String key,
+                                              String value) {
+        if (key.equals("tracker")) {
+            deeplinkAttribution.trackerName = value;
+            return true;
+        }
+
+        if (key.equals("campaign")) {
+            deeplinkAttribution.campaign = value;
+            return true;
+        }
+
+        if (key.equals("adgroup")) {
+            deeplinkAttribution.adgroup = value;
+            return true;
+        }
+
+        if (key.equals("creative")) {
+            deeplinkAttribution.creative = value;
+            return true;
+        }
+
+        return false;
     }
 
     private void launchDeepLinkMain(String deepLink) {
