@@ -116,7 +116,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         getAttributionHandler().checkAttribution(jsonResponse);
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
@@ -476,11 +476,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         return true;
     }
 
-    public static Boolean deleteActivityState(Context context) {
+    public static boolean deleteActivityState(Context context) {
         return context.deleteFile(SESSION_STATE_FILENAME);
     }
 
-    public static Boolean deleteAttribution(Context context) {
+    public static boolean deleteAttribution(Context context) {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 

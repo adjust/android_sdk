@@ -24,8 +24,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     // persistent data
     protected String uuid;
-    protected Boolean enabled;
-    protected Boolean askingAttribution;
+    protected boolean enabled;
+    protected boolean askingAttribution;
 
     // global counters
     protected int eventCount;
@@ -83,7 +83,8 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
-    private void readObject(ObjectInputStream stream) throws NotActiveException, IOException, ClassNotFoundException {
+
+    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();
 
         eventCount = fields.get("eventCount", 0);

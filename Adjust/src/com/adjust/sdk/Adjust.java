@@ -51,7 +51,7 @@ public class Adjust {
         adjustInstance.onPause();
     }
 
-    public static void setEnabled(Boolean enabled) {
+    public static void setEnabled(boolean enabled) {
         AdjustInstance adjustInstance = Adjust.getInstance();
         adjustInstance.setEnabled(enabled);
     }

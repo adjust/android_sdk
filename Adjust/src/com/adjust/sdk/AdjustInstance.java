@@ -40,7 +40,7 @@ public class AdjustInstance {
         activityHandler.trackSubsessionEnd();
     }
 
-    public void setEnabled(Boolean enabled) {
+    public void setEnabled(boolean enabled) {
         if (!checkActivityHandler()) return;
         activityHandler.setEnabled(enabled);
     }
