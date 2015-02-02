@@ -21,6 +21,9 @@ public interface Constants {
     int ONE_MINUTE = 60 * ONE_SECOND;
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
+    int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
+    int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
+
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";

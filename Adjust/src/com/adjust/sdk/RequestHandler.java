@@ -39,9 +39,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
-    private static final int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
-    private static final int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
-
     private InternalHandler internalHandler;
     private IPackageHandler packageHandler;
     private HttpClient httpClient;
