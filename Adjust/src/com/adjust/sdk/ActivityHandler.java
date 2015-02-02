@@ -58,7 +58,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private Attribution attribution;
     private IAttributionHandler attributionHandler;
 
-    public ActivityHandler(AdjustConfig adjustConfig) {
+    private ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
