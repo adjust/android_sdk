@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class AttributionHandler implements IAttributionHandler {
     private ScheduledExecutorService scheduler;
-    private ScheduledExecutorService maxTimeScheduler;
     private IActivityHandler activityHandler;
     private Logger logger;
     private ActivityPackage attributionPackage;
