@@ -195,6 +195,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         writeActivityState();
     }
 
+    public ActivityPackage getAttributionPackage() {
+        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        return attributionBuilder.buildAttributionPackage();
+    }
+
     private void sendReferrer() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SEND_REFERRER;
@@ -613,8 +618,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     // lazy initialization to prevent null activity state before first session
     private IAttributionHandler getAttributionHandler() {
         if (attributionHandler == null) {
-            PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-            ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
+            ActivityPackage attributionPackage = getAttributionPackage();
             attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage);
         }
         return attributionHandler;

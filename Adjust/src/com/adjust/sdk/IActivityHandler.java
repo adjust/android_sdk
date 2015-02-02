@@ -20,5 +20,5 @@ public interface IActivityHandler {
     public void setReferrer(String referrer);
     public void setOfflineMode(boolean enabled);
     public void setAskingAttribution(boolean askingAttribution);
-
+    public ActivityPackage getAttributionPackage();
 }
