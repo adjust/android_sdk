@@ -97,7 +97,7 @@ public class Event {
                 logger.error("Currency must be set with revenue");
                 return false;
             }
-            if (currency == null) {
+            if (currency == "") {
                 logger.error("Currency is empty");
                 return false;
             }
