@@ -123,10 +123,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
         if (enabled) {
             trackSubsessionStart();
-            logger.info("Pausing package handler to disable the SDK");
+            logger.info("Resuming package handler to enabled the SDK");
         } else {
             trackSubsessionEnd();
-            logger.info("Resuming package handler to enable the SDK");
+            logger.info("Pausing package handler to disable the SDK");
         }
     }
 
