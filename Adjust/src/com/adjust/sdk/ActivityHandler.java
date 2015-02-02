@@ -111,9 +111,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             return;
         }
 
-        String deepLink = jsonResponse.optString("deeplink", null);
-        launchDeepLinkMain(deepLink);
-        getAttributionHandler().checkAttribution(jsonResponse);
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.FINISH_TRACKING;
+        message.obj = jsonResponse;
+        sessionHandler.sendMessage(message);
     }
 
     public void setEnabled(boolean enabled) {
@@ -200,12 +201,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private static final class SessionHandler extends Handler {
-        private static final int INIT = 72630;
-        private static final int START = 72640;
-        private static final int END = 72650;
-        private static final int EVENT = 72660;
-        private static final int DEEP_LINK = 72680;
-        private static final int SEND_REFERRER = 72690;
+        private static final int BASE_ADDRESS = 72630;
+        private static final int INIT               = BASE_ADDRESS + 1;
+        private static final int START              = BASE_ADDRESS + 2;
+        private static final int END                = BASE_ADDRESS + 3;
+        private static final int EVENT              = BASE_ADDRESS + 4;
+        private static final int DEEP_LINK          = BASE_ADDRESS + 5;
+        private static final int SEND_REFERRER      = BASE_ADDRESS + 6;
+        private static final int FINISH_TRACKING    = BASE_ADDRESS + 7;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -243,6 +246,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
                     break;
                 case SEND_REFERRER:
                     sessionHandler.sendReferrerInternal();
+                    break;
+                case FINISH_TRACKING:
+                    JSONObject jsonResponse = (JSONObject) message.obj;
+                    sessionHandler.finishedTrackingActivityInternal(jsonResponse);
                     break;
             }
         }
@@ -430,6 +437,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         builder.deeplinkAttribution = deeplinkAttribution;
         ActivityPackage clickPackage = builder.buildClickPackage("deeplink");
         packageHandler.sendClickPackage(clickPackage);
+    }
+
+    private void finishedTrackingActivityInternal (JSONObject jsonResponse) {
+        if (jsonResponse == null) {
+            return;
+        }
+
+        String deepLink = jsonResponse.optString("deeplink", null);
+        launchDeepLinkMain(deepLink);
+        getAttributionHandler().checkAttribution(jsonResponse);
     }
 
     private boolean readDeeplinkQueryString(String queryString,
