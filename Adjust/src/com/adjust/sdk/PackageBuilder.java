@@ -10,7 +10,6 @@
 package com.adjust.sdk;
 
 import android.text.TextUtils;
-import android.util.Base64;
 
 import org.json.JSONObject;
 
@@ -52,8 +51,8 @@ class PackageBuilder {
         addString(parameters, "event_token", event.eventToken);
         addDouble(parameters, "revenue", event.revenue);
         addString(parameters, "currency", event.currency);
-        addMapBase64(parameters, "callback_params", event.callbackParameters);
-        addMapBase64(parameters, "partner_params", event.partnerParameters);
+        addMapJson(parameters, "callback_params", event.callbackParameters);
+        addMapJson(parameters, "partner_params", event.partnerParameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage();
         eventPackage.setPath("/event");
@@ -230,20 +229,12 @@ class PackageBuilder {
         addInt(parameters, key, durationInSeconds);
     }
 
-    private void addMapBase64(Map<String, String> parameters, String key, Map<String, String> map) {
-        if (null == map) {
+    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+        if (map == null) {
             return;
         }
 
-        JSONObject jsonObject = new JSONObject(map);
-        byte[] jsonBytes = jsonObject.toString().getBytes();
-        String encodedMap = Base64.encodeToString(jsonBytes, Base64.NO_WRAP);
-
-        addString(parameters, key, encodedMap);
-    }
-
-    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
-        if (null == map) {
+        if (map.size() == 0) {
             return;
         }
 
