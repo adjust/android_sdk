@@ -23,7 +23,7 @@ class PackageBuilder {
     private ActivityState activityState;
 
     // reattributions
-    Map<String, String> deepLinkParameters;
+    Map<String, String> deeplinkParameters;
 
     public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
         this.adjustConfig = adjustConfig;
@@ -65,10 +65,10 @@ class PackageBuilder {
 
     public ActivityPackage buildClickPackage(String source) {
         Map<String, String> parameters = getDefaultParameters();
-        addString(parameters, "source", source);
 
+        addString(parameters, "source", source);
         addString(parameters, "referrer", adjustConfig.referrer);
-        addMapJson(parameters, "params", deepLinkParameters);
+        addMapJson(parameters, "params", deeplinkParameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage();
         clickPackage.setPath("/sdk_click");
