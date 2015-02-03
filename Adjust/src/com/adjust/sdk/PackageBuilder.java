@@ -24,6 +24,7 @@ class PackageBuilder {
 
     // reattributions
     Map<String, String> deeplinkParameters;
+    Attribution deeplinkAttribution;
 
     public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
         this.adjustConfig = adjustConfig;
@@ -69,6 +70,7 @@ class PackageBuilder {
         addString(parameters, "source", source);
         addString(parameters, "referrer", adjustConfig.referrer);
         addMapJson(parameters, "params", deeplinkParameters);
+        injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage();
         clickPackage.setPath("/sdk_click");
@@ -80,20 +82,7 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildAttributionPackage() {
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        // device info fields
-        addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        addString(parameters, "android_id", deviceInfo.androidId);
-        // config fields
-        addString(parameters, "app_token", adjustConfig.appToken);
-        addString(parameters, "environment", adjustConfig.environment);
-        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        addString(parameters, "gps_adid", playAdId);
-        // activity state fields
-        addString(parameters, "android_uuid", activityState.uuid);
+        Map<String, String> parameters = getIdsParameters();
 
         ActivityPackage attributionPackage = getDefaultActivityPackage();
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
@@ -123,10 +112,20 @@ class PackageBuilder {
         return parameters;
     }
 
+    private Map<String, String> getIdsParameters() {
+        Map<String, String> parameters = new HashMap<String, String>();
+
+        injectDeviceInfoIds(parameters);
+        injectConfig(parameters);
+        injectActivityStateIds(parameters);
+
+        checkDeviceIds(parameters);
+
+        return parameters;
+    }
+
     private void injectDeviceInfo(Map<String, String> parameters) {
-        addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        addString(parameters, "android_id", deviceInfo.androidId);
+        injectDeviceInfoIds(parameters);
         addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         addString(parameters, "package_name", deviceInfo.packageName);
         addString(parameters, "app_version", deviceInfo.appVersion);
@@ -145,6 +144,12 @@ class PackageBuilder {
         fillPluginKeys(parameters);
     }
 
+    private void injectDeviceInfoIds(Map<String, String> parameters) {
+        addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        addString(parameters, "android_id", deviceInfo.androidId);
+    }
+
     private void injectConfig(Map<String, String> parameters) {
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "environment", adjustConfig.environment);
@@ -158,12 +163,26 @@ class PackageBuilder {
     }
 
     private void injectActivityState(Map<String, String> parameters) {
+        injectActivityStateIds(parameters);
         addDate(parameters, "created_at", activityState.createdAt);
-        addString(parameters, "android_uuid", activityState.uuid);
         addInt(parameters, "session_count", activityState.sessionCount);
         addInt(parameters, "subsession_count", activityState.subsessionCount);
         addDuration(parameters, "session_length", activityState.sessionLength);
         addDuration(parameters, "time_spent", activityState.timeSpent);
+    }
+
+    private void injectActivityStateIds(Map<String, String> parameters) {
+        addString(parameters, "android_uuid", activityState.uuid);
+    }
+
+    private void injectAttribution(Map<String, String> parameters) {
+        if (deeplinkAttribution == null) {
+            return;
+        }
+        addString(parameters, "tracker", deeplinkAttribution.trackerName);
+        addString(parameters, "campaign", deeplinkAttribution.campaign);
+        addString(parameters, "adgroup", deeplinkAttribution.adgroup);
+        addString(parameters, "creative", deeplinkAttribution.creative);
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {
