@@ -87,7 +87,7 @@ public class Util {
 
             try {
                 T t = (T) objectStream.readObject();
-                logger.debug("Read %s: %s uuid:%s", objectName, t);
+                logger.debug("Read %s: %s", objectName, t);
                 return t;
             } catch (ClassNotFoundException e) {
                 logger.error("Failed to find activity state class");
