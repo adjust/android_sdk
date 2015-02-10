@@ -1,25 +1,39 @@
 package com.adjust.sdk;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 
+import com.adjust.sdk.plugin.Plugin;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
 import static com.adjust.sdk.Constants.LONG;
 import static com.adjust.sdk.Constants.LOW;
+import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.MEDIUM;
 import static com.adjust.sdk.Constants.NORMAL;
+import static com.adjust.sdk.Constants.PLUGINS;
+import static com.adjust.sdk.Constants.SHA1;
 import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.XLARGE;
 
@@ -51,7 +65,7 @@ class DeviceInfo {
     String simOperator;
     Map<String,String> pluginKeys;
     
-    DeviceInfo(String sdkPrefix, Context context) {
+    DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
@@ -59,6 +73,7 @@ class DeviceInfo {
         int screenLayout = configuration.screenLayout;
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        String macAddress = getMacAddress(context);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -78,6 +93,19 @@ class DeviceInfo {
         networkSubtype = getNetworkSubtype(networkInfo);
         simOperator = getSimOperator(context);
         clientSdk = getClientSdk(sdkPrefix);
+        androidId = getAndroidId(context);
+        fbAttributionId = getAttributionId(context);
+        pluginKeys = getPluginKeys(context);
+        macSha1 = getMacSha1(macAddress);
+        macShortMd5 = getMacShortMd5(macAddress);
+    }
+
+    private String getMacAddress(Context context) {
+        if  (!Reflection.isGooglePlayServicesAvailable(context)) {
+            return Reflection.getMacAddress(context);
+        } else {
+            return  null;
+        }
     }
 
     private String getPackageName(Context context) { return context.getPackageName(); }
@@ -199,6 +227,111 @@ class DeviceInfo {
             return Constants.CLIENT_SDK;
         } else {
             return String.format("%s@%s", sdkPrefix, Constants.CLIENT_SDK);
+        }
+    }
+
+    public Map<String, String> getPluginKeys(Context context) {
+        Map<String, String> pluginKeys = new HashMap<String, String>();
+
+        for (Plugin plugin : getPlugins()) {
+            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
+            if (pluginEntry != null) {
+                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
+            }
+        }
+
+        if (pluginKeys.size() == 0) {
+            return null;
+        } else {
+            return pluginKeys;
+        }
+    }
+
+    private List<Plugin> getPlugins() {
+        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
+
+        for (String pluginName : PLUGINS) {
+            Object pluginObject = Reflection.createDefaultInstance(pluginName);
+            if (pluginObject != null && pluginObject instanceof Plugin) {
+                plugins.add((Plugin) pluginObject);
+            }
+        }
+
+        return plugins;
+    }
+
+
+    private String getMacSha1(String macAddress) {
+        if (macAddress == null) {
+            return null;
+        }
+        String macSha1 = sha1(macAddress);
+
+        return macSha1;
+    }
+
+    private String getMacShortMd5(String macAddress) {
+        if (macAddress == null) {
+            return null;
+        }
+        String macShort = macAddress.replaceAll(":", "");
+        String macShortMd5 = md5(macShort);
+
+        return macShortMd5;
+    }
+
+    private String getAndroidId(Context context) {
+        return Reflection.getAndroidId(context);
+    }
+
+    private String sha1(final String text) {
+        return hash(text, SHA1);
+    }
+
+    private String md5(final String text) {
+        return hash(text, MD5);
+    }
+
+    private String hash(final String text, final String method) {
+        String hashString = null;
+        try {
+            final byte[] bytes = text.getBytes(ENCODING);
+            final MessageDigest mesd = MessageDigest.getInstance(method);
+            mesd.update(bytes, 0, bytes.length);
+            final byte[] hash = mesd.digest();
+            hashString = convertToHex(hash);
+        } catch (Exception e) {
+        }
+        return hashString;
+    }
+
+    private static String convertToHex(final byte[] bytes) {
+        final BigInteger bigInt = new BigInteger(1, bytes);
+        final String formatString = "%0" + (bytes.length << 1) + "x";
+        return String.format(formatString, bigInt);
+    }
+
+    private String getAttributionId(final Context context) {
+        try {
+            final ContentResolver contentResolver = context.getContentResolver();
+            final Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
+            final String columnName = "aid";
+            final String[] projection = {columnName};
+            final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
+
+            if (null == cursor) {
+                return null;
+            }
+            if (!cursor.moveToFirst()) {
+                cursor.close();
+                return null;
+            }
+
+            final String attributionId = cursor.getString(cursor.getColumnIndex(columnName));
+            cursor.close();
+            return attributionId;
+        } catch (Exception e) {
+            return null;
         }
     }
 }

@@ -219,7 +219,8 @@ public class ActivityHandler extends HandlerThread {
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
         this.adjustConfig = adjustConfig;
-        deviceInfo = new DeviceInfo(adjustConfig.sdkPrefix, adjustConfig.context);
+
+        deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
         logger = AdjustFactory.getLogger();
 
         if (adjustConfig.environment == AdjustConfig.PRODUCTION_ENVIRONMENT) {
@@ -228,24 +229,13 @@ public class ActivityHandler extends HandlerThread {
             logger.setLogLevel(adjustConfig.logLevel);
         }
 
-        deviceInfo.pluginKeys = Util.getPluginKeys(adjustConfig.context);
-
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Event buffering is enabled");
         }
 
-        deviceInfo.androidId= Util.getAndroidId(adjustConfig.context);
-        deviceInfo.fbAttributionId = Util.getAttributionId(adjustConfig.context);
-
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         if (playAdId == null) {
             logger.info("Unable to get Google Play Services Advertising ID at start time");
-        }
-
-        if  (!Util.isGooglePlayServicesAvailable(adjustConfig.context)) {
-            String macAddress = Util.getMacAddress(adjustConfig.context);
-            deviceInfo.macSha1 = Util.getMacSha1(macAddress);
-            deviceInfo.macShortMd5 = Util.getMacShortMd5(macAddress);
         }
 
         if (adjustConfig.defaultTracker != null) {
