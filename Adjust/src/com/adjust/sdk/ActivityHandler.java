@@ -293,9 +293,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         if (!offline) {
             packageHandler.resumeSending();
-
         }
-        startTimer();
 
         long now = System.currentTimeMillis();
 
@@ -309,6 +307,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
             writeActivityState();
+            startInternalFinish();
             return;
         }
 
@@ -331,26 +330,31 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             writeActivityState();
+            startInternalFinish();
             return;
         }
 
         // new subsession
         if (lastInterval > SUBSESSION_INTERVAL) {
             activityState.subsessionCount++;
+            activityState.sessionLength += lastInterval;
+            activityState.lastActivity = now;
+            writeActivityState();
             logger.info("Started subsession %d of session %d",
                     activityState.subsessionCount,
                     activityState.sessionCount);
         }
-        activityState.sessionLength += lastInterval;
-        activityState.lastActivity = now;
-        writeActivityState();
+        startInternalFinish();
+        return;
+    }
 
+    private void startInternalFinish() {
+        startTimer();
         if (attribution == null || activityState.askingAttribution) {
             if (shouldGetAttribution) {
                 attributionHandler.getAttribution();
             }
         }
-
     }
 
     private void endInternal() {
