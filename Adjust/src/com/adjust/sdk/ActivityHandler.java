@@ -144,7 +144,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         if (activityState != null) {
             return activityState.enabled;
         } else {
-            return this.enabled;
+            return enabled;
         }
     }
 
@@ -297,10 +297,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             packageHandler.resumeSending();
         }
 
+        processSession();
+
+        startTimer();
+        if (attribution == null || activityState.askingAttribution) {
+            if (shouldGetAttribution) {
+                getAttributionHandler().getAttribution();
+            }
+        }
+    }
+
+    private void processSession() {
         long now = System.currentTimeMillis();
 
         // very first session
-        if (null == activityState) {
+        if (activityState == null) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
             activityState.createdAt = now;  // starting now
@@ -309,7 +320,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
             writeActivityState();
-            startInternalFinish();
             return;
         }
 
@@ -319,7 +329,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             writeActivityState();
-            startInternalFinish();
             return;
         }
 
@@ -332,7 +341,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             writeActivityState();
-            startInternalFinish();
             return;
         }
 
@@ -346,24 +354,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
                     activityState.subsessionCount,
                     activityState.sessionCount);
         }
-        startInternalFinish();
-        return;
-    }
-
-    private void startInternalFinish() {
-        startTimer();
-        if (attribution == null || activityState.askingAttribution) {
-            if (shouldGetAttribution) {
-                getAttributionHandler().getAttribution();
-            }
-        }
     }
 
     private void endInternal() {
         packageHandler.pauseSending();
         stopTimer();
-        // possible to have null activity state thru Adjust->setOfflineMode(true)
-        // or Adjust->setEnabled(false)
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
         }
@@ -374,7 +369,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         if (!activityState.enabled) return;
 
         long now = System.currentTimeMillis();
-
 
         activityState.createdAt = now;
         activityState.eventCount++;
@@ -458,20 +452,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     private boolean updateActivityState(long now) {
         long lastInterval = now - activityState.lastActivity;
-        if (lastInterval < 0) {
-            logger.error(TIME_TRAVEL);
-            activityState.lastActivity = now;
-            return true;
-        }
-
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) {
             return false;
         }
-
-        activityState.sessionLength += lastInterval;
-        activityState.timeSpent += lastInterval;
         activityState.lastActivity = now;
+
+        if (lastInterval < 0) {
+            logger.error(TIME_TRAVEL);
+        } else {
+            activityState.sessionLength += lastInterval;
+            activityState.timeSpent += lastInterval;
+        }
         return true;
     }
 
@@ -507,15 +499,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void timerFired() {
-        if (activityState != null
-                && !activityState.enabled) {
+        if (!activityState.enabled) {
             return;
         }
 
         packageHandler.sendFirstPackage();
 
-        // possible to have null activity state thru Adjust->setOfflineMode(true)
-        // or Adjust->setEnabled(false)
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
         }
