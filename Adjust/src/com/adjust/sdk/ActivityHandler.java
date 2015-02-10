@@ -187,6 +187,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sendReferrer();
     }
 
+    private void sendReferrer() {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.SEND_REFERRER;
+        sessionHandler.sendMessage(message);
     }
 
     public void setAskingAttribution(boolean askingAttribution) {
@@ -200,7 +204,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         private static final int END = 72650;
         private static final int EVENT = 72660;
         private static final int DEEP_LINK = 72680;
-
+        private static final int SEND_REFERRER = 72690;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -235,6 +239,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
                 case DEEP_LINK:
                     Uri url = (Uri) message.obj;
                     sessionHandler.readOpenUrlInternal(url);
+                    break;
+                case SEND_REFERRER:
+                    sessionHandler.sendReferrerInternal();
                     break;
             }
         }
@@ -280,7 +287,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         startInternal();
     }
 
-    private void sendReferrer() {
+    private void sendReferrerInternal() {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         ActivityPackage clickPackage = builder.buildClickPackage("referrer");
         packageHandler.sendClickPackage(clickPackage);
