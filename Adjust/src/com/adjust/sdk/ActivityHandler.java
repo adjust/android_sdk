@@ -352,7 +352,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         startTimer();
         if (attribution == null || activityState.askingAttribution) {
             if (shouldGetAttribution) {
-                attributionHandler.getAttribution();
+                getAttributionHandler().getAttribution();
             }
         }
     }
@@ -417,7 +417,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             adjustDeepLinks.put(keyWOutPrefix, value);
         }
 
-        attributionHandler.getAttribution();
+        getAttributionHandler().getAttribution();
 
         if (adjustDeepLinks.size() == 0) {
             return;
@@ -537,4 +537,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
 
+}
+        return true;
+    }
+
+    // lazy initialization to prevent null activity state before first session
+    private IAttributionHandler getAttributionHandler() {
+        if (attributionHandler == null) {
+            PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+            ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
+            attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage);
+        }
+        return attributionHandler;
+    }
 }
