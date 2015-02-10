@@ -53,7 +53,7 @@
     </repository>
   </distributionManagement>
   <build>
-    <sourceDirectory>src</sourceDirectory>
+    <sourceDirectory>adjust/src/main/java</sourceDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

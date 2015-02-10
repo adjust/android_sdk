@@ -1,43 +1,19 @@
-apply plugin: 'com.android.library'
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     repositories {
-        mavenCentral()
-        mavenLocal()
+        jcenter()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0'
+        classpath 'com.android.tools.build:gradle:1.0.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
-repositories {
-    mavenCentral()
-    mavenLocal()
-}
-android {
-    buildToolsVersion '21.1.2'
-    compileSdkVersion 21
-    defaultConfig {
-        versionName '4.0.0'
-        minSdkVersion 8
-        targetSdkVersion 21
+
+allprojects {
+    repositories {
+        jcenter()
     }
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-    }
-    productFlavors {
-    }
-}
-task jar(type: Jar) {
-    from android.sourceSets.main.java.sourceFiles
-}
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
-}
-dependencies {
 }
