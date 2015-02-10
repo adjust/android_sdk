@@ -19,7 +19,7 @@ import java.util.Locale;
 
 import android.util.Log;
 
-public class ActivityState implements Serializable {
+public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
 
     // persistent data
@@ -63,16 +63,6 @@ public class ActivityState implements Serializable {
         lastInterval = -1;
     }
 
-    protected void injectSessionAttributes(PackageBuilder builder) {
-        injectGeneralAttributes(builder);
-        builder.setLastInterval(lastInterval);
-    }
-
-    protected void injectEventAttributes(PackageBuilder builder) {
-        injectGeneralAttributes(builder);
-        builder.setEventCount(eventCount);
-    }
-
     @Override
     public String toString() {
         return String.format(Locale.US,
@@ -80,6 +70,15 @@ public class ActivityState implements Serializable {
                              eventCount, sessionCount, subsessionCount,
                              sessionLength / 1000.0, timeSpent / 1000.0,
                              stamp(lastActivity));
+    }
+
+    @Override
+    public ActivityState clone()  {
+        try {
+            return (ActivityState) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
     private void readObject(ObjectInputStream stream) throws NotActiveException, IOException, ClassNotFoundException {
@@ -122,14 +121,5 @@ public class ActivityState implements Serializable {
                              date.getHours(),
                              date.getMinutes(),
                              date.getSeconds());
-    }
-
-    private void injectGeneralAttributes(PackageBuilder builder) {
-        builder.setSessionCount(sessionCount);
-        builder.setSubsessionCount(subsessionCount);
-        builder.setSessionLength(sessionLength);
-        builder.setTimeSpent(timeSpent);
-        builder.setCreatedAt(createdAt);
-        builder.setUuid(uuid);
     }
 }

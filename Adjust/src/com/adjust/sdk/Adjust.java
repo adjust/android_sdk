@@ -20,49 +20,19 @@ import android.net.Uri;
 public class Adjust {
 
     private ActivityHandler activityHandler;
-
-    /**
-     * Tell Adjust that an activity did resume.
-     * <p/>
-     * This is used to initialize Adjust and keep track of the current session state.
-     * Call this in the onResume method of every activity of your app.
-     *
-     * @param context The context of the activity that has just resumed.
-     */
-
-    /**
-     * Tell Adjust that an activity will pause.
-     * <p/>
-     * This is used to calculate session attributes like session length and subsession count.
-     * Call this in the onPause method of every activity of your app.
-     */
-
-    /**
-     * Tell Adjust that a user generated some revenue.
-     * <p/>
-     * The amount is measured in cents and rounded to on digit after the
-     * decimal point. If you want to differentiate between several revenue
-     * types, you can do so by using different event tokens. If your revenue
-     * events have callbacks, you can also pass in parameters that will be
-     * forwarded to your end point.
-     *
-     * @param amountInCents The amount in cents (example: 1.5 means one and a half cents)
-     * @param eventToken The token for this revenue event (optional, see above)
-     * @param parameters Parameters for this revenue event (optional, see above)
-     */
-
-    /**
-     * Enable or disable the adjust SDK
-     *
-     * @param enabled The flag to enable or disable the adjust SDK
-     */
-
-    /**
-     * Every activity will get forwarded to this handler to be processed in the background.
-     */
+    private static Adjust defaultInstance;
     private static Logger getLogger() {
         return AdjustFactory.getLogger();
     };
+
+    private Adjust() {};
+
+    public static synchronized Adjust getInstance() {
+        if (defaultInstance == null) {
+            defaultInstance = new Adjust();
+        }
+        return defaultInstance;
+    }
 
     public void onCreate(AdjustConfig adjustConfig) {
         if (activityHandler != null) {

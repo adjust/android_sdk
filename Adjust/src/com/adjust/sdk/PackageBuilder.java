@@ -9,72 +9,32 @@
 
 package com.adjust.sdk;
 
+import android.text.TextUtils;
+import android.util.Base64;
+
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.json.JSONObject;
-
-import android.content.Context;
-import android.text.TextUtils;
-import android.util.Base64;
-
 class PackageBuilder {
 
-    // general
-    private String uuid;
-
-    // sessions
-    private int    sessionCount;
-    private int    subsessionCount;
-    private long   createdAt;
-    private long   sessionLength;
-    private long   timeSpent;
-    private long   lastInterval;
     private String defaultTracker;
     private String referrer;
-
-    // events
-    private int                 eventCount;
 
     Event event;
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
+    private ActivityState activityState;
 
     // reattributions
     private Map<String, String> deepLinkParameters;
 
-    public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo) {
+    public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public void setSessionCount(int sessionCount) {
-        this.sessionCount = sessionCount;
-    }
-
-    public void setSubsessionCount(int subsessionCount) {
-        this.subsessionCount = subsessionCount;
-    }
-
-    public void setCreatedAt(long createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setSessionLength(long sessionLength) {
-        this.sessionLength = sessionLength;
-    }
-
-    public void setTimeSpent(long timeSpent) {
-        this.timeSpent = timeSpent;
-    }
-
-    public void setLastInterval(long lastInterval) {
-        this.lastInterval = lastInterval;
+        this.activityState = activityState.clone();
     }
 
     public void setDefaultTracker(String defaultTracker) {
@@ -85,17 +45,13 @@ class PackageBuilder {
         this.referrer = referrer;
     }
 
-    public void setEventCount(int eventCount) {
-        this.eventCount = eventCount;
-    }
-
     public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
         this.deepLinkParameters = deepLinkParameters;
     }
 
     public ActivityPackage buildSessionPackage() {
         Map<String, String> parameters = getDefaultParameters();
-        addDuration(parameters, "last_interval", lastInterval);
+        addDuration(parameters, "last_interval", activityState.lastInterval);
         addString(parameters, "default_tracker", defaultTracker);
         addString(parameters, Constants.REFERRER, referrer);
 
@@ -119,20 +75,6 @@ class PackageBuilder {
         eventPackage.setParameters(parameters);
 
         return eventPackage;
-    }
-
-    public ActivityPackage buildRevenuePackage() {
-        Map<String, String> parameters = getDefaultParameters();
-        injectEventParameters(parameters);
-        addString(parameters, "amount", getAmountString());
-
-        ActivityPackage revenuePackage = getDefaultActivityPackage();
-        revenuePackage.setPath("/revenue");
-        revenuePackage.setActivityKind(ActivityKind.REVENUE);
-        revenuePackage.setSuffix(getRevenueSuffix());
-        revenuePackage.setParameters(parameters);
-
-        return revenuePackage;
     }
 
     public ActivityPackage buildReattributionPackage() {
@@ -159,12 +101,12 @@ class PackageBuilder {
         Map<String, String> parameters = new HashMap<String, String>();
 
         // general
-        addDate(parameters, "created_at", createdAt);
+        addDate(parameters, "created_at", activityState.createdAt);
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "mac_sha1", deviceInfo.macSha1);
         addString(parameters, "mac_md5", deviceInfo.macShortMd5);
         addString(parameters, "android_id", deviceInfo.androidId);
-        addString(parameters, "android_uuid", uuid);
+        addString(parameters, "android_uuid", activityState.uuid);
         addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         addString(parameters, "environment", adjustConfig.environment);
         String playAdId = Util.getPlayAdId(adjustConfig.context);
@@ -175,10 +117,10 @@ class PackageBuilder {
         checkDeviceIds(parameters);
 
         // session related (used for events as well)
-        addInt(parameters, "session_count", sessionCount);
-        addInt(parameters, "subsession_count", subsessionCount);
-        addDuration(parameters, "session_length", sessionLength);
-        addDuration(parameters, "time_spent", timeSpent);
+        addInt(parameters, "session_count", activityState.sessionCount);
+        addInt(parameters, "subsession_count", activityState.subsessionCount);
+        addDuration(parameters, "session_length", activityState.sessionLength);
+        addDuration(parameters, "time_spent", activityState.timeSpent);
 
         return parameters;
     }
@@ -205,7 +147,7 @@ class PackageBuilder {
     }
 
     private void injectEventParameters(Map<String, String> parameters) {
-        addInt(parameters, "event_count", eventCount);
+        addInt(parameters, "event_count", activityState.eventCount);
         addString(parameters, "event_token", event.eventToken);
         addMapBase64(parameters, "params", event.callbackParameters);
     }

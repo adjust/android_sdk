@@ -122,8 +122,9 @@ public class ActivityHandler extends HandlerThread {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
-        if (checkActivityState(activityState))
+        if (activityState != null) {
             activityState.enabled = enabled;
+        }
         if (enabled) {
             this.trackSubsessionStart();
         } else {
@@ -132,7 +133,7 @@ public class ActivityHandler extends HandlerThread {
     }
 
     public Boolean isEnabled() {
-        if (checkActivityState(activityState)) {
+        if (activityState != null) {
             return activityState.enabled;
         } else {
             return this.enabled;
@@ -240,6 +241,8 @@ public class ActivityHandler extends HandlerThread {
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, dropOfflineActivities);
 
         readActivityState();
+
+        startInternal();
     }
 
     private void startInternal() {
@@ -309,10 +312,6 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void trackEventInternal(Event event) {
-        if (!checkActivityState(activityState)) {
-            return;
-        }
-
         if (!activityState.enabled) {
             return;
         }
@@ -322,9 +321,8 @@ public class ActivityHandler extends HandlerThread {
         activityState.eventCount++;
         updateActivityState(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo);
-
-        activityState.injectEventAttributes(eventBuilder);
+        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        eventBuilder.event = event;
         ActivityPackage eventPackage = eventBuilder.buildEventPackage();
         packageHandler.addPackage(eventPackage);
 
@@ -371,7 +369,7 @@ public class ActivityHandler extends HandlerThread {
             return;
         }
 
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo);
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         builder.setDeepLinkParameters(adjustDeepLinks);
         ActivityPackage reattributionPackage = builder.buildReattributionPackage();
         packageHandler.addPackage(reattributionPackage);
@@ -409,10 +407,6 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void updateActivityState(long now) {
-        if (!checkActivityState(activityState)) {
-            return;
-        }
-
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
@@ -487,9 +481,8 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo);
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         injectReferrer(builder);
-        activityState.injectSessionAttributes(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
@@ -519,10 +512,8 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private void stopTimer() {
-        try {
+        if (timer != null) {
             timer.shutdown();
-        } catch (NullPointerException e) {
-            logger.error("No timer found");
         }
     }
 
@@ -552,11 +543,4 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    private boolean checkActivityState(ActivityState activityState) {
-        if (null == activityState) {
-            logger.error("Missing activity state.");
-            return false;
-        }
-        return true;
-    }
 }
