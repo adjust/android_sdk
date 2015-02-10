@@ -6,7 +6,7 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.Attribution;
-import com.adjust.sdk.Logger;
+import com.adjust.sdk.Logger.LogLevel;
 import com.adjust.sdk.OnFinishedListener;
 
 /**
@@ -22,7 +22,7 @@ public class GlobalApplication extends Application {
         AdjustConfig config = AdjustConfig.getInstance(this, appToken, environment);
 
         // change the log level
-        config.setLogLevel(Logger.LogLevel.VERBOSE);
+        config.setLogLevel(LogLevel.VERBOSE);
 
         // enable event buffering
         //config.setEventBufferingEnabled(true);
