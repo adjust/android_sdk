@@ -170,10 +170,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     public void setReferrer(String referrer) {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        builder.referrer = referrer;
-        ActivityPackage clickPackage = builder.buildClickPackage();
-        packageHandler.sendClickPackage(clickPackage);
+        adjustConfig.referrer = referrer;
+        sendReferrer();
     }
 
     public void setOfflineMode(boolean enabled) {
@@ -266,15 +264,24 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
+        if (adjustConfig.referrer != null) {
+            sendReferrer();
+        }
+
         readAttribution();
         readActivityState();
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
-        attributionHandler = buildAttributionHandler();
 
         shouldGetAttribution = true;
 
         startInternal();
+    }
+
+    private void sendReferrer() {
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        ActivityPackage clickPackage = builder.buildClickPackage("referrer");
+        packageHandler.sendClickPackage(clickPackage);
     }
 
     private void startInternal() {
@@ -302,9 +309,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
             writeActivityState();
-            if (adjustConfig.referrer != null) {
-                setReferrer(adjustConfig.referrer);
-            }
             return;
         }
 
@@ -314,6 +318,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
             writeActivityState();
+            startInternalFinish();
             return;
         }
 
