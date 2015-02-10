@@ -130,6 +130,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         activityHandler.finishedTrackingActivity(jsonResponse);
     }
 
+    @Override
+    public void sendClickPackage(ActivityPackage clickPackage) {
+        requestHandler.sendClickPackage(clickPackage);
+    }
+
     private static final class InternalHandler extends Handler {
         private static final int INIT       = 1;
         private static final int ADD        = 2;

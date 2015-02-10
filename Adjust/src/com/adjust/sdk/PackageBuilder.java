@@ -20,7 +20,7 @@ import java.util.Map;
 
 class PackageBuilder {
 
-    private String referrer;
+    String referrer;
 
     Event event;
     private AdjustConfig adjustConfig;
@@ -28,20 +28,12 @@ class PackageBuilder {
     private ActivityState activityState;
 
     // reattributions
-    private Map<String, String> deepLinkParameters;
+    Map<String, String> deepLinkParameters;
 
     public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
         this.activityState = activityState.clone();
-    }
-
-    public void setReferrer(String referrer) {
-        this.referrer = referrer;
-    }
-
-    public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
-        this.deepLinkParameters = deepLinkParameters;
     }
 
     public ActivityPackage buildSessionPackage() {
@@ -72,17 +64,17 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildReattributionPackage() {
+    public ActivityPackage buildClickPackage() {
         Map<String, String> parameters = getDefaultParameters();
         addMapJson(parameters, "deeplink_parameters", deepLinkParameters);
 
-        ActivityPackage reattributionPackage = getDefaultActivityPackage();
-        reattributionPackage.setPath("/reattribute");
-        reattributionPackage.setActivityKind(ActivityKind.REATTRIBUTION);
-        reattributionPackage.setSuffix("");
-        reattributionPackage.setParameters(parameters);
+        ActivityPackage clickPackage = getDefaultActivityPackage();
+        clickPackage.setPath("/sdk_click");
+        clickPackage.setActivityKind(ActivityKind.CLICK);
+        clickPackage.setSuffix("");
+        clickPackage.setParameters(parameters);
 
-        return reattributionPackage;
+        return clickPackage;
     }
 
     private ActivityPackage getDefaultActivityPackage() {

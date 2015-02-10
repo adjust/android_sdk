@@ -20,6 +20,7 @@ import android.net.Uri;
 public class Adjust {
 
     private ActivityHandler activityHandler;
+    private String referrer;
     private static Adjust defaultInstance;
     private static Logger getLogger() {
         return AdjustFactory.getLogger();
@@ -39,6 +40,8 @@ public class Adjust {
             getLogger().error("Adjust already initialized");
             return;
         }
+
+        adjustConfig.referrer = this.referrer;
 
         activityHandler = new ActivityHandler(adjustConfig);
     }
@@ -71,6 +74,14 @@ public class Adjust {
     public void appWillOpenUrl(Uri url) {
         if (!checkActivityHandler()) return;
         activityHandler.readOpenUrl(url);
+    }
+
+    public void setReferrer(String referrer) {
+        if (activityHandler == null) {
+            this.referrer = referrer;
+        } else {
+            activityHandler.setReferrer(referrer);
+        }
     }
 
     private boolean checkActivityHandler() {

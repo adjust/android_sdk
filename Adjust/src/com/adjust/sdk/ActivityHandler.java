@@ -24,16 +24,6 @@ import android.preference.PreferenceManager;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +59,7 @@ public class ActivityHandler extends HandlerThread {
     private Attribution attribution;
     private AttributionHandler attributionHandler;
 
-    public ActivityHandler(AdjustConfig adjustConfig) {
+    ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -83,26 +73,26 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void trackSubsessionStart() {
+    void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
         sessionHandler.sendMessage(message);
     }
 
-    public void trackSubsessionEnd() {
+    void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
         sessionHandler.sendMessage(message);
     }
 
-    public void trackEvent(Event event) {
+    void trackEvent(Event event) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
         message.obj = event;
         sessionHandler.sendMessage(message);
     }
 
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
+    void finishedTrackingActivity(JSONObject jsonResponse) {
         if (jsonResponse == null) {
             return;
         }
@@ -112,7 +102,7 @@ public class ActivityHandler extends HandlerThread {
         attributionHandler.checkAttribution(jsonResponse);
     }
 
-    public void setEnabled(Boolean enabled) {
+    void setEnabled(Boolean enabled) {
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
@@ -124,7 +114,7 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    public Boolean isEnabled() {
+    Boolean isEnabled() {
         if (activityState != null) {
             return activityState.enabled;
         } else {
@@ -132,14 +122,14 @@ public class ActivityHandler extends HandlerThread {
         }
     }
 
-    public void readOpenUrl(Uri url) {
+    void readOpenUrl(Uri url) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
         message.obj = url;
         sessionHandler.sendMessage(message);
     }
 
-    public void updateAttribution(Attribution attribution) {
+    void updateAttribution(Attribution attribution) {
         if (attribution == null) return;
 
         if (attribution.equals(this.attribution)) {
@@ -150,7 +140,7 @@ public class ActivityHandler extends HandlerThread {
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
-    public void launchAttributionDelegate() {
+    void launchAttributionDelegate() {
         if (adjustConfig.onFinishedListener == null) {
             return;
         }
@@ -163,6 +153,14 @@ public class ActivityHandler extends HandlerThread {
         };
         handler.post(runnable);
     }
+
+    void setReferrer (String referrer) {
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        builder.referrer = referrer;
+        ActivityPackage clickPackage = builder.buildClickPackage();
+        packageHandler.sendClickPackage(clickPackage);
+    }
+
 
     private static final class SessionHandler extends Handler {
         private static final int INIT        = 72630;
@@ -260,7 +258,7 @@ public class ActivityHandler extends HandlerThread {
         }
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, dropOfflineActivities);
-
+        attributionHandler = new AttributionHandler(this, adjustConfig.attributionMaxTimeMilliseconds);
         activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
 
         startInternal();
@@ -287,7 +285,9 @@ public class ActivityHandler extends HandlerThread {
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
             Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
-            logger.info("First session");
+            if (adjustConfig.referrer != null) {
+                setReferrer(adjustConfig.referrer);
+            }
             return;
         }
 
@@ -309,7 +309,6 @@ public class ActivityHandler extends HandlerThread {
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
-            logger.debug("Session %d", activityState.sessionCount);
             return;
         }
 
@@ -354,7 +353,6 @@ public class ActivityHandler extends HandlerThread {
         }
 
         Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
-        logger.debug("Event %d", activityState.eventCount);
     }
 
     private void readOpenUrlInternal(Uri url) {
@@ -386,17 +384,16 @@ public class ActivityHandler extends HandlerThread {
             adjustDeepLinks.put(keyWOutPrefix, value);
         }
 
+        attributionHandler.getAttribution();
+
         if (adjustDeepLinks.size() == 0) {
             return;
         }
 
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        builder.setDeepLinkParameters(adjustDeepLinks);
-        ActivityPackage reattributionPackage = builder.buildReattributionPackage();
-        packageHandler.addPackage(reattributionPackage);
-        packageHandler.sendFirstPackage();
-
-        logger.debug("Reattribution %s", adjustDeepLinks.toString());
+        builder.deepLinkParameters = adjustDeepLinks;
+        ActivityPackage clickPackage = builder.buildClickPackage();
+        packageHandler.sendClickPackage(clickPackage);
     }
 
     private void launchDeepLinkMain(String deepLink) {
@@ -445,20 +442,9 @@ public class ActivityHandler extends HandlerThread {
 
     private void transferSessionPackage() {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        injectReferrer(builder);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
-    }
-
-    private void injectReferrer(PackageBuilder builder) {
-        try {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(adjustConfig.context);
-            builder.setReferrer(preferences.getString(ReferrerReceiver.REFERRER_KEY, null));
-        }
-        catch (Exception e) {
-            logger.error("Failed to inject referrer (%s)", e);
-        }
     }
 
     private void startTimer() {

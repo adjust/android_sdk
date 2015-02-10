@@ -74,7 +74,7 @@ import com.adjust.sdk.plugin.Plugin;
 public class Util {
 
     private static SimpleDateFormat dateFormat;
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'Z";
+    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss:SSS'Z'Z";
 
     protected static UserAgent getUserAgent(final Context context) {
         final Resources resources = context.getResources();

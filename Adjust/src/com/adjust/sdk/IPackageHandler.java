@@ -20,4 +20,6 @@ public interface IPackageHandler {
     public boolean dropsOfflineActivities();
 
     public void finishedTrackingActivity(JSONObject jsonResponse);
+
+    void sendClickPackage(ActivityPackage clickPackage);
 }

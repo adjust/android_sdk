@@ -21,6 +21,7 @@ public class AdjustConfig {
     String defaultTracker;
     OnFinishedListener onFinishedListener;
     Integer attributionMaxTimeMilliseconds;
+    String referrer;
 
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";

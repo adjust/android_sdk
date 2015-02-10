@@ -68,9 +68,18 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         internalHandler.sendMessage(message);
     }
 
+    public void sendClickPackage(ActivityPackage clickPackage) {
+        Message message = Message.obtain();
+        message.arg1 = InternalHandler.SEND_CLICK;
+        message.obj = clickPackage;
+        internalHandler.sendMessage(message);
+
+    }
+
     private static final class InternalHandler extends Handler {
         private static final int INIT = 72401;
         private static final int SEND = 72400;
+        private static final int SEND_CLICK = 72402;
 
         private final WeakReference<RequestHandler> requestHandlerReference;
 
@@ -94,7 +103,11 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
                     break;
                 case SEND:
                     ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    requestHandler.sendInternal(activityPackage);
+                    requestHandler.sendInternal(activityPackage, true);
+                    break;
+                case SEND_CLICK:
+                    ActivityPackage clickPackage = (ActivityPackage) message.obj;
+                    requestHandler.sendInternal(clickPackage, false);
                     break;
             }
         }
@@ -107,53 +120,59 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         httpClient = AdjustFactory.getHttpClient(httpParams);
     }
 
-    private void sendInternal(ActivityPackage activityPackage) {
+    private void sendInternal(ActivityPackage activityPackage, boolean sendToPackageHandler) {
         try {
             HttpUriRequest request = getRequest(activityPackage);
             HttpResponse response = httpClient.execute(request);
-            requestFinished(response, activityPackage);
+            requestFinished(response, sendToPackageHandler);
         } catch (UnsupportedEncodingException e) {
-            sendNextPackage(activityPackage, "Failed to encode parameters", e);
+            sendNextPackage(activityPackage, "Failed to encode parameters", e, sendToPackageHandler);
         } catch (ClientProtocolException e) {
-            closePackage(activityPackage, "Client protocol error", e);
+            closePackage(activityPackage, "Client protocol error", e, sendToPackageHandler);
         } catch (SocketTimeoutException e) {
-            closePackage(activityPackage, "Request timed out", e);
+            closePackage(activityPackage, "Request timed out", e, sendToPackageHandler);
         } catch (IOException e) {
-            closePackage(activityPackage, "Request failed", e);
+            closePackage(activityPackage, "Request failed", e, sendToPackageHandler);
         } catch (Throwable e) {
-            sendNextPackage(activityPackage, "Runtime exception", e);
+            sendNextPackage(activityPackage, "Runtime exception", e, sendToPackageHandler);
         }
     }
 
-    private void requestFinished(HttpResponse response, ActivityPackage activityPackage) {
+    private void requestFinished(HttpResponse response, boolean sendToPackageHandler) {
         String responseString = Util.parseResponse(response, logger);
         JSONObject jsonResponse = Util.buildJsonObject(responseString);
 
-        packageHandler.finishedTrackingActivity(jsonResponse);
-        packageHandler.sendNextPackage();
+        if (sendToPackageHandler) {
+            packageHandler.finishedTrackingActivity(jsonResponse);
+            packageHandler.sendNextPackage();
+        }
     }
 
     // close current package because it failed
-    private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable, boolean sendToPackageHandler) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String handlerMessage = packageHandler.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
         logger.error("%s. (%s) %s", packageMessage, reasonString, handlerMessage);
 
-        // not necessary if it's null
-        //packageHandler.finishedTrackingActivity(null);
-        packageHandler.closeFirstPackage();
+        if (sendToPackageHandler) {
+            // not necessary if it's null
+            //packageHandler.finishedTrackingActivity(null);
+            packageHandler.closeFirstPackage();
+        }
     }
 
     // send next package because the current package failed
-    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable, boolean sendToPackageHandler) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
         logger.error("%s. (%s)", failureMessage, reasonString);
 
-        // not necessary if it's null
-        //packageHandler.finishedTrackingActivity(null);
-        packageHandler.sendNextPackage();
+        if (sendToPackageHandler) {
+            // not necessary if it's null
+            //packageHandler.finishedTrackingActivity(null);
+            packageHandler.sendNextPackage();
+        }
     }
 
     private String getReasonString(String message, Throwable throwable) {

@@ -622,7 +622,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // testing the activity kind is the correct one
         ActivityKind activityKind = activityPackage.getActivityKind();
         assertEquals(activityPackage.getExtendedString(),
-            ActivityKind.REATTRIBUTION, activityKind);
+            ActivityKind.CLICK, activityKind);
 
         // testing the conversion from activity kind to string
         String activityKindString = activityKind.toString();
@@ -632,7 +632,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // testing the conversion from string to activity kind
         activityKind = ActivityKind.fromString(activityKindString);
         assertEquals(activityPackage.getExtendedString(),
-            ActivityKind.REATTRIBUTION, activityKind);
+            ActivityKind.CLICK, activityKind);
 
         // package type should be reattribute
         assertEquals(activityPackage.getExtendedString(),

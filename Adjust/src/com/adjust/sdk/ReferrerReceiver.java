@@ -16,9 +16,6 @@ import java.net.URLDecoder;
 // http://blog.appington.com/2012/08/01/giving-credit-for-android-app-installs
 
 public class ReferrerReceiver extends BroadcastReceiver {
-
-    protected static final String REFERRER_KEY = "AdjustInstallReferrer";
-
     @Override
     public void onReceive(Context context, Intent intent) {
         String rawReferrer = intent.getStringExtra(REFERRER);
@@ -33,7 +30,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
             referrer = MALFORMED;
         }
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-        preferences.edit().putString(REFERRER_KEY, referrer).commit();
+        Adjust adjust = Adjust.getInstance();
+        adjust.setReferrer(referrer);
     }
 }

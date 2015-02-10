@@ -22,12 +22,12 @@ public interface Constants {
     int ONE_MINUTE     = 60 * ONE_SECOND;
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
-    String BASE_URL   = "https://app.adjust.io";
+    String BASE_URL   = "https://app.adjust.com";
     String CLIENT_SDK = "android3.6.2";
     String LOGTAG     = "Adjust";
 
-    String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
-    String ATTRIBUTION_FILENAME    = "AdjustAttribution";
+    String SESSION_STATE_FILENAME = "AdjustIoActivityState";
+    String ATTRIBUTION_FILENAME   = "AdjustAttribution";
 
 
     String UNKNOWN   = "unknown";
