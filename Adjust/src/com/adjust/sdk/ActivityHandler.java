@@ -121,9 +121,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             activityState.enabled = enabled;
         }
         if (enabled) {
-            this.trackSubsessionStart();
+            trackSubsessionStart();
+            logger.info("Pausing package handler to disable the SDK");
         } else {
-            this.trackSubsessionEnd();
+            trackSubsessionEnd();
+            logger.info("Resuming package handler to enable the SDK");
         }
     }
 
