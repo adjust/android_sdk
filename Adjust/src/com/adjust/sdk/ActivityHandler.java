@@ -138,25 +138,12 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void trackEvent(String eventToken, Map<String, String> parameters) {
+    public void trackEvent(Event event) {
         PackageBuilder builder = new PackageBuilder(context);
-        builder.setEventToken(eventToken);
-        builder.setCallbackParameters(parameters);
+        builder.setEvent(event);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
-        message.obj = builder;
-        sessionHandler.sendMessage(message);
-    }
-
-    public void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        PackageBuilder builder = new PackageBuilder(context);
-        builder.setAmountInCents(amountInCents);
-        builder.setEventToken(eventToken);
-        builder.setCallbackParameters(parameters);
-
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.REVENUE;
         message.obj = builder;
         sessionHandler.sendMessage(message);
     }
@@ -212,7 +199,7 @@ public class ActivityHandler extends HandlerThread {
         private static final int START       = 72640;
         private static final int END         = 72650;
         private static final int EVENT       = 72660;
-        private static final int REVENUE     = 72670;
+        //private static final int REVENUE     = 72670;
         private static final int DEEP_LINK   = 72680;
 
 
@@ -249,10 +236,6 @@ public class ActivityHandler extends HandlerThread {
                 case EVENT:
                     PackageBuilder eventBuilder = (PackageBuilder) message.obj;
                     sessionHandler.trackEventInternal(eventBuilder);
-                    break;
-                case REVENUE:
-                    PackageBuilder revenueBuilder = (PackageBuilder) message.obj;
-                    sessionHandler.trackRevenueInternal(revenueBuilder);
                     break;
                 case DEEP_LINK:
                     Uri url = (Uri) message.obj;
@@ -405,36 +388,6 @@ public class ActivityHandler extends HandlerThread {
         logger.debug("Event %d", activityState.eventCount);
     }
 
-    private void trackRevenueInternal(PackageBuilder revenueBuilder) {
-        if (!canTrackRevenue(revenueBuilder)) {
-            return;
-        }
-
-        if (!activityState.enabled) {
-            return;
-        }
-
-        long now = System.currentTimeMillis();
-
-        activityState.createdAt = now;
-        activityState.eventCount++;
-        updateActivityState(now);
-
-        injectGeneralAttributes(revenueBuilder);
-        activityState.injectEventAttributes(revenueBuilder);
-        ActivityPackage eventPackage = revenueBuilder.buildRevenuePackage();
-        packageHandler.addPackage(eventPackage);
-
-        if (eventBuffering) {
-            logger.info("Buffered revenue %s", eventPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
-
-        writeActivityState();
-        logger.debug("Event %d (revenue)", activityState.eventCount);
-    }
-
     private void readOpenUrlInternal(Uri url) {
         if (url == null) {
             return;
@@ -509,13 +462,7 @@ public class ActivityHandler extends HandlerThread {
     private boolean canTrackEvent(PackageBuilder revenueBuilder) {
         return checkAppTokenNotNull(appToken)
             && checkActivityState(activityState)
-            && revenueBuilder.isValidForEvent();
-    }
-
-    private boolean canTrackRevenue(PackageBuilder revenueBuilder) {
-        return checkAppTokenNotNull(appToken)
-            && checkActivityState(activityState)
-            && revenueBuilder.isValidForRevenue();
+            && revenueBuilder.isValidForEvent(logger);
     }
 
     private void updateActivityState(long now) {

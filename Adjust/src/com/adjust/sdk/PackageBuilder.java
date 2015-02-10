@@ -19,7 +19,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Base64;
 
-public class PackageBuilder {
+class PackageBuilder {
 
     private Context context;
 
@@ -47,9 +47,9 @@ public class PackageBuilder {
 
     // events
     private int                 eventCount;
-    private String              eventToken;
-    private double              amountInCents;
-    private Map<String, String> callbackParameters;
+
+    private Event event;
+    void setEvent(Event event) { this.event = event; }
 
     // reattributions
     private Map<String, String> deepLinkParameters;
@@ -131,26 +131,6 @@ public class PackageBuilder {
         this.eventCount = eventCount;
     }
 
-    public String getEventToken() {
-        return eventToken;
-    }
-
-    public void setEventToken(String eventToken) {
-        this.eventToken = eventToken;
-    }
-
-    public double getAmountInCents() {
-        return amountInCents;
-    }
-
-    public void setAmountInCents(double amountInCents) {
-        this.amountInCents = amountInCents;
-    }
-
-    public void setCallbackParameters(Map<String, String> callbackParameters) {
-        this.callbackParameters = callbackParameters;
-    }
-
     public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
         this.deepLinkParameters = deepLinkParameters;
     }
@@ -159,25 +139,31 @@ public class PackageBuilder {
         this.pluginsKeys = pluginKeys;
     }
 
-    public boolean isValidForEvent() {
-        if (null == eventToken) {
-            Logger logger = AdjustFactory.getLogger();
+    public boolean isValidForEvent(Logger logger) {
+        if (event.eventToken == null) {
             logger.error("Missing Event Token");
             return false; // non revenue events need event tokens
         }
-        return isEventTokenValid(); // and they must be valid
-    }
-
-    public boolean isValidForRevenue() {
-        if (amountInCents < 0.0) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.error("Invalid amount %f", amountInCents);
+        if (event.eventToken.length() != 6) {
+            logger.error("Malformed Event Token '%s'", event.eventToken);
             return false;
         }
-        if (eventToken == null) {
-            return true; // revenue events don't need event tokens
+
+        if (event.revenue != null && event.revenue < 0.0) {
+            logger.error("Invalid amount %f", event.revenue);
+            return false;
         }
-        return isEventTokenValid(); // but if they have one, it must be valid
+        if (event.revenue != null && event.currency == null) {
+            logger.error("Currency must be set with revenue");
+            return false;
+        }
+
+        if (event.revenue != null && event.currency.length() != 3) {
+            logger.error("Invalid currency length '%s'", event.currency);
+            return false;
+        }
+
+        return true;
     }
 
     public ActivityPackage buildSessionPackage() {
@@ -233,15 +219,6 @@ public class PackageBuilder {
         reattributionPackage.setParameters(parameters);
 
         return reattributionPackage;
-    }
-
-    private boolean isEventTokenValid() {
-        if (6 != eventToken.length()) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.error("Malformed Event Token '%s'", eventToken);
-            return false;
-        }
-        return true;
     }
 
     private ActivityPackage getDefaultActivityPackage() {
@@ -302,25 +279,25 @@ public class PackageBuilder {
 
     private void injectEventParameters(Map<String, String> parameters) {
         addInt(parameters, "event_count", eventCount);
-        addString(parameters, "event_token", eventToken);
-        addMapBase64(parameters, "params", callbackParameters);
+        addString(parameters, "event_token", event.eventToken);
+        addMapBase64(parameters, "params", event.callbackParameters);
     }
 
     private String getAmountString() {
-        long amountInMillis = Math.round(10 * amountInCents);
-        amountInCents = amountInMillis / 10.0; // now rounded to one decimal point
+        long amountInMillis = Math.round(1000 * event.revenue);
+        event.revenue = amountInMillis / 1000.0; // now rounded to one decimal point
         return Long.toString(amountInMillis);
     }
 
     private String getEventSuffix() {
-        return String.format(" '%s'", eventToken);
+        return String.format(" '%s'", event.eventToken);
     }
 
     private String getRevenueSuffix() {
-        if (eventToken != null) {
-            return String.format(Locale.US, " (%.1f cent, '%s')", amountInCents, eventToken);
+        if (event.revenue == null) {
+            return String.format(" '%s'", event.eventToken);
         } else {
-            return String.format(Locale.US, " (%.1f cent)", amountInCents);
+            return String.format(Locale.US, " (%.1f cent, '%s')", event.revenue, event.eventToken);
         }
     }
 

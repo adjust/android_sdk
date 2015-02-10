@@ -75,13 +75,9 @@ public class Adjust {
      * @param parameters An optional dictionary containing the callback parameters.
      *                   Provide key-value-pairs to be forwarded to your callbacks.
      */
-    public static void trackEvent(String eventToken) {
-        trackEvent(eventToken, null);
-    }
-
-    public static void trackEvent(String eventToken, Map<String, String> parameters) {
+    public static void trackEvent(Event event) {
         try {
-            activityHandler.trackEvent(eventToken, parameters);
+            activityHandler.trackEvent(event);
         } catch (NullPointerException e) {
             getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
         }
@@ -101,21 +97,6 @@ public class Adjust {
      * @param eventToken The token for this revenue event (optional, see above)
      * @param parameters Parameters for this revenue event (optional, see above)
      */
-    public static void trackRevenue(double amountInCents) {
-        Adjust.trackRevenue(amountInCents, null);
-    }
-
-    public static void trackRevenue(double amountInCents, String eventToken) {
-        Adjust.trackRevenue(amountInCents, eventToken, null);
-    }
-
-    public static void trackRevenue(double amountInCents, String eventToken, Map<String, String> parameters) {
-        try {
-            activityHandler.trackRevenue(amountInCents, eventToken, parameters);
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-    }
 
     /**
      * Enable or disable the adjust SDK
