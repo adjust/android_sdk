@@ -368,11 +368,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void trackEventInternal(Event event) {
-        if (!activityState.enabled) {
-            return;
-        }
+        if (!checkEvent(event)) return;
+        if (!activityState.enabled) return;
 
         long now = System.currentTimeMillis();
+
+
         activityState.createdAt = now;
         activityState.eventCount++;
         updateActivityState(now);
@@ -505,7 +506,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void timerFired() {
-        if (null != activityState
+        if (activityState != null
                 && !activityState.enabled) {
             return;
         }
@@ -535,6 +536,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
+    private boolean checkEvent(Event event) {
+        if (event == null) {
+            logger.error("Event missing");
+            return false;
+        }
+        if (!event.isValid()) return false;
 
         return true;
     }
