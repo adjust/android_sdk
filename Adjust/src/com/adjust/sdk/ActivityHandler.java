@@ -379,8 +379,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         updateActivityState(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        eventBuilder.event = event;
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage();
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -429,7 +428,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         builder.deepLinkParameters = adjustDeepLinks;
-        ActivityPackage clickPackage = builder.buildClickPackage();
+        ActivityPackage clickPackage = builder.buildClickPackage("deeplink");
         packageHandler.sendClickPackage(clickPackage);
     }
 
