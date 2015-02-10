@@ -9,12 +9,7 @@
 
 package com.adjust.sdk;
 
-import android.content.Context;
 import android.net.Uri;
-
-import java.util.Map;
-
-import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
 
 /**
  * The main interface to Adjust.
@@ -24,6 +19,8 @@ import static com.adjust.sdk.Constants.NO_ACTIVITY_HANDLER_FOUND;
  */
 public class Adjust {
 
+    private ActivityHandler activityHandler;
+
     /**
      * Tell Adjust that an activity did resume.
      * <p/>
@@ -32,12 +29,6 @@ public class Adjust {
      *
      * @param context The context of the activity that has just resumed.
      */
-    public static void onResume(Context context) {
-        if (null == activityHandler) {
-            activityHandler = new ActivityHandler(context);
-        }
-        activityHandler.trackSubsessionStart();
-    }
 
     /**
      * Tell Adjust that an activity will pause.
@@ -45,44 +36,6 @@ public class Adjust {
      * This is used to calculate session attributes like session length and subsession count.
      * Call this in the onPause method of every activity of your app.
      */
-    public static void onPause() {
-        try {
-            getLogger().debug("onPause");
-            activityHandler.trackSubsessionEnd();
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-    }
-
-    public static void setOnFinishedListener(OnFinishedListener listener) {
-        try {
-            activityHandler.setOnFinishedListener(listener);
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-    }
-
-    /**
-     * Tell Adjust that a particular event has happened.
-     * <p/>
-     * In your dashboard at http://adjust.com you can assign a callback URL to each
-     * event type. That URL will get called every time the event is triggered. On
-     * top of that you can pass a set of parameters to the following method that
-     * will be forwarded to these callbacks.
-     *
-     * @param eventToken The Event Token for this kind of event. They are created
-     *                   in the dashboard at http://adjust.com and should be six characters long.
-     * @param parameters An optional dictionary containing the callback parameters.
-     *                   Provide key-value-pairs to be forwarded to your callbacks.
-     */
-    public static void trackEvent(Event event) {
-        try {
-            activityHandler.trackEvent(event);
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-    }
-
 
     /**
      * Tell Adjust that a user generated some revenue.
@@ -103,51 +56,65 @@ public class Adjust {
      *
      * @param enabled The flag to enable or disable the adjust SDK
      */
-    public static void setEnabled(Boolean enabled) {
-        try {
-            activityHandler.setEnabled(enabled);
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-    }
-
-    /**
-     * Check if the SDK is enabled or disabled
-     */
-    public static Boolean isEnabled() {
-        try {
-            return activityHandler.isEnabled();
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-        return false;
-    }
-
-    public static void appWillOpenUrl(Uri url) {
-        try {
-            activityHandler.readOpenUrl(url);
-        } catch (NullPointerException e) {
-            getLogger().error(NO_ACTIVITY_HANDLER_FOUND);
-        }
-
-    }
-
-
-    // Special appDidLaunch method used by SDK wrappers such as our Adobe Air SDK.
-    public static void appDidLaunch(Context context, String appToken, String environment, String logLevel, boolean eventBuffering) {
-        activityHandler = new ActivityHandler(context, appToken, environment, logLevel, eventBuffering);
-    }
-
-    // Special method used by SDK wrappers such as our Adobe Air SDK.
-    public static void setSdkPrefix(String sdkPrefix) {
-        activityHandler.setSdkPrefix(sdkPrefix);
-    }
 
     /**
      * Every activity will get forwarded to this handler to be processed in the background.
      */
-    private static ActivityHandler activityHandler;
     private static Logger getLogger() {
         return AdjustFactory.getLogger();
     };
+
+    public void onCreate(AdjustConfig adjustConfig) {
+        if (activityHandler != null) {
+            getLogger().error("Adjust already initialized");
+            return;
+        }
+
+        activityHandler = new ActivityHandler(adjustConfig);
+    }
+
+    public void trackEvent(Event event) {
+        if (!checkActivityHandler()) return;
+        activityHandler.trackEvent(event);
+    }
+
+    public void onResume() {
+        if (!checkActivityHandler()) return;
+        activityHandler.trackSubsessionStart();
+    }
+
+    public void onPause() {
+        if (!checkActivityHandler()) return;
+        activityHandler.trackSubsessionEnd();
+    }
+
+    public void setOnFinishedListener(OnFinishedListener listener) {
+        if (!checkActivityHandler()) return;
+        activityHandler.setOnFinishedListener(listener);
+    }
+
+    public void setEnabled(Boolean enabled) {
+        if (!checkActivityHandler()) return;
+        activityHandler.setEnabled(enabled);
+    }
+
+    public boolean isEnabled() {
+        if (!checkActivityHandler()) return false;
+        return activityHandler.isEnabled();
+    }
+
+    public void appWillOpenUrl(Uri url) {
+        if (!checkActivityHandler()) return;
+        activityHandler.readOpenUrl(url);
+    }
+
+
+    private boolean checkActivityHandler() {
+        if (activityHandler == null) {
+            getLogger().error("Please initialize Adjust by calling 'onCreate' before");
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

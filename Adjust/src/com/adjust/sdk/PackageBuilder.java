@@ -21,19 +21,8 @@ import android.util.Base64;
 
 class PackageBuilder {
 
-    private Context context;
-
     // general
-    private String appToken;
-    private String macSha1;
-    private String macShortMd5;
-    private String androidId;
-    private String fbAttributionId;
-    private String userAgent;
-    private String clientSdk;
     private String uuid;
-    private String environment;
-    private Map<String, String> pluginsKeys;
 
     // sessions
     private int    sessionCount;
@@ -48,51 +37,20 @@ class PackageBuilder {
     // events
     private int                 eventCount;
 
-    private Event event;
-    void setEvent(Event event) { this.event = event; }
+    Event event;
+    private AdjustConfig adjustConfig;
+    private DeviceInfo deviceInfo;
 
     // reattributions
     private Map<String, String> deepLinkParameters;
 
-    public PackageBuilder(Context context)
-    {
-        this.context = context;
-    }
-
-    public void setAppToken(String appToken) {
-        this.appToken = appToken;
-    }
-
-    public void setMacSha1(String macSha1) {
-        this.macSha1 = macSha1;
-    }
-
-    public void setMacShortMd5(String macShortMd5) {
-        this.macShortMd5 = macShortMd5;
-    }
-
-    public void setAndroidId(String androidId) {
-        this.androidId = androidId;
+    public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo) {
+        this.adjustConfig = adjustConfig;
+        this.deviceInfo = deviceInfo;
     }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
-    }
-
-    public void setFbAttributionId(String fbAttributionId) {
-        this.fbAttributionId = fbAttributionId;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public void setClientSdk(String clientSdk) {
-        this.clientSdk = clientSdk;
-    }
-
-    public void setEnvironment(String environment) {
-        this.environment = environment;
     }
 
     public void setSessionCount(int sessionCount) {
@@ -133,37 +91,6 @@ class PackageBuilder {
 
     public void setDeepLinkParameters(Map<String, String> deepLinkParameters) {
         this.deepLinkParameters = deepLinkParameters;
-    }
-
-    public void setPluginKeys(Map<String, String> pluginKeys) {
-        this.pluginsKeys = pluginKeys;
-    }
-
-    public boolean isValidForEvent(Logger logger) {
-        if (event.eventToken == null) {
-            logger.error("Missing Event Token");
-            return false; // non revenue events need event tokens
-        }
-        if (event.eventToken.length() != 6) {
-            logger.error("Malformed Event Token '%s'", event.eventToken);
-            return false;
-        }
-
-        if (event.revenue != null && event.revenue < 0.0) {
-            logger.error("Invalid amount %f", event.revenue);
-            return false;
-        }
-        if (event.revenue != null && event.currency == null) {
-            logger.error("Currency must be set with revenue");
-            return false;
-        }
-
-        if (event.revenue != null && event.currency.length() != 3) {
-            logger.error("Invalid currency length '%s'", event.currency);
-            return false;
-        }
-
-        return true;
     }
 
     public ActivityPackage buildSessionPackage() {
@@ -223,8 +150,8 @@ class PackageBuilder {
 
     private ActivityPackage getDefaultActivityPackage() {
         ActivityPackage activityPackage = new ActivityPackage();
-        activityPackage.setUserAgent(userAgent);
-        activityPackage.setClientSdk(clientSdk);
+        activityPackage.setUserAgent(deviceInfo.userAgent);
+        activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
     }
 
@@ -233,16 +160,16 @@ class PackageBuilder {
 
         // general
         addDate(parameters, "created_at", createdAt);
-        addString(parameters, "app_token", appToken);
-        addString(parameters, "mac_sha1", macSha1);
-        addString(parameters, "mac_md5", macShortMd5);
-        addString(parameters, "android_id", androidId);
+        addString(parameters, "app_token", adjustConfig.appToken);
+        addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        addString(parameters, "android_id", deviceInfo.androidId);
         addString(parameters, "android_uuid", uuid);
-        addString(parameters, "fb_id", fbAttributionId);
-        addString(parameters, "environment", environment);
-        String playAdId = Util.getPlayAdId(context);
+        addString(parameters, "fb_id", deviceInfo.fbAttributionId);
+        addString(parameters, "environment", adjustConfig.environment);
+        String playAdId = Util.getPlayAdId(adjustConfig.context);
         addString(parameters, "gps_adid", playAdId);
-        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         fillPluginKeys(parameters);
         checkDeviceIds(parameters);
@@ -268,11 +195,11 @@ class PackageBuilder {
     }
 
     private void fillPluginKeys(Map<String, String> parameters) {
-        if (pluginsKeys == null) {
+        if (deviceInfo.pluginKeys== null) {
             return;
         }
 
-        for (Map.Entry<String, String> pluginEntry : pluginsKeys.entrySet()) {
+        for (Map.Entry<String, String> pluginEntry : deviceInfo.pluginKeys.entrySet()) {
             addString(parameters, pluginEntry.getKey(), pluginEntry.getValue());
         }
     }
