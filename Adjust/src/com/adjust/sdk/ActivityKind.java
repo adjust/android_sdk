@@ -3,7 +3,7 @@ package com.adjust.sdk;
 public enum ActivityKind {
     UNKNOWN, SESSION, EVENT, REVENUE, CLICK;
 
-    public static ActivityKind  fromString(String string) {
+    public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {
             return SESSION;
         } else if ("event".equals(string)) {
@@ -19,12 +19,17 @@ public enum ActivityKind {
 
     @Override
     public String toString() {
-        switch(this) {
-        case SESSION:   return "session";
-        case EVENT:     return "event";
-        case REVENUE:   return "revenue";
-        case CLICK:     return "click";
-        default:        return "unknown";
+        switch (this) {
+            case SESSION:
+                return "session";
+            case EVENT:
+                return "event";
+            case REVENUE:
+                return "revenue";
+            case CLICK:
+                return "click";
+            default:
+                return "unknown";
         }
     }
 }

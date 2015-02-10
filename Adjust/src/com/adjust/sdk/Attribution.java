@@ -1,7 +1,6 @@
 package com.adjust.sdk;
 
 import org.json.JSONObject;
-import org.w3c.dom.Attr;
 
 import java.io.Serializable;
 
@@ -66,7 +65,7 @@ public class Attribution implements Serializable {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
-        Attribution otherAttribution = (Attribution)other;
+        Attribution otherAttribution = (Attribution) other;
 
         if (!equalString(trackerToken, otherAttribution.trackerToken)) return false;
         if (!equalString(trackerName, otherAttribution.trackerName)) return false;

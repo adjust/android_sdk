@@ -1,10 +1,10 @@
 package com.adjust.sdk;
 
+import android.content.Context;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-
-import android.content.Context;
 
 public class Reflection {
 
@@ -15,8 +15,7 @@ public class Reflection {
             String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
 
             return playAdid;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
         }
     }
@@ -28,8 +27,7 @@ public class Reflection {
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
 
             return !isLimitedTrackingEnabled;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
         }
     }
@@ -39,14 +37,13 @@ public class Reflection {
             Integer isGooglePlayServicesAvailableStatusCode = (Integer) invokeStaticMethod(
                     "com.google.android.gms.common.GooglePlayServicesUtil",
                     "isGooglePlayServicesAvailable",
-                    new Class[] {Context.class}, context
+                    new Class[]{Context.class}, context
             );
 
             boolean isGooglePlayServicesAvailable = (Boolean) isConnectionResultSuccess(isGooglePlayServicesAvailableStatusCode);
 
             return isGooglePlayServicesAvailable;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return false;
         }
     }
@@ -56,12 +53,11 @@ public class Reflection {
             String macSha1 = (String) invokeStaticMethod(
                     "com.adjust.sdk.plugin.MacAddressUtil",
                     "getMacAddress",
-                    new Class[] {Context.class}, context
+                    new Class[]{Context.class}, context
             );
 
             return macSha1;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
         }
     }
@@ -69,11 +65,21 @@ public class Reflection {
     public static String getAndroidId(Context context) {
         try {
             String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
-                    ,new Class[] {Context.class}, context);
+                    , new Class[]{Context.class}, context);
 
             return androidId;
+        } catch (Throwable t) {
+            return null;
         }
-        catch (Throwable t) {
+    }
+
+    public static String getSha1EmailAddress(Context context, String key) {
+        try {
+            String sha1EmailAddress = (String) invokeStaticMethod("com.adjust.sdk.plugin.EmailUtil", "getSha1EmailAddress"
+                    , new Class[]{Context.class, String.class}, context, key);
+
+            return sha1EmailAddress;
+        } catch (Throwable t) {
             return null;
         }
     }
@@ -82,7 +88,7 @@ public class Reflection {
             throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
                 "getAdvertisingIdInfo",
-                new Class[] {Context.class} , context
+                new Class[]{Context.class}, context
         );
     }
 
@@ -99,8 +105,7 @@ public class Reflection {
             int successStatusCode = SuccessField.getInt(null);
 
             return successStatusCode == statusCode;
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             return false;
         }
     }
@@ -124,7 +129,7 @@ public class Reflection {
         try {
             Object instance = classObject.newInstance();
             return instance;
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
         }
     }
@@ -135,7 +140,7 @@ public class Reflection {
             Constructor constructor = classObject.getConstructor(cArgs);
             Object instance = constructor.newInstance(args);
             return instance;
-        }catch (Throwable t) {
+        } catch (Throwable t) {
             return null;
         }
     }

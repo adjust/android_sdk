@@ -1,16 +1,13 @@
 package com.adjust.sdk;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +78,8 @@ class AttributionHandler {
         Integer timerMilliseconds = null;
         try {
             timerMilliseconds = jsonResponse.getInt("ask_in");
-        } catch (JSONException e) { }
+        } catch (JSONException e) {
+        }
 
         if (attribution != null && timerMilliseconds == null) {
             attribution.finalAttribution = true;

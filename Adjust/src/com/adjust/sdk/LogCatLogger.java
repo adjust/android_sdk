@@ -9,11 +9,11 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.LOGTAG;
+import android.util.Log;
 
 import java.util.Locale;
 
-import android.util.Log;
+import static com.adjust.sdk.Constants.LOGTAG;
 
 public class LogCatLogger implements Logger {
 
@@ -40,42 +40,42 @@ public class LogCatLogger implements Logger {
     }
 
     @Override
-    public void verbose(String message, Object ...parameters) {
+    public void verbose(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             Log.v(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void debug(String message, Object ...parameters) {
+    public void debug(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             Log.d(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void info(String message, Object ...parameters) {
+    public void info(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.INFO) {
             Log.i(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void warn(String message, Object ...parameters) {
+    public void warn(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
             Log.w(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void error(String message, Object ...parameters) {
+    public void error(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
             Log.e(LOGTAG, String.format(message, parameters));
         }
     }
 
     @Override
-    public void Assert(String message, Object ...parameters) {
+    public void Assert(String message, Object... parameters) {
         Log.println(Log.ASSERT, LOGTAG, String.format(message, parameters));
     }
 }

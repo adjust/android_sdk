@@ -143,17 +143,16 @@ class PackageBuilder {
 
     private void checkDeviceIds(Map<String, String> parameters) {
         if (!parameters.containsKey("mac_sha1")
-            && !parameters.containsKey("mac_md5")
-            && !parameters.containsKey("android_id")
-            && !parameters.containsKey("gps_adid"))
-        {
+                && !parameters.containsKey("mac_md5")
+                && !parameters.containsKey("android_id")
+                && !parameters.containsKey("gps_adid")) {
             Logger logger = AdjustFactory.getLogger();
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
         }
     }
 
     private void fillPluginKeys(Map<String, String> parameters) {
-        if (deviceInfo.pluginKeys== null) {
+        if (deviceInfo.pluginKeys == null) {
             return;
         }
 
@@ -249,7 +248,7 @@ class PackageBuilder {
             return;
         }
 
-        int intValue = value? 1 : 0;
+        int intValue = value ? 1 : 0;
 
         addInt(parameters, key, intValue);
     }

@@ -16,13 +16,13 @@ public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
 
     // data
-    private String              path;
-    private String              clientSdk;
+    private String path;
+    private String clientSdk;
     private Map<String, String> parameters;
 
     // logs
     private ActivityKind activityKind;
-    private String       suffix;
+    private String suffix;
 
     public String getPath() {
         return path;
@@ -52,7 +52,7 @@ public class ActivityPackage implements Serializable {
         return activityKind;
     }
 
-    public void setActivityKind(ActivityKind activityKind ) {
+    public void setActivityKind(ActivityKind activityKind) {
         this.activityKind = activityKind;
     }
 

@@ -9,6 +9,14 @@
 
 package com.adjust.sdk;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -24,26 +32,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.json.JSONObject;
-
-import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-
 // persistent
 public class PackageHandler extends HandlerThread implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
 
-    private final InternalHandler       internalHandler;
-    private       IRequestHandler       requestHandler;
-    private       ActivityHandler       activityHandler;
-    private       List<ActivityPackage> packageQueue;
-    private       AtomicBoolean         isSending;
-    private       boolean               paused;
-    private       Context               context;
-    private       Logger                logger;
+    private final InternalHandler internalHandler;
+    private IRequestHandler requestHandler;
+    private ActivityHandler activityHandler;
+    private List<ActivityPackage> packageQueue;
+    private AtomicBoolean isSending;
+    private boolean paused;
+    private Context context;
+    private Logger logger;
 
     public PackageHandler(ActivityHandler activityHandler, Context context) {
         super(Constants.LOGTAG, MIN_PRIORITY);
@@ -121,9 +121,9 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private static final class InternalHandler extends Handler {
-        private static final int INIT       = 1;
-        private static final int ADD        = 2;
-        private static final int SEND_NEXT  = 3;
+        private static final int INIT = 1;
+        private static final int ADD = 2;
+        private static final int SEND_NEXT = 3;
         private static final int SEND_FIRST = 4;
 
         private final WeakReference<PackageHandler> packageHandlerReference;

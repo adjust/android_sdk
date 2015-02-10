@@ -1,13 +1,13 @@
 package com.adjust.sdk.plugin;
 
+import android.content.Context;
+import android.net.wifi.WifiManager;
+import android.text.TextUtils;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
-
-import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.text.TextUtils;
 
 public class MacAddressUtil {
     public static String getMacAddress(Context context) {

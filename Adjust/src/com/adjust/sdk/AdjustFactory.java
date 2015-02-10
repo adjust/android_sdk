@@ -1,10 +1,10 @@
 package com.adjust.sdk;
 
+import android.content.Context;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpParams;
-
-import android.content.Context;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;

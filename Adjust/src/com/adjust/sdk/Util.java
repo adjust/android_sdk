@@ -131,7 +131,7 @@ public class Util {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             httpResponse.getEntity().writeTo(out);
             out.close();
-            String response =  out.toString().trim();
+            String response = out.toString().trim();
             logger.verbose("Response: %s", response);
             return response;
         } catch (Exception e) {
@@ -146,7 +146,7 @@ public class Util {
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
             return jsonObject;
-        } catch (JSONException e){
+        } catch (JSONException e) {
             Logger logger = AdjustFactory.getLogger();
             logger.error("Failed to parse json response: %s (%s)", jsonString, e.getMessage());
         }

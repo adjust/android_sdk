@@ -63,8 +63,8 @@ class DeviceInfo {
     String networkType;
     String networkSubtype;
     String simOperator;
-    Map<String,String> pluginKeys;
-    
+    Map<String, String> pluginKeys;
+
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -101,14 +101,16 @@ class DeviceInfo {
     }
 
     private String getMacAddress(Context context) {
-        if  (!Reflection.isGooglePlayServicesAvailable(context)) {
+        if (!Reflection.isGooglePlayServicesAvailable(context)) {
             return Reflection.getMacAddress(context);
         } else {
-            return  null;
+            return null;
         }
     }
 
-    private String getPackageName(Context context) { return context.getPackageName(); }
+    private String getPackageName(Context context) {
+        return context.getPackageName();
+    }
 
     private String getAppVersion(Context context) {
         try {
@@ -136,9 +138,13 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceName() { return Build.MODEL; }
+    private String getDeviceName() {
+        return Build.MODEL;
+    }
 
-    private String getDeviceManufacturer() { return Build.MANUFACTURER; }
+    private String getDeviceManufacturer() {
+        return Build.MANUFACTURER;
+    }
 
     private String getOsName() {
         return "android";

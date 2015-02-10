@@ -9,7 +9,6 @@
 
 package com.adjust.sdk;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,31 +17,31 @@ import java.util.List;
  * @since 8.11.13
  */
 public interface Constants {
-    int ONE_SECOND     = 1000;
-    int ONE_MINUTE     = 60 * ONE_SECOND;
+    int ONE_SECOND = 1000;
+    int ONE_MINUTE = 60 * ONE_SECOND;
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
 
-    String BASE_URL   = "https://app.adjust.com";
-    String CLIENT_SDK = "android3.6.2";
-    String LOGTAG     = "Adjust";
+    String BASE_URL = "https://app.adjust.com";
+    String CLIENT_SDK = "android3.6.1";
+    String LOGTAG = "Adjust";
 
     String SESSION_STATE_FILENAME = "AdjustIoActivityState";
-    String ATTRIBUTION_FILENAME   = "AdjustAttribution";
+    String ATTRIBUTION_FILENAME = "AdjustAttribution";
 
     String MALFORMED = "malformed";
-    String SMALL     = "small";
-    String NORMAL    = "normal";
-    String LONG      = "long";
-    String LARGE     = "large";
-    String XLARGE    = "xlarge";
-    String LOW       = "low";
-    String MEDIUM    = "medium";
-    String HIGH      = "high";
-    String REFERRER  = "referrer";
+    String SMALL = "small";
+    String NORMAL = "normal";
+    String LONG = "long";
+    String LARGE = "large";
+    String XLARGE = "xlarge";
+    String LOW = "low";
+    String MEDIUM = "medium";
+    String HIGH = "high";
+    String REFERRER = "referrer";
 
     String ENCODING = "UTF-8";
-    String MD5      = "MD5";
-    String SHA1     = "SHA-1";
+    String MD5 = "MD5";
+    String SHA1 = "SHA-1";
 
     // List of known plugins, possibly not active
     List<String> PLUGINS = Arrays.asList();

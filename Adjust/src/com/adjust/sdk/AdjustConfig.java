@@ -27,7 +27,8 @@ public class AdjustConfig {
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";
 
-    private AdjustConfig () {}
+    private AdjustConfig() {
+    }
 
     public static AdjustConfig getInstance(Context context, String appToken, String environment) {
         if (!canInit(context, appToken, environment)) {

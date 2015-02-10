@@ -9,6 +9,8 @@
 
 package com.adjust.sdk;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.NotActiveException;
 import java.io.ObjectInputStream;
@@ -16,8 +18,6 @@ import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Locale;
-
-import android.util.Log;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
@@ -31,7 +31,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected int sessionCount;
 
     // session attributes
-    protected int  subsessionCount;
+    protected int subsessionCount;
     protected long sessionLength;   // all durations in milliseconds
     protected long timeSpent;
     protected long lastActivity;    // all times in milliseconds since 1970
@@ -66,14 +66,14 @@ public class ActivityState implements Serializable, Cloneable {
     @Override
     public String toString() {
         return String.format(Locale.US,
-                             "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
-                             eventCount, sessionCount, subsessionCount,
-                             sessionLength / 1000.0, timeSpent / 1000.0,
-                             stamp(lastActivity), uuid);
+                "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
+                eventCount, sessionCount, subsessionCount,
+                sessionLength / 1000.0, timeSpent / 1000.0,
+                stamp(lastActivity), uuid);
     }
 
     @Override
-    public ActivityState clone()  {
+    public ActivityState clone() {
         try {
             return (ActivityState) super.clone();
         } catch (CloneNotSupportedException e) {
@@ -98,7 +98,7 @@ public class ActivityState implements Serializable, Cloneable {
         enabled = true;
         // try to read in order of less recent new fields
         try {
-            uuid = (String)fields.get("uuid", null);
+            uuid = (String) fields.get("uuid", null);
             enabled = fields.get("enabled", true);
             // add new fields here
         } catch (Exception e) {
@@ -117,9 +117,9 @@ public class ActivityState implements Serializable, Cloneable {
     private static String stamp(long dateMillis) {
         Date date = new Date(dateMillis);
         return String.format(Locale.US,
-                             "%02d:%02d:%02d",
-                             date.getHours(),
-                             date.getMinutes(),
-                             date.getSeconds());
+                "%02d:%02d:%02d",
+                date.getHours(),
+                date.getMinutes(),
+                date.getSeconds());
     }
 }

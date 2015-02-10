@@ -5,7 +5,7 @@ import java.util.Map;
 /**
  * Created by pfms on 18/09/14.
  */
-public class MapEntry<K, V> implements Map.Entry<K, V>{
+public class MapEntry<K, V> implements Map.Entry<K, V> {
 
     private K key;
     private V value;

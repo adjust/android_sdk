@@ -13,7 +13,8 @@ public class Event {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
-    private Event() {}
+    private Event() {
+    }
 
     public static Event getInstance(String eventToken) {
         Logger logger = AdjustFactory.getLogger();

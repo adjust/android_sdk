@@ -43,12 +43,12 @@ public class ActivityHandler extends HandlerThread {
     private static final String ACTIVITY_STATE_NAME = "activity state";
     private static final String ATTRIBUTION_NAME = "attribution";
 
-    private        SessionHandler           sessionHandler;
-    private        IPackageHandler          packageHandler;
-    private        ActivityState            activityState;
-    private        Logger                   logger;
+    private SessionHandler sessionHandler;
+    private IPackageHandler packageHandler;
+    private ActivityState activityState;
+    private Logger logger;
     private static ScheduledExecutorService timer;
-    private        boolean                  enabled;
+    private boolean enabled;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
@@ -150,7 +150,7 @@ public class ActivityHandler extends HandlerThread {
         handler.post(runnable);
     }
 
-    public void setReferrer (String referrer) {
+    public void setReferrer(String referrer) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
         builder.referrer = referrer;
         ActivityPackage clickPackage = builder.buildClickPackage();
@@ -167,11 +167,11 @@ public class ActivityHandler extends HandlerThread {
     }
 
     private static final class SessionHandler extends Handler {
-        private static final int INIT        = 72630;
-        private static final int START       = 72640;
-        private static final int END         = 72650;
-        private static final int EVENT       = 72660;
-        private static final int DEEP_LINK   = 72680;
+        private static final int INIT = 72630;
+        private static final int START = 72640;
+        private static final int END = 72650;
+        private static final int EVENT = 72660;
+        private static final int DEEP_LINK = 72680;
 
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
@@ -251,7 +251,7 @@ public class ActivityHandler extends HandlerThread {
 
     private void startInternal() {
         if (activityState != null
-            && !activityState.enabled) {
+                && !activityState.enabled) {
             return;
         }
 
@@ -453,7 +453,7 @@ public class ActivityHandler extends HandlerThread {
 
     private void timerFired() {
         if (null != activityState
-            && !activityState.enabled) {
+                && !activityState.enabled) {
             return;
         }
 

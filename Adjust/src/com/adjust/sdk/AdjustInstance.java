@@ -9,9 +9,12 @@ public class AdjustInstance {
 
     private String referrer;
     private ActivityHandler activityHandler;
+
     private static Logger getLogger() {
         return AdjustFactory.getLogger();
-    };
+    }
+
+    ;
 
     public void onCreate(AdjustConfig adjustConfig) {
         if (activityHandler != null) {
