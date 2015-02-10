@@ -360,8 +360,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private void endInternal() {
         packageHandler.pauseSending();
         stopTimer();
-        updateActivityState(System.currentTimeMillis());
-        writeActivityState();
+        // possible to have null activity state thru Adjust->setOfflineMode(true)
+        // or Adjust->setEnabled(false)
+        if (updateActivityState(System.currentTimeMillis())) {
+            writeActivityState();
+        }
     }
 
     private void trackEventInternal(Event event) {
@@ -451,22 +454,23 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         adjustConfig.context.startActivity(mapIntent);
     }
 
-    private void updateActivityState(long now) {
+    private boolean updateActivityState(long now) {
         long lastInterval = now - activityState.lastActivity;
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
-            return;
+            return true;
         }
 
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) {
-            return;
+            return false;
         }
 
         activityState.sessionLength += lastInterval;
         activityState.timeSpent += lastInterval;
         activityState.lastActivity = now;
+        return true;
     }
 
     public static Boolean deleteActivityState(Context context) {
@@ -508,16 +512,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         packageHandler.sendFirstPackage();
 
-        updateActivityState(System.currentTimeMillis());
-        writeActivityState();
-    }
-
-    private IAttributionHandler buildAttributionHandler() {
-        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        ActivityPackage attributionPackage = attributionBuilder.buildAttributionPackage();
-        IAttributionHandler attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage);
-
-        return attributionHandler;
+        // possible to have null activity state thru Adjust->setOfflineMode(true)
+        // or Adjust->setEnabled(false)
+        if (updateActivityState(System.currentTimeMillis())) {
+            writeActivityState();
+        }
     }
 
     private void readActivityState() {
@@ -537,7 +536,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
 
-}
         return true;
     }
 
