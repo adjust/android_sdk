@@ -22,6 +22,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -40,6 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
 import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
 
@@ -50,6 +53,8 @@ public class ActivityHandler extends HandlerThread {
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
     private static final String ADJUST_PREFIX = "adjust_";
+    private static final String ACTIVITY_STATE_NAME = "activity state";
+    private static final String ATTRIBUTION_NAME = "attribution";
 
     private        SessionHandler           sessionHandler;
     private        IPackageHandler          packageHandler;
@@ -62,6 +67,8 @@ public class ActivityHandler extends HandlerThread {
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
+    private Attribution attribution;
+    private AttributionHandler attributionHandler;
 
     public ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
@@ -100,23 +107,14 @@ public class ActivityHandler extends HandlerThread {
         sessionHandler.sendMessage(message);
     }
 
-    public void finishedTrackingActivity(final ResponseData responseData, final String deepLink) {
-        if (onFinishedListener == null && deepLink == null) {
+    public void finishedTrackingActivity(JSONObject jsonResponse) {
+        if (jsonResponse == null) {
             return;
         }
 
-        Handler handler = new Handler(adjustConfig.context.getMainLooper());
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    runDelegateMain(responseData);
-                    launchDeepLinkMain(deepLink);
-                } catch (NullPointerException e) {
-                }
-            }
-        };
-        handler.post(runnable);
+        String deepLink = jsonResponse.optString("deeplink", null);
+        launchDeepLinkMain(deepLink);
+        attributionHandler.checkAttribution(jsonResponse);
     }
 
     public void setEnabled(Boolean enabled) {
@@ -144,6 +142,31 @@ public class ActivityHandler extends HandlerThread {
         message.arg1 = SessionHandler.DEEP_LINK;
         message.obj = url;
         sessionHandler.sendMessage(message);
+    }
+
+    public void updateAttribution(Attribution attribution) {
+        if (attribution == null) return;
+
+        if (attribution.equals(this.attribution)) {
+            return;
+        }
+
+        this.attribution = attribution;
+        Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    }
+
+    public void launchAttributionDelegate() {
+        if (onFinishedListener == null) {
+            return;
+        }
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                onFinishedListener.onFinishedTracking(attribution);
+            }
+        };
+        handler.post(runnable);
     }
 
     private static final class SessionHandler extends Handler {
@@ -243,7 +266,7 @@ public class ActivityHandler extends HandlerThread {
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, dropOfflineActivities);
 
-        readActivityState();
+        activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
 
         startInternal();
     }
@@ -268,7 +291,7 @@ public class ActivityHandler extends HandlerThread {
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
-            writeActivityState();
+            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
             logger.info("First session");
             return;
         }
@@ -278,7 +301,7 @@ public class ActivityHandler extends HandlerThread {
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
-            writeActivityState();
+            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
             return;
         }
 
@@ -290,7 +313,7 @@ public class ActivityHandler extends HandlerThread {
 
             transferSessionPackage();
             activityState.resetSessionAttributes(now);
-            writeActivityState();
+            Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
             logger.debug("Session %d", activityState.sessionCount);
             return;
         }
@@ -304,14 +327,14 @@ public class ActivityHandler extends HandlerThread {
         }
         activityState.sessionLength += lastInterval;
         activityState.lastActivity = now;
-        writeActivityState();
+        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void endInternal() {
         packageHandler.pauseSending();
         stopTimer();
         updateActivityState(System.currentTimeMillis());
-        writeActivityState();
+        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void trackEventInternal(Event event) {
@@ -335,7 +358,7 @@ public class ActivityHandler extends HandlerThread {
             packageHandler.sendFirstPackage();
         }
 
-        writeActivityState();
+        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
         logger.debug("Event %d", activityState.eventCount);
     }
 
@@ -381,12 +404,6 @@ public class ActivityHandler extends HandlerThread {
         logger.debug("Reattribution %s", adjustDeepLinks.toString());
     }
 
-    private void runDelegateMain(ResponseData responseData) {
-        if (onFinishedListener == null) return;
-        if (responseData == null) return;
-        onFinishedListener.onFinishedTracking(responseData);
-    }
-
     private void launchDeepLinkMain(String deepLink) {
         if (deepLink == null) return;
 
@@ -425,58 +442,6 @@ public class ActivityHandler extends HandlerThread {
         activityState.sessionLength += lastInterval;
         activityState.timeSpent += lastInterval;
         activityState.lastActivity = now;
-    }
-
-    private void readActivityState() {
-        try {
-            FileInputStream inputStream = adjustConfig.context.openFileInput(SESSION_STATE_FILENAME);
-            BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
-            ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
-
-            try {
-                activityState = (ActivityState) objectStream.readObject();
-                logger.debug("Read activity state: %s uuid:%s", activityState, activityState.uuid);
-                return;
-            } catch (ClassNotFoundException e) {
-                logger.error("Failed to find activity state class");
-            } catch (OptionalDataException e) {
-                /* no-op */
-            } catch (IOException e) {
-                logger.error("Failed to read activity states object");
-            } catch (ClassCastException e) {
-                logger.error("Failed to cast activity state object");
-            } finally {
-                objectStream.close();
-            }
-
-        } catch (FileNotFoundException e) {
-            logger.verbose("Activity state file not found");
-        } catch (Exception e) {
-            logger.error("Failed to open activity state file for reading (%s)", e);
-        }
-
-        // start with a fresh activity state in case of any exception
-        activityState = null;
-    }
-
-    private void writeActivityState() {
-        try {
-            FileOutputStream outputStream = adjustConfig.context.openFileOutput(SESSION_STATE_FILENAME, Context.MODE_PRIVATE);
-            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
-            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
-
-            try {
-                objectStream.writeObject(activityState);
-                logger.debug("Wrote activity state: %s", activityState);
-            } catch (NotSerializableException e) {
-                logger.error("Failed to serialize activity state");
-            } finally {
-                objectStream.close();
-            }
-
-        } catch (Exception e) {
-            logger.error("Failed to open activity state for writing (%s)", e);
-        }
     }
 
     public static Boolean deleteActivityState(Context context) {
@@ -529,7 +494,7 @@ public class ActivityHandler extends HandlerThread {
         packageHandler.sendFirstPackage();
 
         updateActivityState(System.currentTimeMillis());
-        writeActivityState();
+        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     // TODO validate if this is equal with an offline mode

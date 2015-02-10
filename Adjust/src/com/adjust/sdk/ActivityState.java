@@ -66,10 +66,10 @@ public class ActivityState implements Serializable, Cloneable {
     @Override
     public String toString() {
         return String.format(Locale.US,
-                             "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s",
+                             "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
                              eventCount, sessionCount, subsessionCount,
                              sessionLength / 1000.0, timeSpent / 1000.0,
-                             stamp(lastActivity));
+                             stamp(lastActivity), uuid);
     }
 
     @Override

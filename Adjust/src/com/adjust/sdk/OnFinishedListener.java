@@ -1,5 +1,5 @@
 package com.adjust.sdk;
 
 public interface OnFinishedListener {
-    public void onFinishedTracking(ResponseData responseData);
+    public void onFinishedTracking(Attribution attribution);
 }

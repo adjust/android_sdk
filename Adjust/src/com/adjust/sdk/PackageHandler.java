@@ -126,16 +126,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData, JSONObject jsonResponse) {
-        responseData.setActivityKind(activityPackage.getActivityKind());
-
-        String deepLink = null;
-
-        if (jsonResponse != null) {
-            deepLink = jsonResponse.optString("deeplink", null);
-        }
-
-        activityHandler.finishedTrackingActivity(responseData, deepLink);
+    public void finishedTrackingActivity(JSONObject jsonResponse) {
+        activityHandler.finishedTrackingActivity(jsonResponse);
     }
 
     private static final class InternalHandler extends Handler {

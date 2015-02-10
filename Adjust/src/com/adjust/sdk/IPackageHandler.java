@@ -19,5 +19,5 @@ public interface IPackageHandler {
 
     public boolean dropsOfflineActivities();
 
-    public void finishedTrackingActivity(ActivityPackage activityPackage, ResponseData responseData, JSONObject jsonResponse);
+    public void finishedTrackingActivity(JSONObject jsonResponse);
 }

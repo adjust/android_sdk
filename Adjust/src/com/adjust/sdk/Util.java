@@ -23,6 +23,17 @@ import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.UNKNOWN;
 import static com.adjust.sdk.Constants.XLARGE;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -35,6 +46,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -52,6 +64,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import com.adjust.sdk.plugin.Plugin;
 
@@ -269,18 +282,6 @@ public class Util {
             dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
         }
         return dateFormat.format(date);
-    }
-
-
-    public static JSONObject buildJsonObject(String jsonString) {
-        JSONObject jsonObject = null;
-
-        try {
-            jsonObject = new JSONObject(jsonString);
-        } catch (JSONException e){
-        }
-
-        return jsonObject;
     }
 
     public static String getPlayAdId(Context context) {

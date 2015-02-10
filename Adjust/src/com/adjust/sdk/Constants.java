@@ -27,6 +27,8 @@ public interface Constants {
     String LOGTAG     = "Adjust";
 
     String SESSION_STATE_FILENAME    = "AdjustIoActivityState";
+    String ATTRIBUTION_FILENAME    = "AdjustAttribution";
+
 
     String UNKNOWN   = "unknown";
     String MALFORMED = "malformed";
