@@ -9,19 +9,16 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.HIGH;
-import static com.adjust.sdk.Constants.LARGE;
-import static com.adjust.sdk.Constants.LONG;
-import static com.adjust.sdk.Constants.LOW;
-import static com.adjust.sdk.Constants.MD5;
-import static com.adjust.sdk.Constants.MEDIUM;
-import static com.adjust.sdk.Constants.NORMAL;
-import static com.adjust.sdk.Constants.PLUGINS;
-import static com.adjust.sdk.Constants.SHA1;
-import static com.adjust.sdk.Constants.SMALL;
-import static com.adjust.sdk.Constants.UNKNOWN;
-import static com.adjust.sdk.Constants.XLARGE;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+
+import com.adjust.sdk.plugin.Plugin;
+
+import org.apache.http.HttpResponse;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -46,27 +43,10 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.HttpResponse;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
-import android.util.Log;
-
-import com.adjust.sdk.plugin.Plugin;
+import static com.adjust.sdk.Constants.ENCODING;
+import static com.adjust.sdk.Constants.MD5;
+import static com.adjust.sdk.Constants.PLUGINS;
+import static com.adjust.sdk.Constants.SHA1;
 
 /**
  * Collects utility functions used by Adjust.
@@ -218,5 +198,86 @@ public class Util {
         }
 
         return plugins;
+    }
+
+    public static <T> T readObject(Context context, String filename, String objectName) {
+        Logger logger = AdjustFactory.getLogger();
+        try {
+            FileInputStream inputStream = context.openFileInput(filename);
+            BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+            ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+
+            try {
+                T t = (T) objectStream.readObject();
+                logger.debug("Read %s: %s uuid:%s", objectName, t);
+                return t;
+            } catch (ClassNotFoundException e) {
+                logger.error("Failed to find activity state class");
+            } catch (OptionalDataException e) {
+                /* no-op */
+            } catch (IOException e) {
+                logger.error("Failed to read %s object", objectName);
+            } catch (ClassCastException e) {
+                logger.error("Failed to cast %s object", objectName);
+            } finally {
+                objectStream.close();
+            }
+
+        } catch (FileNotFoundException e) {
+            logger.verbose("%s file not found", objectName);
+        } catch (Exception e) {
+            logger.error("Failed to open %s file for reading (%s)", objectName, e);
+        }
+
+        return null;
+    }
+
+    public static <T> void writeObject(T object, Context context, String filename, String objectName) {
+        Logger logger = AdjustFactory.getLogger();
+        try {
+            FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
+            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+
+            try {
+                objectStream.writeObject(object);
+                logger.debug("Wrote %s: %s", objectName, object);
+            } catch (NotSerializableException e) {
+                logger.error("Failed to serialize %s", objectName);
+            } finally {
+                objectStream.close();
+            }
+
+        } catch (Exception e) {
+            logger.error("Failed to open %s for writing (%s)", objectName, e);
+        }
+    }
+
+    public static String parseResponse(HttpResponse httpResponse, Logger logger) {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            httpResponse.getEntity().writeTo(out);
+            out.close();
+            String response =  out.toString().trim();
+            logger.verbose("Response: %s", response);
+            return response;
+        } catch (Exception e) {
+            logger.error("Failed to parse response (%s)", e);
+            return null;
+        }
+    }
+
+    public static JSONObject buildJsonObject(String jsonString) {
+        if (jsonString == null) return null;
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            return jsonObject;
+        } catch (JSONException e){
+            Logger logger = AdjustFactory.getLogger();
+            logger.error("Failed to parse json response: %s (%s)", jsonString, e.getMessage());
+        }
+
+        return null;
     }
 }
