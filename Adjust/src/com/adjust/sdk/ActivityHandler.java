@@ -129,6 +129,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
     }
 
+    public void setOfflineMode(boolean offline) {
+        this.offline = offline;
+        if (offline) {
+            trackSubsessionEnd();
+            logger.info("Pausing package handler to put in offline mode");
+        } else {
+            trackSubsessionStart();
+            logger.info("Resuming package handler to put in online mode");
+        }
+    }
+
     public boolean isEnabled() {
         if (activityState != null) {
             return activityState.enabled;
@@ -176,17 +187,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sendReferrer();
     }
 
-    public void setOfflineMode(boolean enabled) {
-        if (enabled) {
-            offline = true;
-            endInternal();
-            logger.info("Pausing package handler to put in offline mode");
-        } else {
-            offline = false;
-            packageHandler.resumeSending();
-            startTimer();
-            logger.info("Resuming package handler to put in online mode");
-        }
     }
 
     public void setAskingAttribution(boolean askingAttribution) {
