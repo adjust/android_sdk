@@ -25,7 +25,7 @@ public class AdjustConfig {
     public static final String PRODUCTION_ENVIRONMENT = "production";
 
     private AdjustConfig(Context context, String appToken, String environment) {
-        this.context = context;
+        this.context = context.getApplicationContext();
         this.appToken = appToken;
         this.environment = environment;
 
