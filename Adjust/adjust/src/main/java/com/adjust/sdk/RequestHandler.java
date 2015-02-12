@@ -189,8 +189,8 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         request.addHeader("Accept-Language", language);
 
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entity : activityPackage.getParameters().entrySet()) {
-            NameValuePair pair = new BasicNameValuePair(entity.getKey(), entity.getValue());
+        for (Map.Entry<String, String> entry : activityPackage.getParameters().entrySet()) {
+            NameValuePair pair = new BasicNameValuePair(entry.getKey(), entry.getValue());
             pairs.add(pair);
         }
 

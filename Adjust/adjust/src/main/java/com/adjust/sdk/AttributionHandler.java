@@ -111,8 +111,8 @@ public class AttributionHandler implements IAttributionHandler {
         uriBuilder.authority(Constants.AUTHORITY);
         uriBuilder.appendPath(attributionPackage.getPath());
 
-        for (Map.Entry<String, String> entity : attributionPackage.getParameters().entrySet()) {
-            uriBuilder.appendQueryParameter(entity.getKey(), entity.getValue());
+        for (Map.Entry<String, String> entry : attributionPackage.getParameters().entrySet()) {
+            uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
 
         return uriBuilder.build();

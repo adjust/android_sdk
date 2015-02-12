@@ -201,8 +201,8 @@ class PackageBuilder {
             return;
         }
 
-        for (Map.Entry<String, String> pluginEntry : deviceInfo.pluginKeys.entrySet()) {
-            addString(parameters, pluginEntry.getKey(), pluginEntry.getValue());
+        for (Map.Entry<String, String> entry : deviceInfo.pluginKeys.entrySet()) {
+            addString(parameters, entry.getKey(), entry.getValue());
         }
     }
 

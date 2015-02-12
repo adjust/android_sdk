@@ -75,8 +75,8 @@ public class ActivityPackage implements Serializable {
 
         if (parameters != null) {
             builder.append("Parameters:");
-            for (Map.Entry<String, String> entity : parameters.entrySet()) {
-                builder.append(String.format("\n\t%-16s %s", entity.getKey(), entity.getValue()));
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                builder.append(String.format("\n\t%-16s %s", entry.getKey(), entry.getValue()));
             }
         }
         return builder.toString();
