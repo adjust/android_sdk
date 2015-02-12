@@ -24,7 +24,9 @@ public class AdjustConfig {
     public static final String SANDBOX_ENVIRONMENT = "sandbox";
     public static final String PRODUCTION_ENVIRONMENT = "production";
 
-    private AdjustConfig(Context context, String appToken, String environment) {
+    public AdjustConfig(Context context, String appToken, String environment) {
+        if (!isValid(context, appToken, environment, true)) { return; }
+
         this.context = context.getApplicationContext();
         this.appToken = appToken;
         this.environment = environment;
@@ -32,16 +34,6 @@ public class AdjustConfig {
         // default values
         this.logLevel = Logger.LogLevel.INFO;
         this.eventBufferingEnabled = false;
-    }
-
-    public static AdjustConfig getInstance(Context context, String appToken, String environment) {
-        if (!checkAppToken(appToken)) return null;
-        if (!checkEnvironment(environment, true)) return null;
-        if (!checkContext(context, true)) return null;
-
-        AdjustConfig adjustConfig = new AdjustConfig(context, appToken, environment);
-
-        return adjustConfig;
     }
 
     public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
@@ -67,9 +59,13 @@ public class AdjustConfig {
     public boolean hasDelegate() { return onFinishedListener != null; }
 
     public boolean isValid() {
+        return isValid(context, appToken, environment, false);
+    }
+
+    private boolean isValid(Context context, String appToken, String environment, boolean logNonError) {
         if (!checkAppToken(appToken)) return false;
-        if (!checkEnvironment(environment, false)) return false;
-        if (!checkContext(context, false)) return false;
+        if (!checkEnvironment(environment, logNonError)) return false;
+        if (!checkContext(context, logNonError)) return false;
 
         return true;
     }

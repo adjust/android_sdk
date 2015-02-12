@@ -19,7 +19,7 @@ public class GlobalApplication extends Application {
         // configure Adjust
         String appToken = "{yourAppToken}";
         String environment = AdjustConfig.SANDBOX_ENVIRONMENT;
-        AdjustConfig config = AdjustConfig.getInstance(this, appToken, environment);
+        AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
         // change the log level
         config.setLogLevel(LogLevel.VERBOSE);
