@@ -30,7 +30,7 @@ public class ReferrerReceiver extends BroadcastReceiver {
         }
 
         // TODO test if it works with static instance
-        AdjustInstance adjust = Adjust.getInstance();
+        AdjustInstance adjust = Adjust.getDefaultInstance();
         adjust.setReferrer(referrer);
     }
 }
