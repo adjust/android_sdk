@@ -21,8 +21,8 @@ public class AdjustConfig {
     String referrer;
     Boolean knowDevice;
 
-    public static final String SANDBOX_ENVIRONMENT = "sandbox";
-    public static final String PRODUCTION_ENVIRONMENT = "production";
+    public static final String ENVIRONMENT_SANDBOX = "sandbox";
+    public static final String ENVIRONMENT_PRODUCTION = "production";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         if (!isValid(context, appToken, environment, true)) { return; }
@@ -113,7 +113,7 @@ public class AdjustConfig {
             return false;
         }
 
-        if (environment == AdjustConfig.SANDBOX_ENVIRONMENT) {
+        if (environment == AdjustConfig.ENVIRONMENT_SANDBOX) {
             if (logNonError) {
                 logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
                         "Use this setting for testing. " +
@@ -121,7 +121,7 @@ public class AdjustConfig {
             }
             return true;
         }
-        if (environment == AdjustConfig.PRODUCTION_ENVIRONMENT) {
+        if (environment == AdjustConfig.ENVIRONMENT_PRODUCTION) {
             if (logNonError) {
                 logger.Assert(
                         "PRODUCTION: Adjust is running in Production mode. " +
@@ -131,7 +131,7 @@ public class AdjustConfig {
             return true;
         }
 
-        logger.error("Malformed environment '%s'", environment);
+        logger.error("Unknown environment '%s'", environment);
         return false;
     }
 

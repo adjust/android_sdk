@@ -18,7 +18,7 @@ public class GlobalApplication extends Application {
         super.onCreate();
         // configure Adjust
         String appToken = "{yourAppToken}";
-        String environment = AdjustConfig.SANDBOX_ENVIRONMENT;
+        String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
         // change the log level
