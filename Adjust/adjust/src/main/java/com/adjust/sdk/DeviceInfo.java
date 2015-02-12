@@ -7,11 +7,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
-import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 
 import com.adjust.sdk.plugin.Plugin;
@@ -89,7 +86,7 @@ class DeviceInfo {
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
         androidId = getAndroidId(context);
-        fbAttributionId = getAttributionId(context);
+        fbAttributionId = getFacebookAttributionId(context);
         pluginKeys = getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
@@ -299,7 +296,7 @@ class DeviceInfo {
         return String.format(formatString, bigInt);
     }
 
-    private String getAttributionId(final Context context) {
+    private String getFacebookAttributionId(final Context context) {
         try {
             final ContentResolver contentResolver = context.getContentResolver();
             final Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
