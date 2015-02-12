@@ -427,13 +427,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             return;
         }
 
-        Map<String, String> adjustDeepLinks = new HashMap<String, String>();
+        Map<String, String> deeplinkParameters = new HashMap<String, String>();
         Attribution deeplinkAttribution = new Attribution();
         boolean hasDeeplink = false;
 
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
-            if (readDeeplinkQueryString(pair, adjustDeepLinks, deeplinkAttribution) && !hasDeeplink) {
+            if (readDeeplinkQueryString(pair, deeplinkParameters, deeplinkAttribution) && !hasDeeplink) {
                 hasDeeplink = true;
             }
         }
@@ -447,7 +447,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         // TODO check if createdAt should be updated in click package
 
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        builder.deeplinkParameters = adjustDeepLinks;
+        builder.deeplinkParameters = deeplinkParameters;
         builder.deeplinkAttribution = deeplinkAttribution;
         ActivityPackage clickPackage = builder.buildClickPackage("deeplink");
         packageHandler.sendClickPackage(clickPackage);
@@ -458,13 +458,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             return;
         }
 
-        String deepLink = jsonResponse.optString("deeplink", null);
-        launchDeepLinkMain(deepLink);
+        String deeplink = jsonResponse.optString("deeplink", null);
+        launchDeeplinkMain(deeplink);
         getAttributionHandler().checkAttribution(jsonResponse);
     }
 
     private boolean readDeeplinkQueryString(String queryString,
-                                         Map<String, String> adjustDeepLinks,
+                                         Map<String, String> deeplinkParameters,
                                          Attribution deeplinkAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
@@ -479,7 +479,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         if (keyWOutPrefix.length() == 0) return false;
 
         if (!trySetAttributionDeeplink(deeplinkAttribution, keyWOutPrefix, value)) {
-            adjustDeepLinks.put(keyWOutPrefix, value);
+            deeplinkParameters.put(keyWOutPrefix, value);
         }
 
         return  true;
@@ -511,10 +511,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         return false;
     }
 
-    private void launchDeepLinkMain(String deepLink) {
-        if (deepLink == null) return;
+    private void launchDeeplinkMain(String deeplink) {
+        if (deeplink == null) return;
 
-        Uri location = Uri.parse(deepLink);
+        Uri location = Uri.parse(deeplink);
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -525,11 +525,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         // Start an activity if it's safe
         if (!isIntentSafe) {
-            logger.error("Unable to open deep link (%s)", deepLink);
+            logger.error("Unable to open deep link (%s)", deeplink);
             return;
         }
 
-        logger.info("Open deep link (%s)", deepLink);
+        logger.info("Open deep link (%s)", deeplink);
         adjustConfig.context.startActivity(mapIntent);
     }
 
