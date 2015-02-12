@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
-import static com.adjust.sdk.Constants.SESSION_STATE_FILENAME;
+import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 
 public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
@@ -551,7 +551,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     public static boolean deleteActivityState(Context context) {
-        return context.deleteFile(SESSION_STATE_FILENAME);
+        return context.deleteFile(ACTIVITY_STATE_FILENAME);
     }
 
     public static boolean deleteAttribution(Context context) {
@@ -598,7 +598,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void readActivityState() {
-        activityState = Util.readObject(adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        activityState = Util.readObject(adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void readAttribution() {
@@ -606,7 +606,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private void writeActivityState() {
-        Util.writeObject(activityState, adjustConfig.context, SESSION_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void writeAttribution() {

@@ -32,7 +32,7 @@ public interface Constants {
     String CLIENT_SDK = "android4.0.0";
     String LOGTAG = "Adjust";
 
-    String SESSION_STATE_FILENAME = "AdjustIoActivityState";
+    String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
 
     String MALFORMED = "malformed";
