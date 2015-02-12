@@ -13,21 +13,12 @@ public class Event {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
-    private Logger logger;
+    private static Logger logger = AdjustFactory.getLogger();
 
-    private Event(String eventToken, Logger logger) {
+    public Event(String eventToken) {
+        if (!checkEventToken(eventToken, logger)) return;
+
         this.eventToken = eventToken;
-        this.logger = logger;
-    }
-
-    public static Event getInstance(String eventToken) {
-        Logger logger = AdjustFactory.getLogger();
-
-        if (!checkEventToken(eventToken, logger)) return null;
-
-        Event event = new Event(eventToken, logger);
-
-        return event;
     }
 
     public void setRevenue(double revenue, String currency) {
