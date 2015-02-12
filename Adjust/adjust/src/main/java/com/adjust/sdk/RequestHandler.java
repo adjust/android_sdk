@@ -157,8 +157,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         logger.error("%s. (%s) %s", packageMessage, reasonString, handlerMessage);
 
         if (sendToPackageHandler) {
-            // not necessary if it's null
-            //packageHandler.finishedTrackingActivity(null);
             packageHandler.closeFirstPackage();
         }
     }
@@ -170,8 +168,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         logger.error("%s. (%s)", failureMessage, reasonString);
 
         if (sendToPackageHandler) {
-            // not necessary if it's null
-            //packageHandler.finishedTrackingActivity(null);
             packageHandler.sendNextPackage();
         }
     }
