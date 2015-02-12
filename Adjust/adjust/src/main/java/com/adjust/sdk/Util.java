@@ -90,7 +90,7 @@ public class Util {
                 logger.debug("Read %s: %s", objectName, t);
                 return t;
             } catch (ClassNotFoundException e) {
-                logger.error("Failed to find activity state class");
+                logger.error("Failed to find %s class", objectName);
             } catch (OptionalDataException e) {
                 /* no-op */
             } catch (IOException e) {
