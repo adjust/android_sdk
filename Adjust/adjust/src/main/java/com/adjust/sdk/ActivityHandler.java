@@ -54,7 +54,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     private boolean offline;
 
     private DeviceInfo deviceInfo;
-    private AdjustConfig adjustConfig;
+    private AdjustConfig adjustConfig; // always valid after construction
     private Attribution attribution;
     private IAttributionHandler attributionHandler;
 
@@ -187,7 +187,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
     public void setReferrer(String referrer) {
         adjustConfig.referrer = referrer;
-        sendReferrer();
+        sendReferrer(); // send to background queue to make sure that activityState is valid
     }
 
     public void setAskingAttribution(boolean askingAttribution) {
@@ -289,7 +289,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         }
 
         if (adjustConfig.referrer != null) {
-            sendReferrer();
+            sendReferrer(); // send to background queue to make sure that activityState is valid
         }
 
         readAttribution();
