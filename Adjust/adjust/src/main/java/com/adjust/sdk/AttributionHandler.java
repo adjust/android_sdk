@@ -3,10 +3,8 @@ package com.adjust.sdk;
 import android.net.Uri;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import java.net.URI;
@@ -74,7 +72,7 @@ public class AttributionHandler implements IAttributionHandler {
             boolean updated = activityHandler.updateAttribution(attribution);
 
             if (updated) {
-                activityHandler.launchAttributionDelegate();
+                activityHandler.launchAttributionListener();
             }
 
             activityHandler.setAskingAttribution(false);

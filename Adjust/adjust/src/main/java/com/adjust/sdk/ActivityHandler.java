@@ -171,7 +171,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         return true;
     }
 
-    public void launchAttributionDelegate() {
+    public void launchAttributionListener() {
         if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }
