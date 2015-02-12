@@ -433,7 +433,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
 
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
-            if (readDeeplinkQueryString(pair, deeplinkParameters, deeplinkAttribution) && !hasDeeplink) {
+            if (readDeeplinkQueryString(pair, deeplinkParameters, deeplinkAttribution)) {
                 hasDeeplink = true;
             }
         }
