@@ -26,6 +26,8 @@ class PackageBuilder {
     Map<String, String> deeplinkParameters;
     Attribution deeplinkAttribution;
 
+    private static Logger logger = AdjustFactory.getLogger();
+
     public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
@@ -190,7 +192,6 @@ class PackageBuilder {
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")) {
-            Logger logger = AdjustFactory.getLogger();
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
         }
     }
