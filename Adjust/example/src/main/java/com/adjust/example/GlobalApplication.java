@@ -7,7 +7,7 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.Attribution;
 import com.adjust.sdk.Logger.LogLevel;
-import com.adjust.sdk.OnFinishedListener;
+import com.adjust.sdk.OnAttributionChangedListener;
 
 /**
  * Created by pfms on 17/12/14.
@@ -31,9 +31,9 @@ public class GlobalApplication extends Application {
         //config.setDefaultTracker("{YourDefaultTracker}");
 
         // set attribution delegate
-        config.setOnFinishedListener(new OnFinishedListener() {
+        config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onFinishedTracking(Attribution attribution) {
+            public void onAttributionChanged(Attribution attribution) {
                 Log.d("example", "attribution: " + attribution.toString());
             }
         });

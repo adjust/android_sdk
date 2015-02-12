@@ -172,14 +172,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     public void launchAttributionDelegate() {
-        if (adjustConfig.onFinishedListener == null) {
+        if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                adjustConfig.onFinishedListener.onFinishedTracking(attribution);
+                adjustConfig.onAttributionChangedListener.onAttributionChanged(attribution);
             }
         };
         handler.post(runnable);

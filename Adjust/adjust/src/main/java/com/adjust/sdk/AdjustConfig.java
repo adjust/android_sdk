@@ -3,9 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * Created by pfms on 06/11/14.
  */
@@ -17,7 +14,7 @@ public class AdjustConfig {
     String sdkPrefix;
     Boolean eventBufferingEnabled;
     String defaultTracker;
-    OnFinishedListener onFinishedListener;
+    OnAttributionChangedListener onAttributionChangedListener;
     String referrer;
     Boolean knowDevice;
 
@@ -52,11 +49,11 @@ public class AdjustConfig {
         this.defaultTracker = defaultTracker;
     }
 
-    public void setOnFinishedListener(OnFinishedListener onFinishedListener) {
-        this.onFinishedListener = onFinishedListener;
+    public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
+        this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public boolean hasDelegate() { return onFinishedListener != null; }
+    public boolean hasDelegate() { return onAttributionChangedListener != null; }
 
     public boolean isValid() {
         return isValid(context, appToken, environment, false);
