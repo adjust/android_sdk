@@ -16,7 +16,7 @@ public class AdjustConfig {
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
     String referrer;
-    Boolean knowDevice;
+    Boolean knownDevice;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
