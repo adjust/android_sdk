@@ -117,6 +117,8 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     @Override
     public void sendClickPackage(ActivityPackage clickPackage) {
+        logger.debug("Sending click package (%s)", clickPackage);
+        logger.verbose("%s", clickPackage.getExtendedString());
         requestHandler.sendClickPackage(clickPackage);
     }
 
