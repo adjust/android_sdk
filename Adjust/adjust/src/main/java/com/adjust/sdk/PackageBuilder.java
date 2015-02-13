@@ -210,7 +210,7 @@ class PackageBuilder {
         if (event.revenue == null) {
             return String.format(" '%s'", event.eventToken);
         } else {
-            return String.format(Locale.US, " (%.3f cent, '%s')", event.revenue, event.eventToken);
+            return String.format(Locale.US, " (%.4f cent, '%s')", event.revenue, event.eventToken);
         }
     }
 
@@ -277,7 +277,7 @@ class PackageBuilder {
     private void addDouble(Map<String, String> parameters, String key, Double value) {
         if (value == null) return;
 
-        String doubleString = String.format("%.3f", value);
+        String doubleString = String.format("%.5f", value);
 
         addString(parameters, key, doubleString);
     }
