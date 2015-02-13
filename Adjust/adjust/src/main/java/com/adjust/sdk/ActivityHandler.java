@@ -29,11 +29,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
-import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 
-public class ActivityHandler extends HandlerThread implements IActivityHandler{
+public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private static long TIMER_INTERVAL;
     private static long TIMER_START;
@@ -209,15 +209,24 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sessionHandler.sendMessage(message);
     }
 
+    private class UrlClickTime {
+        Uri url;
+        long clickTime;
+        UrlClickTime(Uri url, long clickTime) {
+            this.url = url;
+            this.clickTime = clickTime;
+        }
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int BASE_ADDRESS = 72630;
-        private static final int INIT               = BASE_ADDRESS + 1;
-        private static final int START              = BASE_ADDRESS + 2;
-        private static final int END                = BASE_ADDRESS + 3;
-        private static final int EVENT              = BASE_ADDRESS + 4;
-        private static final int DEEP_LINK          = BASE_ADDRESS + 5;
-        private static final int SEND_REFERRER      = BASE_ADDRESS + 6;
-        private static final int FINISH_TRACKING    = BASE_ADDRESS + 7;
+        private static final int INIT = BASE_ADDRESS + 1;
+        private static final int START = BASE_ADDRESS + 2;
+        private static final int END = BASE_ADDRESS + 3;
+        private static final int EVENT = BASE_ADDRESS + 4;
+        private static final int FINISH_TRACKING = BASE_ADDRESS + 5;
+        private static final int DEEP_LINK = BASE_ADDRESS + 6;
+        private static final int SEND_REFERRER = BASE_ADDRESS + 7;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -456,7 +465,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         packageHandler.sendClickPackage(clickPackage);
     }
 
-    private void finishedTrackingActivityInternal (JSONObject jsonResponse) {
+    private void finishedTrackingActivityInternal(JSONObject jsonResponse) {
         if (jsonResponse == null) {
             return;
         }
@@ -467,8 +476,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
     }
 
     private boolean readDeeplinkQueryString(String queryString,
-                                         Map<String, String> deeplinkParameters,
-                                         Attribution deeplinkAttribution) {
+                                            Map<String, String> deeplinkParameters,
+                                            Attribution deeplinkAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
 
@@ -485,7 +494,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
             deeplinkParameters.put(keyWOutPrefix, value);
         }
 
-        return  true;
+        return true;
     }
 
     private boolean trySetAttributionDeeplink(Attribution deeplinkAttribution,

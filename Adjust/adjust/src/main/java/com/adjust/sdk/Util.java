@@ -155,7 +155,7 @@ public class Util {
             httpResponse.getEntity().writeTo(out);
             out.close();
             stringResponse = out.toString().trim();
-        }  catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Failed to parse response (%s)", e.getMessage());
         }
 

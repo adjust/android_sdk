@@ -9,10 +9,7 @@
 
 package com.adjust.sdk;
 
-import android.util.Log;
-
 import java.io.IOException;
-import java.io.NotActiveException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;

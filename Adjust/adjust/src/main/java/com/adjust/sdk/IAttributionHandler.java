@@ -7,5 +7,6 @@ import org.json.JSONObject;
  */
 public interface IAttributionHandler {
     public void getAttribution();
+
     public void checkAttribution(JSONObject jsonResponse);
 }

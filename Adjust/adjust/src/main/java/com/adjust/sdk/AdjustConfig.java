@@ -22,7 +22,9 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
     public AdjustConfig(Context context, String appToken, String environment) {
-        if (!isValid(context, appToken, environment, true)) { return; }
+        if (!isValid(context, appToken, environment, true)) {
+            return;
+        }
 
         this.context = context.getApplicationContext();
         this.appToken = appToken;
@@ -53,7 +55,9 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public boolean hasDelegate() { return onAttributionChangedListener != null; }
+    public boolean hasDelegate() {
+        return onAttributionChangedListener != null;
+    }
 
     public boolean isValid() {
         return isValid(context, appToken, environment, false);

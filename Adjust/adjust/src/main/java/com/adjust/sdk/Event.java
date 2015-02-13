@@ -22,7 +22,7 @@ public class Event {
     }
 
     public void setRevenue(double revenue, String currency) {
-        if(!checkRevenue(revenue, currency)) return;
+        if (!checkRevenue(revenue, currency)) return;
 
         this.revenue = revenue;
         this.currency = currency;
@@ -95,7 +95,7 @@ public class Event {
 
         } else if (currency != null) {
             logger.error("Revenue must be set with currency");
-            return  false;
+            return false;
         }
         return true;
     }
