@@ -14,7 +14,7 @@ import static com.adjust.sdk.Constants.REFERRER;
 // support multiple BroadcastReceivers for the INSTALL_REFERRER:
 // http://blog.appington.com/2012/08/01/giving-credit-for-android-app-installs
 
-public class ReferrerReceiver extends BroadcastReceiver {
+public class AdjustReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String rawReferrer = intent.getStringExtra(REFERRER);
