@@ -16,6 +16,7 @@ public class AdjustConfig {
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
     String referrer;
+    long referrerClickTime;
     Boolean knownDevice;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";

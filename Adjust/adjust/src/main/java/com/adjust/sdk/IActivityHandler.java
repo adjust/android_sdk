@@ -20,11 +20,11 @@ public interface IActivityHandler {
 
     public boolean isEnabled();
 
-    public void readOpenUrl(Uri url);
+    public void readOpenUrl(Uri url, long clickTime);
 
     public void updateAttribution(Attribution attribution);
 
-    public void setReferrer(String referrer);
+    public void setReferrer(String referrer, long clickTime);
 
     public void setOfflineMode(boolean enabled);
 

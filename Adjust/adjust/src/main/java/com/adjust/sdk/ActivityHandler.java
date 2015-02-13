@@ -151,9 +151,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    public void readOpenUrl(Uri url) {
+    public void readOpenUrl(Uri url, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
+        UrlClickTime urlClickTime = new UrlClickTime (url, clickTime);
         message.obj = url;
         sessionHandler.sendMessage(message);
     }
@@ -188,8 +189,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    public void setReferrer(String referrer) {
+    public void setReferrer(String referrer, long clickTime) {
         adjustConfig.referrer = referrer;
+        adjustConfig.referrerClickTime = clickTime;
         sendReferrer(); // send to background queue to make sure that activityState is valid
     }
 
@@ -258,16 +260,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     Event event = (Event) message.obj;
                     sessionHandler.trackEventInternal(event);
                     break;
-                case DEEP_LINK:
-                    Uri url = (Uri) message.obj;
-                    sessionHandler.readOpenUrlInternal(url);
-                    break;
-                case SEND_REFERRER:
-                    sessionHandler.sendReferrerInternal();
-                    break;
                 case FINISH_TRACKING:
                     JSONObject jsonResponse = (JSONObject) message.obj;
                     sessionHandler.finishedTrackingActivityInternal(jsonResponse);
+                    break;
+                case DEEP_LINK:
+                    UrlClickTime urlClickTime = (UrlClickTime) message.obj;
+                    sessionHandler.readOpenUrlInternal(urlClickTime.url, urlClickTime.clickTime);
+                    break;
+                case SEND_REFERRER:
+                    sessionHandler.sendReferrerInternal();
                     break;
             }
         }
@@ -312,12 +314,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         shouldGetAttribution = true;
 
         startInternal();
-    }
-
-    private void sendReferrerInternal() {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        ActivityPackage clickPackage = builder.buildClickPackage("referrer");
-        packageHandler.sendClickPackage(clickPackage);
     }
 
     private void startInternal() {
@@ -429,42 +425,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void readOpenUrlInternal(Uri url) {
-        if (url == null) {
-            return;
-        }
-
-        String queryString = url.getQuery();
-        if (queryString == null) {
-            return;
-        }
-
-        Map<String, String> deeplinkParameters = new HashMap<String, String>();
-        Attribution deeplinkAttribution = new Attribution();
-        boolean hasDeeplink = false;
-
-        String[] queryPairs = queryString.split("&");
-        for (String pair : queryPairs) {
-            if (readDeeplinkQueryString(pair, deeplinkParameters, deeplinkAttribution)) {
-                hasDeeplink = true;
-            }
-        }
-
-        if (!hasDeeplink) {
-            return;
-        }
-
-        getAttributionHandler().getAttribution();
-
-        // TODO check if createdAt should be updated in click package
-
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
-        builder.deeplinkParameters = deeplinkParameters;
-        builder.deeplinkAttribution = deeplinkAttribution;
-        ActivityPackage clickPackage = builder.buildClickPackage("deeplink");
-        packageHandler.sendClickPackage(clickPackage);
-    }
-
     private void finishedTrackingActivityInternal(JSONObject jsonResponse) {
         if (jsonResponse == null) {
             return;
@@ -475,9 +435,69 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         getAttributionHandler().checkAttribution(jsonResponse);
     }
 
-    private boolean readDeeplinkQueryString(String queryString,
-                                            Map<String, String> deeplinkParameters,
-                                            Attribution deeplinkAttribution) {
+    private void sendReferrerInternal() {
+        ActivityPackage clickPackage = buildQueryStringClickPackage(adjustConfig.referrer,
+                "reftag",
+                adjustConfig.referrerClickTime);
+        if (clickPackage == null) {
+            return;
+        }
+
+        packageHandler.sendClickPackage(clickPackage);
+    }
+
+    private void readOpenUrlInternal(Uri url, long clickTime) {
+        if (url == null) {
+            return;
+        }
+
+        String queryString = url.getQuery();
+
+        ActivityPackage clickPackage = buildQueryStringClickPackage(queryString, "deeplink", clickTime);
+        if (clickPackage == null) {
+            return;
+        }
+
+        getAttributionHandler().getAttribution();
+
+        packageHandler.sendClickPackage(clickPackage);
+    }
+
+    private ActivityPackage buildQueryStringClickPackage(String queryString, String source, long clickTime) {
+        if (queryString == null) {
+            return null;
+        }
+
+        Map<String, String> queryStringParameters = new HashMap<String, String>();
+        Attribution queryStringAttribution = new Attribution();
+        boolean hasDeeplink = false;
+
+        String[] queryPairs = queryString.split("&");
+        for (String pair : queryPairs) {
+            if (readQueryString(pair, queryStringParameters, queryStringAttribution)) {
+                hasDeeplink = true;
+            }
+        }
+
+        if (!hasDeeplink) {
+            return null;
+        }
+
+        String reftag = queryStringParameters.remove("reftag");
+
+        // TODO check if createdAt should be updated in click package
+
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        builder.extraParameters = queryStringParameters;
+        builder.attribution = queryStringAttribution;
+        builder.reftag = reftag;
+        ActivityPackage clickPackage = builder.buildClickPackage(source, clickTime);
+        return clickPackage;
+    }
+
+    private boolean readQueryString(String queryString,
+                                    Map<String, String> extraParameters,
+                                    Attribution queryStringAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
 
@@ -490,33 +510,33 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
         if (keyWOutPrefix.length() == 0) return false;
 
-        if (!trySetAttributionDeeplink(deeplinkAttribution, keyWOutPrefix, value)) {
-            deeplinkParameters.put(keyWOutPrefix, value);
+        if (!trySetAttribution(queryStringAttribution, keyWOutPrefix, value)) {
+            extraParameters.put(keyWOutPrefix, value);
         }
 
         return true;
     }
 
-    private boolean trySetAttributionDeeplink(Attribution deeplinkAttribution,
-                                              String key,
-                                              String value) {
+    private boolean trySetAttribution(Attribution queryStringAttribution,
+                                      String key,
+                                      String value) {
         if (key.equals("tracker")) {
-            deeplinkAttribution.trackerName = value;
+            queryStringAttribution.trackerName = value;
             return true;
         }
 
         if (key.equals("campaign")) {
-            deeplinkAttribution.campaign = value;
+            queryStringAttribution.campaign = value;
             return true;
         }
 
         if (key.equals("adgroup")) {
-            deeplinkAttribution.adgroup = value;
+            queryStringAttribution.adgroup = value;
             return true;
         }
 
         if (key.equals("creative")) {
-            deeplinkAttribution.creative = value;
+            queryStringAttribution.creative = value;
             return true;
         }
 

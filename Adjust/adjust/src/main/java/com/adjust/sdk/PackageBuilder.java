@@ -23,8 +23,9 @@ class PackageBuilder {
     private ActivityState activityState;
 
     // reattributions
-    Map<String, String> deeplinkParameters;
-    Attribution deeplinkAttribution;
+    Map<String, String> extraParameters;
+    Attribution attribution;
+    String reftag;
 
     private static Logger logger = AdjustFactory.getLogger();
 
@@ -66,12 +67,13 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source) {
+    public ActivityPackage buildClickPackage(String source, long clickTime) {
         Map<String, String> parameters = getDefaultParameters();
 
         addString(parameters, "source", source);
-        addString(parameters, "referrer", adjustConfig.referrer);
-        addMapJson(parameters, "params", deeplinkParameters);
+        addDate(parameters, "click_time", clickTime);
+        addString(parameters, "reftag", reftag);
+        addMapJson(parameters, "params", extraParameters);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage();
@@ -178,13 +180,13 @@ class PackageBuilder {
     }
 
     private void injectAttribution(Map<String, String> parameters) {
-        if (deeplinkAttribution == null) {
+        if (attribution == null) {
             return;
         }
-        addString(parameters, "tracker", deeplinkAttribution.trackerName);
-        addString(parameters, "campaign", deeplinkAttribution.campaign);
-        addString(parameters, "adgroup", deeplinkAttribution.adgroup);
-        addString(parameters, "creative", deeplinkAttribution.creative);
+        addString(parameters, "tracker", attribution.trackerName);
+        addString(parameters, "campaign", attribution.campaign);
+        addString(parameters, "adgroup", attribution.adgroup);
+        addString(parameters, "creative", attribution.creative);
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {

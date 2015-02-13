@@ -8,6 +8,7 @@ import android.net.Uri;
 public class AdjustInstance {
 
     private String referrer;
+    private long referrerClickTime;
     private ActivityHandler activityHandler;
 
     private static Logger getLogger() {
@@ -52,16 +53,19 @@ public class AdjustInstance {
 
     public void appWillOpenUrl(Uri url) {
         if (!checkActivityHandler()) return;
-        activityHandler.readOpenUrl(url);
+        long clickTime = System.currentTimeMillis();
+        activityHandler.readOpenUrl(url, clickTime);
     }
 
     public void setReferrer(String referrer) {
+        long clickTime = System.currentTimeMillis();
         // setReferrer might be triggered before Adjust
         if (activityHandler == null) {
             // save it to inject in the config before launch
             this.referrer = referrer;
+            this.referrerClickTime = clickTime;
         } else {
-            activityHandler.setReferrer(referrer);
+            activityHandler.setReferrer(referrer, clickTime);
         }
     }
 
