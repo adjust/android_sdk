@@ -158,20 +158,23 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler{
         sessionHandler.sendMessage(message);
     }
 
-    public boolean updateAttribution(Attribution attribution) {
-        if (attribution == null) return false;
+    public void updateAttribution(Attribution attribution) {
+        if (attribution == null) return;
 
         if (attribution.equals(this.attribution)) {
-            return false;
+            return;
         }
 
-        this.attribution = attribution;
-        writeAttribution();
-
-        return true;
+        saveAttribution(attribution);
+        launchAttributionListener();
     }
 
-    public void launchAttributionListener() {
+    private void saveAttribution(Attribution attribution) {
+        this.attribution = attribution;
+        writeAttribution();
+    }
+
+    private void launchAttributionListener() {
         if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }

@@ -70,11 +70,7 @@ public class AttributionHandler implements IAttributionHandler {
 
         // without ask_in attribute
         if (timerMilliseconds < 0) {
-            boolean updated = activityHandler.updateAttribution(attribution);
-
-            if (updated) {
-                activityHandler.launchAttributionListener();
-            }
+            activityHandler.updateAttribution(attribution);
 
             activityHandler.setAskingAttribution(false);
 
