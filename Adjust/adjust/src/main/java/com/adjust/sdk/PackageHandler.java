@@ -45,7 +45,9 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private Context context;
     private Logger logger;
 
-    public PackageHandler(IActivityHandler activityHandler, Context context) {
+    public PackageHandler(IActivityHandler activityHandler,
+                          Context context,
+                          boolean startPaused) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
@@ -54,6 +56,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
         this.activityHandler = activityHandler;
         this.context = context;
+        this.paused = startPaused;
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;

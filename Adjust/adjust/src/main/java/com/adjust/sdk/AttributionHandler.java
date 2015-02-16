@@ -25,13 +25,17 @@ public class AttributionHandler implements IAttributionHandler {
     private ActivityPackage attributionPackage;
     private ScheduledFuture waitingTask;
     private HttpClient httpClient;
+    private boolean paused;
 
-    public AttributionHandler(IActivityHandler activityHandler, ActivityPackage attributionPackage) {
+    public AttributionHandler(IActivityHandler activityHandler,
+                              ActivityPackage attributionPackage,
+                              boolean startPaused) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
         this.attributionPackage = attributionPackage;
         httpClient = Util.getHttpClient();
+        this.paused = startPaused;
     }
 
     public void getAttribution() {
@@ -45,6 +49,14 @@ public class AttributionHandler implements IAttributionHandler {
                 checkAttributionInternal(jsonResponse);
             }
         });
+    }
+
+    public void pauseSending() {
+        paused = true;
+    }
+
+    public void resumeSending() {
+        paused = false;
     }
 
     private void getAttribution(int delayInMilliseconds) {
@@ -85,6 +97,11 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void getAttributionInternal() {
+        // TODO check if this what attribution handler paused means
+        if (paused) {
+            logger.debug("Attribution Handler is paused");
+            return;
+        }
         logger.verbose("%s", attributionPackage.getExtendedString());
         HttpResponse httpResponse = null;
         try {

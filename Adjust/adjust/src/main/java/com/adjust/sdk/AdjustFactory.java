@@ -19,9 +19,11 @@ public class AdjustFactory {
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
 
-    public static IPackageHandler getPackageHandler(ActivityHandler activityHandler, Context context) {
+    public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
+                                                    Context context,
+                                                    boolean startPaused) {
         if (packageHandler == null) {
-            return new PackageHandler(activityHandler, context);
+            return new PackageHandler(activityHandler, context, startPaused);
         }
         return packageHandler;
     }
@@ -84,9 +86,10 @@ public class AdjustFactory {
     }
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
-                                                            ActivityPackage attributionPackage) {
+                                                            ActivityPackage attributionPackage,
+                                                            boolean startPaused) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage);
+            return new AttributionHandler(activityHandler, attributionPackage, startPaused);
         }
         return attributionHandler;
     }

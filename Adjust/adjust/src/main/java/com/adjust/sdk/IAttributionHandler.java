@@ -9,4 +9,8 @@ public interface IAttributionHandler {
     public void getAttribution();
 
     public void checkAttribution(JSONObject jsonResponse);
+
+    public void pauseSending();
+
+    public void resumeSending();
 }

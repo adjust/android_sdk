@@ -123,24 +123,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             activityState.enabled = enabled;
         }
         if (enabled) {
-            trackSubsessionStart();
             logger.info("Resuming package handler to enabled the SDK");
+            trackSubsessionStart();
         } else {
-            trackSubsessionEnd();
             logger.info("Pausing package handler to disable the SDK");
+            trackSubsessionEnd();
         }
     }
 
     public void setOfflineMode(boolean offline) {
         this.offline = offline;
         if (offline) {
-            logger.info("Pausing package handler to put in offline mode");
-            trackSubsessionEnd();
+            logger.info("Pausing package and attribution handler to put in offline mode");
         } else {
             logger.info("Resuming package handler to put in online mode");
-            trackSubsessionStart();
-            startTimer();
         }
+        updateStatus();
     }
 
     public boolean isEnabled() {
@@ -220,6 +218,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
+    private void updateStatus() {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.UPDATE_STATUS;
+        sessionHandler.sendMessage(message);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int BASE_ADDRESS = 72630;
         private static final int INIT = BASE_ADDRESS + 1;
@@ -229,6 +233,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int FINISH_TRACKING = BASE_ADDRESS + 5;
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
+        private static final int UPDATE_STATUS = BASE_ADDRESS + 8;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -271,6 +276,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 case SEND_REFERRER:
                     sessionHandler.sendReferrerInternal();
                     break;
+                case UPDATE_STATUS:
+                    sessionHandler.updateStatusInternal();
+                    break;
             }
         }
     }
@@ -309,7 +317,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         readAttribution();
         readActivityState();
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context);
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toPause());
 
         shouldGetAttribution = true;
 
@@ -323,9 +331,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        if (!offline) {
-            packageHandler.resumeSending();
-        }
+        // TODO: Validate instead of updateStatus()
+        updateStatusInternal();
 
         processSession();
 
@@ -396,6 +403,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void endInternal() {
         packageHandler.pauseSending();
+        getAttributionHandler().pauseSending();
         stopTimer();
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
@@ -543,6 +551,33 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return false;
     }
 
+    private void updateStatusInternal() {
+        updateAttributionHandlerStatus();
+        updatePackageHandlerStatus();
+    }
+
+    private void updateAttributionHandlerStatus() {
+        if (attributionHandler == null) {
+            return;
+        }
+        if (toPause()) {
+            attributionHandler.pauseSending();
+        } else {
+            attributionHandler.resumeSending();
+        }
+    }
+
+    private void updatePackageHandlerStatus() {
+        if (packageHandler == null) {
+            return;
+        }
+        if (toPause()) {
+            packageHandler.pauseSending();
+        } else {
+            packageHandler.resumeSending();
+        }
+    }
+
     private void launchDeeplinkMain(String deeplink) {
         if (deeplink == null) return;
 
@@ -659,8 +694,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private IAttributionHandler getAttributionHandler() {
         if (attributionHandler == null) {
             ActivityPackage attributionPackage = getAttributionPackage();
-            attributionHandler = AdjustFactory.getAttributionHandler(this, attributionPackage);
+            attributionHandler = AdjustFactory.getAttributionHandler(this,
+                    attributionPackage,
+                    toPause());
         }
         return attributionHandler;
+    }
+
+    private boolean toPause() {
+        return offline || !enabled;
     }
 }
