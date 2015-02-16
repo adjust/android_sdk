@@ -21,6 +21,7 @@ class PackageBuilder {
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
     private ActivityState activityState;
+    private long createdAt;
 
     // reattributions
     Map<String, String> extraParameters;
@@ -29,10 +30,14 @@ class PackageBuilder {
 
     private static Logger logger = AdjustFactory.getLogger();
 
-    public PackageBuilder(AdjustConfig adjustConfig, DeviceInfo deviceInfo, ActivityState activityState) {
+    public PackageBuilder(AdjustConfig adjustConfig,
+                          DeviceInfo deviceInfo,
+                          ActivityState activityState,
+                          long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
         this.activityState = activityState.clone();
+        this.createdAt = createdAt;
     }
 
     public ActivityPackage buildSessionPackage() {
@@ -109,6 +114,7 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
+        addDate(parameters, "created_at", createdAt);
 
         // general
         checkDeviceIds(parameters);
@@ -168,7 +174,6 @@ class PackageBuilder {
 
     private void injectActivityState(Map<String, String> parameters) {
         injectActivityStateIds(parameters);
-        addDate(parameters, "created_at", activityState.createdAt);
         addInt(parameters, "session_count", activityState.sessionCount);
         addInt(parameters, "subsession_count", activityState.subsessionCount);
         addDuration(parameters, "session_length", activityState.sessionLength);

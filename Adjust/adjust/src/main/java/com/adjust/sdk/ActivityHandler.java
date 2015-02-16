@@ -199,7 +199,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public ActivityPackage getAttributionPackage() {
-        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        long now = System.currentTimeMillis();
+        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
+                deviceInfo,
+                activityState,
+                now);
         return attributionBuilder.buildAttributionPackage();
     }
 
@@ -348,9 +352,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (activityState == null) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
-            activityState.createdAt = now;  // starting now
 
-            transferSessionPackage();
+            transferSessionPackage(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = this.enabled;
             writeActivityState();
@@ -369,10 +372,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // new session
         if (lastInterval > SESSION_INTERVAL) {
             activityState.sessionCount++;
-            activityState.createdAt = now;
             activityState.lastInterval = lastInterval;
 
-            transferSessionPackage();
+            transferSessionPackage(now);
             activityState.resetSessionAttributes(now);
             writeActivityState();
             return;
@@ -416,11 +418,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         long now = System.currentTimeMillis();
 
-        activityState.createdAt = now;
         activityState.eventCount++;
         updateActivityState(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
 
@@ -476,6 +477,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
+        long now = System.currentTimeMillis();
         Map<String, String> queryStringParameters = new HashMap<String, String>();
         Attribution queryStringAttribution = new Attribution();
         boolean hasDeeplink = false;
@@ -493,9 +495,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String reftag = queryStringParameters.remove("reftag");
 
-        // TODO check if createdAt should be updated in click package
-
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
         builder.reftag = reftag;
@@ -625,8 +625,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
-    private void transferSessionPackage() {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState);
+    private void transferSessionPackage(long now) {
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();

@@ -34,7 +34,6 @@ public class ActivityState implements Serializable, Cloneable {
     protected long timeSpent;
     protected long lastActivity;    // all times in milliseconds since 1970
 
-    protected long createdAt;
     protected long lastInterval;
 
     protected ActivityState() {
@@ -49,7 +48,6 @@ public class ActivityState implements Serializable, Cloneable {
         sessionLength = -1; // same for session length and time spent
         timeSpent = -1; // this information will be collected and attached to the next session
         lastActivity = -1;
-        createdAt = -1;
         lastInterval = -1;
     }
 
@@ -58,7 +56,6 @@ public class ActivityState implements Serializable, Cloneable {
         sessionLength = 0; // no session length yet
         timeSpent = 0; // no time spent yet
         lastActivity = now;
-        createdAt = -1;
         lastInterval = -1;
     }
 
@@ -90,9 +87,7 @@ public class ActivityState implements Serializable, Cloneable {
         sessionLength = fields.get("sessionLength", -1l);
         timeSpent = fields.get("timeSpent", -1l);
         lastActivity = fields.get("lastActivity", -1l);
-        createdAt = fields.get("createdAt", -1l);
         lastInterval = fields.get("lastInterval", -1l);
-
 
         // default values for migrating devices
         uuid = null;
