@@ -9,6 +9,8 @@
 
 package com.adjust.sdk;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
@@ -18,6 +20,8 @@ import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
+    private transient String readErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
+    private transient Logger logger;
 
     // persistent data
     protected String uuid;
@@ -37,6 +41,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected long lastInterval;
 
     protected ActivityState() {
+        logger = AdjustFactory.getLogger();
         // create UUID for new devices
         uuid = Util.createUuid();
         enabled = true;
@@ -81,34 +86,58 @@ public class ActivityState implements Serializable, Cloneable {
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();
 
-        eventCount = fields.get("eventCount", 0);
-        sessionCount = fields.get("sessionCount", 0);
-        subsessionCount = fields.get("subsessionCount", -1);
-        sessionLength = fields.get("sessionLength", -1l);
-        timeSpent = fields.get("timeSpent", -1l);
-        lastActivity = fields.get("lastActivity", -1l);
-        lastInterval = fields.get("lastInterval", -1l);
+        eventCount = readIntField(fields, "eventCount", 0);
+        sessionCount = readIntField(fields, "sessionCount", 0);
+        subsessionCount = readIntField(fields, "subsessionCount", -1);
+        sessionLength = readLongField(fields, "sessionLength", -1l);
+        timeSpent = readLongField(fields, "timeSpent", -1l);
+        lastActivity = readLongField(fields, "lastActivity", -1l);
+        lastInterval = readLongField(fields, "lastInterval", -1l);
 
-        // default values for migrating devices
-        uuid = null;
-        enabled = true;
-        askingAttribution = false;
-
-        // try to read in order of less recent new fields
-        try {
-            uuid = (String) fields.get("uuid", null);
-            enabled = fields.get("enabled", true);
-            askingAttribution = fields.get("askingAttribution", false);
-            // add new fields here
-        } catch (Exception e) {
-            Logger logger = AdjustFactory.getLogger();
-            logger.debug("Unable to read new field in migration device with message (%s)",
-                    e.getMessage());
-        }
+        // new fields
+        uuid = readStringField(fields, "uuid", null);
+        enabled = readBooleanField(fields, "enabled", true);
+        askingAttribution = readBooleanField(fields, "askingAttribution", false);
 
         // create UUID for migrating devices
         if (uuid == null) {
             uuid = Util.createUuid();
+        }
+    }
+
+    private String readStringField(GetField fields, String name, String defaultValue) {
+        try {
+            return (String) fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(readErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    private boolean readBooleanField(GetField fields, String name, boolean defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(readErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    private int readIntField(GetField fields, String name, int defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(readErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    private long readLongField(GetField fields, String name, long defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(readErrorMessage, name, e.getMessage());
+            return defaultValue;
         }
     }
 
