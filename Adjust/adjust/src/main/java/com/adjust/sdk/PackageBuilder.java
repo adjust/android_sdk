@@ -217,7 +217,7 @@ class PackageBuilder {
         if (event.revenue == null) {
             return String.format(" '%s'", event.eventToken);
         } else {
-            return String.format(Locale.US, " (%.4f cent, '%s')", event.revenue, event.eventToken);
+            return String.format(Locale.US, " (%.4f %s, '%s')", event.revenue, event.currency, event.eventToken);
         }
     }
 
