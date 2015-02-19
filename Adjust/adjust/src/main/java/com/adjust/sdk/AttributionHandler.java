@@ -29,12 +29,20 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused) {
+                              boolean startPaused)
+    {
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        this.activityHandler = activityHandler;
         logger = AdjustFactory.getLogger();
-        this.attributionPackage = attributionPackage;
         httpClient = Util.getHttpClient();
+        init(activityHandler, attributionPackage, startPaused);
+    }
+
+    public void init(IActivityHandler activityHandler,
+                     ActivityPackage attributionPackage,
+                     boolean startPaused)
+    {
+        this.activityHandler = activityHandler;
+        this.attributionPackage = attributionPackage;
         this.paused = startPaused;
     }
 

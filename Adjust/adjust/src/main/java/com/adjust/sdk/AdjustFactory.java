@@ -25,6 +25,7 @@ public class AdjustFactory {
         if (packageHandler == null) {
             return new PackageHandler(activityHandler, context, startPaused);
         }
+        packageHandler.init(activityHandler, context, startPaused);
         return packageHandler;
     }
 
@@ -32,6 +33,7 @@ public class AdjustFactory {
         if (requestHandler == null) {
             return new RequestHandler(packageHandler);
         }
+        requestHandler.init(packageHandler);
         return requestHandler;
     }
 
@@ -82,6 +84,7 @@ public class AdjustFactory {
         if (activityHandler == null) {
             return ActivityHandler.getInstance(config);
         }
+        activityHandler.init(config);
         return activityHandler;
     }
 
@@ -91,6 +94,7 @@ public class AdjustFactory {
         if (attributionHandler == null) {
             return new AttributionHandler(activityHandler, attributionPackage, startPaused);
         }
+        attributionHandler.init(activityHandler, attributionPackage, startPaused);
         return attributionHandler;
     }
 

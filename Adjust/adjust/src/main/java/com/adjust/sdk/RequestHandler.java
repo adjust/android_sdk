@@ -47,14 +47,17 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
         this.logger = AdjustFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
-        this.packageHandler = packageHandler;
+        init(packageHandler);
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
     }
 
-    @Override
+    public void init(IPackageHandler packageHandler) {
+        this.packageHandler = packageHandler;
+    }
+
     public void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND;

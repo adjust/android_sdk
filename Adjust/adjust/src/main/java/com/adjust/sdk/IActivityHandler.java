@@ -8,6 +8,8 @@ import org.json.JSONObject;
  * Created by pfms on 15/12/14.
  */
 public interface IActivityHandler {
+    public void init(AdjustConfig config);
+
     public void trackSubsessionStart();
 
     public void trackSubsessionEnd();

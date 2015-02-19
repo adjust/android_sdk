@@ -66,11 +66,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         logger = AdjustFactory.getLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
         enabled = true;
-        this.adjustConfig = adjustConfig;
+        init(adjustConfig);
 
         Message message = Message.obtain();
         message.arg1 = SessionHandler.INIT;
         sessionHandler.sendMessage(message);
+    }
+
+    public void init(AdjustConfig adjustConfig) {
+        this.adjustConfig = adjustConfig;
     }
 
     public static ActivityHandler getInstance(AdjustConfig adjustConfig) {

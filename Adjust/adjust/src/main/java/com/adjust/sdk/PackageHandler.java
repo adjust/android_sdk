@@ -54,13 +54,18 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         this.internalHandler = new InternalHandler(getLooper(), this);
         this.logger = AdjustFactory.getLogger();
 
-        this.activityHandler = activityHandler;
-        this.context = context;
-        this.paused = startPaused;
+        init(activityHandler, context, startPaused);
 
         Message message = Message.obtain();
         message.arg1 = InternalHandler.INIT;
         internalHandler.sendMessage(message);
+    }
+
+    @Override
+    public void init(IActivityHandler activityHandler, Context context, boolean startPaused) {
+        this.activityHandler = activityHandler;
+        this.context = context;
+        this.paused = startPaused;
     }
 
     // add a package to the queue
