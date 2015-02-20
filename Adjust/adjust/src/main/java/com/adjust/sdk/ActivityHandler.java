@@ -651,6 +651,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (timer != null) {
             stopTimer();
         }
+        if (!activityState.enabled) {
+            return;
+        }
         timer = Executors.newSingleThreadScheduledExecutor();
         timer.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -668,6 +671,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void timerFired() {
         if (!activityState.enabled) {
+            stopTimer();
             return;
         }
 
