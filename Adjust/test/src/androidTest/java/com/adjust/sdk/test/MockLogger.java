@@ -1,13 +1,13 @@
 package com.adjust.sdk.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.util.Log;
 import android.util.SparseArray;
 
 import com.adjust.sdk.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.adjust.sdk.Constants.LOGTAG;
 
@@ -60,7 +60,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void verbose(String message, Object ...parameters) {
+    public void verbose(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.VERBOSE.getAndroidLogLevel(),
                 "v ",
@@ -68,7 +68,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void debug(String message, Object ...parameters) {
+    public void debug(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.DEBUG.getAndroidLogLevel(),
                 "d ",
@@ -76,7 +76,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void info(String message, Object ...parameters) {
+    public void info(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.INFO.getAndroidLogLevel(),
                 "i ",
@@ -84,7 +84,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void warn(String message, Object ...parameters) {
+    public void warn(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.WARN.getAndroidLogLevel(),
                 "w ",
@@ -92,7 +92,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void error(String message, Object ...parameters) {
+    public void error(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.ERROR.getAndroidLogLevel(),
                 "e ",
@@ -100,7 +100,7 @@ public class MockLogger implements Logger {
     }
 
     @Override
-    public void Assert(String message, Object ...parameters) {
+    public void Assert(String message, Object... parameters) {
         logMessage(String.format(message, parameters),
                 LogLevel.ASSERT.getAndroidLogLevel(),
                 "a ",

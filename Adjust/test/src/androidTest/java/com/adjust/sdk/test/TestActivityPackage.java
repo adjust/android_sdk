@@ -3,11 +3,10 @@ package com.adjust.sdk.test;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.Attribution;
-import com.adjust.sdk.Event;
-
-import java.util.Map;
 
 import junit.framework.Assert;
+
+import java.util.Map;
 
 /**
  * Created by pfms on 09/01/15.
@@ -35,12 +34,11 @@ public class TestActivityPackage {
     public String callbackParams;
     public String partnerParams;
     // click
-    public String referrer;
+    public String reftag;
     public String deepLinkParameters;
     public Attribution attribution;
-    public boolean isClickPackage;
 
-    public TestActivityPackage (ActivityPackage activityPackage) {
+    public TestActivityPackage(ActivityPackage activityPackage) {
         this.activityPackage = activityPackage;
         parameters = activityPackage.getParameters();
 
@@ -115,8 +113,6 @@ public class TestActivityPackage {
         // test default package attributes
         testDefaultAttributes("/sdk_click", ActivityKind.CLICK, "click");
 
-        isClickPackage = true;
-
         // check default parameters
         testDefaultParameters();
 
@@ -125,10 +121,13 @@ public class TestActivityPackage {
         assertParameterEquals("source", source);
 
         // referrer
-        assertParameterEquals("referrer", referrer);
+        assertParameterEquals("reftag", reftag);
 
         // params
         assertParameterEquals("params", deepLinkParameters);
+
+        // click_time
+        assertParameterNotNull("click_time");
 
         // attributions
         if (attribution != null) {
@@ -172,6 +171,8 @@ public class TestActivityPackage {
         testDeviceInfo();
         testConfig();
         testActivityState();
+        // created_at
+        assertParameterNotNull("created_at");
     }
 
     private void testDeviceInfo() {
@@ -249,12 +250,6 @@ public class TestActivityPackage {
 
     private void testActivityState() {
         testActivityStateIds();
-        // created_at
-        if (isClickPackage) {
-            assertParameterNull("created_at");
-        } else {
-            assertParameterNotNull("created_at");
-        }
         // session_count
         if (sessionCount == null) {
             assertParameterNotNull("session_count");
@@ -282,7 +277,7 @@ public class TestActivityPackage {
         }
     }
 
-    private void testActivityStateIds () {
+    private void testActivityStateIds() {
         // android_uuid
         assertParameterNotNull("android_uuid");
     }
@@ -321,6 +316,7 @@ public class TestActivityPackage {
         Assert.assertEquals(activityPackage.getExtendedString(),
                 value, field);
     }
+
     private void assertFail() {
         Assert.fail(activityPackage.getExtendedString());
     }

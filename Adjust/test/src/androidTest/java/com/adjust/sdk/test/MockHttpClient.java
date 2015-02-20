@@ -1,11 +1,5 @@
 package com.adjust.sdk.test;
 
-import android.os.SystemClock;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -23,6 +17,10 @@ import org.apache.http.message.BasicStatusLine;
 import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HttpContext;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 public class MockHttpClient implements HttpClient {
 
     private MockLogger testLogger;
@@ -38,7 +36,7 @@ public class MockHttpClient implements HttpClient {
     @Override
     public HttpResponse execute(HttpUriRequest request) throws IOException,
             ClientProtocolException {
-        testLogger.test(prefix +  "execute, responseType: " + responseType);
+        testLogger.test(prefix + "execute, responseType: " + responseType);
         lastRequest = request;
 
         if (timeout) {
@@ -59,14 +57,14 @@ public class MockHttpClient implements HttpClient {
         } else if (responseType == ResponseType.ATTRIBUTION) {
             return getOkResponse(
                     "{ \"attribution\" : {" +
-                        "\"tracker_token\" : \"ttValue\" , " +
-                        "\"tracker_name\"  : \"tnValue\" , " +
-                        "\"network\"       : \"nValue\" , " +
-                        "\"campaign\"      : \"cpValue\" , " +
-                        "\"adgroup\"       : \"aValue\" , " +
-                        "\"creative\"      : \"ctValue\" } }");
+                            "\"tracker_token\" : \"ttValue\" , " +
+                            "\"tracker_name\"  : \"tnValue\" , " +
+                            "\"network\"       : \"nValue\" , " +
+                            "\"campaign\"      : \"cpValue\" , " +
+                            "\"adgroup\"       : \"aValue\" , " +
+                            "\"creative\"      : \"ctValue\" } }");
         } else if (responseType == ResponseType.ASK_IN) {
-            return  getOkResponse("{ \"ask_in\" : 4000 }");
+            return getOkResponse("{ \"ask_in\" : 4000 }");
         }
 
         return null;
@@ -76,6 +74,7 @@ public class MockHttpClient implements HttpClient {
             throws IOException {
         return getMockResponse(HttpStatus.SC_OK, responseData);
     }
+
     private HttpResponse getMockResponse(int statusCode, String responseData)
             throws IOException {
         StatusLine statusLine = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), statusCode, null);
@@ -108,27 +107,27 @@ public class MockHttpClient implements HttpClient {
 
     @Override
     public HttpResponse execute(HttpHost target, HttpRequest request,
-            HttpContext context) throws IOException, ClientProtocolException {
+                                HttpContext context) throws IOException, ClientProtocolException {
         return null;
     }
 
     @Override
     public <T> T execute(HttpUriRequest arg0,
-            ResponseHandler<? extends T> arg1, HttpContext arg2)
+                         ResponseHandler<? extends T> arg1, HttpContext arg2)
             throws IOException, ClientProtocolException {
         return null;
     }
 
     @Override
     public <T> T execute(HttpHost arg0, HttpRequest arg1,
-            ResponseHandler<? extends T> arg2) throws IOException,
+                         ResponseHandler<? extends T> arg2) throws IOException,
             ClientProtocolException {
         return null;
     }
 
     @Override
     public <T> T execute(HttpHost arg0, HttpRequest arg1,
-            ResponseHandler<? extends T> arg2, HttpContext arg3)
+                         ResponseHandler<? extends T> arg2, HttpContext arg3)
             throws IOException, ClientProtocolException {
         return null;
     }

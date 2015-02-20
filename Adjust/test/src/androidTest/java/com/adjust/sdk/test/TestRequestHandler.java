@@ -5,7 +5,6 @@ import android.os.SystemClock;
 import android.test.ActivityInstrumentationTestCase2;
 
 import com.adjust.sdk.ActivityHandler;
-import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustFactory;
@@ -25,7 +24,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private ActivityPackage sessionPackage;
     private RequestHandler requestHandler;
 
-    public  TestRequestHandler() {
+    public TestRequestHandler() {
         super(UnitTestActivity.class);
     }
 
@@ -118,7 +117,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         closeFirstPackage(sendClick);
     }
 
-    private void clientExceptionTest (boolean sendClick) {
+    private void clientExceptionTest(boolean sendClick) {
         mockHttpClient.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
         sendPackageOrClick(sendClick);
@@ -251,7 +250,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
 
         // create the config to start the session
-        AdjustConfig config = AdjustConfig.getInstance(context,"123456789012", AdjustConfig.SANDBOX_ENVIRONMENT);
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);

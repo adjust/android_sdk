@@ -61,7 +61,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         AdjustFactory.setPackageHandler(mockPackageHandler);
 
         // create the config to start the session
-        AdjustConfig config = AdjustConfig.getInstance(context,"123456789012", AdjustConfig.SANDBOX_ENVIRONMENT);
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
@@ -94,7 +94,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testGetAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage);
+                attributionPackage, false);
 
         // test null client
         nullClientTest(attributionHandler);
@@ -120,16 +120,67 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testCheckAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage);
+                attributionPackage, false);
 
         // test attribution with update in activity handler
         attributionResponseTest(attributionHandler, true);
 
         // test attribution without update in activity handler
         attributionResponseTest(attributionHandler, false);
+    }
 
-        // test ask in
-        askInTest(attributionHandler);
+    public void testAskIn() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestAttributionHandler testAskIn");
+
+        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
+                attributionPackage, false);
+
+        String response = "Response: { \"ask_in\" : 4000 }";
+
+        callCheckAttributionWithGet(attributionHandler, ResponseType.ASK_IN, response);
+
+        // change the response to avoid a cycle;
+        mockHttpClient.responseType = ResponseType.MESSAGE;
+
+        // check attribution was called with ask_in
+        assertUtil.notInTest("ActivityHandler tryUpdateAttribution");
+
+        // it did update to true
+        assertUtil.test("ActivityHandler setAskingAttribution, true");
+
+        // and waited to for query
+        assertUtil.debug("Waiting to query attribution in 4000 milliseconds");
+
+        SystemClock.sleep(2000);
+
+        JSONObject askInJsonResponse = null;
+        try {
+            askInJsonResponse = new JSONObject("{ \"ask_in\" : 5000 }");
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+
+        attributionHandler.checkAttribution(askInJsonResponse);
+
+        SystemClock.sleep(3000);
+
+        // it was been waiting for 1000 + 2000 + 3000 = 6 seconds
+        // check that the mock http client was not called because the original clock was reseted
+        assertUtil.notInTest("HttpClient execute");
+
+        // check that it was finally called after 6 seconds after the second ask_in
+        SystemClock.sleep(3000);
+
+        // it did update to true
+        assertUtil.test("ActivityHandler setAskingAttribution, true");
+
+        // and waited to for query
+        assertUtil.debug("Waiting to query attribution in 5000 milliseconds");
+
+        okMessageTestLogs();
+
+        requestTest(mockHttpClient.lastRequest);
     }
 
     private void nullClientTest(AttributionHandler attributionHandler) {
@@ -168,7 +219,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.debug("No message found");
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler updateAttribution, null");
+        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
     }
 
     private void serverErrorTest(AttributionHandler attributionHandler) {
@@ -184,7 +235,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.error("testResponseError");
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler updateAttribution, null");
+        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
 
         assertUtil.test("ActivityHandler setAskingAttribution, false");
     }
@@ -206,7 +257,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.debug("response OK");
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler updateAttribution, null");
+        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
     }
 
     private void callCheckAttributionWithGet(AttributionHandler attributionHandler,
@@ -235,13 +286,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         callCheckAttributionWithGet(attributionHandler, ResponseType.ATTRIBUTION, response);
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler updateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
-
-        if (updated) {
-            assertUtil.test("ActivityHandler launchAttributionDelegate");
-        } else {
-            assertUtil.notInTest("ActivityHandler launchAttributionDelegate");
-        }
+        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
 
         // updated set askingAttribution to false
         assertUtil.test("ActivityHandler setAskingAttribution, false");
@@ -251,54 +296,6 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         // and waiting for query
         assertUtil.notInDebug("Waiting to query attribution");
-    }
-
-    private void askInTest(AttributionHandler attributionHandler) {
-        String response = "Response: { \"ask_in\" : 4000 }";
-
-        callCheckAttributionWithGet(attributionHandler, ResponseType.ASK_IN, response);
-
-        // change the response to avoid a cycle;
-        mockHttpClient.responseType = ResponseType.MESSAGE;
-
-        // check attribution was called with ask_in
-        assertUtil.notInTest("ActivityHandler updateAttribution");
-
-        // it did update to true
-        assertUtil.test("ActivityHandler setAskingAttribution, true");
-
-        // and waited to for query
-        assertUtil.debug("Waiting to query attribution in 4000 milliseconds");
-
-        SystemClock.sleep(2000);
-
-        JSONObject askInJsonResponse = null;
-        try {
-            askInJsonResponse = new JSONObject("{ \"ask_in\" : 5000 }");
-        } catch (JSONException e) {
-            fail(e.getMessage());
-        }
-
-        attributionHandler.checkAttribution(askInJsonResponse);
-
-        SystemClock.sleep(3000);
-
-        // it was been waiting for 1000 + 2000 + 3000 = 6 seconds
-        // check that the mock http client was not called because the original clock was reseted
-        assertUtil.notInTest("HttpClient execute");
-
-        // check that it was finally called after 6 seconds after the second ask_in
-        SystemClock.sleep(3000);
-
-        // it did update to true
-        assertUtil.test("ActivityHandler setAskingAttribution, true");
-
-        // and waited to for query
-        assertUtil.debug("Waiting to query attribution in 5000 milliseconds");
-
-        okMessageTestLogs();
-
-        requestTest(mockHttpClient.lastRequest);
     }
 
     private void startGetAttributionTest(AttributionHandler attributionHandler, ResponseType responseType) {

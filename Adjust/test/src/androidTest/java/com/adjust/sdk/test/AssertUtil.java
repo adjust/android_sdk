@@ -1,10 +1,13 @@
 package com.adjust.sdk.test;
 
-import static com.adjust.sdk.Logger.LogLevel.*;
-
 import junit.framework.Assert;
 
-import java.util.Objects;
+import static com.adjust.sdk.Logger.LogLevel.ASSERT;
+import static com.adjust.sdk.Logger.LogLevel.DEBUG;
+import static com.adjust.sdk.Logger.LogLevel.ERROR;
+import static com.adjust.sdk.Logger.LogLevel.INFO;
+import static com.adjust.sdk.Logger.LogLevel.VERBOSE;
+import static com.adjust.sdk.Logger.LogLevel.WARN;
 
 /**
  * Created by pfms on 09/01/15.
@@ -91,7 +94,7 @@ public class AssertUtil {
                 object);
     }
 
-    public void isNotNull(Object object){
+    public void isNotNull(Object object) {
         Assert.assertNotNull(mockLogger.toString(),
                 object);
     }
@@ -110,4 +113,4 @@ public class AssertUtil {
         Assert.assertEquals(mockLogger.toString(),
                 expected, actual);
     }
- }
+}

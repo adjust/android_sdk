@@ -7,14 +7,21 @@ import com.adjust.sdk.IRequestHandler;
 public class MockRequestHandler implements IRequestHandler {
     private MockLogger testLogger;
     private String prefix = "RequestHandler ";
+    IPackageHandler packageHandler;
 
     public MockRequestHandler(MockLogger testLogger) {
         this.testLogger = testLogger;
     }
 
     @Override
+    public void init(IPackageHandler packageHandler) {
+        testLogger.test(prefix + "init");
+        this.packageHandler = packageHandler;
+    }
+
+    @Override
     public void sendPackage(ActivityPackage pack) {
-        testLogger.test(prefix +  "sendPackage, " + pack);
+        testLogger.test(prefix + "sendPackage, " + pack);
 
         /*
         // respond successfully to the package handler
@@ -31,6 +38,6 @@ public class MockRequestHandler implements IRequestHandler {
 
     @Override
     public void sendClickPackage(ActivityPackage clickPackage) {
-        testLogger.test(prefix +  "sendClickPackage, " + clickPackage);
+        testLogger.test(prefix + "sendClickPackage, " + clickPackage);
     }
 }

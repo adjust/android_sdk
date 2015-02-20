@@ -95,7 +95,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.IS_SENDING, null);
 
         // verify that both paused and isSending are reset with a new session
-        PackageHandler secondSessionPackageHandler = new PackageHandler(mockActivityHandler, context);
+        PackageHandler secondSessionPackageHandler = new PackageHandler(mockActivityHandler, context, false);
 
         secondSessionPackageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
@@ -181,7 +181,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         // delete package queue for fresh start
         deletePackageQueue();
 
-        PackageHandler packageHandler = new PackageHandler(mockActivityHandler, context);
+        PackageHandler packageHandler = new PackageHandler(mockActivityHandler, context, false);
 
         SystemClock.sleep(1000);
 
@@ -206,7 +206,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
     private PackageHandler addSecondPackageTest(PackageHandler packageHandler) {
         if (packageHandler == null) {
-            packageHandler = new PackageHandler(mockActivityHandler, context);
+            packageHandler = new PackageHandler(mockActivityHandler, context, false);
 
             SystemClock.sleep(1000);
 
@@ -226,7 +226,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     private void addPackageTests(int packageNumber, String packageString) {
-        assertUtil.debug("Added package "+ packageNumber + " (" + packageString +")");
+        assertUtil.debug("Added package " + packageNumber + " (" + packageString + ")");
 
         assertUtil.debug("Package handler wrote " + packageNumber + " packages");
     }
