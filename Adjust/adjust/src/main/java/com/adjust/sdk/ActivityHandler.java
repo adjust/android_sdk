@@ -79,11 +79,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     public static ActivityHandler getInstance(AdjustConfig adjustConfig) {
         if (adjustConfig == null) {
-            AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
+            AdjustFactory.getLogger().error("AdjustConfig missing");
             return null;
         }
 
-        if (!adjustConfig.isValid()) {
+        if(!adjustConfig.isValid()) {
+            AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
             return null;
         }
 
@@ -689,7 +690,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.error("Event missing");
             return false;
         }
-        if (!event.isValid()) return false;
+
+        if (!event.isValid()) {
+            logger.error("Event not initialized correctly");
+            return false;
+        }
 
         return true;
     }
