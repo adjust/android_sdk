@@ -166,7 +166,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
         UrlClickTime urlClickTime = new UrlClickTime (url, clickTime);
-        message.obj = url;
+        message.obj = urlClickTime;
         sessionHandler.sendMessage(message);
     }
 
