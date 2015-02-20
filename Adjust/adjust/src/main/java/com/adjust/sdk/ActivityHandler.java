@@ -128,10 +128,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             activityState.enabled = enabled;
         }
         if (enabled) {
-            logger.info("Resuming package handler to enabled the SDK");
+            if (toPause()) {
+                logger.info("Package and attribution handler remain paused due to the SDK is offline");
+            } else {
+                logger.info("Resuming package handler and attribution handler to enabled the SDK");
+            }
             trackSubsessionStart();
         } else {
-            logger.info("Pausing package handler to disable the SDK");
+            logger.info("Pausing package handler and attribution handler to disable the SDK");
             trackSubsessionEnd();
         }
     }
@@ -141,7 +145,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (offline) {
             logger.info("Pausing package and attribution handler to put in offline mode");
         } else {
-            logger.info("Resuming package handler to put in online mode");
+            if (toPause()) {
+                logger.info("Package and attribution handler remain paused because the SDK is disabled");
+            } else {
+                logger.info("Resuming package handler and attribution handler to put in online mode");
+            }
         }
         updateStatus();
     }
@@ -711,6 +719,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private boolean toPause() {
-        return offline || !enabled;
+        return offline || !isEnabled();
     }
 }
