@@ -59,10 +59,7 @@ public class Event {
     }
 
     public boolean isValid() {
-        if (!checkEventToken(eventToken, logger)) return false;
-        if (!checkRevenue(revenue, currency)) return false;
-
-        return true;
+        return eventToken != null;
     }
 
     private static boolean checkEventToken(String eventToken, Logger logger) {

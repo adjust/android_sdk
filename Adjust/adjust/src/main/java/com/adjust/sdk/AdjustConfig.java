@@ -23,7 +23,7 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
     public AdjustConfig(Context context, String appToken, String environment) {
-        if (!isValid(context, appToken, environment, true)) {
+        if (!isValid(context, appToken, environment)) {
             return;
         }
 
@@ -61,18 +61,18 @@ public class AdjustConfig {
     }
 
     public boolean isValid() {
-        return isValid(context, appToken, environment, false);
+        return appToken != null;
     }
 
-    private boolean isValid(Context context, String appToken, String environment, boolean logNonError) {
+    private boolean isValid(Context context, String appToken, String environment) {
         if (!checkAppToken(appToken)) return false;
-        if (!checkEnvironment(environment, logNonError)) return false;
-        if (!checkContext(context, logNonError)) return false;
+        if (!checkEnvironment(environment)) return false;
+        if (!checkContext(context)) return false;
 
         return true;
     }
 
-    private static boolean checkContext(Context context, boolean logNonError) {
+    private static boolean checkContext(Context context) {
         Logger logger = AdjustFactory.getLogger();
         if (context == null) {
             logger.error("Missing context");
@@ -85,9 +85,7 @@ public class AdjustConfig {
         }
 
         if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            if (logNonError) {
-                logger.warn("Missing permission: ACCESS_WIFI_STATE");
-            }
+            logger.warn("Missing permission: ACCESS_WIFI_STATE");
         }
 
         return true;
@@ -108,7 +106,7 @@ public class AdjustConfig {
         return true;
     }
 
-    private static boolean checkEnvironment(String environment, boolean logNonError) {
+    private static boolean checkEnvironment(String environment) {
         Logger logger = AdjustFactory.getLogger();
         if (environment == null) {
             logger.error("Missing environment");
@@ -116,20 +114,16 @@ public class AdjustConfig {
         }
 
         if (environment == AdjustConfig.ENVIRONMENT_SANDBOX) {
-            if (logNonError) {
-                logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
-                        "Use this setting for testing. " +
-                        "Don't forget to set the environment to `production` before publishing!");
-            }
+            logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
+                    "Use this setting for testing. " +
+                    "Don't forget to set the environment to `production` before publishing!");
             return true;
         }
         if (environment == AdjustConfig.ENVIRONMENT_PRODUCTION) {
-            if (logNonError) {
-                logger.Assert(
-                        "PRODUCTION: Adjust is running in Production mode. " +
-                                "Use this setting only for the build that you want to publish. " +
-                                "Set the environment to `sandbox` if you want to test your app!");
-            }
+            logger.Assert(
+                    "PRODUCTION: Adjust is running in Production mode. " +
+                            "Use this setting only for the build that you want to publish. " +
+                            "Set the environment to `sandbox` if you want to test your app!");
             return true;
         }
 
