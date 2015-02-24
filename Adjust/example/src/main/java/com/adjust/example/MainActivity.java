@@ -54,13 +54,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
-        Event event = new Event("{appToken}");
+        Event event = new Event("{eventToken}");
 
         Adjust.trackEvent(event);
     }
 
     public void onTrackRevenueEventClick(View v) {
-        Event event = new Event("{appToken}");
+        Event event = new Event("{eventToken}");
 
         // add revenue 1 cent of an euro
         event.setRevenue(0.01, "EUR");
@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackEventWithCallbackClick(View v) {
-        Event event = new Event("{appToken}");
+        Event event = new Event("{eventToken}");
 
         // add callback parameters to this parameter
         event.addCallbackParameter("key", "value");
@@ -78,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackEventWithPartnerClick(View v) {
-        Event event = new Event("{appToken}");
+        Event event = new Event("{eventToken}");
 
         // add partner parameters to this parameter
         event.addPartnerParameter("foo", "bar");
