@@ -110,7 +110,7 @@ Replace `{YourAppToken}` with your app token. You can find this in your
 Depending on whether you build your app for testing or for production, you must
 set `environment` with one of these values:
 
-```objc
+```java
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 ```
@@ -130,7 +130,7 @@ You can increase or decrease the amount of logs you see in tests by calling
 `setLogLevel` on your `AdjustConfig` instance with one of the following
 parameters:
 
-```objc
+```java
 config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
 config.setLogLevel(LogLevel.DEBUG);     // enable more logging
 config.setLogLevel(LogLevel.INFO);      // the default
@@ -229,7 +229,7 @@ Adjust.trackEvent(event);
 The event instance can be used to configure the event even more before tracking
 it.
 
-#### Add callback parameters.
+### 9. Add callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will
 send a GET request to that URL whenever the event gets tracked. You can add
@@ -263,7 +263,7 @@ these parameters won't even be read.
 You can read more about using URL callbacks, including a full list of available 
 values, in our [callbacks guide][callbacks-guide].
 
-### 9. Add tracking of revenue
+### 10. Add tracking of revenue
 
 If your users can generate revenue by tapping on advertisements or making
 in-app purchases you can track those revenues with events. Lets say a tap is
@@ -283,7 +283,7 @@ that you have set in your adjust dashboard.**
 
 You can read more about revenue and event tracking in the [event tracking guide.][event-tracking]
 
-### 10. Set up deep link reattributions
+### 11. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential 
@@ -303,7 +303,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 11. Enable event buffering
+### 12. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
@@ -313,7 +313,7 @@ event buffering with your `AdjustConfig` instance:
 config.setEventBufferingEnabled(true);
 ```
 
-### 12. Set listener for delegate notifications
+### 13. Set listener for delegate notifications
 
 You can register a listener callback to be notified of tracker attribution
 changes. Due to the different sources considered for attribution, this
@@ -350,7 +350,7 @@ Here is a quick summary of its properties:
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
 
-### 13. Disable tracking
+### 14. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is remembered
@@ -364,7 +364,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
 
-### 14. Partner parameters
+### 15. Partner parameters
 
 You can also add parameters to be transmitted to network partners, for the
 integrations that have been activated in your adjust dashboard.
@@ -373,7 +373,7 @@ This works similarly to the callback parameters mentioned above, but can
 be added by calling the `addPartnerParameter` method on your `ADJEvent`
 instance.
 
-```objc
+```java
 Event event = new Event("abc123");
 
 event.addPartnerParameter("key", "value");
