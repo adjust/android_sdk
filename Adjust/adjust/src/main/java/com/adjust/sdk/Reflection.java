@@ -2,9 +2,17 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.plugin.Plugin;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
 
@@ -166,5 +174,35 @@ public class Reflection {
         Object resultObject = methodObject.invoke(instance, args);
 
         return resultObject;
+    }
+
+    public static Map<String, String> getPluginKeys(Context context) {
+        Map<String, String> pluginKeys = new HashMap<String, String>();
+
+        for (Plugin plugin : getPlugins()) {
+            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
+            if (pluginEntry != null) {
+                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
+            }
+        }
+
+        if (pluginKeys.size() == 0) {
+            return null;
+        } else {
+            return pluginKeys;
+        }
+    }
+
+    private static List<Plugin> getPlugins() {
+        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
+
+        for (String pluginName : PLUGINS) {
+            Object pluginObject = Reflection.createDefaultInstance(pluginName);
+            if (pluginObject != null && pluginObject instanceof Plugin) {
+                plugins.add((Plugin) pluginObject);
+            }
+        }
+
+        return plugins;
     }
 }

@@ -88,7 +88,7 @@ class DeviceInfo {
         clientSdk = getClientSdk(sdkPrefix);
         androidId = getAndroidId(context, isGooglePlayServicesAvailable);
         fbAttributionId = getFacebookAttributionId(context);
-        pluginKeys = getPluginKeys(context);
+        pluginKeys = Reflection.getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
     }
@@ -215,37 +215,6 @@ class DeviceInfo {
             return String.format("%s@%s", sdkPrefix, Constants.CLIENT_SDK);
         }
     }
-
-    public Map<String, String> getPluginKeys(Context context) {
-        Map<String, String> pluginKeys = new HashMap<String, String>();
-
-        for (Plugin plugin : getPlugins()) {
-            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
-            if (pluginEntry != null) {
-                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
-            }
-        }
-
-        if (pluginKeys.size() == 0) {
-            return null;
-        } else {
-            return pluginKeys;
-        }
-    }
-
-    private List<Plugin> getPlugins() {
-        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
-
-        for (String pluginName : PLUGINS) {
-            Object pluginObject = Reflection.createDefaultInstance(pluginName);
-            if (pluginObject != null && pluginObject instanceof Plugin) {
-                plugins.add((Plugin) pluginObject);
-            }
-        }
-
-        return plugins;
-    }
-
 
     private String getMacSha1(String macAddress) {
         if (macAddress == null) {
