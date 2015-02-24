@@ -68,7 +68,8 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
-        String macAddress = getMacAddress(context);
+        boolean isGooglePlayServicesAvailable = Reflection.isGooglePlayServicesAvailable(context);
+        String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -85,15 +86,15 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
-        androidId = getAndroidId(context);
+        androidId = getAndroidId(context, isGooglePlayServicesAvailable);
         fbAttributionId = getFacebookAttributionId(context);
         pluginKeys = getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
     }
 
-    private String getMacAddress(Context context) {
-        if (!Reflection.isGooglePlayServicesAvailable(context)) {
+    private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
+        if (!isGooglePlayServicesAvailable) {
             return Reflection.getMacAddress(context);
         } else {
             return null;
@@ -265,8 +266,12 @@ class DeviceInfo {
         return macShortMd5;
     }
 
-    private String getAndroidId(Context context) {
-        return Reflection.getAndroidId(context);
+    private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {
+        if (!isGooglePlayServicesAvailable) {
+            return Reflection.getAndroidId(context);
+        } else {
+            return null;
+        }
     }
 
     private String sha1(final String text) {
