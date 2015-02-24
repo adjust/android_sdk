@@ -6,6 +6,7 @@ One major change is how the adjust SDK is initialized. You should now use an
 global android [Application][android_application] class instead of the manifest file.
 
 If you don't already use one for your app, The steps to create and use one are:
+
 1. Create one a class that extends `Application`.  
 2. Open the `AndroidManifest.xml` file and locate the `<application>` element.
 3. Add the attribute `android:name` with the value equal to the created class name preffixed with a comma, `.`.
