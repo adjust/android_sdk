@@ -664,9 +664,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startTimer() {
-        if (timer != null) {
-            stopTimer();
-        }
+        stopTimer();
+
         if (!activityState.enabled) {
             return;
         }
@@ -682,6 +681,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void stopTimer() {
         if (timer != null) {
             timer.shutdown();
+            timer = null;
         }
     }
 
