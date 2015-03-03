@@ -494,16 +494,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         long now = System.currentTimeMillis();
         Map<String, String> queryStringParameters = new HashMap<String, String>();
         Attribution queryStringAttribution = new Attribution();
-        boolean hasDeeplink = false;
+        boolean hasAdjustTags = false;
 
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
             if (readQueryString(pair, queryStringParameters, queryStringAttribution)) {
-                hasDeeplink = true;
+                hasAdjustTags = true;
             }
         }
 
-        if (!hasDeeplink) {
+        if (!hasAdjustTags) {
             return null;
         }
 
