@@ -476,7 +476,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void sendReferrerInternal() {
         ActivityPackage clickPackage = buildQueryStringClickPackage(adjustConfig.referrer,
-                "referrer",
+                "reftag",
                 adjustConfig.referrerClickTime);
         if (clickPackage == null) {
             return;
