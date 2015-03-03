@@ -15,3 +15,7 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
+
+task jar(type: Jar) {
+    from 'src/main/java'
+}
