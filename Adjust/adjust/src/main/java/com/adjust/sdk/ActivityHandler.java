@@ -123,6 +123,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public void setEnabled(boolean enabled) {
+        if (enabled == this.enabled) {
+            if (enabled) {
+                logger.debug("Adjust already enabled");
+            } else {
+                logger.debug("Adjust already disabled");
+            }
+            return;
+        }
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
@@ -141,6 +149,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public void setOfflineMode(boolean offline) {
+        if (offline == this.offline) {
+            if (offline) {
+                logger.debug("Adjust already in offline mode");
+            } else {
+                logger.debug("Adjust already in online mode");
+            }
+            return;
+        }
         this.offline = offline;
         if (offline) {
             logger.info("Pausing package and attribution handler to put in offline mode");
