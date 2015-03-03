@@ -24,8 +24,6 @@ public interface Constants {
     int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
 
-    String REFERRER_KEY = "AdjustInstallReferrer";
-
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
