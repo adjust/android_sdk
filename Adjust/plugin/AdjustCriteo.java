@@ -76,12 +76,11 @@ public class AdjustCriteo {
 
             i++;
 
-            if (i > MAX_VIEW_LISTING_PRODUCTS) {
+            if (i == productsSize || i >= MAX_VIEW_LISTING_PRODUCTS) {
                 break;
             }
-            if (i != productsSize && i != MAX_VIEW_LISTING_PRODUCTS) {
-                criteoVBValue.append(",");
-            }
+
+            criteoVBValue.append(",");
         }
         criteoVBValue.append("]");
         String result = null;
@@ -109,9 +108,11 @@ public class AdjustCriteo {
 
             i++;
 
-            if (i  != productsSize) {
-                criteoVBValue.append(",");
+            if (i == productsSize) {
+                break;
             }
+
+            criteoVBValue.append(",");
         }
         criteoVBValue.append("]");
         String result = null;
