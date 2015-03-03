@@ -22,6 +22,7 @@ public class AdjustInstance {
         }
 
         adjustConfig.referrer = this.referrer;
+        adjustConfig.referrerClickTime = this.referrerClickTime;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
