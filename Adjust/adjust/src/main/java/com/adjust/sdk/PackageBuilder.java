@@ -164,7 +164,7 @@ class PackageBuilder {
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "environment", adjustConfig.environment);
         addBoolean(parameters, "device_known", adjustConfig.knownDevice);
-        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasDelegate());
+        addBoolean(parameters, "needs_attribution_data", adjustConfig.hasListener());
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         addString(parameters, "gps_adid", playAdId);

@@ -56,7 +56,7 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public boolean hasDelegate() {
+    public boolean hasListener() {
         return onAttributionChangedListener != null;
     }
 
