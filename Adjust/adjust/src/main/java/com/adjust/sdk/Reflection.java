@@ -145,6 +145,7 @@ public class Reflection {
     public static Object createInstance(String className, Class[] cArgs, Object... args) {
         try {
             Class classObject = Class.forName(className);
+            @SuppressWarnings("unchecked")
             Constructor constructor = classObject.getConstructor(cArgs);
             Object instance = constructor.newInstance(args);
             return instance;
@@ -169,6 +170,7 @@ public class Reflection {
 
     public static Object invokeMethod(Class classObject, String methodName, Object instance, Class[] cArgs, Object... args)
             throws Exception {
+        @SuppressWarnings("unchecked")
         Method methodObject = classObject.getMethod(methodName, cArgs);
 
         Object resultObject = methodObject.invoke(instance, args);

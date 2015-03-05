@@ -73,6 +73,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public void init(AdjustConfig adjustConfig) {
         this.adjustConfig = adjustConfig;
     }
@@ -92,18 +93,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return activityHandler;
     }
 
+    @Override
     public void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public void trackEvent(Event event) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
@@ -111,6 +115,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public void finishedTrackingActivity(JSONObject jsonResponse) {
         if (jsonResponse == null) {
             return;
@@ -122,6 +127,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public void setEnabled(boolean enabled) {
         if (enabled == this.enabled) {
             if (enabled) {
@@ -148,6 +154,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
+    @Override
     public void setOfflineMode(boolean offline) {
         if (offline == this.offline) {
             if (offline) {
@@ -170,6 +177,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         updateStatus();
     }
 
+    @Override
     public boolean isEnabled() {
         if (activityState != null) {
             return activityState.enabled;
@@ -178,6 +186,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
+    @Override
     public void readOpenUrl(Uri url, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
@@ -186,6 +195,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
     public boolean tryUpdateAttribution(Attribution attribution) {
         if (attribution == null) return false;
 
@@ -217,11 +227,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
+    @Override
     public void setAskingAttribution(boolean askingAttribution) {
         activityState.askingAttribution = askingAttribution;
         writeActivityState();
     }
 
+    @Override
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -231,6 +243,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return attributionBuilder.buildAttributionPackage();
     }
 
+    @Override
     public void sendReferrer(String referrer, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SEND_REFERRER;

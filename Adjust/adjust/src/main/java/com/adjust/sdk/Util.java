@@ -86,6 +86,7 @@ public class Util {
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
 
             try {
+                @SuppressWarnings("unchecked")
                 T t = (T) objectStream.readObject();
                 logger.debug("Read %s: %s", objectName, t);
                 return t;

@@ -37,6 +37,7 @@ public class AttributionHandler implements IAttributionHandler {
         init(activityHandler, attributionPackage, startPaused);
     }
 
+    @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
                      boolean startPaused)
@@ -46,10 +47,12 @@ public class AttributionHandler implements IAttributionHandler {
         this.paused = startPaused;
     }
 
+    @Override
     public void getAttribution() {
         getAttribution(0);
     }
 
+    @Override
     public void checkAttribution(final JSONObject jsonResponse) {
         scheduler.submit(new Runnable() {
             @Override
@@ -59,10 +62,12 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
+    @Override
     public void pauseSending() {
         paused = true;
     }
 
+    @Override
     public void resumeSending() {
         paused = false;
     }

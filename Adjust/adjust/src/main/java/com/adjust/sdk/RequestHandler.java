@@ -54,10 +54,12 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         internalHandler.sendMessage(message);
     }
 
+    @Override
     public void init(IPackageHandler packageHandler) {
         this.packageHandler = packageHandler;
     }
 
+    @Override
     public void sendPackage(ActivityPackage pack) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND;
@@ -65,6 +67,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         internalHandler.sendMessage(message);
     }
 
+    @Override
     public void sendClickPackage(ActivityPackage clickPackage) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_CLICK;
