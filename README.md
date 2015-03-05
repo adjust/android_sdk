@@ -6,7 +6,7 @@ adjust.com.
 ## Basic Installation
 
 These are the minimal steps required to integrate the adjust SDK into your
-Android project. We are going to assume that you use Eclipse for your Android
+Android project. We are going to assume that you use Android Studio for your Android
 development.
 
 ### 1. Get the SDK
@@ -313,12 +313,12 @@ event buffering with your `AdjustConfig` instance:
 config.setEventBufferingEnabled(true);
 ```
 
-### 13. Set listener for delegate notifications
+### 13. Set listener for attribution changed
 
 You can register a listener callback to be notified of tracker attribution
 changes. Due to the different sources considered for attribution, this
-information can not by provided synchronously. Follow these steps to implement
-the optional delegate protocol in your app delegate:
+information can not by provided synchronously. The simplest way is to create a single anonymous 
+listener:
 
 Please make sure to consider our [applicable attribution data policies.][attribution-data]
 
@@ -339,8 +339,8 @@ Please make sure to consider our [applicable attribution data policies.][attribu
     config.setOnAttributionChangedListener(this);
     ```
 
-The delegate function will get when the SDK receives final attribution data.
-Within the delegate function you have access to the `attribution` parameter.
+The listener function will be called when the SDK receives final attribution data.
+Within the listener function you have access to the `attribution` parameter.
 Here is a quick summary of its properties:
 
 - `String trackerToken` the tracker token of the current install.
