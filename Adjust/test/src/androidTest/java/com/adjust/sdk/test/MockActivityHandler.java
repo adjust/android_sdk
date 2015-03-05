@@ -73,8 +73,8 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setReferrer(String referrer, long clickTime) {
-        testLogger.test(prefix + "setReferrer, " + referrer + ". ClickTime, " + clickTime);
+    public void sendReferrer(String referrer, long clickTime) {
+        testLogger.test(prefix + "sendReferrer, " + referrer + ". ClickTime, " + clickTime);
     }
 
     @Override

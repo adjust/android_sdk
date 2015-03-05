@@ -1243,21 +1243,21 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         String prefix = "adjust_=bar";
         String incomplete = "adjust_foo=";
 
-        activityHandler.setReferrer(reftag, now);
+        activityHandler.sendReferrer(reftag, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(extraParams, now);
+        activityHandler.sendReferrer(extraParams, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(mixed, now);
+        activityHandler.sendReferrer(mixed, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(empty, now);
+        activityHandler.sendReferrer(empty, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(nullString, now);
+        activityHandler.sendReferrer(nullString, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(single, now);
+        activityHandler.sendReferrer(single, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(prefix, now);
+        activityHandler.sendReferrer(prefix, now);
         SystemClock.sleep(1000);
-        activityHandler.setReferrer(incomplete, now);
+        activityHandler.sendReferrer(incomplete, now);
         SystemClock.sleep(1000);
 
         // three click packages: reftag, extraParams and mixed

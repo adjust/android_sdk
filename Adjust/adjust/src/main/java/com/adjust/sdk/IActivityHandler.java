@@ -26,7 +26,7 @@ public interface IActivityHandler {
 
     public boolean tryUpdateAttribution(Attribution attribution);
 
-    public void setReferrer(String referrer, long clickTime);
+    public void sendReferrer(String referrer, long clickTime);
 
     public void setOfflineMode(boolean enabled);
 

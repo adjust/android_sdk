@@ -217,12 +217,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    public void setReferrer(String referrer, long clickTime) {
-        adjustConfig.referrer = referrer;
-        adjustConfig.referrerClickTime = clickTime;
-        sendReferrer(); // send to background queue to make sure that activityState is valid
-    }
-
     public void setAskingAttribution(boolean askingAttribution) {
         activityState.askingAttribution = askingAttribution;
         writeActivityState();
@@ -237,9 +231,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return attributionBuilder.buildAttributionPackage();
     }
 
-    private void sendReferrer() {
+    public void sendReferrer(String referrer, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SEND_REFERRER;
+        ReferrerClickTime referrerClickTime = new ReferrerClickTime(referrer, clickTime);
+        message.obj = referrerClickTime;
         sessionHandler.sendMessage(message);
     }
 
@@ -248,6 +244,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         long clickTime;
         UrlClickTime(Uri url, long clickTime) {
             this.url = url;
+            this.clickTime = clickTime;
+        }
+    }
+
+    private class ReferrerClickTime {
+        String referrer;
+        long clickTime;
+        ReferrerClickTime(String referrer, long clickTime) {
+            this.referrer = referrer;
             this.clickTime = clickTime;
         }
     }
@@ -308,7 +313,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     sessionHandler.readOpenUrlInternal(urlClickTime.url, urlClickTime.clickTime);
                     break;
                 case SEND_REFERRER:
-                    sessionHandler.sendReferrerInternal();
+                    ReferrerClickTime referrerClickTime = (ReferrerClickTime) message.obj;
+                    sessionHandler.sendReferrerInternal(referrerClickTime.referrer, referrerClickTime.clickTime);
                     break;
                 case UPDATE_STATUS:
                     sessionHandler.updateStatusInternal();
@@ -345,7 +351,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         if (adjustConfig.referrer != null) {
-            sendReferrer(); // send to background queue to make sure that activityState is valid
+            sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
         }
 
         readAttribution();
@@ -474,13 +480,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         getAttributionHandler().checkAttribution(jsonResponse);
     }
 
-    private void sendReferrerInternal() {
-        ActivityPackage clickPackage = buildQueryStringClickPackage(adjustConfig.referrer,
+    private void sendReferrerInternal(String referrer, long clickTime) {
+        ActivityPackage clickPackage = buildQueryStringClickPackage(referrer,
                 "reftag",
-                adjustConfig.referrerClickTime);
+                clickTime);
         if (clickPackage == null) {
             return;
         }
+
+        getAttributionHandler().getAttribution();
 
         packageHandler.sendClickPackage(clickPackage);
     }

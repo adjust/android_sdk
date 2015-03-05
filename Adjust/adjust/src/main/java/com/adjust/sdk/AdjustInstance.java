@@ -58,15 +58,16 @@ public class AdjustInstance {
         activityHandler.readOpenUrl(url, clickTime);
     }
 
-    public void setReferrer(String referrer) {
+    public void sendReferrer(String referrer) {
+        Log.d("Adjust","AdjustInstance sendReferrer," + referrer);
         long clickTime = System.currentTimeMillis();
-        // setReferrer might be triggered before Adjust
+        // sendReferrer might be triggered before Adjust
         if (activityHandler == null) {
             // save it to inject in the config before launch
             this.referrer = referrer;
             this.referrerClickTime = clickTime;
         } else {
-            activityHandler.setReferrer(referrer, clickTime);
+            activityHandler.sendReferrer(referrer, clickTime);
         }
     }
 
