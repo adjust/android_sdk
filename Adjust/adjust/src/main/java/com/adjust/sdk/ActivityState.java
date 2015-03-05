@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -142,11 +143,12 @@ public class ActivityState implements Serializable, Cloneable {
     }
 
     private static String stamp(long dateMillis) {
-        Date date = new Date(dateMillis);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(dateMillis);
         return String.format(Locale.US,
                 "%02d:%02d:%02d",
-                date.getHours(),
-                date.getMinutes(),
-                date.getSeconds());
+                calendar.HOUR_OF_DAY,
+                calendar.MINUTE,
+                calendar.SECOND);
     }
 }
