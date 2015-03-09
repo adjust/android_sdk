@@ -1,8 +1,7 @@
 apply plugin: 'android-library'
 buildscript {
   repositories {
-    mavenCentral()
-    mavenLocal()
+    jcenter()
   }
 
   dependencies {
@@ -11,12 +10,11 @@ buildscript {
 }
 
 repositories {
-  mavenCentral()
-  mavenLocal()
+  jcenter()
 }
 
 dependencies {
-  compile 'com.android.support:support-v4:19.1.+'
+  compile 'com.android.support:support-v4:21.0.+'
 }
 
 android {
@@ -39,10 +37,12 @@ android {
   }
 }
 
-task jar(type: Jar) {
-  from android.sourceSets.main.java
-}
-
-task wrapper(type: Wrapper) {
-  gradleVersion = '1.8'
+android.libraryVariants.all { variant ->
+    def jarTask = project.tasks.create(name:"jar${variant.name.capitalize()}", type: Jar) {
+            from            variant.javaCompile.destinationDir
+            exclude         "**/R.class"
+            exclude          "**/BuildConfig.class"
+    }
+    jarTask.dependsOn variant.javaCompile
+    artifacts.add('archives', jarTask);
 }
