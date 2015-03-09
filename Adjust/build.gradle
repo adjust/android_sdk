@@ -46,7 +46,3 @@ android.libraryVariants.all { variant ->
     jarTask.dependsOn variant.javaCompile
     artifacts.add('archives', jarTask);
 }
-
-task jar(type: Jar) {
-  from android.sourceSets.main.java
-}
