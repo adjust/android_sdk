@@ -36,7 +36,7 @@ public class Adjust {
         adjustInstance.onCreate(adjustConfig);
     }
 
-    public static void trackEvent(Event event) {
+    public static void trackEvent(AdjustEvent event) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.trackEvent(event);
     }

@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by pfms on 05/11/14.
  */
-public class Event {
+public class AdjustEvent {
     String eventToken;
     Double revenue;
     String currency;
@@ -15,7 +15,7 @@ public class Event {
 
     private static Logger logger = AdjustFactory.getLogger();
 
-    public Event(String eventToken) {
+    public AdjustEvent(String eventToken) {
         if (!checkEventToken(eventToken, logger)) return;
 
         this.eventToken = eventToken;

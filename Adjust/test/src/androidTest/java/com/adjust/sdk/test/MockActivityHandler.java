@@ -4,8 +4,8 @@ import android.net.Uri;
 
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.Attribution;
-import com.adjust.sdk.Event;
 import com.adjust.sdk.IActivityHandler;
 
 import org.json.JSONObject;
@@ -41,7 +41,7 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackEvent(Event event) {
+    public void trackEvent(AdjustEvent event) {
         testLogger.test(prefix + "trackEvent, " + event);
     }
 

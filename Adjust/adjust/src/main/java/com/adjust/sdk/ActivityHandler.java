@@ -108,7 +108,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void trackEvent(Event event) {
+    public void trackEvent(AdjustEvent event) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
         message.obj = event;
@@ -314,7 +314,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     sessionHandler.endInternal();
                     break;
                 case EVENT:
-                    Event event = (Event) message.obj;
+                    AdjustEvent event = (AdjustEvent) message.obj;
                     sessionHandler.trackEventInternal(event);
                     break;
                 case FINISH_TRACKING:
@@ -461,7 +461,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void trackEventInternal(Event event) {
+    private void trackEventInternal(AdjustEvent event) {
         if (!checkEvent(event)) return;
         if (!activityState.enabled) return;
 
@@ -735,7 +735,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
-    private boolean checkEvent(Event event) {
+    private boolean checkEvent(AdjustEvent event) {
         if (event == null) {
             logger.error("Event missing");
             return false;

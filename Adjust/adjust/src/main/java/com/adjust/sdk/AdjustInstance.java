@@ -27,7 +27,7 @@ public class AdjustInstance {
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
 
-    public void trackEvent(Event event) {
+    public void trackEvent(AdjustEvent event) {
         if (!checkActivityHandler()) return;
         activityHandler.trackEvent(event);
     }

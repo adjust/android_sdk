@@ -14,7 +14,7 @@ public interface IActivityHandler {
 
     public void trackSubsessionEnd();
 
-    public void trackEvent(Event event);
+    public void trackEvent(AdjustEvent event);
 
     public void finishedTrackingActivity(JSONObject jsonResponse);
 

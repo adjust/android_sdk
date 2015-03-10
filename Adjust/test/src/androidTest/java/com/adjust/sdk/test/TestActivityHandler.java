@@ -10,10 +10,10 @@ import android.test.mock.MockContext;
 import com.adjust.sdk.ActivityHandler;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Attribution;
 import com.adjust.sdk.Constants;
-import com.adjust.sdk.Event;
 import com.adjust.sdk.Logger.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 
@@ -137,7 +137,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         firstSessionStartTests(false, false);
 
         // create the first Event
-        Event firstEvent = new Event("event1");
+        AdjustEvent firstEvent = new AdjustEvent("event1");
 
         // add callback parameters
         firstEvent.addCallbackParameter("keyCall", "valueCall");
@@ -156,7 +156,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackEvent(firstEvent);
 
         // create the second Event
-        Event secondEvent = new Event("event2");
+        AdjustEvent secondEvent = new AdjustEvent("event2");
 
         // add empty revenue
         secondEvent.setRevenue(0, "USD");
@@ -165,7 +165,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackEvent(secondEvent);
 
         // create third Event
-        Event thirdEvent = new Event("event3");
+        AdjustEvent thirdEvent = new AdjustEvent("event3");
 
         // track third event
         activityHandler.trackEvent(thirdEvent);
@@ -297,7 +297,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         firstSessionStartTests(false, false);
 
         // create the first Event
-        Event firstEvent = new Event("event1");
+        AdjustEvent firstEvent = new AdjustEvent("event1");
 
         // track event
         activityHandler.trackEvent(firstEvent);
@@ -378,19 +378,19 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.isNull(invalidConfigactivityHandler);
 
         // event with null event token
-        Event nullEventToken = new Event(null);
+        AdjustEvent nullEventToken = new AdjustEvent(null);
 
         assertUtil.error("Missing Event Token");
         assertUtil.isFalse(nullEventToken.isValid());
 
         // event with wrong size
-        Event wrongEventTokenSize = new Event("eventXX");
+        AdjustEvent wrongEventTokenSize = new AdjustEvent("eventXX");
 
         assertUtil.error("Malformed Event Token 'eventXX'");
         assertUtil.isFalse(wrongEventTokenSize.isValid());
 
         // event
-        Event event = new Event("event1");
+        AdjustEvent event = new AdjustEvent("event1");
 
         // event with negative revenue
         event.setRevenue(-0.001, "EUR");
@@ -614,7 +614,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
-        activityHandler.trackEvent(new Event("event1"));
+        activityHandler.trackEvent(new AdjustEvent("event1"));
 
         SystemClock.sleep(3000);
 
@@ -676,7 +676,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.debug("Wrote Activity state: ec:0 sc:2 ssc:1");
 
         // track an event
-        activityHandler.trackEvent(new Event("event1"));
+        activityHandler.trackEvent(new AdjustEvent("event1"));
 
         SystemClock.sleep(1000);
 
@@ -1153,7 +1153,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
-        activityHandler.trackEvent(new Event("event1"));
+        activityHandler.trackEvent(new AdjustEvent("event1"));
 
         SystemClock.sleep(3000);
 

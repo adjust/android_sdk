@@ -7,7 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.adjust.sdk.Adjust;
-import com.adjust.sdk.Event;
+import com.adjust.sdk.AdjustEvent;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -54,13 +54,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
-        Event event = new Event("{eventToken}");
+        AdjustEvent event = new AdjustEvent("{eventToken}");
 
         Adjust.trackEvent(event);
     }
 
     public void onTrackRevenueEventClick(View v) {
-        Event event = new Event("{eventToken}");
+        AdjustEvent event = new AdjustEvent("{eventToken}");
 
         // add revenue 1 cent of an euro
         event.setRevenue(0.01, "EUR");
@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackEventWithCallbackClick(View v) {
-        Event event = new Event("{eventToken}");
+        AdjustEvent event = new AdjustEvent("{eventToken}");
 
         // add callback parameters to this parameter
         event.addCallbackParameter("key", "value");
@@ -78,7 +78,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackEventWithPartnerClick(View v) {
-        Event event = new Event("{eventToken}");
+        AdjustEvent event = new AdjustEvent("{eventToken}");
 
         // add partner parameters to this parameter
         event.addPartnerParameter("foo", "bar");

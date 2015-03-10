@@ -54,7 +54,7 @@ class PackageBuilder {
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage(Event event) {
+    public ActivityPackage buildEventPackage(AdjustEvent event) {
         Map<String, String> parameters = getDefaultParameters();
         addInt(parameters, "event_count", activityState.eventCount);
         addString(parameters, "event_token", event.eventToken);
@@ -213,7 +213,7 @@ class PackageBuilder {
         }
     }
 
-    private String getEventSuffix(Event event) {
+    private String getEventSuffix(AdjustEvent event) {
         if (event.revenue == null) {
             return String.format(" '%s'", event.eventToken);
         } else {
