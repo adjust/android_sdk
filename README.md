@@ -32,7 +32,11 @@ afterwards.
 ### 3. Add the adjust library to your project
 
 Open the `build.gradle` of your app and find the `dependencies` block. Add the
-following line into it: ``` compile project(":adjust") ```
+following line into it:
+
+```
+compile project(":adjust")
+```
 
 ![][build_graddle]
 
