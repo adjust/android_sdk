@@ -2,7 +2,7 @@ package com.adjust.sdk.test;
 
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.Attribution;
+import com.adjust.sdk.AdjustAttribution;
 
 import junit.framework.Assert;
 
@@ -36,7 +36,7 @@ public class TestActivityPackage {
     // click
     public String reftag;
     public String deepLinkParameters;
-    public Attribution attribution;
+    public AdjustAttribution attribution;
 
     public TestActivityPackage(ActivityPackage activityPackage) {
         this.activityPackage = activityPackage;
@@ -47,7 +47,7 @@ public class TestActivityPackage {
         environment = "sandbox";
         clientSdk = "android4.0.0";
         suffix = "";
-        attribution = new Attribution();
+        attribution = new AdjustAttribution();
     }
 
     public void testSessionPackage(int sessionCount) {

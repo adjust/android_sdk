@@ -25,7 +25,7 @@ class PackageBuilder {
 
     // reattributions
     Map<String, String> extraParameters;
-    Attribution attribution;
+    AdjustAttribution attribution;
     String reftag;
 
     private static Logger logger = AdjustFactory.getLogger();

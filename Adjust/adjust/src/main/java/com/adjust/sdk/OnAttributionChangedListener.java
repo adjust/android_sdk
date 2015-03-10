@@ -1,5 +1,5 @@
 package com.adjust.sdk;
 
 public interface OnAttributionChangedListener {
-    public void onAttributionChanged(Attribution attribution);
+    public void onAttributionChanged(AdjustAttribution attribution);
 }

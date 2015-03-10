@@ -9,10 +9,10 @@ import android.test.mock.MockContext;
 
 import com.adjust.sdk.ActivityHandler;
 import com.adjust.sdk.ActivityPackage;
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.Attribution;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.Logger.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -805,7 +805,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         TestActivityPackage testAttributionClickPackage = new TestActivityPackage(attributionClickPackage);
 
         // create the attribution
-        Attribution firstAttribution = new Attribution();
+        AdjustAttribution firstAttribution = new AdjustAttribution();
         firstAttribution.trackerName = "trackerValue";
         firstAttribution.campaign = "campaignValue";
         firstAttribution.adgroup = "adgroupValue";
@@ -836,7 +836,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         TestActivityPackage testMixedClickPackage = new TestActivityPackage(mixedClickPackage);
 
         // create the attribution
-        Attribution secondAttribution = new Attribution();
+        AdjustAttribution secondAttribution = new AdjustAttribution();
         secondAttribution.campaign = "campaignValue";
         secondAttribution.adgroup = "adgroupValue";
         secondAttribution.creative = "creativeValue";
@@ -863,7 +863,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 mockLogger.test("onAttributionChanged: " + attribution);
             }
         });
@@ -944,7 +944,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         firstSessionStartTests(false, false);
 
         JSONObject nullJsonObject = null;
-        Attribution nullAttribution = Attribution.fromJson(nullJsonObject);
+        AdjustAttribution nullAttribution = AdjustAttribution.fromJson(nullJsonObject);
 
         // check if Attribution wasn't built
         assertUtil.isNull(nullAttribution);
@@ -959,13 +959,13 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         } catch (JSONException e) {
             fail(e.getMessage());
         }
-        Attribution emptyAttribution = Attribution.fromJson(emptyJsonResponse);
+        AdjustAttribution emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
 
         // check that updates attribution
         assertUtil.isTrue(firstActivityHandler.tryUpdateAttribution(emptyAttribution));
         assertUtil.debug("Wrote Attribution: tt:null tn:null net:null cam:null adg:null cre:null");
 
-        emptyAttribution = Attribution.fromJson(emptyJsonResponse);
+        emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
 
         // check that it does not update the attribution
         assertUtil.isFalse(firstActivityHandler.tryUpdateAttribution(emptyAttribution));
@@ -981,7 +981,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 mockLogger.test("onAttributionChanged: " + attribution);
             }
         });
@@ -1012,7 +1012,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         } catch (JSONException e) {
             fail(e.getMessage());
         }
-        Attribution firstAttribution = Attribution.fromJson(firstAttributionJson);
+        AdjustAttribution firstAttribution = AdjustAttribution.fromJson(firstAttributionJson);
 
         //check that it updates
         assertUtil.isTrue(restartActivityHandler.tryUpdateAttribution(firstAttribution));
@@ -1037,7 +1037,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 mockLogger.test("onAttributionChanged: " + attribution);
             }
         });
@@ -1068,7 +1068,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         } catch (JSONException e) {
             fail(e.getMessage());
         }
-        Attribution secondAttribution = Attribution.fromJson(secondAttributionJson);
+        AdjustAttribution secondAttribution = AdjustAttribution.fromJson(secondAttributionJson);
 
         //check that it updates
         assertUtil.isTrue(secondRestartActivityHandler.tryUpdateAttribution(secondAttribution));
@@ -1342,7 +1342,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 mockLogger.test("onAttributionChanged " + attribution);
             }
         });
@@ -1404,7 +1404,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         } catch (JSONException e) {
             fail(e.getMessage());
         }
-        Attribution attribution = Attribution.fromJson(jsonAttribution);
+        AdjustAttribution attribution = AdjustAttribution.fromJson(jsonAttribution);
 
         // update the attribution
         activityHandler.tryUpdateAttribution(attribution);
@@ -1448,7 +1448,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 mockLogger.test("onAttributionChanged " + attribution);
             }
         });

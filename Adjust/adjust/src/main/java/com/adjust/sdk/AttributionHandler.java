@@ -89,7 +89,7 @@ public class AttributionHandler implements IAttributionHandler {
         if (jsonResponse == null) return;
 
         JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
-        Attribution attribution = Attribution.fromJson(attributionJson);
+        AdjustAttribution attribution = AdjustAttribution.fromJson(attributionJson);
 
         int timerMilliseconds = jsonResponse.optInt("ask_in", -1);
 

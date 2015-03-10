@@ -4,8 +4,8 @@ import android.app.Application;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.Attribution;
 import com.adjust.sdk.Logger.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 
@@ -33,12 +33,13 @@ public class GlobalApplication extends Application {
         // set attribution delegate
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 Log.d("example", "attribution: " + attribution.toString());
             }
         });
 
         Adjust.onCreate(config);
+
 
         // register onResume and onPause events of all activities
         // for applications with minimum support of Android v4 or greater

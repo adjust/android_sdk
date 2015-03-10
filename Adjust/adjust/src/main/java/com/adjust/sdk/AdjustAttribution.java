@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * Created by pfms on 07/11/14.
  */
-public class Attribution implements Serializable {
+public class AdjustAttribution implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public String trackerToken;
@@ -17,10 +17,10 @@ public class Attribution implements Serializable {
     public String adgroup;
     public String creative;
 
-    public static Attribution fromJson(JSONObject jsonObject) {
+    public static AdjustAttribution fromJson(JSONObject jsonObject) {
         if (jsonObject == null) return null;
 
-        Attribution attribution = new Attribution();
+        AdjustAttribution attribution = new AdjustAttribution();
 
         attribution.trackerToken = jsonObject.optString("tracker_token", null);
         attribution.trackerName = jsonObject.optString("tracker_name", null);
@@ -36,7 +36,7 @@ public class Attribution implements Serializable {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
-        Attribution otherAttribution = (Attribution) other;
+        AdjustAttribution otherAttribution = (AdjustAttribution) other;
 
         if (!equalString(trackerToken,  otherAttribution.trackerToken)) return false;
         if (!equalString(trackerName,   otherAttribution.trackerName)) return false;

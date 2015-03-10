@@ -3,9 +3,9 @@ package com.adjust.sdk.test;
 import android.net.Uri;
 
 import com.adjust.sdk.ActivityPackage;
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.Attribution;
 import com.adjust.sdk.IActivityHandler;
 
 import org.json.JSONObject;
@@ -67,7 +67,7 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public boolean tryUpdateAttribution(Attribution attribution) {
+    public boolean tryUpdateAttribution(AdjustAttribution attribution) {
         testLogger.test(prefix + "tryUpdateAttribution, " + attribution);
         return false;
     }

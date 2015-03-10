@@ -55,7 +55,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
-    private Attribution attribution;
+    private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -196,7 +196,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public boolean tryUpdateAttribution(Attribution attribution) {
+    public boolean tryUpdateAttribution(AdjustAttribution attribution) {
         if (attribution == null) return false;
 
         if (attribution.equals(this.attribution)) {
@@ -208,7 +208,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    private void saveAttribution(Attribution attribution) {
+    private void saveAttribution(AdjustAttribution attribution) {
         this.attribution = attribution;
         writeAttribution();
     }
@@ -530,7 +530,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         Map<String, String> queryStringParameters = new HashMap<String, String>();
-        Attribution queryStringAttribution = new Attribution();
+        AdjustAttribution queryStringAttribution = new AdjustAttribution();
         boolean hasAdjustTags = false;
 
         String[] queryPairs = queryString.split("&");
@@ -556,7 +556,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private boolean readQueryString(String queryString,
                                     Map<String, String> extraParameters,
-                                    Attribution queryStringAttribution) {
+                                    AdjustAttribution queryStringAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
 
@@ -576,7 +576,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    private boolean trySetAttribution(Attribution queryStringAttribution,
+    private boolean trySetAttribution(AdjustAttribution queryStringAttribution,
                                       String key,
                                       String value) {
         if (key.equals("tracker")) {

@@ -24,7 +24,7 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
-    public boolean tryUpdateAttribution(Attribution attribution);
+    public boolean tryUpdateAttribution(AdjustAttribution attribution);
 
     public void sendReferrer(String referrer, long clickTime);
 
