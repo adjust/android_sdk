@@ -59,7 +59,6 @@ public class AdjustInstance {
     }
 
     public void sendReferrer(String referrer) {
-        Log.d("Adjust","AdjustInstance sendReferrer," + referrer);
         long clickTime = System.currentTimeMillis();
         // sendReferrer might be triggered before Adjust
         if (activityHandler == null) {
