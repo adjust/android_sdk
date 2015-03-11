@@ -3,8 +3,8 @@ package com.adjust.sdk.test;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.adjust.sdk.ILogger;
 import com.adjust.sdk.LogLevel;
-import com.adjust.sdk.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.adjust.sdk.Constants.LOGTAG;
 
-public class MockLogger implements Logger {
+public class MockLogger implements ILogger {
 
     private StringBuffer logBuffer;
     private SparseArray<ArrayList<String>> logMap;

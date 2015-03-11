@@ -13,7 +13,7 @@ public class AdjustEvent {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
-    private static Logger logger = AdjustFactory.getLogger();
+    private static ILogger logger = AdjustFactory.getLogger();
 
     public AdjustEvent(String eventToken) {
         if (!checkEventToken(eventToken, logger)) return;
@@ -62,7 +62,7 @@ public class AdjustEvent {
         return eventToken != null;
     }
 
-    private static boolean checkEventToken(String eventToken, Logger logger) {
+    private static boolean checkEventToken(String eventToken, ILogger logger) {
         if (eventToken == null) {
             logger.error("Missing Event Token");
             return false;

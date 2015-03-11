@@ -38,7 +38,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
     private IPackageHandler packageHandler;
     private HttpClient httpClient;
-    private Logger logger;
+    private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
         super(Constants.LOGTAG, MIN_PRIORITY);

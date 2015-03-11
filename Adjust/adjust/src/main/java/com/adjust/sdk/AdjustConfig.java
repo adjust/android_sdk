@@ -72,7 +72,7 @@ public class AdjustConfig {
     }
 
     private static boolean checkContext(Context context) {
-        Logger logger = AdjustFactory.getLogger();
+        ILogger logger = AdjustFactory.getLogger();
         if (context == null) {
             logger.error("Missing context");
             return false;
@@ -87,7 +87,7 @@ public class AdjustConfig {
     }
 
     private static boolean checkAppToken(String appToken) {
-        Logger logger = AdjustFactory.getLogger();
+        ILogger logger = AdjustFactory.getLogger();
         if (appToken == null) {
             logger.error("Missing App Token.");
             return false;
@@ -102,7 +102,7 @@ public class AdjustConfig {
     }
 
     private static boolean checkEnvironment(String environment) {
-        Logger logger = AdjustFactory.getLogger();
+        ILogger logger = AdjustFactory.getLogger();
         if (environment == null) {
             logger.error("Missing environment");
             return false;

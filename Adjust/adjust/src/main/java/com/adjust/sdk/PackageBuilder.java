@@ -28,7 +28,7 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
 
-    private static Logger logger = AdjustFactory.getLogger();
+    private static ILogger logger = AdjustFactory.getLogger();
 
     public PackageBuilder(AdjustConfig adjustConfig,
                           DeviceInfo deviceInfo,

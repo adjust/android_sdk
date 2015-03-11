@@ -11,7 +11,7 @@ public class AdjustInstance {
     private long referrerClickTime;
     private ActivityHandler activityHandler;
 
-    private static Logger getLogger() {
+    private static ILogger getLogger() {
         return AdjustFactory.getLogger();
     }
 

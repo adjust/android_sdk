@@ -9,20 +9,17 @@
 
 package com.adjust.sdk;
 
-import android.util.Log;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
     private transient String readErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
-    private transient Logger logger;
+    private transient ILogger logger;
 
     // persistent data
     protected String uuid;

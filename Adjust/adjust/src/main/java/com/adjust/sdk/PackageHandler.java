@@ -43,7 +43,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private AtomicBoolean isSending;
     private boolean paused;
     private Context context;
-    private Logger logger;
+    private ILogger logger;
 
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,

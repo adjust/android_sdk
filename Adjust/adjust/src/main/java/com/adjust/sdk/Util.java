@@ -80,7 +80,7 @@ public class Util {
     }
 
     public static <T> T readObject(Context context, String filename, String objectName) {
-        Logger logger = AdjustFactory.getLogger();
+        ILogger logger = AdjustFactory.getLogger();
         try {
             FileInputStream inputStream = context.openFileInput(filename);
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
@@ -113,7 +113,7 @@ public class Util {
     }
 
     public static <T> void writeObject(T object, Context context, String filename, String objectName) {
-        Logger logger = AdjustFactory.getLogger();
+        ILogger logger = AdjustFactory.getLogger();
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
@@ -133,7 +133,7 @@ public class Util {
         }
     }
 
-    public static String parseResponse(HttpResponse httpResponse, Logger logger) {
+    public static String parseResponse(HttpResponse httpResponse, ILogger logger) {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             httpResponse.getEntity().writeTo(out);
@@ -147,7 +147,7 @@ public class Util {
         }
     }
 
-    public static JSONObject parseJsonResponse(HttpResponse httpResponse, Logger logger) {
+    public static JSONObject parseJsonResponse(HttpResponse httpResponse, ILogger logger) {
         if (httpResponse == null) {
             return null;
         }

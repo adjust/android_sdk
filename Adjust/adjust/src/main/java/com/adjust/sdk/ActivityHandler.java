@@ -47,7 +47,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private SessionHandler sessionHandler;
     private IPackageHandler packageHandler;
     private ActivityState activityState;
-    private Logger logger;
+    private ILogger logger;
     private static ScheduledExecutorService timer;
     private boolean enabled;
     private boolean shouldGetAttribution;

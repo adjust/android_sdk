@@ -11,7 +11,7 @@ public class AdjustFactory {
     private static IRequestHandler requestHandler = null;
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
-    private static Logger logger = null;
+    private static ILogger logger = null;
     private static HttpClient httpClient = null;
 
     private static long timerInterval = -1;
@@ -37,10 +37,10 @@ public class AdjustFactory {
         return requestHandler;
     }
 
-    public static Logger getLogger() {
+    public static ILogger getLogger() {
         if (logger == null) {
             // Logger needs to be "static" to retain the configuration throughout the app
-            logger = new LogCatLogger();
+            logger = new Logger();
         }
         return logger;
     }
@@ -106,7 +106,7 @@ public class AdjustFactory {
         AdjustFactory.requestHandler = requestHandler;
     }
 
-    public static void setLogger(Logger logger) {
+    public static void setLogger(ILogger logger) {
         AdjustFactory.logger = logger;
     }
 
