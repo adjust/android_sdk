@@ -40,6 +40,13 @@ compile project(":adjust")
 
 ![][build_graddle]
 
+Alternatively, you can use the maven repository instead of downloading and importing
+the adjust module:
+
+```
+compile 'com.adjust.sdk:adjust-android:4.0.0'
+```
+
 ### 4. Add permissions
 
 #### Google Play Store
