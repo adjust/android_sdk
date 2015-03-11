@@ -157,7 +157,7 @@ In your `AndroidManifest.xml`, add the following `receiver` tag inside the
 
 ```xml
 <receiver
-    android:name="com.adjust.sdk.ReferrerReceiver"
+    android:name="com.adjust.sdk.AdjustReferrerReceiver"
     android:exported="true" >
     <intent-filter>
         <action android:name="com.android.vending.INSTALL_REFERRER" />
