@@ -309,7 +309,28 @@ these parameters won't even be read.
 You can read more about using URL callbacks, including a full list of available
 values, in our [callbacks guide][callbacks-guide].
 
-### 10. Add tracking of revenue
+
+### 10. Partner parameters
+
+You can also add parameters to be transmitted to network partners, for the
+integrations that have been activated in your adjust dashboard.
+
+This works similarly to the callback parameters mentioned above, but can be
+added by calling the `addPartnerParameter` method on your `AdjustEvent` instance.
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.addPartnerParameter("key", "value");
+event.addPartnerParameter("foo", "bar");
+
+Adjust.trackEvent(event);
+```
+
+You can read more about special partners and these integrations in our [guide
+to special partners.][special-partners]
+
+### 11. Add tracking of revenue
 
 If your users can generate revenue by tapping on advertisements or making
 in-app purchases you can track those revenues with events. Lets say a tap is
@@ -330,7 +351,7 @@ that you have set in your adjust dashboard.**
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
-### 11. Set up deep link reattributions
+### 12. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential if
@@ -350,7 +371,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 12. Enable event buffering
+### 13. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
@@ -360,7 +381,7 @@ event buffering with your `AdjustConfig` instance:
 config.setEventBufferingEnabled(true);
 ```
 
-### 13. Set listener for attribution changed
+### 14. Set listener for attribution changed
 
 You can register a listener callback to be notified of tracker attribution
 changes. Due to the different sources considered for attribution, this
@@ -398,7 +419,7 @@ parameter.  Here is a quick summary of its properties:
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
 
-### 14. Disable tracking
+### 15. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
@@ -411,25 +432,6 @@ Adjust.setEnabled(false);
 You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
-
-### 15. Partner parameters
-
-You can also add parameters to be transmitted to network partners, for the
-integrations that have been activated in your adjust dashboard.
-
-This works similarly to the callback parameters mentioned above, but can be
-added by calling the `addPartnerParameter` method on your `AdjustEvent` instance.
-
-```java
-AdjustEvent event = new AdjustEvent("abc123");
-
-event.addPartnerParameter("key", "value");
-
-Adjust.trackEvent(event);
-```
-
-You can read more about special partners and these integrations in our [guide
-to special partners.][special-partners]
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/adjust_android_sdk/releases
