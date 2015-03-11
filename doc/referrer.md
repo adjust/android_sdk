@@ -9,7 +9,7 @@ public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // Adjust
-        new ReferrerReceiver().onReceive(context, intent);
+        new AdjustReferrerReceiver().onReceive(context, intent);
 
         // Google Analytics
         new CampaignTrackingReceiver().onReceive(context, intent);
