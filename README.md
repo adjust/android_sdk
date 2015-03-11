@@ -47,7 +47,29 @@ compile project(":adjust")
 Since the 1st of August of 2014, apps in the Google Play Store must use the
 [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow
 the adjust SDK to use the Google Advertising ID, you must integrate the [Google
-Play Services][google_play_services].
+Play Services][google_play_services]. If you haven't done it yet, follow this steps:
+
+1. Open the `build.gradle` of your app and find the `dependencies` block. Add the
+following line into it:
+
+    ```
+    compile 'com.google.android.gms:play-services:6.5.87'
+    ```
+
+    You can use instead the ads subset of the Google Play Services, to minimize the [dex 65k limit][multidex] issue.
+
+    ```
+    compile 'com.google.android.gms:play-services-ads:6.5.87'
+    ```
+
+2. In the Package Explorer open the `AndroidManifest.xml` of your Android project.
+Add the following `meta-data` tag inside the `<application>` element.
+
+
+    ```xml
+    <meta-data android:name="com.google.android.gms.version"
+           android:value="@integer/google_play_services_version" />
+    ```
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tag for `INTERNET` if it's not present already.
@@ -410,13 +432,14 @@ to special partners.][special-partners]
 [log_message]:   https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/08_log_message.png
 [referrer]:      doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[google_play_services]: http://developer.android.com/google/play-services/index.html
+[google_play_services]: http://developer.android.com/google/play-services/setup.html
 [android_application]:  http://developer.android.com/reference/android/app/Application.html
 [application_name]:     http://developer.android.com/guide/topics/manifest/application-element.html#nm
 [google_ad_id]:         https://developer.android.com/google/play-services/id.html
 [callbacks-guide]:      https://docs.adjust.com/en/callbacks
 [event-tracking]:       https://docs.adjust.com/en/event-tracking
 [special-partners]:     https://docs.adjust.com/en/special-partners
+[multidex]:             https://developer.android.com/tools/building/multidex.html
 
 ## License
 
