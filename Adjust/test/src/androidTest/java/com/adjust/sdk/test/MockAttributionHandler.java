@@ -37,18 +37,6 @@ public class MockAttributionHandler implements IAttributionHandler {
         testLogger.test(prefix + "checkAttribution");
 
         this.lastJsonResponse = jsonResponse;
-        /*
-        if (activityHandler == null) {
-            return;
-        }
-
-        JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
-        Attribution attribution = Attribution.fromJson(attributionJson);
-
-        if (activityHandler.updateAttribution(attribution)) {
-            activityHandler.launchAttributionListener();
-        }
-        */
     }
 
     @Override
