@@ -79,7 +79,7 @@ aren't present already.
 
 If you are using Proguard, add these lines to your Proguard file:
 
-````
+```
 -keep class com.adjust.sdk.** { *; }
 ```
 
