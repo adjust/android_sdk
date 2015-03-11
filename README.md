@@ -233,7 +233,7 @@ every tap on a button. You would have to create a new event token in your
 method you could then add the following lines to track the click:
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 Adjust.trackEvent(event);
 ```
 
@@ -252,7 +252,7 @@ For example, suppose you have registered the URL
 `http://www.adjust.com/callback` then track an event like this:
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 
 event.addCallbackParameter("key", "value");
 event.addCallbackParameter("foo", "bar");
@@ -283,7 +283,7 @@ in-app purchases you can track those revenues with events. Lets say a tap is
 worth one Euro cent. You could then track the revenue event like this:
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 event.setRevenue(0.01, "EUR");
 Adjust.trackEvent(event);
 ```
@@ -385,10 +385,10 @@ You can also add parameters to be transmitted to network partners, for the
 integrations that have been activated in your adjust dashboard.
 
 This works similarly to the callback parameters mentioned above, but can be
-added by calling the `addPartnerParameter` method on your `ADJEvent` instance.
+added by calling the `addPartnerParameter` method on your `AdjustEvent` instance.
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 
 event.addPartnerParameter("key", "value");
 
