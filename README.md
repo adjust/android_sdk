@@ -342,7 +342,7 @@ policies.][attribution-data]
     ```java
     config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
         @Override
-        public void onAttributionChanged(Attribution attribution) {
+        public void onAttributionChanged(AdjustAttribution attribution) {
         }
     });
     ```
