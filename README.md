@@ -111,11 +111,22 @@ To start with, we'll set up basic session tracking.
 
 #### Basic Setup
 
-Open or create a global android [Application][android_application] class. If
-you are creating one, make sure to add it to the `<application>` tag in the
-`AndroidManifest.xml` file, under the tag [<android:name>][application_name].
-Inside the `Application` class, use the `onCreate` method to add the code that
-initializes the adjust SDK:
+We recommend using a global android [Application][android_application] class to
+start the SDK. If don't already have one in your app, follow this steps:
+
+1. Create one a class that extends `Application`.
+2. Open the `AndroidManifest.xml` file and locate the `<application>` element.
+3. Add the attribute `android:name` with the value equal to the created class name prefixed with a full stop, `.`.
+
+Our example app has an `Application` class named `GlobalApplication`, so the manifest file is configured as:
+```xml
+ <application
+   ...
+   android:name=".GlobalApplication">
+     ...
+</application>
+```
+With your `Application` class, use the `onCreate` method to add the code that initializes the adjust SDK:
 
 ```java
 import com.adjust.sdk.Adjust;
