@@ -3,6 +3,7 @@ package com.adjust.sdk.test;
 import android.util.Log;
 import android.util.SparseArray;
 
+import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.Logger;
 
 import java.util.ArrayList;

@@ -14,7 +14,7 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Constants;
-import com.adjust.sdk.Logger.LogLevel;
+import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 
 import org.json.JSONException;

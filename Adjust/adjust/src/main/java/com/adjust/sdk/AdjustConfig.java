@@ -9,7 +9,7 @@ public class AdjustConfig {
     Context context;
     String appToken;
     String environment;
-    Logger.LogLevel logLevel;
+    LogLevel logLevel;
     String sdkPrefix;
     Boolean eventBufferingEnabled;
     String defaultTracker;
@@ -31,7 +31,7 @@ public class AdjustConfig {
         this.environment = environment;
 
         // default values
-        this.logLevel = Logger.LogLevel.INFO;
+        this.logLevel = LogLevel.INFO;
         this.eventBufferingEnabled = false;
     }
 
@@ -39,7 +39,7 @@ public class AdjustConfig {
         this.eventBufferingEnabled = eventBufferingEnabled;
     }
 
-    public void setLogLevel(Logger.LogLevel logLevel) {
+    public void setLogLevel(LogLevel logLevel) {
         this.logLevel = logLevel;
     }
 

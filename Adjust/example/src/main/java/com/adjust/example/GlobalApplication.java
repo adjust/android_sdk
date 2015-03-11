@@ -6,7 +6,7 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.Logger.LogLevel;
+import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 
 /**

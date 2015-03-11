@@ -2,12 +2,12 @@ package com.adjust.sdk.test;
 
 import junit.framework.Assert;
 
-import static com.adjust.sdk.Logger.LogLevel.ASSERT;
-import static com.adjust.sdk.Logger.LogLevel.DEBUG;
-import static com.adjust.sdk.Logger.LogLevel.ERROR;
-import static com.adjust.sdk.Logger.LogLevel.INFO;
-import static com.adjust.sdk.Logger.LogLevel.VERBOSE;
-import static com.adjust.sdk.Logger.LogLevel.WARN;
+import static com.adjust.sdk.LogLevel.ASSERT;
+import static com.adjust.sdk.LogLevel.DEBUG;
+import static com.adjust.sdk.LogLevel.ERROR;
+import static com.adjust.sdk.LogLevel.INFO;
+import static com.adjust.sdk.LogLevel.VERBOSE;
+import static com.adjust.sdk.LogLevel.WARN;
 
 /**
  * Created by pfms on 09/01/15.
