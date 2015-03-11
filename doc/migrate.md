@@ -1,24 +1,11 @@
 ## Migrate your adjust SDK for Android to 4.0.0 from 3.6.2
 
-### `Application` class
+### The Application class
 
 One major change is how the adjust SDK is initialized. You should now use an 
 global android [Application][android_application] class instead of the manifest file.
 
-If you don't already use one for your app, The steps to create and use one are:
-
-1. Create one a class that extends `Application`.  
-2. Open the `AndroidManifest.xml` file and locate the `<application>` element.
-3. Add the attribute `android:name` with the value equal to the created class name preffixed with a comma, `.`.
-
-Our example app has an `Application` class named `GlobalApplication`, so the manifest file is configured as:
-```xml
- <application 
-   ...
-   android:name=".GlobalApplication">
-     ...
-</application>
-```
+If you don't already use one for your app, follow the steps in our [guide][basic-setup].
 
 A second major change is how to configure the adjust SDK. All initial setup is now done with
 a new config object. Inside the `onCreate` method of the `Application` class:
@@ -259,5 +246,5 @@ meaningful at all times! Especially if you are tracking revenue.
 [settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
 [android_application]:  http://developer.android.com/reference/android/app/Application.html
 [application_name]:     http://developer.android.com/guide/topics/manifest/application-element.html#nm
-
+[basic-setup]:          https://github.com/adjust/android_sdk/tree/master#basic-setup
 
