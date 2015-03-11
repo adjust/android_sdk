@@ -62,7 +62,7 @@ Adjust.trackEvent("abc123", parameters);
 ##### After
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 event.addCallbackParameter("key", "value");
 event.addCallbackParameter("foo", "bar");
 Adjust.trackEvent(event);
@@ -89,7 +89,7 @@ Adjust.trackRevenue(1.0, "abc123");
 ##### After
 
 ```java
-Event event = new Event("abc123");
+AdjustEvent event = new AdjustEvent("abc123");
 event.setRevenue(0.01, "EUR");
 Adjust.trackEvent(event);
 ```
