@@ -10,6 +10,7 @@
 package com.adjust.sdk;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -192,5 +193,10 @@ public class Util {
         HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
         HttpConnectionParams.setSoTimeout(httpParams, Constants.SOCKET_TIMEOUT);
         return AdjustFactory.getHttpClient(httpParams);
+    }
+
+    public static boolean checkPermission(Context context, String permission) {
+        int result = context.checkCallingOrSelfPermission(permission);
+        return result == PackageManager.PERMISSION_GRANTED;
     }
 }

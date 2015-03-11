@@ -1,7 +1,6 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.content.pm.PackageManager;
 
 /**
  * Created by pfms on 06/11/14.
@@ -79,13 +78,9 @@ public class AdjustConfig {
             return false;
         }
 
-        if (!checkPermission(context, android.Manifest.permission.INTERNET)) {
+        if (!Util.checkPermission(context, android.Manifest.permission.INTERNET)) {
             logger.error("Missing permission: INTERNET");
             return false;
-        }
-
-        if (!checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            logger.warn("Missing permission: ACCESS_WIFI_STATE");
         }
 
         return true;
@@ -130,10 +125,4 @@ public class AdjustConfig {
         logger.error("Unknown environment '%s'", environment);
         return false;
     }
-
-    private static boolean checkPermission(Context context, String permission) {
-        int result = context.checkCallingOrSelfPermission(permission);
-        return result == PackageManager.PERMISSION_GRANTED;
-    }
-
 }
