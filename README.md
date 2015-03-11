@@ -214,11 +214,11 @@ methods every time any Activity resumes or pauses. Otherwise the SDK might miss
 a session start or session end. In order to do so you should follow these steps
 for **each** Activity of your app:
 
-- Open the source file of your Activity.
-- Add the `import` statement at the top of the file.
-- In your Activity's `onResume` method call `Adjust.onResume`. Create the
+1. Open the source file of your Activity.
+2. Add the `import` statement at the top of the file.
+3. In your Activity's `onResume` method call `Adjust.onResume`. Create the
   method if needed.
-- In your Activity's `onPause` method call `Adjust.onPause`. Create the method
+4. In your Activity's `onPause` method call `Adjust.onPause`. Create the method
   if needed.
 
 After these steps your activity should look like this:
