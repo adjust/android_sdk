@@ -229,7 +229,7 @@ import com.adjust.sdk.Adjust;
 public class YourActivity extends Activity {
     protected void onResume() {
         super.onResume();
-        Adjust.onResume(this);
+        Adjust.onResume();
     }
     protected void onPause() {
         super.onPause();
