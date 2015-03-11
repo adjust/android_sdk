@@ -57,9 +57,6 @@ class DeviceInfo {
     String screenDensity;
     String displayWidth;
     String displayHeight;
-    String networkType;
-    String networkSubtype;
-    String simOperator;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
