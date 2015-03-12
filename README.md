@@ -36,6 +36,8 @@ module name `:adjust` appears before finishing.
 The `adjust` module should be imported into your Android Studio project
 afterwards.
 
+![][imported_module]
+
 ### <a id="step3"></a>3. Add the adjust library to your project
 
 Open the `build.gradle` file of your app and find the `dependencies` block. Add
@@ -45,7 +47,7 @@ the following line:
 compile project(":adjust")
 ```
 
-![][build_graddle]
+![][gradle_adjust]
 
 If you are using Maven, add this line instead:
 
@@ -75,6 +77,8 @@ following line:
     compile 'com.google.android.gms:play-services-ads:6.5.87'
     ```
 
+    ![][gradle_gps]
+
 2. In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the following `meta-data` tag inside the `<application>` element.
 
@@ -83,6 +87,8 @@ Add the following `meta-data` tag inside the `<application>` element.
     <meta-data android:name="com.google.android.gms.version"
                android:value="@integer/google_play_services_version" />
     ```
+
+    ![][manifest_gps]
 
 ### 5. Add permissions
 
@@ -97,7 +103,7 @@ Add the `uses-permission` tag for `INTERNET` if it's not present already.
 If your app is *only* for the Google Play Store, you can remove the
 `ACCESS_WIFI_STATE` permission.
 
-![][permissions]
+![][manifest_permissions]
 
 If you are using Proguard, add these lines to your Proguard file:
 
@@ -109,6 +115,8 @@ If you are using Proguard, add these lines to your Proguard file:
 
 If you are *not* targeting the Google Play Store, you can remove the
 `com.google.android.gms` rules.
+
+![][proguard]
 
 ### 6. Add broadcast receiver
 
@@ -144,17 +152,21 @@ We recommend using a global android [Application][android_application] class to
 initialize the SDK. If don't have one in your app already, follow these steps:
 
 1. Create a class that extends `Application`.
+    ![][application_class]
+
 2. Open the `AndroidManifest.xml` file of your app and locate the `<application>` element.
 3. Add the attribute `android:name` and set it to the name of your new application class pefixed by a dot.
 
-In our example app we use an `Application` class named `GlobalApplication`, so the manifest file is configured as:
-```xml
- <application
-   android:name=".GlobalApplication"
-   ... >
-     ...
-</application>
-```
+    In our example app we use an `Application` class named `GlobalApplication`, so the manifest file is configured as:
+    ```xml
+     <application
+       android:name=".GlobalApplication"
+       ... >
+         ...
+    </application>
+    ```
+
+    ![][manifest_application]
 
 In your `Application` class find or create the `onCreate` method and add the
 following code to initialize the adjust SDK:
@@ -176,7 +188,7 @@ public class YourApplicationClass extends Application {
 }
 ```
 
-![][settings]
+![][application_config]
 
 Replace `{YourAppToken}` with your app token. You can find this in your
 [dashboard].
@@ -452,14 +464,21 @@ You can check if the adjust SDK is currently enabled by calling the function
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/adjust_android_sdk/releases
-[import_module]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/01_import_module.png
-[select_module]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/02_select_module.png
-[build_graddle]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/03_build_gradle.png
-[permissions]:   https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/04_permissions.png
-[settings]:      https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/05_settings.png
-[receiver]:      https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/06_receiver.png
-[activity]:      https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/07_activity.png
-[log_message]:   https://raw.github.com/adjust/adjust_sdk/master/Resources/android/v4/08_log_message.png
+[import_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
+[select_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
+[imported_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
+[gradle_adjust]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
+[gradle_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
+[manifest_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
+[manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
+[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard.png
+[receiver]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
+[application_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
+[manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
+[application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
+[activity]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
+[log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
+
 [referrer]:      doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
