@@ -7,7 +7,9 @@ adjust.com.
 
 These are the minimal steps required to integrate the adjust SDK into your
 Android project. We are going to assume that you use Android Studio for your
-Android development.
+Android development and target an Android API level 9 (Gingerbread) or later.
+
+If you're using the [Maven Repository][maven] you can start with [step 3](#step3).
 
 ### 1. Get the SDK
 
@@ -29,10 +31,10 @@ module name `:adjust` appears before finishing.
 The `adjust` module should be imported into your Android Studio project
 afterwards.
 
-### 3. Add the adjust library to your project
+### <a id="step3"></a>3. Add the adjust library to your project
 
-Open the `build.gradle` of your app and find the `dependencies` block. Add the
-following line into it:
+Open the `build.gradle` file of your app and find the `dependencies` block. Add
+the following line:
 
 ```
 compile project(":adjust")
@@ -40,30 +42,29 @@ compile project(":adjust")
 
 ![][build_graddle]
 
-Alternatively, you can use the maven repository instead of downloading and importing
-the adjust module:
+If you are using Maven, add this line instead:
 
 ```
 compile 'com.adjust.sdk:adjust-android:4.0.0'
 ```
 
-### 4. Add permissions
-
-#### Google Play Store
+### 4. Add Google Play Services
 
 Since the 1st of August of 2014, apps in the Google Play Store must use the
 [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow
 the adjust SDK to use the Google Advertising ID, you must integrate the [Google
-Play Services][google_play_services]. If you haven't done it yet, follow this steps:
+Play Services][google_play_services]. If you haven't done this yet, follow
+these steps:
 
-1. Open the `build.gradle` of your app and find the `dependencies` block. Add the
-following line into it:
+1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the
+following line:
 
     ```
     compile 'com.google.android.gms:play-services:6.5.87'
     ```
 
-    You can use instead the ads subset of the Google Play Services, to minimize the [dex 65k limit][multidex] issue.
+    If you don't need all of the Google Play Services, you can avoid [dex
+    issues][multidex] by using only the ads part:
 
     ```
     compile 'com.google.android.gms:play-services-ads:6.5.87'
@@ -75,15 +76,23 @@ Add the following `meta-data` tag inside the `<application>` element.
 
     ```xml
     <meta-data android:name="com.google.android.gms.version"
-           android:value="@integer/google_play_services_version" />
+               android:value="@integer/google_play_services_version" />
     ```
+
+### 5. Add permissions
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project.
 Add the `uses-permission` tag for `INTERNET` if it's not present already.
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
+
+If your app is *only* for the Google Play Store, you can remove the
+`ACCESS_WIFI_STAT` permission.
+
+![][permissions]
 
 If you are using Proguard, add these lines to your Proguard file:
 
@@ -93,26 +102,10 @@ If you are using Proguard, add these lines to your Proguard file:
 -keep class com.google.android.gms.ads.identifier.** { *; }
 ```
 
-#### Other Stores
+If you are *not* targeting the Google Play Store, you can remove the
+`com.google.android.gms` rules.
 
-In the Package Explorer open the `AndroidManifest.xml` of your Android project.
-Add the `uses-permission` tags for `INTERNET` and `ACCESS_WIFI_STATE` if they
-aren't present already.
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-```
-
-![][permissions]
-
-If you are using Proguard, add these lines to your Proguard file:
-
-```
--keep class com.adjust.sdk.** { *; }
-```
-
-### 5. Add broadcast receiver
+### 6. Add broadcast receiver
 
 In your `AndroidManifest.xml` add the following `receiver` tag inside the
 `application` tag.
@@ -136,20 +129,20 @@ If you are already using a different broadcast receiver for the
 `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the
 Adjust receiver.
 
-### 6. Integrate Adjust into your app
+### 7. Integrate Adjust into your app
 
 To start with, we'll set up basic session tracking.
 
 #### Basic Setup
 
 We recommend using a global android [Application][android_application] class to
-start the SDK. If don't already have one in your app, follow this steps:
+initialize the SDK. If don't have one in your app already, follow these steps:
 
-1. Create one a class that extends `Application`.
-2. Open the `AndroidManifest.xml` file and locate the `<application>` element.
-3. Add the attribute `android:name` with the value equal to the created class name prefixed with a full stop, `.`.
+1. Create a class that extends `Application`.
+2. Open the `AndroidManifest.xml` file of your app and locate the `<application>` element.
+3. Add the attribute `android:name` and set it to the name of your new application class pefixed by a dot.
 
-Our example app has an `Application` class named `GlobalApplication`, so the manifest file is configured as:
+In our example app we use an `Application` class named `GlobalApplication`, so the manifest file is configured as:
 ```xml
  <application
    ...
@@ -157,7 +150,9 @@ Our example app has an `Application` class named `GlobalApplication`, so the man
      ...
 </application>
 ```
-With your `Application` class, use the `onCreate` method to add the code that initializes the adjust SDK:
+
+In your `Application` class find or create the `onCreate` method and add the
+following code to initialize the adjust SDK:
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -214,7 +209,7 @@ config.setLogLevel(LogLevel.ERROR];     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-### 7. Integrate adjust into your app
+### 8. Integrate adjust into your app
 
 To provide proper session tracking it is required to call certain Adjust
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
@@ -252,7 +247,7 @@ Repeat these steps for **every** Activity of your app. Don't forget these steps
 when you create new Activities in the future. Depending on your coding style
 you might want to implement this in a common superclass of all your Activities.
 
-### 8. Build your app
+### 9. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
 `tag:Adjust` to hide all other logs. After your app has launched you should see
@@ -265,7 +260,7 @@ the following Adjust log: `Install tracked`
 Once you have integrated the adjust SDK into your project, you can take
 advantage of the following features.
 
-### 9. Add tracking of custom events
+### 10. Add tracking of custom events
 
 You can use adjust to track any event in your app. Suppose you want to track
 every tap on a button. You would have to create a new event token in your
@@ -280,7 +275,7 @@ Adjust.trackEvent(event);
 The event instance can be used to configure the event even more before tracking
 it.
 
-### 10. Add callback parameters
+### 11. Add callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will
 send a GET request to that URL whenever the event gets tracked. You can add
@@ -317,7 +312,7 @@ You can read more about using URL callbacks, including a full list of available
 values, in our [callbacks guide][callbacks-guide].
 
 
-### 11. Partner parameters
+### 12. Partner parameters
 
 You can also add parameters to be transmitted to network partners, for the
 integrations that have been activated in your adjust dashboard.
@@ -337,7 +332,7 @@ Adjust.trackEvent(event);
 You can read more about special partners and these integrations in our [guide
 to special partners.][special-partners]
 
-### 12. Add tracking of revenue
+### 13. Add tracking of revenue
 
 If your users can generate revenue by tapping on advertisements or making
 in-app purchases you can track those revenues with events. Lets say a tap is
@@ -358,7 +353,7 @@ that you have set in your adjust dashboard.**
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
-### 13. Set up deep link reattributions
+### 14. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential if
@@ -378,46 +373,56 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 14. Enable event buffering
+### 15. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
 event buffering with your `AdjustConfig` instance:
 
 ```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
 config.setEventBufferingEnabled(true);
+
+Adjust.onCreate(config);
 ```
 
-### 15. Set listener for attribution changed
+### 16. Set listener for attribution changes
 
-You can register a listener callback to be notified of tracker attribution
-changes. Due to the different sources considered for attribution, this
-information can not by provided synchronously. The simplest way is to create a
-single anonymous listener:
+You can register a listener to be notified of tracker attribution changes. Due
+to the different sources considered for attribution, this information can not
+by provided synchronously. The simplest way is to create a single anonymous
+listener:
 
 Please make sure to consider our [applicable attribution data
-policies.][attribution-data]
+policies][attribution-data].
 
-- With the `AdjustConfig` instance, before starting the SDK, add the anonymous listener:
+With the `AdjustConfig` instance, before starting the SDK, add the anonymous listener:
 
-    ```java
-    config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
-        @Override
-        public void onAttributionChanged(AdjustAttribution attribution) {
-        }
-    });
-    ```
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-- Alternatively, you could implement the `OnAttributionChangedListener`
-  interface in your `Application` class and pass `this`:
+config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+    @Override
+    public void onAttributionChanged(AdjustAttribution attribution) {
+    }
+});
 
-    ```java
-    config.setOnAttributionChangedListener(this);
-    ```
+Adjust.onCreate(config);
+```
 
-The listener function will be called when the SDK receives final attribution
-data.  Within the listener function you have access to the `attribution`
-parameter.  Here is a quick summary of its properties:
+Alternatively, you could implement the `OnAttributionChangedListener`
+interface in your `Application` class and set it as listener:
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setOnAttributionChangedListener(this);
+Adjust.onCreate(config);
+```
+
+The listener function will be called when the SDK receives the final attribution
+information. Within the listener function you have access to the `attribution`
+parameter. Here is a quick summary of its properties:
 
 - `String trackerToken` the tracker token of the current install.
 - `String trackerName` the tracker name of the current install.
@@ -460,6 +465,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 [event-tracking]:       https://docs.adjust.com/en/event-tracking
 [special-partners]:     https://docs.adjust.com/en/special-partners
 [multidex]:             https://developer.android.com/tools/building/multidex.html
+[maven]:                http://maven.org
 
 ## License
 
