@@ -2,10 +2,10 @@
 
 ### The Application class
 
-One major change is how the adjust SDK is initialized. You should now use an 
-global android [Application][android_application] class instead of the manifest file.
+One major change is how the adjust SDK is initialized. You should now use a
+global Android [Application][android_application] class instead of the manifest file.
 
-If you don't already use one for your app, follow the steps in our [guide][basic-setup].
+If you don't already use one for your app, follow the steps in our [Readme][basic-setup].
 
 A second major change is how to configure the adjust SDK. All initial setup is now done with
 a new config object. Inside the `onCreate` method of the `Application` class:
@@ -14,7 +14,7 @@ a new config object. Inside the `onCreate` method of the `Application` class:
 2. Optionally configure it.
 3. Launch the SDK by invoking `Adjust.onCreate` with the config object.
 
-Here is an example of how the setup might look before in the manifest and 
+Here is an example of how the setup might look before in the manifest and
 after the migration in the `Application` class:
 
 ##### Before
@@ -22,7 +22,7 @@ after the migration in the `Application` class:
 ```xml
 <meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
 <meta-data android:name="AdjustLogLevel"    android:value="info" />
-<meta-data android:name="AdjustEnvironment" android:value="sandbox" /> 
+<meta-data android:name="AdjustEnvironment" android:value="sandbox" />
 ```
 
 ##### After
@@ -39,7 +39,7 @@ public class YourApplicationClass extends Application {
         String appToken = "{YourAppToken}";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
-        config.setLogLevel(LogLevel.INFO); // if not configure, INFO is used by default
+        config.setLogLevel(LogLevel.INFO); // if not configured, INFO is used by default
         Adjust.onCreate(config);
     }
 }
@@ -73,10 +73,9 @@ Adjust.trackEvent(event);
 Revenues are now handled like normal events. You just set a revenue and a
 currency to track revenues. Note that it is no longer possible to track revenues
 without associated event tokens. You might need to create an additional event token
-in your dashboard. The optional transaction ID is now a property of the event
-instance.
+in your dashboard.
 
-*Please note* - the revenue format has been changed from a cent float to a whole 
+*Please note* - the revenue format has been changed from a cent float to a whole
 currency-unit float. Current revenue tracking must be adjusted to whole currency
 units (i.e., divided by 100) in order to remain consistent.
 
