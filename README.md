@@ -95,7 +95,7 @@ Add the `uses-permission` tag for `INTERNET` if it's not present already.
 ```
 
 If your app is *only* for the Google Play Store, you can remove the
-`ACCESS_WIFI_STAT` permission.
+`ACCESS_WIFI_STATE` permission.
 
 ![][permissions]
 
@@ -150,8 +150,8 @@ initialize the SDK. If don't have one in your app already, follow these steps:
 In our example app we use an `Application` class named `GlobalApplication`, so the manifest file is configured as:
 ```xml
  <application
-   ...
-   android:name=".GlobalApplication">
+   android:name=".GlobalApplication"
+   ... >
      ...
 </application>
 ```
@@ -167,7 +167,7 @@ public class YourApplicationClass extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // configure Adjust
+
         String appToken = "{YourAppToken}";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
