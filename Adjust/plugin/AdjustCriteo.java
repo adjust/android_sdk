@@ -1,8 +1,8 @@
 package com.adjust.sdk.plugin;
 
+import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.Event;
-import com.adjust.sdk.Logger;
+import com.adjust.sdk.ILogger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -12,15 +12,15 @@ import java.util.List;
  * Created by pfms on 24/02/15.
  */
 public class AdjustCriteo {
-    private static Logger logger = AdjustFactory.getLogger();
+    private static ILogger logger = AdjustFactory.getLogger();
     private static int MAX_VIEW_LISTING_PRODUCTS = 3;
 
-    public static void injectViewSearchIntoEvent(Event event, String checkInDate, String checkOutDate) {
+    public static void injectViewSearchIntoEvent(AdjustEvent event, String checkInDate, String checkOutDate) {
         event.addPartnerParameter("din", checkInDate);
         event.addPartnerParameter("dout", checkOutDate);
     }
 
-    public static void injectViewListingIntoEvent(Event event, List<CriteoProduct> products, String customerId) {
+    public static void injectViewListingIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVLFromProducts(products);
 
         if (jsonProducts == null) {
@@ -32,12 +32,12 @@ public class AdjustCriteo {
         event.addPartnerParameter("criteo_p", jsonProducts);
     }
 
-    public static void injectViewProductIntoEvent(Event event, String productId, String customerId) {
+    public static void injectViewProductIntoEvent(AdjustEvent event, String productId, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", productId);
     }
 
-    public static void injectCartIntoEvent(Event event, List<CriteoProduct> products, String customerId) {
+    public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
         if (jsonProducts == null) {
             logger.error("Missing products from Criteo Cart");
@@ -48,7 +48,7 @@ public class AdjustCriteo {
         event.addPartnerParameter("criteo_p", jsonProducts);
     }
 
-    public static void injectTransactionConfirmedIntoEvent(Event event, List<CriteoProduct> products, String customerId) {
+    public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
         if (jsonProducts == null) {
             logger.error("Missing products from Criteo Transaction Confirmed");

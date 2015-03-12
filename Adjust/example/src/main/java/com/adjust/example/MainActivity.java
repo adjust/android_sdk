@@ -9,7 +9,6 @@ import android.view.View;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
 
-
 public class MainActivity extends ActionBarActivity {
 
     @Override
