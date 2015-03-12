@@ -384,7 +384,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        // TODO: Validate instead of updateStatus()
         updateStatusInternal();
 
         processSession();

@@ -110,7 +110,6 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void getAttributionInternal() {
-        // TODO check if this what attribution handler paused means
         if (paused) {
             logger.debug("Attribution Handler is paused");
             return;

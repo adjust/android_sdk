@@ -29,7 +29,6 @@ public class AdjustReferrerReceiver extends BroadcastReceiver {
             referrer = MALFORMED;
         }
 
-        // TODO test if it works with static instance
         AdjustInstance adjust = Adjust.getDefaultInstance();
         adjust.sendReferrer(referrer);
     }
