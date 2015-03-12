@@ -3,6 +3,11 @@
 This is the Android SDK of adjust™. You can read more about adjust™ at
 adjust.com.
 
+## Example app
+
+There is an example app inside the [`example` directory][example]. You can open
+the Android project to see an example on how the adjust SDK can be integrated.
+
 ## Basic Installation
 
 These are the minimal steps required to integrate the adjust SDK into your
@@ -466,6 +471,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 [special-partners]:     https://docs.adjust.com/en/special-partners
 [multidex]:             https://developer.android.com/tools/building/multidex.html
 [maven]:                http://maven.org
+[example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
 
 ## License
 
