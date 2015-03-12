@@ -180,7 +180,7 @@ public class Util {
         }
 
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.debug(message);
+            logger.info(message);
         } else {
             logger.error(message);
         }
