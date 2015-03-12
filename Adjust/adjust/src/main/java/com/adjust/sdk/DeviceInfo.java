@@ -11,13 +11,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
-import com.adjust.sdk.plugin.Plugin;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,7 +24,6 @@ import static com.adjust.sdk.Constants.LOW;
 import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.MEDIUM;
 import static com.adjust.sdk.Constants.NORMAL;
-import static com.adjust.sdk.Constants.PLUGINS;
 import static com.adjust.sdk.Constants.SHA1;
 import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.XLARGE;

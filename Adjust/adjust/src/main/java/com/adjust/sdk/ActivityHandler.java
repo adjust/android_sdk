@@ -84,7 +84,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
-        if(!adjustConfig.isValid()) {
+        if (!adjustConfig.isValid()) {
             AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
             return null;
         }
@@ -190,7 +190,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void readOpenUrl(Uri url, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.DEEP_LINK;
-        UrlClickTime urlClickTime = new UrlClickTime (url, clickTime);
+        UrlClickTime urlClickTime = new UrlClickTime(url, clickTime);
         message.obj = urlClickTime;
         sessionHandler.sendMessage(message);
     }
@@ -255,6 +255,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private class UrlClickTime {
         Uri url;
         long clickTime;
+
         UrlClickTime(Uri url, long clickTime) {
             this.url = url;
             this.clickTime = clickTime;
@@ -264,6 +265,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private class ReferrerClickTime {
         String referrer;
         long clickTime;
+
         ReferrerClickTime(String referrer, long clickTime) {
             this.referrer = referrer;
             this.clickTime = clickTime;

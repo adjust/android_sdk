@@ -29,8 +29,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused)
-    {
+                              boolean startPaused) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
         httpClient = Util.getHttpClient();
@@ -40,8 +39,7 @@ public class AttributionHandler implements IAttributionHandler {
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused)
-    {
+                     boolean startPaused) {
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
         this.paused = startPaused;
