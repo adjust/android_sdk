@@ -97,11 +97,14 @@ Add the `uses-permission` tag for `INTERNET` if it's not present already.
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 ```
 
-If your app is *only* for the Google Play Store, you can remove the
-`ACCESS_WIFI_STATE` permission.
+If you are *not* targeting the Google Play Store, add both of these permissions instead:
+
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+```
 
 ![][manifest_permissions]
 
@@ -226,7 +229,7 @@ config.setLogLevel(LogLevel.ERROR];     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-### 8. Integrate adjust into your app
+### 8. Update your activities
 
 To provide proper session tracking it is required to call certain Adjust
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
