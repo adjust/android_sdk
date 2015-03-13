@@ -13,7 +13,6 @@ import android.net.Uri;
 
 /**
  * The main interface to Adjust.
- * <p/>
  * Use the methods of this class to tell Adjust about the usage of your app.
  * See the README for details.
  */
