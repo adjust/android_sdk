@@ -4,12 +4,13 @@ If multiple SDKs need to register a broadcast receiver for the
 `INSTALL_REFERRER` intent in your app, you will have to implement your own
 `BroadcastReceiver` that calls all the other receivers that you want to
 support. It should look like this [1]:
+
 ```java
 public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         // Adjust
-        new ReferrerReceiver().onReceive(context, intent);
+        new AdjustReferrerReceiver().onReceive(context, intent);
 
         // Google Analytics
         new CampaignTrackingReceiver().onReceive(context, intent);
@@ -20,6 +21,7 @@ public class InstallReceiver extends BroadcastReceiver {
 Make sure to adjust the list of supported receviers and fix the imports. You
 also need to update your `AndroidManifest.xml` to use your own
 `InstallReceiver`:
+
 ```xml
 <receiver
     android:name="com.your.app.InstallReceiver"

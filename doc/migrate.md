@@ -1,4 +1,99 @@
-## Migrate your adjust SDK for Android to 3.6.2 from v2.1.x
+## Migrate your adjust SDK for Android to 4.0.0 from 3.6.2
+
+### The Application class
+
+One major change is how the adjust SDK is initialized. You should now use a
+global Android [Application][android_application] class instead of the manifest file.
+
+If you don't already use one for your app, follow the steps in our [Readme][basic-setup].
+
+A second major change is how to configure the adjust SDK. All initial setup is now done with
+a new config object. Inside the `onCreate` method of the `Application` class:
+
+1. Create an the config object `AdjustConfig` with the app token, the environment and `this`.
+2. Optionally configure it.
+3. Launch the SDK by invoking `Adjust.onCreate` with the config object.
+
+Here is an example of how the setup might look before in the manifest and
+after the migration in the `Application` class:
+
+##### Before
+
+```xml
+<meta-data android:name="AdjustAppToken"    android:value="{YourAppToken}" />
+<meta-data android:name="AdjustLogLevel"    android:value="info" />
+<meta-data android:name="AdjustEnvironment" android:value="sandbox" />
+```
+
+##### After
+
+```java
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustConfig;
+
+public class YourApplicationClass extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        // configure Adjust
+        String appToken = "{YourAppToken}";
+        String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+        AdjustConfig config = new AdjustConfig(this, appToken, environment);
+        config.setLogLevel(LogLevel.INFO); // if not configured, INFO is used by default
+        Adjust.onCreate(config);
+    }
+}
+```
+
+### Event tracking
+
+We also introduced proper event objects that can be set up before they are
+tracked. Again, an example of how it might look like before and after:
+
+##### Before
+
+```java
+Map<String, String> parameters = new HashMap<String, String>();
+parameters.put("key", "value");
+parameters.put("foo", "bar");
+Adjust.trackEvent("abc123", parameters);
+```
+
+##### After
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+event.addCallbackParameter("key", "value");
+event.addCallbackParameter("foo", "bar");
+Adjust.trackEvent(event);
+```
+
+### Revenue tracking
+
+Revenues are now handled like normal events. You just set a revenue and a
+currency to track revenues. Note that it is no longer possible to track revenues
+without associated event tokens. You might need to create an additional event token
+in your dashboard.
+
+*Please note* - the revenue format has been changed from a cent float to a whole
+currency-unit float. Current revenue tracking must be adjusted to whole currency
+units (i.e., divided by 100) in order to remain consistent.
+
+##### Before
+
+```java
+Adjust.trackRevenue(1.0, "abc123");
+```
+
+##### After
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+event.setRevenue(0.01, "EUR");
+Adjust.trackEvent(event);
+```
+
+## Additional steps if you come from v2.1.x
 
 We renamed the main class `com.adeven.adjustio.AdjustIo` to
 `com.adjust.sdk.Adjust`. Follow these steps to update all adjust SDK calls.
@@ -148,4 +243,7 @@ meaningful at all times! Especially if you are tracking revenue.
 [import]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/import2.png
 [activity]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/activity4.png
 [settings]: https://raw.github.com/adjust/adjust_sdk/master/Resources/android/settings.png
+[android_application]:  http://developer.android.com/reference/android/app/Application.html
+[application_name]:     http://developer.android.com/guide/topics/manifest/application-element.html#nm
+[basic-setup]:          https://github.com/adjust/android_sdk/tree/master#basic-setup
 
