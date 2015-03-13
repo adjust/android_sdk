@@ -183,7 +183,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private void addInternal(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
-        logger.verbose(newPackage.getExtendedString());
+        logger.verbose("%s", newPackage.getExtendedString());
 
         writePackageQueue();
     }

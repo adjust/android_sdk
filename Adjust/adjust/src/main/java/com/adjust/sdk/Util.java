@@ -180,9 +180,9 @@ public class Util {
         }
 
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.info(message);
+            logger.info("%s", message);
         } else {
-            logger.error(message);
+            logger.error("%s", message);
         }
 
         return jsonResponse;

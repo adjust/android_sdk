@@ -11,6 +11,7 @@ package com.adjust.sdk;
 
 import android.util.Log;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import static com.adjust.sdk.Constants.LOGTAG;
@@ -18,6 +19,7 @@ import static com.adjust.sdk.Constants.LOGTAG;
 public class Logger implements ILogger {
 
     private LogLevel logLevel;
+    private static String formatErrorMessage = "Error formating log message: %s, with params: %s";
 
     public Logger() {
         setLogLevel(LogLevel.INFO);
@@ -42,40 +44,64 @@ public class Logger implements ILogger {
     @Override
     public void verbose(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
-            Log.v(LOGTAG, String.format(message, parameters));
+            try {
+                Log.v(LOGTAG, String.format(message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
     @Override
     public void debug(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
-            Log.d(LOGTAG, String.format(message, parameters));
+            try {
+                Log.d(LOGTAG, String.format(message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
     @Override
     public void info(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.INFO) {
-            Log.i(LOGTAG, String.format(message, parameters));
+            try {
+                Log.i(LOGTAG, String.format(message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
     @Override
     public void warn(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
-            Log.w(LOGTAG, String.format(message, parameters));
+            try {
+                Log.w(LOGTAG, String.format(message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
     @Override
     public void error(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
-            Log.e(LOGTAG, String.format(message, parameters));
+            try {
+                Log.e(LOGTAG, String.format(message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
     @Override
     public void Assert(String message, Object... parameters) {
-        Log.println(Log.ASSERT, LOGTAG, String.format(message, parameters));
+        try {
+            Log.println(Log.ASSERT, LOGTAG, String.format(message, parameters));
+        } catch (Exception e) {
+            Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+        }
     }
 }
