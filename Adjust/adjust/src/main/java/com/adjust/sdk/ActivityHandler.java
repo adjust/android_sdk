@@ -50,7 +50,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private ILogger logger;
     private static ScheduledExecutorService timer;
     private boolean enabled;
-    private boolean shouldGetAttribution;
     private boolean offline;
 
     private DeviceInfo deviceInfo;
@@ -374,8 +373,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toPause());
 
-        shouldGetAttribution = true;
-
         startInternal();
     }
 
@@ -445,11 +442,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void checkAttributionState() {
         // if there is no attribution saved, or there is one being asked
         if (attribution == null || activityState.askingAttribution) {
-            // and it was triggered the first time as a subsession
-            // (prevents sessions that did not save the attribution due to an interruption)
-            if (shouldGetAttribution) {
-                getAttributionHandler().getAttribution();
-            }
+            getAttributionHandler().getAttribution();
         }
     }
 
@@ -682,7 +675,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
-        shouldGetAttribution = false;
     }
 
     private void startTimer() {
