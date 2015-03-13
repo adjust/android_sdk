@@ -2,19 +2,21 @@
 
 Integrate adjust with Criteo events by following these steps:
 
-1. Locate the `plugin` folder inside the downloaded archive from our [releases page](https://github.com/adjust/android_sdk/releases).
+1. Locate the `plugin` folder inside the downloaded archive from our
+   [releases page](https://github.com/adjust/android_sdk/releases).
 
-2. Open the `adjust` module in Android Studio and locate the `com.adjust.sdk.plugin` package folder in the path
-`adjust/src/main/java/com/adjust/sdk/plugin`. 
+2. Open the `adjust` module in Android Studio and locate the
+   `plugin` package folder in `adjust/java/com/adjust/sdk`.
 
-3. Drag the `AdjustCriteo.java` and `CriteoProduct.java` files from the 
-downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
+3. Drag the `AdjustCriteo.java` and `CriteoProduct.java` files from the
+   downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
 
-Now you can integrate each of the different Criteo events, like in the following examples:
+Now you can integrate each of the different Criteo events, like in the
+following examples:
 
 ### View Homepage
 
-```java 
+```java
 AdjustEvent event = new AdjustEvent("{viewHomepageEventToken}");
 
 Adjust.trackEvent(event);
