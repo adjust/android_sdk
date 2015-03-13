@@ -75,6 +75,10 @@ public class AttributionHandler implements IAttributionHandler {
             waitingTask.cancel(false);
         }
 
+        if (delayInMilliseconds != 0) {
+            logger.debug("Waiting to query attribution in %d milliseconds", delayInMilliseconds);
+        }
+
         waitingTask = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
@@ -101,8 +105,6 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         activityHandler.setAskingAttribution(true);
-
-        logger.debug("Waiting to query attribution in %d milliseconds", timerMilliseconds);
 
         getAttribution(timerMilliseconds);
     }
