@@ -9,7 +9,7 @@ pre-installed on their device, follow these steps.
    `AdjustConfig`:
 
     ```java
-    djustConfig config = new AdjustConfig(this, appToken, environment);
+    AdjustConfig config = new AdjustConfig(this, appToken, environment);
     config.setDefaultTracker("{TrackerToken}");
     Adjust.onCreate(config);
     ```
