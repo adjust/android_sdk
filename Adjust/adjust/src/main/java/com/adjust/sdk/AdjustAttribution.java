@@ -60,6 +60,18 @@ public class AdjustAttribution implements Serializable {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode = 37 * hashCode + Util.hashString(trackerToken);
+        hashCode = 37 * hashCode + Util.hashString(trackerName);
+        hashCode = 37 * hashCode + Util.hashString(network);
+        hashCode = 37 * hashCode + Util.hashString(campaign);
+        hashCode = 37 * hashCode + Util.hashString(adgroup);
+        hashCode = 37 * hashCode + Util.hashString(creative);
+        return hashCode;
+    }
+
 
     @Override
     public String toString() {

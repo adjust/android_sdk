@@ -244,7 +244,79 @@ public class Util {
         }
     }
 
+    public static boolean equalObject(Object first, Object second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return first.equals(second);
+    }
+
+    public static boolean equalsMap(Map first, Map second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return first.entrySet().equals(second.entrySet());
+    }
+
+    public static boolean equalsDouble(Double first, Double second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
+    }
+
     public static boolean equalString(String first, String second) {
         return equalObject(first, second);
+    }
+
+    public static boolean equalEnum(Enum first, Enum second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalLong(Long first, Long second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalInt(Integer first, Integer second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalBoolean(Boolean first, Boolean second) {
+        return equalObject(first, second);
+    }
+
+    public static int hashBoolean(Boolean value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashLong(Long value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashString(String value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashEnum(Enum value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashMap(Map value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.entrySet().hashCode();
     }
 }

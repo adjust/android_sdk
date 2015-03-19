@@ -93,6 +93,40 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other == null) return false;
+        if (getClass() != other.getClass()) return false;
+        ActivityState otherActivityState = (ActivityState) other;
+
+        if (!Util.equalString(  uuid,               otherActivityState.uuid))               return false;
+        if (!Util.equalBoolean( enabled,            otherActivityState.enabled))            return false;
+        if (!Util.equalBoolean( askingAttribution,  otherActivityState.askingAttribution))  return false;
+        if (!Util.equalInt(     eventCount,         otherActivityState.eventCount))         return false;
+        if (!Util.equalInt(     sessionCount,       otherActivityState.sessionCount))       return false;
+        if (!Util.equalInt(     subsessionCount,    otherActivityState.subsessionCount))    return false;
+        if (!Util.equalLong(    sessionLength,      otherActivityState.sessionLength))      return false;
+        if (!Util.equalLong(    timeSpent,          otherActivityState.timeSpent))          return false;
+        if (!Util.equalLong(    lastInterval,       otherActivityState.lastInterval))       return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode = 37 * hashCode + Util.hashString(uuid);
+        hashCode = 37 * hashCode + Util.hashBoolean(enabled);
+        hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution);
+        hashCode = 37 * hashCode + eventCount;
+        hashCode = 37 * hashCode + sessionCount;
+        hashCode = 37 * hashCode + subsessionCount;
+        hashCode = 37 * hashCode + Util.hashLong(sessionLength);
+        hashCode = 37 * hashCode + Util.hashLong(timeSpent);
+        hashCode = 37 * hashCode + Util.hashLong(lastInterval);
+        return hashCode;
+    }
+
 
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();

@@ -27,6 +27,7 @@ public class ActivityPackage implements Serializable {
             new ObjectStreamField("activityKind", ActivityKind.class),
             new ObjectStreamField("suffix", String.class)
     };
+    private transient int hashCode;
 
     // data
     private String path;
@@ -106,5 +107,33 @@ public class ActivityPackage implements Serializable {
 
     private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
         stream.defaultReadObject();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other == null) return false;
+        if (getClass() != other.getClass()) return false;
+        ActivityPackage otherActivityPackage = (ActivityPackage) other;
+
+        if (!Util.equalString(  path,           otherActivityPackage.path))         return false;
+        if (!Util.equalString(  clientSdk,      otherActivityPackage.clientSdk))    return false;
+        if (!Util.equalsMap(    parameters,     otherActivityPackage.parameters))   return false;
+        if (!Util.equalEnum(    activityKind,   otherActivityPackage.activityKind)) return false;
+        if (!Util.equalString(  suffix,         otherActivityPackage.suffix))       return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        if (hashCode == 0) {
+            hashCode = 17;
+            hashCode = 37 * hashCode + Util.hashString(path);
+            hashCode = 37 * hashCode + Util.hashString(clientSdk);
+            hashCode = 37 * hashCode + Util.hashMap(parameters);
+            hashCode = 37 * hashCode + Util.hashEnum(activityKind);
+            hashCode = 37 * hashCode + Util.hashString(suffix);
+        }
+        return hashCode;
     }
 }
