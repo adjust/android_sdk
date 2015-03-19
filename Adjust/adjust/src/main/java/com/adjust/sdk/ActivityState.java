@@ -12,6 +12,7 @@ package com.adjust.sdk;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Locale;
@@ -19,6 +20,18 @@ import java.util.Locale;
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
     private transient ILogger logger;
+    private static final ObjectStreamField[] serialPersistentFields = {
+            new ObjectStreamField("uuid", String.class),
+            new ObjectStreamField("enabled", boolean.class),
+            new ObjectStreamField("askingAttribution", boolean.class),
+            new ObjectStreamField("eventCount", int.class),
+            new ObjectStreamField("sessionCount", int.class),
+            new ObjectStreamField("subsessionCount", int.class),
+            new ObjectStreamField("sessionLength", long.class),
+            new ObjectStreamField("timeSpent", long.class),
+            new ObjectStreamField("lastActivity", long.class),
+            new ObjectStreamField("lastInterval", long.class)
+    };
 
     // persistent data
     protected String uuid;

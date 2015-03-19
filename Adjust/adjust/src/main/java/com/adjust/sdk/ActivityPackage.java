@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.SortedMap;
@@ -16,6 +17,13 @@ import java.util.TreeMap;
 
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
+    private static final ObjectStreamField[] serialPersistentFields = {
+            new ObjectStreamField("path", String.class),
+            new ObjectStreamField("clientSdk", String.class),
+            new ObjectStreamField("parameters", (Class<Map<String,String>>)((Class)Map.class)),
+            new ObjectStreamField("activityKind", ActivityKind.class),
+            new ObjectStreamField("suffix", String.class)
+    };
 
     // data
     private String path;

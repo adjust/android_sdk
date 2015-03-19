@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 
 /**
@@ -9,6 +10,14 @@ import java.io.Serializable;
  */
 public class AdjustAttribution implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final ObjectStreamField[] serialPersistentFields = {
+            new ObjectStreamField("trackerToken", String.class),
+            new ObjectStreamField("trackerName", String.class),
+            new ObjectStreamField("network", String.class),
+            new ObjectStreamField("campaign", String.class),
+            new ObjectStreamField("adgroup", String.class),
+            new ObjectStreamField("creative", String.class)
+    };
 
     public String trackerToken;
     public String trackerName;
