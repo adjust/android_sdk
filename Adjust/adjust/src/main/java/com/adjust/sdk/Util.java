@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -82,16 +83,22 @@ public class Util {
     }
 
     public static <T> T readObject(Context context, String filename, String objectName) {
+        Closeable closable = null;
+        @SuppressWarnings("unchecked")
+        T object = null;
         try {
             FileInputStream inputStream = context.openFileInput(filename);
+            closable = inputStream;
+
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+            closable = bufferedStream;
+
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+            closable = objectStream;
 
             try {
-                @SuppressWarnings("unchecked")
-                T t = (T) objectStream.readObject();
-                logger.debug("Read %s: %s", objectName, t);
-                return t;
+                object = (T) objectStream.readObject();
+                logger.debug("Read %s: %s", objectName, object);
             } catch (ClassNotFoundException e) {
                 logger.error("Failed to find %s class", objectName);
             } catch (OptionalDataException e) {
@@ -100,36 +107,50 @@ public class Util {
                 logger.error("Failed to read %s object", objectName);
             } catch (ClassCastException e) {
                 logger.error("Failed to cast %s object", objectName);
-            } finally {
-                objectStream.close();
             }
-
         } catch (FileNotFoundException e) {
             logger.verbose("%s file not found", objectName);
         } catch (Exception e) {
             logger.error("Failed to open %s file for reading (%s)", objectName, e);
         }
+        try {
+            if (closable != null) {
+                closable.close();
+            }
+        } catch (Exception e) {
+            logger.error("Failed to close %s file for reading (%s)", objectName, e);
+        }
 
-        return null;
+        return object;
     }
 
     public static <T> void writeObject(T object, Context context, String filename, String objectName) {
+        Closeable closable = null;
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            closable = outputStream;
+
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
+            closable = bufferedStream;
+
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+            closable = objectStream;
 
             try {
                 objectStream.writeObject(object);
                 logger.debug("Wrote %s: %s", objectName, object);
             } catch (NotSerializableException e) {
                 logger.error("Failed to serialize %s", objectName);
-            } finally {
-                objectStream.close();
             }
-
         } catch (Exception e) {
             logger.error("Failed to open %s for writing (%s)", objectName, e);
+        }
+        try {
+            if (closable != null) {
+                closable.close();
+            }
+        } catch (Exception e) {
+            logger.error("Failed to close %s file for writing (%s)", objectName, e);
         }
     }
 
