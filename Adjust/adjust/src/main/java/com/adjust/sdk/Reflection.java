@@ -81,17 +81,6 @@ public class Reflection {
         }
     }
 
-    public static String getSha1EmailAddress(Context context, String key) {
-        try {
-            String sha1EmailAddress = (String) invokeStaticMethod("com.adjust.sdk.plugin.EmailUtil", "getSha1EmailAddress"
-                    , new Class[]{Context.class, String.class}, context, key);
-
-            return sha1EmailAddress;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
     private static Object getAdvertisingInfoObject(Context context)
             throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
