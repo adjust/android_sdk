@@ -44,27 +44,22 @@ public class AdjustAttribution implements Serializable {
         return attribution;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
         AdjustAttribution otherAttribution = (AdjustAttribution) other;
 
-        if (!equalString(trackerToken,  otherAttribution.trackerToken)) return false;
-        if (!equalString(trackerName,   otherAttribution.trackerName)) return false;
-        if (!equalString(network,       otherAttribution.network)) return false;
-        if (!equalString(campaign,      otherAttribution.campaign)) return false;
-        if (!equalString(adgroup,       otherAttribution.adgroup)) return false;
-        if (!equalString(creative,      otherAttribution.creative)) return false;
+        if (!Util.equalString(trackerToken, otherAttribution.trackerToken)) return false;
+        if (!Util.equalString(trackerName, otherAttribution.trackerName)) return false;
+        if (!Util.equalString(network, otherAttribution.network)) return false;
+        if (!Util.equalString(campaign, otherAttribution.campaign)) return false;
+        if (!Util.equalString(adgroup, otherAttribution.adgroup)) return false;
+        if (!Util.equalString(creative, otherAttribution.creative)) return false;
         return true;
     }
 
-    private boolean equalString(String first, String second) {
-        if (first == null || second == null) {
-            return first == null && second == null;
-        }
-        return first.equals(second);
-    }
 
     @Override
     public String toString() {

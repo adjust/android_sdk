@@ -35,6 +35,7 @@ import java.io.ObjectOutputStream;
 import java.io.OptionalDataException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -241,5 +242,9 @@ public class Util {
             logger.debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;
         }
+    }
+
+    public static boolean equalString(String first, String second) {
+        return equalObject(first, second);
     }
 }
