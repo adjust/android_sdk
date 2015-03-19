@@ -124,7 +124,7 @@ public class AttributionHandler implements IAttributionHandler {
             return;
         }
 
-        JSONObject jsonResponse = Util.parseJsonResponse(httpResponse, logger);
+        JSONObject jsonResponse = Util.parseJsonResponse(httpResponse);
 
         checkAttributionInternal(jsonResponse);
     }
