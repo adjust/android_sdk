@@ -133,20 +133,6 @@ public class Util {
         }
     }
 
-    public static String parseResponse(HttpResponse httpResponse, ILogger logger) {
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            httpResponse.getEntity().writeTo(out);
-            out.close();
-            String response = out.toString().trim();
-            logger.verbose("Response: %s", response);
-            return response;
-        } catch (Exception e) {
-            logger.error("Failed to parse response (%s)", e);
-            return null;
-        }
-    }
-
     public static JSONObject parseJsonResponse(HttpResponse httpResponse) {
         if (httpResponse == null) {
             return null;
