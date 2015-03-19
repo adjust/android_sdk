@@ -48,7 +48,10 @@ public class Util {
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
-    private static final ILogger logger = AdjustFactory.getLogger();
+
+    private static ILogger getLogger() {
+        return AdjustFactory.getLogger();
+    }
 
     protected static String createUuid() {
         return UUID.randomUUID().toString();
@@ -99,27 +102,27 @@ public class Util {
 
             try {
                 object = (T) objectStream.readObject();
-                logger.debug("Read %s: %s", objectName, object);
+                getLogger().debug("Read %s: %s", objectName, object);
             } catch (ClassNotFoundException e) {
-                logger.error("Failed to find %s class", objectName);
+                getLogger().error("Failed to find %s class", objectName);
             } catch (OptionalDataException e) {
                 /* no-op */
             } catch (IOException e) {
-                logger.error("Failed to read %s object", objectName);
+                getLogger().error("Failed to read %s object", objectName);
             } catch (ClassCastException e) {
-                logger.error("Failed to cast %s object", objectName);
+                getLogger().error("Failed to cast %s object", objectName);
             }
         } catch (FileNotFoundException e) {
-            logger.verbose("%s file not found", objectName);
+            getLogger().verbose("%s file not found", objectName);
         } catch (Exception e) {
-            logger.error("Failed to open %s file for reading (%s)", objectName, e);
+            getLogger().error("Failed to open %s file for reading (%s)", objectName, e);
         }
         try {
             if (closable != null) {
                 closable.close();
             }
         } catch (Exception e) {
-            logger.error("Failed to close %s file for reading (%s)", objectName, e);
+            getLogger().error("Failed to close %s file for reading (%s)", objectName, e);
         }
 
         return object;
@@ -139,19 +142,19 @@ public class Util {
 
             try {
                 objectStream.writeObject(object);
-                logger.debug("Wrote %s: %s", objectName, object);
+                getLogger().debug("Wrote %s: %s", objectName, object);
             } catch (NotSerializableException e) {
-                logger.error("Failed to serialize %s", objectName);
+                getLogger().error("Failed to serialize %s", objectName);
             }
         } catch (Exception e) {
-            logger.error("Failed to open %s for writing (%s)", objectName, e);
+            getLogger().error("Failed to open %s for writing (%s)", objectName, e);
         }
         try {
             if (closable != null) {
                 closable.close();
             }
         } catch (Exception e) {
-            logger.error("Failed to close %s file for writing (%s)", objectName, e);
+            getLogger().error("Failed to close %s file for writing (%s)", objectName, e);
         }
     }
 
@@ -166,17 +169,17 @@ public class Util {
             out.close();
             stringResponse = out.toString().trim();
         } catch (Exception e) {
-            logger.error("Failed to parse response (%s)", e.getMessage());
+            getLogger().error("Failed to parse response (%s)", e.getMessage());
         }
 
-        logger.verbose("Response: %s", stringResponse);
+        getLogger().verbose("Response: %s", stringResponse);
         if (stringResponse == null) return null;
 
         JSONObject jsonResponse = null;
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            logger.error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
+            getLogger().error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
         }
 
         if (jsonResponse == null) return null;
@@ -188,9 +191,9 @@ public class Util {
         }
 
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.info("%s", message);
+            getLogger().info("%s", message);
         } else {
-            logger.error("%s", message);
+            getLogger().error("%s", message);
         }
 
         return jsonResponse;
@@ -212,7 +215,7 @@ public class Util {
         try {
             return (String) fields.get(name, defaultValue);
         } catch (Exception e) {
-            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;
         }
     }
@@ -221,7 +224,7 @@ public class Util {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
-            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;
         }
     }
@@ -230,7 +233,7 @@ public class Util {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
-            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;
         }
     }
@@ -239,7 +242,7 @@ public class Util {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
-            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;
         }
     }
