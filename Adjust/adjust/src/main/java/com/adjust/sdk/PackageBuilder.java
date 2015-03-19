@@ -45,9 +45,8 @@ class PackageBuilder {
         addDuration(parameters, "last_interval", activityState.lastInterval);
         addString(parameters, "default_tracker", adjustConfig.defaultTracker);
 
-        ActivityPackage sessionPackage = getDefaultActivityPackage();
+        ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
-        sessionPackage.setActivityKind(ActivityKind.SESSION);
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
 
@@ -63,9 +62,8 @@ class PackageBuilder {
         addMapJson(parameters, "callback_params", event.callbackParameters);
         addMapJson(parameters, "partner_params", event.partnerParameters);
 
-        ActivityPackage eventPackage = getDefaultActivityPackage();
+        ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
-        eventPackage.setActivityKind(ActivityKind.EVENT);
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
 
@@ -81,9 +79,8 @@ class PackageBuilder {
         addMapJson(parameters, "params", extraParameters);
         injectAttribution(parameters);
 
-        ActivityPackage clickPackage = getDefaultActivityPackage();
+        ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
-        clickPackage.setActivityKind(ActivityKind.CLICK);
         clickPackage.setSuffix("");
         clickPackage.setParameters(parameters);
 
@@ -93,17 +90,16 @@ class PackageBuilder {
     public ActivityPackage buildAttributionPackage() {
         Map<String, String> parameters = getIdsParameters();
 
-        ActivityPackage attributionPackage = getDefaultActivityPackage();
+        ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
-        attributionPackage.setActivityKind(ActivityKind.ATTRIBUTION);
         attributionPackage.setSuffix("");
         attributionPackage.setParameters(parameters);
 
         return attributionPackage;
     }
 
-    private ActivityPackage getDefaultActivityPackage() {
-        ActivityPackage activityPackage = new ActivityPackage();
+    private ActivityPackage getDefaultActivityPackage(ActivityKind activityKind) {
+        ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
     }

@@ -52,16 +52,16 @@ public class ActivityPackage implements Serializable {
         return activityKind;
     }
 
-    public void setActivityKind(ActivityKind activityKind) {
-        this.activityKind = activityKind;
-    }
-
     public String getSuffix() {
         return suffix;
     }
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public ActivityPackage(ActivityKind activityKind) {
+        this.activityKind = activityKind;
     }
 
     public String toString() {
@@ -82,19 +82,7 @@ public class ActivityPackage implements Serializable {
         return builder.toString();
     }
 
-    protected String getSuccessMessage() {
-        try {
-            return String.format("Tracked %s%s", activityKind.toString(), suffix);
-        } catch (NullPointerException e) {
-            return "Tracked ???";
-        }
-    }
-
     protected String getFailureMessage() {
-        try {
-            return String.format("Failed to track %s%s", activityKind.toString(), suffix);
-        } catch (NullPointerException e) {
-            return "Failed to track ???";
-        }
+        return String.format("Failed to track %s%s", activityKind.toString(), suffix);
     }
 }
