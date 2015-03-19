@@ -9,6 +9,9 @@
 
 package com.adjust.sdk;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Map;
@@ -95,5 +98,13 @@ public class ActivityPackage implements Serializable {
 
     protected String getFailureMessage() {
         return String.format("Failed to track %s%s", activityKind.toString(), suffix);
+    }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+        stream.defaultReadObject();
     }
 }

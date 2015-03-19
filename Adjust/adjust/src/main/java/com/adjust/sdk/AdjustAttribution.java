@@ -2,6 +2,9 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 
@@ -68,4 +71,13 @@ public class AdjustAttribution implements Serializable {
         return String.format("tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative);
     }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+        stream.defaultReadObject();
+    }
+
 }

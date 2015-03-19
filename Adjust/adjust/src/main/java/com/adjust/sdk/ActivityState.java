@@ -12,6 +12,7 @@ package com.adjust.sdk;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
+import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
@@ -115,6 +116,9 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+     }
 
     private static String stamp(long dateMillis) {
         Calendar calendar = Calendar.getInstance();
