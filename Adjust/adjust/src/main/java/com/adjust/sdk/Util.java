@@ -45,6 +45,7 @@ public class Util {
 
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
+    private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     private static final ILogger logger = AdjustFactory.getLogger();
 
     protected static String createUuid() {
@@ -197,5 +198,41 @@ public class Util {
     public static boolean checkPermission(Context context, String permission) {
         int result = context.checkCallingOrSelfPermission(permission);
         return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static String readStringField(ObjectInputStream.GetField fields, String name, String defaultValue) {
+        try {
+            return (String) fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean readBooleanField(ObjectInputStream.GetField fields, String name, boolean defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int readIntField(ObjectInputStream.GetField fields, String name, int defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static long readLongField(ObjectInputStream.GetField fields, String name, long defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            logger.debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
     }
 }
