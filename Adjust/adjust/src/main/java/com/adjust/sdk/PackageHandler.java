@@ -17,16 +17,6 @@ import android.os.Message;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.NotSerializableException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 // persistent
 public class PackageHandler extends HandlerThread implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
+    private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
     private final InternalHandler internalHandler;
     private IRequestHandler requestHandler;
@@ -214,61 +205,21 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void readPackageQueue() {
-        try {
-            FileInputStream inputStream = context.openFileInput(PACKAGE_QUEUE_FILENAME);
-            BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
-            ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+        packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME);
 
-            try {
-                Object object = objectStream.readObject();
-                @SuppressWarnings("unchecked")
-                List<ActivityPackage> packageQueue = (List<ActivityPackage>) object;
-                logger.debug("Package handler read %d packages", packageQueue.size());
-                this.packageQueue = packageQueue;
-                return;
-            } catch (ClassNotFoundException e) {
-                logger.error("Failed to find package queue class");
-            } catch (OptionalDataException e) {
-                /* no-op */
-            } catch (IOException e) {
-                logger.error("Failed to read package queue object");
-            } catch (ClassCastException e) {
-                logger.error("Failed to cast package queue object");
-            } finally {
-                objectStream.close();
-            }
-        } catch (FileNotFoundException e) {
-            logger.verbose("Package queue file not found");
-        } catch (Exception e) {
-            logger.error("Failed to read package queue file");
+        if (packageQueue != null) {
+            logger.debug("Package handler read %d packages", packageQueue.size());
+        } else {
+            packageQueue = new ArrayList<>();
         }
+    }
 
-        // start with a fresh package queue in case of any exception
-        packageQueue = new ArrayList<ActivityPackage>();
+    private void writePackageQueue() {
+        Util.writeObject(packageQueue, context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME);
+        logger.debug("Package handler wrote %d packages", packageQueue.size());
     }
 
     public static Boolean deletePackageQueue(Context context) {
         return context.deleteFile(PACKAGE_QUEUE_FILENAME);
-    }
-
-
-    private void writePackageQueue() {
-        try {
-            FileOutputStream outputStream = context.openFileOutput(PACKAGE_QUEUE_FILENAME, Context.MODE_PRIVATE);
-            BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
-            ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
-
-            try {
-                objectStream.writeObject(packageQueue);
-                logger.debug("Package handler wrote %d packages", packageQueue.size());
-            } catch (NotSerializableException e) {
-                logger.error("Failed to serialize packages");
-            } finally {
-                objectStream.close();
-            }
-        } catch (Exception e) {
-            logger.error("Failed to write packages (%s)", e.getLocalizedMessage());
-            e.printStackTrace();
-        }
     }
 }
