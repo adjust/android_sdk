@@ -216,7 +216,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         assertUtil.verbose("Response: { }");
 
-        assertUtil.debug("No message found");
+        assertUtil.info("No message found");
 
         // check attribution was called without ask_in
         assertUtil.test("ActivityHandler tryUpdateAttribution, null");
@@ -254,7 +254,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.verbose("Response: { \"message\" : \"response OK\"}");
 
         // the message in the response
-        assertUtil.debug("response OK");
+        assertUtil.info("response OK");
 
         // check attribution was called without ask_in
         assertUtil.test("ActivityHandler tryUpdateAttribution, null");

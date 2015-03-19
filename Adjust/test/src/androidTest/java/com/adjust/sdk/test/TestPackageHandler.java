@@ -277,8 +277,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     private ActivityPackage createUnknowPackage(String suffix) {
-        ActivityPackage activityPackage = new ActivityPackage();
-        activityPackage.setActivityKind(ActivityKind.UNKNOWN);
+        ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
         activityPackage.setSuffix(suffix);
 
         return activityPackage;
