@@ -11,6 +11,8 @@ package com.adjust.sdk;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
@@ -75,8 +77,9 @@ public class ActivityPackage implements Serializable {
 
         if (parameters != null) {
             builder.append("Parameters:");
-            for (Map.Entry<String, String> entry : parameters.entrySet()) {
-                builder.append(String.format("\n\t%-16s %s", entry.getKey(), entry.getValue()));
+            SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
+            for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
+                builder.append(String.format("\n\t%-16s %s", entry.getKey(),  entry.getValue()));
             }
         }
         return builder.toString();
