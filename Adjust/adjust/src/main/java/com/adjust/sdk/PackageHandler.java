@@ -210,7 +210,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         if (packageQueue != null) {
             logger.debug("Package handler read %d packages", packageQueue.size());
         } else {
-            packageQueue = new ArrayList<>();
+            packageQueue = new ArrayList<ActivityPackage>();
         }
     }
 
