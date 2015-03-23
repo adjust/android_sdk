@@ -40,13 +40,9 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{viewListingEventToken}");
 
-CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
-CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
-CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+List<String> productIds = Arrays.asList("productId1", "productId2", "productId3");
 
-List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
-
-AdjustCriteo.injectViewListingIntoEvent(event, products, "customerId1");
+AdjustCriteo.injectViewListingIntoEvent(event, productIds, "customerId1");
 
 Adjust.trackEvent(event);
 ```
