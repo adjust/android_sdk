@@ -12,14 +12,27 @@ package com.adjust.sdk;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectInputStream.GetField;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private transient String readErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     private transient ILogger logger;
+    private static final ObjectStreamField[] serialPersistentFields = {
+            new ObjectStreamField("uuid", String.class),
+            new ObjectStreamField("enabled", boolean.class),
+            new ObjectStreamField("askingAttribution", boolean.class),
+            new ObjectStreamField("eventCount", int.class),
+            new ObjectStreamField("sessionCount", int.class),
+            new ObjectStreamField("subsessionCount", int.class),
+            new ObjectStreamField("sessionLength", long.class),
+            new ObjectStreamField("timeSpent", long.class),
+            new ObjectStreamField("lastActivity", long.class),
+            new ObjectStreamField("lastInterval", long.class)
+    };
 
     // persistent data
     protected String uuid;
@@ -80,22 +93,56 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other == null) return false;
+        if (getClass() != other.getClass()) return false;
+        ActivityState otherActivityState = (ActivityState) other;
+
+        if (!Util.equalString(uuid, otherActivityState.uuid))               return false;
+        if (!Util.equalBoolean(enabled, otherActivityState.enabled))            return false;
+        if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution))  return false;
+        if (!Util.equalInt(eventCount, otherActivityState.eventCount))         return false;
+        if (!Util.equalInt(sessionCount, otherActivityState.sessionCount))       return false;
+        if (!Util.equalInt(subsessionCount, otherActivityState.subsessionCount))    return false;
+        if (!Util.equalLong(sessionLength, otherActivityState.sessionLength))      return false;
+        if (!Util.equalLong(timeSpent, otherActivityState.timeSpent))          return false;
+        if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode = 37 * hashCode + Util.hashString(uuid);
+        hashCode = 37 * hashCode + Util.hashBoolean(enabled);
+        hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution);
+        hashCode = 37 * hashCode + eventCount;
+        hashCode = 37 * hashCode + sessionCount;
+        hashCode = 37 * hashCode + subsessionCount;
+        hashCode = 37 * hashCode + Util.hashLong(sessionLength);
+        hashCode = 37 * hashCode + Util.hashLong(timeSpent);
+        hashCode = 37 * hashCode + Util.hashLong(lastInterval);
+        return hashCode;
+    }
+
 
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();
 
-        eventCount = readIntField(fields, "eventCount", 0);
-        sessionCount = readIntField(fields, "sessionCount", 0);
-        subsessionCount = readIntField(fields, "subsessionCount", -1);
-        sessionLength = readLongField(fields, "sessionLength", -1l);
-        timeSpent = readLongField(fields, "timeSpent", -1l);
-        lastActivity = readLongField(fields, "lastActivity", -1l);
-        lastInterval = readLongField(fields, "lastInterval", -1l);
+        eventCount = Util.readIntField(fields, "eventCount", 0);
+        sessionCount = Util.readIntField(fields, "sessionCount", 0);
+        subsessionCount = Util.readIntField(fields, "subsessionCount", -1);
+        sessionLength = Util.readLongField(fields, "sessionLength", -1l);
+        timeSpent = Util.readLongField(fields, "timeSpent", -1l);
+        lastActivity = Util.readLongField(fields, "lastActivity", -1l);
+        lastInterval = Util.readLongField(fields, "lastInterval", -1l);
 
         // new fields
-        uuid = readStringField(fields, "uuid", null);
-        enabled = readBooleanField(fields, "enabled", true);
-        askingAttribution = readBooleanField(fields, "askingAttribution", false);
+        uuid = Util.readStringField(fields, "uuid", null);
+        enabled = Util.readBooleanField(fields, "enabled", true);
+        askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         // create UUID for migrating devices
         if (uuid == null) {
@@ -103,41 +150,9 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
-    private String readStringField(GetField fields, String name, String defaultValue) {
-        try {
-            return (String) fields.get(name, defaultValue);
-        } catch (Exception e) {
-            logger.debug(readErrorMessage, name, e.getMessage());
-            return defaultValue;
-        }
-    }
-
-    private boolean readBooleanField(GetField fields, String name, boolean defaultValue) {
-        try {
-            return fields.get(name, defaultValue);
-        } catch (Exception e) {
-            logger.debug(readErrorMessage, name, e.getMessage());
-            return defaultValue;
-        }
-    }
-
-    private int readIntField(GetField fields, String name, int defaultValue) {
-        try {
-            return fields.get(name, defaultValue);
-        } catch (Exception e) {
-            logger.debug(readErrorMessage, name, e.getMessage());
-            return defaultValue;
-        }
-    }
-
-    private long readLongField(GetField fields, String name, long defaultValue) {
-        try {
-            return fields.get(name, defaultValue);
-        } catch (Exception e) {
-            logger.debug(readErrorMessage, name, e.getMessage());
-            return defaultValue;
-        }
-    }
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+     }
 
     private static String stamp(long dateMillis) {
         Calendar calendar = Calendar.getInstance();

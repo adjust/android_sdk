@@ -15,3 +15,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep class com.adjust.sdk.plugin.MacAddressUtil { <methods>; }
+-keep class com.adjust.sdk.plugin.AndroidIdUtil { <methods>; }
+#-keep class com.adjust.sdk.plugin.MacAddressUtil { String getMacAddress(android.content.Context); }
+#-keep class com.adjust.sdk.plugin.AndroidIdUtil { String getAndroidId(android.content.Context); }
+
+-keep class com.google.android.gms.common.GooglePlayServicesUtil {
+    int isGooglePlayServicesAvailable (android.content.Context);
+}
+-keep class com.google.android.gms.common.ConnectionResult {
+    int SUCCESS;
+}
+-keep class com.google.android.gms.ads.identifier.** { *; }
+
+#-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+#    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info getAdvertisingIdInfo (android.content.Contextxt);
+#}
+#-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient.Info {
+#    String getId ();
+#    boolean isLimitAdTrackingEnabled();
+#}

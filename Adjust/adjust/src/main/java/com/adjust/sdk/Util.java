@@ -24,16 +24,16 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -45,6 +45,11 @@ public class Util {
 
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
+    private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
+
+    private static ILogger getLogger() {
+        return AdjustFactory.getLogger();
+    }
 
     protected static String createUuid() {
         return UUID.randomUUID().toString();
@@ -80,74 +85,76 @@ public class Util {
     }
 
     public static <T> T readObject(Context context, String filename, String objectName) {
-        ILogger logger = AdjustFactory.getLogger();
+        Closeable closable = null;
+        @SuppressWarnings("unchecked")
+        T object = null;
         try {
             FileInputStream inputStream = context.openFileInput(filename);
+            closable = inputStream;
+
             BufferedInputStream bufferedStream = new BufferedInputStream(inputStream);
+            closable = bufferedStream;
+
             ObjectInputStream objectStream = new ObjectInputStream(bufferedStream);
+            closable = objectStream;
 
             try {
-                @SuppressWarnings("unchecked")
-                T t = (T) objectStream.readObject();
-                logger.debug("Read %s: %s", objectName, t);
-                return t;
+                object = (T) objectStream.readObject();
+                getLogger().debug("Read %s: %s", objectName, object);
             } catch (ClassNotFoundException e) {
-                logger.error("Failed to find %s class", objectName);
-            } catch (OptionalDataException e) {
-                /* no-op */
-            } catch (IOException e) {
-                logger.error("Failed to read %s object", objectName);
+                getLogger().error("Failed to find %s class (%s)", objectName, e.getMessage());
             } catch (ClassCastException e) {
-                logger.error("Failed to cast %s object", objectName);
-            } finally {
-                objectStream.close();
+                getLogger().error("Failed to cast %s object (%s)", objectName, e.getMessage());
+            } catch (Exception e) {
+                getLogger().error("Failed to read %s object (%s)", objectName, e.getMessage());
             }
-
         } catch (FileNotFoundException e) {
-            logger.verbose("%s file not found", objectName);
+            getLogger().verbose("%s file not found", objectName);
         } catch (Exception e) {
-            logger.error("Failed to open %s file for reading (%s)", objectName, e);
+            getLogger().error("Failed to open %s file for reading (%s)", objectName, e);
+        }
+        try {
+            if (closable != null) {
+                closable.close();
+            }
+        } catch (Exception e) {
+            getLogger().error("Failed to close %s file for reading (%s)", objectName, e);
         }
 
-        return null;
+        return object;
     }
 
     public static <T> void writeObject(T object, Context context, String filename, String objectName) {
-        ILogger logger = AdjustFactory.getLogger();
+        Closeable closable = null;
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
+            closable = outputStream;
+
             BufferedOutputStream bufferedStream = new BufferedOutputStream(outputStream);
+            closable = bufferedStream;
+
             ObjectOutputStream objectStream = new ObjectOutputStream(bufferedStream);
+            closable = objectStream;
 
             try {
                 objectStream.writeObject(object);
-                logger.debug("Wrote %s: %s", objectName, object);
+                getLogger().debug("Wrote %s: %s", objectName, object);
             } catch (NotSerializableException e) {
-                logger.error("Failed to serialize %s", objectName);
-            } finally {
-                objectStream.close();
+                getLogger().error("Failed to serialize %s", objectName);
             }
-
         } catch (Exception e) {
-            logger.error("Failed to open %s for writing (%s)", objectName, e);
+            getLogger().error("Failed to open %s for writing (%s)", objectName, e);
         }
-    }
-
-    public static String parseResponse(HttpResponse httpResponse, ILogger logger) {
         try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            httpResponse.getEntity().writeTo(out);
-            out.close();
-            String response = out.toString().trim();
-            logger.verbose("Response: %s", response);
-            return response;
+            if (closable != null) {
+                closable.close();
+            }
         } catch (Exception e) {
-            logger.error("Failed to parse response (%s)", e);
-            return null;
+            getLogger().error("Failed to close %s file for writing (%s)", objectName, e);
         }
     }
 
-    public static JSONObject parseJsonResponse(HttpResponse httpResponse, ILogger logger) {
+    public static JSONObject parseJsonResponse(HttpResponse httpResponse) {
         if (httpResponse == null) {
             return null;
         }
@@ -158,17 +165,17 @@ public class Util {
             out.close();
             stringResponse = out.toString().trim();
         } catch (Exception e) {
-            logger.error("Failed to parse response (%s)", e.getMessage());
+            getLogger().error("Failed to parse response (%s)", e.getMessage());
         }
 
-        logger.verbose("Response: %s", stringResponse);
+        getLogger().verbose("Response: %s", stringResponse);
         if (stringResponse == null) return null;
 
         JSONObject jsonResponse = null;
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            logger.error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
+            getLogger().error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
         }
 
         if (jsonResponse == null) return null;
@@ -180,9 +187,9 @@ public class Util {
         }
 
         if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            logger.info("%s", message);
+            getLogger().info("%s", message);
         } else {
-            logger.error("%s", message);
+            getLogger().error("%s", message);
         }
 
         return jsonResponse;
@@ -198,5 +205,121 @@ public class Util {
     public static boolean checkPermission(Context context, String permission) {
         int result = context.checkCallingOrSelfPermission(permission);
         return result == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public static String readStringField(ObjectInputStream.GetField fields, String name, String defaultValue) {
+        return readObjectField(fields, name, defaultValue);
+    }
+
+    public static <T> T readObjectField(ObjectInputStream.GetField fields, String name, T defaultValue) {
+        try {
+            return (T) fields.get(name, defaultValue);
+        } catch (Exception e) {
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean readBooleanField(ObjectInputStream.GetField fields, String name, boolean defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static int readIntField(ObjectInputStream.GetField fields, String name, int defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static long readLongField(ObjectInputStream.GetField fields, String name, long defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
+    public static boolean equalObject(Object first, Object second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return first.equals(second);
+    }
+
+    public static boolean equalsMap(Map first, Map second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return first.entrySet().equals(second.entrySet());
+    }
+
+    public static boolean equalsDouble(Double first, Double second) {
+        if (first == null || second == null) {
+            return first == null && second == null;
+        }
+        return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
+    }
+
+    public static boolean equalString(String first, String second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalEnum(Enum first, Enum second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalLong(Long first, Long second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalInt(Integer first, Integer second) {
+        return equalObject(first, second);
+    }
+
+    public static boolean equalBoolean(Boolean first, Boolean second) {
+        return equalObject(first, second);
+    }
+
+    public static int hashBoolean(Boolean value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashLong(Long value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashString(String value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashEnum(Enum value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashMap(Map value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.entrySet().hashCode();
     }
 }

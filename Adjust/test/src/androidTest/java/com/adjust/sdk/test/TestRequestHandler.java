@@ -170,7 +170,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.verbose("Response: { }");
 
-        assertUtil.debug("No message found");
+        assertUtil.info("No message found");
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {}");
 
@@ -186,7 +186,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.verbose("Response: { \"message\" : \"response OK\"}");
 
-        assertUtil.debug("response OK");
+        assertUtil.info("response OK");
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"response OK\"}");
 
@@ -202,7 +202,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.verbose("Response: { \"attribution\" : {\"tracker_token\" : \"ttValue\" , \"tracker_name\"  : \"tnValue\" , \"network\"       : \"nValue\" , \"campaign\"      : \"cpValue\" , \"adgroup\"       : \"aValue\" , \"creative\"      : \"ctValue\" } }");
 
-        assertUtil.debug("No message found");
+        assertUtil.info("No message found");
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\"}}");
 

@@ -40,13 +40,9 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{viewListingEventToken}");
 
-CriteoProduct product1 = new CriteoProduct(100, 1, "productId1");
-CriteoProduct product2 = new CriteoProduct(77.7f, 3, "productId2");
-CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
+List<String> productIds = Arrays.asList("productId1", "productId2", "productId3");
 
-List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
-
-AdjustCriteo.injectViewListingIntoEvent(event, products, "customerId1");
+AdjustCriteo.injectViewListingIntoEvent(event, productIds, "customerId1");
 
 Adjust.trackEvent(event);
 ```
@@ -97,4 +93,77 @@ List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
 AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "customerId1");
 
 Adjust.trackEvent(event);
+```
+
+### User Level
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userLevelEventToken}");
+
+AdjustCriteo.injectUserLevelIntoEvent(event, 1, "customerId1");
+
+Adjust.trackEvent(event);
+```
+
+### User Status
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{userStatusEventToken}");
+
+AdjustCriteo.injectUserStatusIntoEvent(event, "uiStatusValue", "customerId1");
+
+Adjust.trackEvent(event);
+```
+
+### Achievement Unlocked
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{achievementUnlockedEventToken}");
+
+AdjustCriteo.injectAchievementUnlockedIntoEvent(event, "AchievementUnlocked", "customerId1");
+
+Adjust.trackEvent(event);
+```
+
+### Custom Event
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEventEventToken}");
+
+AdjustCriteo.injectCustomEventIntoEvent(event, "uiDataValue", "customerId1");
+
+Adjust.trackEvent(event);
+```
+
+### Custom Event 2
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustEvent event = new AdjustEvent("{customEvent2EventToken}");
+
+AdjustCriteo.injectCustomEvent2IntoEvent(event, "uiData2Value", 3, "customerId1");
+
+Adjust.trackEvent(event);
+```
+
+### Hashed Email
+
+It's possible to attach an hashed email in every Criteo event with the `injectHashedEmailIntoCriteoEvents` method.
+The hashed email will be sent with every Criteo event for the duration of the application lifecycle,
+so it must be set again when the app is re-lauched.
+The hashed email can be removed by setting the `injectHashedEmailIntoCriteoEvents` method with `null`.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectHashedEmailIntoCriteoEvents("8455938a1db5c475a87d76edacb6284e");
 ```

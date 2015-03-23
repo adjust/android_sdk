@@ -2,6 +2,10 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
 import java.io.Serializable;
 
 /**
@@ -9,6 +13,14 @@ import java.io.Serializable;
  */
 public class AdjustAttribution implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final ObjectStreamField[] serialPersistentFields = {
+            new ObjectStreamField("trackerToken", String.class),
+            new ObjectStreamField("trackerName", String.class),
+            new ObjectStreamField("network", String.class),
+            new ObjectStreamField("campaign", String.class),
+            new ObjectStreamField("adgroup", String.class),
+            new ObjectStreamField("creative", String.class)
+    };
 
     public String trackerToken;
     public String trackerName;
@@ -32,31 +44,47 @@ public class AdjustAttribution implements Serializable {
         return attribution;
     }
 
+    @Override
     public boolean equals(Object other) {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
         AdjustAttribution otherAttribution = (AdjustAttribution) other;
 
-        if (!equalString(trackerToken,  otherAttribution.trackerToken)) return false;
-        if (!equalString(trackerName,   otherAttribution.trackerName)) return false;
-        if (!equalString(network,       otherAttribution.network)) return false;
-        if (!equalString(campaign,      otherAttribution.campaign)) return false;
-        if (!equalString(adgroup,       otherAttribution.adgroup)) return false;
-        if (!equalString(creative,      otherAttribution.creative)) return false;
+        if (!Util.equalString(trackerToken, otherAttribution.trackerToken)) return false;
+        if (!Util.equalString(trackerName, otherAttribution.trackerName)) return false;
+        if (!Util.equalString(network, otherAttribution.network)) return false;
+        if (!Util.equalString(campaign, otherAttribution.campaign)) return false;
+        if (!Util.equalString(adgroup, otherAttribution.adgroup)) return false;
+        if (!Util.equalString(creative, otherAttribution.creative)) return false;
         return true;
     }
 
-    private boolean equalString(String first, String second) {
-        if (first == null || second == null) {
-            return first == null && second == null;
-        }
-        return first.equals(second);
+    @Override
+    public int hashCode() {
+        int hashCode = 17;
+        hashCode = 37 * hashCode + Util.hashString(trackerToken);
+        hashCode = 37 * hashCode + Util.hashString(trackerName);
+        hashCode = 37 * hashCode + Util.hashString(network);
+        hashCode = 37 * hashCode + Util.hashString(campaign);
+        hashCode = 37 * hashCode + Util.hashString(adgroup);
+        hashCode = 37 * hashCode + Util.hashString(creative);
+        return hashCode;
     }
+
 
     @Override
     public String toString() {
         return String.format("tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative);
     }
+
+    private void writeObject(ObjectOutputStream stream) throws IOException {
+        stream.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+        stream.defaultReadObject();
+    }
+
 }

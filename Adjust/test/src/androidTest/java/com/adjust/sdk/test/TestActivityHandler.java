@@ -1122,8 +1122,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         assertUtil.test("PackageHandler pauseSending");
 
-        assertUtil.test("AttributionHandler init, startPaused: true");
-
         assertUtil.test("AttributionHandler pauseSending");
 
         // disable the SDK
@@ -1315,26 +1313,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustFactory.setTimerStart(500);
         /***
          * if (attribution == null || activityState.askingAttribution) {
-         *   if (shouldGetAttribution) {
          *     getAttributionHandler().getAttribution();
-         *   }
          * }
-         *
-         *  9 possible states with variables
-         *  attribution = null          -> attrNul
-         *  askingAttribution = true    -> askAttr
-         *  shouldGetAttribution = true -> shldGet
-         *  getAttribution is called    -> getAttr
-         *
-         *  State   Number  attrNul |   askAttr |   shldGet ->  getAttr
-         *  000->0  0       False   |   False   |   False   ->  False
-         *  001->0  1       False   |   False   |   True    ->  False
-         *  010->0  2       False   |   True    |   False   ->  False
-         *  011->1  3       False   |   True    |   True    ->  True
-         *  100->0  4       True    |   False   |   False   ->  False
-         *  101->1  5       True    |   False   |   True    ->  True
-         *  110->0  6       True    |   True    |   False   ->  False
-         *  111->1  7       True    |   True    |   True    ->  True
          */
 
         // create the config to start the session
@@ -1355,26 +1335,22 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // test init values
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
-        // state 100->0 number 4
         // attribution is null,
         // askingAttribution is false by default,
-        // shouldGetAttribution is false after a session
 
         // test first session start
         firstSessionStartWithoutTimerTests(false, false);
 
-        timerFiredTest();
+        // there should be a getAttribution
+        assertUtil.test("AttributionHandler getAttribution");
 
-        // there shouldn't be a getAttribution
-        assertUtil.notInTest("AttributionHandler getAttribution");
+        timerFiredTest();
 
         // save activity state
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
 
-        // state 110->0 number 6
         // attribution is null,
         // askingAttribution is set to true,
-        // shouldGetAttribution is false after a session
 
         // set asking attribution
         activityHandler.setAskingAttribution(true);
@@ -1384,12 +1360,10 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(2000);
 
-        subsessionGetAttributionTest(2, false);
+        subsessionGetAttributionTest(2, true);
 
-        // state 010->0 number 2
         // attribution is set,
         // askingAttribution is set to true,
-        // shouldGetAttribution is false after a session
 
         JSONObject jsonAttribution = null;
 
@@ -1416,12 +1390,10 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(2000);
 
-        subsessionGetAttributionTest(3, false);
+        subsessionGetAttributionTest(3, true);
 
-        // state 000->0 number 0
         // attribution is set,
         // askingAttribution is set to false
-        // shouldGetAttribution is false after a session
 
         activityHandler.setAskingAttribution(false);
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:3");
@@ -1431,80 +1403,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(2000);
 
         subsessionGetAttributionTest(4, false);
-
-        // state 101->1 number 5
-        // attribution is null,
-        // askingAttribution is set to false from the previous activity handler
-        // shouldGetAttribution is true after restarting with no new session
-
-        // delete attribution to start as null
-        ActivityHandler.deleteAttribution(context);
-
-        // deleting the attribution file to simulate a first session
-        mockLogger.test("Was Attribution deleted? " + true);
-
-        // reset activity handler with previous saved activity state
-        config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
-
-        config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
-            @Override
-            public void onAttributionChanged(AdjustAttribution attribution) {
-                mockLogger.test("onAttributionChanged " + attribution);
-            }
-        });
-        activityHandler = ActivityHandler.getInstance(config);
-
-        SystemClock.sleep(3000);
-
-        // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
-
-        subsessionGetAttributionTest(5, true);
-
-        // state 111->1 number 7
-        // attribution is null,
-        // askingAttribution is set to true,
-        // shouldGetAttribution is still true
-
-        activityHandler.setAskingAttribution(true);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:5");
-
-        // trigger a new sub session
-        activityHandler.trackSubsessionStart();
-        SystemClock.sleep(2000);
-
-        subsessionGetAttributionTest(6, true);
-
-        // state 011->1 number 3
-        // attribution is set,
-        // askingAttribution is set to true,
-        // shouldGetAttribution is still true
-
-        // update the attribution
-        activityHandler.tryUpdateAttribution(attribution);
-
-        // attribution was updated
-        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
-
-        // trigger a new sub session
-        activityHandler.trackSubsessionStart();
-        SystemClock.sleep(2000);
-
-        subsessionGetAttributionTest(7, true);
-
-        // state 001->0 number 1
-        // attribution is set,
-        // askingAttribution is set to false,
-        // shouldGetAttribution is still true
-
-        activityHandler.setAskingAttribution(false);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:7");
-
-        // trigger a new sub session
-        activityHandler.trackSubsessionStart();
-        SystemClock.sleep(2000);
-
-        subsessionGetAttributionTest(8, false);
     }
 
     private void firstSessionSubsessionsTest(int subsessionCount) {
