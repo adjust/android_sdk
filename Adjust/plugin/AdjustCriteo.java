@@ -26,7 +26,7 @@ public class AdjustCriteo {
         String jsonProducts = createCriteoVLFromProducts(productIds);
 
         if (jsonProducts == null) {
-            logger.error("Missing products from Criteo View Listing");
+            logger.error("Criteo View Listing must contain a product id list.");
             return;
         }
 
@@ -44,7 +44,7 @@ public class AdjustCriteo {
     public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
         if (jsonProducts == null) {
-            logger.error("Missing products from Criteo Cart");
+            logger.error("Criteo Cart must contain a list of CriteoProduct.");
             return;
         }
 
@@ -56,7 +56,7 @@ public class AdjustCriteo {
     public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
         if (jsonProducts == null) {
-            logger.error("Missing products from Criteo Transaction Confirmed");
+            logger.error("Criteo Transaction Confirmed must contain a list of products.");
             return;
         }
 
