@@ -100,7 +100,7 @@ public class ActivityPackage implements Serializable {
     }
 
     protected String getFailureMessage() {
-        return String.format("Failed to track %s%s", activityKind.toString(), suffix);
+        return String.format("Failed to track %s%s", (activityKind == null? "unknown":activityKind.toString()), suffix);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
