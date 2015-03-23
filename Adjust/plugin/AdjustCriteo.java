@@ -6,6 +6,7 @@ import com.adjust.sdk.ILogger;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,73 +20,68 @@ public class AdjustCriteo {
     public static void injectViewSearchIntoEvent(AdjustEvent event, String checkInDate, String checkOutDate) {
         event.addPartnerParameter("din", checkInDate);
         event.addPartnerParameter("dout", checkOutDate);
+
         injectHashEmail(event);
     }
 
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> productIds, String customerId) {
         String jsonProducts = createCriteoVLFromProducts(productIds);
-
-        if (jsonProducts == null) {
-            logger.error("Criteo View Listing must contain a product id list.");
-            return;
-        }
-
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
+
         injectHashEmail(event);
     }
 
     public static void injectViewProductIntoEvent(AdjustEvent event, String productId, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", productId);
+
         injectHashEmail(event);
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
-        if (jsonProducts == null) {
-            logger.error("Criteo Cart must contain a list of CriteoProduct.");
-            return;
-        }
 
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
+
         injectHashEmail(event);
     }
 
     public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
-        if (jsonProducts == null) {
-            logger.error("Criteo Transaction Confirmed must contain a list of products.");
-            return;
-        }
 
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
+
         injectHashEmail(event);
     }
 
     public static void injectUserLevelIntoEvent(AdjustEvent event, long uiLevel, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("ui_level", String.valueOf(uiLevel));
+
         injectHashEmail(event);
     }
 
     public static void injectUserStatusIntoEvent(AdjustEvent event, String uiStatus, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("ui_status", uiStatus);
+
         injectHashEmail(event);
     }
 
     public static void injectAchievementUnlockedIntoEvent(AdjustEvent event, String uiAchievement, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("ui_achievmnt", uiAchievement);
+
         injectHashEmail(event);
     }
 
     public static void injectCustomEventIntoEvent(AdjustEvent event, String uiData, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("ui_data", uiData);
+
         injectHashEmail(event);
     }
 
@@ -93,6 +89,7 @@ public class AdjustCriteo {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("ui_data2", uiData2);
         event.addPartnerParameter("ui_data3", String.valueOf(uiData3));
+
         injectHashEmail(event);
     }
 
@@ -110,7 +107,8 @@ public class AdjustCriteo {
 
     private static String createCriteoVLFromProducts(List<String> productIds) {
         if (productIds == null) {
-            return null;
+            logger.warn("Criteo View Listing product ids list is null. It will sent as empty.");
+            productIds = new ArrayList<String>();
         }
         StringBuffer criteoVLValue = new StringBuffer("[");
         int productIdsSize = productIds.size();
@@ -142,8 +140,9 @@ public class AdjustCriteo {
     }
 
     private static String createCriteoVBFromProducts(List<CriteoProduct> products) {
-        if (logger == null) {
-            return null;
+        if (products == null) {
+            logger.warn("Criteo Event product list is empty. It will sent as empty.");
+            products = new ArrayList<CriteoProduct>();
         }
         StringBuffer criteoVBValue = new StringBuffer("[");
         int productsSize = products.size();
