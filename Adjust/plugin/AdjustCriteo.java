@@ -59,6 +59,32 @@ public class AdjustCriteo {
         event.addPartnerParameter("criteo_p", jsonProducts);
     }
 
+    public static void injectUserLevelIntoEvent(AdjustEvent event, long uiLevel, String customerId) {
+        event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("ui_level", String.valueOf(uiLevel));
+    }
+
+    public static void injectUserStatusIntoEvent(AdjustEvent event, String uiStatus, String customerId) {
+        event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("ui_status", uiStatus);
+    }
+
+    public static void injectAchievementUnlockedIntoEvent(AdjustEvent event, String uiAchievement, String customerId) {
+        event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("ui_achievmnt", uiAchievement);
+    }
+
+    public static void injectCustomEventIntoEvent(AdjustEvent event, String uiData, String customerId) {
+        event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("ui_data", uiData);
+    }
+
+    public static void injectCustomEvent2IntoEvent(AdjustEvent event, String uiData2, long uiData3, String customerId) {
+        event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("ui_data2", uiData2);
+        event.addPartnerParameter("ui_data3", String.valueOf(uiData3));
+    }
+
     private static String createCriteoVLFromProducts(List<String> productIds) {
         if (productIds == null) {
             return null;
