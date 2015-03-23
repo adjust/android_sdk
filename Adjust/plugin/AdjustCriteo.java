@@ -20,8 +20,8 @@ public class AdjustCriteo {
         event.addPartnerParameter("dout", checkOutDate);
     }
 
-    public static void injectViewListingIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
-        String jsonProducts = createCriteoVLFromProducts(products);
+    public static void injectViewListingIntoEvent(AdjustEvent event, List<String> productIds, String customerId) {
+        String jsonProducts = createCriteoVLFromProducts(productIds);
 
         if (jsonProducts == null) {
             logger.error("Missing products from Criteo View Listing");
@@ -59,35 +59,35 @@ public class AdjustCriteo {
         event.addPartnerParameter("criteo_p", jsonProducts);
     }
 
-    private static String createCriteoVLFromProducts(List<CriteoProduct> products) {
-        if (products == null) {
+    private static String createCriteoVLFromProducts(List<String> productIds) {
+        if (productIds == null) {
             return null;
         }
-        StringBuffer criteoVBValue = new StringBuffer("[");
-        int productsSize = products.size();
+        StringBuffer criteoVLValue = new StringBuffer("[");
+        int productIdsSize = productIds.size();
 
-        if (productsSize > MAX_VIEW_LISTING_PRODUCTS) {
-            logger.warn("View Listing events should only have at most 3 objects, discarding the rest");
+        if (productIdsSize > MAX_VIEW_LISTING_PRODUCTS) {
+            logger.warn("Criteo View Listing should only have at most 3 product ids. The rest will be discarded.");
         }
-        for (int i = 0; i < productsSize; ) {
-            CriteoProduct criteoProduct = products.get(i);
-            String productString = String.format("\"%s\"", criteoProduct.productID);
-            criteoVBValue.append(productString);
+        for (int i = 0; i < productIdsSize; ) {
+            String productID = productIds.get(i);
+            String productString = String.format("\"%s\"", productID);
+            criteoVLValue.append(productString);
 
             i++;
 
-            if (i == productsSize || i >= MAX_VIEW_LISTING_PRODUCTS) {
+            if (i == productIdsSize || i >= MAX_VIEW_LISTING_PRODUCTS) {
                 break;
             }
 
-            criteoVBValue.append(",");
+            criteoVLValue.append(",");
         }
-        criteoVBValue.append("]");
+        criteoVLValue.append("]");
         String result = null;
         try {
-            result = URLEncoder.encode(criteoVBValue.toString(),"UTF-8");
+            result = URLEncoder.encode(criteoVLValue.toString(),"UTF-8");
         } catch (UnsupportedEncodingException e) {
-            logger.error("error converting criteo products (%s)", e.getMessage());
+            logger.error("error converting criteo product ids (%s)", e.getMessage());
         }
         return result;
     }
