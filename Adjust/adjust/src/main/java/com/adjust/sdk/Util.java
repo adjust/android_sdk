@@ -28,11 +28,9 @@ import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
@@ -104,13 +102,11 @@ public class Util {
                 object = (T) objectStream.readObject();
                 getLogger().debug("Read %s: %s", objectName, object);
             } catch (ClassNotFoundException e) {
-                getLogger().error("Failed to find %s class", objectName);
-            } catch (OptionalDataException e) {
-                /* no-op */
-            } catch (IOException e) {
-                getLogger().error("Failed to read %s object", objectName);
+                getLogger().error("Failed to find %s class (%s)", objectName, e.getMessage());
             } catch (ClassCastException e) {
-                getLogger().error("Failed to cast %s object", objectName);
+                getLogger().error("Failed to cast %s object (%s)", objectName, e.getMessage());
+            } catch (Exception e) {
+                getLogger().error("Failed to read %s object (%s)", objectName, e.getMessage());
             }
         } catch (FileNotFoundException e) {
             getLogger().verbose("%s file not found", objectName);
@@ -212,8 +208,12 @@ public class Util {
     }
 
     public static String readStringField(ObjectInputStream.GetField fields, String name, String defaultValue) {
+        return readObjectField(fields, name, defaultValue);
+    }
+
+    public static <T> T readObjectField(ObjectInputStream.GetField fields, String name, T defaultValue) {
         try {
-            return (String) fields.get(name, defaultValue);
+            return (T) fields.get(name, defaultValue);
         } catch (Exception e) {
             getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
             return defaultValue;

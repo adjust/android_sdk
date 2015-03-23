@@ -1,7 +1,7 @@
 package com.adjust.sdk;
 
 public enum ActivityKind {
-    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION;
+    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION;
 
     public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {

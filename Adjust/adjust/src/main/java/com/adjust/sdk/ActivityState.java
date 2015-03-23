@@ -100,15 +100,15 @@ public class ActivityState implements Serializable, Cloneable {
         if (getClass() != other.getClass()) return false;
         ActivityState otherActivityState = (ActivityState) other;
 
-        if (!Util.equalString(  uuid,               otherActivityState.uuid))               return false;
-        if (!Util.equalBoolean( enabled,            otherActivityState.enabled))            return false;
-        if (!Util.equalBoolean( askingAttribution,  otherActivityState.askingAttribution))  return false;
-        if (!Util.equalInt(     eventCount,         otherActivityState.eventCount))         return false;
-        if (!Util.equalInt(     sessionCount,       otherActivityState.sessionCount))       return false;
-        if (!Util.equalInt(     subsessionCount,    otherActivityState.subsessionCount))    return false;
-        if (!Util.equalLong(    sessionLength,      otherActivityState.sessionLength))      return false;
-        if (!Util.equalLong(    timeSpent,          otherActivityState.timeSpent))          return false;
-        if (!Util.equalLong(    lastInterval,       otherActivityState.lastInterval))       return false;
+        if (!Util.equalString(uuid, otherActivityState.uuid))               return false;
+        if (!Util.equalBoolean(enabled, otherActivityState.enabled))            return false;
+        if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution))  return false;
+        if (!Util.equalInt(eventCount, otherActivityState.eventCount))         return false;
+        if (!Util.equalInt(sessionCount, otherActivityState.sessionCount))       return false;
+        if (!Util.equalInt(subsessionCount, otherActivityState.subsessionCount))    return false;
+        if (!Util.equalLong(sessionLength, otherActivityState.sessionLength))      return false;
+        if (!Util.equalLong(timeSpent, otherActivityState.timeSpent))          return false;
+        if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
         return true;
     }
 

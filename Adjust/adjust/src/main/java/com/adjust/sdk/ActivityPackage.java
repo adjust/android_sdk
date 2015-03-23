@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 public class ActivityPackage implements Serializable {
     private static final long serialVersionUID = -35935556512024097L;
+
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("path", String.class),
             new ObjectStreamField("clientSdk", String.class),
@@ -27,6 +28,7 @@ public class ActivityPackage implements Serializable {
             new ObjectStreamField("activityKind", ActivityKind.class),
             new ObjectStreamField("suffix", String.class)
     };
+
     private transient int hashCode;
 
     // data
@@ -106,7 +108,13 @@ public class ActivityPackage implements Serializable {
     }
 
     private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
-        stream.defaultReadObject();
+        ObjectInputStream.GetField fields = stream.readFields();
+
+        path = Util.readStringField(fields, "path", null);
+        clientSdk = Util.readStringField(fields, "clientSdk", null);
+        parameters = Util.readObjectField(fields, "parameters", null);
+        activityKind = Util.readObjectField(fields, "activityKind", ActivityKind.UNKNOWN);
+        suffix = Util.readStringField(fields, "suffix", null);
     }
 
     @Override
@@ -116,11 +124,11 @@ public class ActivityPackage implements Serializable {
         if (getClass() != other.getClass()) return false;
         ActivityPackage otherActivityPackage = (ActivityPackage) other;
 
-        if (!Util.equalString(  path,           otherActivityPackage.path))         return false;
-        if (!Util.equalString(  clientSdk,      otherActivityPackage.clientSdk))    return false;
-        if (!Util.equalsMap(    parameters,     otherActivityPackage.parameters))   return false;
-        if (!Util.equalEnum(    activityKind,   otherActivityPackage.activityKind)) return false;
-        if (!Util.equalString(  suffix,         otherActivityPackage.suffix))       return false;
+        if (!Util.equalString(path, otherActivityPackage.path))         return false;
+        if (!Util.equalString(clientSdk, otherActivityPackage.clientSdk))    return false;
+        if (!Util.equalsMap(parameters, otherActivityPackage.parameters))   return false;
+        if (!Util.equalEnum(activityKind, otherActivityPackage.activityKind)) return false;
+        if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
         return true;
     }
 
