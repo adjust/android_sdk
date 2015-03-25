@@ -280,7 +280,7 @@ class PackageBuilder {
     private void addDouble(Map<String, String> parameters, String key, Double value) {
         if (value == null) return;
 
-        String doubleString = String.format("%.5f", value);
+        String doubleString = String.format(Locale.US, "%.5f", value);
 
         addString(parameters, key, doubleString);
     }
