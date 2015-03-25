@@ -176,9 +176,9 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
     private String getReasonString(String message, Throwable throwable) {
         if (throwable != null) {
-            return String.format("%s: %s", message, throwable);
+            return String.format(Locale.US, "%s: %s", message, throwable);
         } else {
-            return String.format("%s", message);
+            return String.format(Locale.US, "%s", message);
         }
     }
 

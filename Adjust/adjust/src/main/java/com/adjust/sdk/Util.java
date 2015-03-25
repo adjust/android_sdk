@@ -66,7 +66,7 @@ public class Util {
             return string;
         }
 
-        return String.format("'%s'", string);
+        return String.format(Locale.US, "'%s'", string);
     }
 
     public static String dateFormat(long date) {

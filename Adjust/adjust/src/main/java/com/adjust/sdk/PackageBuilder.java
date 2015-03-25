@@ -211,7 +211,7 @@ class PackageBuilder {
 
     private String getEventSuffix(AdjustEvent event) {
         if (event.revenue == null) {
-            return String.format(" '%s'", event.eventToken);
+            return String.format(Locale.US, " '%s'", event.eventToken);
         } else {
             return String.format(Locale.US, " (%.4f %s, '%s')", event.revenue, event.currency, event.eventToken);
         }

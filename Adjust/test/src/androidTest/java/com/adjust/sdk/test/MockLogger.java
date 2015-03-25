@@ -9,6 +9,7 @@ import com.adjust.sdk.LogLevel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 import static com.adjust.sdk.Constants.LOGTAG;
 
@@ -62,7 +63,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void verbose(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.VERBOSE.getAndroidLogLevel(),
                 "v ",
                 Log.VERBOSE);
@@ -70,7 +71,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void debug(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.DEBUG.getAndroidLogLevel(),
                 "d ",
                 Log.DEBUG);
@@ -78,7 +79,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void info(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.INFO.getAndroidLogLevel(),
                 "i ",
                 Log.INFO);
@@ -86,7 +87,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void warn(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.WARN.getAndroidLogLevel(),
                 "w ",
                 Log.WARN);
@@ -94,7 +95,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void error(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.ERROR.getAndroidLogLevel(),
                 "e ",
                 Log.ERROR);
@@ -102,7 +103,7 @@ public class MockLogger implements ILogger {
 
     @Override
     public void Assert(String message, Object... parameters) {
-        logMessage(String.format(message, parameters),
+        logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.ASSERT.getAndroidLogLevel(),
                 "a ",
                 Log.ASSERT);
