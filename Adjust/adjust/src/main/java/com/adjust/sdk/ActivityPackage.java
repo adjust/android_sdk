@@ -38,7 +38,7 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> parameters;
 
     // logs
-    private ActivityKind activityKind;
+    private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private String suffix;
 
     public String getPath() {
@@ -101,7 +101,7 @@ public class ActivityPackage implements Serializable {
     }
 
     protected String getFailureMessage() {
-        return String.format(Locale.US, "Failed to track %s%s", (activityKind == null? "unknown":activityKind.toString()), suffix);
+        return String.format(Locale.US, "Failed to track %s%s", activityKind.toString(), suffix);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
