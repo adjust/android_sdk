@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -37,7 +38,7 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> parameters;
 
     // logs
-    private ActivityKind activityKind;
+    private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private String suffix;
 
     public String getPath() {
@@ -81,26 +82,26 @@ public class ActivityPackage implements Serializable {
     }
 
     public String toString() {
-        return String.format("%s%s", activityKind.toString(), suffix);
+        return String.format(Locale.US, "%s%s", activityKind.toString(), suffix);
     }
 
     public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("Path:      %s\n", path));
-        builder.append(String.format("ClientSdk: %s\n", clientSdk));
+        builder.append(String.format(Locale.US, "Path:      %s\n", path));
+        builder.append(String.format(Locale.US, "ClientSdk: %s\n", clientSdk));
 
         if (parameters != null) {
             builder.append("Parameters:");
             SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
             for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
-                builder.append(String.format("\n\t%-16s %s", entry.getKey(),  entry.getValue()));
+                builder.append(String.format(Locale.US, "\n\t%-16s %s", entry.getKey(),  entry.getValue()));
             }
         }
         return builder.toString();
     }
 
     protected String getFailureMessage() {
-        return String.format("Failed to track %s%s", (activityKind == null? "unknown":activityKind.toString()), suffix);
+        return String.format(Locale.US, "Failed to track %s%s", activityKind.toString(), suffix);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {

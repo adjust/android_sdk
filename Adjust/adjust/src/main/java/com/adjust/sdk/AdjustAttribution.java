@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
+import java.util.Locale;
 
 /**
  * Created by pfms on 07/11/14.
@@ -75,7 +76,7 @@ public class AdjustAttribution implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
+        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative);
     }
 

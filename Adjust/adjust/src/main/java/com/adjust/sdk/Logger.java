@@ -45,9 +45,9 @@ public class Logger implements ILogger {
     public void verbose(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             try {
-                Log.v(LOGTAG, String.format(message, parameters));
+                Log.v(LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -56,9 +56,9 @@ public class Logger implements ILogger {
     public void debug(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             try {
-                Log.d(LOGTAG, String.format(message, parameters));
+                Log.d(LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -67,9 +67,9 @@ public class Logger implements ILogger {
     public void info(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.INFO) {
             try {
-                Log.i(LOGTAG, String.format(message, parameters));
+                Log.i(LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -78,9 +78,9 @@ public class Logger implements ILogger {
     public void warn(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
             try {
-                Log.w(LOGTAG, String.format(message, parameters));
+                Log.w(LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -89,9 +89,9 @@ public class Logger implements ILogger {
     public void error(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
             try {
-                Log.e(LOGTAG, String.format(message, parameters));
+                Log.e(LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -99,9 +99,9 @@ public class Logger implements ILogger {
     @Override
     public void Assert(String message, Object... parameters) {
         try {
-            Log.println(Log.ASSERT, LOGTAG, String.format(message, parameters));
+            Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
         } catch (Exception e) {
-            Log.e(LOGTAG, String.format(formatErrorMessage, message, Arrays.toString(parameters)));
+            Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
         }
     }
 }

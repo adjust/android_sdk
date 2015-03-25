@@ -206,7 +206,7 @@ class DeviceInfo {
         if (sdkPrefix == null) {
             return Constants.CLIENT_SDK;
         } else {
-            return String.format("%s@%s", sdkPrefix, Constants.CLIENT_SDK);
+            return String.format(Locale.US, "%s@%s", sdkPrefix, Constants.CLIENT_SDK);
         }
     }
 
@@ -261,7 +261,7 @@ class DeviceInfo {
     private static String convertToHex(final byte[] bytes) {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
-        return String.format(formatString, bigInt);
+        return String.format(Locale.US, formatString, bigInt);
     }
 
     private String getFacebookAttributionId(final Context context) {
