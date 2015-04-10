@@ -184,7 +184,7 @@ class DeviceInfo {
         int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
 
-        if (0 == density) {
+        if (density == 0) {
             return null;
         } else if (density < low) {
             return LOW;
@@ -272,7 +272,7 @@ class DeviceInfo {
             final String[] projection = {columnName};
             final Cursor cursor = contentResolver.query(uri, projection, null, null, null);
 
-            if (null == cursor) {
+            if (cursor == null) {
                 return null;
             }
             if (!cursor.moveToFirst()) {
