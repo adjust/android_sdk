@@ -67,20 +67,22 @@ these steps:
 following line:
 
     ```
-    compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.google.android.gms:play-services:7.0.0'
     ```
 
     If you don't need all of the Google Play Services, you can avoid [dex
     issues][multidex] by using only the ads part:
 
     ```
-    compile 'com.google.android.gms:play-services-ads:6.5.87'
+    compile 'com.google.android.gms:play-services-ads:7.0.0'
     ```
 
     ![][gradle_gps]
 
-2. In the Package Explorer open the `AndroidManifest.xml` of your Android project.
-Add the following `meta-data` tag inside the `<application>` element.
+2. Skip this step if you are using version 7 or later of Google Play Services:
+   In the Package Explorer open the `AndroidManifest.xml` of your Android
+   project.  Add the following `meta-data` tag inside the `<application>`
+   element.
 
 
     ```xml
