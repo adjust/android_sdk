@@ -28,5 +28,5 @@ dependencies {
     // running mvn package
     //compile fileTree(dir: '../target', include: ['*.jar'])
     // using maven repository
-    //compile 'com.adjust.sdk:adjust-android:4.0.2'
+    //compile 'com.adjust.sdk:adjust-android:4.0.3'
 }

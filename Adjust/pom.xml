@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>adjust-android</artifactId>
     <groupId>com.adjust.sdk</groupId>
-    <version>4.0.2</version>
+    <version>4.0.3</version>
     <packaging>jar</packaging>
     <name>Adjust Android SDK</name>
     <url>https://github.com/adjust/android_sdk</url>
