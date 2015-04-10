@@ -217,7 +217,7 @@ AdjustEvent event = new AdjustEvent(BASKET_TOKEN);
 Map<String, Object> product1 = new HashMap<>();
 product1.put(AdjustSociomantic.SCMProductID, "1");
 product1.put(AdjustSociomantic.SCMAmount, 42);
-product1.put(AdjustSociomantic.SCMCurrency, "EUR";
+product1.put(AdjustSociomantic.SCMCurrency, "EUR");
 product1.put(AdjustSociomantic.SCMQuantity, 1);
 
 Map<String, Object> product2 = new HashMap<>();
