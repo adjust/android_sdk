@@ -1,4 +1,4 @@
-package com.sociomantic.sociomanticplugin;
+package com.adjust.sdk.plugin;
 
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
@@ -80,12 +80,9 @@ public abstract class AdjustSociomantic {
         SCMCustomerTargeting
     );
 
-
     private static ILogger logger = AdjustFactory.getLogger();
 
-
     public static void injectCustomerDataIntoEvent(AdjustEvent event, Map<String, String> customerData) {
-
         if (null == event) {
             logger.error("Event object is required.");
             return;
@@ -95,13 +92,11 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-
         Map<String, String> data = new HashMap<>();
-
 
         for (Entry<String, String> entry: customerData.entrySet()) {
             if (!customerAliases.contains(entry.getKey())) {
-                logger.warn("Key must belong to the customer Aliases, entry: ".concat(entry.getKey().concat(" was discarded")));
+                logger.warn("Key must belong to the customer Aliases, entry: %s was discarded", entry.getKey());
             }
             else {
                 data.put(entry.getKey(), entry.getValue());
@@ -121,12 +116,10 @@ public abstract class AdjustSociomantic {
     }
 
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> categories) {
-
         injectViewListingIntoEvent(event, categories, null);
     }
 
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> categories, String date) {
-
         if (null == event) {
             logger.error("Event object is required.");
             return;
@@ -136,7 +129,7 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        HashMap<String, Object> co = new HashMap<>();
+        Map<String, Object> co = new HashMap<>();
 
         if (null != date) {
             co.put(SCMTimestamp, date);
@@ -148,12 +141,10 @@ public abstract class AdjustSociomantic {
     }
 
     public static void injectProductIntoEvent(AdjustEvent event, String productId) {
-
         injectProductIntoEvent(event, productId, null);
     }
 
     public static void injectProductIntoEvent(AdjustEvent event, String productId, Map<String, Object> parameters) {
-
         if (null == event) {
             logger.error("Event object is required.");
             return;
@@ -178,7 +169,6 @@ public abstract class AdjustSociomantic {
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List products) {
-
         if (null == event) {
             logger.error("Event object is required.");
             return;
@@ -203,7 +193,6 @@ public abstract class AdjustSociomantic {
             if (!_product.isEmpty()) {
                 po.add(_product);
             }
-
         }
 
         if (!po.isEmpty()) {
@@ -228,7 +217,6 @@ public abstract class AdjustSociomantic {
     }
     
     private static void injectTransactionIntoEvent(AdjustEvent event, String transactionID, List products, Map<String, Object> parameters, Boolean confirmed) {
-
         if (null == event) {
             logger.error("Event object is required.");
             return;
@@ -352,7 +340,6 @@ public abstract class AdjustSociomantic {
     }
 
     private static String stringify(Object o) {
-
         if (o == null) {
             return "null";
         }
@@ -372,11 +359,13 @@ public abstract class AdjustSociomantic {
         if (o instanceof List) {
             String res = "[";
             List<Object> list = (List) o;
+            Iterator<Object> iterator = list.iterator();
 
-            for (Object item: list) {
+            while (iterator.hasNext()) {
+                Object item = iterator.next();
                 res = res.concat(stringify(item));
 
-                if (list.indexOf(item) < list.size() - 1) {
+                if (iterator.hasNext()) {
                     res = res.concat(",");
                 }
             }
@@ -388,10 +377,9 @@ public abstract class AdjustSociomantic {
             String res = "{";
             Map<Object, Object> map = (Map) o;
             Iterator<Entry<Object, Object>> iterator = map.entrySet().iterator();
-            Entry<Object, Object> entry = null;
 
             while(iterator.hasNext()) {
-                entry = iterator.next();
+                Entry<Object, Object> entry = iterator.next();
 
                 res = res.concat(stringify(entry.getKey()))
                         .concat(":")
