@@ -85,7 +85,7 @@ public class AdjustEvent {
                 logger.error("Currency must be set with revenue");
                 return false;
             }
-            if (currency == "") {
+            if (currency.equals("")) {
                 logger.error("Currency is empty");
                 return false;
             }
@@ -102,7 +102,7 @@ public class AdjustEvent {
             logger.error("%s parameter %s is missing", parameterName, attributeType);
             return false;
         }
-        if (attribute == "") {
+        if (attribute.equals("")) {
             logger.error("%s parameter %s is empty", parameterName, attributeType);
             return false;
         }

@@ -345,7 +345,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
 
-        if (adjustConfig.environment == AdjustConfig.ENVIRONMENT_PRODUCTION) {
+        if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
             logger.setLogLevel(LogLevel.ASSERT);
         } else {
             logger.setLogLevel(adjustConfig.logLevel);
