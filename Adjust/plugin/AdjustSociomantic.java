@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 /**
  * AdjustSociomantic Class
- * Created by Nicolas Brugneaux <nicolas.brugneaux@sociomantic.com> on 01/04/15.
+ * Created by Nicolas Brugneaux nicolas.brugneaux@sociomantic.com on 01/04/15.
  */
 public abstract class AdjustSociomantic {
 
