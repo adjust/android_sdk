@@ -70,7 +70,7 @@ public class Util {
     }
 
     public static String dateFormat(long date) {
-        if (null == dateFormat) {
+        if (dateFormat == null) {
             dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
         }
         return dateFormat.format(date);

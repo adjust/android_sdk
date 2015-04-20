@@ -149,7 +149,7 @@ public class AdjustCriteo {
         int productsSize = products.size();
         for (int i = 0; i < productsSize; ) {
             CriteoProduct criteoProduct = products.get(i);
-            String productString = String.format(Locale.US, "{\"i\":\"%s,\"pr\":%f,\"q\":%d}",
+            String productString = String.format(Locale.US, "{\"i\":\"%s\",\"pr\":%f,\"q\":%d}",
                     criteoProduct.productID,
                     criteoProduct.price,
                     criteoProduct.quantity);

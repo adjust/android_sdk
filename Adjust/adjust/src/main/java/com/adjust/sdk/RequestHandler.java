@@ -93,7 +93,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             super.handleMessage(message);
 
             RequestHandler requestHandler = requestHandlerReference.get();
-            if (null == requestHandler) {
+            if (requestHandler == null) {
                 return;
             }
 

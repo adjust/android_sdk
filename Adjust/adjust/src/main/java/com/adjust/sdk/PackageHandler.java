@@ -139,7 +139,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
             super.handleMessage(message);
 
             PackageHandler packageHandler = packageHandlerReference.get();
-            if (null == packageHandler) {
+            if (packageHandler == null) {
                 return;
             }
 
