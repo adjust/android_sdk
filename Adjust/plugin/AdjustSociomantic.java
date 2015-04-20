@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 /**
  * AdjustSociomantic Class
- * Created by Nicolas Brugneaux <nicolas.brugneaux@sociomantic.com> on 01/04/15.
+ * Created by Nicolas Brugneaux nicolas.brugneaux@sociomantic.com on 01/04/15.
  */
 public abstract class AdjustSociomantic {
 
@@ -92,7 +92,7 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, String> data = new HashMap<>();
+        Map<String, String> data = new HashMap<String, String>();
 
         for (Entry<String, String> entry: customerData.entrySet()) {
             if (!customerAliases.contains(entry.getKey())) {
@@ -129,7 +129,7 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Object> co = new HashMap<>();
+        Map<String, Object> co = new HashMap<String, Object>();
 
         if (null != date) {
             co.put(SCMTimestamp, date);
@@ -160,7 +160,7 @@ public abstract class AdjustSociomantic {
             po = filter(parameters, productAliases);
         }
         else {
-            po = new HashMap<>();
+            po = new HashMap<String, Object>();
         }
 
         po.put(SCMProductID, productId);
@@ -178,10 +178,10 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        List<Map<String, Object>> po = new ArrayList<>();
+        List<Map<String, Object>> po = new ArrayList<Map<String, Object>>();
 
         for (Object product: products) {
-            Map<String, Object> _product = new HashMap<>();
+            Map<String, Object> _product = new HashMap<String, Object>();
 
             if (product instanceof String) {
                 _product.put(SCMProductID, product);
@@ -230,11 +230,11 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Map<String, Object>> to = new HashMap<>(1);
-        List<Map<String, Object>> po = new ArrayList<>();
+        Map<String, Map<String, Object>> to = new HashMap<String, Map<String, Object>>(1);
+        List<Map<String, Object>> po = new ArrayList<Map<String, Object>>();
 
         for (Object product: products) {
-            Map<String, Object> _product = new HashMap<>();
+            Map<String, Object> _product = new HashMap<String, Object>();
 
             if (product instanceof String) {
                 _product.put(SCMProductID, product);
@@ -283,7 +283,7 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Map<String, String>> to = new HashMap<>(1);
+        Map<String, Map<String, String>> to = new HashMap<String, Map<String, String>>(1);
         to.put(SCMTransaction, new HashMap<String, String>());
 
         if (confirmed) {
@@ -301,7 +301,7 @@ public abstract class AdjustSociomantic {
 
     private static Map<String, Object> filter(Map<String, Object> parameters, List<String> aliases) {
 
-        Map<String, Object> filtered = new HashMap<>();
+        Map<String, Object> filtered = new HashMap<String, Object>();
 
         for(Entry<String, Object> entry: parameters.entrySet()) {
             String key = entry.getKey();
@@ -327,7 +327,7 @@ public abstract class AdjustSociomantic {
 
     private static List<String> filterStringArray(List list) {
 
-        List<String> filtered = new ArrayList<>();
+        List<String> filtered = new ArrayList<String>();
         for (Object item: list) {
             if (item instanceof String) {
                 filtered.add((String) item);
