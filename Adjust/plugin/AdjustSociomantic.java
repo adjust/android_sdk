@@ -105,7 +105,7 @@ public abstract class AdjustSociomantic {
 
         String dob = stringify(data);
 
-        event.addPartnerParameter("dob", dob);
+        event.addPartnerParameter("socio_dob", dob);
     }
 
     public static void injectHomePageIntoEvent(AdjustEvent event) {
@@ -137,7 +137,7 @@ public abstract class AdjustSociomantic {
 
         co.put(SCMCategory, categories);
 
-        event.addPartnerParameter("co", stringify(co));
+        event.addPartnerParameter("socio_co", stringify(co));
     }
 
     public static void injectProductIntoEvent(AdjustEvent event, String productId) {
@@ -165,7 +165,7 @@ public abstract class AdjustSociomantic {
 
         po.put(SCMProductID, productId);
 
-        event.addPartnerParameter("po", stringify(po));
+        event.addPartnerParameter("socio_po", stringify(po));
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List products) {
@@ -196,7 +196,7 @@ public abstract class AdjustSociomantic {
         }
 
         if (!po.isEmpty()) {
-            event.addPartnerParameter("po", stringify(po));
+            event.addPartnerParameter("socio_po", stringify(po));
         }
     }
 
@@ -249,7 +249,7 @@ public abstract class AdjustSociomantic {
         }
 
         if (!po.isEmpty()) {
-            event.addPartnerParameter("po", stringify(po));
+            event.addPartnerParameter("socio_po", stringify(po));
         }
 
         if (null != parameters) {
@@ -265,7 +265,7 @@ public abstract class AdjustSociomantic {
 
         to.get(SCMTransaction).put(SCMTransaction, transactionID);
 
-        event.addPartnerParameter("to", stringify(to));
+        event.addPartnerParameter("socio_to", stringify(to));
     }
 
     public static void injectLeadIntoEvent(AdjustEvent event, String leadID) {
@@ -292,7 +292,7 @@ public abstract class AdjustSociomantic {
 
         to.get(SCMTransaction).put(SCMTransaction, leadID);
 
-        event.addPartnerParameter("to", stringify(to));
+        event.addPartnerParameter("socio_to", stringify(to));
     }
     
     ////////////////////////////////////////////////////////////////////////////////////////////////
