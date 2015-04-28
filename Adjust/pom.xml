@@ -23,6 +23,12 @@
             <organization>adjust GmbH</organization>
             <organizationUrl>http://www.adjust.com</organizationUrl>
         </developer>
+        <developer>
+            <name>Ugljesa Erceg</name>
+            <email>ugljesa@adjust.com</email>
+            <organization>adjust GmbH</organization>
+            <organizationUrl>http://www.adjust.com</organizationUrl>
+        </developer>
     </developers>
     <scm>
         <connection>scm:git:git@github.com:adjust/android_sdk.git</connection>
