@@ -23,6 +23,7 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -523,7 +524,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         long now = System.currentTimeMillis();
-        Map<String, String> queryStringParameters = new HashMap<String, String>();
+        Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
         boolean hasAdjustTags = false;
 

@@ -3,6 +3,8 @@ package com.adjust.sdk.test;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustAttribution;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 import junit.framework.Assert;
 
@@ -104,9 +106,9 @@ public class TestActivityPackage {
         // currency
         assertParameterEquals("currency", currency);
         // callback_params
-        assertParameterEquals("callback_params", callbackParams);
+        assertJsonParameterEquals("callback_params", callbackParams);
         // partner_params
-        assertParameterEquals("partner_params", partnerParams);
+        assertJsonParameterEquals("partner_params", partnerParams);
     }
 
     public void testClickPackage(String source) {
@@ -124,7 +126,7 @@ public class TestActivityPackage {
         assertParameterEquals("reftag", reftag);
 
         // params
-        assertParameterEquals("params", deepLinkParameters);
+        assertJsonParameterEquals("params", deepLinkParameters);
 
         // click_time
         assertParameterNotNull("click_time");
@@ -297,8 +299,22 @@ public class TestActivityPackage {
             assertParameterNull(parameterName);
             return;
         }
+
         Assert.assertEquals(activityPackage.getExtendedString(),
                 value, parameters.get(parameterName));
+    }
+
+    private void assertJsonParameterEquals(String parameterName, String value) {
+        if (value == null) {
+            assertParameterNull(parameterName);
+            return;
+        }
+
+        JsonParser parser = new JsonParser();
+        JsonElement e1 = parser.parse(value);
+        JsonElement e2 = parser.parse(parameters.get(parameterName));
+
+        assertEquals(e1, e2);
     }
 
     private void assertParameterEquals(String parameterName, int value) {

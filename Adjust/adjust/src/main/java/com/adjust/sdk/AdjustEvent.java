@@ -1,6 +1,7 @@
 package com.adjust.sdk;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -33,7 +34,7 @@ public class AdjustEvent {
         if (!isValidParameter(value, "value", "Callback")) return;
 
         if (callbackParameters == null) {
-            callbackParameters = new HashMap<String, String>();
+            callbackParameters = new LinkedHashMap<String, String>();
         }
 
         String previousValue = callbackParameters.put(key, value);
@@ -48,7 +49,7 @@ public class AdjustEvent {
         if (!isValidParameter(value, "value", "Partner")) return;
 
         if (partnerParameters == null) {
-            partnerParameters = new HashMap<String, String>();
+            partnerParameters = new LinkedHashMap<String, String>();
         }
 
         String previousValue = partnerParameters.put(key, value);
