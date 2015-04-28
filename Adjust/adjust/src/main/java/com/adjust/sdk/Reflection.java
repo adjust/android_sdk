@@ -40,22 +40,6 @@ public class Reflection {
         }
     }
 
-    public static boolean isGooglePlayServicesAvailable(Context context) {
-        try {
-            Integer isGooglePlayServicesAvailableStatusCode = (Integer) invokeStaticMethod(
-                    "com.google.android.gms.common.GooglePlayServicesUtil",
-                    "isGooglePlayServicesAvailable",
-                    new Class[]{Context.class}, context
-            );
-
-            boolean isGooglePlayServicesAvailable = (Boolean) isConnectionResultSuccess(isGooglePlayServicesAvailableStatusCode);
-
-            return isGooglePlayServicesAvailable;
-        } catch (Throwable t) {
-            return false;
-        }
-    }
-
     public static String getMacAddress(Context context) {
         try {
             String macSha1 = (String) invokeStaticMethod(

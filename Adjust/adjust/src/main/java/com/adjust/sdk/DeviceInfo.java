@@ -59,7 +59,7 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
-        boolean isGooglePlayServicesAvailable = Reflection.isGooglePlayServicesAvailable(context);
+        boolean isGooglePlayServicesAvailable = Reflection.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
 
         packageName = getPackageName(context);
