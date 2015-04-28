@@ -178,7 +178,7 @@ public class TestActivityPackage {
     private void testDeviceInfo() {
         testDeviceInfoIds();
         // fb_id
-        assertParameterNotNull("fb_id");
+        //assertParameterNotNull("fb_id");
         // package_name
         assertParameterNotNull("package_name");
         // app_version
