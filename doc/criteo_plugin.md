@@ -14,25 +14,6 @@ Integrate adjust with Criteo events by following these steps:
 Now you can integrate each of the different Criteo events, like in the
 following examples:
 
-### View Homepage
-
-```java
-AdjustEvent event = new AdjustEvent("{viewHomepageEventToken}");
-
-Adjust.trackEvent(event);
-```
-
-### View Search
-
-```java
-import com.adjust.sdk.plugin.AdjustCriteo;
-
-AdjustEvent event = new AdjustEvent("{viewSearchEventToken}");
-AdjustCriteo.injectViewSearchIntoEvent(event, "2015-01-01", "2015-01-07");
-
-Adjust.trackEvent(event);
-```
-
 ### View Listing
 
 ```java
@@ -90,7 +71,7 @@ CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
 
 List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
 
-AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "customerId1");
+AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "transactionId", "customerId1");
 
 Adjust.trackEvent(event);
 ```
@@ -166,4 +147,16 @@ The hashed email can be removed by setting the `injectHashedEmailIntoCriteoEvent
 import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustCriteo.injectHashedEmailIntoCriteoEvents("8455938a1db5c475a87d76edacb6284e");
+```
+
+### Search dates
+
+It's possible to attach a check-in and check-out date to every Criteo event with the `injectViewSearchDatesIntoCriteoEvent` method. The dates will be sent with every Criteo event for the duration of the application lifecycle, so it must be set again when the app is re-lauched.
+
+The search dates can be removed by setting the `injectViewSearchDatesIntoCriteoEvents` dates with `null`.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectViewSearchDatesIntoCriteoEvents("2015-01-01", "2015-01-07");
 ```
