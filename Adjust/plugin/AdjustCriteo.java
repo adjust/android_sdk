@@ -44,10 +44,11 @@ public class AdjustCriteo {
         injectHashEmail(event);
     }
 
-    public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
+    public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String transactionId, String customerId) {
         String jsonProducts = createCriteoVBFromProducts(products);
 
         event.addPartnerParameter("customer_id", customerId);
+        event.addPartnerParameter("transaction_id", transactionId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
         injectOptionalParams(event);
