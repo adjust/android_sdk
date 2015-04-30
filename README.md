@@ -368,9 +368,7 @@ Adjust.trackEvent(event);
 
 This can be combined with callback parameters of course.
 
-Please note that while the currency token must be set, adjust will not perform
-a currency conversion. **You should always transmit revenues in the currency
-that you have set in your adjust dashboard.**
+When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here.][currency-conversion]
 
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
@@ -496,6 +494,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 [multidex]:             https://developer.android.com/tools/building/multidex.html
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
 
 ## License
 
