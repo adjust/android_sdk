@@ -9,6 +9,8 @@ import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.RequestHandler;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 /**
  * Created by pfms on 30/01/15.
@@ -204,7 +206,11 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.info("No message found");
 
-        assertUtil.test("PackageHandler finishedTrackingActivity, {\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\"}}");
+        JsonParser parser = new JsonParser();
+        JsonElement e1 = parser.parse("{\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\"}}");
+        JsonElement e2 = parser.parse(mockPackageHandler.jsonResponse.toString());
+
+        assertEquals(e1, e2);
 
         sendNextPackage(sendClick);
     }

@@ -36,7 +36,7 @@ class PackageBuilder {
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
-        this.activityState = activityState.clone();
+        this.activityState = activityState.shallowCopy();
         this.createdAt = createdAt;
     }
 
