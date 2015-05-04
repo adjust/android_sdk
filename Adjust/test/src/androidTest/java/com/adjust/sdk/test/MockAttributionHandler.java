@@ -21,8 +21,12 @@ public class MockAttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, ActivityPackage attributionPackage, boolean startPaused) {
-        testLogger.test(prefix + "init, startPaused: " + startPaused);
+    public void init(IActivityHandler activityHandler,
+                     ActivityPackage attributionPackage,
+                     boolean startPaused,
+                     boolean hasListener) {
+        testLogger.test(prefix + "init, startPaused: " + startPaused +
+                ", hasListener: " + hasListener);
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
     }

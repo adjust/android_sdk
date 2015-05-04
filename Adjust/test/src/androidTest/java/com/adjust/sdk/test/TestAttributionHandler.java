@@ -94,7 +94,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testGetAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false);
+                attributionPackage, false, true);
 
         // test null client
         nullClientTest(attributionHandler);
@@ -120,7 +120,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testCheckAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false);
+                attributionPackage, false, true);
 
         // test attribution with update in activity handler
         attributionResponseTest(attributionHandler, true);
@@ -134,7 +134,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testAskIn");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false);
+                attributionPackage, false, true);
 
         String response = "Response: { \"ask_in\" : 4000 }";
 
@@ -181,6 +181,50 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         okMessageTestLogs();
 
         requestTest(mockHttpClient.lastRequest);
+    }
+
+    public void testPause() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestAttributionHandler testPause");
+
+        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
+                attributionPackage, true, true);
+
+        mockHttpClient.responseType = ResponseType.MESSAGE;
+
+        attributionHandler.getAttribution();
+
+        SystemClock.sleep(1000);
+
+        // check that the activity handler is paused
+        assertUtil.debug("Attribution Handler is paused");
+
+        // and it did not call the http client
+        assertUtil.isNull(mockHttpClient.lastRequest);
+
+        assertUtil.notInTest("HttpClient execute");
+    }
+
+    public void testWithoutListener() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestAttributionHandler testPause");
+
+        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
+                attributionPackage, false, false);
+
+        mockHttpClient.responseType = ResponseType.MESSAGE;
+
+        attributionHandler.getAttribution();
+
+        SystemClock.sleep(1000);
+
+        // check that the activity handler is not paused
+        assertUtil.notInDebug("Attribution Handler is paused");
+
+        // but it did not call the http client
+        assertUtil.isNull(mockHttpClient.lastRequest);
+
+        assertUtil.notInTest("HttpClient execute");
     }
 
     private void nullClientTest(AttributionHandler attributionHandler) {

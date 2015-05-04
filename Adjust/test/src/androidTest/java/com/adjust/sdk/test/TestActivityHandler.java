@@ -97,7 +97,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         // checking the default values of the first session package
         // should only have one package
@@ -134,7 +134,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "VERBOSE", true);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         // create the first Event
         AdjustEvent firstEvent = new AdjustEvent("event1");
@@ -294,7 +294,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "DEBUG", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         // create the first Event
         AdjustEvent firstEvent = new AdjustEvent("event1");
@@ -462,7 +462,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "WARN", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         // track null event
         activityHandler.trackEvent(null);
@@ -490,22 +490,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
 
-        SystemClock.sleep(3000);
-
-        // trigger a new sub session session
-        activityHandler.trackSubsessionStart();
-
-        SystemClock.sleep(5000);
-
-        // trigger a new session
-        activityHandler.trackSubsessionStart();
-
-        SystemClock.sleep(1000);
-
-        // end the session
-        activityHandler.trackSubsessionEnd();
-
-        SystemClock.sleep(1000);
+        SystemClock.sleep(2000);
 
         // set verbose log level
         config.setLogLevel(LogLevel.INFO);
@@ -514,7 +499,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
+
+        // trigger a new sub session session
+        activityHandler.trackSubsessionStart();
+
+        SystemClock.sleep(5000);
 
         // test the new sub session
         assertUtil.test("PackageHandler resumeSending");
@@ -531,8 +521,16 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // save activity state
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:2");
 
+        mockLogger.test("before new session");
+
+        // trigger a new session
+        activityHandler.trackSubsessionStart();
+
+        SystemClock.sleep(1000);
+        mockLogger.test("after new session");
+
         // new session
-        startSessionTest(false, false);
+        startSessionTest(false, true);
 
         // test the new subsession
         assertUtil.debug("Wrote Activity state: ec:0 sc:2 ssc:1");
@@ -542,6 +540,11 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // save activity state
         assertUtil.debug("Wrote Activity state: ec:0 sc:2 ssc:1");
+
+        // end the session
+        activityHandler.trackSubsessionEnd();
+
+        SystemClock.sleep(1000);
 
         // pause sending
         assertUtil.test("PackageHandler pauseSending");
@@ -610,7 +613,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ERROR", false);
 
         // test first session start without attribution handler
-        firstSessionStartWithoutTimerTests(false, true);
+        firstSessionStartWithoutTimerTests(true, false, true);
 
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
@@ -622,7 +625,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.notInTest("PackageHandler sendFirstPackage");
 
         // but that it was paused
-        assertUtil.test("PackageHandler pauseSending");
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
 
         // check that it did not resume
@@ -728,7 +730,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         // test sub session not paused
-        startSessionTest(true, false);
+        startSessionTest(false, true);
 
         // after sending the first package saves the activity state
         assertUtil.debug("Wrote Activity state: ec:1 sc:3 ssc:1");
@@ -758,7 +760,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ASSERT", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         Uri attributions = Uri.parse("AdjustTests://example.com/path/inApp?adjust_tracker=trackerValue&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
         Uri extraParams = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=bar&other=stuff&adjust_key=value");
@@ -871,13 +873,15 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
 
+        activityHandler.trackSubsessionStart();
+
         SystemClock.sleep(3000);
 
         // test init values
         initTests(AdjustConfig.ENVIRONMENT_PRODUCTION, "ASSERT", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, true, false);
 
         JSONObject responseNull = null;
 
@@ -941,7 +945,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         JSONObject nullJsonObject = null;
         AdjustAttribution nullAttribution = AdjustAttribution.fromJson(nullJsonObject);
@@ -993,7 +997,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // test init values
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
-        firstSessionSubsessionsTest(2);
+        firstSessionSubsessionsTest(1, 2);
 
         // check that it does not update the attribution after the restart
         assertUtil.isFalse(restartActivityHandler.tryUpdateAttribution(emptyAttribution));
@@ -1049,7 +1053,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // test init values
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
-        firstSessionSubsessionsTest(3);
+        firstSessionSubsessionsTest(1, 3);
 
         // check that it does not update the attribution after the restart
         assertUtil.isFalse(secondRestartActivityHandler.tryUpdateAttribution(firstAttribution));
@@ -1110,7 +1114,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
-        firstSessionStartTests(false, true);
+        firstSessionStartTests(true, false, false);
 
         // it didn't pause attribution handler because it wasn't lazily init
         assertUtil.notInTest("AttributionHandler pauseSending");
@@ -1173,7 +1177,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         // test that is not paused anymore
-        startSessionTest(true, false);
+        startSessionTest(false, true);
 
         /*
         // send new session to package handler
@@ -1228,7 +1232,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
-        firstSessionStartTests(false, false);
+        firstSessionStartTests(false, false, false);
 
         long now = System.currentTimeMillis();
 
@@ -1311,9 +1315,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         mockLogger.Assert("TestActivityHandler testGetAttribution");
 
         AdjustFactory.setTimerStart(500);
+        AdjustFactory.setSessionInterval(4000);
         /***
-         * if (attribution == null || activityState.askingAttribution) {
-         *     getAttributionHandler().getAttribution();
+         * if (activityState.subsessionCount > 1) {
+         *     if (attribution == null || activityState.askingAttribution) {
+         *         getAttributionHandler().getAttribution();
+         *     }
          * }
          */
 
@@ -1335,35 +1342,63 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // test init values
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
+        // subsession count is 1
         // attribution is null,
         // askingAttribution is false by default,
+        // -> Not called
 
         // test first session start
-        firstSessionStartWithoutTimerTests(false, false);
+        firstSessionStartWithoutTimerTests(false, true, false);
 
-        // there should be a getAttribution
-        assertUtil.test("AttributionHandler getAttribution");
+        // test that get attribution wasn't called
+        assertUtil.notInTest("AttributionHandler getAttribution");
 
         timerFiredTest();
 
         // save activity state
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
 
-        // attribution is null,
+        // subsession count increased to 2
+        // attribution is still null,
+        // askingAttribution is still false,
+        // -> Called
+
+        // trigger a new sub session
+        activityHandler.trackSubsessionStart();
+        SystemClock.sleep(2000);
+
+        subsessionGetAttributionTest(1, 2, true);
+
+        // subsession count increased to 3
+        // attribution is still null,
         // askingAttribution is set to true,
+        // -> Called
 
         // set asking attribution
         activityHandler.setAskingAttribution(true);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
+        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:2");
 
         // trigger a new session
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(2000);
 
-        subsessionGetAttributionTest(2, true);
+        subsessionGetAttributionTest(1, 3, true);
 
+        // subsession is reset to 1 with new session
+        // attribution is still null,
+        // askingAttribution is set to true,
+        // -> Not called
+
+        SystemClock.sleep(3000); // 5 seconds = 2 + 3
+        activityHandler.trackSubsessionStart();
+        SystemClock.sleep(2000);
+
+        subsessionGetAttributionTest(2, 1, false);
+
+        // subsession count increased to 2
         // attribution is set,
         // askingAttribution is set to true,
+        // -> Called
 
         JSONObject jsonAttribution = null;
 
@@ -1390,34 +1425,64 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(2000);
 
-        subsessionGetAttributionTest(3, true);
+        subsessionGetAttributionTest(2, 2, true);
 
+        // subsession count is reset to 1
+        // attribution is set,
+        // askingAttribution is set to true,
+        // -> Not called
+
+        SystemClock.sleep(3000); // 5 seconds = 2 + 3
+        activityHandler.trackSubsessionStart();
+        SystemClock.sleep(2000);
+
+        subsessionGetAttributionTest(3, 1, false);
+
+        // subsession increased to 2
         // attribution is set,
         // askingAttribution is set to false
+        // -> Not called
 
         activityHandler.setAskingAttribution(false);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:3");
+        assertUtil.debug("Wrote Activity state: ec:0 sc:3 ssc:1");
 
         // trigger a new sub session
         activityHandler.trackSubsessionStart();
         SystemClock.sleep(2000);
 
-        subsessionGetAttributionTest(4, false);
+        subsessionGetAttributionTest(3, 2, false);
+
+        // subsession is reset to 1
+        // attribution is set,
+        // askingAttribution is set to false
+        // -> Not called
+
+        SystemClock.sleep(3000); // 5 seconds = 2 + 3
+        activityHandler.trackSubsessionStart();
+        SystemClock.sleep(2000);
+
+        subsessionGetAttributionTest(4, 1, false);
+
     }
 
-    private void firstSessionSubsessionsTest(int subsessionCount) {
-        subsessionGetAttributionTest(subsessionCount, null);
+    private void firstSessionSubsessionsTest(int sessionCount, int subsessionCount) {
+        subsessionGetAttributionTest(sessionCount, subsessionCount, null);
     }
 
-    private void subsessionGetAttributionTest(int subsessionCount, Boolean getAttributionIsCalled) {
+    private void subsessionGetAttributionTest(int sessionCount, int subsessionCount, Boolean getAttributionIsCalled) {
         // test the new sub session
         assertUtil.test("PackageHandler resumeSending");
 
         // save activity state
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:" + subsessionCount);
+        assertUtil.debug("Wrote Activity state: ec:0 sc:" + sessionCount + " ssc:" + subsessionCount);
 
-        // test the subsession message
-        assertUtil.info("Started subsession " + subsessionCount + " of session 1");
+        if (subsessionCount > 1) {
+            // test the subsession message
+            assertUtil.info("Started subsession " + subsessionCount + " of session " + sessionCount);
+        } else {
+            // test the subsession message
+            assertUtil.notInInfo("Started subsession ");
+        }
 
         if (getAttributionIsCalled != null) {
             if (getAttributionIsCalled) {
@@ -1455,9 +1520,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.info("Unable to get Google Play Services Advertising ID at start time");
     }
 
-    private void firstSessionStartTests(boolean attributionHandlerLaunched, boolean paused) {
+    private void firstSessionStartTests(boolean paused, boolean hasListener, boolean attributionHandlerLaunched) {
 
-        firstSessionStartWithoutTimerTests(attributionHandlerLaunched, paused);
+        firstSessionStartWithoutTimerTests(paused, hasListener, attributionHandlerLaunched);
 
         timerFiredTest();
 
@@ -1465,7 +1530,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
     }
 
-    private void firstSessionStartWithoutTimerTests(boolean attributionHandlerLaunched, boolean paused) {
+    private void firstSessionStartWithoutTimerTests(boolean paused, boolean hasListener,
+                                                    boolean attributionHandlerLaunched) {
         //  test that the attribution file did not exist in the first run of the application
         assertUtil.verbose("Attribution file not found");
 
@@ -1479,13 +1545,21 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
             assertUtil.test("PackageHandler init, startPaused: false");
         }
 
-        startSessionTest(attributionHandlerLaunched, paused);
+        startSessionTest(paused, false);
 
         // after sending the first package saves the activity state
         assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1 sl:0.0 ts:0.0");
+
+        if (attributionHandlerLaunched) {
+            // attribution handler started
+            assertUtil.test("AttributionHandler init, startPaused: " + paused +
+                    ", hasListener: " + hasListener);
+        } else {
+            assertUtil.notInTest("AttributionHandler init");
+        }
     }
 
-    private void startSessionTest(boolean attributionHandlerLaunched, boolean paused) {
+    private void startSessionTest(boolean paused, boolean attributionHandlerLaunched) {
         // when a session package is being sent the attribution handler should resume sending
         if (!attributionHandlerLaunched) {
             //assertUtil.notInTest("AttributionHandler resumeSending");
