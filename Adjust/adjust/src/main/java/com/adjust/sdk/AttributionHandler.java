@@ -76,6 +76,9 @@ public class AttributionHandler implements IAttributionHandler {
 
     private void getAttribution(int delayInMilliseconds) {
         if (waitingTask != null) {
+            if (waitingTask.getDelay(TimeUnit.MILLISECONDS) > delayInMilliseconds) {
+                return;
+            }
             waitingTask.cancel(false);
         }
 
