@@ -441,10 +441,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void checkAttributionState() {
-        // if there is no attribution saved, or there is one being asked
-        if (attribution == null || activityState.askingAttribution) {
-            getAttributionHandler().getAttribution();
+        // if it's a new session
+        if (activityState.subsessionCount <= 1) {
+            return;
         }
+
+        // if there is already an attribution saved and there was no attribution being asked
+        if (attribution != null && !activityState.askingAttribution) {
+            return;
+        }
+
+        getAttributionHandler().getAttribution();
     }
 
     private void endInternal() {
