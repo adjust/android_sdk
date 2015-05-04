@@ -457,8 +457,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void trackEventInternal(AdjustEvent event) {
+        if (!isEnabled()) return;
         if (!checkEvent(event)) return;
-        if (!activityState.enabled) return;
 
         long now = System.currentTimeMillis();
 
