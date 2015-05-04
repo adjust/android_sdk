@@ -30,7 +30,7 @@
 -keep class com.google.android.gms.ads.identifier.** { *; }
 
 #-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-#    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info getAdvertisingIdInfo (android.content.Contextxt);
+#    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info getAdvertisingIdInfo (android.content.Context);
 #}
 #-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient.Info {
 #    String getId ();
