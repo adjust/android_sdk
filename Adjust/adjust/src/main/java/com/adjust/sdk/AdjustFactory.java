@@ -90,11 +90,12 @@ public class AdjustFactory {
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
                                                             ActivityPackage attributionPackage,
-                                                            boolean startPaused) {
+                                                            boolean startPaused,
+                                                            boolean hasListener) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, startPaused);
+            return new AttributionHandler(activityHandler, attributionPackage, startPaused, hasListener);
         }
-        attributionHandler.init(activityHandler, attributionPackage, startPaused);
+        attributionHandler.init(activityHandler, attributionPackage, startPaused, hasListener);
         return attributionHandler;
     }
 

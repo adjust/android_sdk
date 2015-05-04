@@ -749,7 +749,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             ActivityPackage attributionPackage = getAttributionPackage();
             attributionHandler = AdjustFactory.getAttributionHandler(this,
                     attributionPackage,
-                    toPause());
+                    toPause(),
+                    adjustConfig.hasListener());
         }
         return attributionHandler;
     }
