@@ -31,7 +31,7 @@ String appToken = "{YourAppToken}";
 String environment = AdjustConfig.ENVIRONMENT_SANDBOX;  // or AdjustConfig.ENVIRONMENT_PRODUCTION
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-config.setMainProcessName("com.example.myapp");
+config.setProcessName("com.example.myapp");
 
 Adjust.onCreate(config);
 ```
@@ -52,19 +52,13 @@ If you name your main process like this, then you should set your main process n
 object like this:
 
 ```java
-config.setMainProcessName("com.example.myapp:YourMainProcessName");
+config.setProcessName("com.example.myapp:YourMainProcessName");
 ```
 
-This will inform our SDK of your main process name and our SDK will not initialize
-in any other process where you might try to use it. If you try to use the Adjust SDK from some other process, you will
-get the following log messages:
+This will inform our SDK of your main process name and our SDK will not initialize in any other process where you might try to use it. If you try to use the Adjust SDK from some other process, you will get the following log message:
 
 ```
-05-06 13:20:02.880    3442-3442/com.example.myapp:YourProcessName E/Adjust﹕ You can't initialize Adjust in process which is not the main one
-05-06 13:20:02.885    3442-3442/com.example.myapp:YourProcessName E/Adjust﹕ AdjustConfig not initialized correctly
+05-06 17:15:06.885    8743-8743/com.example.myapp:YourProcessName I/Adjust﹕ Skipping initialization in background process (com.example.myapp:YourProcessName)
 ```
 
-If you do not set your main process name in the ```AdjustConfig``` object and try to call the SDK in multiple processes, you
-will initialize several different Adjust SDK instances, because different processes in Android do not share the same memory
-space. This can lead to some unpredictability, so we strongly advise you to always set your main process name if you 
-have a multi-process app, or ensure that you do not use the Adjust SDK in more than one process in your app. 
+If you do not set your main process name in the ```AdjustConfig``` object and try to call the SDK in multiple processes, you will initialize several different Adjust SDK instances, because different processes in Android do not share the same memory space. This can lead to some unpredictability, so we strongly advise you to always set your main process name if you have a multi-process app, or ensure that you do not use the Adjust SDK in more than one process in your app. 
