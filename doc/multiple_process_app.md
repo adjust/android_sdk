@@ -28,7 +28,7 @@ multiple processes in your app, you should set the main process name in the ```A
 
 ```java
 String appToken = "{YourAppToken}";
-String environment = AdjustConfig.ENVIRONMENT_SANDBOX;  // or AdjustConfig.ENVIRONMENT_SANDBOX
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;  // or AdjustConfig.ENVIRONMENT_PRODUCTION
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setMainProcessName("com.example.myapp");
