@@ -140,6 +140,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
+            writeActivityState();
         }
         if (enabled) {
             if (toPause()) {
