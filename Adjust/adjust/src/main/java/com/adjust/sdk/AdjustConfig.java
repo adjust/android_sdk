@@ -55,6 +55,24 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
+    public void setMainProcessName(String mainProcessName) {
+        int currentPid = android.os.Process.myPid();
+        android.app.ActivityManager manager = (android.app.ActivityManager) this.context.getSystemService(Context.ACTIVITY_SERVICE);
+
+        for (android.app.ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+            if (processInfo.pid == currentPid) {
+                if (!processInfo.processName.equalsIgnoreCase(mainProcessName)) {
+                    ILogger logger = AdjustFactory.getLogger();
+                    logger.error("You can't initialize Adjust in process which is not the main one");
+
+                    this.appToken = null;
+                }
+
+                break;
+            }
+        }
+    }
+
     public boolean hasListener() {
         return onAttributionChangedListener != null;
     }
