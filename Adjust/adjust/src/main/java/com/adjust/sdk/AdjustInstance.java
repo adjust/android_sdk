@@ -77,7 +77,7 @@ public class AdjustInstance {
 
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
-            getLogger().error("Please initialize Adjust by calling 'onCreate' before");
+            getLogger().error("Adjust not initialized correctly");
             return false;
         } else {
             return true;

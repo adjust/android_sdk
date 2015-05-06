@@ -89,6 +89,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
+        if (adjustConfig.processName != null) {
+            int currentPid = android.os.Process.myPid();
+            android.app.ActivityManager manager = (android.app.ActivityManager) adjustConfig.context.getSystemService(Context.ACTIVITY_SERVICE);
+
+            for (android.app.ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+                if (processInfo.pid == currentPid) {
+                    if (!processInfo.processName.equalsIgnoreCase(adjustConfig.processName)) {
+                        AdjustFactory.getLogger().info("Skipping initialization in background process (%s)", processInfo.processName);
+
+                        return null;
+                    }
+                }
+            }
+        }
+
         ActivityHandler activityHandler = new ActivityHandler(adjustConfig);
         return activityHandler;
     }
