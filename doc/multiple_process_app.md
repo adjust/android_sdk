@@ -12,31 +12,16 @@ inside your process or activity definition in Android manifest file.
 ```
 
 ```xml
-<activity
+<service
     android:name=".YourService"
     android:process=":YourProcessName">
-</activity>
+</service>
 ```
 
 By defining your services or activities like this, you are forcing them to run in different process than the
-main one. 
+main one.
 
-You can also change the name of your main process by changing ```android:process``` property of your ```application```
-in Android manifest file.
-
-```xml
-<application
-  android:name=".YourApp"
-  android:icon="@drawable/ic_launcher"
-  android:label="@string/app_name"
-  android:theme="@style/AppTheme"
-  android:process=":YourMainProcessName">
-</application>
-```
-
-If you just leave this property out of your ```application``` definition in Android manifest file, main process will
-have the same name as your app package. If your app package name is ```com.example.myapp```, that will also be the 
-name of your main process. In that case, ```YourActivity``` and ```YourService``` will run in process with name ```com.example.myapp:YourProcessName```.
+By default, your main process name is the same as your app package name. If your app package name is ```com.example.myapp```, that will also be the name of your main process. In that case, ```YourActivity``` and ```YourService``` will run in process with name ```com.example.myapp:YourProcessName```.
 
 Adjust SDK at this moment __does not support__ tracking from more than one process in app. If you are using
 more processes in your app, you should set main process name in ```AdjustConfig``` object.
@@ -49,6 +34,25 @@ AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setMainProcessName("com.example.myapp");
 
 Adjust.onCreate(config);
+```
+
+You can also change the name of your main process by changing ```android:process``` property of your ```application``` in Android manifest file.
+
+```xml
+<application
+  android:name=".YourApp"
+  android:icon="@drawable/ic_launcher"
+  android:label="@string/app_name"
+  android:theme="@style/AppTheme"
+  android:process=":YourMainProcessName">
+</application>
+```
+
+If you give the name to your main process like this, than you should set your main process name in ```AdjustConfig```
+object like this:
+
+```java
+config.setMainProcessName("com.example.myapp:YourMainProcessName");
 ```
 
 By doing this, you will give information to our SDK about your main process name and our SDK will not initialize
