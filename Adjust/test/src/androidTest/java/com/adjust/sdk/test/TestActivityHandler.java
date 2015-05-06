@@ -447,6 +447,24 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         assertUtil.error("Partner parameter value is empty");
 
+        // create the config with wrong process name
+        AdjustConfig configWrongProcess = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
+        configWrongProcess.setProcessName("com.wrong.process");
+
+        // create handler and start the first session
+        ActivityHandler.getInstance(configWrongProcess);
+
+        assertUtil.info("Skipping initialization in background process (com.adjust.sdk.test.test)");
+
+        // create the config with correct process name
+        AdjustConfig configCorrectProcess = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
+        configCorrectProcess.setProcessName("com.adjust.sdk.test.test");
+
+        // create handler and start the first session
+        ActivityHandler.getInstance(configCorrectProcess);
+
+        assertUtil.notInInfo("Skipping initialization in background process");
+
         // create the config to start the session
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
