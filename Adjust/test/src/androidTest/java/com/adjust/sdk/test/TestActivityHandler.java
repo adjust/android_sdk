@@ -602,6 +602,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // check that it is disabled
         assertUtil.isFalse(activityHandler.isEnabled());
 
+        // not writing activity state because it did not had time to start
+        assertUtil.notInDebug("Wrote Activity state");
+
         // check if message the disable of the SDK
         assertUtil.info("Pausing package handler and attribution handler to disable the SDK");
 
@@ -1133,6 +1136,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that it is disabled
         assertUtil.isFalse(activityHandler.isEnabled());
+
+        // writing activity state after disabling
+        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
 
         // check if message the disable of the SDK
         assertUtil.info("Pausing package handler and attribution handler to disable the SDK");
