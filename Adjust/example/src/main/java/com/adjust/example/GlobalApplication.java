@@ -30,6 +30,9 @@ public class GlobalApplication extends Application {
         // set default tracker
         //config.setDefaultTracker("{YourDefaultTracker}");
 
+        // set process name
+        //config.setProcessName("com.adjust.example");
+
         // set attribution delegate
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override

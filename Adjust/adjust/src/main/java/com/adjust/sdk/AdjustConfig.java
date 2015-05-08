@@ -9,6 +9,7 @@ public class AdjustConfig {
     Context context;
     String appToken;
     String environment;
+    String processName;
     LogLevel logLevel;
     String sdkPrefix;
     Boolean eventBufferingEnabled;
@@ -46,6 +47,8 @@ public class AdjustConfig {
     public void setSdkPrefix(String sdkPrefix) {
         this.sdkPrefix = sdkPrefix;
     }
+
+    public void setProcessName(String processName) { this.processName = processName; }
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;

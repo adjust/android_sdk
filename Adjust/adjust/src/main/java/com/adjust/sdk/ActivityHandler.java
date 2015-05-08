@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -89,6 +90,25 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
+        if (adjustConfig.processName != null) {
+            int currentPid = android.os.Process.myPid();
+            ActivityManager manager = (ActivityManager) adjustConfig.context.getSystemService(Context.ACTIVITY_SERVICE);
+
+            if (manager == null) {
+                return null;
+            }
+
+            for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+                if (processInfo.pid == currentPid) {
+                    if (!processInfo.processName.equalsIgnoreCase(adjustConfig.processName)) {
+                        AdjustFactory.getLogger().info("Skipping initialization in background process (%s)", processInfo.processName);
+                        return null;
+                    }
+                    break;
+                }
+            }
+        }
+
         ActivityHandler activityHandler = new ActivityHandler(adjustConfig);
         return activityHandler;
     }
@@ -140,6 +160,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
+            writeActivityState();
         }
         if (enabled) {
             if (toPause()) {
@@ -441,10 +462,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void checkAttributionState() {
-        // if there is no attribution saved, or there is one being asked
-        if (attribution == null || activityState.askingAttribution) {
-            getAttributionHandler().getAttribution();
+        // if it's a new session
+        if (activityState.subsessionCount <= 1) {
+            return;
         }
+
+        // if there is already an attribution saved and there was no attribution being asked
+        if (attribution != null && !activityState.askingAttribution) {
+            return;
+        }
+
+        getAttributionHandler().getAttribution();
     }
 
     private void endInternal() {
@@ -457,8 +485,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void trackEventInternal(AdjustEvent event) {
+        if (!isEnabled()) return;
         if (!checkEvent(event)) return;
-        if (!activityState.enabled) return;
 
         long now = System.currentTimeMillis();
 
@@ -749,7 +777,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             ActivityPackage attributionPackage = getAttributionPackage();
             attributionHandler = AdjustFactory.getAttributionHandler(this,
                     attributionPackage,
-                    toPause());
+                    toPause(),
+                    adjustConfig.hasListener());
         }
         return attributionHandler;
     }

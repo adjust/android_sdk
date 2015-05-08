@@ -26,23 +26,27 @@ public class AttributionHandler implements IAttributionHandler {
     private ScheduledFuture waitingTask;
     private HttpClient httpClient;
     private boolean paused;
+    private boolean hasListener;
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused) {
+                              boolean startPaused,
+                              boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
         httpClient = Util.getHttpClient();
-        init(activityHandler, attributionPackage, startPaused);
+        init(activityHandler, attributionPackage, startPaused, hasListener);
     }
 
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused) {
+                     boolean startPaused,
+                     boolean hasListener) {
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
         this.paused = startPaused;
+        this.hasListener = hasListener;
     }
 
     @Override
@@ -72,6 +76,9 @@ public class AttributionHandler implements IAttributionHandler {
 
     private void getAttribution(int delayInMilliseconds) {
         if (waitingTask != null) {
+            if (waitingTask.getDelay(TimeUnit.MILLISECONDS) > delayInMilliseconds) {
+                return;
+            }
             waitingTask.cancel(false);
         }
 
@@ -110,6 +117,9 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void getAttributionInternal() {
+        if (!hasListener) {
+            return;
+        }
         if (paused) {
             logger.debug("Attribution Handler is paused");
             return;

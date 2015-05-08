@@ -8,7 +8,8 @@ import org.json.JSONObject;
 public interface IAttributionHandler {
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused);
+                     boolean startPaused,
+                     boolean hasListener);
 
     public void getAttribution();
 

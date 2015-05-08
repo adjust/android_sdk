@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.0.5'
+compile 'com.adjust.sdk:adjust-android:4.0.6'
 ```
 
 ### 4. Add Google Play Services
@@ -451,7 +451,7 @@ parameter. Here is a quick summary of its properties:
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
 
-### 16. Disable tracking
+### 17. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
