@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -91,15 +92,19 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (adjustConfig.processName != null) {
             int currentPid = android.os.Process.myPid();
-            android.app.ActivityManager manager = (android.app.ActivityManager) adjustConfig.context.getSystemService(Context.ACTIVITY_SERVICE);
+            ActivityManager manager = (ActivityManager) adjustConfig.context.getSystemService(Context.ACTIVITY_SERVICE);
 
-            for (android.app.ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+            if (manager == null) {
+                return null;
+            }
+
+            for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
                 if (processInfo.pid == currentPid) {
                     if (!processInfo.processName.equalsIgnoreCase(adjustConfig.processName)) {
                         AdjustFactory.getLogger().info("Skipping initialization in background process (%s)", processInfo.processName);
-
                         return null;
                     }
+                    break;
                 }
             }
         }
