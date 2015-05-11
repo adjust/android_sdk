@@ -86,7 +86,7 @@ class DeviceInfo {
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
         if (!isGooglePlayServicesAvailable) {
-            if (!!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+            if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
                 AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
             }
             return Reflection.getMacAddress(context);
