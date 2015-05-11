@@ -299,6 +299,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    private void timerFired() {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.TIMER_FIRED;
+        sessionHandler.sendMessage(message);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int BASE_ADDRESS = 72630;
         private static final int INIT = BASE_ADDRESS + 1;
@@ -309,6 +315,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_STATUS = BASE_ADDRESS + 8;
+        private static final int TIMER_FIRED = BASE_ADDRESS + 9;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -354,6 +361,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     break;
                 case UPDATE_STATUS:
                     sessionHandler.updateStatusInternal();
+                    break;
+                case TIMER_FIRED:
+                    sessionHandler.timerFiredInternal();
                     break;
             }
         }
@@ -726,7 +736,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         timer.suspend();
     }
 
-    private void timerFired() {
+    private void timerFiredInternal() {
         if (paused()) {
             // stop the timer cycle if it's disabled/offline
             stopTimer();
