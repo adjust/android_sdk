@@ -323,14 +323,15 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
                 "\"network\"       : \"nValue\" , " +
                 "\"campaign\"      : \"cpValue\" , " +
                 "\"adgroup\"       : \"aValue\" , " +
-                "\"creative\"      : \"ctValue\" } }";
+                "\"creative\"      : \"ctValue\" , " +
+                "\"click_label\"   : \"clValue\" } }";
 
         mockActivityHandler.updated = updated;
 
         callCheckAttributionWithGet(attributionHandler, ResponseType.ATTRIBUTION, response);
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
+        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
         // updated set askingAttribution to false
         assertUtil.test("ActivityHandler setAskingAttribution, false");

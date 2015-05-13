@@ -202,12 +202,12 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("HttpClient execute, responseType: ATTRIBUTION");
 
-        assertUtil.verbose("Response: { \"attribution\" : {\"tracker_token\" : \"ttValue\" , \"tracker_name\"  : \"tnValue\" , \"network\"       : \"nValue\" , \"campaign\"      : \"cpValue\" , \"adgroup\"       : \"aValue\" , \"creative\"      : \"ctValue\" } }");
+        assertUtil.verbose("Response: { \"attribution\" : {\"tracker_token\" : \"ttValue\" , \"tracker_name\"  : \"tnValue\" , \"network\"       : \"nValue\" , \"campaign\"      : \"cpValue\" , \"adgroup\"       : \"aValue\" , \"creative\"      : \"ctValue\" , \"click_label\"   : \"clValue\" } }");
 
         assertUtil.info("No message found");
 
         JsonParser parser = new JsonParser();
-        JsonElement e1 = parser.parse("{\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\"}}");
+        JsonElement e1 = parser.parse("{\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\",\"click_label\":\"clValue\"}}");
         JsonElement e2 = parser.parse(mockPackageHandler.jsonResponse.toString());
 
         assertEquals(e1, e2);
