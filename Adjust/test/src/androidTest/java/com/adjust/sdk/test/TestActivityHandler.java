@@ -89,7 +89,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -126,7 +126,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.VERBOSE);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -286,7 +286,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.DEBUG);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -472,7 +472,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.WARN);
 
         // create handler and start the first session
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -506,7 +506,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(2000);
 
@@ -609,7 +609,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.ERROR);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         // check that is true by default
         assertUtil.isTrue(activityHandler.isEnabled());
@@ -773,7 +773,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.ASSERT);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -892,7 +892,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         });
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         activityHandler.trackSubsessionStart();
 
@@ -957,7 +957,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
-        ActivityHandler firstActivityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler firstActivityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -1011,7 +1011,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
             }
         });
 
-        ActivityHandler restartActivityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler restartActivityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -1068,7 +1068,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
             }
         });
 
-        ActivityHandler secondRestartActivityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler secondRestartActivityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -1123,7 +1123,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         // put SDK offline
         activityHandler.setOfflineMode(true);
@@ -1250,7 +1250,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -1361,7 +1361,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         });
 
         // start activity handler with config
-        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        ActivityHandler activityHandler = getActivityHandler(config);
 
         SystemClock.sleep(3000);
 
@@ -1620,5 +1620,15 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.test("PackageHandler pauseSending");
 
         assertUtil.test("AttributionHandler pauseSending");
+    }
+
+    private ActivityHandler getActivityHandler(AdjustConfig config) {
+        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+
+        if (activityHandler != null) {
+            activityHandler.trackSubsessionStart();
+        }
+
+        return activityHandler;
     }
 }
