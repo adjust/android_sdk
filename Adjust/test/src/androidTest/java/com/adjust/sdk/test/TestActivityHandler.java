@@ -634,7 +634,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ERROR", false);
 
         // test first session start without attribution handler
-        firstSessionStartWithoutTimerTests(true, false, true);
+        firstSessionStartWithoutTimerTests(true, false, false);
 
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
@@ -809,12 +809,10 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // three click packages: attributions, extraParams and mixed
         for (int i = 3; i > 0; i--) {
-            assertUtil.test("AttributionHandler getAttribution");
             assertUtil.test("PackageHandler sendClickPackage");
         }
 
         // check that it did not send any other click package
-        assertUtil.notInTest("AttributionHandler getAttribution");
         assertUtil.notInTest("PackageHandler sendClickPackage");
 
         // checking the default values of the first session package

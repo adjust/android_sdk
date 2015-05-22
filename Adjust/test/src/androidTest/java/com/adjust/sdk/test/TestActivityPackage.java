@@ -115,8 +115,8 @@ public class TestActivityPackage {
         // test default package attributes
         testDefaultAttributes("/sdk_click", ActivityKind.CLICK, "click");
 
-        // check default parameters
-        testDefaultParameters();
+        // check device ids parameters
+        testDeviceIdsParameters();
 
         // click parameters
         // source
@@ -148,9 +148,7 @@ public class TestActivityPackage {
         // test default package attributes
         testDefaultAttributes("attribution", ActivityKind.ATTRIBUTION, "attribution");
 
-        testDeviceInfoIds();
-        testConfig();
-        testActivityStateIds();
+        testDeviceIdsParameters();
     }
 
     private void testDefaultAttributes(String path, ActivityKind activityKind, String activityKindString) {
@@ -173,6 +171,16 @@ public class TestActivityPackage {
         testDeviceInfo();
         testConfig();
         testActivityState();
+        testCreatedAt();
+    }
+
+    private void testDeviceIdsParameters() {
+        testDeviceInfoIds();
+        testConfig();
+        testCreatedAt();
+    }
+
+    private void testCreatedAt() {
         // created_at
         assertParameterNotNull("created_at");
     }
@@ -217,14 +225,16 @@ public class TestActivityPackage {
             assertParameterNull("mac_sha1");
             // mac_md5
             assertParameterNull("mac_md5");
+            // android_id
+            assertParameterNull("android_id");
         } else {
             // mac_sha1
             assertParameterNotNull("mac_sha1");
             // mac_md5
             assertParameterNotNull("mac_md5");
+            // android_id
+            assertParameterNotNull("android_id");
         }
-        // android_id
-        assertParameterNotNull("android_id");
     }
 
     private void testConfig() {

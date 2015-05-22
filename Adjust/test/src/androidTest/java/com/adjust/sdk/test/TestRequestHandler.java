@@ -254,12 +254,12 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         // deleting the attribution file to simulate a first session
         mockLogger.test("Was Attribution deleted? " + attributionDeleted);
 
-
         // create the config to start the session
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+        activityHandler.trackSubsessionStart();
         SystemClock.sleep(3000);
 
         ActivityPackage sessionPackage = mockPackageHandler.queue.get(0);
