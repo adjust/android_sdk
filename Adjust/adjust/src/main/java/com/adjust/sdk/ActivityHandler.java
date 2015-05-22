@@ -129,6 +129,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void trackEvent(AdjustEvent event) {
+        if (activityState == null) {
+            trackSubsessionStart();
+        }
+
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
         message.obj = event;
@@ -395,7 +399,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toPause());
 
-        startInternal();
+        ActivityPackage attributionPackage = getAttributionPackage();
+        attributionHandler = AdjustFactory.getAttributionHandler(this,
+                attributionPackage,
+                toPause(),
+                adjustConfig.hasListener());
+
+        // startInternal();
     }
 
     private void startInternal() {
@@ -472,12 +482,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        getAttributionHandler().getAttribution();
+        attributionHandler.getAttribution();
     }
 
     private void endInternal() {
         packageHandler.pauseSending();
-        getAttributionHandler().pauseSending();
+        attributionHandler.pauseSending();
         stopTimer();
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
@@ -513,7 +523,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String deeplink = jsonResponse.optString("deeplink", null);
         launchDeeplinkMain(deeplink);
-        getAttributionHandler().checkAttribution(jsonResponse);
+        attributionHandler.checkAttribution(jsonResponse);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
@@ -523,8 +533,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (clickPackage == null) {
             return;
         }
-
-        getAttributionHandler().getAttribution();
 
         packageHandler.sendClickPackage(clickPackage);
     }
@@ -540,8 +548,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (clickPackage == null) {
             return;
         }
-
-        getAttributionHandler().getAttribution();
 
         packageHandler.sendClickPackage(clickPackage);
     }
@@ -769,18 +775,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         return true;
-    }
-
-    // lazy initialization to prevent null activity state before first session
-    private IAttributionHandler getAttributionHandler() {
-        if (attributionHandler == null) {
-            ActivityPackage attributionPackage = getAttributionPackage();
-            attributionHandler = AdjustFactory.getAttributionHandler(this,
-                    attributionPackage,
-                    toPause(),
-                    adjustConfig.hasListener());
-        }
-        return attributionHandler;
     }
 
     private boolean toPause() {

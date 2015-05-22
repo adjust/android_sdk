@@ -36,7 +36,7 @@ class PackageBuilder {
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
-        this.activityState = activityState.shallowCopy();
+        this.activityState = activityState == null ? null : activityState.shallowCopy();
         this.createdAt = createdAt;
     }
 
@@ -71,7 +71,7 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildClickPackage(String source, long clickTime) {
-        Map<String, String> parameters = getDefaultParameters();
+        Map<String, String> parameters = getIdsParameters();
 
         addString(parameters, "source", source);
         addDate(parameters, "click_time", clickTime);
@@ -123,7 +123,6 @@ class PackageBuilder {
 
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
-        injectActivityStateIds(parameters);
 
         checkDeviceIds(parameters);
 
