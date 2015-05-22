@@ -110,7 +110,7 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
-        addDate(parameters, "created_at", createdAt);
+        injectCreatedAt(parameters);
 
         // general
         checkDeviceIds(parameters);
@@ -123,6 +123,7 @@ class PackageBuilder {
 
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
+        injectCreatedAt(parameters);
 
         checkDeviceIds(parameters);
 
@@ -168,15 +169,15 @@ class PackageBuilder {
     }
 
     private void injectActivityState(Map<String, String> parameters) {
-        injectActivityStateIds(parameters);
+        addString(parameters, "android_uuid", activityState.uuid);
         addInt(parameters, "session_count", activityState.sessionCount);
         addInt(parameters, "subsession_count", activityState.subsessionCount);
         addDuration(parameters, "session_length", activityState.sessionLength);
         addDuration(parameters, "time_spent", activityState.timeSpent);
     }
 
-    private void injectActivityStateIds(Map<String, String> parameters) {
-        addString(parameters, "android_uuid", activityState.uuid);
+    private void injectCreatedAt(Map<String, String> parameters) {
+        addDate(parameters, "created_at", createdAt);
     }
 
     private void injectAttribution(Map<String, String> parameters) {
