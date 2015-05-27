@@ -167,7 +167,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             writeActivityState();
         }
         if (enabled) {
-            if (toPause()) {
+            if (paused()) {
                 logger.info("Package and attribution handler remain paused due to the SDK is offline");
             } else {
                 logger.info("Resuming package handler and attribution handler to enabled the SDK");
@@ -193,7 +193,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (offline) {
             logger.info("Pausing package and attribution handler to put in offline mode");
         } else {
-            if (toPause()) {
+            if (paused()) {
                 logger.info("Package and attribution handler remain paused because the SDK is disabled");
             } else {
                 logger.info("Resuming package handler and attribution handler to put in online mode");
@@ -397,12 +397,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         readAttribution();
         readActivityState();
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toPause());
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, paused());
 
         ActivityPackage attributionPackage = getAttributionPackage();
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                toPause(),
+                paused(),
                 adjustConfig.hasListener());
 
         // startInternal();
@@ -640,7 +640,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (attributionHandler == null) {
             return;
         }
-        if (toPause()) {
+        if (paused()) {
             attributionHandler.pauseSending();
         } else {
             attributionHandler.resumeSending();
@@ -651,7 +651,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (packageHandler == null) {
             return;
         }
-        if (toPause()) {
+        if (paused()) {
             packageHandler.pauseSending();
         } else {
             packageHandler.resumeSending();
@@ -715,7 +715,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void startTimer() {
         stopTimer();
 
-        if (!activityState.enabled) {
+        // don't start the timer if it's disabled/offline
+        if (paused()) {
             return;
         }
         timer = Executors.newSingleThreadScheduledExecutor();
@@ -735,7 +736,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void timerFired() {
-        if (!activityState.enabled) {
+        if (paused()) {
+            // stop the timer cycle if it's disabled/offline
             stopTimer();
             return;
         }
@@ -777,7 +779,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    private boolean toPause() {
+    private boolean paused() {
         return offline || !isEnabled();
     }
 }
