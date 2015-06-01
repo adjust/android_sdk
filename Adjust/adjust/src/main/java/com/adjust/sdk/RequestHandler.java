@@ -154,7 +154,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     // close current package because it failed
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable, boolean sendToPackageHandler) {
         final String packageMessage = activityPackage.getFailureMessage();
-        final String handlerMessage = packageHandler.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
         logger.error("%s. (%s) Will retry later", packageMessage, reasonString);
 
