@@ -568,7 +568,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
-        long now = System.currentTimeMillis();
         Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
         boolean hasAdjustTags = false;
@@ -586,6 +585,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String reftag = queryStringParameters.remove("reftag");
 
+        long now = System.currentTimeMillis();
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
