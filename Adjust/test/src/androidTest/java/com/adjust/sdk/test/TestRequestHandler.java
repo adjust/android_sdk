@@ -105,8 +105,6 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         emptyJsonTest(sendClick);
 
         messageTest(sendClick);
-
-        attributionTest(sendClick);
     }
 
     private void nullResponseTest(boolean sendClick) {
@@ -126,9 +124,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("HttpClient execute, responseType: CLIENT_PROTOCOL_EXCEPTION");
 
-        assertUtil.test("PackageHandler getFailureMessage");
-
-        assertUtil.error("Failed to track session. (Client protocol error: org.apache.http.client.ClientProtocolException: testResponseError) Mock Failure Message.");
+        assertUtil.error("Failed to track session. (Client protocol error: org.apache.http.client.ClientProtocolException: testResponseError) Will retry later");
 
         closeFirstPackage(sendClick);
     }
@@ -158,7 +154,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.verbose("Response: not a json response");
 
-        assertUtil.error("Failed to parse json response: not a json response (Value not of type java.lang.String cannot be converted to JSONObject)");
+        assertUtil.error("Failed to parse json response. (Value not of type java.lang.String cannot be converted to JSONObject)");
 
         closeFirstPackage(sendClick);
     }
@@ -191,26 +187,6 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertUtil.info("response OK");
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"response OK\"}");
-
-        sendNextPackage(sendClick);
-    }
-
-    private void attributionTest(boolean sendClick) {
-        mockHttpClient.responseType = ResponseType.ATTRIBUTION;
-
-        sendPackageOrClick(sendClick);
-
-        assertUtil.test("HttpClient execute, responseType: ATTRIBUTION");
-
-        assertUtil.verbose("Response: { \"attribution\" : {\"tracker_token\" : \"ttValue\" , \"tracker_name\"  : \"tnValue\" , \"network\"       : \"nValue\" , \"campaign\"      : \"cpValue\" , \"adgroup\"       : \"aValue\" , \"creative\"      : \"ctValue\" , \"click_label\"   : \"clValue\" } }");
-
-        assertUtil.info("No message found");
-
-        JsonParser parser = new JsonParser();
-        JsonElement e1 = parser.parse("{\"attribution\":{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\",\"click_label\":\"clValue\"}}");
-        JsonElement e2 = parser.parse(mockPackageHandler.jsonResponse.toString());
-
-        assertEquals(e1, e2);
 
         sendNextPackage(sendClick);
     }

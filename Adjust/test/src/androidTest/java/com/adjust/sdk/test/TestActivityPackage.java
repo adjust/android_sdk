@@ -129,6 +129,7 @@ public class TestActivityPackage {
         assertJsonParameterEquals("params", deepLinkParameters);
 
         // click_time
+        // TODO add string click time to compare
         assertParameterNotNull("click_time");
 
         // attributions

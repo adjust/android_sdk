@@ -122,11 +122,28 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
                 attributionPackage, false, true);
 
-        // test attribution with update in activity handler
-        attributionResponseTest(attributionHandler, true);
+        String response = "Response: { \"attribution\" : " +
+                "{\"tracker_token\" : \"ttValue\" , " +
+                "\"tracker_name\"  : \"tnValue\" , " +
+                "\"network\"       : \"nValue\" , " +
+                "\"campaign\"      : \"cpValue\" , " +
+                "\"adgroup\"       : \"aValue\" , " +
+                "\"creative\"      : \"ctValue\" , " +
+                "\"click_label\"   : \"clValue\" } }";
 
-        // test attribution without update in activity handler
-        attributionResponseTest(attributionHandler, false);
+        callCheckAttributionWithGet(attributionHandler, ResponseType.ATTRIBUTION, response);
+
+        // check attribution was called without ask_in
+        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
+
+        // updated set askingAttribution to false
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        // it did not update to true
+        assertUtil.notInTest("ActivityHandler setAskingAttribution, true");
+
+        // and waiting for query
+        assertUtil.notInDebug("Waiting to query attribution");
     }
 
     public void testAskIn() {
@@ -165,18 +182,18 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         SystemClock.sleep(3000);
 
+        // it did update to true
+        assertUtil.test("ActivityHandler setAskingAttribution, true");
+
+        // and waited to for query
+        assertUtil.debug("Waiting to query attribution in 5000 milliseconds");
+
         // it was been waiting for 1000 + 2000 + 3000 = 6 seconds
         // check that the mock http client was not called because the original clock was reseted
         assertUtil.notInTest("HttpClient execute");
 
         // check that it was finally called after 6 seconds after the second ask_in
         SystemClock.sleep(3000);
-
-        // it did update to true
-        assertUtil.test("ActivityHandler setAskingAttribution, true");
-
-        // and waited to for query
-        assertUtil.debug("Waiting to query attribution in 5000 milliseconds");
 
         okMessageTestLogs();
 
@@ -197,7 +214,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         SystemClock.sleep(1000);
 
         // check that the activity handler is paused
-        assertUtil.debug("Attribution Handler is paused");
+        assertUtil.debug("Attribution handler is paused");
 
         // and it did not call the http client
         assertUtil.isNull(mockHttpClient.lastRequest);
@@ -219,7 +236,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         SystemClock.sleep(1000);
 
         // check that the activity handler is not paused
-        assertUtil.notInDebug("Attribution Handler is paused");
+        assertUtil.notInDebug("Attribution handler is paused");
 
         // but it did not call the http client
         assertUtil.isNull(mockHttpClient.lastRequest);
@@ -249,7 +266,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         assertUtil.verbose("Response: not a json response");
 
-        assertUtil.error("Failed to parse json response: not a json response (Value not of type java.lang.String cannot be converted to JSONObject)");
+        assertUtil.error("Failed to parse json response. (Value not of type java.lang.String cannot be converted to JSONObject)");
     }
 
     private void emptyJsonResponseTest(AttributionHandler attributionHandler) {
@@ -314,33 +331,6 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         // the response logged
         assertUtil.verbose(response);
-    }
-
-    private void attributionResponseTest(AttributionHandler attributionHandler, boolean updated) {
-        String response = "Response: { \"attribution\" : " +
-                "{\"tracker_token\" : \"ttValue\" , " +
-                "\"tracker_name\"  : \"tnValue\" , " +
-                "\"network\"       : \"nValue\" , " +
-                "\"campaign\"      : \"cpValue\" , " +
-                "\"adgroup\"       : \"aValue\" , " +
-                "\"creative\"      : \"ctValue\" , " +
-                "\"click_label\"   : \"clValue\" } }";
-
-        mockActivityHandler.updated = updated;
-
-        callCheckAttributionWithGet(attributionHandler, ResponseType.ATTRIBUTION, response);
-
-        // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
-
-        // updated set askingAttribution to false
-        assertUtil.test("ActivityHandler setAskingAttribution, false");
-
-        // it did not update to true
-        assertUtil.notInTest("ActivityHandler setAskingAttribution, true");
-
-        // and waiting for query
-        assertUtil.notInDebug("Waiting to query attribution");
     }
 
     private void startGetAttributionTest(AttributionHandler attributionHandler, ResponseType responseType) {

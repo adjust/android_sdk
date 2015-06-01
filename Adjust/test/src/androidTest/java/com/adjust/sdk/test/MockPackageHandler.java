@@ -68,12 +68,6 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
-    public String getFailureMessage() {
-        testLogger.test(prefix + "getFailureMessage");
-        return "Mock Failure Message.";
-    }
-
-    @Override
     public void finishedTrackingActivity(JSONObject jsonResponse) {
         testLogger.test(prefix + "finishedTrackingActivity, " + jsonResponse);
         this.jsonResponse = jsonResponse;

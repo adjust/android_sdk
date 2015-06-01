@@ -57,7 +57,16 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testAddPackage");
 
-        addFirstPackageTest();
+        PackageHandler packageHandler = startPackageHandler();
+
+        ActivityPackage firstActivityPackage = createUnknowPackage("FirstPackage");
+
+        packageHandler.addPackage(firstActivityPackage);
+
+        SystemClock.sleep(1000);
+
+        addPackageTests(1, "unknownFirstPackage");
+
         addSecondPackageTest(null);
     }
 
@@ -166,7 +175,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         PackageHandler packageHandler = startPackageHandler();
 
-        assertUtil.isEqual("Will retry later.", packageHandler.getFailureMessage());
+        // TODO test "will retry later"
 
         packageHandler.finishedTrackingActivity(null);
 
@@ -186,20 +195,6 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         SystemClock.sleep(1000);
 
         assertUtil.verbose("Package queue file not found");
-
-        return packageHandler;
-    }
-
-    private PackageHandler addFirstPackageTest() {
-        PackageHandler packageHandler = startPackageHandler();
-
-        ActivityPackage firstActivityPackage = createUnknowPackage("FirstPackage");
-
-        packageHandler.addPackage(firstActivityPackage);
-
-        SystemClock.sleep(1000);
-
-        addPackageTests(1, "unknownFirstPackage");
 
         return packageHandler;
     }
