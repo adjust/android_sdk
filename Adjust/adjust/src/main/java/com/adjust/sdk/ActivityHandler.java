@@ -743,6 +743,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
+        logger.debug("Session timer fired");
         packageHandler.sendFirstPackage();
 
         if (updateActivityState(System.currentTimeMillis())) {
