@@ -125,7 +125,7 @@ public class AttributionHandler implements IAttributionHandler {
             return;
         }
         if (paused) {
-            logger.debug("Attribution Handler is paused");
+            logger.debug("Attribution handler is paused");
             return;
         }
         logger.verbose("%s", attributionPackage.getExtendedString());

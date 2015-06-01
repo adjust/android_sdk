@@ -92,7 +92,7 @@ public class AdjustConfig {
     private static boolean checkAppToken(String appToken) {
         ILogger logger = AdjustFactory.getLogger();
         if (appToken == null) {
-            logger.error("Missing App Token.");
+            logger.error("Missing App Token");
             return false;
         }
 

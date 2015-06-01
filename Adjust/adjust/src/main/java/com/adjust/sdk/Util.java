@@ -165,7 +165,7 @@ public class Util {
             out.close();
             stringResponse = out.toString().trim();
         } catch (Exception e) {
-            getLogger().error("Failed to parse response (%s)", e.getMessage());
+            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
         }
 
         getLogger().verbose("Response: %s", stringResponse);
@@ -175,7 +175,7 @@ public class Util {
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            getLogger().error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
+            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
         }
 
         if (jsonResponse == null) return null;
