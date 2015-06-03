@@ -23,7 +23,7 @@ public class AttributionHandler implements IAttributionHandler {
     private IActivityHandler activityHandler;
     private ILogger logger;
     private ActivityPackage attributionPackage;
-    private AdjustTimer timer;
+    private TimerOnce timer;
     private HttpClient httpClient;
     private boolean paused;
     private boolean hasListener;
@@ -35,7 +35,7 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
         httpClient = Util.getHttpClient();
-        timer = new AdjustTimer(scheduler, new Runnable() {
+        timer = new TimerOnce(scheduler, new Runnable() {
             @Override
             public void run() {
                 getAttributionInternal();
@@ -90,12 +90,8 @@ public class AttributionHandler implements IAttributionHandler {
             logger.debug("Waiting to query attribution in %d milliseconds", delayInMilliseconds);
         }
 
-        // cancel if any previous timers were running
-        timer.cancel();
         // set the new time the timer will fire in
-        timer.setFireIn(delayInMilliseconds);
-        // start the timer
-        timer.resume();
+        timer.startIn(delayInMilliseconds);
     }
 
     private void checkAttributionInternal(JSONObject jsonResponse) {

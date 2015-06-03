@@ -46,7 +46,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
-    private AdjustTimer timer;
+    private TimerCycle timer;
     private boolean enabled;
     private boolean offline;
 
@@ -411,7 +411,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 paused(),
                 adjustConfig.hasListener());
 
-        timer = new AdjustTimer(new Runnable() {
+        timer = new TimerCycle(new Runnable() {
             @Override
             public void run() {
                 timerFired();
@@ -729,7 +729,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        timer.resume();
+        timer.start();
     }
 
     private void stopTimer() {
