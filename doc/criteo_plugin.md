@@ -160,3 +160,16 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustCriteo.injectViewSearchDatesIntoCriteoEvents("2015-01-01", "2015-01-07");
 ```
+
+### Partner id
+
+It's possible to attach a partner id in every Criteo event with the `injectPartnerIdIntoCriteoEvents` method.
+The partner id will be sent with every Criteo event for the duration of the application lifecycle,
+so it must be set again when the app is re-lauched.
+The partner id can be removed by setting the `injectPartnerIdIntoCriteoEvents` method with `null`.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
+```
