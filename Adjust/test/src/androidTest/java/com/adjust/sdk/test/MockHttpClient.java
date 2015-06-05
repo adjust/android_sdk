@@ -62,7 +62,8 @@ public class MockHttpClient implements HttpClient {
                             "\"network\"       : \"nValue\" , " +
                             "\"campaign\"      : \"cpValue\" , " +
                             "\"adgroup\"       : \"aValue\" , " +
-                            "\"creative\"      : \"ctValue\" } }");
+                            "\"creative\"      : \"ctValue\" , " +
+                            "\"click_label\"   : \"clValue\" } }");
         } else if (responseType == ResponseType.ASK_IN) {
             return getOkResponse("{ \"ask_in\" : 4000 }");
         }

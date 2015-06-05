@@ -20,7 +20,8 @@ public class AdjustAttribution implements Serializable {
             new ObjectStreamField("network", String.class),
             new ObjectStreamField("campaign", String.class),
             new ObjectStreamField("adgroup", String.class),
-            new ObjectStreamField("creative", String.class)
+            new ObjectStreamField("creative", String.class),
+            new ObjectStreamField("clickLabel", String.class)
     };
 
     public String trackerToken;
@@ -29,6 +30,7 @@ public class AdjustAttribution implements Serializable {
     public String campaign;
     public String adgroup;
     public String creative;
+    public String clickLabel;
 
     public static AdjustAttribution fromJson(JSONObject jsonObject) {
         if (jsonObject == null) return null;
@@ -41,6 +43,7 @@ public class AdjustAttribution implements Serializable {
         attribution.campaign = jsonObject.optString("campaign", null);
         attribution.adgroup = jsonObject.optString("adgroup", null);
         attribution.creative = jsonObject.optString("creative", null);
+        attribution.clickLabel = jsonObject.optString("click_label", null);
 
         return attribution;
     }
@@ -58,6 +61,7 @@ public class AdjustAttribution implements Serializable {
         if (!Util.equalString(campaign, otherAttribution.campaign)) return false;
         if (!Util.equalString(adgroup, otherAttribution.adgroup)) return false;
         if (!Util.equalString(creative, otherAttribution.creative)) return false;
+        if (!Util.equalString(clickLabel, otherAttribution.clickLabel)) return false;
         return true;
     }
 
@@ -70,14 +74,15 @@ public class AdjustAttribution implements Serializable {
         hashCode = 37 * hashCode + Util.hashString(campaign);
         hashCode = 37 * hashCode + Util.hashString(adgroup);
         hashCode = 37 * hashCode + Util.hashString(creative);
+        hashCode = 37 * hashCode + Util.hashString(clickLabel);
         return hashCode;
     }
 
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s",
-                trackerToken, trackerName, network, campaign, adgroup, creative);
+        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s",
+                trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {

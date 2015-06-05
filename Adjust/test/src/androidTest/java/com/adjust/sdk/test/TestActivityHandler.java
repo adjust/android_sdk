@@ -988,7 +988,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that updates attribution
         assertUtil.isTrue(firstActivityHandler.tryUpdateAttribution(emptyAttribution));
-        assertUtil.debug("Wrote Attribution: tt:null tn:null net:null cam:null adg:null cre:null");
+        assertUtil.debug("Wrote Attribution: tt:null tn:null net:null cam:null adg:null cre:null cl:null");
 
         emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
 
@@ -1033,7 +1033,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                     "\"network\"       : \"nValue\" , " +
                     "\"campaign\"      : \"cpValue\" , " +
                     "\"adgroup\"       : \"aValue\" , " +
-                    "\"creative\"      : \"ctValue\" }");
+                    "\"creative\"      : \"ctValue\" , " +
+                    "\"click_label\"   : \"clValue\" }");
         } catch (JSONException e) {
             fail(e.getMessage());
         }
@@ -1041,12 +1042,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         //check that it updates
         assertUtil.isTrue(restartActivityHandler.tryUpdateAttribution(firstAttribution));
-        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
+        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
         // check that it launch the saved attribute
         SystemClock.sleep(1000);
 
-        assertUtil.test("onAttributionChanged: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
+        assertUtil.test("onAttributionChanged: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
         // check that it does not update the attribution
         assertUtil.isFalse(restartActivityHandler.tryUpdateAttribution(firstAttribution));
@@ -1089,7 +1090,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                     "\"network\"       : \"nValue2\" , " +
                     "\"campaign\"      : \"cpValue2\" , " +
                     "\"adgroup\"       : \"aValue2\" , " +
-                    "\"creative\"      : \"ctValue2\" }");
+                    "\"creative\"      : \"ctValue2\" , " +
+                    "\"click_label\"   : \"clValue2\" }");
         } catch (JSONException e) {
             fail(e.getMessage());
         }
@@ -1097,12 +1099,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         //check that it updates
         assertUtil.isTrue(secondRestartActivityHandler.tryUpdateAttribution(secondAttribution));
-        assertUtil.debug("Wrote Attribution: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2");
+        assertUtil.debug("Wrote Attribution: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
 
         // check that it launch the saved attribute
         SystemClock.sleep(1000);
 
-        assertUtil.test("onAttributionChanged: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2");
+        assertUtil.test("onAttributionChanged: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
 
         // check that it does not update the attribution
         assertUtil.isFalse(secondRestartActivityHandler.tryUpdateAttribution(secondAttribution));
@@ -1433,7 +1435,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                     "\"network\"       : \"nValue\" , " +
                     "\"campaign\"      : \"cpValue\" , " +
                     "\"adgroup\"       : \"aValue\" , " +
-                    "\"creative\"      : \"ctValue\" }");
+                    "\"creative\"      : \"ctValue\" , " +
+                    "\"click_label\"   : \"clValue\" }");
         } catch (JSONException e) {
             fail(e.getMessage());
         }
@@ -1443,7 +1446,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.tryUpdateAttribution(attribution);
 
         // attribution was updated
-        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue");
+        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
         // trigger a new sub session
         activityHandler.trackSubsessionStart();

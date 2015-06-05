@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.0.6'
+compile 'com.adjust.sdk:adjust-android:4.0.7'
 ```
 
 ### 4. Add Google Play Services
@@ -450,6 +450,7 @@ parameter. Here is a quick summary of its properties:
 - `String campaign` the campaign grouping level of the current install.
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
+- `String clickLabel` the click label of the current install.
 
 ### 17. Disable tracking
 

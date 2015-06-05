@@ -19,20 +19,21 @@ public class AdjustCriteo {
     private static String hashEmailInternal;
     private static String checkInDateInternal;
     private static String checkOutDateInternal;
+    private static String partnerIdInternal;
 
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> productIds, String customerId) {
         String jsonProducts = createCriteoVLFromProducts(productIds);
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectViewProductIntoEvent(AdjustEvent event, String productId, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", productId);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
@@ -41,7 +42,7 @@ public class AdjustCriteo {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String transactionId, String customerId) {
@@ -99,9 +100,14 @@ public class AdjustCriteo {
         checkOutDateInternal = checkOutDate;
     }
 
+    public static void injectPartnerIdIntoCriteoEvents(String partnerId) {
+        partnerIdInternal = partnerId;
+    }
+
     private static void injectOptionalParams(AdjustEvent event) {
         injectHashEmail(event);
         injectSearchDates(event);
+        injectPartnerId(event);
     }
     private static void injectHashEmail(AdjustEvent event) {
         if (hashEmailInternal == null || hashEmailInternal.isEmpty()) {
@@ -120,6 +126,15 @@ public class AdjustCriteo {
         event.addPartnerParameter("din", checkInDateInternal);
         event.addPartnerParameter("dout", checkOutDateInternal);
     }
+
+    private static void injectPartnerId(AdjustEvent event) {
+        if (partnerIdInternal == null || partnerIdInternal.isEmpty()) {
+            return;
+        }
+
+        event.addPartnerParameter("criteo_partner_id", partnerIdInternal);
+    }
+
 
     private static String createCriteoVLFromProducts(List<String> productIds) {
         if (productIds == null) {
