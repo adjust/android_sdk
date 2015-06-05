@@ -25,14 +25,14 @@ public class AdjustCriteo {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectViewProductIntoEvent(AdjustEvent event, String productId, String customerId) {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", productId);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
@@ -41,7 +41,7 @@ public class AdjustCriteo {
         event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
-        injectHashEmail(event);
+        injectOptionalParams(event);
     }
 
     public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String transactionId, String customerId) {
