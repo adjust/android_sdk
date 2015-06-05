@@ -450,6 +450,7 @@ parameter. Here is a quick summary of its properties:
 - `String campaign` the campaign grouping level of the current install.
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
+- `String clickLabel` the click label of the current install.
 
 ### 17. Disable tracking
 
