@@ -11,20 +11,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
 import static com.adjust.sdk.Constants.LONG;
 import static com.adjust.sdk.Constants.LOW;
-import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.MEDIUM;
 import static com.adjust.sdk.Constants.NORMAL;
-import static com.adjust.sdk.Constants.SHA1;
 import static com.adjust.sdk.Constants.SMALL;
 import static com.adjust.sdk.Constants.XLARGE;
 
@@ -214,7 +209,7 @@ class DeviceInfo {
         if (macAddress == null) {
             return null;
         }
-        String macSha1 = sha1(macAddress);
+        String macSha1 = Util.sha1(macAddress);
 
         return macSha1;
     }
@@ -224,7 +219,7 @@ class DeviceInfo {
             return null;
         }
         String macShort = macAddress.replaceAll(":", "");
-        String macShortMd5 = md5(macShort);
+        String macShortMd5 = Util.md5(macShort);
 
         return macShortMd5;
     }
@@ -235,33 +230,6 @@ class DeviceInfo {
         } else {
             return null;
         }
-    }
-
-    private String sha1(final String text) {
-        return hash(text, SHA1);
-    }
-
-    private String md5(final String text) {
-        return hash(text, MD5);
-    }
-
-    private String hash(final String text, final String method) {
-        String hashString = null;
-        try {
-            final byte[] bytes = text.getBytes(ENCODING);
-            final MessageDigest mesd = MessageDigest.getInstance(method);
-            mesd.update(bytes, 0, bytes.length);
-            final byte[] hash = mesd.digest();
-            hashString = convertToHex(hash);
-        } catch (Exception e) {
-        }
-        return hashString;
-    }
-
-    private static String convertToHex(final byte[] bytes) {
-        final BigInteger bigInt = new BigInteger(1, bytes);
-        final String formatString = "%0" + (bytes.length << 1) + "x";
-        return String.format(Locale.US, formatString, bigInt);
     }
 
     private String getFacebookAttributionId(final Context context) {
