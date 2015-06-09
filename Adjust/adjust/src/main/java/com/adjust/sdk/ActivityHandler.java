@@ -759,7 +759,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
-    private void writeActivityState() {
+    private synchronized void writeActivityState() {
         Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
