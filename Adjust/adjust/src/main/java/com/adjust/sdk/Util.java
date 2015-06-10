@@ -31,12 +31,18 @@ import java.io.FileOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.adjust.sdk.Constants.ENCODING;
+import static com.adjust.sdk.Constants.MD5;
+import static com.adjust.sdk.Constants.SHA1;
 
 /**
  * Collects utility functions used by Adjust.
@@ -165,7 +171,7 @@ public class Util {
             out.close();
             stringResponse = out.toString().trim();
         } catch (Exception e) {
-            getLogger().error("Failed to parse response (%s)", e.getMessage());
+            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
         }
 
         getLogger().verbose("Response: %s", stringResponse);
@@ -175,7 +181,7 @@ public class Util {
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            getLogger().error("Failed to parse json response: %s (%s)", stringResponse, e.getMessage());
+            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
         }
 
         if (jsonResponse == null) return null;
@@ -321,5 +327,32 @@ public class Util {
             return 0;
         }
         return value.entrySet().hashCode();
+    }
+
+    public static String sha1(final String text) {
+        return hash(text, SHA1);
+    }
+
+    public static String md5(final String text) {
+        return hash(text, MD5);
+    }
+
+    public static String hash(final String text, final String method) {
+        String hashString = null;
+        try {
+            final byte[] bytes = text.getBytes(ENCODING);
+            final MessageDigest mesd = MessageDigest.getInstance(method);
+            mesd.update(bytes, 0, bytes.length);
+            final byte[] hash = mesd.digest();
+            hashString = convertToHex(hash);
+        } catch (Exception e) {
+        }
+        return hashString;
+    }
+
+    public static String convertToHex(final byte[] bytes) {
+        final BigInteger bigInt = new BigInteger(1, bytes);
+        final String formatString = "%0" + (bytes.length << 1) + "x";
+        return String.format(Locale.US, formatString, bigInt);
     }
 }

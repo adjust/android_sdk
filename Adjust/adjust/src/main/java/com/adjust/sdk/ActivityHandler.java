@@ -23,13 +23,9 @@ import android.os.Message;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
@@ -50,7 +46,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
-    private static ScheduledExecutorService timer;
+    private TimerCycle timer;
     private boolean enabled;
     private boolean offline;
 
@@ -129,6 +125,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void trackEvent(AdjustEvent event) {
+        if (activityState == null) {
+            trackSubsessionStart();
+        }
+
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT;
         message.obj = event;
@@ -163,7 +163,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             writeActivityState();
         }
         if (enabled) {
-            if (toPause()) {
+            if (paused()) {
                 logger.info("Package and attribution handler remain paused due to the SDK is offline");
             } else {
                 logger.info("Resuming package handler and attribution handler to enabled the SDK");
@@ -189,7 +189,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (offline) {
             logger.info("Pausing package and attribution handler to put in offline mode");
         } else {
-            if (toPause()) {
+            if (paused()) {
                 logger.info("Package and attribution handler remain paused because the SDK is disabled");
             } else {
                 logger.info("Resuming package handler and attribution handler to put in online mode");
@@ -299,6 +299,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    private void timerFired() {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.TIMER_FIRED;
+        sessionHandler.sendMessage(message);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int BASE_ADDRESS = 72630;
         private static final int INIT = BASE_ADDRESS + 1;
@@ -309,6 +315,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_STATUS = BASE_ADDRESS + 8;
+        private static final int TIMER_FIRED = BASE_ADDRESS + 9;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -355,6 +362,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 case UPDATE_STATUS:
                     sessionHandler.updateStatusInternal();
                     break;
+                case TIMER_FIRED:
+                    sessionHandler.timerFiredInternal();
+                    break;
             }
         }
     }
@@ -393,9 +403,20 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         readAttribution();
         readActivityState();
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toPause());
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, paused());
 
-        startInternal();
+        ActivityPackage attributionPackage = getAttributionPackage();
+        attributionHandler = AdjustFactory.getAttributionHandler(this,
+                attributionPackage,
+                paused(),
+                adjustConfig.hasListener());
+
+        timer = new TimerCycle(new Runnable() {
+            @Override
+            public void run() {
+                timerFired();
+            }
+        },TIMER_START, TIMER_INTERVAL);
     }
 
     private void startInternal() {
@@ -472,12 +493,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        getAttributionHandler().getAttribution();
+        attributionHandler.getAttribution();
     }
 
     private void endInternal() {
         packageHandler.pauseSending();
-        getAttributionHandler().pauseSending();
+        attributionHandler.pauseSending();
         stopTimer();
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
@@ -513,7 +534,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String deeplink = jsonResponse.optString("deeplink", null);
         launchDeeplinkMain(deeplink);
-        getAttributionHandler().checkAttribution(jsonResponse);
+        attributionHandler.checkAttribution(jsonResponse);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
@@ -523,8 +544,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (clickPackage == null) {
             return;
         }
-
-        getAttributionHandler().getAttribution();
 
         packageHandler.sendClickPackage(clickPackage);
     }
@@ -541,8 +560,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        getAttributionHandler().getAttribution();
-
         packageHandler.sendClickPackage(clickPackage);
     }
 
@@ -551,7 +568,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
-        long now = System.currentTimeMillis();
         Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
         boolean hasAdjustTags = false;
@@ -569,6 +585,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String reftag = queryStringParameters.remove("reftag");
 
+        long now = System.currentTimeMillis();
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
@@ -634,7 +651,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (attributionHandler == null) {
             return;
         }
-        if (toPause()) {
+        if (paused()) {
             attributionHandler.pauseSending();
         } else {
             attributionHandler.resumeSending();
@@ -645,7 +662,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (packageHandler == null) {
             return;
         }
-        if (toPause()) {
+        if (paused()) {
             packageHandler.pauseSending();
         } else {
             packageHandler.resumeSending();
@@ -707,33 +724,26 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startTimer() {
-        stopTimer();
-
-        if (!activityState.enabled) {
+        // don't start the timer if it's disabled/offline
+        if (paused()) {
             return;
         }
-        timer = Executors.newSingleThreadScheduledExecutor();
-        timer.scheduleWithFixedDelay(new Runnable() {
-            @Override
-            public void run() {
-                timerFired();
-            }
-        }, TIMER_START, TIMER_INTERVAL, TimeUnit.MILLISECONDS);
+
+        timer.start();
     }
 
     private void stopTimer() {
-        if (timer != null) {
-            timer.shutdown();
-            timer = null;
-        }
+        timer.suspend();
     }
 
-    private void timerFired() {
-        if (!activityState.enabled) {
+    private void timerFiredInternal() {
+        if (paused()) {
+            // stop the timer cycle if it's disabled/offline
             stopTimer();
             return;
         }
 
+        logger.debug("Session timer fired");
         packageHandler.sendFirstPackage();
 
         if (updateActivityState(System.currentTimeMillis())) {
@@ -749,7 +759,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
-    private void writeActivityState() {
+    private synchronized void writeActivityState() {
         Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
@@ -771,19 +781,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    // lazy initialization to prevent null activity state before first session
-    private IAttributionHandler getAttributionHandler() {
-        if (attributionHandler == null) {
-            ActivityPackage attributionPackage = getAttributionPackage();
-            attributionHandler = AdjustFactory.getAttributionHandler(this,
-                    attributionPackage,
-                    toPause(),
-                    adjustConfig.hasListener());
-        }
-        return attributionHandler;
-    }
-
-    private boolean toPause() {
+    private boolean paused() {
         return offline || !isEnabled();
     }
 }

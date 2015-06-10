@@ -16,7 +16,6 @@ import org.json.JSONObject;
 public class MockActivityHandler implements IActivityHandler {
     private MockLogger testLogger;
     private String prefix = "ActivityHandler ";
-    boolean updated;
     AdjustConfig config;
 
 

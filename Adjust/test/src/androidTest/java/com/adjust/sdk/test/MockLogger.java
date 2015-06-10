@@ -121,12 +121,14 @@ public class MockLogger implements ILogger {
         for (String log : list) {
             listCopy.remove(0);
             if (log.startsWith(beginsWith)) {
-                test(log + " found");
+                //test(log + " found");
+                Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, "%s found", log));
                 logMap.put(level, listCopy);
                 return true;
             }
         }
-        test(sList + " does not contain " + beginsWith);
+        Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, "%s does not contain %s", sList, beginsWith));
+
         return false;
     }
 

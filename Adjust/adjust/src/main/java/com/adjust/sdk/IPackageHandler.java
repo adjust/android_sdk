@@ -19,8 +19,6 @@ public interface IPackageHandler {
 
     public void resumeSending();
 
-    public String getFailureMessage();
-
     public void finishedTrackingActivity(JSONObject jsonResponse);
 
     public void sendClickPackage(ActivityPackage clickPackage);

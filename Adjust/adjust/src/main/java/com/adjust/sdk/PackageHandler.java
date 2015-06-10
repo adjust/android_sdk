@@ -103,12 +103,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         paused = false;
     }
 
-    // short info about how failing packages are handled
-    @Override
-    public String getFailureMessage() {
-        return "Will retry later.";
-    }
-
     @Override
     public void finishedTrackingActivity(JSONObject jsonResponse) {
         activityHandler.finishedTrackingActivity(jsonResponse);

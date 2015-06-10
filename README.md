@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.0.7'
+compile 'com.adjust.sdk:adjust-android:4.0.8'
 ```
 
 ### 4. Add Google Play Services

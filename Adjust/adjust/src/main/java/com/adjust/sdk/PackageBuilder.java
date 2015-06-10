@@ -36,7 +36,7 @@ class PackageBuilder {
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
-        this.activityState = activityState.shallowCopy();
+        this.activityState = activityState == null ? null : activityState.shallowCopy();
         this.createdAt = createdAt;
     }
 
@@ -71,7 +71,7 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildClickPackage(String source, long clickTime) {
-        Map<String, String> parameters = getDefaultParameters();
+        Map<String, String> parameters = getIdsParameters();
 
         addString(parameters, "source", source);
         addDate(parameters, "click_time", clickTime);
@@ -110,7 +110,7 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
-        addDate(parameters, "created_at", createdAt);
+        injectCreatedAt(parameters);
 
         // general
         checkDeviceIds(parameters);
@@ -123,7 +123,7 @@ class PackageBuilder {
 
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
-        injectActivityStateIds(parameters);
+        injectCreatedAt(parameters);
 
         checkDeviceIds(parameters);
 
@@ -169,15 +169,15 @@ class PackageBuilder {
     }
 
     private void injectActivityState(Map<String, String> parameters) {
-        injectActivityStateIds(parameters);
+        addString(parameters, "android_uuid", activityState.uuid);
         addInt(parameters, "session_count", activityState.sessionCount);
         addInt(parameters, "subsession_count", activityState.subsessionCount);
         addDuration(parameters, "session_length", activityState.sessionLength);
         addDuration(parameters, "time_spent", activityState.timeSpent);
     }
 
-    private void injectActivityStateIds(Map<String, String> parameters) {
-        addString(parameters, "android_uuid", activityState.uuid);
+    private void injectCreatedAt(Map<String, String> parameters) {
+        addDate(parameters, "created_at", createdAt);
     }
 
     private void injectAttribution(Map<String, String> parameters) {

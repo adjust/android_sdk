@@ -23,7 +23,7 @@ public class AttributionHandler implements IAttributionHandler {
     private IActivityHandler activityHandler;
     private ILogger logger;
     private ActivityPackage attributionPackage;
-    private ScheduledFuture waitingTask;
+    private TimerOnce timer;
     private HttpClient httpClient;
     private boolean paused;
     private boolean hasListener;
@@ -35,6 +35,12 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
         httpClient = Util.getHttpClient();
+        timer = new TimerOnce(scheduler, new Runnable() {
+            @Override
+            public void run() {
+                getAttributionInternal();
+            }
+        });
         init(activityHandler, attributionPackage, startPaused, hasListener);
     }
 
@@ -74,24 +80,18 @@ public class AttributionHandler implements IAttributionHandler {
         paused = false;
     }
 
-    private void getAttribution(int delayInMilliseconds) {
-        if (waitingTask != null) {
-            if (waitingTask.getDelay(TimeUnit.MILLISECONDS) > delayInMilliseconds) {
-                return;
-            }
-            waitingTask.cancel(false);
+    private void getAttribution(long delayInMilliseconds) {
+        // don't reset if new time is shorter than last one
+        if (timer.getFireIn() > delayInMilliseconds) {
+            return;
         }
 
         if (delayInMilliseconds != 0) {
             logger.debug("Waiting to query attribution in %d milliseconds", delayInMilliseconds);
         }
 
-        waitingTask = scheduler.schedule(new Runnable() {
-            @Override
-            public void run() {
-                getAttributionInternal();
-            }
-        }, delayInMilliseconds, TimeUnit.MILLISECONDS);
+        // set the new time the timer will fire in
+        timer.startIn(delayInMilliseconds);
     }
 
     private void checkAttributionInternal(JSONObject jsonResponse) {
@@ -100,7 +100,7 @@ public class AttributionHandler implements IAttributionHandler {
         JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
         AdjustAttribution attribution = AdjustAttribution.fromJson(attributionJson);
 
-        int timerMilliseconds = jsonResponse.optInt("ask_in", -1);
+        long timerMilliseconds = jsonResponse.optLong("ask_in", -1);
 
         // without ask_in attribute
         if (timerMilliseconds < 0) {
@@ -121,7 +121,7 @@ public class AttributionHandler implements IAttributionHandler {
             return;
         }
         if (paused) {
-            logger.debug("Attribution Handler is paused");
+            logger.debug("Attribution handler is paused");
             return;
         }
         logger.verbose("%s", attributionPackage.getExtendedString());
