@@ -648,9 +648,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void updateAttributionHandlerStatus() {
-        if (attributionHandler == null) {
-            return;
-        }
         if (paused()) {
             attributionHandler.pauseSending();
         } else {
@@ -659,9 +656,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void updatePackageHandlerStatus() {
-        if (packageHandler == null) {
-            return;
-        }
         if (paused()) {
             packageHandler.pauseSending();
         } else {
