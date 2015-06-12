@@ -545,7 +545,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        packageHandler.sendClickPackage(clickPackage);
+        packageHandler.addPackage(clickPackage);
     }
 
     private void readOpenUrlInternal(Uri url, long clickTime) {
@@ -560,7 +560,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        packageHandler.sendClickPackage(clickPackage);
+        packageHandler.addPackage(clickPackage);
     }
 
     private ActivityPackage buildQueryStringClickPackage(String queryString, String source, long clickTime) {
