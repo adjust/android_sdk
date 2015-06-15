@@ -183,7 +183,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.test("PackageHandler addPackage");
 
         // check that event was buffered
-        assertUtil.info("Buffered event  (0.0010 EUR, 'event1')");
+        assertUtil.info("Buffered event (0.00100 EUR, 'event1')");
 
         // and not sent to package handler
         assertUtil.notInTest("PackageHandler sendFirstPackage");
@@ -196,7 +196,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.test("PackageHandler addPackage");
 
         // check that event was buffered
-        assertUtil.info("Buffered event  (0.0000 USD, 'event2')");
+        assertUtil.info("Buffered event (0.00000 USD, 'event2')");
 
         // and not sent to package handler
         assertUtil.notInTest("PackageHandler sendFirstPackage");
@@ -209,7 +209,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.test("PackageHandler addPackage");
 
         // check that event was buffered
-        assertUtil.info("Buffered event  'event3'");
+        assertUtil.info("Buffered event 'event3'");
 
         // and not sent to package handler
         assertUtil.notInTest("PackageHandler sendFirstPackage");
@@ -237,7 +237,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // set event test parameters
         testFirstEventPackage.eventCount = "1";
-        testFirstEventPackage.suffix = " (0.0010 EUR, 'event1')";
+        testFirstEventPackage.suffix = "(0.00100 EUR, 'event1')";
         testFirstEventPackage.revenueString = "0.00100";
         testFirstEventPackage.currency = "EUR";
         testFirstEventPackage.callbackParams = "{\"keyCall\":\"valueCall2\",\"fooCall\":\"barCall\"}";
@@ -254,7 +254,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // set event test parameters
         testSecondEventPackage.eventCount = "2";
-        testSecondEventPackage.suffix = " (0.0000 USD, 'event2')";
+        testSecondEventPackage.suffix = "(0.00000 USD, 'event2')";
         testSecondEventPackage.revenueString = "0.00000";
         testSecondEventPackage.currency = "USD";
 
@@ -269,7 +269,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // set event test parameters
         testThirdEventPackage.eventCount = "3";
-        testThirdEventPackage.suffix = " 'event3'";
+        testThirdEventPackage.suffix = "'event3'";
 
         // test third event
         testThirdEventPackage.testEventPackage("event3");
@@ -612,6 +612,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // test first session start without attribution handler
         checkFirstSession(true);
 
+        // test end session of disable
+        checkEndSession();
+
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
         activityHandler.trackEvent(new AdjustEvent("event1"));
@@ -620,9 +623,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that timer was not executed
         checkTimerIsFired(false);
-
-        // but that it was paused
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:1");
 
         // check that it did not resume
         assertUtil.notInTest("PackageHandler resumeSending");
@@ -645,11 +645,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // wait to update status
         SystemClock.sleep(6000);
 
-        // update attribution handler to paused
-        assertUtil.test("AttributionHandler pauseSending");
-
-        // update package handler to paused
-        assertUtil.test("PackageHandler pauseSending");
+        // test end session of offline
+        checkEndSession(false);
 
         // re-enable the SDK
         activityHandler.setEnabled(true);
@@ -664,6 +661,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         checkNewSession(true, 2, 0);
+
+        // and that the timer was not fired
+        checkTimerIsFired(false);
 
         // track an event
         activityHandler.trackEvent(new AdjustEvent("event1"));
@@ -695,7 +695,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // create activity package test
         TestActivityPackage testEventPackage = new TestActivityPackage(eventPackage);
 
-        testEventPackage.suffix = " 'event1'";
+        testEventPackage.suffix = "'event1'";
 
         // test event
         testEventPackage.testEventPackage("event1");
@@ -718,7 +718,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         // test session not paused
-        checkNewSession(false, 3, 1);
+        checkNewSession(false, 3, 1, true);
     }
 
     public void testOpenUrl() {
@@ -768,11 +768,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // three click packages: attributions, extraParams and mixed
         for (int i = 3; i > 0; i--) {
-            assertUtil.test("PackageHandler sendClickPackage");
+            assertUtil.test("PackageHandler addPackage");
         }
-
-        // check that it did not send any other click package
-        assertUtil.notInTest("PackageHandler sendClickPackage");
 
         // checking the default values of the first session package
         // 1 session + 3 click
@@ -919,7 +916,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        initTests();
 
         // test first session start
         checkFirstSession();
@@ -1090,23 +1087,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.info("Pausing package and attribution handler to put in offline mode");
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        initTests();
 
         // test first session start
         checkFirstSession(true);
 
-        // check that the update status from set offline mode was triggered after the first session
-        assertUtil.test("PackageHandler pauseSending");
-
-        // it didn't pause attribution handler because it wasn't lazily init
-        assertUtil.notInTest("AttributionHandler pauseSending");
-
-        // start the attribution handler by ending the session
-        activityHandler.trackSubsessionEnd();
-
-        SystemClock.sleep(1000);
-
-        // test end session logs
+        // test end of session logs
         checkEndSession();
 
         // disable the SDK
@@ -1124,7 +1110,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         // test end session logs
-        checkEndSession();
+        checkEndSession(false);
 
         // put SDK back online
         activityHandler.setOfflineMode(false);
@@ -1134,8 +1120,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(1000);
 
         // test the update status, still paused
-        assertUtil.test("AttributionHandler pauseSending");
-        assertUtil.test("PackageHandler pauseSending");
+        assertUtil.notInTest("AttributionHandler pauseSending");
+        assertUtil.notInTest("PackageHandler pauseSending");
 
         // try to do activities while SDK disabled
         activityHandler.trackSubsessionStart();
@@ -1177,7 +1163,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        initTests();
 
         // test first session start
         checkFirstSession();
@@ -1213,7 +1199,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // three click packages: reftag, extraParams and mixed
         for (int i = 3; i > 0; i--) {
             //assertUtil.test("AttributionHandler getAttribution");
-            assertUtil.test("PackageHandler sendClickPackage");
+            assertUtil.test("PackageHandler addPackage");
         }
 
         // check that it did not send any other click package
@@ -1288,7 +1274,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        initTests();
 
         // subsession count is 1
         // attribution is null,
@@ -1406,6 +1392,45 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         checkSubsession(4, 1, true, false);
     }
 
+    public void testTimer() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestActivityHandler testTimer");
+
+        AdjustFactory.setTimerInterval(4000);
+        AdjustFactory.setTimerStart(0);
+
+        // create the config to start the session
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
+
+        // start activity handler with config
+        ActivityHandler activityHandler = getActivityHandler(config);
+
+        SystemClock.sleep(2000);
+
+        // test init values
+        initTests();
+
+        // test first session start
+        checkFirstSession();
+
+        // wait enough to fire the first cycle
+        SystemClock.sleep(3000);
+
+        checkTimerIsFired(true);
+
+        // end subsession to stop timer
+        activityHandler.trackSubsessionEnd();
+
+        // wait enough for a new cycle
+        SystemClock.sleep(6000);
+
+        activityHandler.trackSubsessionStart();
+
+        SystemClock.sleep(1000);
+
+        checkTimerIsFired(false);
+    }
+
     private void checkFirstSessionSubsession(int subsessionCount) {
         checkSubsession(1, subsessionCount);
     }
@@ -1447,9 +1472,14 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         }
     }
 
+    private void initTests() {
+        initTests("sandbox", "INFO", false, null, null);
+    }
+
     private void initTests(String environment, String logLevel, boolean eventBuffering) {
         initTests(environment, logLevel, eventBuffering, null, null);
     }
+
     private void initTests(String environment, String logLevel, boolean eventBuffering,
                            String readActivityState, String readAttribution) {
         // check environment level
@@ -1555,9 +1585,17 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
     }
 
     private void checkEndSession() {
+        checkEndSession(true);
+    }
+
+    private void checkEndSession(boolean updateActivityState) {
         assertUtil.test("PackageHandler pauseSending");
 
         assertUtil.test("AttributionHandler pauseSending");
+
+        if (updateActivityState) {
+            assertUtil.debug("Wrote Activity state: ");
+        }
     }
 
     private ActivityHandler getActivityHandler(AdjustConfig config) {

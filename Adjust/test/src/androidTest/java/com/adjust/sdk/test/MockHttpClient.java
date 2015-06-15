@@ -41,7 +41,6 @@ public class MockHttpClient implements HttpClient {
 
         if (timeout) {
             testLogger.test("timing out");
-
         }
 
         if (responseType == ResponseType.CLIENT_PROTOCOL_EXCEPTION) {

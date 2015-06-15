@@ -22,7 +22,6 @@ public class MockRequestHandler implements IRequestHandler {
     @Override
     public void sendPackage(ActivityPackage pack) {
         testLogger.test(prefix + "sendPackage, " + pack);
-
         /*
         // respond successfully to the package handler
         if (packageHandler != null && !errorNextSend) {
@@ -34,10 +33,5 @@ public class MockRequestHandler implements IRequestHandler {
             packageHandler.closeFirstPackage();
         }
         */
-    }
-
-    @Override
-    public void sendClickPackage(ActivityPackage clickPackage) {
-        testLogger.test(prefix + "sendClickPackage, " + clickPackage);
     }
 }
