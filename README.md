@@ -227,7 +227,7 @@ config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
 config.setLogLevel(LogLevel.DEBUG);     // enable more logging
 config.setLogLevel(LogLevel.INFO);      // the default
 config.setLogLevel(LogLevel.WARN);      // disable info logging
-config.setLogLevel(LogLevel.ERROR];     // disable warnings as well
+config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
@@ -411,7 +411,7 @@ Adjust.onCreate(config);
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
-by provided synchronously. The simplest way is to create a single anonymous
+be provided synchronously. The simplest way is to create a single anonymous
 listener:
 
 Please make sure to consider our [applicable attribution data
