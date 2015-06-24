@@ -468,21 +468,22 @@ You can check if the adjust SDK is currently enabled by calling the function
 
 ### 18. Offline mode
 
-You can put the adjust SDK in offline mode to prevent it from sending 
-any information to our servers. While in offline mode, all information is saved
-in a file, so take care of triggering too many events while in offline mode.
-You can set it to offline mode, by calling `setOfflineMode` with the parameter `true`.
+You can put the adjust SDK in offline mode to suspend transmission to our servers, 
+while retaining tracked data to be sent later. While in offline mode, all information is saved
+in a file, so be careful not to trigger too many events while in offline mode.
+
+You can activate offline mode by calling `setOfflineMode` with the parameter `true`.
 
 ```java
 Adjust.setOfflineMode(true);
 ```
 
+Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`.
 When the adjust SDK is put back in online mode, all saved information is send to our servers 
-with the correct time information. To put it back in online mode, just call 
-`setOfflineMode` with the parameter `false`.
+with the correct time information.
 
 Unlike disabling tracking, this setting is *not remembered*
-bettween sessions. This means that the SDK is in online mode whenever is started,
+bettween sessions. This means that the SDK is in online mode whenever it is started,
 even if the app was terminated in offline mode.
 
 [dashboard]:     http://adjust.com
