@@ -149,53 +149,70 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (enabled == this.enabled) {
-            if (enabled) {
-                logger.debug("Adjust already enabled");
-            } else {
-                logger.debug("Adjust already disabled");
-            }
+        if (!hasChangedState(isEnabled(), enabled,
+                "Adjust already enabled", "Adjust already disabled")) {
             return;
         }
+
         this.enabled = enabled;
         if (activityState != null) {
             activityState.enabled = enabled;
             writeActivityState();
         }
-        if (enabled) {
-            if (paused()) {
-                logger.info("Package and attribution handler remain paused due to the SDK is offline");
-            } else {
-                logger.info("Resuming package handler and attribution handler to enabled the SDK");
-            }
-            trackSubsessionStart();
-        } else {
-            logger.info("Pausing package handler and attribution handler to disable the SDK");
+
+        updateStatus(!enabled,
+                "Pausing package handler and attribution handler to disable the SDK",
+                "Package and attribution handler remain paused due to the SDK is offline",
+                "Resuming package handler and attribution handler to enabled the SDK");
+    }
+
+    private void updateStatus(boolean pausingState, String pausingMessage,
+                              String remainsPausedMessage, String unPausingMessage)
+    {
+        if (pausingState) {
+            logger.info(pausingMessage);
             trackSubsessionEnd();
+            return;
         }
+
+        if (paused()) {
+            logger.info(remainsPausedMessage);
+        } else {
+            logger.info(unPausingMessage);
+            trackSubsessionStart();
+        }
+    }
+
+    private boolean hasChangedState(boolean previousState, boolean newState,
+                                    String trueMessage, String falseMessage)
+    {
+        if (previousState != newState) {
+            return true;
+        }
+
+        if (previousState) {
+            logger.debug(trueMessage);
+        } else {
+            logger.debug(falseMessage);
+        }
+
+        return false;
     }
 
     @Override
     public void setOfflineMode(boolean offline) {
-        if (offline == this.offline) {
-            if (offline) {
-                logger.debug("Adjust already in offline mode");
-            } else {
-                logger.debug("Adjust already in online mode");
-            }
+        if (!hasChangedState(this.offline, offline,
+                "Adjust already in offline mode",
+                "Adjust already in online mode")) {
             return;
         }
+
         this.offline = offline;
-        if (offline) {
-            logger.info("Pausing package and attribution handler to put in offline mode");
-        } else {
-            if (paused()) {
-                logger.info("Package and attribution handler remain paused because the SDK is disabled");
-            } else {
-                logger.info("Resuming package handler and attribution handler to put in online mode");
-            }
-        }
-        updateStatus();
+
+        updateStatus(offline,
+                "Pausing package and attribution handler to put in offline mode",
+                "Package and attribution handler remain paused because the SDK is disabled",
+                "Resuming package handler and attribution handler to put in online mode");
     }
 
     @Override
