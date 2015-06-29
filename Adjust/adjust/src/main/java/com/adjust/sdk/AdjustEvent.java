@@ -78,7 +78,7 @@ public class AdjustEvent {
     private boolean checkRevenue(Double revenue, String currency) {
         if (revenue != null) {
             if (revenue < 0.0) {
-                logger.error("Invalid amount %.4f", revenue);
+                logger.error("Invalid amount %.5f", revenue);
                 return false;
             }
 
