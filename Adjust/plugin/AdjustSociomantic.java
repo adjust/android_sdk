@@ -170,7 +170,7 @@ public abstract class AdjustSociomantic {
             product = new HashMap<String, Object>();
         }
 
-        product.put(SCMProductID, product);
+        product.put(SCMProductID, productId);
         productList = Arrays.asList(product);
         po.put(SCMProducts, productList);
         addPartnerParameter(event, "socio_po", stringify(po));
