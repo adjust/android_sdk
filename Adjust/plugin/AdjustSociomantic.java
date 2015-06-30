@@ -1,4 +1,4 @@
-package com.adjust.sdk.plugin;
+package com.adjust.sdk.sociomantic;
 
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
