@@ -108,13 +108,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         activityHandler.finishedTrackingActivity(jsonResponse);
     }
 
-    @Override
-    public void sendClickPackage(ActivityPackage clickPackage) {
-        logger.debug("Sending click package (%s)", clickPackage);
-        logger.verbose("%s", clickPackage.getExtendedString());
-        requestHandler.sendClickPackage(clickPackage);
-    }
-
     private static final class InternalHandler extends Handler {
         private static final int INIT = 1;
         private static final int ADD = 2;
@@ -166,7 +159,11 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void addInternal(ActivityPackage newPackage) {
-        packageQueue.add(newPackage);
+        if (newPackage.getActivityKind().equals(ActivityKind.CLICK) && !packageQueue.isEmpty()) {
+            packageQueue.add(1, newPackage);
+        } else {
+            packageQueue.add(newPackage);
+        }
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
 

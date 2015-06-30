@@ -67,9 +67,17 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         requestHandler = new RequestHandler(mockPackageHandler);
 
-        sendPackageOrClickTest(false);
+        nullResponseTest();
 
-        sendPackageOrClickTest(true);
+        clientExceptionTest();
+
+        serverErrorTest();
+
+        wrongJsonTest();
+
+        emptyJsonTest();
+
+        messageTest();
     }
 
     /*
@@ -86,53 +94,38 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         requestHandler.sendPackage(sessionPackage);
 
         SystemClock.sleep(5000);
-
-        requestHandler.sendClickPackage(sessionPackage);
-
-        SystemClock.sleep(5000);
     }
     */
 
-    private void sendPackageOrClickTest(boolean sendClick) {
-        nullResponseTest(sendClick);
-
-        clientExceptionTest(sendClick);
-
-        serverErrorTest(sendClick);
-
-        wrongJsonTest(sendClick);
-
-        emptyJsonTest(sendClick);
-
-        messageTest(sendClick);
-    }
-
-    private void nullResponseTest(boolean sendClick) {
+    private void nullResponseTest() {
         mockHttpClient.responseType = null;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: null");
 
-        closeFirstPackage(sendClick);
+        assertUtil.test("PackageHandler closeFirstPackage");
     }
 
-    private void clientExceptionTest(boolean sendClick) {
+    private void clientExceptionTest() {
         mockHttpClient.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: CLIENT_PROTOCOL_EXCEPTION");
 
         assertUtil.error("Failed to track session. (Client protocol error: org.apache.http.client.ClientProtocolException: testResponseError) Will retry later");
 
-        closeFirstPackage(sendClick);
+        assertUtil.test("PackageHandler closeFirstPackage");
     }
 
-    private void serverErrorTest(boolean sendClick) {
+    private void serverErrorTest() {
         mockHttpClient.responseType = ResponseType.INTERNAL_SERVER_ERROR;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: INTERNAL_SERVER_ERROR");
 
@@ -142,13 +135,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"testResponseError\"}");
 
-        sendNextPackage(sendClick);
+        assertUtil.test("PackageHandler sendNextPackage");
     }
 
-    private void wrongJsonTest(boolean sendClick) {
+    private void wrongJsonTest() {
         mockHttpClient.responseType = ResponseType.WRONG_JSON;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: WRONG_JSON");
 
@@ -156,13 +150,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.error("Failed to parse json response. (Value not of type java.lang.String cannot be converted to JSONObject)");
 
-        closeFirstPackage(sendClick);
+        assertUtil.test("PackageHandler closeFirstPackage");
     }
 
-    private void emptyJsonTest(boolean sendClick) {
+    private void emptyJsonTest() {
         mockHttpClient.responseType = ResponseType.EMPTY_JSON;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: EMPTY_JSON");
 
@@ -172,13 +167,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {}");
 
-        sendNextPackage(sendClick);
+        assertUtil.test("PackageHandler sendNextPackage");
     }
 
-    private void messageTest(boolean sendClick) {
+    private void messageTest() {
         mockHttpClient.responseType = ResponseType.MESSAGE;
 
-        sendPackageOrClick(sendClick);
+        requestHandler.sendPackage(sessionPackage);
+        SystemClock.sleep(1000);
 
         assertUtil.test("HttpClient execute, responseType: MESSAGE");
 
@@ -188,32 +184,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"response OK\"}");
 
-        sendNextPackage(sendClick);
-    }
-
-    private void sendPackageOrClick(boolean sendClick) {
-        if (sendClick) {
-            requestHandler.sendClickPackage(sessionPackage);
-        } else {
-            requestHandler.sendPackage(sessionPackage);
-        }
-        SystemClock.sleep(1000);
-    }
-
-    private void closeFirstPackage(boolean sendClick) {
-        if (sendClick) {
-            assertUtil.notInTest("PackageHandler closeFirstPackage");
-        } else {
-            assertUtil.test("PackageHandler closeFirstPackage");
-        }
-    }
-
-    private void sendNextPackage(boolean sendClick) {
-        if (sendClick) {
-            assertUtil.notInTest("PackageHandler sendNextPackage");
-        } else {
-            assertUtil.test("PackageHandler sendNextPackage");
-        }
+        assertUtil.test("PackageHandler sendNextPackage");
     }
 
     private ActivityPackage getSessionPackage() {

@@ -59,15 +59,41 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         PackageHandler packageHandler = startPackageHandler();
 
-        ActivityPackage firstActivityPackage = createUnknowPackage("FirstPackage");
+        ActivityPackage firstClickPackage = createClickPackage("FirstPackage");
 
-        packageHandler.addPackage(firstActivityPackage);
+        packageHandler.addPackage(firstClickPackage);
 
         SystemClock.sleep(1000);
 
-        addPackageTests(1, "unknownFirstPackage");
+        addPackageTests(1, "clickFirstPackage");
 
-        addSecondPackageTest(null);
+        PackageHandler secondPackageHandler = addSecondPackageTest(null);
+
+        ActivityPackage secondClickPackage = createClickPackage("ThirdPackage");
+
+        secondPackageHandler.addPackage(secondClickPackage);
+
+        SystemClock.sleep(1000);
+
+        addPackageTests(3, "clickThirdPackage");
+
+        // send the first click package/ first package
+        secondPackageHandler.sendFirstPackage();
+        SystemClock.sleep(1000);
+
+        assertUtil.test("RequestHandler sendPackage, clickFirstPackage");
+
+        // send the second click package/ third package
+        secondPackageHandler.sendNextPackage();
+        SystemClock.sleep(1000);
+
+        assertUtil.test("RequestHandler sendPackage, clickThirdPackage");
+
+        // send the unknow package/ second package
+        secondPackageHandler.sendNextPackage();
+        SystemClock.sleep(1000);
+
+        assertUtil.test("RequestHandler sendPackage, unknownSecondPackage");
     }
 
     public void testSendFirst() {
@@ -180,10 +206,6 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.finishedTrackingActivity(null);
 
         assertUtil.test("ActivityHandler finishedTrackingActivity, null");
-
-        packageHandler.sendClickPackage(createUnknowPackage(""));
-
-        assertUtil.test("RequestHandler sendClickPackage, unknown");
     }
 
     private PackageHandler startPackageHandler() {
@@ -273,6 +295,13 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
     private ActivityPackage createUnknowPackage(String suffix) {
         ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
+        activityPackage.setSuffix(suffix);
+
+        return activityPackage;
+    }
+
+    private ActivityPackage createClickPackage(String suffix) {
+        ActivityPackage activityPackage = new ActivityPackage(ActivityKind.CLICK);
         activityPackage.setSuffix(suffix);
 
         return activityPackage;

@@ -72,10 +72,4 @@ public class MockPackageHandler implements IPackageHandler {
         testLogger.test(prefix + "finishedTrackingActivity, " + jsonResponse);
         this.jsonResponse = jsonResponse;
     }
-
-    @Override
-    public void sendClickPackage(ActivityPackage clickPackage) {
-        testLogger.test(prefix + "sendClickPackage");
-        queue.add(clickPackage);
-    }
 }

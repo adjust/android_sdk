@@ -38,7 +38,15 @@ Integrate adjust with Sociomantic events by following these steps:
     final static String SCMTransaction;
     ```
 
-5. Now you can integrate each of the different Sociomantic events, like in the following examples:
+5. Before sending any Sociomantic you should set a partner id as shown below:
+
+    ```java
+    import com.adjust.sdk.plugin.AdjustSociomantic;
+
+    AdjustSociomantic.injectPartnerIdInSociomanticEvents("{sociomanticPartnerId}");
+    ```
+
+6. Now you can integrate each of the different Sociomantic events, like in the following examples:
 
 ### Customer Event
 

@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 public abstract class AdjustSociomantic {
 
     public final static String SCMCategory = "category";
+    public final static String SCMProducts = "products";
     public final static String SCMProductName = "fn";
     public final static String SCMSalePrice = "price";
     public final static String SCMAmount = "amount";
@@ -80,7 +81,13 @@ public abstract class AdjustSociomantic {
         SCMCustomerTargeting
     );
 
+    private static String adpanId;
+
     private static ILogger logger = AdjustFactory.getLogger();
+
+    public static void injectPartnerIdInSociomanticEvents(String newAdpanId) {
+        adpanId = newAdpanId;
+    }
 
     public static void injectCustomerDataIntoEvent(AdjustEvent event, Map<String, String> customerData) {
         if (null == event) {
@@ -105,20 +112,19 @@ public abstract class AdjustSociomantic {
 
         String dob = stringify(data);
 
-        event.addPartnerParameter("socio_dob", dob);
+        addPartnerParameter(event, "socio_dob", dob);
     }
 
     public static void injectHomePageIntoEvent(AdjustEvent event) {
         if (null == event) {
             logger.error("Event object is required.");
         }
-        // do nothing
+        addPartnerParameter(event);
     }
 
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> categories) {
         injectViewListingIntoEvent(event, categories, null);
     }
-
     public static void injectViewListingIntoEvent(AdjustEvent event, List<String> categories, String date) {
         if (null == event) {
             logger.error("Event object is required.");
@@ -137,13 +143,12 @@ public abstract class AdjustSociomantic {
 
         co.put(SCMCategory, categories);
 
-        event.addPartnerParameter("socio_co", stringify(co));
+        addPartnerParameter(event, "socio_co", stringify(co));
     }
 
     public static void injectProductIntoEvent(AdjustEvent event, String productId) {
         injectProductIntoEvent(event, productId, null);
     }
-
     public static void injectProductIntoEvent(AdjustEvent event, String productId, Map<String, Object> parameters) {
         if (null == event) {
             logger.error("Event object is required.");
@@ -154,18 +159,21 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Object> po;
+        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
+        List<Map<String, Object>> productList;
+        Map<String, Object> product;
 
         if (null != parameters) {
-            po = filter(parameters, productAliases);
+            product = filter(parameters, productAliases);
         }
         else {
-            po = new HashMap<String, Object>();
+            product = new HashMap<String, Object>();
         }
 
-        po.put(SCMProductID, productId);
-
-        event.addPartnerParameter("socio_po", stringify(po));
+        product.put(SCMProductID, product);
+        productList = Arrays.asList(product);
+        po.put(SCMProducts, productList);
+        addPartnerParameter(event, "socio_po", stringify(po));
     }
 
     public static void injectCartIntoEvent(AdjustEvent event, List products) {
@@ -178,7 +186,8 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        List<Map<String, Object>> po = new ArrayList<Map<String, Object>>();
+        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
+        List<Map<String, Object>> productList = new ArrayList<>();
 
         for (Object product: products) {
             Map<String, Object> _product = new HashMap<String, Object>();
@@ -191,19 +200,19 @@ public abstract class AdjustSociomantic {
             }
 
             if (!_product.isEmpty()) {
-                po.add(_product);
+                productList.add(_product);
             }
         }
 
         if (!po.isEmpty()) {
-            event.addPartnerParameter("socio_po", stringify(po));
+            po.put(SCMProducts, productList);
+            addPartnerParameter(event, "socio_po", stringify(po));
         }
     }
 
     public static void injectConfirmedTransactionIntoEvent(AdjustEvent event, String transactionID, List products) {
         injectTransactionIntoEvent(event, transactionID, products, null, Boolean.TRUE);
     }
-
     public static void injectConfirmedTransactionIntoEvent(AdjustEvent event, String transactionID, List products, Map<String, Object> parameters) {
         injectTransactionIntoEvent(event, transactionID, products, parameters, Boolean.TRUE);
     }
@@ -211,11 +220,9 @@ public abstract class AdjustSociomantic {
     public static void injectTransactionIntoEvent(AdjustEvent event, String transactionID, List products) {
         injectTransactionIntoEvent(event, transactionID, products, null, Boolean.FALSE);
     }
-    
     public static void injectTransactionIntoEvent(AdjustEvent event, String transactionID, List products, Map<String, Object> parameters) {
         injectTransactionIntoEvent(event, transactionID, products, parameters, Boolean.FALSE);
     }
-    
     private static void injectTransactionIntoEvent(AdjustEvent event, String transactionID, List products, Map<String, Object> parameters, Boolean confirmed) {
         if (null == event) {
             logger.error("Event object is required.");
@@ -230,8 +237,9 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Map<String, Object>> to = new HashMap<String, Map<String, Object>>(1);
-        List<Map<String, Object>> po = new ArrayList<Map<String, Object>>();
+        Map<String, Map<String, Object>> to = new HashMap<>(1);
+        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
+        List<Map<String, Object>> productList = new ArrayList<>();
 
         for (Object product: products) {
             Map<String, Object> _product = new HashMap<String, Object>();
@@ -244,12 +252,13 @@ public abstract class AdjustSociomantic {
             }
 
             if (!_product.isEmpty()) {
-                po.add(_product);
+                productList.add(_product);
             }
         }
 
-        if (!po.isEmpty()) {
-            event.addPartnerParameter("socio_po", stringify(po));
+        if (!productList.isEmpty()) {
+            po.put(SCMProducts, productList);
+            addPartnerParameter(event, "socio_po", stringify(po));
         }
 
         if (null != parameters) {
@@ -265,13 +274,12 @@ public abstract class AdjustSociomantic {
 
         to.get(SCMTransaction).put(SCMTransaction, transactionID);
 
-        event.addPartnerParameter("socio_to", stringify(to));
+        addPartnerParameter(event, "socio_to", stringify(to));
     }
 
     public static void injectLeadIntoEvent(AdjustEvent event, String leadID) {
         injectLeadIntoEvent(event, leadID, Boolean.FALSE);
     }
-
     public static void injectLeadIntoEvent(AdjustEvent event, String leadID, Boolean confirmed) {
 
         if (null == event) {
@@ -292,12 +300,29 @@ public abstract class AdjustSociomantic {
 
         to.get(SCMTransaction).put(SCMTransaction, leadID);
 
-        event.addPartnerParameter("socio_to", stringify(to));
+        addPartnerParameter(event, "socio_to", stringify(to));
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////////////////////
     // private methods used internally
     ////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private static void addPartnerParameter(AdjustEvent event) {
+        addPartnerParameter(event, null, null);
+    }
+    private static void addPartnerParameter(AdjustEvent event, String parameter, String json) {
+        if (null == adpanId) {
+            logger.error("The adpanId must be set before sending any sociomantic event. No parameter has been added.");
+            return;
+        }
+
+        if (null != parameter && null != json)
+        {
+            event.addPartnerParameter(parameter, json);
+        }
+
+        event.addPartnerParameter("socio_aid", adpanId);
+    }
 
     private static Map<String, Object> filter(Map<String, Object> parameters, List<String> aliases) {
 
