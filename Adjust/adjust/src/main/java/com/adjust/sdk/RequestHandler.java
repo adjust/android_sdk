@@ -16,23 +16,30 @@ import android.os.Message;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
@@ -103,11 +110,63 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void sendInternal(ActivityPackage activityPackage) {
-        // TODO: Make new HTTP POST request and call requestFinished according to it.
+        URL url;
+        HttpURLConnection connection = null;
+        String targetURL = Constants.BASE_URL + activityPackage.getPath();
+
+        try {
+            //Create connection
+            url = new URL(targetURL);
+            connection = (HttpURLConnection)url.openConnection();
+            connection.setRequestMethod("POST");
+
+            connection.setRequestProperty("Content-Type", URLEncodedUtils.CONTENT_TYPE);
+            connection.setRequestProperty("Client-SDK", activityPackage.getClientSdk());
+            connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
+
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+
+            // Send request
+            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(getPostDataString(activityPackage.getParameters()));
+            wr.flush();
+            wr.close();
+
+            String response = "";
+
+            if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                while ((line = br.readLine()) != null) {
+                    response += line;
+                }
+            }
+
+            logger.debug("Response = " + response);
+
+            requestFinished(response);
+        } catch (UnsupportedEncodingException e) {
+            sendNextPackage(activityPackage, "Failed to encode parameters", e);
+        } catch (SocketTimeoutException e) {
+            closePackage(activityPackage, "Request timed out", e);
+        } catch (IOException e) {
+            closePackage(activityPackage, "Request failed", e);
+        } catch (Throwable e) {
+            sendNextPackage(activityPackage, "Runtime exception", e);
+        } finally {
+            if(connection != null) {
+                connection.disconnect();
+            }
+        }
+
+        // TODO: Check exception types and possible scenarios.
     }
 
-    private void requestFinished(HttpResponse response) {
-        JSONObject jsonResponse = Util.parseJsonResponse(response);
+    private void requestFinished(String response) throws JSONException {
+        JSONObject jsonResponse = new JSONObject(response);
 
         if (jsonResponse == null) {
             packageHandler.closeFirstPackage();
@@ -144,29 +203,30 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = Constants.BASE_URL + activityPackage.getPath();
-        HttpPost request = new HttpPost(url);
+    private String getPostDataString(Map<String, String> params) throws UnsupportedEncodingException{
+        boolean first = true;
+        StringBuilder result = new StringBuilder();
 
-        String language = Locale.getDefault().getLanguage();
-        request.addHeader("Client-SDK", activityPackage.getClientSdk());
-        request.addHeader("Accept-Language", language);
+        for(Map.Entry<String, String> entry : params.entrySet()) {
+            if (first) {
+                first = false;
+            } else {
+                result.append("&");
+            }
 
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entry : activityPackage.getParameters().entrySet()) {
-            NameValuePair pair = new BasicNameValuePair(entry.getKey(), entry.getValue());
-            pairs.add(pair);
+            result.append(URLEncoder.encode(entry.getKey(), Constants.ENCODING));
+            result.append("=");
+            result.append(URLEncoder.encode(entry.getValue(), Constants.ENCODING));
         }
 
         long now = System.currentTimeMillis();
         String dateString = Util.dateFormat(now);
-        NameValuePair sentAtPair = new BasicNameValuePair("sent_at", dateString);
-        pairs.add(sentAtPair);
 
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pairs);
-        entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
-        request.setEntity(entity);
+        result.append("&");
+        result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode(dateString, Constants.ENCODING));
 
-        return request;
+        return result.toString();
     }
 }
