@@ -2,14 +2,17 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONObject;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by pfms on 07/11/14.
@@ -130,15 +133,11 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            // TODO: Make new HTTP GET request in here.
+            makeHttpGetRequest();
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
-
-        // TODO: Change this according to new HTTP GET logic.
-        // JSONObject jsonResponse = Util.parseJsonResponse(httpResponse);
-        // checkAttributionInternal(jsonResponse);
     }
 
     private Uri buildUri(ActivityPackage attributionPackage) {
@@ -155,13 +154,29 @@ public class AttributionHandler implements IAttributionHandler {
         return uriBuilder.build();
     }
 
-    private HttpGet getRequest(ActivityPackage attributionPackage) throws URISyntaxException {
-        HttpGet request = new HttpGet();
-        Uri uri = buildUri(attributionPackage);
-        request.setURI(new URI(uri.toString()));
+    private void makeHttpGetRequest() throws Exception {
+        HttpURLConnection connection = null;
+        String targetURL = buildUri(attributionPackage).toString();
 
-        request.addHeader("Client-SDK", attributionPackage.getClientSdk());
+        String response = "";
+        URL url = new URL(targetURL);
 
-        return request;
+        connection = (HttpURLConnection)url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Client-SDK", attributionPackage.getClientSdk());
+
+        if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
+            String line;
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+            while ((line = br.readLine()) != null) {
+                response += line;
+            }
+
+            logger.debug("Response = " + response);
+
+            JSONObject jsonResponse = new JSONObject(response);
+            checkAttributionInternal(jsonResponse);
+        }
     }
 }
