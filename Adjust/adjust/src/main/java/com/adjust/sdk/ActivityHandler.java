@@ -155,7 +155,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         this.enabled = enabled;
-        if (activityState != null) {
+
+        if (activityState == null) {
+            trackSubsessionStart();
+        } else {
             activityState.enabled = enabled;
             writeActivityState();
         }
@@ -208,6 +211,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         this.offline = offline;
+
+        if (activityState == null) {
+            trackSubsessionStart();
+        }
 
         updateStatus(offline,
                 "Pausing package and attribution handler to put in offline mode",
