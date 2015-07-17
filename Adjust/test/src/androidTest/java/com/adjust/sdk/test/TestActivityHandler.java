@@ -585,7 +585,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setLogLevel(LogLevel.ERROR);
 
         // start activity handler with config
-        ActivityHandler activityHandler = getActivityHandler(config);
+        ActivityHandler activityHandler = ActivityHandler.getInstance(config);
 
         // check that is true by default
         assertUtil.isTrue(activityHandler.isEnabled());
