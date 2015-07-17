@@ -227,7 +227,7 @@ config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
 config.setLogLevel(LogLevel.DEBUG);     // enable more logging
 config.setLogLevel(LogLevel.INFO);      // the default
 config.setLogLevel(LogLevel.WARN);      // disable info logging
-config.setLogLevel(LogLevel.ERROR];     // disable warnings as well
+config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
@@ -411,7 +411,7 @@ Adjust.onCreate(config);
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
-by provided synchronously. The simplest way is to create a single anonymous
+be provided synchronously. The simplest way is to create a single anonymous
 listener:
 
 Please make sure to consider our [applicable attribution data
@@ -465,6 +465,26 @@ Adjust.setEnabled(false);
 You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
+
+### 18. Offline mode
+
+You can put the adjust SDK in offline mode to suspend transmission to our servers, 
+while retaining tracked data to be sent later. While in offline mode, all information is saved
+in a file, so be careful not to trigger too many events while in offline mode.
+
+You can activate offline mode by calling `setOfflineMode` with the parameter `true`.
+
+```java
+Adjust.setOfflineMode(true);
+```
+
+Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`.
+When the adjust SDK is put back in online mode, all saved information is send to our servers 
+with the correct time information.
+
+Unlike disabling tracking, this setting is *not remembered*
+bettween sessions. This means that the SDK is in online mode whenever it is started,
+even if the app was terminated in offline mode.
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/adjust_android_sdk/releases
