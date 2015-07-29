@@ -507,6 +507,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void checkAttributionState() {
+        if (!checkActivityState(activityState)) { return; }
+
         // if it's a new session
         if (activityState.subsessionCount <= 1) {
             return;
@@ -530,6 +532,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void trackEventInternal(AdjustEvent event) {
+        if (!checkActivityState(activityState)) return;
         if (!isEnabled()) return;
         if (!checkEvent(event)) return;
 
@@ -710,6 +713,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private boolean updateActivityState(long now) {
+        if (!checkActivityState(activityState)) { return false; }
+
         long lastInterval = now - activityState.lastActivity;
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) {
@@ -796,6 +801,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean checkActivityState(ActivityState activityState) {
+        if (activityState == null) {
+            logger.error("Missing activity state.");
+            return false;
+        }
         return true;
     }
 
