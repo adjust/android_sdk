@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpParams;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
@@ -12,7 +10,6 @@ public class AdjustFactory {
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
-    private static HttpClient httpClient = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
@@ -43,13 +40,6 @@ public class AdjustFactory {
             logger = new Logger();
         }
         return logger;
-    }
-
-    public static HttpClient getHttpClient(HttpParams params) {
-        if (httpClient == null) {
-            return new DefaultHttpClient(params);
-        }
-        return httpClient;
     }
 
     public static long getTimerInterval() {
@@ -112,7 +102,8 @@ public class AdjustFactory {
     }
 
     public static void setHttpClient(HttpClient httpClient) {
-        AdjustFactory.httpClient = httpClient;
+        // TODO: Adjust this to HttpURLConnection which is used instead of HttpClient.
+        // AdjustFactory.httpClient = httpClient;
     }
 
     public static void setTimerInterval(long timerInterval) {

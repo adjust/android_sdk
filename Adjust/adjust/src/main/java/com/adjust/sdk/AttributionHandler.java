@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.json.JSONObject;
 
@@ -12,8 +10,6 @@ import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by pfms on 07/11/14.
@@ -24,7 +20,7 @@ public class AttributionHandler implements IAttributionHandler {
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
-    private HttpClient httpClient;
+
     private boolean paused;
     private boolean hasListener;
 
@@ -34,13 +30,18 @@ public class AttributionHandler implements IAttributionHandler {
                               boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
-        httpClient = Util.getHttpClient();
-        timer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                getAttributionInternal();
-            }
-        });
+
+        if (this.scheduler != null) {
+            timer = new TimerOnce(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    getAttributionInternal();
+                }
+            });
+        } else {
+            this.logger.error("Timer not initialized, attribution handler is disabled");
+        }
+
         init(activityHandler, attributionPackage, startPaused, hasListener);
     }
 
@@ -120,23 +121,24 @@ public class AttributionHandler implements IAttributionHandler {
         if (!hasListener) {
             return;
         }
+
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;
         }
+
         logger.verbose("%s", attributionPackage.getExtendedString());
-        HttpResponse httpResponse = null;
+
         try {
-            HttpGet request = getRequest(attributionPackage);
-            httpResponse = httpClient.execute(request);
+            // TODO: Make new HTTP GET request in here.
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
 
-        JSONObject jsonResponse = Util.parseJsonResponse(httpResponse);
-
-        checkAttributionInternal(jsonResponse);
+        // TODO: Change this according to new HTTP GET logic.
+        // JSONObject jsonResponse = Util.parseJsonResponse(httpResponse);
+        // checkAttributionInternal(jsonResponse);
     }
 
     private Uri buildUri(ActivityPackage attributionPackage) {

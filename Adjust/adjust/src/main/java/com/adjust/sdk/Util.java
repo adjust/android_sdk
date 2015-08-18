@@ -14,10 +14,6 @@ import android.content.pm.PackageManager;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -199,13 +195,6 @@ public class Util {
         }
 
         return jsonResponse;
-    }
-
-    public static HttpClient getHttpClient() {
-        HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(httpParams, Constants.SOCKET_TIMEOUT);
-        return AdjustFactory.getHttpClient(httpParams);
     }
 
     public static boolean checkPermission(Context context, String permission) {

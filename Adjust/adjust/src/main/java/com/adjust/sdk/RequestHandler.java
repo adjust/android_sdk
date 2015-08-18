@@ -37,7 +37,6 @@ import java.util.Map;
 public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
     private IPackageHandler packageHandler;
-    private HttpClient httpClient;
     private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
@@ -100,25 +99,11 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void initInternal() {
-        httpClient = Util.getHttpClient();
+        // TODO: HttpClient was initialized in here, maybe remove this method?
     }
 
     private void sendInternal(ActivityPackage activityPackage) {
-        try {
-            HttpUriRequest request = getRequest(activityPackage);
-            HttpResponse response = httpClient.execute(request);
-            requestFinished(response);
-        } catch (UnsupportedEncodingException e) {
-            sendNextPackage(activityPackage, "Failed to encode parameters", e);
-        } catch (ClientProtocolException e) {
-            closePackage(activityPackage, "Client protocol error", e);
-        } catch (SocketTimeoutException e) {
-            closePackage(activityPackage, "Request timed out", e);
-        } catch (IOException e) {
-            closePackage(activityPackage, "Request failed", e);
-        } catch (Throwable e) {
-            sendNextPackage(activityPackage, "Runtime exception", e);
-        }
+        // TODO: Make new HTTP POST request and call requestFinished according to it.
     }
 
     private void requestFinished(HttpResponse response) {
