@@ -277,6 +277,7 @@ public class Util {
 
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
+        connection.setReadTimeout(Constants.ONE_MINUTE);
 
         return connection;
     }
