@@ -11,23 +11,30 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -35,6 +42,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.MD5;
@@ -156,22 +165,32 @@ public class Util {
         }
     }
 
-    public static JSONObject parseJsonResponse(HttpResponse httpResponse) {
-        if (httpResponse == null) {
+    public static JSONObject readHttpResponse(HttpURLConnection connection) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        ILogger logger = getLogger();
+        Integer responseCode = null;
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            responseCode = connection.getResponseCode();
+        } catch (Exception e) {
+            logger.error("Failed to read response. (%s)", e.getMessage());
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        String stringResponse = sb.toString();
+        logger.verbose("Response: %s", stringResponse);
+
+        if (stringResponse == null || stringResponse.length() == 0) {
             return null;
         }
-        String stringResponse = null;
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            httpResponse.getEntity().writeTo(out);
-            out.close();
-            stringResponse = out.toString().trim();
-        } catch (Exception e) {
-            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
-        }
-
-        getLogger().verbose("Response: %s", stringResponse);
-        if (stringResponse == null) return null;
 
         JSONObject jsonResponse = null;
         try {
@@ -188,13 +207,78 @@ public class Util {
             message = "No message found";
         }
 
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            getLogger().info("%s", message);
+        if (responseCode != null &&
+                responseCode == HttpsURLConnection.HTTP_OK) {
+            logger.info("%s", message);
         } else {
-            getLogger().error("%s", message);
+            logger.error("%s", message);
         }
 
         return jsonResponse;
+    }
+
+    public static HttpURLConnection createGETHttpURLConnection(String urlString, String clientSdk)
+            throws IOException {
+        HttpURLConnection connection = createHttpURLConnection(urlString, clientSdk);
+        connection.setRequestMethod("GET");
+
+        return connection;
+    }
+
+    public static HttpURLConnection createPOSTHttpURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
+            throws IOException {
+        HttpURLConnection connection = createHttpURLConnection(urlString, clientSdk);
+        connection.setRequestMethod("POST");
+
+        connection.setUseCaches(false);
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+
+        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+        wr.writeBytes(getPostDataString(parameters));
+        wr.flush();
+        wr.close();
+
+        return connection;
+    }
+
+    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+
+        for(Map.Entry<String, String> entry : body.entrySet()) {
+            String encodedName = URLEncoder.encode(entry.getKey(), Constants.ENCODING);
+            String value = entry.getValue();
+            String encodedValue = value != null ? URLEncoder.encode(value, Constants.ENCODING) : "";
+            if (result.length() > 0) {
+                result.append("&");
+            }
+
+            result.append(encodedName);
+            result.append("=");
+            result.append(encodedValue);
+        }
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+
+        result.append("&");
+        result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode(dateString, Constants.ENCODING));
+
+        return result.toString();
+    }
+
+    public static HttpURLConnection createHttpURLConnection(String urlString, String clientSdk)
+            throws IOException {
+        URL url = new URL(urlString);
+
+        HttpURLConnection connection = AdjustFactory.getHttpURLConnection(url);
+
+        connection.setRequestProperty("Client-SDK", clientSdk);
+        connection.setConnectTimeout(Constants.ONE_MINUTE);
+
+        return connection;
     }
 
     public static boolean checkPermission(Context context, String permission) {

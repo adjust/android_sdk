@@ -14,32 +14,16 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
@@ -54,10 +38,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         this.logger = AdjustFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
         init(packageHandler);
-
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
     }
 
     @Override
@@ -74,7 +54,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private static final class InternalHandler extends Handler {
-        private static final int INIT = 72401;
         private static final int SEND = 72400;
 
         private final WeakReference<RequestHandler> requestHandlerReference;
@@ -94,9 +73,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             }
 
             switch (message.arg1) {
-                case INIT:
-                    requestHandler.initInternal();
-                    break;
                 case SEND:
                     ActivityPackage activityPackage = (ActivityPackage) message.obj;
                     requestHandler.sendInternal(activityPackage);
@@ -105,49 +81,19 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void initInternal() {
-        // TODO: HttpClient was initialized in here, maybe remove this method?
-    }
-
     private void sendInternal(ActivityPackage activityPackage) {
         URL url;
-        HttpURLConnection connection = null;
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
-            //Create connection
-            url = new URL(targetURL);
-            connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestMethod("POST");
+            HttpURLConnection connection = Util.createPOSTHttpURLConnection(
+                    targetURL,
+                    activityPackage.getClientSdk(),
+                    activityPackage.getParameters());
 
-            connection.setRequestProperty("Content-Type", URLEncodedUtils.CONTENT_TYPE);
-            connection.setRequestProperty("Client-SDK", activityPackage.getClientSdk());
-            connection.setRequestProperty("Accept-Language", Locale.getDefault().getLanguage());
+            JSONObject jsonResponse = Util.readHttpResponse(connection);
 
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-
-            // Send request
-            DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(getPostDataString(activityPackage.getParameters()));
-            wr.flush();
-            wr.close();
-
-            String response = "";
-
-            if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-                String line;
-                BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-                while ((line = br.readLine()) != null) {
-                    response += line;
-                }
-            }
-
-            logger.debug("Response = " + response);
-
-            requestFinished(response);
+            requestFinished(jsonResponse);
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
@@ -156,18 +102,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             closePackage(activityPackage, "Request failed", e);
         } catch (Throwable e) {
             sendNextPackage(activityPackage, "Runtime exception", e);
-        } finally {
-            if(connection != null) {
-                connection.disconnect();
-            }
         }
-
-        // TODO: Check exception types and possible scenarios.
     }
 
-    private void requestFinished(String response) throws JSONException {
-        JSONObject jsonResponse = new JSONObject(response);
-
+    private void requestFinished(JSONObject jsonResponse) throws JSONException {
         if (jsonResponse == null) {
             packageHandler.closeFirstPackage();
             return;
@@ -201,32 +139,5 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         } else {
             return String.format(Locale.US, "%s", message);
         }
-    }
-
-    private String getPostDataString(Map<String, String> params) throws UnsupportedEncodingException{
-        boolean first = true;
-        StringBuilder result = new StringBuilder();
-
-        for(Map.Entry<String, String> entry : params.entrySet()) {
-            if (first) {
-                first = false;
-            } else {
-                result.append("&");
-            }
-
-            result.append(URLEncoder.encode(entry.getKey(), Constants.ENCODING));
-            result.append("=");
-            result.append(URLEncoder.encode(entry.getValue(), Constants.ENCODING));
-        }
-
-        long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
-
-        result.append("&");
-        result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
-        result.append("=");
-        result.append(URLEncoder.encode(dateString, Constants.ENCODING));
-
-        return result.toString();
     }
 }

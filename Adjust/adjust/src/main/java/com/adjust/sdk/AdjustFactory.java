@@ -2,7 +2,9 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import org.apache.http.client.HttpClient;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
@@ -10,6 +12,7 @@ public class AdjustFactory {
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
+    private static HttpURLConnection mockHttpURLConnection = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
@@ -89,6 +92,14 @@ public class AdjustFactory {
         return attributionHandler;
     }
 
+    public static HttpURLConnection getHttpURLConnection(URL url) throws IOException {
+        if (AdjustFactory.mockHttpURLConnection == null) {
+            return (HttpURLConnection)url.openConnection();
+        }
+
+        return AdjustFactory.mockHttpURLConnection;
+    }
+
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
@@ -99,11 +110,6 @@ public class AdjustFactory {
 
     public static void setLogger(ILogger logger) {
         AdjustFactory.logger = logger;
-    }
-
-    public static void setHttpClient(HttpClient httpClient) {
-        // TODO: Adjust this to HttpURLConnection which is used instead of HttpClient.
-        // AdjustFactory.httpClient = httpClient;
     }
 
     public static void setTimerInterval(long timerInterval) {
@@ -130,4 +136,7 @@ public class AdjustFactory {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
+    public static void setMockHttpURLConnection(HttpURLConnection mockHttpURLConnection) {
+        AdjustFactory.mockHttpURLConnection = mockHttpURLConnection;
+    }
 }

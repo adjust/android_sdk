@@ -132,51 +132,32 @@ public class AttributionHandler implements IAttributionHandler {
 
         logger.verbose("%s", attributionPackage.getExtendedString());
 
+        JSONObject jsonResponse = null;
         try {
-            makeHttpGetRequest();
+            HttpURLConnection connection = Util.createGETHttpURLConnection(
+                    buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
+                    attributionPackage.getClientSdk());
+
+            jsonResponse = Util.readHttpResponse(connection);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
+
+        checkAttributionInternal(jsonResponse);
     }
 
-    private Uri buildUri(ActivityPackage attributionPackage) {
+    private Uri buildUri(String path, Map<String, String> parameters) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);
         uriBuilder.authority(Constants.AUTHORITY);
-        uriBuilder.appendPath(attributionPackage.getPath());
+        uriBuilder.appendPath(path);
 
-        for (Map.Entry<String, String> entry : attributionPackage.getParameters().entrySet()) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
 
         return uriBuilder.build();
-    }
-
-    private void makeHttpGetRequest() throws Exception {
-        HttpURLConnection connection = null;
-        String targetURL = buildUri(attributionPackage).toString();
-
-        String response = "";
-        URL url = new URL(targetURL);
-
-        connection = (HttpURLConnection)url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Client-SDK", attributionPackage.getClientSdk());
-
-        if (connection.getResponseCode() == HttpsURLConnection.HTTP_OK) {
-            String line;
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            while ((line = br.readLine()) != null) {
-                response += line;
-            }
-
-            logger.debug("Response = " + response);
-
-            JSONObject jsonResponse = new JSONObject(response);
-            checkAttributionInternal(jsonResponse);
-        }
     }
 }
