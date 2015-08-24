@@ -113,4 +113,8 @@ public class AssertUtil {
         Assert.assertEquals(mockLogger.toString(),
                 expected, actual);
     }
+
+    public void fail() {
+        Assert.fail(mockLogger.toString());
+    }
 }
