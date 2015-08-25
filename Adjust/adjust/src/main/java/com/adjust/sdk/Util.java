@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
@@ -167,13 +168,22 @@ public class Util {
         ILogger logger = getLogger();
         Integer responseCode = null;
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
+            responseCode = connection.getResponseCode();
+            InputStream inputStream;
 
-            while ((line = br.readLine()) != null) {
+            if (responseCode >= 400) {
+                inputStream = connection.getErrorStream();
+            } else {
+                inputStream = connection.getInputStream();
+            }
+
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
                 sb.append(line);
             }
-            responseCode = connection.getResponseCode();
         } catch (Exception e) {
             logger.error("Failed to read response. (%s)", e.getMessage());
             throw e;
