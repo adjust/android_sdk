@@ -19,7 +19,7 @@ import org.json.JSONObject;
 public class TestAttributionHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
     private MockLogger mockLogger;
     private MockActivityHandler mockActivityHandler;
-    private MockHttpURLConnection mockHttpURLConnection;
+    private MockHttpsURLConnection mockHttpsURLConnection;
     private AssertUtil assertUtil;
     private UnitTestActivity activity;
     private Context context;
@@ -38,13 +38,13 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         super.setUp();
         mockLogger = new MockLogger();
         mockActivityHandler = new MockActivityHandler(mockLogger);
-        mockHttpURLConnection = new MockHttpURLConnection(null, mockLogger);
+        mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
 
         assertUtil = new AssertUtil(mockLogger);
 
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setActivityHandler(mockActivityHandler);
-        AdjustFactory.setMockHttpURLConnection(mockHttpURLConnection);
+        AdjustFactory.setMockHttpsURLConnection(mockHttpsURLConnection);
 
         activity = getActivity();
         context = activity.getApplicationContext();
@@ -81,7 +81,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        AdjustFactory.setMockHttpURLConnection(null);
+        AdjustFactory.setMockHttpsURLConnection(null);
         AdjustFactory.setActivityHandler(null);
         AdjustFactory.setLogger(null);
 
@@ -158,7 +158,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         callCheckAttributionWithGet(attributionHandler, ResponseType.ASK_IN, response);
 
         // change the response to avoid a cycle;
-        mockHttpURLConnection.responseType = ResponseType.MESSAGE;
+        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
         // check attribution was called with ask_in
         assertUtil.notInTest("ActivityHandler tryUpdateAttribution");
@@ -207,7 +207,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
                 attributionPackage, true, true);
 
-        mockHttpURLConnection.responseType = ResponseType.MESSAGE;
+        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
         attributionHandler.getAttribution();
 
@@ -219,7 +219,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         // and it did not call the http client
         //assertUtil.isNull(mockHttpClient.lastRequest);
 
-        assertUtil.notInTest("MockHttpURLConnection getInputStream");
+        assertUtil.notInTest("MockHttpsURLConnection getInputStream");
     }
 
     public void testWithoutListener() {
@@ -229,7 +229,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
                 attributionPackage, false, false);
 
-        mockHttpURLConnection.responseType = ResponseType.MESSAGE;
+        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
         attributionHandler.getAttribution();
 
@@ -241,7 +241,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         // but it did not call the http client
         //assertUtil.isNull(mockHttpClient.lastRequest);
 
-        assertUtil.notInTest("MockHttpURLConnection getInputStream");
+        assertUtil.notInTest("MockHttpsURLConnection getInputStream");
     }
 
     private void nullClientTest(AttributionHandler attributionHandler) {
@@ -262,7 +262,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         startGetAttributionTest(attributionHandler, ResponseType.WRONG_JSON);
 
         // check that the mock http client was called
-        assertUtil.test("MockHttpURLConnection getInputStream");
+        assertUtil.test("MockHttpsURLConnection getInputStream");
 
         assertUtil.verbose("Response: not a json response");
 
@@ -273,7 +273,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         startGetAttributionTest(attributionHandler, ResponseType.EMPTY_JSON);
 
         // check that the mock http client was called
-        assertUtil.test("MockHttpURLConnection getInputStream");
+        assertUtil.test("MockHttpsURLConnection getInputStream");
 
         assertUtil.verbose("Response: { }");
 
@@ -287,7 +287,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         startGetAttributionTest(attributionHandler, ResponseType.INTERNAL_SERVER_ERROR);
 
         // check that the mock http client was called
-        assertUtil.test("MockHttpURLConnection getInputStream");
+        assertUtil.test("MockHttpsURLConnection getErrorStream");
 
         // the response logged
         assertUtil.verbose("Response: { \"message\": \"testResponseError\"}");
@@ -309,7 +309,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
     private void okMessageTestLogs() {
         // check that the mock http client was called
-        assertUtil.test("MockHttpURLConnection getInputStream");
+        assertUtil.test("MockHttpsURLConnection getInputStream");
 
         // the response logged
         assertUtil.verbose("Response: { \"message\" : \"response OK\"}");
@@ -327,14 +327,14 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         startGetAttributionTest(attributionHandler, responseType);
 
         // check that the mock http client was called
-        assertUtil.test("MockHttpURLConnection getInputStream");
+        assertUtil.test("MockHttpsURLConnection getInputStream");
 
         // the response logged
         assertUtil.verbose(response);
     }
 
     private void startGetAttributionTest(AttributionHandler attributionHandler, ResponseType responseType) {
-        mockHttpURLConnection.responseType = responseType;
+        mockHttpsURLConnection.responseType = responseType;
 
         attributionHandler.getAttribution();
 

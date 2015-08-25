@@ -8,32 +8,33 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.Permission;
+import java.security.cert.Certificate;
 import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLPeerUnverifiedException;
 
 /**
  * Created by pfms on 20/08/15.
  */
-public class MockHttpURLConnection extends HttpURLConnection {
+public class MockHttpsURLConnection extends HttpsURLConnection {
 
     private MockLogger testLogger;
-    private String prefix = "MockHttpURLConnection ";
+    private String prefix = "MockHttpsURLConnection ";
     private ByteArrayOutputStream outputStream;
     public ResponseType responseType;
     public boolean timeout;
 
-    protected MockHttpURLConnection(URL url) {
+    protected MockHttpsURLConnection(URL url) {
         super(url);
     }
 
-    public MockHttpURLConnection(URL url, MockLogger mockLogger) {
+    public MockHttpsURLConnection(URL url, MockLogger mockLogger) {
         this(url);
         this.testLogger = mockLogger;
     }
@@ -47,8 +48,6 @@ public class MockHttpURLConnection extends HttpURLConnection {
 
         if (responseType == ResponseType.CLIENT_PROTOCOL_EXCEPTION) {
             throw new IOException ("testResponseError");
-        } else if (responseType == ResponseType.INTERNAL_SERVER_ERROR) {
-            return getMockResponse("{ \"message\": \"testResponseError\"}");
         } else if (responseType == ResponseType.WRONG_JSON) {
             return getMockResponse("not a json response");
         } else if (responseType == ResponseType.EMPTY_JSON) {
@@ -69,6 +68,18 @@ public class MockHttpURLConnection extends HttpURLConnection {
             return getMockResponse("{ \"ask_in\" : 4000 }");
         }
 
+        return null;
+    }
+
+    public InputStream getErrorStream() {
+        testLogger.test(prefix + "getErrorStream, responseType: " + responseType);
+        try {
+            if (responseType == ResponseType.INTERNAL_SERVER_ERROR) {
+                return getMockResponse("{ \"message\": \"testResponseError\"}");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -105,11 +116,6 @@ public class MockHttpURLConnection extends HttpURLConnection {
     @Override
     public void connect() throws IOException {
         testLogger.test(prefix + "connect");
-    }
-
-    public InputStream getErrorStream() {
-        testLogger.test(prefix + "getErrorStream");
-        return null;
     }
 
     public Permission getPermission() throws IOException {
@@ -341,5 +347,23 @@ public class MockHttpURLConnection extends HttpURLConnection {
     public String toString() {
         testLogger.test(prefix + "toString");
         return null;
+    }
+
+    @Override
+    public String getCipherSuite() {
+        testLogger.test(prefix + "getCipherSuite");
+        return null;
+    }
+
+    @Override
+    public Certificate[] getLocalCertificates() {
+        testLogger.test(prefix + "getLocalCertificates");
+        return new Certificate[0];
+    }
+
+    @Override
+    public Certificate[] getServerCertificates() throws SSLPeerUnverifiedException {
+        testLogger.test(prefix + "getServerCertificates");
+        return new Certificate[0];
     }
 }
