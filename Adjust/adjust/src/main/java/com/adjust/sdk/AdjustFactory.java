@@ -3,8 +3,9 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
@@ -12,7 +13,7 @@ public class AdjustFactory {
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
-    private static HttpURLConnection mockHttpURLConnection = null;
+    private static HttpsURLConnection mockHttpsURLConnection = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
@@ -92,12 +93,12 @@ public class AdjustFactory {
         return attributionHandler;
     }
 
-    public static HttpURLConnection getHttpURLConnection(URL url) throws IOException {
-        if (AdjustFactory.mockHttpURLConnection == null) {
-            return (HttpURLConnection)url.openConnection();
+    public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
+        if (AdjustFactory.mockHttpsURLConnection == null) {
+            return (HttpsURLConnection)url.openConnection();
         }
 
-        return AdjustFactory.mockHttpURLConnection;
+        return AdjustFactory.mockHttpsURLConnection;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
@@ -136,7 +137,7 @@ public class AdjustFactory {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
-    public static void setMockHttpURLConnection(HttpURLConnection mockHttpURLConnection) {
-        AdjustFactory.mockHttpURLConnection = mockHttpURLConnection;
+    public static void setMockHttpsURLConnection(HttpsURLConnection mockHttpsURLConnection) {
+        AdjustFactory.mockHttpsURLConnection = mockHttpsURLConnection;
     }
 }

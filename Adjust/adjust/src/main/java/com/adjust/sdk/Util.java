@@ -11,7 +11,6 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +18,6 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -32,7 +30,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -165,7 +162,7 @@ public class Util {
         }
     }
 
-    public static JSONObject readHttpResponse(HttpURLConnection connection) throws Exception {
+    public static JSONObject readHttpResponse(HttpsURLConnection connection) throws Exception {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
@@ -217,17 +214,17 @@ public class Util {
         return jsonResponse;
     }
 
-    public static HttpURLConnection createGETHttpURLConnection(String urlString, String clientSdk)
+    public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)
             throws IOException {
-        HttpURLConnection connection = createHttpURLConnection(urlString, clientSdk);
+        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
         connection.setRequestMethod("GET");
 
         return connection;
     }
 
-    public static HttpURLConnection createPOSTHttpURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
             throws IOException {
-        HttpURLConnection connection = createHttpURLConnection(urlString, clientSdk);
+        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
         connection.setRequestMethod("POST");
 
         connection.setUseCaches(false);
@@ -269,11 +266,11 @@ public class Util {
         return result.toString();
     }
 
-    public static HttpURLConnection createHttpURLConnection(String urlString, String clientSdk)
+    public static HttpsURLConnection createHttpsURLConnection(String urlString, String clientSdk)
             throws IOException {
         URL url = new URL(urlString);
 
-        HttpURLConnection connection = AdjustFactory.getHttpURLConnection(url);
+        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);

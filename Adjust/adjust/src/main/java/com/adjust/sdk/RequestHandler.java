@@ -20,10 +20,11 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.Locale;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
@@ -86,7 +87,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
-            HttpURLConnection connection = Util.createPOSTHttpURLConnection(
+            HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
                     targetURL,
                     activityPackage.getClientSdk(),
                     activityPackage.getParameters());

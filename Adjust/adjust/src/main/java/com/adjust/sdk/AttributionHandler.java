@@ -4,10 +4,6 @@ import android.net.Uri;
 
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -134,7 +130,7 @@ public class AttributionHandler implements IAttributionHandler {
 
         JSONObject jsonResponse = null;
         try {
-            HttpURLConnection connection = Util.createGETHttpURLConnection(
+            HttpsURLConnection connection = Util.createGETHttpsURLConnection(
                     buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
