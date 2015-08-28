@@ -29,6 +29,7 @@ public interface Constants {
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.1.2";
     String LOGTAG = "Adjust";
+    String REFTAG = "reftag";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";

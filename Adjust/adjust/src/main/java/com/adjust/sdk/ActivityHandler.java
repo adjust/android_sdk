@@ -566,7 +566,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void sendReferrerInternal(String referrer, long clickTime) {
         ActivityPackage clickPackage = buildQueryStringClickPackage(referrer,
-                "reftag",
+                Constants.REFTAG,
                 clickTime);
         if (clickPackage == null) {
             return;
@@ -610,13 +610,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return null;
         }
 
-        String reftag = queryStringParameters.remove("reftag");
+        String reftag = queryStringParameters.remove(Constants.REFTAG);
 
         long now = System.currentTimeMillis();
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
         builder.reftag = reftag;
+        if (source == Constants.REFTAG) {
+            builder.referrer = queryString;
+        }
+
         ActivityPackage clickPackage = builder.buildClickPackage(source, clickTime);
         return clickPackage;
     }
