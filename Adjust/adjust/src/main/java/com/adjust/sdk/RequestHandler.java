@@ -14,30 +14,21 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
 import java.util.Locale;
-import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
     private InternalHandler internalHandler;
     private IPackageHandler packageHandler;
-    private HttpClient httpClient;
     private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
@@ -48,10 +39,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         this.logger = AdjustFactory.getLogger();
         this.internalHandler = new InternalHandler(getLooper(), this);
         init(packageHandler);
-
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
     }
 
     @Override
@@ -68,7 +55,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private static final class InternalHandler extends Handler {
-        private static final int INIT = 72401;
         private static final int SEND = 72400;
 
         private final WeakReference<RequestHandler> requestHandlerReference;
@@ -88,9 +74,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             }
 
             switch (message.arg1) {
-                case INIT:
-                    requestHandler.initInternal();
-                    break;
                 case SEND:
                     ActivityPackage activityPackage = (ActivityPackage) message.obj;
                     requestHandler.sendInternal(activityPackage);
@@ -99,19 +82,21 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void initInternal() {
-        httpClient = Util.getHttpClient();
-    }
-
     private void sendInternal(ActivityPackage activityPackage) {
+        URL url;
+        String targetURL = Constants.BASE_URL + activityPackage.getPath();
+
         try {
-            HttpUriRequest request = getRequest(activityPackage);
-            HttpResponse response = httpClient.execute(request);
-            requestFinished(response);
+            HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
+                    targetURL,
+                    activityPackage.getClientSdk(),
+                    activityPackage.getParameters());
+
+            JSONObject jsonResponse = Util.readHttpResponse(connection);
+
+            requestFinished(jsonResponse);
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
-        } catch (ClientProtocolException e) {
-            closePackage(activityPackage, "Client protocol error", e);
         } catch (SocketTimeoutException e) {
             closePackage(activityPackage, "Request timed out", e);
         } catch (IOException e) {
@@ -121,9 +106,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void requestFinished(HttpResponse response) {
-        JSONObject jsonResponse = Util.parseJsonResponse(response);
-
+    private void requestFinished(JSONObject jsonResponse) throws JSONException {
         if (jsonResponse == null) {
             packageHandler.closeFirstPackage();
             return;
@@ -157,31 +140,5 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         } else {
             return String.format(Locale.US, "%s", message);
         }
-    }
-
-    private HttpUriRequest getRequest(ActivityPackage activityPackage) throws UnsupportedEncodingException {
-        String url = Constants.BASE_URL + activityPackage.getPath();
-        HttpPost request = new HttpPost(url);
-
-        String language = Locale.getDefault().getLanguage();
-        request.addHeader("Client-SDK", activityPackage.getClientSdk());
-        request.addHeader("Accept-Language", language);
-
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        for (Map.Entry<String, String> entry : activityPackage.getParameters().entrySet()) {
-            NameValuePair pair = new BasicNameValuePair(entry.getKey(), entry.getValue());
-            pairs.add(pair);
-        }
-
-        long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
-        NameValuePair sentAtPair = new BasicNameValuePair("sent_at", dateString);
-        pairs.add(sentAtPair);
-
-        UrlEncodedFormEntity entity = new UrlEncodedFormEntity(pairs);
-        entity.setContentType(URLEncodedUtils.CONTENT_TYPE);
-        request.setEntity(entity);
-
-        return request;
     }
 }

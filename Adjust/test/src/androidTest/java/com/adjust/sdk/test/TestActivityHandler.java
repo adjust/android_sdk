@@ -1214,6 +1214,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         TestActivityPackage reftagClickPackageTest = new TestActivityPackage(reftagClickPackage);
 
         reftagClickPackageTest.reftag = "referrerValue";
+        reftagClickPackageTest.referrer = reftag;
 
         reftagClickPackageTest.testClickPackage("reftag");
 
@@ -1226,6 +1227,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // other deep link parameters
         testExtraParamsClickPackage.deepLinkParameters = "{\"key\":\"value\",\"foo\":\"bar\"}";
 
+        testExtraParamsClickPackage.referrer = extraParams;
+
         // test the second deeplink
         testExtraParamsClickPackage.testClickPackage("reftag");
 
@@ -1236,6 +1239,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         TestActivityPackage testMixedClickPackage = new TestActivityPackage(mixedClickPackage);
 
         testMixedClickPackage.reftag = "referrerValue";
+        testMixedClickPackage.referrer = mixed;
 
         // other deep link parameters
         testMixedClickPackage.deepLinkParameters = "{\"foo\":\"bar\"}";

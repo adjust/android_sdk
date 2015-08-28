@@ -2,18 +2,13 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONObject;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by pfms on 07/11/14.
@@ -24,7 +19,7 @@ public class AttributionHandler implements IAttributionHandler {
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
-    private HttpClient httpClient;
+
     private boolean paused;
     private boolean hasListener;
 
@@ -34,13 +29,18 @@ public class AttributionHandler implements IAttributionHandler {
                               boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
-        httpClient = Util.getHttpClient();
-        timer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                getAttributionInternal();
-            }
-        });
+
+        if (this.scheduler != null) {
+            timer = new TimerOnce(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    getAttributionInternal();
+                }
+            });
+        } else {
+            this.logger.error("Timer not initialized, attribution handler is disabled");
+        }
+
         init(activityHandler, attributionPackage, startPaused, hasListener);
     }
 
@@ -120,46 +120,40 @@ public class AttributionHandler implements IAttributionHandler {
         if (!hasListener) {
             return;
         }
+
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;
         }
+
         logger.verbose("%s", attributionPackage.getExtendedString());
-        HttpResponse httpResponse = null;
+
+        JSONObject jsonResponse = null;
         try {
-            HttpGet request = getRequest(attributionPackage);
-            httpResponse = httpClient.execute(request);
+            HttpsURLConnection connection = Util.createGETHttpsURLConnection(
+                    buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
+                    attributionPackage.getClientSdk());
+
+            jsonResponse = Util.readHttpResponse(connection);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
 
-        JSONObject jsonResponse = Util.parseJsonResponse(httpResponse);
-
         checkAttributionInternal(jsonResponse);
     }
 
-    private Uri buildUri(ActivityPackage attributionPackage) {
+    private Uri buildUri(String path, Map<String, String> parameters) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);
         uriBuilder.authority(Constants.AUTHORITY);
-        uriBuilder.appendPath(attributionPackage.getPath());
+        uriBuilder.appendPath(path);
 
-        for (Map.Entry<String, String> entry : attributionPackage.getParameters().entrySet()) {
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
 
         return uriBuilder.build();
-    }
-
-    private HttpGet getRequest(ActivityPackage attributionPackage) throws URISyntaxException {
-        HttpGet request = new HttpGet();
-        Uri uri = buildUri(attributionPackage);
-        request.setURI(new URI(uri.toString()));
-
-        request.addHeader("Client-SDK", attributionPackage.getClientSdk());
-
-        return request;
     }
 }

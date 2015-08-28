@@ -27,8 +27,9 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.1.1";
+    String CLIENT_SDK = "android4.1.2";
     String LOGTAG = "Adjust";
+    String REFTAG = "reftag";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";

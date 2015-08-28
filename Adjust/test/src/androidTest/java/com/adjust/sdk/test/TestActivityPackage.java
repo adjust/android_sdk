@@ -3,6 +3,7 @@ package com.adjust.sdk.test;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustAttribution;
+import com.adjust.sdk.Constants;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
@@ -39,6 +40,7 @@ public class TestActivityPackage {
     public String reftag;
     public String deepLinkParameters;
     public AdjustAttribution attribution;
+    public String referrer;
 
     public TestActivityPackage(ActivityPackage activityPackage) {
         this.activityPackage = activityPackage;
@@ -47,7 +49,7 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.1.1";
+        clientSdk = "android4.1.2";
         suffix = "";
         attribution = new AdjustAttribution();
     }
@@ -123,7 +125,13 @@ public class TestActivityPackage {
         assertParameterEquals("source", source);
 
         // referrer
-        assertParameterEquals("reftag", reftag);
+        assertParameterEquals(Constants.REFTAG, reftag);
+
+        if (source == Constants.REFTAG) {
+            assertParameterEquals("referrer", referrer);
+        } else {
+            assertParameterNull("referrer");
+        }
 
         // params
         assertJsonParameterEquals("params", deepLinkParameters);

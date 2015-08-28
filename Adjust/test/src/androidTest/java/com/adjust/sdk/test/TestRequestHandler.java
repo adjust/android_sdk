@@ -9,8 +9,6 @@ import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.RequestHandler;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 /**
  * Created by pfms on 30/01/15.
@@ -18,7 +16,7 @@ import com.google.gson.JsonParser;
 public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
     private MockLogger mockLogger;
     private MockPackageHandler mockPackageHandler;
-    private MockHttpClient mockHttpClient;
+    private MockHttpsURLConnection mockHttpsURLConnection;
     private AssertUtil assertUtil;
     private UnitTestActivity activity;
     private Context context;
@@ -39,13 +37,13 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         super.setUp();
         mockLogger = new MockLogger();
         mockPackageHandler = new MockPackageHandler(mockLogger);
-        mockHttpClient = new MockHttpClient(mockLogger);
+        mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
 
         assertUtil = new AssertUtil(mockLogger);
 
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setPackageHandler(mockPackageHandler);
-        AdjustFactory.setHttpClient(mockHttpClient);
+        AdjustFactory.setMockHttpsURLConnection(mockHttpsURLConnection);
 
         activity = getActivity();
         context = activity.getApplicationContext();
@@ -57,6 +55,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     protected void tearDown() throws Exception {
         super.tearDown();
 
+        AdjustFactory.setMockHttpsURLConnection(null);
         AdjustFactory.setPackageHandler(null);
         AdjustFactory.setLogger(null);
     }
@@ -80,54 +79,60 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         messageTest();
     }
 
-    /*
+/* configure local test server
     public void testTimeout() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testTimeout");
 
-        //mockHttpClient.timeout = true;
+        mockHttpsURLConnection.responseType = ResponseType.EMPTY_JSON;
 
-        AdjustFactory.setHttpClient(null);
+        mockHttpsURLConnection.timeout = true;
 
         requestHandler = new RequestHandler(mockPackageHandler);
 
         requestHandler.sendPackage(sessionPackage);
 
-        SystemClock.sleep(5000);
+        SystemClock.sleep(15000);
+
+        assertUtil.fail();
     }
-    */
+*/
 
     private void nullResponseTest() {
-        mockHttpClient.responseType = null;
+        mockHttpsURLConnection.responseType = null;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: null");
+        assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.test("PackageHandler closeFirstPackage");
+        assertUtil.error("Failed to read response. (lock == null)");
+
+        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException: lock == null)");
+
+        assertUtil.test("PackageHandler sendNextPackage");
     }
 
     private void clientExceptionTest() {
-        mockHttpClient.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
+        mockHttpsURLConnection.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: CLIENT_PROTOCOL_EXCEPTION");
+        assertUtil.test("MockHttpsURLConnection getInputStream, responseType: CLIENT_PROTOCOL_EXCEPTION");
 
-        assertUtil.error("Failed to track session. (Client protocol error: org.apache.http.client.ClientProtocolException: testResponseError) Will retry later");
+        assertUtil.error("Failed to track session. (Request failed: java.io.IOException: testResponseError) Will retry later");
 
         assertUtil.test("PackageHandler closeFirstPackage");
     }
 
     private void serverErrorTest() {
-        mockHttpClient.responseType = ResponseType.INTERNAL_SERVER_ERROR;
+        mockHttpsURLConnection.responseType = ResponseType.INTERNAL_SERVER_ERROR;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: INTERNAL_SERVER_ERROR");
+        assertUtil.test("MockHttpsURLConnection getErrorStream, responseType: INTERNAL_SERVER_ERROR");
 
         assertUtil.verbose("Response: { \"message\": \"testResponseError\"}");
 
@@ -139,12 +144,12 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     private void wrongJsonTest() {
-        mockHttpClient.responseType = ResponseType.WRONG_JSON;
+        mockHttpsURLConnection.responseType = ResponseType.WRONG_JSON;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: WRONG_JSON");
+        assertUtil.test("MockHttpsURLConnection getInputStream, responseType: WRONG_JSON");
 
         assertUtil.verbose("Response: not a json response");
 
@@ -154,12 +159,12 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     private void emptyJsonTest() {
-        mockHttpClient.responseType = ResponseType.EMPTY_JSON;
+        mockHttpsURLConnection.responseType = ResponseType.EMPTY_JSON;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: EMPTY_JSON");
+        assertUtil.test("MockHttpsURLConnection getInputStream, responseType: EMPTY_JSON");
 
         assertUtil.verbose("Response: { }");
 
@@ -171,12 +176,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     }
 
     private void messageTest() {
-        mockHttpClient.responseType = ResponseType.MESSAGE;
+        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
         requestHandler.sendPackage(sessionPackage);
         SystemClock.sleep(1000);
 
-        assertUtil.test("HttpClient execute, responseType: MESSAGE");
+        mockLogger.test(mockHttpsURLConnection.readRequest());
+
+        assertUtil.test("MockHttpsURLConnection getInputStream, responseType: MESSAGE");
 
         assertUtil.verbose("Response: { \"message\" : \"response OK\"}");
 

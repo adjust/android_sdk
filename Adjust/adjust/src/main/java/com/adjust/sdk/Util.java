@@ -12,26 +12,27 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
 import java.io.Closeable;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
@@ -39,6 +40,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.MD5;
@@ -160,22 +163,41 @@ public class Util {
         }
     }
 
-    public static JSONObject parseJsonResponse(HttpResponse httpResponse) {
-        if (httpResponse == null) {
+    public static JSONObject readHttpResponse(HttpsURLConnection connection) throws Exception {
+        StringBuffer sb = new StringBuffer();
+        ILogger logger = getLogger();
+        Integer responseCode = null;
+        try {
+            responseCode = connection.getResponseCode();
+            InputStream inputStream;
+
+            if (responseCode >= 400) {
+                inputStream = connection.getErrorStream();
+            } else {
+                inputStream = connection.getInputStream();
+            }
+
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                sb.append(line);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to read response. (%s)", e.getMessage());
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        String stringResponse = sb.toString();
+        logger.verbose("Response: %s", stringResponse);
+
+        if (stringResponse == null || stringResponse.length() == 0) {
             return null;
         }
-        String stringResponse = null;
-        try {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            httpResponse.getEntity().writeTo(out);
-            out.close();
-            stringResponse = out.toString().trim();
-        } catch (Exception e) {
-            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
-        }
-
-        getLogger().verbose("Response: %s", stringResponse);
-        if (stringResponse == null) return null;
 
         JSONObject jsonResponse = null;
         try {
@@ -192,20 +214,79 @@ public class Util {
             message = "No message found";
         }
 
-        if (httpResponse.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-            getLogger().info("%s", message);
+        if (responseCode != null &&
+                responseCode == HttpsURLConnection.HTTP_OK) {
+            logger.info("%s", message);
         } else {
-            getLogger().error("%s", message);
+            logger.error("%s", message);
         }
 
         return jsonResponse;
     }
 
-    public static HttpClient getHttpClient() {
-        HttpParams httpParams = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParams, Constants.CONNECTION_TIMEOUT);
-        HttpConnectionParams.setSoTimeout(httpParams, Constants.SOCKET_TIMEOUT);
-        return AdjustFactory.getHttpClient(httpParams);
+    public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)
+            throws IOException {
+        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+        connection.setRequestMethod("GET");
+
+        return connection;
+    }
+
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
+            throws IOException {
+        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+        connection.setRequestMethod("POST");
+
+        connection.setUseCaches(false);
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+
+        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+        wr.writeBytes(getPostDataString(parameters));
+        wr.flush();
+        wr.close();
+
+        return connection;
+    }
+
+    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+        StringBuilder result = new StringBuilder();
+
+        for(Map.Entry<String, String> entry : body.entrySet()) {
+            String encodedName = URLEncoder.encode(entry.getKey(), Constants.ENCODING);
+            String value = entry.getValue();
+            String encodedValue = value != null ? URLEncoder.encode(value, Constants.ENCODING) : "";
+            if (result.length() > 0) {
+                result.append("&");
+            }
+
+            result.append(encodedName);
+            result.append("=");
+            result.append(encodedValue);
+        }
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+
+        result.append("&");
+        result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode(dateString, Constants.ENCODING));
+
+        return result.toString();
+    }
+
+    public static HttpsURLConnection createHttpsURLConnection(String urlString, String clientSdk)
+            throws IOException {
+        URL url = new URL(urlString);
+
+        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+
+        connection.setRequestProperty("Client-SDK", clientSdk);
+        connection.setConnectTimeout(Constants.ONE_MINUTE);
+        connection.setReadTimeout(Constants.ONE_MINUTE);
+
+        return connection;
     }
 
     public static boolean checkPermission(Context context, String permission) {

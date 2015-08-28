@@ -27,6 +27,7 @@ class PackageBuilder {
     Map<String, String> extraParameters;
     AdjustAttribution attribution;
     String reftag;
+    String referrer;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -77,6 +78,7 @@ class PackageBuilder {
         addDate(parameters, "click_time", clickTime);
         addString(parameters, "reftag", reftag);
         addMapJson(parameters, "params", extraParameters);
+        addString(parameters, "referrer", referrer);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
