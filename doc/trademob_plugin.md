@@ -47,7 +47,7 @@ AdjustTrademob.injectViewItemIntoEvent(event, "itemId1", metadata);
 Adjust.trackEvent(event);
 ```
 
-### Add to Busket
+### Add to Basket
 
 ```java
 import com.adjust.sdk.plugin.AdjustTrademob;
@@ -61,7 +61,7 @@ TrademobItem itemId3 = new TrademobItem("itemId3", 4, 25f);
 
 List<TrademobItem> items = Arrays.asList(itemId1, itemId2, itemId3);
 
-AdjustTrademob.injectAddToBusketIntoEvent(event, items, null);
+AdjustTrademob.injectAddToBasketIntoEvent(event, items, null);
 
 Adjust.trackEvent(event);
 ```
