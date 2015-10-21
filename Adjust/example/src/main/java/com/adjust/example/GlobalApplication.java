@@ -17,7 +17,7 @@ public class GlobalApplication extends Application {
     public void onCreate() {
         super.onCreate();
         // configure Adjust
-        String appToken = "{yourAppToken}";
+        String appToken = "{YourAppToken}";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
@@ -94,6 +94,4 @@ public class GlobalApplication extends Application {
         }
     }
     */
-
-
 }
