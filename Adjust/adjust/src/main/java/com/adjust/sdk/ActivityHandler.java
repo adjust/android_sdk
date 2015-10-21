@@ -599,6 +599,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
         boolean hasAdjustTags = false;
 
+        logger.verbose("Reading query string (%s) from %s", queryString, source);
+
         String[] queryPairs = queryString.split("&");
         for (String pair : queryPairs) {
             if (readQueryString(pair, queryStringParameters, queryStringAttribution)) {
