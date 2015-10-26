@@ -7,11 +7,17 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
 
 public class MainActivity extends ActionBarActivity {
+    private static final String EVENT_TOKEN_SIMPLE      = "{YourEventToken}";
+    private static final String EVENT_TOKEN_REVENUE     = "{YourEventToken}";
+    private static final String EVENT_TOKEN_CALLBACK    = "{YourEventToken}";
+    private static final String EVENT_TOKEN_PARTNER     = "{YourEventToken}";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,8 +27,16 @@ public class MainActivity extends ActionBarActivity {
         Intent intent = getIntent();
         Uri data = intent.getData();
         Adjust.appWillOpenUrl(data);
-    }
 
+        // Adjust UI according to SDK state.
+        Button btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);
+
+        if (Adjust.isEnabled()) {
+            btnEnableDisableSDK.setText(R.string.txt_disable_sdk);
+        } else {
+            btnEnableDisableSDK.setText(R.string.txt_enable_sdk);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -38,7 +52,6 @@ public class MainActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -59,35 +72,66 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
-        AdjustEvent event = new AdjustEvent("{eventToken}");
+        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
 
         Adjust.trackEvent(event);
     }
 
     public void onTrackRevenueEventClick(View v) {
-        AdjustEvent event = new AdjustEvent("{eventToken}");
+        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
 
-        // add revenue 1 cent of an euro
+        // Add revenue 1 cent of an euro.
         event.setRevenue(0.01, "EUR");
 
         Adjust.trackEvent(event);
     }
 
-    public void onTrackEventWithCallbackClick(View v) {
-        AdjustEvent event = new AdjustEvent("{eventToken}");
+    public void onTrackCallbackEventClick(View v) {
+        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
 
-        // add callback parameters to this parameter
+        // Add callback parameters to this parameter.
         event.addCallbackParameter("key", "value");
 
         Adjust.trackEvent(event);
     }
 
-    public void onTrackEventWithPartnerClick(View v) {
-        AdjustEvent event = new AdjustEvent("{eventToken}");
+    public void onTrackPartnerEventClick(View v) {
+        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
 
-        // add partner parameters to this parameter
+        // Add partner parameters to this parameter.
         event.addPartnerParameter("foo", "bar");
 
         Adjust.trackEvent(event);
+    }
+
+    public void onEnableDisableOfflineModeClick(View v) {
+        if (((Button)v).getText().equals(
+                getApplicationContext().getResources().getString(R.string.txt_enable_offline_mode))) {
+            Adjust.setOfflineMode(true);
+            ((Button)v).setText(R.string.txt_disable_offline_mode);
+        } else {
+            Adjust.setOfflineMode(false);
+            ((Button)v).setText(R.string.txt_enable_offline_mode);
+        }
+    }
+
+    public void onEnableDisableSDKClick(View v) {
+        if (Adjust.isEnabled()) {
+            Adjust.setEnabled(false);
+            ((Button)v).setText(R.string.txt_enable_sdk);
+        } else {
+            Adjust.setEnabled(true);
+            ((Button)v).setText(R.string.txt_disable_sdk);
+        }
+    }
+
+    public void onIsSDKEnabledClick(View v) {
+        if (Adjust.isEnabled()) {
+            Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_enabled,
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_disabled,
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }

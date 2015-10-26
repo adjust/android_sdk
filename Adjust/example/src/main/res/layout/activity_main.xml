@@ -1,57 +1,103 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
-    <TextView
-        android:text="@string/app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView" />
-
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Simple event"
         android:id="@+id/btnSimpleEvent"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onTrackSimpleEventClick" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onTrackSimpleEventClick"
+        android:text="@string/btn_simple_event" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:id="@+id/btnRevenueEvent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Revenue"
-        android:id="@+id/btnRevenue"
-        android:layout_below="@+id/btnSimpleEvent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onTrackRevenueEventClick" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onTrackRevenueEventClick"
+        android:text="@string/btn_revenue_event" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:id="@+id/btnCallbackEvent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Callback parameters"
-        android:id="@+id/btnCallbackParameters"
-        android:layout_below="@+id/btnRevenue"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onTrackEventWithCallbackClick" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onTrackCallbackEventClick"
+        android:text="@string/btn_callback_event" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:id="@+id/btnPartnerEvent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Partner parameters"
-        android:id="@+id/Attribution"
-        android:layout_below="@+id/btnCallbackParameters"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:onClick="onTrackEventWithPartnerClick" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onTrackPartnerEventClick"
+        android:text="@string/btn_partner_event" />
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/btnEnableDisableOfflineMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onEnableDisableOfflineModeClick"
+        android:text="@string/txt_enable_offline_mode" />
+
+    <Button
+        android:id="@+id/btnEnableDisableSDK"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onEnableDisableSDKClick"
+        android:text="@string/txt_disable_sdk" />
+
+    <Button
+        android:id="@+id/btnIsSDKEnabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onIsSDKEnabledClick"
+        android:text="@string/btn_is_sdk_enabled" />
+
+</LinearLayout>
