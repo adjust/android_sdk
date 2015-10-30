@@ -74,7 +74,7 @@ following line:
     issues][multidex] by using only the ads part:
 
     ```
-    compile 'com.google.android.gms:play-services-ads:7.0.0'
+    compile 'com.google.android.gms:play-services-analytics:8.1.0'
     ```
 
     ![][gradle_gps]
