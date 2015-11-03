@@ -317,9 +317,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void updateStatus() {
+    private void updateHandlersStatus() {
         Message message = Message.obtain();
-        message.arg1 = SessionHandler.UPDATE_STATUS;
+        message.arg1 = SessionHandler.UPDATE_HANDLERS_STATUS;
         sessionHandler.sendMessage(message);
     }
 
@@ -338,7 +338,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int FINISH_TRACKING = BASE_ADDRESS + 5;
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
-        private static final int UPDATE_STATUS = BASE_ADDRESS + 8;
+        private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
         private static final int TIMER_FIRED = BASE_ADDRESS + 9;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
@@ -383,8 +383,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     ReferrerClickTime referrerClickTime = (ReferrerClickTime) message.obj;
                     sessionHandler.sendReferrerInternal(referrerClickTime.referrer, referrerClickTime.clickTime);
                     break;
-                case UPDATE_STATUS:
-                    sessionHandler.updateStatusInternal();
+                case UPDATE_HANDLERS_STATUS:
+                    sessionHandler.updateHandlersStatusInternal();
                     break;
                 case TIMER_FIRED:
                     sessionHandler.timerFiredInternal();
@@ -450,7 +450,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        updateStatusInternal();
+        updateHandlersStatusInternal();
 
         processSession();
 
@@ -675,7 +675,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return false;
     }
 
-    private void updateStatusInternal() {
+    private void updateHandlersStatusInternal() {
         updateAttributionHandlerStatus();
         updatePackageHandlerStatus();
     }
