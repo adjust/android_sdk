@@ -246,11 +246,15 @@ If your app `minSdkVersion` in gradle is `14` or superior,
 you can register all the activities lifecycle callbacks in one place, 
 to avoid editing every `Activity` class in your app.
 
-In the `Application` class of your app, in the same `onCreate` method where the adjust SDK is configured,
-call the function `registerActivityLifecycleCallbacks` with the parameter of a class that implements the interface `ActivityLifecycleCallbacks`.
-Of the methods that this class must implement, edit `onActivityResumed(Activity activity)` to include a call to `Adjust.onResume()` and edit `onActivityPaused(Activity activity)` to include a call to `Adjust.onPause();`
+1. Open the source file of your `Application` class.
+2. Add a private static final class `GlobalActivityLifecycleCallbacks` that implements the `ActivityLifecycleCallbacks` interface.
+3. In the `onActivityResumed(Activity activity)` method of the `GlobalActivityLifecycleCallbacks` class, call `Adjust.onResume()`
+4. In the `onActivityPaused(Activity activity)` method of the `GlobalActivityLifecycleCallbacks` class, call `Adjust.onPause()`
+5. Edit the same `onCreate()` method on the `Application` class where the adjust SDK is configured and add the call to `registerActivityLifecycleCallbacks(new GlobalActivityLifecycleCallbacks())`
 
 ![][activity_lifecycle]
+
+If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app, you can remove them now.
 
 #### Android 2.3 Gingerbread
 
