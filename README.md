@@ -187,7 +187,7 @@ following code to initialize the adjust SDK:
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustConfig;
 
-public class YourApplicationClass extends Application {
+public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
@@ -239,6 +239,24 @@ config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
 ### 8. Update your activities
+
+#### Android 4.0.0 Ice Cream Sandwich or superior
+
+If your app `minSdkVersion` in gradle is `14` or superior, 
+you can register all the activities lifecycle callbacks in one place, 
+to avoid editing every `Activity` class in your app.
+
+In the `Application` class of your app, in the same `onCreate` method where the adjust SDK is configured,
+call the function `registerActivityLifecycleCallbacks` with the parameter of a class that implements the interface `ActivityLifecycleCallbacks`.
+Of the methods that this class must implement, edit `onActivityResumed(Activity activity)` to include a call to `Adjust.onResume()` and edit `onActivityPaused(Activity activity)` to include a call to `Adjust.onPause();`
+
+![][activity_lifecycle]
+
+#### Android 2.3 Gingerbread
+
+If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it 
+to at least `14` to simplify the integration process in the long term. Consult the official
+Android [dashboard][android-dashboard] to know the latest market share of the major versions.
 
 To provide proper session tracking it is required to call certain Adjust
 methods every time any Activity resumes or pauses. Otherwise the SDK might miss
@@ -502,13 +520,14 @@ even if the app was terminated in offline mode.
 [gradle_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
 [manifest_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
 [manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard.png
+[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
 [receiver]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
 [application_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
 [manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
 [application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
 [activity]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
 [log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
+[activity_lifecycle]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activities_lifecycle.png
 
 [referrer]:      doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
@@ -523,6 +542,7 @@ even if the app was terminated in offline mode.
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
 [currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android-dashboard]:    http://developer.android.com/about/dashboards/index.html
 
 ## License
 
