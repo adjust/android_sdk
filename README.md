@@ -233,7 +233,9 @@ following code to initialize the adjust SDK:
 
 5. Add a private class that implements the `ActivityLifecycleCallbacks` interface. 
 If you don't have access to this interface, your app is targeting an Android api level inferior to 14. 
-You will have to update manually each Activity by following this [instructions](#activity).
+You will have to update manually each Activity by following this [instructions][activity_resume_pause].
+If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app before,
+you should remove them.
 
     ![][activity_lifecycle_class]
 
@@ -294,55 +296,7 @@ config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-### <a name="activity"></a>8. Update your activities
-
-#### Android 4.0.0 Ice Cream Sandwich or superior
-
-If your app `minSdkVersion` in gradle is `14` or superior, you don't need add `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app. If you had them before, you should remove them.
-
-#### Android 2.3 Gingerbread
-
-If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it 
-to at least `14` to simplify the integration process in the long term. Consult the official
-Android [dashboard][android-dashboard] to know the latest market share of the major versions.
-
-To provide proper session tracking it is required to call certain Adjust
-methods every time any Activity resumes or pauses. Otherwise the SDK might miss
-a session start or session end. In order to do so you should follow these steps
-for **each** Activity of your app:
-
-1. Open the source file of your Activity.
-2. Add the `import` statement at the top of the file.
-3. In your Activity's `onResume` method call `Adjust.onResume`. Create the
-  method if needed.
-4. In your Activity's `onPause` method call `Adjust.onPause`. Create the method
-  if needed.
-
-After these steps your activity should look like this:
-
-```java
-import com.adjust.sdk.Adjust;
-// ...
-public class YourActivity extends Activity {
-    protected void onResume() {
-        super.onResume();
-        Adjust.onResume();
-    }
-    protected void onPause() {
-        super.onPause();
-        Adjust.onPause();
-    }
-    // ...
-}
-```
-
-![][activity]
-
-Repeat these steps for **every** Activity of your app. Don't forget these steps
-when you create new Activities in the future. Depending on your coding style
-you might want to implement this in a common superclass of all your Activities.
-
-### 9. Build your app
+### 8. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
 `tag:Adjust` to hide all other logs. After your app has launched you should see
@@ -355,7 +309,7 @@ the following Adjust log: `Install tracked`
 Once you have integrated the adjust SDK into your project, you can take
 advantage of the following features.
 
-### 10. Add tracking of custom events
+### 9. Add tracking of custom events
 
 You can use adjust to track any event in your app. Suppose you want to track
 every tap on a button. You would have to create a new event token in your
@@ -370,7 +324,7 @@ Adjust.trackEvent(event);
 The event instance can be used to configure the event even more before tracking
 it.
 
-### 11. Add callback parameters
+### 10. Add callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will
 send a GET request to that URL whenever the event gets tracked. You can add
@@ -407,7 +361,7 @@ You can read more about using URL callbacks, including a full list of available
 values, in our [callbacks guide][callbacks-guide].
 
 
-### 12. Partner parameters
+### 11. Partner parameters
 
 You can also add parameters to be transmitted to network partners, for the
 integrations that have been activated in your adjust dashboard.
@@ -427,7 +381,7 @@ Adjust.trackEvent(event);
 You can read more about special partners and these integrations in our [guide
 to special partners.][special-partners]
 
-### 13. Add tracking of revenue
+### 12. Add tracking of revenue
 
 If your users can generate revenue by tapping on advertisements or making
 in-app purchases you can track those revenues with events. Lets say a tap is
@@ -446,7 +400,7 @@ When you set a currency token, adjust will automatically convert the incoming re
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
-### 14. Set up deep link reattributions
+### 13. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential if
@@ -466,7 +420,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 15. Enable event buffering
+### 14. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
@@ -480,7 +434,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### 16. Set listener for attribution changes
+### 15. Set listener for attribution changes
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
@@ -525,7 +479,7 @@ parameter. Here is a quick summary of its properties:
 - `String creative` the creative grouping level of the current install.
 - `String clickLabel` the click label of the current install.
 
-### 17. Disable tracking
+### 16. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
@@ -539,7 +493,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
 
-### 18. Offline mode
+### 17. Offline mode
 
 You can put the adjust SDK in offline mode to suspend transmission to our servers, 
 while retaining tracked data to be sent later. While in offline mode, all information is saved
@@ -573,7 +527,6 @@ even if the app was terminated in offline mode.
 [application_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
 [manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
 [application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[activity]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
 [log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
 [activity_lifecycle_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
 [activity_lifecycle_methods]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
@@ -592,7 +545,7 @@ even if the app was terminated in offline mode.
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
 [currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
-[android-dashboard]:    http://developer.android.com/about/dashboards/index.html
+[activity_resume_pause]: doc/activity_resume_pause.md
 
 ## License
 
