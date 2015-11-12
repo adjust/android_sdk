@@ -180,27 +180,62 @@ initialize the SDK. If don't have one in your app already, follow these steps:
 
     ![][manifest_application]
 
-In your `Application` class find or create the `onCreate` method and add the
+4. In your `Application` class find or create the `onCreate` method and add the
 following code to initialize the adjust SDK:
 
-```java
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustConfig;
-
-public class GlobalApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        String appToken = "{YourAppToken}";
-        String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-        AdjustConfig config = new AdjustConfig(this, appToken, environment);
-        Adjust.onCreate(config);
+    ```java
+    import com.adjust.sdk.Adjust;
+    import com.adjust.sdk.AdjustConfig;
+    
+    public class GlobalApplication extends Application {
+        @Override
+        public void onCreate() {
+            super.onCreate();
+    
+            String appToken = "{YourAppToken}";
+            String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+            AdjustConfig config = new AdjustConfig(this, appToken, environment);
+            Adjust.onCreate(config);
+        }
     }
-}
-```
+    ```
+    
+    ![][application_config]
 
-![][application_config]
+5. Add a private class that implements the `ActivityLifecycleCallbacks` interface. 
+If you don't have access to this interface, your app is targeting an Android api level inferior to 14. 
+You will have to update manually each Activity by following this [instructions](#activity).
+
+6. Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`.
+Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.onPause()`.
+
+7. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with a instance of the created `ActivityLifecycleCallbacks` class.
+
+    ```java
+    import com.adjust.sdk.Adjust;
+    
+    public class GlobalApplication extends Application {
+        @Override
+        public void onCreate() {
+            // ...
+            registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+        }
+    }
+    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+        @Override
+        public void onActivityResumed(Activity activity) {
+            Adjust.onResume();
+        }
+    
+        @Override
+        public void onActivityPaused(Activity activity) {
+            Adjust.onPause();
+        }
+        //...
+    }
+    ```
+    
+    ![][activity_lifecycle_allbacks]
 
 Replace `{YourAppToken}` with your app token. You can find this in your
 [dashboard].
@@ -238,23 +273,11 @@ config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-### 8. Update your activities
+### <a name="activity"></a>8. Update your activities
 
 #### Android 4.0.0 Ice Cream Sandwich or superior
 
-If your app `minSdkVersion` in gradle is `14` or superior, 
-you can register all the activities lifecycle callbacks in one place, 
-to avoid editing every `Activity` class in your app.
-
-1. Open the source file of your `Application` class.
-2. Add a private static final class `GlobalActivityLifecycleCallbacks` that implements the `ActivityLifecycleCallbacks` interface.
-3. In the `onActivityResumed(Activity activity)` method of the `GlobalActivityLifecycleCallbacks` class, call `Adjust.onResume()`
-4. In the `onActivityPaused(Activity activity)` method of the `GlobalActivityLifecycleCallbacks` class, call `Adjust.onPause()`
-5. Edit the same `onCreate()` method on the `Application` class where the adjust SDK is configured and add the call to `registerActivityLifecycleCallbacks(new GlobalActivityLifecycleCallbacks())`
-
-![][activity_lifecycle]
-
-If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app, you can remove them now.
+If your app `minSdkVersion` in gradle is `14` or superior, you don't need add `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app. If you had them before, you should remove them.
 
 #### Android 2.3 Gingerbread
 
