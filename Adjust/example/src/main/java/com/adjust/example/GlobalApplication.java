@@ -1,6 +1,8 @@
 package com.adjust.example;
 
+import android.app.Activity;
 import android.app.Application;
+import android.os.Bundle;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
@@ -45,8 +47,8 @@ public class GlobalApplication extends Application {
 
 
         // register onResume and onPause events of all activities
-        // for applications with minimum support of Android v4 or greater
-        //registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+        // for applications with minSdkVersion >= 14
+        registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
         // put the SDK in offline mode
         //Adjust.setOfflineMode(true);
@@ -56,7 +58,6 @@ public class GlobalApplication extends Application {
     }
 
     // you can use this class if your app is for Android 4.0 or higher
-    /*
     private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
         @Override
         public void onActivityResumed(Activity activity) {
@@ -93,5 +94,4 @@ public class GlobalApplication extends Application {
 
         }
     }
-    */
 }
