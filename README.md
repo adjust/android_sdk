@@ -208,6 +208,28 @@ following code to initialize the adjust SDK:
     ```
     
     ![][application_config]
+    
+    Replace `{YourAppToken}` with your app token. You can find this in your
+    [dashboard].
+    
+    Depending on whether you build your app for testing or for production, you must
+    set `environment` with one of these values:
+    
+    ```java
+    String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    ```
+    
+    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX`
+    if and only if you or someone else is testing your app. Make sure to set the
+    environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish
+    the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start
+    developing and testing it again.
+    
+    We use this environment to distinguish between real traffic and test traffic
+    from test devices. It is very important that you keep this value meaningful at
+    all times! This is especially important if you are tracking revenue.
+
 
 5. Add a private class that implements the `ActivityLifecycleCallbacks` interface. 
 If you don't have access to this interface, your app is targeting an Android api level inferior to 14. 
@@ -256,27 +278,6 @@ Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.
     ```
     
     ![][activity_lifecycle_register]
-
-Replace `{YourAppToken}` with your app token. You can find this in your
-[dashboard].
-
-Depending on whether you build your app for testing or for production, you must
-set `environment` with one of these values:
-
-```java
-String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
-```
-
-**Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX`
-if and only if you or someone else is testing your app. Make sure to set the
-environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish
-the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start
-developing and testing it again.
-
-We use this environment to distinguish between real traffic and test traffic
-from test devices. It is very important that you keep this value meaningful at
-all times! This is especially important if you are tracking revenue.
 
 #### Adjust Logging
 
