@@ -113,11 +113,18 @@ If you are *not* targeting the Google Play Store, add both of these permissions 
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
--keep class com.adjust.sdk.plugin.MacAddressUtil { java.lang.String getMacAddress(android.content.Context); }
--keep class com.adjust.sdk.plugin.AndroidIdUtil { java.lang.String getAndroidId(android.content.Context); }
--keep class com.google.android.gms.common.ConnectionResult { int SUCCESS; }
+-keep class com.adjust.sdk.plugin.MacAddressUtil { 
+    java.lang.String getMacAddress(android.content.Context); 
+}
+-keep class com.adjust.sdk.plugin.AndroidIdUtil { 
+    java.lang.String getAndroidId(android.content.Context); 
+}
+-keep class com.google.android.gms.common.ConnectionResult { 
+    int SUCCESS; 
+}
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info getAdvertisingIdInfo (android.content.Context);
+    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info 
+        getAdvertisingIdInfo (android.content.Context);
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient.Info {
     java.lang.String getId ();
