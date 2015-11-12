@@ -206,19 +206,32 @@ following code to initialize the adjust SDK:
 If you don't have access to this interface, your app is targeting an Android api level inferior to 14. 
 You will have to update manually each Activity by following this [instructions](#activity).
 
+    ![][activity_lifecycle_class]
+
 6. Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`.
 Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.onPause()`.
 
+    ![][activity_lifecycle_methods]
+    
 7. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with a instance of the created `ActivityLifecycleCallbacks` class.
 
     ```java
     import com.adjust.sdk.Adjust;
-    
+    import com.adjust.sdk.AdjustConfig;
+        
     public class GlobalApplication extends Application {
         @Override
         public void onCreate() {
-            // ...
+            super.onCreate();
+                    
+            String appToken = "{YourAppToken}";
+            String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+            AdjustConfig config = new AdjustConfig(this, appToken, environment);
+            Adjust.onCreate(config);
+
             registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+            
+            //...
         }
     }
     private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
@@ -235,7 +248,7 @@ Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.
     }
     ```
     
-    ![][activity_lifecycle_allbacks]
+    ![][activity_lifecycle_register]
 
 Replace `{YourAppToken}` with your app token. You can find this in your
 [dashboard].
@@ -554,7 +567,9 @@ even if the app was terminated in offline mode.
 [application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
 [activity]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
 [log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
-[activity_lifecycle]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activities_lifecycle.png
+[activity_lifecycle_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
+[activity_lifecycle_methods]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
+[activity_lifecycle_register]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 [referrer]:      doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
