@@ -113,9 +113,23 @@ If you are *not* targeting the Google Play Store, add both of these permissions 
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
--keep class com.adjust.sdk.** { *; }
--keep class com.google.android.gms.common.** { *; }
--keep class com.google.android.gms.ads.identifier.** { *; }
+-keep class com.adjust.sdk.plugin.MacAddressUtil { 
+    java.lang.String getMacAddress(android.content.Context); 
+}
+-keep class com.adjust.sdk.plugin.AndroidIdUtil { 
+    java.lang.String getAndroidId(android.content.Context); 
+}
+-keep class com.google.android.gms.common.ConnectionResult { 
+    int SUCCESS; 
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
+    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info 
+        getAdvertisingIdInfo (android.content.Context);
+}
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient.Info {
+    java.lang.String getId ();
+    boolean isLimitAdTrackingEnabled();
+}
 ```
 
 If you are *not* targeting the Google Play Store, you can remove the
@@ -173,48 +187,99 @@ initialize the SDK. If don't have one in your app already, follow these steps:
 
     ![][manifest_application]
 
-In your `Application` class find or create the `onCreate` method and add the
+4. In your `Application` class find or create the `onCreate` method and add the
 following code to initialize the adjust SDK:
 
-```java
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustConfig;
-
-public class YourApplicationClass extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        String appToken = "{YourAppToken}";
-        String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-        AdjustConfig config = new AdjustConfig(this, appToken, environment);
-        Adjust.onCreate(config);
+    ```java
+    import com.adjust.sdk.Adjust;
+    import com.adjust.sdk.AdjustConfig;
+    
+    public class GlobalApplication extends Application {
+        @Override
+        public void onCreate() {
+            super.onCreate();
+    
+            String appToken = "{YourAppToken}";
+            String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+            AdjustConfig config = new AdjustConfig(this, appToken, environment);
+            Adjust.onCreate(config);
+        }
     }
-}
-```
+    ```
+    
+    ![][application_config]
+    
+    Replace `{YourAppToken}` with your app token. You can find this in your
+    [dashboard].
+    
+    Depending on whether you build your app for testing or for production, you must
+    set `environment` with one of these values:
+    
+    ```java
+    String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+    ```
+    
+    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX`
+    if and only if you or someone else is testing your app. Make sure to set the
+    environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish
+    the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start
+    developing and testing it again.
+    
+    We use this environment to distinguish between real traffic and test traffic
+    from test devices. It is very important that you keep this value meaningful at
+    all times! This is especially important if you are tracking revenue.
 
-![][application_config]
 
-Replace `{YourAppToken}` with your app token. You can find this in your
-[dashboard].
+5. Add a private class that implements the `ActivityLifecycleCallbacks` interface. 
+If you don't have access to this interface, your app is targeting an Android api level inferior to 14. 
+You will have to update manually each Activity by following this [instructions][activity_resume_pause].
+If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app before,
+you should remove them.
 
-Depending on whether you build your app for testing or for production, you must
-set `environment` with one of these values:
+    ![][activity_lifecycle_class]
 
-```java
-String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
-```
+6. Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`.
+Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.onPause()`.
 
-**Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX`
-if and only if you or someone else is testing your app. Make sure to set the
-environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish
-the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start
-developing and testing it again.
+    ![][activity_lifecycle_methods]
+    
+7. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with a instance of the created `ActivityLifecycleCallbacks` class.
 
-We use this environment to distinguish between real traffic and test traffic
-from test devices. It is very important that you keep this value meaningful at
-all times! This is especially important if you are tracking revenue.
+    ```java
+    import com.adjust.sdk.Adjust;
+    import com.adjust.sdk.AdjustConfig;
+        
+    public class GlobalApplication extends Application {
+        @Override
+        public void onCreate() {
+            super.onCreate();
+                    
+            String appToken = "{YourAppToken}";
+            String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+            AdjustConfig config = new AdjustConfig(this, appToken, environment);
+            Adjust.onCreate(config);
+
+            registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+            
+            //...
+        }
+    }
+    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+        @Override
+        public void onActivityResumed(Activity activity) {
+            Adjust.onResume();
+        }
+    
+        @Override
+        public void onActivityPaused(Activity activity) {
+            Adjust.onPause();
+        }
+        //...
+    }
+    ```
+    
+    ![][activity_lifecycle_register]
 
 #### Adjust Logging
 
@@ -231,45 +296,7 @@ config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-### 8. Update your activities
-
-To provide proper session tracking it is required to call certain Adjust
-methods every time any Activity resumes or pauses. Otherwise the SDK might miss
-a session start or session end. In order to do so you should follow these steps
-for **each** Activity of your app:
-
-1. Open the source file of your Activity.
-2. Add the `import` statement at the top of the file.
-3. In your Activity's `onResume` method call `Adjust.onResume`. Create the
-  method if needed.
-4. In your Activity's `onPause` method call `Adjust.onPause`. Create the method
-  if needed.
-
-After these steps your activity should look like this:
-
-```java
-import com.adjust.sdk.Adjust;
-// ...
-public class YourActivity extends Activity {
-    protected void onResume() {
-        super.onResume();
-        Adjust.onResume();
-    }
-    protected void onPause() {
-        super.onPause();
-        Adjust.onPause();
-    }
-    // ...
-}
-```
-
-![][activity]
-
-Repeat these steps for **every** Activity of your app. Don't forget these steps
-when you create new Activities in the future. Depending on your coding style
-you might want to implement this in a common superclass of all your Activities.
-
-### 9. Build your app
+### 8. Build your app
 
 Build and run your Android app. In your LogCat viewer you can set the filter
 `tag:Adjust` to hide all other logs. After your app has launched you should see
@@ -282,7 +309,7 @@ the following Adjust log: `Install tracked`
 Once you have integrated the adjust SDK into your project, you can take
 advantage of the following features.
 
-### 10. Add tracking of custom events
+### 9. Add tracking of custom events
 
 You can use adjust to track any event in your app. Suppose you want to track
 every tap on a button. You would have to create a new event token in your
@@ -297,7 +324,7 @@ Adjust.trackEvent(event);
 The event instance can be used to configure the event even more before tracking
 it.
 
-### 11. Add callback parameters
+### 10. Add callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will
 send a GET request to that URL whenever the event gets tracked. You can add
@@ -334,7 +361,7 @@ You can read more about using URL callbacks, including a full list of available
 values, in our [callbacks guide][callbacks-guide].
 
 
-### 12. Partner parameters
+### 11. Partner parameters
 
 You can also add parameters to be transmitted to network partners, for the
 integrations that have been activated in your adjust dashboard.
@@ -354,7 +381,7 @@ Adjust.trackEvent(event);
 You can read more about special partners and these integrations in our [guide
 to special partners.][special-partners]
 
-### 13. Add tracking of revenue
+### 12. Add tracking of revenue
 
 If your users can generate revenue by tapping on advertisements or making
 in-app purchases you can track those revenues with events. Lets say a tap is
@@ -373,7 +400,7 @@ When you set a currency token, adjust will automatically convert the incoming re
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
-### 14. Set up deep link reattributions
+### 13. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential if
@@ -393,7 +420,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 15. Enable event buffering
+### 14. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
@@ -407,7 +434,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### 16. Set listener for attribution changes
+### 15. Set listener for attribution changes
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
@@ -452,7 +479,7 @@ parameter. Here is a quick summary of its properties:
 - `String creative` the creative grouping level of the current install.
 - `String clickLabel` the click label of the current install.
 
-### 17. Disable tracking
+### 16. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
@@ -466,7 +493,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
 
-### 18. Offline mode
+### 17. Offline mode
 
 You can put the adjust SDK in offline mode to suspend transmission to our servers, 
 while retaining tracked data to be sent later. While in offline mode, all information is saved
@@ -495,13 +522,15 @@ even if the app was terminated in offline mode.
 [gradle_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
 [manifest_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
 [manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard.png
+[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
 [receiver]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
 [application_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
 [manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
 [application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[activity]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
 [log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
+[activity_lifecycle_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
+[activity_lifecycle_methods]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
+[activity_lifecycle_register]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 [referrer]:      doc/referrer.md
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
@@ -516,6 +545,7 @@ even if the app was terminated in offline mode.
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
 [currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[activity_resume_pause]: doc/activity_resume_pause.md
 
 ## License
 

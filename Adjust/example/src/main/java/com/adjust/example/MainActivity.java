@@ -59,18 +59,6 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Adjust.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Adjust.onPause();
-    }
-
     public void onTrackSimpleEventClick(View v) {
         AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
 
