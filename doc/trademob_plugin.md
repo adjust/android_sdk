@@ -11,6 +11,8 @@ Integrate adjust with Trademob events by following these steps:
 3. Drag the `AdjustTrademob.java` and `TrademobItem.java` files from the
    downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
 
+For questions regarding this plugin, please reach out to `eugenio.warglien@trademob.com`
+
 You can now use Trademob event in the following ways:
 
 ### View Listing
