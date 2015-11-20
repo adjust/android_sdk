@@ -1,5 +1,7 @@
 package com.adjust.sdk.plugin;
 
+import android.net.Uri;
+
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ILogger;
@@ -104,11 +106,22 @@ public class AdjustCriteo {
         partnerIdInternal = partnerId;
     }
 
+    public static void injectDeeplinkIntoEvent(AdjustEvent event, Uri url) {
+        if (url == null) {
+            return;
+        }
+
+        adjustEvent.addPartnerParameter("criteo_deeplink", url.toString());
+
+        injectOptionalParams(event);
+    }
+
     private static void injectOptionalParams(AdjustEvent event) {
         injectHashEmail(event);
         injectSearchDates(event);
         injectPartnerId(event);
     }
+
     private static void injectHashEmail(AdjustEvent event) {
         if (hashEmailInternal == null || hashEmailInternal.isEmpty()) {
             return;
@@ -134,7 +147,6 @@ public class AdjustCriteo {
 
         event.addPartnerParameter("criteo_partner_id", partnerIdInternal);
     }
-
 
     private static String createCriteoVLFromProducts(List<String> productIds) {
         if (productIds == null) {
