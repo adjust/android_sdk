@@ -173,3 +173,24 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
 ```
+
+### Send deeplink
+
+For each activity that accepts deep links, find the onCreate method and add the folowing call:
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    
+    AdjustEvent event = new AdjustEvent("{deeplinkEventToken}");
+    AdjustCriteo.injectDeeplinkIntoEvent(event, data);
+    Adjust.trackEvent(event);
+    
+    //...
+}
+```
