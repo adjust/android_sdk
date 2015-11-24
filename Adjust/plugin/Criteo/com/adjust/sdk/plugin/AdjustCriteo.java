@@ -111,7 +111,7 @@ public class AdjustCriteo {
             return;
         }
 
-        adjustEvent.addPartnerParameter("criteo_deeplink", url.toString());
+        event.addPartnerParameter("criteo_deeplink", url.toString());
 
         injectOptionalParams(event);
     }
