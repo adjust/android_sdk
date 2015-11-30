@@ -1,14 +1,20 @@
 ## Sociomantic plugin
 
-Integrate adjust with Sociomantic events by following these steps:
+Add the dependency of the adjust sdk with the Sociomantic plugin:
 
-1. Locate the `plugin` folder inside the downloaded archive from our [releases page](https://github.com/adjust/android_sdk/releases).
+```
+compile 'com.adjust.sdk:adjust-android-sociomantic:4.1.5'
+```
+
+Or integrate adjust with Sociomantic events by following these steps:
+
+1. Locate the `plugin/Sociomantic` folder inside the downloaded archive from our [releases page](https://github.com/adjust/android_sdk/releases).
 
 2. Open the `adjust` module in Android Studio and locate the
    `plugin` package folder in `adjust/java/com/adjust/sdk`.
 
 3. Drag the `AdjustSociomantic.java` file from the
-   downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
+   downloaded `plugin/Sociomantic/com/adjust/sdk/plugin` folder into the `plugin` folder in the `adjust` project.
 
 4. You know have access to the Sociomantic events methods as well as constants that you should use for property names of your dictionaries:
 

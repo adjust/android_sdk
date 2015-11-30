@@ -1,15 +1,21 @@
 ## Criteo plugin
 
-Integrate adjust with Criteo events by following these steps:
+Add the dependency of the adjust sdk with the Criteo plugin:
 
-1. Locate the `plugin` folder inside the downloaded archive from our
+```
+compile 'com.adjust.sdk:adjust-android-criteo:4.1.5'
+```
+
+Or integrate adjust with Criteo events by following these steps:
+
+1. Locate the `plugin/Criteo` folder inside the downloaded archive from our
    [releases page](https://github.com/adjust/android_sdk/releases).
 
 2. Open the `adjust` module in Android Studio and locate the
    `plugin` package folder in `adjust/java/com/adjust/sdk`.
 
 3. Drag the `AdjustCriteo.java` and `CriteoProduct.java` files from the
-   downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
+   downloaded `plugin/Criteo/com/adjust/sdk/plugin` folder into the `plugin` folder in the `adjust` project.
 
 Now you can integrate each of the different Criteo events, like in the
 following examples:
@@ -172,4 +178,25 @@ The partner id can be removed by setting the `injectPartnerIdIntoCriteoEvents` m
 import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustCriteo.injectPartnerIdIntoCriteoEvents("{CriteoPartnerId}");
+```
+
+### Send deeplink
+
+For each activity that accepts deep links, find the onCreate method and add the folowing call:
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+
+    Intent intent = getIntent();
+    Uri data = intent.getData();
+    
+    AdjustEvent event = new AdjustEvent("{deeplinkEventToken}");
+    AdjustCriteo.injectDeeplinkIntoEvent(event, data);
+    Adjust.trackEvent(event);
+    
+    //...
+}
 ```

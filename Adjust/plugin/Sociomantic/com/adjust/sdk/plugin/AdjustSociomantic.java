@@ -159,7 +159,7 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
+        Map<String, List<Map<String, Object>>> po = new HashMap<String, List<Map<String, Object>>>(1);
         List<Map<String, Object>> productList;
         Map<String, Object> product;
 
@@ -186,8 +186,8 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
-        List<Map<String, Object>> productList = new ArrayList<>();
+        Map<String, List<Map<String, Object>>> po = new HashMap<String, List<Map<String, Object>>>(1);
+        List<Map<String, Object>> productList = new ArrayList<Map<String, Object>>();
 
         for (Object product: products) {
             Map<String, Object> _product = new HashMap<String, Object>();
@@ -237,9 +237,9 @@ public abstract class AdjustSociomantic {
             return;
         }
 
-        Map<String, Map<String, Object>> to = new HashMap<>(1);
-        Map<String, List<Map<String, Object>>> po = new HashMap<>(1);
-        List<Map<String, Object>> productList = new ArrayList<>();
+        Map<String, Map<String, Object>> to = new HashMap<String, Map<String, Object>>(1);
+        Map<String, List<Map<String, Object>>> po = new HashMap<String, List<Map<String, Object>>>(1);
+        List<Map<String, Object>> productList = new ArrayList<Map<String, Object>>();
 
         for (Object product: products) {
             Map<String, Object> _product = new HashMap<String, Object>();

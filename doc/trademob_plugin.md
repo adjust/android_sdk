@@ -1,15 +1,21 @@
 ## Trademob plugin
 
-Integrate adjust with Trademob events by following these steps:
+Add the dependency of the adjust sdk with the Trademob plugin:
 
-1. Locate the `plugin` folder inside the downloaded archive from our
+```
+compile 'com.adjust.sdk:adjust-android-trademob:4.1.5'
+```
+
+Or integrate adjust with Trademob events by following these steps:
+
+1. Locate the `plugin/Trademob` folder inside the downloaded archive from our
    [releases page](https://github.com/adjust/android_sdk/releases).
 
 2. Open the `adjust` module in Android Studio and locate the
    `plugin` package folder in `adjust/java/com/adjust/sdk`.
 
 3. Drag the `AdjustTrademob.java` and `TrademobItem.java` files from the
-   downloaded `plugin` folder into the `plugin` folder in the `adjust` project.
+   downloaded `plugin/Trademob/com/adjust/sdk/plugin` folder into the `plugin` folder in the `adjust` project.
 
 For questions regarding this plugin, please reach out to `eugenio.warglien@trademob.com`
 
