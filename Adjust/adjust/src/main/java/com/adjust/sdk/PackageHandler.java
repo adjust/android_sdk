@@ -15,8 +15,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,16 +77,22 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage() {
+    public void sendNextPackage(ResponseData responseData) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
+
+        responseData.willRetry = false;
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage() {
+    public void closeFirstPackage(ResponseData responseData) {
         isSending.set(false);
+
+        responseData.willRetry = true;
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -101,11 +105,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     @Override
     public void resumeSending() {
         paused = false;
-    }
-
-    @Override
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
-        activityHandler.finishedTrackingActivity(jsonResponse);
     }
 
     private static final class InternalHandler extends Handler {

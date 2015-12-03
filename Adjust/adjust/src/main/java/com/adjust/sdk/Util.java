@@ -173,7 +173,7 @@ public class Util {
         }
     }
 
-    public static JSONObject readHttpResponse(HttpsURLConnection connection) throws Exception {
+    public static ResponseData readHttpResponse(HttpsURLConnection connection) throws Exception {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
@@ -202,23 +202,34 @@ public class Util {
                 connection.disconnect();
             }
         }
+        ResponseData responseData = new ResponseData();
+
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
         if (stringResponse == null || stringResponse.length() == 0) {
-            return null;
+            return responseData;
         }
 
         JSONObject jsonResponse = null;
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
+            String message = String.format("Failed to parse json response. (%s)", e.getMessage());
+            logger.error(message);
+            responseData.message = message;
         }
 
-        if (jsonResponse == null) return null;
+        if (jsonResponse == null) {
+            return responseData;
+        }
+
+        responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
+
+        responseData.message = message;
+        responseData.timestamp = jsonResponse.optString("timestamp", null);
 
         if (message == null) {
             message = "No message found";
@@ -227,11 +238,13 @@ public class Util {
         if (responseCode != null &&
                 responseCode == HttpsURLConnection.HTTP_OK) {
             logger.info("%s", message);
+            responseData.wasSuccess = true;
         } else {
             logger.error("%s", message);
+            responseData.wasSuccess = false;
         }
 
-        return jsonResponse;
+        return responseData;
     }
 
     public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)

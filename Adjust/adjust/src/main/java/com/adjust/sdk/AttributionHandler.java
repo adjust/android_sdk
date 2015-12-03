@@ -128,19 +128,17 @@ public class AttributionHandler implements IAttributionHandler {
 
         logger.verbose("%s", attributionPackage.getExtendedString());
 
-        JSONObject jsonResponse = null;
         try {
             HttpsURLConnection connection = Util.createGETHttpsURLConnection(
                     buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
-            jsonResponse = Util.readHttpResponse(connection);
+            ResponseData responseData = Util.readHttpResponse(connection);
+            checkAttributionInternal(responseData.jsonResponse);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
-
-        checkAttributionInternal(jsonResponse);
     }
 
     private Uri buildUri(String path, Map<String, String> parameters) {

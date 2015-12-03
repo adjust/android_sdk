@@ -20,8 +20,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -139,14 +137,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
-        if (jsonResponse == null) {
+    public void finishedTrackingActivity(ResponseData responseData) {
+        if (responseData.jsonResponse == null && adjustConfig.onFinishedListener == null) {
             return;
         }
-
         Message message = Message.obtain();
         message.arg1 = SessionHandler.FINISH_TRACKING;
-        message.obj = jsonResponse;
+        message.obj = responseData;
         sessionHandler.sendMessage(message);
     }
 
@@ -275,6 +272,20 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
+    private void launchFinishedListener(final ResponseData responseData) {
+        if (adjustConfig.onFinishedListener == null) {
+            return;
+        }
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                adjustConfig.onFinishedListener.onFinishedTracking(responseData);
+            }
+        };
+        handler.post(runnable);
+    }
+
     @Override
     public void setAskingAttribution(boolean askingAttribution) {
         activityState.askingAttribution = askingAttribution;
@@ -375,8 +386,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     sessionHandler.trackEventInternal(event);
                     break;
                 case FINISH_TRACKING:
-                    JSONObject jsonResponse = (JSONObject) message.obj;
-                    sessionHandler.finishedTrackingActivityInternal(jsonResponse);
+                    ResponseData responseData = (ResponseData) message.obj;
+                    sessionHandler.finishedTrackingActivityInternal(responseData);
                     break;
                 case DEEP_LINK:
                     UrlClickTime urlClickTime = (UrlClickTime) message.obj;
@@ -557,14 +568,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void finishedTrackingActivityInternal(JSONObject jsonResponse) {
-        if (jsonResponse == null) {
-            return;
+    private void finishedTrackingActivityInternal(ResponseData responseData) {
+        if (responseData.jsonResponse != null) {
+            String deeplink = responseData.jsonResponse.optString("deeplink", null);
+            launchDeeplinkMain(deeplink);
+            attributionHandler.checkAttribution(responseData.jsonResponse);
         }
-
-        String deeplink = jsonResponse.optString("deeplink", null);
-        launchDeeplinkMain(deeplink);
-        attributionHandler.checkAttribution(jsonResponse);
+        launchFinishedListener(responseData);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {

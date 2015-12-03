@@ -15,6 +15,7 @@ public class AdjustConfig {
     Boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
+    OnFinishedListener onFinishedListener;
     String referrer;
     long referrerClickTime;
     Boolean deviceKnown;

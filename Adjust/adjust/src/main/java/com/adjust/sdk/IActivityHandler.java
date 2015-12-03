@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 /**
  * Created by pfms on 15/12/14.
  */
@@ -16,7 +14,7 @@ public interface IActivityHandler {
 
     public void trackEvent(AdjustEvent event);
 
-    public void finishedTrackingActivity(JSONObject jsonResponse);
+    public void finishedTrackingActivity(ResponseData responseData);
 
     public void setEnabled(boolean enabled);
 
