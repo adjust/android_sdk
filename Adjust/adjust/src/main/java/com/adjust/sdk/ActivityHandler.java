@@ -703,6 +703,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        mapIntent.setPackage(adjustConfig.context.getPackageName());
+
         // Verify it resolves
         PackageManager packageManager = adjustConfig.context.getPackageManager();
         List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
