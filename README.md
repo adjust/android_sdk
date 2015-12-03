@@ -67,14 +67,14 @@ these steps:
 following line:
 
     ```
-    compile 'com.google.android.gms:play-services:7.0.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
     ```
 
     If you don't need all of the Google Play Services, you can avoid [dex
     issues][multidex] by using only the ads part:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:8.1.0'
+    compile 'com.google.android.gms:play-services-analytics:8.3.0'
     ```
 
     ![][gradle_gps]
