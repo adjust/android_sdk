@@ -22,7 +22,7 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
-    public boolean tryUpdateAttribution(AdjustAttribution attribution);
+    public void launchResponseTasks(ResponseData responseData, AdjustAttribution attribution);
 
     public void sendReferrer(String referrer, long clickTime);
 

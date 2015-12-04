@@ -141,10 +141,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (responseData.jsonResponse == null && adjustConfig.onFinishedListener == null) {
             return;
         }
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.FINISH_TRACKING;
-        message.obj = responseData;
-        sessionHandler.sendMessage(message);
+        if (responseData.jsonResponse == null) {
+            launchResponseTasks(responseData, null);
+            return;
+        }
+        attributionHandler.checkResponse(responseData);
     }
 
     @Override
@@ -240,17 +241,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
-    @Override
-    public boolean tryUpdateAttribution(AdjustAttribution attribution) {
-        if (attribution == null) return false;
+    private void updateAttribution(AdjustAttribution attribution, Handler handler) {
+        if (attribution == null) {
+            return;
+        }
 
         if (attribution.equals(this.attribution)) {
-            return false;
+            return;
         }
 
         saveAttribution(attribution);
-        launchAttributionListener();
-        return true;
+        launchAttributionListener(handler);
     }
 
     private void saveAttribution(AdjustAttribution attribution) {
@@ -258,11 +259,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeAttribution();
     }
 
-    private void launchAttributionListener() {
+    private void launchAttributionListener(Handler handler) {
         if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }
-        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+        // add it to the handler queue
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -272,11 +273,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void launchFinishedListener(final ResponseData responseData) {
+    private void launchFinishedListener(final ResponseData responseData, Handler handler) {
         if (adjustConfig.onFinishedListener == null) {
             return;
         }
-        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+        // add it to the handler queue
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
@@ -309,6 +310,25 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         ReferrerClickTime referrerClickTime = new ReferrerClickTime(referrer, clickTime);
         message.obj = referrerClickTime;
         sessionHandler.sendMessage(message);
+    }
+
+    @Override
+    public void launchResponseTasks(ResponseData responseData, AdjustAttribution attribution) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.RESPONSE_TASKS;
+        ResponseDataTasks responseDataTasks = new ResponseDataTasks(responseData, attribution);
+        message.obj = responseDataTasks;
+        sessionHandler.sendMessage(message);
+    }
+
+    private class ResponseDataTasks {
+        ResponseData responseData;
+        AdjustAttribution attribution;
+
+        ResponseDataTasks(ResponseData responseData, AdjustAttribution attribution) {
+            this.responseData = responseData;
+            this.attribution = attribution;
+        }
     }
 
     private class UrlClickTime {
@@ -349,7 +369,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int START = BASE_ADDRESS + 2;
         private static final int END = BASE_ADDRESS + 3;
         private static final int EVENT = BASE_ADDRESS + 4;
-        private static final int FINISH_TRACKING = BASE_ADDRESS + 5;
+        private static final int RESPONSE_TASKS = BASE_ADDRESS + 5;
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
@@ -385,9 +405,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     AdjustEvent event = (AdjustEvent) message.obj;
                     sessionHandler.trackEventInternal(event);
                     break;
-                case FINISH_TRACKING:
-                    ResponseData responseData = (ResponseData) message.obj;
-                    sessionHandler.finishedTrackingActivityInternal(responseData);
+                case RESPONSE_TASKS:
+                    ResponseDataTasks responseDataTasks = (ResponseDataTasks) message.obj;
+                    sessionHandler.launchResponseTasksInternal(responseDataTasks.responseData, responseDataTasks.attribution);
                     break;
                 case DEEP_LINK:
                     UrlClickTime urlClickTime = (UrlClickTime) message.obj;
@@ -568,13 +588,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void finishedTrackingActivityInternal(ResponseData responseData) {
-        if (responseData.jsonResponse != null) {
-            String deeplink = responseData.jsonResponse.optString("deeplink", null);
-            launchDeeplinkMain(deeplink);
-            attributionHandler.checkAttribution(responseData.jsonResponse);
-        }
-        launchFinishedListener(responseData);
+    private void launchResponseTasksInternal(ResponseData responseData, AdjustAttribution attribution) {
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // first try to update and launch the attribution changed listener
+        updateAttribution(attribution, handler);
+
+        // second try to launch the finished activity listener
+        launchFinishedListener(responseData, handler);
+
+        // in last, try to launch the deeplink
+        launchDeeplink(responseData, handler);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
@@ -709,8 +734,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchDeeplinkMain(String deeplink) {
-        if (deeplink == null) return;
+    private void launchDeeplink(ResponseData responseData, Handler handler) {
+        if (responseData.jsonResponse == null) {
+            return;
+        }
+
+        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
+
+        if (deeplink == null) {
+            return;
+        }
 
         Uri location = Uri.parse(deeplink);
         final Intent mapIntent;
@@ -734,8 +767,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        logger.info("Open deep link (%s)", deeplink);
-        adjustConfig.context.startActivity(mapIntent);
+        // add it to the handler queue
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Open deep link (%s)", deeplink);
+                adjustConfig.context.startActivity(mapIntent);
+            }
+        };
+        handler.post(runnable);
     }
 
     private boolean updateActivityState(long now) {
