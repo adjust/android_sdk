@@ -3,8 +3,7 @@ package com.adjust.sdk.test;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.IActivityHandler;
 import com.adjust.sdk.IAttributionHandler;
-
-import org.json.JSONObject;
+import com.adjust.sdk.ResponseDataTasks;
 
 /**
  * Created by pfms on 09/01/15.
@@ -13,7 +12,7 @@ public class MockAttributionHandler implements IAttributionHandler {
     private MockLogger testLogger;
     private String prefix = "AttributionHandler ";
     IActivityHandler activityHandler;
-    JSONObject lastJsonResponse;
+    ResponseDataTasks lastResponseDataTasks;
     ActivityPackage attributionPackage;
 
     public MockAttributionHandler(MockLogger testLogger) {
@@ -37,10 +36,10 @@ public class MockAttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void checkAttribution(JSONObject jsonResponse) {
-        testLogger.test(prefix + "checkAttribution");
+    public void checkResponse(ResponseDataTasks responseDataTasks) {
+        testLogger.test(prefix + "checkResponse");
 
-        this.lastJsonResponse = jsonResponse;
+        this.lastResponseDataTasks = responseDataTasks;
     }
 
     @Override

@@ -84,13 +84,13 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertUtil.test("RequestHandler sendPackage, clickFirstPackage");
 
         // send the second click package/ third package
-        secondPackageHandler.sendNextPackage();
+        secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
         assertUtil.test("RequestHandler sendPackage, clickThirdPackage");
 
         // send the unknow package/ second package
-        secondPackageHandler.sendNextPackage();
+        secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
         assertUtil.test("RequestHandler sendPackage, unknownSecondPackage");
@@ -159,7 +159,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         addSecondPackageTest(packageHandler);
 
         //send next package
-        packageHandler.sendNextPackage();
+        packageHandler.sendNextPackage(null);
         SystemClock.sleep(2000);
 
         assertUtil.debug("Package handler wrote 1 packages");
@@ -183,7 +183,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.IS_SENDING, null);
 
         //send next package
-        packageHandler.closeFirstPackage();
+        //packageHandler.closeFirstPackage(null);
         SystemClock.sleep(2000);
 
         assertUtil.notInDebug("Package handler wrote");
@@ -202,8 +202,6 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         PackageHandler packageHandler = startPackageHandler();
 
         // TODO test "will retry later"
-
-        packageHandler.finishedTrackingActivity(null);
 
         assertUtil.test("ActivityHandler finishedTrackingActivity, null");
     }

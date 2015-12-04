@@ -3,12 +3,10 @@ package com.adjust.sdk.test;
 import android.net.Uri;
 
 import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.IActivityHandler;
-
-import org.json.JSONObject;
+import com.adjust.sdk.ResponseDataTasks;
 
 /**
  * Created by pfms on 09/01/15.
@@ -45,8 +43,8 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
-        testLogger.test(prefix + "finishedTrackingActivity, " + jsonResponse);
+    public void finishedTrackingActivity(ResponseDataTasks responseDataTasks) {
+        testLogger.test(prefix + "finishedTrackingActivity, " + responseDataTasks);
     }
 
     @Override
@@ -66,9 +64,8 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public boolean tryUpdateAttribution(AdjustAttribution attribution) {
-        testLogger.test(prefix + "tryUpdateAttribution, " + attribution);
-        return false;
+    public void launchResponseTasks(ResponseDataTasks responseDataTasks) {
+        testLogger.test(prefix + "launchResponseTasks, " + responseDataTasks);
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.adjust.sdk.test;
 
 import junit.framework.Assert;
 
+import java.util.Locale;
+
 import static com.adjust.sdk.LogLevel.ASSERT;
 import static com.adjust.sdk.LogLevel.DEBUG;
 import static com.adjust.sdk.LogLevel.ERROR;
@@ -19,74 +21,74 @@ public class AssertUtil {
         this.mockLogger = mockLogger;
     }
 
-    public void test(String message) {
+    public void test(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsTestMessage(message));
+                mockLogger.containsTestMessage(String.format(Locale.US, message, parameters)));
     }
 
-    public void verbose(String message) {
+    public void verbose(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(VERBOSE, message));
+                mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters)));
     }
 
-    public void debug(String message) {
+    public void debug(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(DEBUG, message));
+                mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters)));
     }
 
-    public void info(String message) {
+    public void info(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(INFO, message));
+                mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters)));
     }
 
-    public void warn(String message) {
+    public void warn(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(WARN, message));
+                mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters)));
     }
 
-    public void error(String message) {
+    public void error(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(ERROR, message));
+                mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters)));
     }
 
-    public void Assert(String message) {
+    public void Assert(String message, Object... parameters) {
         Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(ASSERT, message));
+                mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInTest(String message) {
+    public void notInTest(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
                 mockLogger.containsTestMessage(message));
     }
 
-    public void notInVerbose(String message) {
+    public void notInVerbose(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(VERBOSE, message));
+                mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInDebug(String message) {
+    public void notInDebug(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(DEBUG, message));
+                mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInInfo(String message) {
+    public void notInInfo(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(INFO, message));
+                mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInWarn(String message) {
+    public void notInWarn(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(WARN, message));
+                mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInError(String message) {
+    public void notInError(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(ERROR, message));
+                mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters)));
     }
 
-    public void notInAssert(String message) {
+    public void notInAssert(String message, Object... parameters) {
         Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(ASSERT, message));
+                mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters)));
     }
 
     public void isNull(Object object) {
