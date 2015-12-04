@@ -10,6 +10,8 @@ import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnFinishedListener;
+import com.adjust.sdk.ResponseData;
 
 /**
  * Created by pfms on 17/12/14.
@@ -43,8 +45,21 @@ public class GlobalApplication extends Application {
             }
         });
 
-        Adjust.onCreate(config);
+        config.setOnFinishedListener(new OnFinishedListener() {
+            @Override
+            public void onFinishedTracking(ResponseData responseData) {
+                String message = String.format("responseData, kind: %s, success: %b, retry: %b, timestamp: %s, message: %s, json: %s",
+                        responseData.activityKindString,
+                        responseData.wasSuccess,
+                        responseData.willRetry,
+                        responseData.timestamp,
+                        responseData.message,
+                        responseData.jsonResponse);
+                Log.d("example", message);
+            }
+        });
 
+        Adjust.onCreate(config);
 
         // register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14
