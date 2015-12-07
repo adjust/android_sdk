@@ -784,7 +784,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void readActivityState() {
         try {
-            activityState = Util.readObject(adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
+            activityState = Util.readObject(adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ACTIVITY_STATE_NAME, e.getMessage());
             activityState = null;
@@ -793,7 +793,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void readAttribution() {
         try {
-            attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+            attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME, AdjustAttribution.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ATTRIBUTION_NAME, e.getMessage());
             attribution = null;
