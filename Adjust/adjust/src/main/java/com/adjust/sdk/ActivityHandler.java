@@ -700,7 +700,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (deeplink == null) return;
 
         Uri location = Uri.parse(deeplink);
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW, location);
+        final Intent mapIntent;
+        if (adjustConfig.deepLinkComponent == null) {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location);
+        } else {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
+        }
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         mapIntent.setPackage(adjustConfig.context.getPackageName());
