@@ -9,9 +9,9 @@ public interface IPackageHandler {
 
     public void sendFirstPackage();
 
-    public void sendNextPackage(ResponseData responseData);
+    public void sendNextPackage(ResponseDataTasks responseDataTasks);
 
-    public void closeFirstPackage(ResponseData responseData);
+    public void closeFirstPackage();
 
     public void pauseSending();
 

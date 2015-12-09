@@ -173,7 +173,7 @@ public class Util {
         }
     }
 
-    public static ResponseData readHttpResponse(HttpsURLConnection connection) throws Exception {
+    public static ResponseDataTasks readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
@@ -202,13 +202,16 @@ public class Util {
                 connection.disconnect();
             }
         }
-        ResponseData responseData = new ResponseData();
+
+        ResponseDataTasks responseDataTasks = new ResponseDataTasks();
+        responseDataTasks.responseData = new ResponseData();
+        responseDataTasks.onFinishedListener = activityPackage.onFailureFinishedListener;
 
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
         if (stringResponse == null || stringResponse.length() == 0) {
-            return responseData;
+            return responseDataTasks;
         }
 
         JSONObject jsonResponse = null;
@@ -217,19 +220,19 @@ public class Util {
         } catch (JSONException e) {
             String message = String.format("Failed to parse json response. (%s)", e.getMessage());
             logger.error(message);
-            responseData.message = message;
+            responseDataTasks.responseData.message = message;
         }
 
         if (jsonResponse == null) {
-            return responseData;
+            return responseDataTasks;
         }
 
-        responseData.jsonResponse = jsonResponse;
+        responseDataTasks.responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
 
-        responseData.message = message;
-        responseData.timestamp = jsonResponse.optString("timestamp", null);
+        responseDataTasks.responseData.message = message;
+        responseDataTasks.responseData.timestamp = jsonResponse.optString("timestamp", null);
 
         if (message == null) {
             message = "No message found";
@@ -238,13 +241,12 @@ public class Util {
         if (responseCode != null &&
                 responseCode == HttpsURLConnection.HTTP_OK) {
             logger.info("%s", message);
-            responseData.wasSuccess = true;
+            responseDataTasks.onFinishedListener = activityPackage.onSuccessFinishedListener;
         } else {
             logger.error("%s", message);
-            responseData.wasSuccess = false;
         }
 
-        return responseData;
+        return responseDataTasks;
     }
 
     public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)

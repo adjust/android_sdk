@@ -67,6 +67,8 @@ class PackageBuilder {
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
+        eventPackage.onSuccessFinishedListener = event.onSuccessFinishedListener;
+        eventPackage.onFailureFinishedListener = event.onFailureFinishedListener;
 
         return eventPackage;
     }

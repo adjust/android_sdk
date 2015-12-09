@@ -61,11 +61,11 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void checkResponse(final ResponseData responseData) {
+    public void checkResponse(final ResponseDataTasks responseDataTasks) {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                checkResponseInternal(responseData);
+                checkResponseInternal(responseDataTasks);
             }
         });
     }
@@ -94,11 +94,12 @@ public class AttributionHandler implements IAttributionHandler {
         timer.startIn(delayInMilliseconds);
     }
 
-    private AdjustAttribution checkAttributionInternal(ResponseData responseData) {
+    private void checkAttributionInternal(ResponseDataTasks responseDataTasks) {
+        ResponseData responseData = responseDataTasks.responseData;
         JSONObject jsonResponse = responseData.jsonResponse;
 
         if (jsonResponse == null) {
-            return null;
+            return;
         }
 
         long timerMilliseconds = jsonResponse.optLong("ask_in", -1);
@@ -108,22 +109,18 @@ public class AttributionHandler implements IAttributionHandler {
 
             getAttribution(timerMilliseconds);
 
-            responseData.willRetry = true;
-
-            return null;
+            return;
         }
         activityHandler.setAskingAttribution(false);
 
         JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
-        AdjustAttribution attribution = AdjustAttribution.fromJson(attributionJson);
-
-        return attribution;
+        responseDataTasks.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkResponseInternal(ResponseData responseData) {
-        AdjustAttribution attribution = checkAttributionInternal(responseData);
+    private void checkResponseInternal(ResponseDataTasks responseDataTasks) {
+        checkAttributionInternal(responseDataTasks);
 
-        activityHandler.launchResponseTasks(responseData, attribution);
+        activityHandler.launchResponseTasks(responseDataTasks);
     }
 
     private void getAttributionInternal() {
@@ -143,11 +140,9 @@ public class AttributionHandler implements IAttributionHandler {
                     buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
-            ResponseData responseData = Util.readHttpResponse(connection);
-            responseData.willRetry = false;
-            responseData.activityKindString = attributionPackage.getActivityKind().toString();
+            ResponseDataTasks responseDataTasks = Util.readHttpResponse(connection, attributionPackage);
 
-            checkResponseInternal(responseData);
+            checkResponseInternal(responseDataTasks);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;

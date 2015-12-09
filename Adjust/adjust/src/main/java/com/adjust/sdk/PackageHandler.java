@@ -77,22 +77,18 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage(ResponseData responseData) {
+    public void sendNextPackage(ResponseDataTasks responseDataTasks) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
 
-        responseData.willRetry = false;
-        activityHandler.finishedTrackingActivity(responseData);
+        activityHandler.finishedTrackingActivity(responseDataTasks);
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage(ResponseData responseData) {
+    public void closeFirstPackage() {
         isSending.set(false);
-
-        responseData.willRetry = true;
-        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -196,7 +192,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     private void readPackageQueue() {
         try {
-            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, List.class);
+            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, (Class<List<ActivityPackage>>)((Class)List.class));
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", PACKAGE_QUEUE_NAME, e.getMessage());
             packageQueue = null;

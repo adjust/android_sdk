@@ -1,6 +1,5 @@
 package com.adjust.sdk;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -13,6 +12,8 @@ public class AdjustEvent {
     String currency;
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
+    OnFinishedListener onSuccessFinishedListener;
+    OnFinishedListener onFailureFinishedListener;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -57,6 +58,14 @@ public class AdjustEvent {
         if (previousValue != null) {
             logger.warn("key %s was overwritten", key);
         }
+    }
+
+    public void setOnSuccessFinishedListener(OnFinishedListener onSuccessFinishedListener) {
+        this.onSuccessFinishedListener = onSuccessFinishedListener;
+    }
+
+    public void setOnFailureFinishedListener(OnFinishedListener onFailureFinishedListener) {
+        this.onFailureFinishedListener = onFailureFinishedListener;
     }
 
     public boolean isValid() {

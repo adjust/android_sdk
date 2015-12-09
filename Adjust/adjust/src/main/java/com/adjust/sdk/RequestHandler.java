@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -82,7 +81,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void sendInternal(ActivityPackage activityPackage) {
-        URL url;
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
@@ -91,10 +89,9 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
                     activityPackage.getClientSdk(),
                     activityPackage.getParameters());
 
-            ResponseData responseData = Util.readHttpResponse(connection);
-            responseData.activityKindString = activityPackage.getActivityKind().toString();
+            ResponseDataTasks responseDataTasks = Util.readHttpResponse(connection, activityPackage);
 
-            requestFinished(responseData);
+            requestFinished(responseDataTasks);
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
@@ -106,13 +103,13 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void requestFinished(ResponseData responseData) throws JSONException {
-        if (responseData.jsonResponse == null) {
-            packageHandler.closeFirstPackage(responseData);
+    private void requestFinished(ResponseDataTasks responseDataTasks) throws JSONException {
+        if (responseDataTasks.responseData.jsonResponse == null) {
+            packageHandler.closeFirstPackage();
             return;
         }
 
-        packageHandler.sendNextPackage(responseData);
+        packageHandler.sendNextPackage(responseDataTasks);
     }
 
     // close current package because it failed
@@ -122,11 +119,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
         logger.error(finalMessage);
 
-        ResponseData responseData = new ResponseData();
-        responseData.message = finalMessage;
-        responseData.activityKindString = activityPackage.getActivityKind().toString();
-
-        packageHandler.closeFirstPackage(responseData);
+        packageHandler.closeFirstPackage();
     }
 
     // send next package because the current package failed
@@ -136,11 +129,12 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
         logger.error(finalMessage);
 
-        ResponseData responseData = new ResponseData();
-        responseData.message = finalMessage;
-        responseData.activityKindString = activityPackage.getActivityKind().toString();
+        ResponseDataTasks responseDataTasks = new ResponseDataTasks();
+        responseDataTasks.responseData = new ResponseData();
+        responseDataTasks.responseData.message = finalMessage;
+        responseDataTasks.onFinishedListener = activityPackage.onFailureFinishedListener;
 
-        packageHandler.sendNextPackage(responseData);
+        packageHandler.sendNextPackage(responseDataTasks);
     }
 
     private String getReasonString(String message, Throwable throwable) {
