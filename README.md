@@ -393,6 +393,38 @@ When you set a currency token, adjust will automatically convert the incoming re
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
+### 13. Set listener for event tracked
+
+You can register a listener to be notified when an event is tracked. 
+There is a listener for when the event is correctly tracked, and a listener for when there was some type of failure.
+You can add any or both of the listener after creating the `AdjustEvent` object:
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setOnSuccessFinishedListener(new OnFinishedListener() {
+    @Override
+    public void onFinishedTracking(ResponseData responseData) {
+        // ...
+    }
+});
+
+event.setOnFailureFinishedListener(new OnFinishedListener() {
+    @Override
+    public void onFinishedTracking(ResponseData responseData) {
+        // ...
+    }
+});
+
+Adjust.trackEvent(event);
+```
+
+The listener function will be called when the SDK receives a proper response from the server with some information. Within the listener function you have access to the `response` received. Here is a quick summary of its properties:
+
+- `String message` the message from the server or the error logged by the SDK.
+- `String timestamp` timestamp from the server
+- `JSONObject jsonResponse` the json object with the reponse from the server.
+
 ### 13. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
