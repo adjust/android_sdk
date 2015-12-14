@@ -59,6 +59,10 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
+    public void setKnownDevice(boolean knownDevice) {
+        this.knownDevice = knownDevice;
+    }
+
     public void setDeepLinkComponent(Class deepLinkComponent) {
         this.deepLinkComponent = deepLinkComponent;
     }
