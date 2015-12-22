@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.1.3'
+compile 'com.adjust.sdk:adjust-android:4.2.0'
 ```
 
 ### 4. Add Google Play Services
@@ -67,14 +67,14 @@ these steps:
 following line:
 
     ```
-    compile 'com.google.android.gms:play-services:7.0.0'
+    compile 'com.google.android.gms:play-services:8.3.0'
     ```
 
     If you don't need all of the Google Play Services, you can avoid [dex
     issues][multidex] by using only the ads part:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:8.1.0'
+    compile 'com.google.android.gms:play-services-analytics:8.3.0'
     ```
 
     ![][gradle_gps]

@@ -161,7 +161,7 @@ class PackageBuilder {
     private void injectConfig(Map<String, String> parameters) {
         addString(parameters, "app_token", adjustConfig.appToken);
         addString(parameters, "environment", adjustConfig.environment);
-        addBoolean(parameters, "device_known", adjustConfig.knownDevice);
+        addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         addBoolean(parameters, "needs_attribution_data", adjustConfig.hasListener());
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);

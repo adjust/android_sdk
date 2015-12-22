@@ -93,9 +93,8 @@ public class Util {
         return Reflection.isPlayTrackingEnabled(context);
     }
 
-    public static <T> T readObject(Context context, String filename, String objectName) {
+    public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
         Closeable closable = null;
-        @SuppressWarnings("unchecked")
         T object = null;
         try {
             FileInputStream inputStream = context.openFileInput(filename);
@@ -108,7 +107,7 @@ public class Util {
             closable = objectStream;
 
             try {
-                object = (T) objectStream.readObject();
+                object = type.cast(objectStream.readObject());
                 getLogger().debug("Read %s: %s", objectName, object);
             } catch (ClassNotFoundException e) {
                 getLogger().error("Failed to find %s class (%s)", objectName, e.getMessage());

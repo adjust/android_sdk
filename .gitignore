@@ -54,11 +54,16 @@ Thumbs.db
 
 # gradle directory
 .gradle
-.gradletasknamecache
-gradlew
-gradlew.bat
-gradle/
 build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
 
 #for oh-my-zsh jira plugin (https://github.com/robbyrussell/oh-my-zsh/wiki/Plugins#jira)
 .jira-url

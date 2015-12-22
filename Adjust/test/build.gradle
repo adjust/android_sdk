@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.2"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 21
+        targetSdkVersion 23
     }
 }
 
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.gson:gson:2.4'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':adjust')
 }
