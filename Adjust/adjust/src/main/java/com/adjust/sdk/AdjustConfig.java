@@ -17,7 +17,7 @@ public class AdjustConfig {
     OnAttributionChangedListener onAttributionChangedListener;
     String referrer;
     long referrerClickTime;
-    Boolean knownDevice;
+    Boolean deviceKnown;
     Class deepLinkComponent;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
@@ -59,8 +59,8 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public void setKnownDevice(boolean knownDevice) {
-        this.knownDevice = knownDevice;
+    public void setDeviceKnown(boolean deviceKnown) {
+        this.deviceKnown = deviceKnown;
     }
 
     public void setDeepLinkComponent(Class deepLinkComponent) {
