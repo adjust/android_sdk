@@ -39,6 +39,7 @@ class DeviceInfo {
     String deviceManufacturer;
     String osName;
     String osVersion;
+    String apiLevel;
     String language;
     String country;
     String screenSize;
@@ -64,6 +65,7 @@ class DeviceInfo {
         deviceManufacturer = getDeviceManufacturer();
         osName = getOsName();
         osVersion = getOsVersion();
+        apiLevel = getApiLevel();
         language = getLanguage(locale);
         country = getCountry(locale);
         screenSize = getScreenSize(screenLayout);
@@ -133,7 +135,11 @@ class DeviceInfo {
     }
 
     private String getOsVersion() {
-        return osVersion = "" + Build.VERSION.SDK_INT;
+        return Build.VERSION.RELEASE;
+    }
+
+    private String getApiLevel() {
+        return "" + Build.VERSION.SDK_INT;
     }
 
     private String getLanguage(Locale locale) {
