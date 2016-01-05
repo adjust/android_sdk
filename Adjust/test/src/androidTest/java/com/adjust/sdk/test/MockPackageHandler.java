@@ -5,7 +5,7 @@ import android.content.Context;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.IActivityHandler;
 import com.adjust.sdk.IPackageHandler;
-import com.adjust.sdk.ResponseDataTasks;
+import com.adjust.sdk.ResponseData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,13 +46,13 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void sendNextPackage(ResponseDataTasks responseDataTasks) {
-        testLogger.test(prefix + "sendNextPackage, " + responseDataTasks);
+    public void sendNextPackage(ResponseData responseData) {
+        testLogger.test(prefix + "sendNextPackage, " + responseData);
     }
 
     @Override
-    public void closeFirstPackage() {
-        testLogger.test(prefix + "closeFirstPackage");
+    public void closeFirstPackage(ResponseData responseData) {
+        testLogger.test(prefix + "closeFirstPackage, " + responseData);
     }
 
     @Override
