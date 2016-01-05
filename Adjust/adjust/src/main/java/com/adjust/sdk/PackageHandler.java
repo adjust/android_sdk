@@ -77,18 +77,21 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage(ResponseDataTasks responseDataTasks) {
+    public void sendNextPackage(ResponseData responseData) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
 
-        activityHandler.finishedTrackingActivity(responseDataTasks);
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage() {
+    public void closeFirstPackage(ResponseData responseData) {
         isSending.set(false);
+
+        responseData.willRetry = true;
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // interrupt the sending loop after the current request has finished

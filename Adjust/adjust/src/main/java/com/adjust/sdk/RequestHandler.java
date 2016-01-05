@@ -89,9 +89,9 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
                     activityPackage.getClientSdk(),
                     activityPackage.getParameters());
 
-            ResponseDataTasks responseDataTasks = Util.readHttpResponse(connection, activityPackage);
+            ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
 
-            requestFinished(responseDataTasks);
+            requestFinished(responseData);
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
@@ -103,13 +103,13 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void requestFinished(ResponseDataTasks responseDataTasks) throws JSONException {
-        if (responseDataTasks.responseData.jsonResponse == null) {
-            packageHandler.closeFirstPackage();
+    private void requestFinished(ResponseData responseData) throws JSONException {
+        if (responseData.jsonResponse == null) {
+            packageHandler.closeFirstPackage(responseData);
             return;
         }
 
-        packageHandler.sendNextPackage(responseDataTasks);
+        packageHandler.sendNextPackage(responseData);
     }
 
     // close current package because it failed
@@ -119,7 +119,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
         logger.error(finalMessage);
 
-        packageHandler.closeFirstPackage();
+        ResponseData responseData = new ResponseData(activityPackage);
+        responseData.message = finalMessage;
+
+        packageHandler.closeFirstPackage(responseData);
     }
 
     // send next package because the current package failed
@@ -129,12 +132,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
         logger.error(finalMessage);
 
-        ResponseDataTasks responseDataTasks = new ResponseDataTasks();
-        responseDataTasks.responseData = new ResponseData();
-        responseDataTasks.responseData.message = finalMessage;
-        responseDataTasks.onFinishedListener = activityPackage.onFailureFinishedListener;
+        ResponseData responseData = new ResponseData(activityPackage);
+        responseData.message = finalMessage;
 
-        packageHandler.sendNextPackage(responseDataTasks);
+        packageHandler.sendNextPackage(responseData);
     }
 
     private String getReasonString(String message, Throwable throwable) {

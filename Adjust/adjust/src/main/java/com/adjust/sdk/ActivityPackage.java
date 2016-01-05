@@ -41,9 +41,6 @@ public class ActivityPackage implements Serializable {
     private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private String suffix;
 
-    transient OnFinishedListener onSuccessFinishedListener;
-    transient OnFinishedListener onFailureFinishedListener;
-
     public String getPath() {
         return path;
     }

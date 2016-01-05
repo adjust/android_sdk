@@ -11,7 +11,7 @@ public interface IAttributionHandler {
 
     public void getAttribution();
 
-    public void checkResponse(ResponseDataTasks responseDataTasks);
+    public void checkResponse(ResponseData responseData);
 
     public void pauseSending();
 

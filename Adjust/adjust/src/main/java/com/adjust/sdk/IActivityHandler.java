@@ -14,7 +14,7 @@ public interface IActivityHandler {
 
     public void trackEvent(AdjustEvent event);
 
-    public void finishedTrackingActivity(ResponseDataTasks responseDataTasks);
+    public void finishedTrackingActivity(ResponseData responseData);
 
     public void setEnabled(boolean enabled);
 
@@ -22,7 +22,7 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
-    public void launchResponseTasks(ResponseDataTasks responseDataTasks);
+    public void launchResponseTasks(ResponseData responseData);
 
     public void sendReferrer(String referrer, long clickTime);
 

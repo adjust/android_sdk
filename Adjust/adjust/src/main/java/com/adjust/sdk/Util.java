@@ -173,7 +173,7 @@ public class Util {
         }
     }
 
-    public static ResponseDataTasks readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
+    public static ResponseData readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
@@ -203,15 +203,13 @@ public class Util {
             }
         }
 
-        ResponseDataTasks responseDataTasks = new ResponseDataTasks();
-        responseDataTasks.responseData = new ResponseData();
-        responseDataTasks.onFinishedListener = activityPackage.onFailureFinishedListener;
+        ResponseData responseData = new ResponseData(activityPackage);
 
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
         if (stringResponse == null || stringResponse.length() == 0) {
-            return responseDataTasks;
+            return responseData;
         }
 
         JSONObject jsonResponse = null;
@@ -220,19 +218,20 @@ public class Util {
         } catch (JSONException e) {
             String message = String.format("Failed to parse json response. (%s)", e.getMessage());
             logger.error(message);
-            responseDataTasks.responseData.message = message;
+            responseData.message = message;
         }
 
         if (jsonResponse == null) {
-            return responseDataTasks;
+            return responseData;
         }
 
-        responseDataTasks.responseData.jsonResponse = jsonResponse;
+        responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
 
-        responseDataTasks.responseData.message = message;
-        responseDataTasks.responseData.timestamp = jsonResponse.optString("timestamp", null);
+        responseData.message = message;
+        responseData.timestamp = jsonResponse.optString("timestamp", null);
+        responseData.adid = jsonResponse.optString("adid", null);
 
         if (message == null) {
             message = "No message found";
@@ -241,12 +240,12 @@ public class Util {
         if (responseCode != null &&
                 responseCode == HttpsURLConnection.HTTP_OK) {
             logger.info("%s", message);
-            responseDataTasks.onFinishedListener = activityPackage.onSuccessFinishedListener;
+            responseData.success = true;
         } else {
             logger.error("%s", message);
         }
 
-        return responseDataTasks;
+        return responseData;
     }
 
     public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)

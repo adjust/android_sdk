@@ -19,6 +19,8 @@ public class AdjustConfig {
     long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
+    OnTrackingSucceededListener onTrackingSucceededListener;
+    OnTrackingFailedListener onTrackingFailedListener;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -65,6 +67,14 @@ public class AdjustConfig {
 
     public void setDeepLinkComponent(Class deepLinkComponent) {
         this.deepLinkComponent = deepLinkComponent;
+    }
+
+    public void setOnTrackingSucceededListener(OnTrackingSucceededListener onTrackingSucceededListener) {
+        this.onTrackingSucceededListener = onTrackingSucceededListener;
+    }
+
+    public void setOnTrackingFailedListener(OnTrackingFailedListener onTrackingFailedListener) {
+        this.onTrackingFailedListener = onTrackingFailedListener;
     }
 
     public boolean hasListener() {

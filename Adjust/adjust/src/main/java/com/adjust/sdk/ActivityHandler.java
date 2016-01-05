@@ -137,18 +137,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(ResponseDataTasks responseDataTasks) {
-        // no response json to check for attributes and no callback for events
-        if (responseDataTasks.responseData.jsonResponse == null && responseDataTasks.onFinishedListener == null) {
+    public void finishedTrackingActivity(ResponseData responseData) {
+        // no response json to check for attributes and no callback for failed package
+        if (responseData.jsonResponse == null && adjustConfig.onTrackingFailedListener == null) {
             return;
         }
-        // callback for events is present
-        if (responseDataTasks.responseData.jsonResponse == null) {
-            launchResponseTasks(responseDataTasks);
+        // callback for failed package is present
+        if (responseData.jsonResponse == null) {
+            launchResponseTasks(responseData);
             return;
         }
         // attribute might be present
-        attributionHandler.checkResponse(responseDataTasks);
+        attributionHandler.checkResponse(responseData);
     }
 
     @Override
@@ -275,10 +275,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void launchResponseTasks(ResponseDataTasks responseDataTasks) {
+    public void launchResponseTasks(ResponseData responseData) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.RESPONSE_TASKS;
-        message.obj = responseDataTasks;
+        message.obj = responseData;
         sessionHandler.sendMessage(message);
     }
 
@@ -357,8 +357,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     sessionHandler.trackEventInternal(event);
                     break;
                 case RESPONSE_TASKS:
-                    ResponseDataTasks responseDataTasks = (ResponseDataTasks) message.obj;
-                    sessionHandler.launchResponseTasksInternal(responseDataTasks);
+                    ResponseData responseData = (ResponseData) message.obj;
+                    sessionHandler.launchResponseTasksInternal(responseData);
                     break;
                 case DEEP_LINK:
                     UrlClickTime urlClickTime = (UrlClickTime) message.obj;
@@ -539,18 +539,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void launchResponseTasksInternal(ResponseDataTasks responseDataTasks) {
+    private void launchResponseTasksInternal(ResponseData responseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // first try to update and launch the attribution changed listener
-        updateAttribution(responseDataTasks.attribution, handler);
+        updateAttribution(responseData.attribution, handler);
 
         // second try to launch the finished activity listener
-        launchFinishedListener(responseDataTasks.onFinishedListener, responseDataTasks.responseData, handler);
+        launchFinishedListener(responseData, handler);
 
         // in last, try to launch the deeplink
-        launchDeeplink(responseDataTasks.responseData, handler);
+        launchDeeplink(responseData, handler);
     }
 
     private void updateAttribution(AdjustAttribution attribution, Handler handler) {
@@ -580,15 +580,28 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void launchFinishedListener(final OnFinishedListener onFinishedListener, final ResponseData responseData, Handler handler) {
-        if (onFinishedListener == null) {
+    private void launchFinishedListener(final ResponseData responseData, Handler handler) {
+        // no event or session package
+        if (responseData.activityKind != ActivityKind.EVENT && responseData.activityKind != ActivityKind.SESSION) {
+            return;
+        }
+        // no success callback
+        if (responseData.success && adjustConfig.onTrackingSucceededListener == null) {
+            return;
+        }
+        // no failure callback
+        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
             return;
         }
         // add it to the handler queue
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                onFinishedListener.onFinishedTracking(responseData);
+                if (responseData.success) {
+                    adjustConfig.onTrackingSucceededListener.onFinishedTrackingSucceeded(responseData.getSuccessResponseData());
+                } else {
+                    adjustConfig.onTrackingFailedListener.onFinishedTrackingFailed(responseData.getFailureResponseData());
+                }
             }
         };
         handler.post(runnable);
