@@ -8,8 +8,12 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.FailureResponseData;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnTrackingFailedListener;
+import com.adjust.sdk.OnTrackingSucceededListener;
+import com.adjust.sdk.SuccessResponseData;
 
 /**
  * Created by pfms on 17/12/14.
@@ -40,6 +44,22 @@ public class GlobalApplication extends Application {
             @Override
             public void onAttributionChanged(AdjustAttribution attribution) {
                 Log.d("example", "attribution: " + attribution.toString());
+            }
+        });
+
+        // set success tracking delegate
+        config.setOnTrackingSucceededListener(new OnTrackingSucceededListener() {
+            @Override
+            public void onFinishedTrackingSucceeded(SuccessResponseData successResponseData) {
+                Log.d("example", "success tracking: " + successResponseData.toString());
+            }
+        });
+
+        // set failure tracking delegate
+        config.setOnTrackingFailedListener(new OnTrackingFailedListener() {
+            @Override
+            public void onFinishedTrackingFailed(FailureResponseData failureResponseData) {
+                Log.d("example", "failed tracking: " + failureResponseData.toString());
             }
         });
 
