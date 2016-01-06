@@ -393,39 +393,42 @@ When you set a currency token, adjust will automatically convert the incoming re
 You can read more about revenue and event tracking in the [event tracking
 guide.][event-tracking]
 
-### 13. Set listener for event tracked
+### 13. Set listener for tracked events and sessions
 
-You can register a listener to be notified when an event is tracked. 
-There is a listener for when the event is correctly tracked, and a listener for when there was some type of failure.
-You can add any or both of the listener after creating the `AdjustEvent` object:
+You can register a listener to be notified when events and sessions are tracked. 
+There is a listener for when the event or session is correctly tracked, and a listener for when there was some type of failure.
+You can add any or both of the listener after creating the `AdjustConfig` object:
 
 ```java
-AdjustEvent event = new AdjustEvent("abc123");
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-event.setOnSuccessFinishedListener(new OnFinishedListener() {
+config.setOnTrackingSucceededListener(new OnTrackingSucceededListener() {
     @Override
-    public void onFinishedTracking(ResponseData responseData) {
+    public void onFinishedTrackingSucceeded(SuccessResponseData successResponseData) {
         // ...
     }
 });
 
-event.setOnFailureFinishedListener(new OnFinishedListener() {
+config.setOnTrackingFailedListener(new OnTrackingFailedListener() {
     @Override
-    public void onFinishedTracking(ResponseData responseData) {
+    public void onFinishedTrackingFailed(FailureResponseData failureResponseData) {
         // ...
     }
 });
 
-Adjust.trackEvent(event);
+Adjust.onCreate(config);
 ```
 
-The listener function will be called when the SDK receives a proper response from the server with some information. Within the listener function you have access to the `response` received. Here is a quick summary of its properties:
+The listener function will be called after the SDK tries to send a package to the server. Within the listener function you have access to the `successResponseData` or `failureResponseData` object. Here is a quick summary of its common properties:
 
+- `String activityKindString` the type of package send, either `"event"` or `"session"`. 
 - `String message` the message from the server or the error logged by the SDK.
-- `String timestamp` timestamp from the server
+- `String timestamp` timestamp from the server.
+- `String adid` a unique device identifier provided by adjust.
+- `String eventToken` the event token, if the package tracked was an event.
 - `JSONObject jsonResponse` the json object with the reponse from the server.
 
-### 13. Set up deep link reattributions
+### 14. Set up deep link reattributions
 
 You can set up the adjust SDK to handle deep links that are used to open your
 app. We will only read certain adjust specific parameters. This is essential if
@@ -445,7 +448,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-### 14. Enable event buffering
+### 15. Enable event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some
 HTTP requests in order to send them in one batch every minute. You can enable
@@ -459,7 +462,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### <a id="attribution_changed_listener"></a>15. Set listener for attribution changes
+### <a id="attribution_changed_listener"></a>16. Set listener for attribution changes
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
@@ -504,7 +507,7 @@ parameter. Here is a quick summary of its properties:
 - `String creative` the creative grouping level of the current install.
 - `String clickLabel` the click label of the current install.
 
-### 16. Disable tracking
+### 17. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
@@ -518,7 +521,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
 
-### 17. Offline mode
+### 18. Offline mode
 
 You can put the adjust SDK in offline mode to suspend transmission to our servers, 
 while retaining tracked data to be sent later. While in offline mode, all information is saved
