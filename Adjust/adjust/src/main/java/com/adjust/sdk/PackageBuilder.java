@@ -142,6 +142,7 @@ class PackageBuilder {
         addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         addString(parameters, "os_name", deviceInfo.osName);
         addString(parameters, "os_version", deviceInfo.osVersion);
+        addString(parameters, "api_level", deviceInfo.apiLevel);
         addString(parameters, "language", deviceInfo.language);
         addString(parameters, "country", deviceInfo.country);
         addString(parameters, "screen_size", deviceInfo.screenSize);

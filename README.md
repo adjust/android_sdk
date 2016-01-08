@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.2.0'
+compile 'com.adjust.sdk:adjust-android:4.2.1'
 ```
 
 ### 4. Add Google Play Services
@@ -123,10 +123,10 @@ If you are using Proguard, add these lines to your Proguard file:
     int SUCCESS; 
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient.Info 
+    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info 
         getAdvertisingIdInfo (android.content.Context);
 }
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient.Info {
+-keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId ();
     boolean isLimitAdTrackingEnabled();
 }

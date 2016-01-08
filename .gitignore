@@ -69,4 +69,5 @@ gradle-app.setting
 .jira-url
 atlassian-ide-plugin.xml
 
-# add exception for private libraries 
+# add exception for private libraries
+google-services.json
