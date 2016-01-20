@@ -139,14 +139,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public void finishedTrackingActivity(ResponseData responseData) {
         // no response json to check for attributes and no callback for failed package
-        if (responseData.jsonResponse == null && adjustConfig.onTrackingFailedListener == null) {
-            return;
-        }
-        // callback for failed package is present
         if (responseData.jsonResponse == null) {
+            if (adjustConfig.onTrackingFailedListener == null) {
+                return;
+            }
+            // callback for failed package is present
+            logger.debug("No json with failure delegate");
             launchResponseTasks(responseData);
             return;
         }
+
         // attribute might be present
         attributionHandler.checkResponse(responseData);
     }
@@ -581,30 +583,36 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void launchFinishedListener(final ResponseData responseData, Handler handler) {
-        // no event or session package
-        if (responseData.activityKind != ActivityKind.EVENT && responseData.activityKind != ActivityKind.SESSION) {
+        // no event package
+        if (responseData.activityKind != ActivityKind.EVENT) {
             return;
         }
-        // no success callback
+        // success callback
         if (responseData.success && adjustConfig.onTrackingSucceededListener == null) {
-            return;
-        }
-        // no failure callback
-        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
-            return;
-        }
-        // add it to the handler queue
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (responseData.success) {
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
                     adjustConfig.onTrackingSucceededListener.onFinishedTrackingSucceeded(responseData.getSuccessResponseData());
-                } else {
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+        // failure callback
+        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
                     adjustConfig.onTrackingFailedListener.onFinishedTrackingFailed(responseData.getFailureResponseData());
                 }
-            }
-        };
-        handler.post(runnable);
+            };
+            handler.post(runnable);
+
+            return;
+        }
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
