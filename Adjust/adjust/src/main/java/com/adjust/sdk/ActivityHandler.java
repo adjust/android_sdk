@@ -138,19 +138,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void finishedTrackingActivity(ResponseData responseData) {
-        // no response json to check for attributes and no callback for failed package
-        if (responseData.jsonResponse == null) {
-            if (adjustConfig.onTrackingFailedListener == null) {
-                return;
-            }
-            // callback for failed package is present
-            logger.debug("No json with failure delegate");
-            launchResponseTasks(responseData);
+        // redirect session responses to attribution handler to check for attribution information
+        if (responseData.activityKind == ActivityKind.SESSION) {
+            attributionHandler.checkResponse(responseData);
             return;
         }
-
-        // attribute might be present
-        attributionHandler.checkResponse(responseData);
+        // no response json to check for attributes and no callback for failed package
+        if (responseData.jsonResponse == null && adjustConfig.onTrackingFailedListener == null) {
+            return;
+        }
+        launchResponseTasks(responseData);
     }
 
     @Override
@@ -284,6 +281,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
+    public void launchAttributionTasks(ResponseData responseData) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.ATTRIBUTION_TASKS;
+        message.obj = responseData;
+        sessionHandler.sendMessage(message);
+    }
+
     private class UrlClickTime {
         Uri url;
         long clickTime;
@@ -327,6 +332,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
         private static final int TIMER_FIRED = BASE_ADDRESS + 9;
+        private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 10;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -375,6 +381,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     break;
                 case TIMER_FIRED:
                     sessionHandler.timerFiredInternal();
+                    break;
+                case ATTRIBUTION_TASKS:
+                    ResponseData responseDataAttribution = (ResponseData) message.obj;
+                    sessionHandler.launchAttributionTasksInternal(responseDataAttribution);
                     break;
             }
         }
@@ -545,27 +555,40 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
-        // first try to update and launch the attribution changed listener
-        updateAttribution(responseData.attribution, handler);
-
-        // second try to launch the finished activity listener
+        // try to launch the finished activity listener
         launchFinishedListener(responseData, handler);
 
         // in last, try to launch the deeplink
         launchDeeplink(responseData, handler);
     }
 
-    private void updateAttribution(AdjustAttribution attribution, Handler handler) {
+    private void launchAttributionTasksInternal(ResponseData responseData) {
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttribution(responseData.attribution);
+
+        // launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListener(handler);
+        }
+
+        // in last, try to launch the deeplink
+        launchDeeplink(responseData, handler);
+    }
+
+    private boolean updateAttribution(AdjustAttribution attribution) {
         if (attribution == null) {
-            return;
+            return false;
         }
 
         if (attribution.equals(this.attribution)) {
-            return;
+            return false;
         }
 
         saveAttribution(attribution);
-        launchAttributionListener(handler);
+        return true;
     }
 
     private void launchAttributionListener(Handler handler) {

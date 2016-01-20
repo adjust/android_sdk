@@ -117,7 +117,7 @@ public class AttributionHandler implements IAttributionHandler {
     private void checkResponseInternal(ResponseData responseData) {
         checkAttributionInternal(responseData);
 
-        activityHandler.launchResponseTasks(responseData);
+        activityHandler.launchAttributionTasks(responseData);
     }
 
     private void getAttributionInternal() {

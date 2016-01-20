@@ -24,6 +24,8 @@ public interface IActivityHandler {
 
     public void launchResponseTasks(ResponseData responseData);
 
+    public void launchAttributionTasks(ResponseData responseData);
+
     public void sendReferrer(String referrer, long clickTime);
 
     public void setOfflineMode(boolean enabled);
