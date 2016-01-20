@@ -562,6 +562,39 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         launchDeeplink(responseData, handler);
     }
 
+    private void launchFinishedListener(final ResponseData responseData, Handler handler) {
+        // no event package
+        if (responseData.activityKind != ActivityKind.EVENT) {
+            return;
+        }
+        // success callback
+        if (responseData.success && adjustConfig.onTrackingSucceededListener == null) {
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onTrackingSucceededListener.onFinishedTrackingSucceeded(responseData.getSuccessResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+        // failure callback
+        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onTrackingFailedListener.onFinishedTrackingFailed(responseData.getFailureResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+    }
+
     private void launchAttributionTasksInternal(ResponseData responseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
@@ -605,37 +638,48 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void launchFinishedListener(final ResponseData responseData, Handler handler) {
-        // no event package
-        if (responseData.activityKind != ActivityKind.EVENT) {
+    private void launchDeeplink(ResponseData responseData, Handler handler) {
+        if (responseData.jsonResponse == null) {
             return;
         }
-        // success callback
-        if (responseData.success && adjustConfig.onTrackingSucceededListener == null) {
-            // add it to the handler queue
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    adjustConfig.onTrackingSucceededListener.onFinishedTrackingSucceeded(responseData.getSuccessResponseData());
-                }
-            };
-            handler.post(runnable);
 
-            return;
-        }
-        // failure callback
-        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
-            // add it to the handler queue
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    adjustConfig.onTrackingFailedListener.onFinishedTrackingFailed(responseData.getFailureResponseData());
-                }
-            };
-            handler.post(runnable);
+        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
 
+        if (deeplink == null) {
             return;
         }
+
+        Uri location = Uri.parse(deeplink);
+        final Intent mapIntent;
+        if (adjustConfig.deepLinkComponent == null) {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location);
+        } else {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
+        }
+        mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        mapIntent.setPackage(adjustConfig.context.getPackageName());
+
+        // Verify it resolves
+        PackageManager packageManager = adjustConfig.context.getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+
+        // Start an activity if it's safe
+        if (!isIntentSafe) {
+            logger.error("Unable to open deep link (%s)", deeplink);
+            return;
+        }
+
+        // add it to the handler queue
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Open deep link (%s)", deeplink);
+                adjustConfig.context.startActivity(mapIntent);
+            }
+        };
+        handler.post(runnable);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
@@ -770,49 +814,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchDeeplink(ResponseData responseData, Handler handler) {
-        if (responseData.jsonResponse == null) {
-            return;
-        }
-
-        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
-
-        if (deeplink == null) {
-            return;
-        }
-
-        Uri location = Uri.parse(deeplink);
-        final Intent mapIntent;
-        if (adjustConfig.deepLinkComponent == null) {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location);
-        } else {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
-        }
-        mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        mapIntent.setPackage(adjustConfig.context.getPackageName());
-
-        // Verify it resolves
-        PackageManager packageManager = adjustConfig.context.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
-        boolean isIntentSafe = activities.size() > 0;
-
-        // Start an activity if it's safe
-        if (!isIntentSafe) {
-            logger.error("Unable to open deep link (%s)", deeplink);
-            return;
-        }
-
-        // add it to the handler queue
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.info("Open deep link (%s)", deeplink);
-                adjustConfig.context.startActivity(mapIntent);
-            }
-        };
-        handler.post(runnable);
-    }
 
     private boolean updateActivityState(long now) {
         if (!checkActivityState(activityState)) { return false; }
