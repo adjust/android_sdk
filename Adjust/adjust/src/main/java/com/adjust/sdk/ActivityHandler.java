@@ -420,7 +420,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
                 paused(),
-                adjustConfig.hasListener());
+                adjustConfig.hasAttributionChangedListener());
 
         timer = new TimerCycle(new Runnable() {
             @Override

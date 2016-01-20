@@ -77,8 +77,14 @@ public class AdjustConfig {
         this.onTrackingFailedListener = onTrackingFailedListener;
     }
 
-    public boolean hasListener() {
+    public boolean hasAttributionChangedListener() {
         return onAttributionChangedListener != null;
+    }
+
+    public boolean hasListener() {
+        return onAttributionChangedListener != null
+                || onTrackingSucceededListener != null
+                || onTrackingFailedListener != null;
     }
 
     public boolean isValid() {
