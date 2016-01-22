@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import android.content.Context;
 import android.net.Uri;
 
 /**
@@ -73,6 +74,10 @@ public class Adjust {
     public static void setOfflineMode(boolean enabled) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setOfflineMode(enabled);
+    }
+
+    public static String getGoogleAdId(Context context) {
+        return Reflection.getPlayAdId(context);
     }
 }
 
