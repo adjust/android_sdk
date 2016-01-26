@@ -67,13 +67,6 @@ these steps:
 following line:
 
     ```
-    compile 'com.google.android.gms:play-services:8.3.0'
-    ```
-
-    If you don't need all of the Google Play Services, you can avoid [dex
-    issues][multidex] by using only the ads part:
-
-    ```
     compile 'com.google.android.gms:play-services-analytics:8.3.0'
     ```
 
@@ -541,7 +534,6 @@ even if the app was terminated in offline mode.
 [callbacks-guide]:      https://docs.adjust.com/en/callbacks
 [event-tracking]:       https://docs.adjust.com/en/event-tracking
 [special-partners]:     https://docs.adjust.com/en/special-partners
-[multidex]:             https://developer.android.com/tools/building/multidex.html
 [maven]:                http://maven.org
 [example]:              https://github.com/adjust/android_sdk/tree/master/Adjust/example
 [currency-conversion]:  https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
