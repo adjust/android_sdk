@@ -55,7 +55,7 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = configuration.locale;
         int screenLayout = configuration.screenLayout;
-        boolean isGooglePlayServicesAvailable = Reflection.getPlayAdId(context) != null;
+        boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
 
         packageName = getPackageName(context);
@@ -76,7 +76,7 @@ class DeviceInfo {
         clientSdk = getClientSdk(sdkPrefix);
         androidId = getAndroidId(context, isGooglePlayServicesAvailable);
         fbAttributionId = getFacebookAttributionId(context);
-        pluginKeys = Reflection.getPluginKeys(context);
+        pluginKeys = Util.getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
     }
@@ -86,7 +86,7 @@ class DeviceInfo {
             if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
                 AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
             }
-            return Reflection.getMacAddress(context);
+            return Util.getMacAddress(context);
         } else {
             return null;
         }
@@ -232,7 +232,7 @@ class DeviceInfo {
 
     private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {
         if (!isGooglePlayServicesAvailable) {
-            return Reflection.getAndroidId(context);
+            return Util.getAndroidId(context);
         } else {
             return null;
         }
