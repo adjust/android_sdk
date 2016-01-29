@@ -78,7 +78,7 @@ public class Adjust {
         adjustInstance.setOfflineMode(enabled);
     }
 
-    public static void getGoogleAdId(Context context, final onDeviceIdRead onDeviceIdRead) {
+    public static void getGoogleAdId(Context context, final OnDeviceIdRead onDeviceIdRead) {
         if (Looper.myLooper() != Looper.getMainLooper()) {
             onDeviceIdRead.onPlayAdIdRead(Util.getPlayAdId(context));
             return;
