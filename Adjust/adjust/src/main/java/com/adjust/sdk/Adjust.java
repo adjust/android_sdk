@@ -9,7 +9,10 @@
 
 package com.adjust.sdk;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Looper;
 
 /**
  * The main interface to Adjust.
@@ -73,6 +76,29 @@ public class Adjust {
     public static void setOfflineMode(boolean enabled) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setOfflineMode(enabled);
+    }
+
+    public static void getGoogleAdId(Context context, final OnDeviceIdRead onDeviceIdRead) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            onDeviceIdRead.onPlayAdIdRead(Util.getPlayAdId(context));
+            return;
+        }
+        try{
+            new AsyncTask<Context,Void,String>() {
+                @Override
+                protected String doInBackground(Context... params) {
+                    Context innerContext = params[0];
+                    String innerResult = Util.getPlayAdId(innerContext);
+                    return innerResult;
+                }
+
+                @Override
+                protected void onPostExecute(String playAdiId) {
+                    onDeviceIdRead.onPlayAdIdRead(playAdiId);
+                    super.onPostExecute(playAdiId);
+                }
+            }.execute(context);
+        } catch (Exception e) {}
     }
 }
 

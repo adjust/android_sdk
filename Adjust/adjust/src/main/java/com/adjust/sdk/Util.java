@@ -93,6 +93,17 @@ public class Util {
         return Reflection.isPlayTrackingEnabled(context);
     }
 
+    public static String getMacAddress(Context context) {
+        return Reflection.getMacAddress(context);
+    }
+
+    public static Map<String, String> getPluginKeys(Context context) {
+        return Reflection.getPluginKeys(context);
+    }
+    public static String getAndroidId(Context context) {
+        return Reflection.getAndroidId(context);
+    }
+
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
         Closeable closable = null;
         T object = null;
