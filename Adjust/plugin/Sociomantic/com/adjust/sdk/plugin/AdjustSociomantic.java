@@ -204,7 +204,7 @@ public abstract class AdjustSociomantic {
             }
         }
 
-        if (!po.isEmpty()) {
+        if (!productList.isEmpty()) {
             po.put(SCMProducts, productList);
             addPartnerParameter(event, "socio_po", stringify(po));
         }
