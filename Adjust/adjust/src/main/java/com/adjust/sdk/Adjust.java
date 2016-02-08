@@ -78,27 +78,38 @@ public class Adjust {
         adjustInstance.setOfflineMode(enabled);
     }
 
-    public static void getGoogleAdId(Context context, final OnDeviceIdRead onDeviceIdRead) {
+    public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
+        ILogger logger = AdjustFactory.getLogger();
         if (Looper.myLooper() != Looper.getMainLooper()) {
-            onDeviceIdRead.onPlayAdIdRead(Util.getPlayAdId(context));
+            logger.debug("GoogleAdId being read in the background");
+            String GoogleAdId = Util.getPlayAdId(context);
+
+            logger.debug("GoogleAdId read " + GoogleAdId);
+            onDeviceIdRead.onGoogleAdIdRead(GoogleAdId);
             return;
         }
         try{
+            logger.debug("GoogleAdId being read in the foreground");
+
             new AsyncTask<Context,Void,String>() {
                 @Override
                 protected String doInBackground(Context... params) {
+                    ILogger logger = AdjustFactory.getLogger();
                     Context innerContext = params[0];
                     String innerResult = Util.getPlayAdId(innerContext);
+                    logger.debug("GoogleAdId read " + innerResult);
                     return innerResult;
                 }
 
                 @Override
                 protected void onPostExecute(String playAdiId) {
-                    onDeviceIdRead.onPlayAdIdRead(playAdiId);
-                    super.onPostExecute(playAdiId);
+                    ILogger logger = AdjustFactory.getLogger();
+                    onDeviceIdRead.onGoogleAdIdRead(playAdiId);
                 }
             }.execute(context);
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            logger.error("Unable to get GoogleAdId from the foreground (%s)", e.getMessage());
+        }
     }
 }
 
