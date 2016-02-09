@@ -11,7 +11,7 @@ public interface IAttributionHandler {
 
     public void getAttribution();
 
-    public void checkSessionResponse(ResponseData responseData);
+    public void checkSessionResponse(SessionResponseData responseData);
 
     public void pauseSending();
 

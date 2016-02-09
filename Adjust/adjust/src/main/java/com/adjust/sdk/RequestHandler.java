@@ -119,7 +119,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
         logger.error(finalMessage);
 
-        ResponseData responseData = new ResponseData(activityPackage);
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
         responseData.message = finalMessage;
 
         packageHandler.closeFirstPackage(responseData);
@@ -132,7 +132,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
         logger.error(finalMessage);
 
-        ResponseData responseData = new ResponseData(activityPackage);
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
         responseData.message = finalMessage;
 
         packageHandler.sendNextPackage(responseData);

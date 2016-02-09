@@ -22,11 +22,11 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
-    public void launchEventResponseTasks(ResponseData responseData);
+    public void launchEventResponseTasks(EventResponseData responseData);
 
-    public void launchSessionResponseTasks(ResponseData responseData);
+    public void launchSessionResponseTasks(SessionResponseData responseData);
 
-    public void launchAttributionResponseTasks(ResponseData responseData);
+    public void launchAttributionResponseTasks(AttributionResponseData responseData);
 
     public void sendReferrer(String referrer, long clickTime);
 

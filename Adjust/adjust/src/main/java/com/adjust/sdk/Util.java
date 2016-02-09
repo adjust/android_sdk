@@ -203,7 +203,7 @@ public class Util {
             }
         }
 
-        ResponseData responseData = new ResponseData(activityPackage);
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
 
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);

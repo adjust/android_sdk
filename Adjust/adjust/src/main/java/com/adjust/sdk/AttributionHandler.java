@@ -61,7 +61,7 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void checkSessionResponse(final ResponseData responseData) {
+    public void checkSessionResponse(final SessionResponseData responseData) {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
@@ -70,7 +70,7 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
-    private void checkAttributionResponse(final ResponseData responseData) {
+    private void checkAttributionResponse(final AttributionResponseData responseData) {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
@@ -124,13 +124,13 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkSessionResponseInternal(ResponseData responseData) {
+    private void checkSessionResponseInternal(SessionResponseData responseData) {
         checkAttributionInternal(responseData);
 
         activityHandler.launchSessionResponseTasks(responseData);
     }
 
-    private void checkAttributionResponseInternal(ResponseData responseData) {
+    private void checkAttributionResponseInternal(AttributionResponseData responseData) {
         checkAttributionInternal(responseData);
 
         activityHandler.launchAttributionResponseTasks(responseData);
@@ -155,7 +155,11 @@ public class AttributionHandler implements IAttributionHandler {
 
             ResponseData responseData = Util.readHttpResponse(connection, attributionPackage);
 
-            checkAttributionResponse(responseData);
+            if (!(responseData instanceof AttributionResponseData)) {
+                return;
+            }
+
+            checkAttributionResponse((AttributionResponseData)responseData);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
