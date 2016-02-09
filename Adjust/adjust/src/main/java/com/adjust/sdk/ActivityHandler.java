@@ -140,14 +140,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void finishedTrackingActivity(ResponseData responseData) {
         // redirect session responses to attribution handler to check for attribution information
         if (responseData.activityKind == ActivityKind.SESSION) {
-            attributionHandler.checkResponse(responseData);
+            attributionHandler.checkSessionResponse(responseData);
             return;
         }
-        // no response json to check for attributes and no callback for failed package
-        if (responseData.jsonResponse == null && adjustConfig.onTrackingFailedListener == null) {
-            return;
+        // check if it's an event response
+        if (responseData.activityKind == ActivityKind.EVENT) {
+            launchEventResponseTasks(responseData);
         }
-        launchResponseTasks(responseData);
     }
 
     @Override
@@ -274,20 +273,29 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void launchResponseTasks(ResponseData responseData) {
+    public void launchEventResponseTasks(ResponseData responseData) {
         Message message = Message.obtain();
-        message.arg1 = SessionHandler.RESPONSE_TASKS;
+        message.arg1 = SessionHandler.EVENT_TASKS;
         message.obj = responseData;
         sessionHandler.sendMessage(message);
     }
 
     @Override
-    public void launchAttributionTasks(ResponseData responseData) {
+    public void launchSessionResponseTasks(ResponseData responseData) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.SESSION_TASKS;
+        message.obj = responseData;
+        sessionHandler.sendMessage(message);
+    }
+
+    @Override
+    public void launchAttributionResponseTasks(ResponseData responseData) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.ATTRIBUTION_TASKS;
         message.obj = responseData;
         sessionHandler.sendMessage(message);
     }
+
 
     private class UrlClickTime {
         Uri url;
@@ -327,12 +335,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int START = BASE_ADDRESS + 2;
         private static final int END = BASE_ADDRESS + 3;
         private static final int EVENT = BASE_ADDRESS + 4;
-        private static final int RESPONSE_TASKS = BASE_ADDRESS + 5;
+        private static final int EVENT_TASKS = BASE_ADDRESS + 5;
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
         private static final int TIMER_FIRED = BASE_ADDRESS + 9;
-        private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 10;
+        private static final int SESSION_TASKS = BASE_ADDRESS + 10;
+        private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 11;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -364,9 +373,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     AdjustEvent event = (AdjustEvent) message.obj;
                     sessionHandler.trackEventInternal(event);
                     break;
-                case RESPONSE_TASKS:
-                    ResponseData responseData = (ResponseData) message.obj;
-                    sessionHandler.launchResponseTasksInternal(responseData);
+                case EVENT_TASKS:
+                    ResponseData eventResponseData = (ResponseData) message.obj;
+                    sessionHandler.launchEventResponseTasksInternal(eventResponseData);
                     break;
                 case DEEP_LINK:
                     UrlClickTime urlClickTime = (UrlClickTime) message.obj;
@@ -382,9 +391,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 case TIMER_FIRED:
                     sessionHandler.timerFiredInternal();
                     break;
+                case SESSION_TASKS:
+                    ResponseData sessionResponseData = (ResponseData) message.obj;
+                    sessionHandler.launchSessionResponseTasksInternal(sessionResponseData);
+                    break;
                 case ATTRIBUTION_TASKS:
-                    ResponseData responseDataAttribution = (ResponseData) message.obj;
-                    sessionHandler.launchAttributionTasksInternal(responseDataAttribution);
+                    ResponseData attributionResponseData = (ResponseData) message.obj;
+                    sessionHandler.launchAttributionResponseTasksInternal(attributionResponseData);
                     break;
             }
         }
@@ -551,24 +564,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void launchResponseTasksInternal(ResponseData responseData) {
-        // use the same handler to ensure that all tasks are executed sequentially
+    private void launchEventResponseTasksInternal(final ResponseData responseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
-        // try to launch the finished activity listener
-        launchFinishedListener(responseData, handler);
-
-        // in last, try to launch the deeplink
-        launchDeeplink(responseData, handler);
-    }
-
-    private void launchFinishedListener(final ResponseData responseData, Handler handler) {
-        // no event package
-        if (responseData.activityKind != ActivityKind.EVENT) {
-            return;
-        }
         // success callback
-        if (responseData.success && adjustConfig.onTrackingSucceededListener == null) {
+        if (responseData.success && adjustConfig.onTrackingSucceededListener != null) {
+            logger.debug("Launching success event tracking listener");
             // add it to the handler queue
             Runnable runnable = new Runnable() {
                 @Override
@@ -581,7 +582,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
         // failure callback
-        if (!responseData.success && adjustConfig.onTrackingFailedListener == null) {
+        if (!responseData.success && adjustConfig.onTrackingFailedListener != null) {
+            logger.debug("Launching failed event tracking listener");
             // add it to the handler queue
             Runnable runnable = new Runnable() {
                 @Override
@@ -595,20 +597,35 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchAttributionTasksInternal(ResponseData responseData) {
+    private void launchSessionResponseTasksInternal(ResponseData responseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
         boolean attributionUpdated = updateAttribution(responseData.attribution);
 
-        // launch attribution changed delegate
+        // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
             launchAttributionListener(handler);
         }
 
-        // in last, try to launch the deeplink
+        // if there is any, try to launch the deeplink
         launchDeeplink(responseData, handler);
+    }
+
+    private void launchAttributionResponseTasksInternal(ResponseData responseData) {
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttribution(responseData.attribution);
+
+        // if attribution not changed exit
+        if (!attributionUpdated) {
+            return;
+        }
+
+        // launch attribution changed delegate
+        launchAttributionListener(handler);
     }
 
     private boolean updateAttribution(AdjustAttribution attribution) {
