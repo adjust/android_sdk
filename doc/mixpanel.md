@@ -20,7 +20,7 @@ public class YourApplicationClass extends Application {
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
+            public void onAttributionChanged(AdjustAttribution attribution) {
                 MixpanelAPI mixpanel = MixpanelAPI.getInstance(context, MIXPANEL_TOKEN);
 
                 // The adjust properties will be sent
