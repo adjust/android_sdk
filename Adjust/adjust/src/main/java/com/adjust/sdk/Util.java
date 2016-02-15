@@ -11,6 +11,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.os.Looper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,6 +89,36 @@ public class Util {
 
     public static String getPlayAdId(Context context) {
         return Reflection.getPlayAdId(context);
+    }
+
+    public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
+        ILogger logger = AdjustFactory.getLogger();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            logger.debug("GoogleAdId being read in the background");
+            String GoogleAdId = Util.getPlayAdId(context);
+
+            logger.debug("GoogleAdId read " + GoogleAdId);
+            onDeviceIdRead.onGoogleAdIdRead(GoogleAdId);
+            return;
+        }
+
+        logger.debug("GoogleAdId being read in the foreground");
+        new AsyncTask<Context,Void,String>() {
+            @Override
+            protected String doInBackground(Context... params) {
+                ILogger logger = AdjustFactory.getLogger();
+                Context innerContext = params[0];
+                String innerResult = Util.getPlayAdId(innerContext);
+                logger.debug("GoogleAdId read " + innerResult);
+                return innerResult;
+            }
+
+            @Override
+            protected void onPostExecute(String playAdiId) {
+                ILogger logger = AdjustFactory.getLogger();
+                onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+            }
+        }.execute(context);
     }
 
     public static Boolean isPlayTrackingEnabled(Context context) {
