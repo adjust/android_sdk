@@ -742,6 +742,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         packageHandler.addPackage(clickPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void readOpenUrlInternal(Uri url, long clickTime) {
@@ -757,6 +758,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         packageHandler.addPackage(clickPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private ActivityPackage buildQueryStringClickPackage(String queryString, String source, long clickTime) {
