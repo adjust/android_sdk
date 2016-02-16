@@ -8,12 +8,16 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.FailureResponseData;
+import com.adjust.sdk.EventFailureResponseData;
+import com.adjust.sdk.EventSuccessResponseData;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnTrackingFailedListener;
-import com.adjust.sdk.OnTrackingSucceededListener;
-import com.adjust.sdk.SuccessResponseData;
+import com.adjust.sdk.OnEventTrackingFailedListener;
+import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnSessionTrackingFailedListener;
+import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.SessionFailureResponseData;
+import com.adjust.sdk.SessionSuccessResponseData;
 
 /**
  * Created by pfms on 17/12/14.
@@ -47,19 +51,35 @@ public class GlobalApplication extends Application {
             }
         });
 
-        // set success tracking delegate
-        config.setOnTrackingSucceededListener(new OnTrackingSucceededListener() {
+        // set event success tracking delegate
+        config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
             @Override
-            public void onFinishedTrackingSucceeded(SuccessResponseData successResponseData) {
-                Log.d("example", "success tracking: " + successResponseData.toString());
+            public void onFinishedEventTrackingSucceeded(EventSuccessResponseData eventSuccessResponseData) {
+                Log.d("example", "success event tracking: " + eventSuccessResponseData.toString());
             }
         });
 
-        // set failure tracking delegate
-        config.setOnTrackingFailedListener(new OnTrackingFailedListener() {
+        // set event failure tracking delegate
+        config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
-            public void onFinishedTrackingFailed(FailureResponseData failureResponseData) {
-                Log.d("example", "failed tracking: " + failureResponseData.toString());
+            public void onFinishedEventTrackingFailed(EventFailureResponseData eventFailureResponseData) {
+                Log.d("example", "failed event tracking: " + eventFailureResponseData.toString());
+            }
+        });
+
+        // set session success tracking delegate
+        config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+            @Override
+            public void onFinishedSessionTrackingSucceeded(SessionSuccessResponseData sessionSuccessResponseData) {
+                Log.d("example", "success session tracking: " + sessionSuccessResponseData.toString());
+            }
+        });
+
+        // set session failure tracking delegate
+        config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+            @Override
+            public void onFinishedSessionTrackingFailed(SessionFailureResponseData sessionFailureResponseData) {
+                Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
             }
         });
 

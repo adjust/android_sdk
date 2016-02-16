@@ -61,20 +61,20 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void checkSessionResponse(final SessionResponseData responseData) {
+    public void checkSessionResponse(final SessionResponseData sessionResponseData) {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                checkSessionResponseInternal(responseData);
+                checkSessionResponseInternal(sessionResponseData);
             }
         });
     }
 
-    private void checkAttributionResponse(final AttributionResponseData responseData) {
+    private void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                checkAttributionResponseInternal(responseData);
+                checkAttributionResponseInternal(attributionResponseData);
             }
         });
     }
@@ -124,16 +124,16 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkSessionResponseInternal(SessionResponseData responseData) {
-        checkAttributionInternal(responseData);
+    private void checkSessionResponseInternal(SessionResponseData sessionResponseData) {
+        checkAttributionInternal(sessionResponseData);
 
-        activityHandler.launchSessionResponseTasks(responseData);
+        activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
-    private void checkAttributionResponseInternal(AttributionResponseData responseData) {
-        checkAttributionInternal(responseData);
+    private void checkAttributionResponseInternal(AttributionResponseData attributionResponseData) {
+        checkAttributionInternal(attributionResponseData);
 
-        activityHandler.launchAttributionResponseTasks(responseData);
+        activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
     private void getAttributionInternal() {

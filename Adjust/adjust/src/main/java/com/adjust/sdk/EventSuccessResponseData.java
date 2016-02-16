@@ -7,8 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 04/01/16.
  */
-public class SuccessResponseData {
-    public String activityKindString;
+public class EventSuccessResponseData {
     public String message;
     public String timestamp;
     public String adid;
@@ -17,7 +16,7 @@ public class SuccessResponseData {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "%s msg:%s time:%s adid:%s event:%s json:%s",
-                activityKindString, message, timestamp, adid, eventToken, jsonResponse);
+        return String.format(Locale.US, "Event Success msg:%s time:%s adid:%s event:%s json:%s",
+            message, timestamp, adid, eventToken, jsonResponse);
     }
 }

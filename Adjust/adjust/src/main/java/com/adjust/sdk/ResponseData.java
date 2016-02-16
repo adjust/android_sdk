@@ -43,37 +43,6 @@ public abstract class ResponseData {
         return responseData;
     }
 
-    public SuccessResponseData getSuccessResponseData() {
-        if (!success) {
-            return null;
-        }
-
-        SuccessResponseData successResponseData = new SuccessResponseData();
-        successResponseData.activityKindString = activityKind.toString();
-        successResponseData.message = message;
-        successResponseData.timestamp = timestamp;
-        successResponseData.adid = adid;
-        successResponseData.jsonResponse = jsonResponse;
-
-        return successResponseData;
-    }
-
-    public FailureResponseData getFailureResponseData() {
-        if (success) {
-            return null;
-        }
-
-        FailureResponseData failureResponseData = new FailureResponseData();
-        failureResponseData.activityKindString = activityKind.toString();
-        failureResponseData.message = message;
-        failureResponseData.timestamp = timestamp;
-        failureResponseData.adid = adid;
-        failureResponseData.willRetry = willRetry;
-        failureResponseData.jsonResponse = jsonResponse;
-
-        return failureResponseData;
-    }
-
     @Override
     public String toString() {
         return String.format(Locale.US, "message:%s timestamp:%s json:%s",

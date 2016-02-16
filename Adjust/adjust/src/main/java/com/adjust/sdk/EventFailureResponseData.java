@@ -7,8 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 04/01/16.
  */
-public class FailureResponseData {
-    public String activityKindString;
+public class EventFailureResponseData {
     public String message;
     public String timestamp;
     public String adid;
@@ -18,7 +17,7 @@ public class FailureResponseData {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "%s msg:%s time:%s adid:%s event:%s retry:%b json:%s",
-                activityKindString, message, timestamp, adid, eventToken, willRetry, jsonResponse);
+        return String.format(Locale.US, "Event Failure msg:%s time:%s adid:%s event:%s retry:%b json:%s",
+            message, timestamp, adid, eventToken, willRetry, jsonResponse);
     }
 }

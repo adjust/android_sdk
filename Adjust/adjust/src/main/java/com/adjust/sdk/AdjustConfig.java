@@ -19,8 +19,10 @@ public class AdjustConfig {
     long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
-    OnTrackingSucceededListener onTrackingSucceededListener;
-    OnTrackingFailedListener onTrackingFailedListener;
+    OnEventTrackingSucceededListener onEventTrackingSucceededListener;
+    OnEventTrackingFailedListener onEventTrackingFailedListener;
+    OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
+    OnSessionTrackingFailedListener onSessionTrackingFailedListener;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -69,12 +71,20 @@ public class AdjustConfig {
         this.deepLinkComponent = deepLinkComponent;
     }
 
-    public void setOnTrackingSucceededListener(OnTrackingSucceededListener onTrackingSucceededListener) {
-        this.onTrackingSucceededListener = onTrackingSucceededListener;
+    public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
+        this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
     }
 
-    public void setOnTrackingFailedListener(OnTrackingFailedListener onTrackingFailedListener) {
-        this.onTrackingFailedListener = onTrackingFailedListener;
+    public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener) {
+        this.onEventTrackingFailedListener = onEventTrackingFailedListener;
+    }
+
+    public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener) {
+        this.onSessionTrackingSucceededListener = onSessionTrackingSucceededListener;
+    }
+
+    public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
+        this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
     }
 
     public boolean hasAttributionChangedListener() {
@@ -83,8 +93,10 @@ public class AdjustConfig {
 
     public boolean hasListener() {
         return onAttributionChangedListener != null
-                || onTrackingSucceededListener != null
-                || onTrackingFailedListener != null;
+                || onEventTrackingSucceededListener != null
+                || onEventTrackingFailedListener != null
+                || onSessionTrackingSucceededListener != null
+                || onSessionTrackingFailedListener != null;
     }
 
     public boolean isValid() {

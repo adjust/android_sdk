@@ -273,26 +273,26 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void launchEventResponseTasks(EventResponseData responseData) {
+    public void launchEventResponseTasks(EventResponseData eventResponseData) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.EVENT_TASKS;
-        message.obj = responseData;
+        message.obj = eventResponseData;
         sessionHandler.sendMessage(message);
     }
 
     @Override
-    public void launchSessionResponseTasks(SessionResponseData responseData) {
+    public void launchSessionResponseTasks(SessionResponseData sessionResponseData) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SESSION_TASKS;
-        message.obj = responseData;
+        message.obj = sessionResponseData;
         sessionHandler.sendMessage(message);
     }
 
     @Override
-    public void launchAttributionResponseTasks(AttributionResponseData responseData) {
+    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.ATTRIBUTION_TASKS;
-        message.obj = responseData;
+        message.obj = attributionResponseData;
         sessionHandler.sendMessage(message);
     }
 
@@ -564,17 +564,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void launchEventResponseTasksInternal(final EventResponseData responseData) {
+    private void launchEventResponseTasksInternal(final EventResponseData eventResponseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // success callback
-        if (responseData.success && adjustConfig.onTrackingSucceededListener != null) {
+        if (eventResponseData.success && adjustConfig.onEventTrackingSucceededListener != null) {
             logger.debug("Launching success event tracking listener");
             // add it to the handler queue
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    adjustConfig.onTrackingSucceededListener.onFinishedTrackingSucceeded(responseData.getSuccessResponseData());
+                    adjustConfig.onEventTrackingSucceededListener.onFinishedEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
                 }
             };
             handler.post(runnable);
@@ -582,13 +582,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
         // failure callback
-        if (!responseData.success && adjustConfig.onTrackingFailedListener != null) {
+        if (!eventResponseData.success && adjustConfig.onEventTrackingFailedListener != null) {
             logger.debug("Launching failed event tracking listener");
             // add it to the handler queue
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    adjustConfig.onTrackingFailedListener.onFinishedTrackingFailed(responseData.getFailureResponseData());
+                    adjustConfig.onEventTrackingFailedListener.onFinishedEventTrackingFailed(eventResponseData.getFailureResponseData());
                 }
             };
             handler.post(runnable);
@@ -597,20 +597,54 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchSessionResponseTasksInternal(SessionResponseData responseData) {
+    private void launchSessionResponseTasksInternal(SessionResponseData sessionResponseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
-        boolean attributionUpdated = updateAttribution(responseData.attribution);
+        boolean attributionUpdated = updateAttribution(sessionResponseData.attribution);
 
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
             launchAttributionListener(handler);
         }
 
+        // launch Session tracking listener if available
+        launchSessionResponseListener(sessionResponseData, handler);
+
         // if there is any, try to launch the deeplink
-        launchDeeplink(responseData, handler);
+        launchDeeplink(sessionResponseData, handler);
+    }
+
+    private void launchSessionResponseListener(final SessionResponseData sessionResponseData, Handler handler) {
+        // success callback
+        if (sessionResponseData.success && adjustConfig.onSessionTrackingSucceededListener != null) {
+            logger.debug("Launching success session tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onSessionTrackingSucceededListener.onFinishedSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+        // failure callback
+        if (!sessionResponseData.success && adjustConfig.onSessionTrackingFailedListener != null) {
+            logger.debug("Launching failed session tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onSessionTrackingFailedListener.onFinishedSessionTrackingFailed(sessionResponseData.getFailureResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
     }
 
     private void launchAttributionResponseTasksInternal(AttributionResponseData responseData) {

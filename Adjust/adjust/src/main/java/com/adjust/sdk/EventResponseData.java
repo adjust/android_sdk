@@ -10,19 +10,32 @@ public class EventResponseData extends ResponseData {
         eventToken = activityPackage.getParameters().get("event_token");
     }
 
-    @Override
-    public SuccessResponseData getSuccessResponseData() {
-        SuccessResponseData successResponseData = super.getSuccessResponseData();
+    public EventSuccessResponseData getSuccessResponseData() {
+        if (!success) {
+            return null;
+        }
 
+        EventSuccessResponseData successResponseData = new EventSuccessResponseData();
+        successResponseData.message = message;
+        successResponseData.timestamp = timestamp;
+        successResponseData.adid = adid;
+        successResponseData.jsonResponse = jsonResponse;
         successResponseData.eventToken = eventToken;
 
         return successResponseData;
     }
 
-    @Override
-    public FailureResponseData getFailureResponseData() {
-        FailureResponseData failureResponseData = super.getFailureResponseData();
+    public EventFailureResponseData getFailureResponseData() {
+        if (success) {
+            return null;
+        }
 
+        EventFailureResponseData failureResponseData = new EventFailureResponseData();
+        failureResponseData.message = message;
+        failureResponseData.timestamp = timestamp;
+        failureResponseData.adid = adid;
+        failureResponseData.willRetry = willRetry;
+        failureResponseData.jsonResponse = jsonResponse;
         failureResponseData.eventToken = eventToken;
 
         return failureResponseData;
