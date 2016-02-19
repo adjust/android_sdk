@@ -146,6 +146,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
             launchEventResponseTasks((EventResponseData)responseData);
+            return;
         }
     }
 

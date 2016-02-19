@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 16/02/16.
  */
-public class SessionFailureResponseData {
+public class AdjustSessionFailure {
     public String message;
     public String timestamp;
     public String adid;

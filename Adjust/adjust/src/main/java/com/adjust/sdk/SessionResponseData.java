@@ -4,12 +4,12 @@ package com.adjust.sdk;
  * Created by pfms on 09/02/16.
  */
 public class SessionResponseData extends ResponseData {
-    public SessionSuccessResponseData getSuccessResponseData() {
+    public AdjustSessionSuccess getSuccessResponseData() {
         if (!success) {
             return null;
         }
 
-        SessionSuccessResponseData successResponseData = new SessionSuccessResponseData();
+        AdjustSessionSuccess successResponseData = new AdjustSessionSuccess();
         successResponseData.message = message;
         successResponseData.timestamp = timestamp;
         successResponseData.adid = adid;
@@ -18,12 +18,12 @@ public class SessionResponseData extends ResponseData {
         return successResponseData;
     }
 
-    public SessionFailureResponseData getFailureResponseData() {
+    public AdjustSessionFailure getFailureResponseData() {
         if (success) {
             return null;
         }
 
-        SessionFailureResponseData failureResponseData = new SessionFailureResponseData();
+        AdjustSessionFailure failureResponseData = new AdjustSessionFailure();
         failureResponseData.message = message;
         failureResponseData.timestamp = timestamp;
         failureResponseData.adid = adid;

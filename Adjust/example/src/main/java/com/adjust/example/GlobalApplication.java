@@ -8,16 +8,16 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.EventFailureResponseData;
-import com.adjust.sdk.EventSuccessResponseData;
+import com.adjust.sdk.AdjustEventFailure;
+import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.adjust.sdk.SessionFailureResponseData;
-import com.adjust.sdk.SessionSuccessResponseData;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
 
 /**
  * Created by pfms on 17/12/14.
@@ -54,7 +54,7 @@ public class GlobalApplication extends Application {
         // set event success tracking delegate
         config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
             @Override
-            public void onFinishedEventTrackingSucceeded(EventSuccessResponseData eventSuccessResponseData) {
+            public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                 Log.d("example", "success event tracking: " + eventSuccessResponseData.toString());
             }
         });
@@ -62,7 +62,7 @@ public class GlobalApplication extends Application {
         // set event failure tracking delegate
         config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
-            public void onFinishedEventTrackingFailed(EventFailureResponseData eventFailureResponseData) {
+            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                 Log.d("example", "failed event tracking: " + eventFailureResponseData.toString());
             }
         });
@@ -70,7 +70,7 @@ public class GlobalApplication extends Application {
         // set session success tracking delegate
         config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
             @Override
-            public void onFinishedSessionTrackingSucceeded(SessionSuccessResponseData sessionSuccessResponseData) {
+            public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                 Log.d("example", "success session tracking: " + sessionSuccessResponseData.toString());
             }
         });
@@ -78,7 +78,7 @@ public class GlobalApplication extends Application {
         // set session failure tracking delegate
         config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
             @Override
-            public void onFinishedSessionTrackingFailed(SessionFailureResponseData sessionFailureResponseData) {
+            public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
                 Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
             }
         });

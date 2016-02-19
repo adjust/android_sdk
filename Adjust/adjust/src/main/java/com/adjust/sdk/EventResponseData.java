@@ -10,12 +10,12 @@ public class EventResponseData extends ResponseData {
         eventToken = activityPackage.getParameters().get("event_token");
     }
 
-    public EventSuccessResponseData getSuccessResponseData() {
+    public AdjustEventSuccess getSuccessResponseData() {
         if (!success) {
             return null;
         }
 
-        EventSuccessResponseData successResponseData = new EventSuccessResponseData();
+        AdjustEventSuccess successResponseData = new AdjustEventSuccess();
         successResponseData.message = message;
         successResponseData.timestamp = timestamp;
         successResponseData.adid = adid;
@@ -25,12 +25,12 @@ public class EventResponseData extends ResponseData {
         return successResponseData;
     }
 
-    public EventFailureResponseData getFailureResponseData() {
+    public AdjustEventFailure getFailureResponseData() {
         if (success) {
             return null;
         }
 
-        EventFailureResponseData failureResponseData = new EventFailureResponseData();
+        AdjustEventFailure failureResponseData = new AdjustEventFailure();
         failureResponseData.message = message;
         failureResponseData.timestamp = timestamp;
         failureResponseData.adid = adid;

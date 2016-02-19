@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 04/01/16.
  */
-public class EventFailureResponseData {
+public class AdjustEventFailure {
     public String message;
     public String timestamp;
     public String adid;
