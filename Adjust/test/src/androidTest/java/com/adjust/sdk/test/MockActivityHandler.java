@@ -7,6 +7,10 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.IActivityHandler;
 import com.adjust.sdk.ResponseData;
+import com.adjust.sdk.EventResponseData;
+import com.adjust.sdk.SessionResponseData;
+import com.adjust.sdk.AttributionResponseData;
+
 
 /**
  * Created by pfms on 09/01/15.
@@ -64,8 +68,18 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void launchResponseTasks(ResponseData responseData) {
-        testLogger.test(prefix + "launchResponseTasks, " + responseData);
+    public void launchEventResponseTasks(EventResponseData eventResponseData) {
+
+    }
+
+    @Override
+    public void launchSessionResponseTasks(SessionResponseData sessionResponseData) {
+
+    }
+
+    @Override
+    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
+
     }
 
     @Override

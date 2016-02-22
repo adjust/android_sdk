@@ -870,7 +870,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.notInInfo("Open deep link");
 
         // set package handler to respond with a valid attribution
-        ResponseData wrongDeeplinkResponseData = new ResponseData(null);
+        ResponseData wrongDeeplinkResponseData = null;//new ResponseData(null);
         try {
             wrongDeeplinkResponseData.jsonResponse = new JSONObject("{ " +
                     "\"deeplink\" :  \"wrongDeeplink://\" }");
