@@ -65,5 +65,5 @@ You can follow our [guide][guide_permissions] from the `5. Add permissions` sect
 [maven_search]:         http://search.maven.org/#search%7Cga%7C1%7Ccom.adjust.sdk
 [application]:          http://developer.android.com/guide/topics/manifest/application-element.html
 [eclipse_library]:      http://developer.android.com/tools/projects/projects-eclipse.html#ReferencingLibraryProject
-[guide_permissions]:    https://github.com/adjust/android_sdk/tree/master4#5-add-permissions
+[guide_permissions]:    https://github.com/adjust/android_sdk#5-add-permissions
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
