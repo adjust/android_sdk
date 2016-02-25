@@ -54,20 +54,7 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
             return getMockResponse("{ }");
         } else if (responseType == ResponseType.MESSAGE) {
             return getMockResponse("{ \"message\" : \"response OK\"}");
-        } else if (responseType == ResponseType.ATTRIBUTION) {
-            return getMockResponse(
-                    "{ \"attribution\" : {" +
-                            "\"tracker_token\" : \"ttValue\" , " +
-                            "\"tracker_name\"  : \"tnValue\" , " +
-                            "\"network\"       : \"nValue\" , " +
-                            "\"campaign\"      : \"cpValue\" , " +
-                            "\"adgroup\"       : \"aValue\" , " +
-                            "\"creative\"      : \"ctValue\" , " +
-                            "\"click_label\"   : \"clValue\" } }");
-        } else if (responseType == ResponseType.ASK_IN) {
-            return getMockResponse("{ \"ask_in\" : 4000 }");
         }
-
         return null;
     }
 

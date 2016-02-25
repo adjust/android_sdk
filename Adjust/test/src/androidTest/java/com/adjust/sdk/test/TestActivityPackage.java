@@ -22,7 +22,7 @@ public class TestActivityPackage {
     public String environment;
     public String clientSdk;
     public Boolean deviceKnow;
-    public boolean needsAttributionData;
+    public boolean needsResponseDetails;
     public boolean playServices;
     // session
     public Integer sessionCount;
@@ -254,7 +254,7 @@ public class TestActivityPackage {
         // device_known
         testParameterBoolean("device_known", deviceKnow);
         // needs_attribution_data
-        testParameterBoolean("needs_attribution_data", needsAttributionData);
+        testParameterBoolean("needs_response_details", needsResponseDetails);
         // play services
         if (playServices) {
             // gps_adid

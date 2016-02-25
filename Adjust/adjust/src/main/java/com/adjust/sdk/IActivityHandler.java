@@ -22,6 +22,8 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
+    public boolean updateAttribution(AdjustAttribution attribution);
+
     public void launchEventResponseTasks(EventResponseData eventResponseData);
 
     public void launchSessionResponseTasks(SessionResponseData sessionResponseData);

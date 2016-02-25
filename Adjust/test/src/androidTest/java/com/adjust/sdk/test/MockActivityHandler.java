@@ -3,6 +3,7 @@ package com.adjust.sdk.test;
 import android.net.Uri;
 
 import com.adjust.sdk.ActivityPackage;
+import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.IActivityHandler;
@@ -18,8 +19,8 @@ import com.adjust.sdk.AttributionResponseData;
 public class MockActivityHandler implements IActivityHandler {
     private MockLogger testLogger;
     private String prefix = "ActivityHandler ";
-    AdjustConfig config;
-
+    private AdjustConfig config;
+    private ResponseData lastResponseData;
 
     public MockActivityHandler(MockLogger testLogger) {
         this.testLogger = testLogger;
@@ -49,6 +50,7 @@ public class MockActivityHandler implements IActivityHandler {
     @Override
     public void finishedTrackingActivity(ResponseData responseData) {
         testLogger.test(prefix + "finishedTrackingActivity, " + responseData);
+        this.lastResponseData = responseData;
     }
 
     @Override
@@ -68,18 +70,27 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void launchEventResponseTasks(EventResponseData eventResponseData) {
+    public boolean updateAttribution(AdjustAttribution attribution) {
+        testLogger.test(prefix + "updateAttribution, " + attribution);
+        return false;
+    }
 
+    @Override
+    public void launchEventResponseTasks(EventResponseData eventResponseData) {
+        testLogger.test(prefix + "launchEventResponseTasks, " + eventResponseData);
+        this.lastResponseData = eventResponseData;
     }
 
     @Override
     public void launchSessionResponseTasks(SessionResponseData sessionResponseData) {
-
+        testLogger.test(prefix + "launchSessionResponseTasks, " + sessionResponseData);
+        this.lastResponseData = sessionResponseData;
     }
 
     @Override
     public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
-
+        testLogger.test(prefix + "launchAttributionResponseTasks, " + attributionResponseData);
+        this.lastResponseData = attributionResponseData;
     }
 
     @Override
@@ -102,5 +113,4 @@ public class MockActivityHandler implements IActivityHandler {
         testLogger.test(prefix + "getAttributionPackage");
         return null;
     }
-
 }

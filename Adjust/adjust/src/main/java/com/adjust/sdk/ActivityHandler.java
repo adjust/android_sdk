@@ -243,6 +243,20 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    @Override
+    public boolean updateAttribution(AdjustAttribution attribution) {
+        if (attribution == null) {
+            return false;
+        }
+
+        if (attribution.equals(this.attribution)) {
+            return false;
+        }
+
+        saveAttribution(attribution);
+        return true;
+    }
+
     private void saveAttribution(AdjustAttribution attribution) {
         this.attribution = attribution;
         writeAttribution();
@@ -661,19 +675,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // launch attribution changed delegate
         launchAttributionListener(handler);
-    }
-
-    private boolean updateAttribution(AdjustAttribution attribution) {
-        if (attribution == null) {
-            return false;
-        }
-
-        if (attribution.equals(this.attribution)) {
-            return false;
-        }
-
-        saveAttribution(attribution);
-        return true;
     }
 
     private void launchAttributionListener(Handler handler) {
