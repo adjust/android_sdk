@@ -506,6 +506,24 @@ Unlike disabling tracking, this setting is *not remembered*
 bettween sessions. This means that the SDK is in online mode whenever it is started,
 even if the app was terminated in offline mode.
 
+### 18. Device id's
+
+Certains services such as Google Analytics, require that Device and Client IDs must first coordinate in order to prevent duplicate reporting.
+
+To obtain the device identifier Google Advertising Id, there is a restriction that it can only be read in a background thread. 
+By calling the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will make sure that it will work in any situation:
+
+```java
+Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
+    @Override
+    public void onGoogleAdIdRead(String googleAdId) {
+        // ...
+    }
+});
+```
+
+Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance you will have access to Google Advertising Id as the variable `googleAdId`.
+
 ## Troubleshooting
 
 ### I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
