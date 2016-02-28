@@ -530,7 +530,7 @@ even if the app was terminated in offline mode.
 [google_play_services]: http://developer.android.com/google/play-services/setup.html
 [android_application]:  http://developer.android.com/reference/android/app/Application.html
 [application_name]:     http://developer.android.com/guide/topics/manifest/application-element.html#nm
-[google_ad_id]:         https://developer.android.com/google/play-services/id.html
+[google_ad_id]:         https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [callbacks-guide]:      https://docs.adjust.com/en/callbacks
 [event-tracking]:       https://docs.adjust.com/en/event-tracking
 [special-partners]:     https://docs.adjust.com/en/special-partners
