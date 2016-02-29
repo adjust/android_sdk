@@ -506,12 +506,14 @@ Unlike disabling tracking, this setting is *not remembered*
 bettween sessions. This means that the SDK is in online mode whenever it is started,
 even if the app was terminated in offline mode.
 
-### 18. Device id's
+### 18. Device IDs
 
-Certains services such as Google Analytics, require that Device and Client IDs must first coordinate in order to prevent duplicate reporting.
+Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting. 
 
-To obtain the device identifier Google Advertising Id, there is a restriction that it can only be read in a background thread. 
-By calling the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will make sure that it will work in any situation:
+To obtain the IDFA, call the function `idfa`:
+
+If you need to obtain the Google Advertising ID, There is a restriction that only allows it to be read in a background thread.
+ If you call the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will work in any situation
 
 ```java
 Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
@@ -522,7 +524,7 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 });
 ```
 
-Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance you will have access to Google Advertising Id as the variable `googleAdId`.
+Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as the variable `googleAdId`.
 
 ## Troubleshooting
 
