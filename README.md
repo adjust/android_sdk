@@ -508,7 +508,25 @@ even if the app was terminated in offline mode.
 
 ## Troubleshooting
 
-### I'm seeing the "too frequent session" error 
+### I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
+
+This error occurs usually when testing installs. We expect each session to have a minimum lenght of time, around 30 minutes.
+The sdk only sends a new session after some time since the last one. The only exception is if the app is un-installed an re-installed in a short time span, triggering a new first session.
+
+Although this behaviour is combersome during tests, we try to have the sandbox behaviour matching the production one as much as possible.
+
+It's possible to reset the information of the app of the device in our servers. Take notice of the error message in the logs 
+```
+Session failed (Ignoring too frequent session. Last session: YYYY-MM-DDTHH:mm:ss, this session: YYYY-MM-DDTHH:mm:ss, interval: XXs, min interval: 20m) (app_token: {yourAppToken}, adid: {adidValue})
+```
+
+With the `{yourAppToken}` and `{adidValue}` values, replace them and open the following link:
+
+```
+http://app.adjust.com/forget_device?app_token={yourAppToken}&adid={adidValue}
+```
+
+When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were incorrect, the link returs `Device not found`.
 
 ### Is my broadcast receiver capturing the install referrer?
 
