@@ -130,7 +130,7 @@ If you are *not* targeting the Google Play Store, you can remove the
 
 ![][proguard]
 
-### 6. Add broadcast receiver
+### <a id="broadcast_receiver"></a>6. Add broadcast receiver
 
 In your `AndroidManifest.xml` add the following `receiver` tag inside the
 `application` tag.
@@ -529,6 +529,17 @@ http://app.adjust.com/forget_device?app_token={yourAppToken}&adid={adidValue}
 When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were incorrect, the link returs `Device not found`.
 
 ### Is my broadcast receiver capturing the install referrer?
+
+If you followed the instructions in the [guide](#broadcast_receiver), the broadcast receiver should be configured to send the install referrer to our sdk and our servers.
+
+You can can test this by triggering a test install referrer manually. 
+Replace `com.your.appid` by your app id and run the following command with [adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
+
+```
+adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "tracking_id%3D123456789&utm_source%3Dmdotm%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
+```
+
+Instead of replacing the app id, it's possible to remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` paramenter.
 
 ### Can I trigger an event at application launch?
 
