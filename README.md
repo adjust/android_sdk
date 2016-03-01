@@ -427,7 +427,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### 15. Set listener for attribution changes
+### <a id="attribution_changed_listener"></a>15. Set listener for attribution changes
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
@@ -505,6 +505,29 @@ with the correct time information.
 Unlike disabling tracking, this setting is *not remembered*
 bettween sessions. This means that the SDK is in online mode whenever it is started,
 even if the app was terminated in offline mode.
+
+## Troubleshooting
+
+### I'm seeing the "too frequent session" error 
+
+### Is my broadcast receiver capturing the install referrer?
+
+### Can I trigger an event at application launch?
+
+Not how one would intuitively think. The `onCreate` method on the global `Application` class is called not only
+at application launch, but also when a system or application event is captured by the app.
+
+Our sdk is prepared to be initialized at this time, but not started. 
+That will only happen when an activity is started, i.e., when a user actually launches the app.
+
+Understanding this, it is easy to see that triggering an event at this time will not do what you would expect.
+It will start the adjust sdk and send the event, even when the app was not launched by the user, 
+at a time that depends on external factors of the app. 
+One common consequence is the artificall increase of installs and sessions tracked.
+
+If you want to trigger an event after the install, use the [attribution changed listener](#attribution_changed_listener).
+
+If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity that is started.
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/adjust_android_sdk/releases
