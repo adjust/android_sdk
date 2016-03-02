@@ -536,10 +536,37 @@ You can can test this by triggering a test install referrer manually.
 Replace `com.your.appid` by your app id and run the following command with [adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
 
 ```
-adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "tracking_id%3D123456789&utm_source%3Dmdotm%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
+db shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.adjust.example/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dmdotm%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
 ```
 
 Instead of replacing the app id, it's possible to remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` paramenter.
+
+If you the log level set to `verbose`, you should be able to see the log from reading the referrer:
+
+````
+V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=mdotm&utm_medium=banner&utm_campaign=campaign) from reftag
+```
+
+And a click package added to the sdk package handler:
+
+```
+V/Adjust: Path:      /sdk_click
+    ClientSdk: android4.2.3
+    Parameters:
+    	app_token        abc123abc123
+    	click_time       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+    	created_at       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+    	environment      sandbox
+    	gps_adid         12345678-0abc-de12-3456-7890abcdef12
+    	needs_attribution_data 1
+    	referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=mdotm&utm_medium=banner&utm_campaign=campaign
+    	reftag           abc1234
+    	source           reftag
+    	tracking_enabled 1
+```
+
+If you perform this test before launching the app, you won't see the package being send. 
+Only when the app is launched, the package is send.
 
 ### Can I trigger an event at application launch?
 
