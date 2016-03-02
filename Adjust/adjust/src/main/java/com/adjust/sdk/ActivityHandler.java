@@ -126,6 +126,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public void trackEvent(AdjustEvent event) {
         if (activityState == null) {
+            logger.warn("Event triggered before first application launch.\n" +
+                    "This will trigger the sdk start and an install without user interaction" +
+                    "Please look into https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
             trackSubsessionStart();
         }
 
