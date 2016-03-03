@@ -544,10 +544,12 @@ Replace `com.your.appid` with your app ID and run the following command with the
 [adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
 
 ```
-db shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.adjust.example/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
+adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
 ```
 
-Instead of replacing the app ID, you can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` parameter.
+If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent and followed this [guide][referrer], replace `com.adjust.sdk.AdjustReferrerReceiver` with your broadcast receiver.
+
+You can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` parameter so that all the apps in the device will receive the `INSTALL_REFERRER` intent.
 
 If you set the log level to `verbose`, you should be able to see the log from reading 
 the referrer:
