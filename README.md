@@ -510,44 +510,53 @@ even if the app was terminated in offline mode.
 
 ### I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
 
-This error occurs usually when testing installs. We expect each session to have a minimum lenght of time, around 30 minutes.
-The sdk only sends a new session after some time since the last one. The only exception is if the app is un-installed an re-installed in a short time span, triggering a new first session.
+This error typically occurs when testing installs. Uninstalling and reinstalling the app is not 
+enough to trigger a new install. The servers will determine that the SDK has lost its 
+locally aggregated session data and ignore the erroneous message, given the information 
+available on the servers about the device.
 
-Although this behaviour is combersome during tests, we try to have the sandbox behaviour matching the production one as much as possible.
+This behaviour can be cumbersome during tests, but is necessary in order to have the sandbox 
+behaviour match production as much as possible.
 
-It's possible to reset the information of the app of the device in our servers. Take notice of the error message in the logs 
+You can reset the session data of the device in our servers. Check the error 
+message in the logs:
+
 ```
 Session failed (Ignoring too frequent session. Last session: YYYY-MM-DDTHH:mm:ss, this session: YYYY-MM-DDTHH:mm:ss, interval: XXs, min interval: 20m) (app_token: {yourAppToken}, adid: {adidValue})
 ```
 
-With the `{yourAppToken}` and `{adidValue}` values, replace them and open the following link:
+With the `{yourAppToken}` and `{adidValue}` values filled in below, open the following link:
 
 ```
 http://app.adjust.com/forget_device?app_token={yourAppToken}&adid={adidValue}
 ```
 
-When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were incorrect, the link returs `Device not found`.
+When the device is forgotten, the link just returns `Forgot device`. If the device was 
+already forgotten or the values were incorrect, the link returns `Device not found`.
 
 ### Is my broadcast receiver capturing the install referrer?
 
-If you followed the instructions in the [guide](#broadcast_receiver), the broadcast receiver should be configured to send the install referrer to our sdk and our servers.
+If you followed the instructions in the [guide](#broadcast_receiver), the broadcast receiver 
+should be configured to send the install referrer to our SDK and to our servers.
 
-You can can test this by triggering a test install referrer manually. 
-Replace `com.your.appid` by your app id and run the following command with [adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
+You can test this by triggering a test install referrer manually. 
+Replace `com.your.appid` with your app ID and run the following command with the 
+[adb](http://developer.android.com/tools/help/adb.html) tool that comes with Android Studio:
 
 ```
-db shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.adjust.example/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dmdotm%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
+db shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.adjust.example/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
 ```
 
-Instead of replacing the app id, it's possible to remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` paramenter.
+Instead of replacing the app ID, you can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` parameter.
 
-If you the log level set to `verbose`, you should be able to see the log from reading the referrer:
+If you set the log level to `verbose`, you should be able to see the log from reading 
+the referrer:
 
 ````
-V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=mdotm&utm_medium=banner&utm_campaign=campaign) from reftag
+V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
 ```
 
-And a click package added to the sdk package handler:
+And a click package added to the SDK's package handler:
 
 ```
 V/Adjust: Path:      /sdk_click
@@ -559,31 +568,33 @@ V/Adjust: Path:      /sdk_click
     	environment      sandbox
     	gps_adid         12345678-0abc-de12-3456-7890abcdef12
     	needs_attribution_data 1
-    	referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=mdotm&utm_medium=banner&utm_campaign=campaign
+    	referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign
     	reftag           abc1234
     	source           reftag
     	tracking_enabled 1
 ```
 
-If you perform this test before launching the app, you won't see the package being send. 
-Only when the app is launched, the package is send.
+If you perform this test before launching the app, you won't see the package being sent. 
+The package will be sent once the app is launched.
 
 ### Can I trigger an event at application launch?
 
-Not how one would intuitively think. The `onCreate` method on the global `Application` class is called not only
+Not how you might intuitively think. The `onCreate` method on the global `Application` class is called not only
 at application launch, but also when a system or application event is captured by the app.
 
-Our sdk is prepared to be initialized at this time, but not started. 
-That will only happen when an activity is started, i.e., when a user actually launches the app.
+Our SDK is prepared for initialization at this time, but not actually started. 
+This will only happen when an activity is started, i.e., when a user actually launches the app.
 
-Understanding this, it is easy to see that triggering an event at this time will not do what you would expect.
-It will start the adjust sdk and send the event, even when the app was not launched by the user, 
+That's why triggering an event at this time will not do what you would expect.
+Such calls will start the adjust SDK and send the events, even when the app was not launched by the user - 
 at a time that depends on external factors of the app. 
-One common consequence is the artificall increase of installs and sessions tracked.
+
+Triggering events at application launch will thus result in inaccuracies in the number 
+of installs and sessions tracked.
 
 If you want to trigger an event after the install, use the [attribution changed listener](#attribution_changed_listener).
 
-If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity that is started.
+If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
 
 [dashboard]:     http://adjust.com
 [releases]:      https://github.com/adjust/adjust_android_sdk/releases
