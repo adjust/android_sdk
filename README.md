@@ -510,10 +510,8 @@ even if the app was terminated in offline mode.
 
 Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting. 
 
-To obtain the IDFA, call the function `idfa`:
-
-If you need to obtain the Google Advertising ID, There is a restriction that only allows it to be read in a background thread.
- If you call the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will work in any situation
+If you need to obtain the Google Advertising ID, there is a restriction that only allows it to be read in a background thread.
+ If you call the function `getGoogleAdId` with the context and a `OnDeviceIdsRead` instance, it will work in any situation:
 
 ```java
 Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
