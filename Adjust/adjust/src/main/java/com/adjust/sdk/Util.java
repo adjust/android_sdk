@@ -492,4 +492,12 @@ public class Util {
         final String formatString = "%0" + (bytes.length << 1) + "x";
         return String.format(Locale.US, formatString, bigInt);
     }
+
+    public static String[] getSupportedAbis() {
+        return Reflection.getSupportedAbis();
+    }
+
+    public static String getCpuAbi() {
+        return Reflection.getCpuAbi();
+    }
 }

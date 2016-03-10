@@ -150,6 +150,8 @@ class PackageBuilder {
         addString(parameters, "screen_density", deviceInfo.screenDensity);
         addString(parameters, "display_width", deviceInfo.displayWidth);
         addString(parameters, "display_height", deviceInfo.displayHeight);
+        addString(parameters, "hardware_name", deviceInfo.hardwareName);
+        addString(parameters, "cpu_type", deviceInfo.abi);
         fillPluginKeys(parameters);
     }
 
