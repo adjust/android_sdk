@@ -668,13 +668,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // try to update the attribution
         boolean attributionUpdated = updateAttribution(responseData.attribution);
 
-        // if attribution not changed exit
-        if (!attributionUpdated) {
-            return;
+        // if attribution changed, launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListener(handler);
         }
-
-        // launch attribution changed delegate
-        launchAttributionListener(handler);
     }
 
     private void launchAttributionListener(Handler handler) {
