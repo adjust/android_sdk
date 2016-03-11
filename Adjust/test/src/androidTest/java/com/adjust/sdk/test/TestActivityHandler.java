@@ -782,6 +782,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // three click packages: attributions, extraParams and mixed
         for (int i = 3; i > 0; i--) {
             assertUtil.test("PackageHandler addPackage");
+            assertUtil.test("PackageHandler sendFirstPackage");
         }
 
         // checking the default values of the first session package
@@ -1044,6 +1045,9 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.readOpenUrl(attributions, now);
         SystemClock.sleep(1000);
 
+        assertUtil.test("PackageHandler addPackage");
+        assertUtil.test("PackageHandler sendFirstPackage");
+
         // test sdk_click response data
         ActivityPackage sdkClickPackage = mockPackageHandler.queue.get(2);
         ClickResponseData clickResponseData = (ClickResponseData)ResponseData.buildResponseData(sdkClickPackage);
@@ -1289,7 +1293,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         //check that it updates
         attributionResponseDataWithAttribution.attribution = secondAttribution;
         secondRestartActivityHandler.launchAttributionResponseTasks(attributionResponseDataWithAttribution);
-        SystemClock.sleep(1000);
+        SystemClock.sleep(2000);
 
         assertUtil.debug("Wrote Attribution: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
 
@@ -1437,6 +1441,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         for (int i = 3; i > 0; i--) {
             //assertUtil.test("AttributionHandler getAttribution");
             assertUtil.test("PackageHandler addPackage");
+            assertUtil.test("PackageHandler sendFirstPackage");
         }
 
         // check that it did not send any other click package
