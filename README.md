@@ -52,7 +52,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.2.3'
+compile 'com.adjust.sdk:adjust-android:4.6.0'
 ```
 
 ### 4. Add Google Play Services
@@ -617,7 +617,7 @@ And a click package added to the SDK's package handler:
 
 ```
 V/Adjust: Path:      /sdk_click
-    ClientSdk: android4.2.3
+    ClientSdk: android4.6.0
     Parameters:
     	app_token        abc123abc123
     	click_time       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
