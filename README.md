@@ -475,8 +475,8 @@ parameter. Here is a quick summary of its properties:
 ### 16. Set listener for tracked events and sessions
 
 You can register a listener to be notified when events and sessions are tracked. 
-There is a listener for when the event or session is correctly tracked, and a listener for when there was some type of failure.
-You can add any or both of the listener after creating the `AdjustConfig` object:
+There are two listeners: one indicating the event or session is correctly tracked, and another indicating there was a failure.
+You can add either or both of the listeners after creating the `AdjustConfig` object:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -505,9 +505,9 @@ The listener function will be called after the SDK tries to send a package to th
 - `String timestamp` timestamp from the server.
 - `String adid` a unique device identifier provided by adjust.
 - `String eventToken` the event token, if the package tracked was an event.
-- `JSONObject jsonResponse` the json object with the reponse from the server.
+- `JSONObject jsonResponse` the JSON object with the reponse from the server.
 
-The extra parameter in `failureResponseData` is currently only `boolean willRetry` and it indicates whether the package will try to be send again to the server. 
+Currently, the extra parameter in `failureResponseData` is only `boolean willRetry`, which indicates there will be an attempt to resend the package at a later time.
 
 ### 17. Disable tracking
 
