@@ -8,8 +8,16 @@ import android.util.Log;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEventFailure;
+import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnEventTrackingFailedListener;
+import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnSessionTrackingFailedListener;
+import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
 
 /**
  * Created by pfms on 17/12/14.
@@ -43,8 +51,39 @@ public class GlobalApplication extends Application {
             }
         });
 
-        Adjust.onCreate(config);
+        // set event success tracking delegate
+        config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+            @Override
+            public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+                Log.d("example", "success event tracking: " + eventSuccessResponseData.toString());
+            }
+        });
 
+        // set event failure tracking delegate
+        config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+            @Override
+            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+                Log.d("example", "failed event tracking: " + eventFailureResponseData.toString());
+            }
+        });
+
+        // set session success tracking delegate
+        config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+            @Override
+            public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+                Log.d("example", "success session tracking: " + sessionSuccessResponseData.toString());
+            }
+        });
+
+        // set session failure tracking delegate
+        config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+            @Override
+            public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+                Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
+            }
+        });
+
+        Adjust.onCreate(config);
 
         // register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14

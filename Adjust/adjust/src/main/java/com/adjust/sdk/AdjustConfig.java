@@ -19,6 +19,10 @@ public class AdjustConfig {
     long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
+    OnEventTrackingSucceededListener onEventTrackingSucceededListener;
+    OnEventTrackingFailedListener onEventTrackingFailedListener;
+    OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
+    OnSessionTrackingFailedListener onSessionTrackingFailedListener;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -67,8 +71,32 @@ public class AdjustConfig {
         this.deepLinkComponent = deepLinkComponent;
     }
 
-    public boolean hasListener() {
+    public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
+        this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
+    }
+
+    public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener) {
+        this.onEventTrackingFailedListener = onEventTrackingFailedListener;
+    }
+
+    public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener) {
+        this.onSessionTrackingSucceededListener = onSessionTrackingSucceededListener;
+    }
+
+    public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
+        this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
+    }
+
+    public boolean hasAttributionChangedListener() {
         return onAttributionChangedListener != null;
+    }
+
+    public boolean hasListener() {
+        return onAttributionChangedListener != null
+                || onEventTrackingSucceededListener != null
+                || onEventTrackingFailedListener != null
+                || onSessionTrackingSucceededListener != null
+                || onSessionTrackingFailedListener != null;
     }
 
     public boolean isValid() {

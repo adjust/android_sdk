@@ -138,9 +138,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.error("testResponseError");
 
-        assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"testResponseError\"}");
-
-        assertUtil.test("PackageHandler sendNextPackage");
+        assertUtil.test("PackageHandler sendNextPackage, message:testResponseError timestamp:null json:{\"message\":\"testResponseError\"}");
     }
 
     private void wrongJsonTest() {
@@ -170,9 +168,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.info("No message found");
 
-        assertUtil.test("PackageHandler finishedTrackingActivity, {}");
-
-        assertUtil.test("PackageHandler sendNextPackage");
+        assertUtil.test("PackageHandler sendNextPackage, message:null timestamp:null json:{}");
     }
 
     private void messageTest() {
@@ -189,9 +185,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.info("response OK");
 
-        assertUtil.test("PackageHandler finishedTrackingActivity, {\"message\":\"response OK\"}");
-
-        assertUtil.test("PackageHandler sendNextPackage");
+        assertUtil.test("PackageHandler sendNextPackage, message:response OK timestamp:null json:{\"message\":\"response OK\"}");
     }
 
     private ActivityPackage getSessionPackage() {

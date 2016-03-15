@@ -11,6 +11,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
+import android.os.Looper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -87,6 +89,36 @@ public class Util {
 
     public static String getPlayAdId(Context context) {
         return Reflection.getPlayAdId(context);
+    }
+
+    public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
+        ILogger logger = AdjustFactory.getLogger();
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            logger.debug("GoogleAdId being read in the background");
+            String GoogleAdId = Util.getPlayAdId(context);
+
+            logger.debug("GoogleAdId read " + GoogleAdId);
+            onDeviceIdRead.onGoogleAdIdRead(GoogleAdId);
+            return;
+        }
+
+        logger.debug("GoogleAdId being read in the foreground");
+        new AsyncTask<Context,Void,String>() {
+            @Override
+            protected String doInBackground(Context... params) {
+                ILogger logger = AdjustFactory.getLogger();
+                Context innerContext = params[0];
+                String innerResult = Util.getPlayAdId(innerContext);
+                logger.debug("GoogleAdId read " + innerResult);
+                return innerResult;
+            }
+
+            @Override
+            protected void onPostExecute(String playAdiId) {
+                ILogger logger = AdjustFactory.getLogger();
+                onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+            }
+        }.execute(context);
     }
 
     public static Boolean isPlayTrackingEnabled(Context context) {
@@ -173,7 +205,7 @@ public class Util {
         }
     }
 
-    public static JSONObject readHttpResponse(HttpsURLConnection connection) throws Exception {
+    public static ResponseData readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
@@ -202,23 +234,36 @@ public class Util {
                 connection.disconnect();
             }
         }
+
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
+
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
         if (stringResponse == null || stringResponse.length() == 0) {
-            return null;
+            return responseData;
         }
 
         JSONObject jsonResponse = null;
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            getLogger().error("Failed to parse json response. (%s)", e.getMessage());
+            String message = String.format("Failed to parse json response. (%s)", e.getMessage());
+            logger.error(message);
+            responseData.message = message;
         }
 
-        if (jsonResponse == null) return null;
+        if (jsonResponse == null) {
+            return responseData;
+        }
+
+        responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
+
+        responseData.message = message;
+        responseData.timestamp = jsonResponse.optString("timestamp", null);
+        responseData.adid = jsonResponse.optString("adid", null);
 
         if (message == null) {
             message = "No message found";
@@ -227,11 +272,12 @@ public class Util {
         if (responseCode != null &&
                 responseCode == HttpsURLConnection.HTTP_OK) {
             logger.info("%s", message);
+            responseData.success = true;
         } else {
             logger.error("%s", message);
         }
 
-        return jsonResponse;
+        return responseData;
     }
 
     public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)

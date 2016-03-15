@@ -12,10 +12,23 @@ import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustEventFailure;
+import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AttributionResponseData;
+import com.adjust.sdk.ClickResponseData;
 import com.adjust.sdk.Constants;
+import com.adjust.sdk.EventResponseData;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnEventTrackingFailedListener;
+import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnSessionTrackingFailedListener;
+import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.ResponseData;
+import com.adjust.sdk.SessionResponseData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -94,7 +107,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
         checkFirstSession();
@@ -131,7 +144,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "VERBOSE", true);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "VERBOSE", true);
 
         // test first session start
         checkFirstSession();
@@ -291,7 +304,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "DEBUG", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "DEBUG", false);
 
         // test first session start
         checkFirstSession();
@@ -477,7 +490,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "WARN", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "WARN", false);
 
         // test first session start
         checkFirstSession();
@@ -514,7 +527,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false);
 
         // test first session start
         checkFirstSession();
@@ -607,7 +620,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(2000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ERROR", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ERROR", false);
 
         // test first session start without attribution handler
         checkFirstSession(true);
@@ -737,7 +750,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ASSERT", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "ASSERT", false);
 
         // test first session start
         checkFirstSession();
@@ -769,6 +782,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // three click packages: attributions, extraParams and mixed
         for (int i = 3; i > 0; i--) {
             assertUtil.test("PackageHandler addPackage");
+            assertUtil.test("PackageHandler sendFirstPackage");
         }
 
         // checking the default values of the first session package
@@ -828,15 +842,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         testMixedClickPackage.testClickPackage("deeplink");
     }
 
-    public void testFinishedTrackingActivity() {
+    public void testAttributionDelegate() {
         // assert test name to read better in logcat
-        mockLogger.Assert("TestActivityHandler testFinishedTrackingActivity");
+        mockLogger.Assert("TestActivityHandler testAttributionDelegate");
 
         // create the config to start the session
-        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_PRODUCTION);
-
-        // set verbose log level
-        config.setLogLevel(LogLevel.VERBOSE);
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
@@ -844,6 +855,222 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 mockLogger.test("onAttributionChanged: " + attribution);
             }
         });
+
+        checkFinishTasks(config,
+                true,   // attributionDelegatePresent
+                false,  // eventSuccessDelegatePresent
+                false,  // eventFailureDelegatePresent
+                false,  // sessionSuccessDelegatePresent
+                false); // sessionFailureDelegatePresent
+    }
+
+    public void testSuccessDelegates() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestActivityHandler testSuccessDelegates");
+
+        // create the config to start the session
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
+
+        config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+            @Override
+            public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+                mockLogger.test("onFinishedEventTrackingSucceeded: " + eventSuccessResponseData);
+            }
+        });
+
+        config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+            @Override
+            public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+                mockLogger.test("onFinishedSessionTrackingSucceeded: " + sessionSuccessResponseData);
+            }
+        });
+
+        checkFinishTasks(config,
+                false,  // attributionDelegatePresent
+                true,   // eventSuccessDelegatePresent
+                false,  // eventFailureDelegatePresent
+                true,   // sessionSuccessDelegatePresent
+                false); // sessionFailureDelegatePresent
+    }
+
+    public void testFailureDelegates() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestActivityHandler testFailureDelegates");
+
+        // create the config to start the session
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
+
+        config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+            @Override
+            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+                mockLogger.test("onFinishedEventTrackingFailed: " + eventFailureResponseData);
+            }
+        });
+
+        config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+            @Override
+            public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
+                mockLogger.test("onFinishedSessionTrackingFailed: " + failureResponseData);
+            }
+        });
+
+        checkFinishTasks(config,
+                false,  // attributionDelegatePresent
+                false,  // eventSuccessDelegatePresent
+                true,   // eventFailureDelegatePresent
+                false,  // sessionSuccessDelegatePresent
+                true);  // sessionFailureDelegatePresent
+    }
+
+    public void checkFinishTasks(AdjustConfig config,
+                                 boolean attributionDelegatePresent,
+                                 boolean eventSuccessDelegatePresent,
+                                 boolean eventFailureDelegatePresent,
+                                 boolean sessionSuccessDelegatePresent,
+                                 boolean sessionFailureDelegatePresent)
+    {
+        ActivityHandler activityHandler = getActivityHandler(config);
+
+        activityHandler.trackSubsessionStart();
+
+        SystemClock.sleep(3000);
+
+        checkInitAndFirstSession();
+
+        // test first session package
+        ActivityPackage firstSessionPackage = mockPackageHandler.queue.get(0);
+
+        // create activity package test
+        TestActivityPackage testActivityPackage = new TestActivityPackage(firstSessionPackage);
+
+        testActivityPackage.needsResponseDetails =
+                attributionDelegatePresent ||
+                eventSuccessDelegatePresent ||
+                eventFailureDelegatePresent ||
+                sessionSuccessDelegatePresent ||
+                sessionFailureDelegatePresent;
+
+        // set first session
+        testActivityPackage.testSessionPackage(1);
+
+        // simulate a successful session
+        SessionResponseData successSessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
+        successSessionResponseData.success = true;
+
+        activityHandler.finishedTrackingActivity(successSessionResponseData);
+        SystemClock.sleep(1000);
+
+        // attribution handler should always receive the session response
+        assertUtil.test("AttributionHandler checkSessionResponse");
+        // the first session does not trigger the event response delegate
+
+        assertUtil.notInDebug("Launching success event tracking listener");
+        assertUtil.notInDebug("Launching failed event tracking listener");
+
+        activityHandler.launchSessionResponseTasks(successSessionResponseData);
+        SystemClock.sleep(1000);
+
+        // if present, the first session triggers the success session delegate
+        if (sessionSuccessDelegatePresent) {
+            assertUtil.debug("Launching success session tracking listener");
+        } else {
+            assertUtil.notInDebug("Launching success session tracking delegate");
+        }
+        // it doesn't trigger the failure session delegate
+        assertUtil.notInDebug("Launching failed session tracking listener");
+
+        // simulate a failure session
+        SessionResponseData failureSessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
+        failureSessionResponseData.success = false;
+
+        activityHandler.launchSessionResponseTasks(failureSessionResponseData);
+        SystemClock.sleep(1000);
+
+        // it doesn't trigger the success session delegate
+        assertUtil.notInDebug("Launching success session tracking listener");
+
+        // if present, the first session triggers the failure session delegate
+        if (sessionFailureDelegatePresent) {
+            assertUtil.debug("Launching failed session tracking listener");
+        } else {
+            assertUtil.notInDebug("Launching failed session tracking listener");
+        }
+
+        // test success event response data
+        activityHandler.trackEvent(new AdjustEvent("abc123"));
+        SystemClock.sleep(1000);
+
+        ActivityPackage eventPackage = mockPackageHandler.queue.get(1);
+        EventResponseData eventSuccessResponseData = (EventResponseData)ResponseData.buildResponseData(eventPackage);
+        eventSuccessResponseData.success = true;
+
+        activityHandler.finishedTrackingActivity(eventSuccessResponseData);
+        SystemClock.sleep(1000);
+
+        // attribution handler should never receive the event response
+        assertUtil.notInTest("AttributionHandler checkSessionResponse");
+
+        // if present, the success event triggers the success event delegate
+        if (eventSuccessDelegatePresent) {
+            assertUtil.debug("Launching success event tracking listener");
+        } else {
+            assertUtil.notInDebug("Launching success event tracking listener");
+        }
+        // it doesn't trigger the failure event delegate
+        assertUtil.notInDebug("Launching failed event tracking listener");
+
+        // test failure event response data
+        EventResponseData eventFailureResponseData = (EventResponseData)ResponseData.buildResponseData(eventPackage);
+        eventFailureResponseData.success = false;
+
+        activityHandler.finishedTrackingActivity(eventFailureResponseData);
+        SystemClock.sleep(1000);
+
+        // attribution handler should never receive the event response
+        assertUtil.notInTest("AttributionHandler checkSessionResponse");
+
+        // if present, the failure event triggers the failure event delegate
+        if (eventFailureDelegatePresent) {
+            assertUtil.debug("Launching failed event tracking listener");
+        } else {
+            assertUtil.notInDebug("Launching failed event tracking listener");
+        }
+        // it doesn't trigger the success event delegate
+        assertUtil.notInDebug("Launching success event tracking listener");
+
+        // test click
+        Uri attributions = Uri.parse("AdjustTests://example.com/path/inApp?adjust_tracker=trackerValue&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
+        long now = System.currentTimeMillis();
+
+        activityHandler.readOpenUrl(attributions, now);
+        SystemClock.sleep(1000);
+
+        assertUtil.test("PackageHandler addPackage");
+        assertUtil.test("PackageHandler sendFirstPackage");
+
+        // test sdk_click response data
+        ActivityPackage sdkClickPackage = mockPackageHandler.queue.get(2);
+        ClickResponseData clickResponseData = (ClickResponseData)ResponseData.buildResponseData(sdkClickPackage);
+
+        activityHandler.finishedTrackingActivity(clickResponseData);
+        SystemClock.sleep(1000);
+
+        // attribution handler should never receive the click response
+        assertUtil.notInTest("AttributionHandler checkSessionResponse");
+        // it doesn't trigger the any event delegate
+        assertUtil.notInDebug("Launching success event tracking listener");
+        assertUtil.notInDebug("Launching failed event tracking listener");
+    }
+
+    public void testLaunchDeepLink() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestActivityHandler testLaunchDeepLink");
+
+        // create the config to start the session
+        AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_PRODUCTION);
+
+        // set verbose log level
+        config.setLogLevel(LogLevel.VERBOSE);
 
         // start activity handler with config
         ActivityHandler activityHandler = getActivityHandler(config);
@@ -853,14 +1080,14 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_PRODUCTION, "ASSERT", false);
+        checkInitTests(AdjustConfig.ENVIRONMENT_PRODUCTION, "ASSERT", false);
 
         // test first session start
         checkFirstSession();
 
-        JSONObject responseNull = null;
+        ResponseData responseDataNull = null;
 
-        activityHandler.finishedTrackingActivity(responseNull);
+        //activityHandler.finishedTrackingActivity(responseDataNull);
         SystemClock.sleep(1000);
 
         // if the response is null
@@ -869,22 +1096,20 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.notInInfo("Open deep link");
 
         // set package handler to respond with a valid attribution
-        JSONObject wrongDeeplinkResponse = null;
+        ResponseData wrongDeeplinkResponseData = ResponseData.buildResponseData(mockPackageHandler.queue.get(0));
         try {
-            wrongDeeplinkResponse = new JSONObject("{ " +
+            wrongDeeplinkResponseData.jsonResponse = new JSONObject("{ " +
                     "\"deeplink\" :  \"wrongDeeplink://\" }");
         } catch (JSONException e) {
             fail(e.getMessage());
         }
 
-        activityHandler.finishedTrackingActivity(wrongDeeplinkResponse);
-        SystemClock.sleep(1000);
+        activityHandler.launchSessionResponseTasks((SessionResponseData) wrongDeeplinkResponseData);
+        SystemClock.sleep(3000);
 
         // check that it was unable to open the url
         assertUtil.error("Unable to open deep link (wrongDeeplink://)");
 
-        // and it check the attribution
-        assertUtil.test("AttributionHandler checkAttribution");
         // TODO add test that opens url
 
         // checking the default values of the first session package
@@ -896,7 +1121,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // create activity package test
         TestActivityPackage testActivityPackage = new TestActivityPackage(activityPackage);
 
-        testActivityPackage.needsAttributionData = true;
         testActivityPackage.environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 
         // set first session
@@ -916,7 +1140,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests();
+        checkInitTests();
 
         // test first session start
         checkFirstSession();
@@ -928,7 +1152,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.isNull(nullAttribution);
 
         // check that it does not update a null attribution
-        assertUtil.isFalse(firstActivityHandler.tryUpdateAttribution(nullAttribution));
+        assertUtil.isFalse(firstActivityHandler.updateAttribution(nullAttribution));
 
         // create an empty attribution
         JSONObject emptyJsonResponse = null;
@@ -940,13 +1164,21 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustAttribution emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
 
         // check that updates attribution
-        assertUtil.isTrue(firstActivityHandler.tryUpdateAttribution(emptyAttribution));
+        assertUtil.isTrue(firstActivityHandler.updateAttribution(emptyAttribution));
         assertUtil.debug("Wrote Attribution: tt:null tn:null net:null cam:null adg:null cre:null cl:null");
 
         emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
 
+        // test first session package
+        ActivityPackage firstSessionPackage = mockPackageHandler.queue.get(0);
+
+        // simulate a session response with attribution data
+        SessionResponseData sessionResponseDataWithAttribution = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
+        sessionResponseDataWithAttribution.attribution = emptyAttribution;
+
         // check that it does not update the attribution
-        assertUtil.isFalse(firstActivityHandler.tryUpdateAttribution(emptyAttribution));
+        firstActivityHandler.launchSessionResponseTasks(sessionResponseDataWithAttribution);
+        SystemClock.sleep(1000);
         assertUtil.notInDebug("Wrote Attribution");
 
         // end session
@@ -955,12 +1187,13 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         checkEndSession();
 
+        // create the new config
         config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
             public void onAttributionChanged(AdjustAttribution attribution) {
-                mockLogger.test("onAttributionChanged: " + attribution);
+                mockLogger.test("restartActivityHandler onAttributionChanged: " + attribution);
             }
         });
 
@@ -969,12 +1202,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false, "ec:0 sc:1 ssc:1", "tt:null tn:null net:null cam:null adg:null cre:null cl:null");
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false, "ec:0 sc:1 ssc:1", "tt:null tn:null net:null cam:null adg:null cre:null cl:null");
 
         checkFirstSessionSubsession(2);
 
         // check that it does not update the attribution after the restart
-        assertUtil.isFalse(restartActivityHandler.tryUpdateAttribution(emptyAttribution));
+        assertUtil.isFalse(restartActivityHandler.updateAttribution(emptyAttribution));
         assertUtil.notInDebug("Wrote Attribution");
 
         // new attribution
@@ -994,16 +1227,23 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustAttribution firstAttribution = AdjustAttribution.fromJson(firstAttributionJson);
 
         //check that it updates
-        assertUtil.isTrue(restartActivityHandler.tryUpdateAttribution(firstAttribution));
-        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
-
-        // check that it launch the saved attribute
+        sessionResponseDataWithAttribution.attribution = firstAttribution;
+        restartActivityHandler.launchSessionResponseTasks(sessionResponseDataWithAttribution);
         SystemClock.sleep(1000);
 
-        assertUtil.test("onAttributionChanged: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
+        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
+        assertUtil.test("restartActivityHandler onAttributionChanged: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
+        // test first session package
+        ActivityPackage attributionPackage = mockAttributionHandler.attributionPackage;
+        // simulate a session response with attribution data
+        AttributionResponseData attributionResponseDataWithAttribution = (AttributionResponseData)ResponseData.buildResponseData(attributionPackage);
+
+        attributionResponseDataWithAttribution.attribution = firstAttribution;
         // check that it does not update the attribution
-        assertUtil.isFalse(restartActivityHandler.tryUpdateAttribution(firstAttribution));
+        restartActivityHandler.launchAttributionResponseTasks(attributionResponseDataWithAttribution);
+        SystemClock.sleep(1000);
+
         assertUtil.notInDebug("Wrote Attribution");
 
         // end session
@@ -1017,7 +1257,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
             public void onAttributionChanged(AdjustAttribution attribution) {
-                mockLogger.test("onAttributionChanged: " + attribution);
+                mockLogger.test("secondRestartActivityHandler onAttributionChanged: " + attribution);
             }
         });
 
@@ -1026,12 +1266,12 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false, "ec:0 sc:1 ssc:2", "tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
+        checkInitTests(AdjustConfig.ENVIRONMENT_SANDBOX, "INFO", false, "ec:0 sc:1 ssc:2", "tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
 
         checkFirstSessionSubsession(3);
 
         // check that it does not update the attribution after the restart
-        assertUtil.isFalse(secondRestartActivityHandler.tryUpdateAttribution(firstAttribution));
+        assertUtil.isFalse(secondRestartActivityHandler.updateAttribution(firstAttribution));
         assertUtil.notInDebug("Wrote Attribution");
 
         // new attribution
@@ -1051,16 +1291,17 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustAttribution secondAttribution = AdjustAttribution.fromJson(secondAttributionJson);
 
         //check that it updates
-        assertUtil.isTrue(secondRestartActivityHandler.tryUpdateAttribution(secondAttribution));
+        attributionResponseDataWithAttribution.attribution = secondAttribution;
+        secondRestartActivityHandler.launchAttributionResponseTasks(attributionResponseDataWithAttribution);
+        SystemClock.sleep(2000);
+
         assertUtil.debug("Wrote Attribution: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
 
         // check that it launch the saved attribute
-        SystemClock.sleep(1000);
-
-        assertUtil.test("onAttributionChanged: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
+        assertUtil.test("secondRestartActivityHandler onAttributionChanged: tt:ttValue2 tn:tnValue2 net:nValue2 cam:cpValue2 adg:aValue2 cre:ctValue2 cl:clValue2");
 
         // check that it does not update the attribution
-        assertUtil.isFalse(secondRestartActivityHandler.tryUpdateAttribution(secondAttribution));
+        assertUtil.isFalse(secondRestartActivityHandler.updateAttribution(secondAttribution));
         assertUtil.notInDebug("Wrote Attribution");
     }
 
@@ -1087,7 +1328,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.info("Pausing package and attribution handler to put in offline mode");
 
         // test init values
-        initTests();
+        checkInitTests();
 
         // test first session start
         checkFirstSession(true);
@@ -1163,7 +1404,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests();
+        checkInitTests();
 
         // test first session start
         checkFirstSession();
@@ -1200,6 +1441,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         for (int i = 3; i > 0; i--) {
             //assertUtil.test("AttributionHandler getAttribution");
             assertUtil.test("PackageHandler addPackage");
+            assertUtil.test("PackageHandler sendFirstPackage");
         }
 
         // check that it did not send any other click package
@@ -1278,7 +1520,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(3000);
 
         // test init values
-        initTests();
+        checkInitTests();
 
         // subsession count is 1
         // attribution is null,
@@ -1350,7 +1592,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustAttribution attribution = AdjustAttribution.fromJson(jsonAttribution);
 
         // update the attribution
-        activityHandler.tryUpdateAttribution(attribution);
+        activityHandler.updateAttribution(attribution);
 
         // attribution was updated
         assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
@@ -1412,7 +1654,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         SystemClock.sleep(2000);
 
         // test init values
-        initTests();
+        checkInitTests();
 
         // test first session start
         checkFirstSession();
@@ -1476,16 +1718,16 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         }
     }
 
-    private void initTests() {
-        initTests("sandbox", "INFO", false, null, null);
+    private void checkInitTests() {
+        checkInitTests("sandbox", "INFO", false, null, null);
     }
 
-    private void initTests(String environment, String logLevel, boolean eventBuffering) {
-        initTests(environment, logLevel, eventBuffering, null, null);
+    private void checkInitTests(String environment, String logLevel, boolean eventBuffering) {
+        checkInitTests(environment, logLevel, eventBuffering, null, null);
     }
 
-    private void initTests(String environment, String logLevel, boolean eventBuffering,
-                           String readActivityState, String readAttribution) {
+    private void checkInitTests(String environment, String logLevel, boolean eventBuffering,
+                                String readActivityState, String readAttribution) {
         // check environment level
         if (environment == "sandbox") {
             assertUtil.Assert("SANDBOX: Adjust is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
@@ -1508,10 +1750,10 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // check Google play is not set
         assertUtil.info("Unable to get Google Play Services Advertising ID at start time");
 
-        readFiles(readActivityState, readAttribution);
+        checkReadFiles(readActivityState, readAttribution);
     }
 
-    private void readFiles(String readActivityState, String readAttribution) {
+    private void checkReadFiles(String readActivityState, String readAttribution) {
         if (readAttribution == null) {
             //  test that the attribution file did not exist in the first run of the application
             assertUtil.verbose("Attribution file not found");
@@ -1538,7 +1780,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
             assertUtil.test("PackageHandler init, startPaused: false");
         }
 
-        checkNewSession(paused,1, 0, false);
+        checkNewSession(paused, 1, 0, false);
     }
 
     private void checkNewSession(boolean paused,
@@ -1577,6 +1819,11 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 "ec:" + eventCount + " sc:" + sessionCount + " ssc:1" );
 
         checkTimerIsFired(!(paused || timerAlreadyStarted));
+    }
+
+    private void checkInitAndFirstSession() {
+        checkInitTests();
+        checkFirstSession();
     }
 
     private void checkTimerIsFired(boolean timerFired) {

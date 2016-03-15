@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 /**
  * Created by pfms on 15/12/14.
  */
@@ -16,7 +14,7 @@ public interface IActivityHandler {
 
     public void trackEvent(AdjustEvent event);
 
-    public void finishedTrackingActivity(JSONObject jsonResponse);
+    public void finishedTrackingActivity(ResponseData responseData);
 
     public void setEnabled(boolean enabled);
 
@@ -24,7 +22,13 @@ public interface IActivityHandler {
 
     public void readOpenUrl(Uri url, long clickTime);
 
-    public boolean tryUpdateAttribution(AdjustAttribution attribution);
+    public boolean updateAttribution(AdjustAttribution attribution);
+
+    public void launchEventResponseTasks(EventResponseData eventResponseData);
+
+    public void launchSessionResponseTasks(SessionResponseData sessionResponseData);
+
+    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
     public void sendReferrer(String referrer, long clickTime);
 

@@ -8,6 +8,8 @@ import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.PackageHandler;
+import com.adjust.sdk.ResponseData;
+import com.adjust.sdk.UnknownResponseData;
 
 /**
  * Created by pfms on 30/01/15.
@@ -84,13 +86,13 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertUtil.test("RequestHandler sendPackage, clickFirstPackage");
 
         // send the second click package/ third package
-        secondPackageHandler.sendNextPackage();
+        secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
         assertUtil.test("RequestHandler sendPackage, clickThirdPackage");
 
         // send the unknow package/ second package
-        secondPackageHandler.sendNextPackage();
+        secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
         assertUtil.test("RequestHandler sendPackage, unknownSecondPackage");
@@ -159,7 +161,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         addSecondPackageTest(packageHandler);
 
         //send next package
-        packageHandler.sendNextPackage();
+        packageHandler.sendNextPackage(null);
         SystemClock.sleep(2000);
 
         assertUtil.debug("Package handler wrote 1 packages");
@@ -183,7 +185,9 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.IS_SENDING, null);
 
         //send next package
-        packageHandler.closeFirstPackage();
+        ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
+        UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
+        packageHandler.closeFirstPackage(unknownResponseData);
         SystemClock.sleep(2000);
 
         assertUtil.notInDebug("Package handler wrote");
@@ -193,19 +197,6 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         // try to send the first package again
         sendFirstTests(SendFirstState.SEND, "unknownFirstPackage");
-    }
-
-    public void testCalls() {
-        // assert test name to read better in logcat
-        mockLogger.Assert("TestPackageHandler testCalls");
-
-        PackageHandler packageHandler = startPackageHandler();
-
-        // TODO test "will retry later"
-
-        packageHandler.finishedTrackingActivity(null);
-
-        assertUtil.test("ActivityHandler finishedTrackingActivity, null");
     }
 
     private PackageHandler startPackageHandler() {

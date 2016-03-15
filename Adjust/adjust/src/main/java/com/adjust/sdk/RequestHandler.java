@@ -15,13 +15,11 @@ import android.os.Looper;
 import android.os.Message;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-import java.net.URL;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -83,7 +81,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     private void sendInternal(ActivityPackage activityPackage) {
-        URL url;
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
@@ -92,9 +89,9 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
                     activityPackage.getClientSdk(),
                     activityPackage.getParameters());
 
-            JSONObject jsonResponse = Util.readHttpResponse(connection);
+            ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
 
-            requestFinished(jsonResponse);
+            requestFinished(responseData);
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
@@ -106,32 +103,39 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         }
     }
 
-    private void requestFinished(JSONObject jsonResponse) throws JSONException {
-        if (jsonResponse == null) {
-            packageHandler.closeFirstPackage();
+    private void requestFinished(ResponseData responseData) throws JSONException {
+        if (responseData.jsonResponse == null) {
+            packageHandler.closeFirstPackage(responseData);
             return;
         }
 
-        packageHandler.finishedTrackingActivity(jsonResponse);
-        packageHandler.sendNextPackage();
+        packageHandler.sendNextPackage(responseData);
     }
 
     // close current package because it failed
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
-        logger.error("%s. (%s) Will retry later", packageMessage, reasonString);
+        String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
+        logger.error(finalMessage);
 
-        packageHandler.closeFirstPackage();
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
+        responseData.message = finalMessage;
+
+        packageHandler.closeFirstPackage(responseData);
     }
 
     // send next package because the current package failed
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = getReasonString(message, throwable);
-        logger.error("%s. (%s)", failureMessage, reasonString);
+        String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
+        logger.error(finalMessage);
 
-        packageHandler.sendNextPackage();
+        ResponseData responseData = ResponseData.buildResponseData(activityPackage);
+        responseData.message = finalMessage;
+
+        packageHandler.sendNextPackage(responseData);
     }
 
     private String getReasonString(String message, Throwable throwable) {

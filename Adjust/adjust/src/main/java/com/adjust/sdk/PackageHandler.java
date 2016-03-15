@@ -15,8 +15,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,16 +77,21 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage() {
+    public void sendNextPackage(ResponseData responseData) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND_NEXT;
         internalHandler.sendMessage(message);
+
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage() {
+    public void closeFirstPackage(ResponseData responseData) {
         isSending.set(false);
+
+        responseData.willRetry = true;
+        activityHandler.finishedTrackingActivity(responseData);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -101,11 +104,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     @Override
     public void resumeSending() {
         paused = false;
-    }
-
-    @Override
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
-        activityHandler.finishedTrackingActivity(jsonResponse);
     }
 
     private static final class InternalHandler extends Handler {
@@ -197,7 +195,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     private void readPackageQueue() {
         try {
-            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, List.class);
+            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, (Class<List<ActivityPackage>>)((Class)List.class));
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", PACKAGE_QUEUE_NAME, e.getMessage());
             packageQueue = null;

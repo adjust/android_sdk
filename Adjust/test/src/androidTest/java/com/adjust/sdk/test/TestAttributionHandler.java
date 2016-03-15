@@ -9,6 +9,8 @@ import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AttributionHandler;
+import com.adjust.sdk.ResponseData;
+import com.adjust.sdk.SessionResponseData;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,6 +26,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
     private UnitTestActivity activity;
     private Context context;
     private ActivityPackage attributionPackage;
+    private ActivityPackage firstSessionPackage;
 
     public TestAttributionHandler() {
         super(UnitTestActivity.class);
@@ -49,21 +52,32 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         activity = getActivity();
         context = activity.getApplicationContext();
 
-        attributionPackage = getAttributionPackage();
+        savePackages();
+
+        mockLogger.reset();
     }
 
-    private ActivityPackage getAttributionPackage() {
+    private void savePackages() {
         MockAttributionHandler mockAttributionHandler = new MockAttributionHandler(mockLogger);
         MockPackageHandler mockPackageHandler = new MockPackageHandler(mockLogger);
 
         AdjustFactory.setAttributionHandler(mockAttributionHandler);
         AdjustFactory.setPackageHandler(mockPackageHandler);
 
+        // deleting the activity state file to simulate a first session
+        boolean activityStateDeleted = ActivityHandler.deleteActivityState(context);
+        boolean attributionDeleted = ActivityHandler.deleteAttribution(context);
+
         // create the config to start the session
         AdjustConfig config = new AdjustConfig(context, "123456789012", AdjustConfig.ENVIRONMENT_SANDBOX);
 
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
+
+        if (activityHandler != null) {
+            activityHandler.trackSubsessionStart();
+        }
+
         SystemClock.sleep(3000);
 
         ActivityPackage attributionPackage = activityHandler.getAttributionPackage();
@@ -72,9 +86,9 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         attributionPackageTest.testAttributionPackage();
 
-        mockLogger.reset();
+        this.firstSessionPackage = mockPackageHandler.queue.get(0);
 
-        return attributionPackage;
+        this.attributionPackage = attributionPackage;
     }
 
     @Override
@@ -113,28 +127,37 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         // test ok response with message
         okMessageTest(attributionHandler);
+
     }
 
-    public void testCheckAttribution() {
+    public void testCheckSessionResponse() {
         // assert test name to read better in logcat
-        mockLogger.Assert("TestAttributionHandler testCheckAttribution");
+        mockLogger.Assert("TestAttributionHandler testCheckSessionResponse");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
                 attributionPackage, false, true);
 
-        String response = "Response: { \"attribution\" : " +
-                "{\"tracker_token\" : \"ttValue\" , " +
-                "\"tracker_name\"  : \"tnValue\" , " +
-                "\"network\"       : \"nValue\" , " +
-                "\"campaign\"      : \"cpValue\" , " +
-                "\"adgroup\"       : \"aValue\" , " +
-                "\"creative\"      : \"ctValue\" , " +
-                "\"click_label\"   : \"clValue\" } }";
+        // new attribution
+        JSONObject attributionJson = null;
+        try {
+            attributionJson = new JSONObject("{ " +
+                    "\"tracker_token\" : \"ttValue\" , " +
+                    "\"tracker_name\"  : \"tnValue\" , " +
+                    "\"network\"       : \"nValue\" , " +
+                    "\"campaign\"      : \"cpValue\" , " +
+                    "\"adgroup\"       : \"aValue\" , " +
+                    "\"creative\"      : \"ctValue\" , " +
+                    "\"click_label\"   : \"clValue\" }");
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
 
-        callCheckAttributionWithGet(attributionHandler, ResponseType.ATTRIBUTION, response);
+        SessionResponseData sessionResponseData = (SessionResponseData) ResponseData.buildResponseData(firstSessionPackage);
+        sessionResponseData.jsonResponse = attributionJson;
 
-        // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
+        attributionHandler.checkSessionResponse(sessionResponseData);
+
+        SystemClock.sleep(1000);
 
         // updated set askingAttribution to false
         assertUtil.test("ActivityHandler setAskingAttribution, false");
@@ -144,6 +167,9 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         // and waiting for query
         assertUtil.notInDebug("Waiting to query attribution");
+
+        // check attribution was called without ask_in
+        assertUtil.test("ActivityHandler launchSessionResponseTasks, message:null timestamp:null json:{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\",\"click_label\":\"clValue\"}");
     }
 
     public void testAskIn() {
@@ -155,13 +181,28 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         String response = "Response: { \"ask_in\" : 4000 }";
 
-        callCheckAttributionWithGet(attributionHandler, ResponseType.ASK_IN, response);
+        JSONObject askIn4sJson = null;
+        try {
+            askIn4sJson = new JSONObject("{ \"ask_in\" : 4000 }");
+        } catch (JSONException e) {
+            fail(e.getMessage());
+        }
+
+        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
+
+        SessionResponseData sessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
+        sessionResponseData.jsonResponse = askIn4sJson;
+
+        attributionHandler.checkSessionResponse(sessionResponseData);;
+
+        // sleep enough not to trigger the timer
+        SystemClock.sleep(1000);
 
         // change the response to avoid a cycle;
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
         // check attribution was called with ask_in
-        assertUtil.notInTest("ActivityHandler tryUpdateAttribution");
+        assertUtil.notInTest("ActivityHandler updateAttribution");
 
         // it did update to true
         assertUtil.test("ActivityHandler setAskingAttribution, true");
@@ -171,15 +212,17 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         SystemClock.sleep(2000);
 
-        JSONObject askInJsonResponse = null;
+        JSONObject askIn5sJson = null;
         try {
-            askInJsonResponse = new JSONObject("{ \"ask_in\" : 5000 }");
+            askIn5sJson = new JSONObject("{ \"ask_in\" : 5000 }");
         } catch (JSONException e) {
             fail(e.getMessage());
         }
 
-        attributionHandler.checkAttribution(askInJsonResponse);
+        sessionResponseData.jsonResponse = askIn5sJson;
+        attributionHandler.checkSessionResponse(sessionResponseData);
 
+        // sleep enough not to trigger the old timer
         SystemClock.sleep(3000);
 
         // it did update to true
@@ -193,7 +236,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.notInTest("HttpClient execute");
 
         // check that it was finally called after 6 seconds after the second ask_in
-        SystemClock.sleep(3000);
+        SystemClock.sleep(4000);
 
         okMessageTestLogs();
 
@@ -280,7 +323,9 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.info("No message found");
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        assertUtil.test("ActivityHandler launchAttributionResponseTasks, message:null timestamp:null json:{}");
     }
 
     private void serverErrorTest(AttributionHandler attributionHandler) {
@@ -296,9 +341,9 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.error("testResponseError");
 
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
-
         assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        assertUtil.test("ActivityHandler launchAttributionResponseTasks, message:testResponseError timestamp:null json:{\"message\":\"testResponseError\"}");
     }
 
     private void okMessageTest(AttributionHandler attributionHandler) {
@@ -317,20 +362,10 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         // the message in the response
         assertUtil.info("response OK");
 
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
         // check attribution was called without ask_in
-        assertUtil.test("ActivityHandler tryUpdateAttribution, null");
-    }
-
-    private void callCheckAttributionWithGet(AttributionHandler attributionHandler,
-                                             ResponseType responseType,
-                                             String response) {
-        startGetAttributionTest(attributionHandler, responseType);
-
-        // check that the mock http client was called
-        assertUtil.test("MockHttpsURLConnection getInputStream");
-
-        // the response logged
-        assertUtil.verbose(response);
+        assertUtil.test("ActivityHandler launchAttributionResponseTasks, message:response OK timestamp:null json:{\"message\":\"response OK\"}");
     }
 
     private void startGetAttributionTest(AttributionHandler attributionHandler, ResponseType responseType) {

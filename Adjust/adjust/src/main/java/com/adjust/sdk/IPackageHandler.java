@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import org.json.JSONObject;
-
 public interface IPackageHandler {
     public void init(IActivityHandler activityHandler, Context context, boolean startPaused);
 
@@ -11,13 +9,11 @@ public interface IPackageHandler {
 
     public void sendFirstPackage();
 
-    public void sendNextPackage();
+    public void sendNextPackage(ResponseData responseData);
 
-    public void closeFirstPackage();
+    public void closeFirstPackage(ResponseData responseData);
 
     public void pauseSending();
 
     public void resumeSending();
-
-    public void finishedTrackingActivity(JSONObject jsonResponse);
 }

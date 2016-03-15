@@ -20,8 +20,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
-import org.json.JSONObject;
-
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -139,15 +137,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(JSONObject jsonResponse) {
-        if (jsonResponse == null) {
+    public void finishedTrackingActivity(ResponseData responseData) {
+        // redirect session responses to attribution handler to check for attribution information
+        if (responseData instanceof SessionResponseData) {
+            attributionHandler.checkSessionResponse((SessionResponseData)responseData);
             return;
         }
-
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.FINISH_TRACKING;
-        message.obj = jsonResponse;
-        sessionHandler.sendMessage(message);
+        // check if it's an event response
+        if (responseData instanceof EventResponseData) {
+            launchEventResponseTasks((EventResponseData)responseData);
+            return;
+        }
     }
 
     @Override
@@ -244,35 +244,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public boolean tryUpdateAttribution(AdjustAttribution attribution) {
-        if (attribution == null) return false;
+    public boolean updateAttribution(AdjustAttribution attribution) {
+        if (attribution == null) {
+            return false;
+        }
 
         if (attribution.equals(this.attribution)) {
             return false;
         }
 
         saveAttribution(attribution);
-        launchAttributionListener();
         return true;
     }
 
     private void saveAttribution(AdjustAttribution attribution) {
         this.attribution = attribution;
         writeAttribution();
-    }
-
-    private void launchAttributionListener() {
-        if (adjustConfig.onAttributionChangedListener == null) {
-            return;
-        }
-        Handler handler = new Handler(adjustConfig.context.getMainLooper());
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                adjustConfig.onAttributionChangedListener.onAttributionChanged(attribution);
-            }
-        };
-        handler.post(runnable);
     }
 
     @Override
@@ -299,6 +286,31 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         message.obj = referrerClickTime;
         sessionHandler.sendMessage(message);
     }
+
+    @Override
+    public void launchEventResponseTasks(EventResponseData eventResponseData) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.EVENT_TASKS;
+        message.obj = eventResponseData;
+        sessionHandler.sendMessage(message);
+    }
+
+    @Override
+    public void launchSessionResponseTasks(SessionResponseData sessionResponseData) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.SESSION_TASKS;
+        message.obj = sessionResponseData;
+        sessionHandler.sendMessage(message);
+    }
+
+    @Override
+    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.ATTRIBUTION_TASKS;
+        message.obj = attributionResponseData;
+        sessionHandler.sendMessage(message);
+    }
+
 
     private class UrlClickTime {
         Uri url;
@@ -338,11 +350,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int START = BASE_ADDRESS + 2;
         private static final int END = BASE_ADDRESS + 3;
         private static final int EVENT = BASE_ADDRESS + 4;
-        private static final int FINISH_TRACKING = BASE_ADDRESS + 5;
+        private static final int EVENT_TASKS = BASE_ADDRESS + 5;
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
         private static final int TIMER_FIRED = BASE_ADDRESS + 9;
+        private static final int SESSION_TASKS = BASE_ADDRESS + 10;
+        private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 11;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -374,9 +388,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     AdjustEvent event = (AdjustEvent) message.obj;
                     sessionHandler.trackEventInternal(event);
                     break;
-                case FINISH_TRACKING:
-                    JSONObject jsonResponse = (JSONObject) message.obj;
-                    sessionHandler.finishedTrackingActivityInternal(jsonResponse);
+                case EVENT_TASKS:
+                    EventResponseData eventResponseData = (EventResponseData) message.obj;
+                    sessionHandler.launchEventResponseTasksInternal(eventResponseData);
                     break;
                 case DEEP_LINK:
                     UrlClickTime urlClickTime = (UrlClickTime) message.obj;
@@ -391,6 +405,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     break;
                 case TIMER_FIRED:
                     sessionHandler.timerFiredInternal();
+                    break;
+                case SESSION_TASKS:
+                    SessionResponseData sessionResponseData = (SessionResponseData) message.obj;
+                    sessionHandler.launchSessionResponseTasksInternal(sessionResponseData);
+                    break;
+                case ATTRIBUTION_TASKS:
+                    AttributionResponseData attributionResponseData = (AttributionResponseData) message.obj;
+                    sessionHandler.launchAttributionResponseTasksInternal(attributionResponseData);
                     break;
             }
         }
@@ -436,7 +458,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
                 paused(),
-                adjustConfig.hasListener());
+                adjustConfig.hasAttributionChangedListener());
 
         timer = new TimerCycle(new Runnable() {
             @Override
@@ -557,14 +579,157 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
     }
 
-    private void finishedTrackingActivityInternal(JSONObject jsonResponse) {
-        if (jsonResponse == null) {
+    private void launchEventResponseTasksInternal(final EventResponseData eventResponseData) {
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // success callback
+        if (eventResponseData.success && adjustConfig.onEventTrackingSucceededListener != null) {
+            logger.debug("Launching success event tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onEventTrackingSucceededListener.onFinishedEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+        // failure callback
+        if (!eventResponseData.success && adjustConfig.onEventTrackingFailedListener != null) {
+            logger.debug("Launching failed event tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onEventTrackingFailedListener.onFinishedEventTrackingFailed(eventResponseData.getFailureResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+    }
+
+    private void launchSessionResponseTasksInternal(SessionResponseData sessionResponseData) {
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttribution(sessionResponseData.attribution);
+
+        // if attribution changed, launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListener(handler);
+        }
+
+        // launch Session tracking listener if available
+        launchSessionResponseListener(sessionResponseData, handler);
+
+        // if there is any, try to launch the deeplink
+        launchDeeplink(sessionResponseData, handler);
+    }
+
+    private void launchSessionResponseListener(final SessionResponseData sessionResponseData, Handler handler) {
+        // success callback
+        if (sessionResponseData.success && adjustConfig.onSessionTrackingSucceededListener != null) {
+            logger.debug("Launching success session tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onSessionTrackingSucceededListener.onFinishedSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+        // failure callback
+        if (!sessionResponseData.success && adjustConfig.onSessionTrackingFailedListener != null) {
+            logger.debug("Launching failed session tracking listener");
+            // add it to the handler queue
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    adjustConfig.onSessionTrackingFailedListener.onFinishedSessionTrackingFailed(sessionResponseData.getFailureResponseData());
+                }
+            };
+            handler.post(runnable);
+
+            return;
+        }
+    }
+
+    private void launchAttributionResponseTasksInternal(AttributionResponseData responseData) {
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttribution(responseData.attribution);
+
+        // if attribution changed, launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListener(handler);
+        }
+    }
+
+    private void launchAttributionListener(Handler handler) {
+        if (adjustConfig.onAttributionChangedListener == null) {
+            return;
+        }
+        // add it to the handler queue
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                adjustConfig.onAttributionChangedListener.onAttributionChanged(attribution);
+            }
+        };
+        handler.post(runnable);
+    }
+
+    private void launchDeeplink(ResponseData responseData, Handler handler) {
+        if (responseData.jsonResponse == null) {
             return;
         }
 
-        String deeplink = jsonResponse.optString("deeplink", null);
-        launchDeeplinkMain(deeplink);
-        attributionHandler.checkAttribution(jsonResponse);
+        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
+
+        if (deeplink == null) {
+            return;
+        }
+
+        Uri location = Uri.parse(deeplink);
+        final Intent mapIntent;
+        if (adjustConfig.deepLinkComponent == null) {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location);
+        } else {
+            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
+        }
+        mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        mapIntent.setPackage(adjustConfig.context.getPackageName());
+
+        // Verify it resolves
+        PackageManager packageManager = adjustConfig.context.getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+
+        // Start an activity if it's safe
+        if (!isIntentSafe) {
+            logger.error("Unable to open deep link (%s)", deeplink);
+            return;
+        }
+
+        // add it to the handler queue
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.info("Open deep link (%s)", deeplink);
+                adjustConfig.context.startActivity(mapIntent);
+            }
+        };
+        handler.post(runnable);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
@@ -576,6 +741,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         packageHandler.addPackage(clickPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void readOpenUrlInternal(Uri url, long clickTime) {
@@ -591,6 +757,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         packageHandler.addPackage(clickPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private ActivityPackage buildQueryStringClickPackage(String queryString, String source, long clickTime) {
@@ -699,34 +866,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchDeeplinkMain(String deeplink) {
-        if (deeplink == null) return;
-
-        Uri location = Uri.parse(deeplink);
-        final Intent mapIntent;
-        if (adjustConfig.deepLinkComponent == null) {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location);
-        } else {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
-        }
-        mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        mapIntent.setPackage(adjustConfig.context.getPackageName());
-
-        // Verify it resolves
-        PackageManager packageManager = adjustConfig.context.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
-        boolean isIntentSafe = activities.size() > 0;
-
-        // Start an activity if it's safe
-        if (!isIntentSafe) {
-            logger.error("Unable to open deep link (%s)", deeplink);
-            return;
-        }
-
-        logger.info("Open deep link (%s)", deeplink);
-        adjustConfig.context.startActivity(mapIntent);
-    }
 
     private boolean updateActivityState(long now) {
         if (!checkActivityState(activityState)) { return false; }
