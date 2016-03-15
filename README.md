@@ -474,23 +474,41 @@ parameter. Here is a quick summary of its properties:
 
 ### 16. Set listener for tracked events and sessions
 
-You can register a listener to be notified when events and sessions are tracked. 
-There are two listeners: one indicating the event or session is correctly tracked, and another indicating there was a failure.
-You can add either or both of the listeners after creating the `AdjustConfig` object:
+You can register a listener to be notified when events or sessions are tracked.
+There are four listeners: one for tracking successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed sessions.
+You can add any number of listeners after creating the `AdjustConfig` object:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-config.setOnTrackingSucceededListener(new OnTrackingSucceededListener() {
+// set event success tracking delegate
+config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
     @Override
-    public void onFinishedTrackingSucceeded(SuccessResponseData successResponseData) {
+    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
         // ...
     }
 });
 
-config.setOnTrackingFailedListener(new OnTrackingFailedListener() {
+// set event failure tracking delegate
+config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
     @Override
-    public void onFinishedTrackingFailed(FailureResponseData failureResponseData) {
+    public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+        // ...
+    }
+});
+
+// set session success tracking delegate
+config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+    @Override
+    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+        // ...
+    }
+});
+
+// set session failure tracking delegate
+config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+    @Override
+    public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
         // ...
     }
 });
@@ -498,16 +516,20 @@ config.setOnTrackingFailedListener(new OnTrackingFailedListener() {
 Adjust.onCreate(config);
 ```
 
-The listener function will be called after the SDK tries to send a package to the server. Within the listener function you have access to the `successResponseData` or `failureResponseData` object. Here is a quick summary of its common properties:
+The listener function will be called after the SDK tries to send a package to the server. Within the listener function you have access to a response data object specifically for the listener. Here is a quick summary of the success session response data object fields:
 
-- `String activityKindString` the type of package send, either `"event"` or `"session"`. 
 - `String message` the message from the server or the error logged by the SDK.
 - `String timestamp` timestamp from the server.
 - `String adid` a unique device identifier provided by adjust.
-- `String eventToken` the event token, if the package tracked was an event.
 - `JSONObject jsonResponse` the JSON object with the reponse from the server.
 
-Currently, the extra parameter in `failureResponseData` is only `boolean willRetry`, which indicates there will be an attempt to resend the package at a later time.
+Both event response data objects contain:
+
+- `String eventToken` the event token, if the package tracked was an event.
+
+And both event and session failed objects also contain:
+
+- `boolean willRetry` indicates there will be an attempt to resend the package at a later time.
 
 ### 17. Disable tracking
 
