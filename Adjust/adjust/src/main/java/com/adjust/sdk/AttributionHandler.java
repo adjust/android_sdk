@@ -25,7 +25,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused,
+                              boolean startsSending,
                               boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
@@ -41,17 +41,17 @@ public class AttributionHandler implements IAttributionHandler {
             this.logger.error("Timer not initialized, attribution handler is disabled");
         }
 
-        init(activityHandler, attributionPackage, startPaused, hasListener);
+        init(activityHandler, attributionPackage, startsSending, hasListener);
     }
 
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused,
+                     boolean startsSending,
                      boolean hasListener) {
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
-        this.paused = startPaused;
+        this.paused = !startsSending;
         this.hasListener = hasListener;
     }
 

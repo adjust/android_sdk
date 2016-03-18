@@ -12,7 +12,7 @@ public class AdjustConfig {
     String processName;
     LogLevel logLevel;
     String sdkPrefix;
-    Boolean eventBufferingEnabled;
+    boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
     String referrer;
@@ -23,6 +23,7 @@ public class AdjustConfig {
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
+    boolean sendInBackground;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -39,10 +40,19 @@ public class AdjustConfig {
         // default values
         this.logLevel = LogLevel.INFO;
         this.eventBufferingEnabled = false;
+        this.sendInBackground = false;
     }
 
     public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
+        if (eventBufferingEnabled == null) {
+            this.eventBufferingEnabled = false;
+            return;
+        }
         this.eventBufferingEnabled = eventBufferingEnabled;
+    }
+
+    public void setSendInBackground(boolean sendInBackground) {
+        this.sendInBackground = sendInBackground;
     }
 
     public void setLogLevel(LogLevel logLevel) {

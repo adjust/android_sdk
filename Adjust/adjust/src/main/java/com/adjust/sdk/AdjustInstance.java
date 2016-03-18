@@ -34,12 +34,12 @@ public class AdjustInstance {
 
     public void onResume() {
         if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionStart();
+        activityHandler.onResume();
     }
 
     public void onPause() {
         if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionEnd();
+        activityHandler.onPause();
     }
 
     public void setEnabled(boolean enabled) {
