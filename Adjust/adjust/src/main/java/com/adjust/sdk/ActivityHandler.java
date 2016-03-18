@@ -31,8 +31,8 @@ import static com.adjust.sdk.Constants.LOGTAG;
 
 public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
-    private static long TIMER_INTERVAL;
-    private static long TIMER_START;
+    private static long FOREGROUND_TIMER_INTERVAL;
+    private static long FOREGROUND_TIMER_START;
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
@@ -44,7 +44,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
-    private TimerCycle timer;
+    private TimerCycle foregroundTimer;
     private boolean enabled;
     private boolean offline;
 
@@ -338,9 +338,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
-    private void timerFired() {
+    private void foregroundTimerFired() {
         Message message = Message.obtain();
-        message.arg1 = SessionHandler.TIMER_FIRED;
+        message.arg1 = SessionHandler.FOREGROUND_TIMER_FIRED;
         sessionHandler.sendMessage(message);
     }
 
@@ -354,7 +354,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int DEEP_LINK = BASE_ADDRESS + 6;
         private static final int SEND_REFERRER = BASE_ADDRESS + 7;
         private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
-        private static final int TIMER_FIRED = BASE_ADDRESS + 9;
+        private static final int FOREGROUND_TIMER_FIRED = BASE_ADDRESS + 9;
         private static final int SESSION_TASKS = BASE_ADDRESS + 10;
         private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 11;
 
@@ -403,8 +403,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 case UPDATE_HANDLERS_STATUS:
                     sessionHandler.updateHandlersStatusInternal();
                     break;
-                case TIMER_FIRED:
-                    sessionHandler.timerFiredInternal();
+                case FOREGROUND_TIMER_FIRED:
+                    sessionHandler.foregroundTimerFiredInternal();
                     break;
                 case SESSION_TASKS:
                     SessionResponseData sessionResponseData = (SessionResponseData) message.obj;
@@ -419,8 +419,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void initInternal() {
-        TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        TIMER_START = AdjustFactory.getTimerStart();
+        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
@@ -460,12 +460,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 paused(),
                 adjustConfig.hasAttributionChangedListener());
 
-        timer = new TimerCycle(new Runnable() {
+        foregroundTimer = new TimerCycle(new Runnable() {
             @Override
             public void run() {
-                timerFired();
+                foregroundTimerFired();
             }
-        },TIMER_START, TIMER_INTERVAL);
+        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL);
     }
 
     private void startInternal() {
@@ -481,7 +481,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         checkAttributionState();
 
-        startTimer();
+        startForegroundTimer();
     }
 
     private void processSession() {
@@ -550,7 +550,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void endInternal() {
         packageHandler.pauseSending();
         attributionHandler.pauseSending();
-        stopTimer();
+        stopForegroundTimer();
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
         }
@@ -901,23 +901,23 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         packageHandler.sendFirstPackage();
     }
 
-    private void startTimer() {
+    private void startForegroundTimer() {
         // don't start the timer if it's disabled/offline
         if (paused()) {
             return;
         }
 
-        timer.start();
+        foregroundTimer.start();
     }
 
-    private void stopTimer() {
-        timer.suspend();
+    private void stopForegroundTimer() {
+        foregroundTimer.suspend();
     }
 
-    private void timerFiredInternal() {
+    private void foregroundTimerFiredInternal() {
         if (paused()) {
             // stop the timer cycle if it's disabled/offline
-            stopTimer();
+            stopForegroundTimer();
             return;
         }
 
