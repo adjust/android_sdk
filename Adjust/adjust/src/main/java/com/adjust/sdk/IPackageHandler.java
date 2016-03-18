@@ -3,7 +3,7 @@ package com.adjust.sdk;
 import android.content.Context;
 
 public interface IPackageHandler {
-    public void init(IActivityHandler activityHandler, Context context, boolean startPaused);
+    public void init(IActivityHandler activityHandler, Context context, boolean startsSending);
 
     public void addPackage(ActivityPackage pack);
 

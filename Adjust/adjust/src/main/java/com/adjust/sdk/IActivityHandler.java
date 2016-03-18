@@ -8,9 +8,9 @@ import android.net.Uri;
 public interface IActivityHandler {
     public void init(AdjustConfig config);
 
-    public void trackSubsessionStart();
+    public void onResume();
 
-    public void trackSubsessionEnd();
+    public void onPause();
 
     public void trackEvent(AdjustEvent event);
 

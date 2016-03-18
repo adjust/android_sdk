@@ -24,6 +24,8 @@ import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
@@ -33,6 +35,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private static long FOREGROUND_TIMER_INTERVAL;
     private static long FOREGROUND_TIMER_START;
+    private static long BACKGROUND_TIMER_INTERVAL;
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
@@ -45,8 +48,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private ActivityState activityState;
     private ILogger logger;
     private TimerCycle foregroundTimer;
+    private ScheduledExecutorService scheduler;
+    private TimerOnce backgroundTimer;
     private boolean enabled;
     private boolean offline;
+    private boolean background;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -61,6 +67,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         logger = AdjustFactory.getLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
         enabled = true;
+        background = true;
         init(adjustConfig);
 
         Message message = Message.obtain();
@@ -108,6 +115,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
+    public void onResume() {
+        background = false;
+        trackSubsessionStart();
+    }
+
     public void trackSubsessionStart() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
@@ -115,6 +127,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
+    public void onPause() {
+        background = true;
+        trackSubsessionEnd();
+    }
+
     public void trackSubsessionEnd() {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
@@ -344,6 +361,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    private void backgroundTimerFired() {
+        Message message = Message.obtain();
+        message.arg1 = SessionHandler.BACKGROUND_TIMER_FIRED;
+        sessionHandler.sendMessage(message);
+    }
+
     private static final class SessionHandler extends Handler {
         private static final int BASE_ADDRESS = 72630;
         private static final int INIT = BASE_ADDRESS + 1;
@@ -357,6 +380,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         private static final int FOREGROUND_TIMER_FIRED = BASE_ADDRESS + 9;
         private static final int SESSION_TASKS = BASE_ADDRESS + 10;
         private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 11;
+        private static final int BACKGROUND_TIMER_FIRED = BASE_ADDRESS + 12;
 
         private final WeakReference<ActivityHandler> sessionHandlerReference;
 
@@ -414,6 +438,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                     AttributionResponseData attributionResponseData = (AttributionResponseData) message.obj;
                     sessionHandler.launchAttributionResponseTasksInternal(attributionResponseData);
                     break;
+                case BACKGROUND_TIMER_FIRED:
+                    sessionHandler.backgroundTimerFiredInternal();
+                    break;
             }
         }
     }
@@ -421,6 +448,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void initInternal() {
         FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
@@ -452,12 +480,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         readAttribution();
         readActivityState();
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, paused());
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend());
 
         ActivityPackage attributionPackage = getAttributionPackage();
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                paused(),
+                toSend(),
                 adjustConfig.hasAttributionChangedListener());
 
         foregroundTimer = new TimerCycle(new Runnable() {
@@ -466,6 +494,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 foregroundTimerFired();
             }
         }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL);
+
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFired();
+            }
+        });
     }
 
     private void startInternal() {
@@ -474,6 +510,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 && !activityState.enabled) {
             return;
         }
+
+        stopBackgroundTimer();
 
         updateHandlersStatusInternal();
 
@@ -548,9 +586,19 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void endInternal() {
-        packageHandler.pauseSending();
-        attributionHandler.pauseSending();
+        // stop foreground timer in any situation
         stopForegroundTimer();
+
+        // if it's offline, disabled
+        // or it can't send in the background
+        // -> pause sdk
+        if (paused() || !adjustConfig.sendInBackground) {
+            pauseSending();
+        } else {
+        // it it doesn't pause the sdk, it starts the background timer
+            startBackgroundTimer();
+        }
+
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
         }
@@ -574,6 +622,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.info("Buffered event %s", eventPackage.getSuffix());
         } else {
             packageHandler.sendFirstPackage();
+        }
+
+        // if it is in the background and it can send, start the background timer
+        if (adjustConfig.sendInBackground && background) {
+            startBackgroundTimer();
         }
 
         writeActivityState();
@@ -846,24 +899,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void updateHandlersStatusInternal() {
-        updateAttributionHandlerStatus();
-        updatePackageHandlerStatus();
-    }
-
-    private void updateAttributionHandlerStatus() {
-        if (paused()) {
-            attributionHandler.pauseSending();
+        if (toSend()) {
+            resumeSending();
         } else {
-            attributionHandler.resumeSending();
+            pauseSending();
         }
     }
 
-    private void updatePackageHandlerStatus() {
-        if (paused()) {
-            packageHandler.pauseSending();
-        } else {
-            packageHandler.resumeSending();
-        }
+    private void pauseSending() {
+        attributionHandler.pauseSending();
+        packageHandler.pauseSending();
+    }
+
+    private void resumeSending() {
+        attributionHandler.resumeSending();
+        packageHandler.resumeSending();
     }
 
 
@@ -902,7 +952,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startForegroundTimer() {
-        // don't start the timer if it's disabled/offline
+        // don't start the timer if it's disabled or offline
         if (paused()) {
             return;
         }
@@ -927,6 +977,29 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (updateActivityState(System.currentTimeMillis())) {
             writeActivityState();
         }
+    }
+
+    private void startBackgroundTimer() {
+        // don't start the timer if it's disabled or offline
+        if (paused()) {
+            return;
+        }
+
+        // background timer already started
+        if (backgroundTimer.getFireIn() > 0) {
+            return;
+        }
+        logger.verbose("Background timer started");
+        backgroundTimer.startIn(BACKGROUND_TIMER_INTERVAL);
+    }
+
+    private void stopBackgroundTimer() {
+        backgroundTimer.cancel();
+    }
+
+    private void backgroundTimerFiredInternal() {
+        logger.debug("Background timer fired");
+        packageHandler.sendFirstPackage();
     }
 
     private void readActivityState() {
@@ -979,5 +1052,20 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private boolean paused() {
         return offline || !isEnabled();
+    }
+
+    private boolean toSend() {
+        // if it's offline, disabled -> don't send
+        if (paused()) {
+            return false;
+        }
+
+        // has the option to send in the background -> is to send
+        if (adjustConfig.sendInBackground) {
+            return true;
+        }
+
+        // doesn't have the option -> depends on being on the background
+        return !background;
     }
 }
