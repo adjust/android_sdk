@@ -860,12 +860,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
-        ActivityPackage clickPackage = buildQueryStringClickPackage(referrer,
-                Constants.REFTAG,
-                clickTime);
-        if (clickPackage == null) {
+        if (referrer == null || referrer.length() == 0 ) {
             return;
         }
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilder(referrer);
+
+        if (clickPackageBuilder == null) {
+            return;
+        }
+
+        clickPackageBuilder.referrer = referrer;
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, clickTime);
 
         packageHandler.addPackage(clickPackage);
         packageHandler.sendFirstPackage();
@@ -878,35 +883,36 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String queryString = url.getQuery();
 
-        ActivityPackage clickPackage = buildQueryStringClickPackage(queryString, "deeplink", clickTime);
-        if (clickPackage == null) {
+        if (queryString == null && url.toString().length() > 0) {
+            queryString = "";
+        }
+
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilder(queryString);
+        if (clickPackageBuilder == null) {
             return;
         }
+
+        clickPackageBuilder.deeplink = url.toString();
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, clickTime);
 
         packageHandler.addPackage(clickPackage);
         packageHandler.sendFirstPackage();
     }
 
-    private ActivityPackage buildQueryStringClickPackage(String queryString, String source, long clickTime) {
+    private PackageBuilder queryStringClickPackageBuilder(String queryString) {
         if (queryString == null) {
             return null;
         }
 
         Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
-        boolean hasAdjustTags = false;
 
-        logger.verbose("Reading query string (%s) from %s", queryString, source);
+        logger.verbose("Reading query string (%s)", queryString);
 
         String[] queryPairs = queryString.split("&");
-        for (String pair : queryPairs) {
-            if (readQueryString(pair, queryStringParameters, queryStringAttribution)) {
-                hasAdjustTags = true;
-            }
-        }
 
-        if (!hasAdjustTags) {
-            return null;
+        for (String pair : queryPairs) {
+            readQueryString(pair, queryStringParameters, queryStringAttribution);
         }
 
         String reftag = queryStringParameters.remove(Constants.REFTAG);
@@ -916,12 +922,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
         builder.reftag = reftag;
-        if (source == Constants.REFTAG) {
-            builder.referrer = queryString;
-        }
 
-        ActivityPackage clickPackage = builder.buildClickPackage(source, clickTime);
-        return clickPackage;
+        return builder;
     }
 
     private boolean readQueryString(String queryString,

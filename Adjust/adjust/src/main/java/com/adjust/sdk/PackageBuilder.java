@@ -28,6 +28,7 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
     String referrer;
+    String deeplink;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -79,6 +80,7 @@ class PackageBuilder {
         addString(parameters, "reftag", reftag);
         addMapJson(parameters, "params", extraParameters);
         addString(parameters, "referrer", referrer);
+        addString(parameters, "deeplink", deeplink);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
