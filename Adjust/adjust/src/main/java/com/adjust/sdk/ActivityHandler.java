@@ -50,14 +50,42 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private TimerCycle foregroundTimer;
     private ScheduledExecutorService scheduler;
     private TimerOnce backgroundTimer;
-    private boolean enabled;
-    private boolean offline;
-    private boolean background;
+    private InternalState internalState;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
+
+    private class InternalState {
+        boolean enabled;
+        boolean offline;
+        boolean background;
+
+        boolean isEnabled() {
+            return enabled;
+        }
+
+        boolean isDisabled() {
+            return !enabled;
+        }
+
+        boolean isOffline() {
+            return offline;
+        }
+
+        boolean isOnline() {
+            return !offline;
+        }
+
+        boolean isBackground() {
+            return background;
+        }
+
+        boolean isForeground() {
+            return !background;
+        }
+    }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
         super(LOGTAG, MIN_PRIORITY);
@@ -66,8 +94,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         logger = AdjustFactory.getLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
-        enabled = true;
-        background = true;
+        internalState = new InternalState();
+        // enabled by default
+        internalState.enabled = true;
+        // online by default
+        internalState.offline = false;
+        // in the background by default
+        internalState.background = true;
+
         init(adjustConfig);
 
         Message message = Message.obtain();
@@ -116,7 +150,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void onResume() {
-        background = false;
+        internalState.background = false;
         trackSubsessionStart();
     }
 
@@ -128,7 +162,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void onPause() {
-        background = true;
+        internalState.background = true;
         trackSubsessionEnd();
     }
 
@@ -169,12 +203,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void setEnabled(boolean enabled) {
-        if (!hasChangedState(isEnabled(), enabled,
+        // compare with the saved or internal state
+        if (!hasChangedState(this.isEnabled(), enabled,
                 "Adjust already enabled", "Adjust already disabled")) {
             return;
         }
 
-        this.enabled = enabled;
+        internalState.enabled = enabled;
 
         if (activityState == null) {
             updateStatus(!enabled,
@@ -228,16 +263,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void setOfflineMode(boolean offline) {
-        if (!hasChangedState(this.offline, offline,
+        // compare with the internal state
+        if (!hasChangedState(internalState.isOffline(), offline,
                 "Adjust already in offline mode",
                 "Adjust already in online mode")) {
             return;
         }
 
-        this.offline = offline;
+        internalState.offline = offline;
 
         if (activityState == null) {
-            updateStatus(!enabled,
+            updateStatus(offline,
                     "Package handler and attribution handler will start paused due to SDK being offline",
                     "Package and attribution handler will still start as paused due to SDK being disabled",
                     "Package handler and attribution handler will start as active due to SDK being online");
@@ -255,7 +291,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (activityState != null) {
             return activityState.enabled;
         } else {
-            return enabled;
+            return internalState.isEnabled();
         }
     }
 
@@ -294,16 +330,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public ActivityPackage getAttributionPackage() {
-        long now = System.currentTimeMillis();
-        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
-                deviceInfo,
-                activityState,
-                now);
-        return attributionBuilder.buildAttributionPackage();
-    }
-
-    @Override
     public void sendReferrer(String referrer, long clickTime) {
         Message message = Message.obtain();
         message.arg1 = SessionHandler.SEND_REFERRER;
@@ -336,6 +362,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionHandler.sendMessage(message);
     }
 
+    public ActivityPackage getAttributionPackage() {
+        long now = System.currentTimeMillis();
+        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
+                deviceInfo,
+                activityState,
+                now);
+        return attributionBuilder.buildAttributionPackage();
+    }
+
+    public InternalState getInternalState() {
+        return internalState;
+    }
 
     private class UrlClickTime {
         Uri url;
@@ -540,7 +578,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
             transferSessionPackage(now);
             activityState.resetSessionAttributes(now);
-            activityState.enabled = this.enabled;
+            activityState.enabled = internalState.isEnabled();
             writeActivityState();
             return;
         }
@@ -614,7 +652,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void trackEventInternal(AdjustEvent event) {
         if (!checkActivityState(activityState)) return;
-        if (!isEnabled()) return;
+        if (!this.isEnabled()) return;
         if (!checkEvent(event)) return;
 
         long now = System.currentTimeMillis();
@@ -633,7 +671,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         // if it is in the background and it can send, start the background timer
-        if (adjustConfig.sendInBackground && background) {
+        if (adjustConfig.sendInBackground && internalState.isBackground()) {
             startBackgroundTimer();
         }
 
@@ -1080,7 +1118,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private boolean paused() {
-        return offline || !isEnabled();
+        return internalState.isOffline() || !this.isEnabled();
     }
 
     private boolean toSend() {
@@ -1094,7 +1132,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return true;
         }
 
-        // doesn't have the option -> depends on being on the background
-        return !background;
+        // doesn't have the option -> depends on being on the background/foreground
+        return internalState.isForeground();
     }
 }
