@@ -681,7 +681,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         launchSessionResponseListener(sessionResponseData, handler);
 
         // if there is any, try to launch the deeplink
-        launchDeeplink(sessionResponseData, handler);
+        prepareDeeplink(sessionResponseData, handler);
     }
 
     private void launchSessionResponseListener(final SessionResponseData sessionResponseData, Handler handler) {
@@ -741,7 +741,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void launchDeeplink(ResponseData responseData, Handler handler) {
+    private void prepareDeeplink(ResponseData responseData, final Handler handler) {
         if (responseData.jsonResponse == null) {
             return;
         }
@@ -752,7 +752,28 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        Uri location = Uri.parse(deeplink);
+        final Uri location = Uri.parse(deeplink);
+
+        // there is no validation to be made by the user
+        if (adjustConfig.onDeeplinkResponseListener == null) {
+            launchDeeplink(location, handler, deeplink);
+            return;
+        }
+
+        // launch deeplink validation by user
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                boolean toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(location);
+                if (toLaunchDeeplink) {
+                    launchDeeplink(location, handler, deeplink);
+                }
+            }
+        };
+        handler.post(runnable);
+    }
+
+    private void launchDeeplink(final Uri location, Handler handler, final String deeplink) {
         final Intent mapIntent;
         if (adjustConfig.deepLinkComponent == null) {
             mapIntent = new Intent(Intent.ACTION_VIEW, location);

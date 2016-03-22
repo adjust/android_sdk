@@ -23,6 +23,7 @@ public class AdjustConfig {
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
+    OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
@@ -95,6 +96,10 @@ public class AdjustConfig {
 
     public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
         this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
+    }
+
+    public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
+        this.onDeeplinkResponseListener = onDeeplinkResponseListener;
     }
 
     public boolean hasAttributionChangedListener() {
