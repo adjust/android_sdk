@@ -2,6 +2,7 @@ package com.adjust.example;
 
 import android.app.Activity;
 import android.app.Application;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -80,6 +82,18 @@ public class GlobalApplication extends Application {
             @Override
             public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
                 Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
+            }
+        });
+
+        // evaluate deeplink to be launched
+        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+                if (deeplink.getPath().equals("")) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
         });
 
