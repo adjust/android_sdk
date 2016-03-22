@@ -57,32 +57,32 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
 
-    private class InternalState {
+    public class InternalState {
         boolean enabled;
         boolean offline;
         boolean background;
 
-        boolean isEnabled() {
+        public boolean isEnabled() {
             return enabled;
         }
 
-        boolean isDisabled() {
+        public boolean isDisabled() {
             return !enabled;
         }
 
-        boolean isOffline() {
+        public boolean isOffline() {
             return offline;
         }
 
-        boolean isOnline() {
+        public boolean isOnline() {
             return !offline;
         }
 
-        boolean isBackground() {
+        public boolean isBackground() {
             return background;
         }
 
-        boolean isForeground() {
+        public boolean isForeground() {
             return !background;
         }
     }
@@ -95,12 +95,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         logger = AdjustFactory.getLogger();
         sessionHandler = new SessionHandler(getLooper(), this);
         internalState = new InternalState();
+
+        // read files to have sync values available
+        readAttribution(adjustConfig.context);
+        readActivityState(adjustConfig.context);
+
         // enabled by default
-        internalState.enabled = true;
+        if (activityState == null) {
+            internalState.enabled = true;
+        } else {
+            internalState.enabled = activityState.enabled;
+        }
         // online by default
         internalState.offline = false;
         // in the background by default
         internalState.background = true;
+
 
         init(adjustConfig);
 
@@ -522,9 +532,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (adjustConfig.referrer != null) {
             sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
         }
-
-        readAttribution();
-        readActivityState();
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend());
 
@@ -1065,22 +1072,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void backgroundTimerFiredInternal() {
-        logger.debug("Background timer fired");
         packageHandler.sendFirstPackage();
     }
 
-    private void readActivityState() {
+    private void readActivityState(Context context) {
         try {
-            activityState = Util.readObject(adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
+            activityState = Util.readObject(context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ACTIVITY_STATE_NAME, e.getMessage());
             activityState = null;
         }
     }
 
-    private void readAttribution() {
+    private void readAttribution(Context context) {
         try {
-            attribution = Util.readObject(adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME, AdjustAttribution.class);
+            attribution = Util.readObject(context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME, AdjustAttribution.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ATTRIBUTION_NAME, e.getMessage());
             attribution = null;
