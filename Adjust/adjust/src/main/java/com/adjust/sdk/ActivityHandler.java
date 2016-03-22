@@ -177,11 +177,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         this.enabled = enabled;
 
         if (activityState == null) {
-            trackSubsessionStart();
-        } else {
-            activityState.enabled = enabled;
-            writeActivityState();
+            updateStatus(!enabled,
+                    "Package handler and attribution handler will start paused due to the disable of the SDK",
+                    "Package and attribution handler will still start paused due to the SDK being offline",
+                    "Package handler and attribution handler will start active due to be enabled");
+            return;
         }
+
+        activityState.enabled = enabled;
+        writeActivityState();
 
         updateStatus(!enabled,
                 "Pausing package handler and attribution handler to disable the SDK",
@@ -194,7 +198,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     {
         if (pausingState) {
             logger.info(pausingMessage);
-            trackSubsessionEnd();
+            updateHandlersStatus();
             return;
         }
 
@@ -202,7 +206,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.info(remainsPausedMessage);
         } else {
             logger.info(unPausingMessage);
-            trackSubsessionStart();
+            updateHandlersStatus();
         }
     }
 
@@ -233,7 +237,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         this.offline = offline;
 
         if (activityState == null) {
-            trackSubsessionStart();
+            updateStatus(!enabled,
+                    "Package handler and attribution handler will start paused due to offline mode",
+                    "Package and attribution handler will still start paused due to the SDK being disabled",
+                    "Package handler and attribution handler will start active due to being online");
+            return;
         }
 
         updateStatus(offline,
