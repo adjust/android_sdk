@@ -30,6 +30,7 @@ public interface Constants {
     String CLIENT_SDK = "android4.6.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
+    String DEEPLINK = "deeplink";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
