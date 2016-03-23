@@ -178,9 +178,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(!enabled,
-                    "Package handler and attribution handler will start paused due to the disable of the SDK",
-                    "Package and attribution handler will still start paused due to the SDK being offline",
-                    "Package handler and attribution handler will start active due to be enabled");
+                    "Package handler and attribution handler will start as paused due to the SDK being disabled",
+                    "Package and attribution handler will still start as paused due to the SDK being offline",
+                    "Package handler and attribution handler will start as active due to the SDK being enabled");
             return;
         }
 
@@ -188,9 +188,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
 
         updateStatus(!enabled,
-                "Pausing package handler and attribution handler to disable the SDK",
-                "Package and attribution handler remain paused due to the SDK is offline",
-                "Resuming package handler and attribution handler to enabled the SDK");
+                "Pausing package handler and attribution handler due to SDK being disabled",
+                "Package and attribution handler remain paused due to SDK being offline",
+                "Resuming package handler and attribution handler due to SDK being enabled");
     }
 
     private void updateStatus(boolean pausingState, String pausingMessage,
@@ -238,16 +238,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(!enabled,
-                    "Package handler and attribution handler will start paused due to offline mode",
-                    "Package and attribution handler will still start paused due to the SDK being disabled",
-                    "Package handler and attribution handler will start active due to being online");
+                    "Package handler and attribution handler will start paused due to SDK being offline",
+                    "Package and attribution handler will still start as paused due to SDK being disabled",
+                    "Package handler and attribution handler will start as active due to SDK being online");
             return;
         }
 
         updateStatus(offline,
-                "Pausing package and attribution handler to put in offline mode",
-                "Package and attribution handler remain paused because the SDK is disabled",
-                "Resuming package handler and attribution handler to put in online mode");
+                "Pausing package and attribution handler to put SDK offline mode",
+                "Package and attribution handler remain paused due to SDK being disabled",
+                "Resuming package handler and attribution handler to put SDK in online mode");
     }
 
     @Override
