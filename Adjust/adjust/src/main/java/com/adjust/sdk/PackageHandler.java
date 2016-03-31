@@ -14,10 +14,14 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 
 import java.lang.ref.WeakReference;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 // persistent
@@ -33,6 +37,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private boolean paused;
     private Context context;
     private ILogger logger;
+    private BackoffStrategy backoffStrategy;
 
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
@@ -42,6 +47,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         start();
         this.internalHandler = new InternalHandler(getLooper(), this);
         this.logger = AdjustFactory.getLogger();
+        this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
         init(activityHandler, context, startsSending);
 
@@ -87,12 +93,26 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage(ResponseData responseData) {
-        isSending.set(false);
+    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
         logger.verbose("Package handler can send");
 
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
+
+        if (activityPackage != null) {
+            int retries = activityPackage.increaseRetries();
+
+            long waitTime = Util.getWaitingTime(retries, backoffStrategy);
+
+            DecimalFormat df = new DecimalFormat("#.#");
+            double waitTimeSeconds = waitTime / 1000.0;
+
+            logger.verbose("Sleeping for %s seconds before retrying the %d time", df.format(waitTimeSeconds), retries);
+            SystemClock.sleep(waitTime);
+        }
+
+        isSending.set(false);
+        sendFirstPackage();
     }
 
     // interrupt the sending loop after the current request has finished

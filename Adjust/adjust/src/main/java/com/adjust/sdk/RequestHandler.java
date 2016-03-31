@@ -94,7 +94,13 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
             ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
 
-            requestFinished(responseData);
+            if (responseData.jsonResponse == null) {
+                packageHandler.closeFirstPackage(responseData, activityPackage);
+                return;
+            }
+
+            packageHandler.sendNextPackage(responseData);
+
         } catch (UnsupportedEncodingException e) {
             sendNextPackage(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
@@ -104,15 +110,6 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         } catch (Throwable e) {
             sendNextPackage(activityPackage, "Runtime exception", e);
         }
-    }
-
-    private void requestFinished(ResponseData responseData) throws JSONException {
-        if (responseData.jsonResponse == null) {
-            packageHandler.closeFirstPackage(responseData);
-            return;
-        }
-
-        packageHandler.sendNextPackage(responseData);
     }
 
     // close current package because it failed
@@ -125,7 +122,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         ResponseData responseData = ResponseData.buildResponseData(activityPackage);
         responseData.message = finalMessage;
 
-        packageHandler.closeFirstPackage(responseData);
+        packageHandler.closeFirstPackage(responseData, activityPackage);
     }
 
     // send next package because the current package failed

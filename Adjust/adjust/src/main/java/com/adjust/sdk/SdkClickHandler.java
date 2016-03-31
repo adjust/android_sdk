@@ -3,12 +3,14 @@ package com.adjust.sdk;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -20,6 +22,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
     private ILogger logger;
     private boolean paused;
     private List<ActivityPackage> packageQueue;
+    private BackoffStrategy backoffStrategy;
 
     public SdkClickHandler(boolean startsSending) {
         super(Constants.LOGTAG, MIN_PRIORITY);
@@ -29,6 +32,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         init(startsSending);
         this.logger = AdjustFactory.getLogger();
         this.internalHandler = new Handler(getLooper());
+        this.backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
     }
 
     @Override
@@ -76,6 +80,14 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
 
                 ActivityPackage sdkClickPackage = packageQueue.get(0);
 
+                int retries = sdkClickPackage.getRetries();
+
+                if (retries > 0) {
+                    long waitTime = Util.getWaitingTime(retries, backoffStrategy);
+                    logger.verbose("Sleeping for %d seconds before retrying sdk_click for the %d time", TimeUnit.MILLISECONDS.toSeconds(waitTime), retries);
+                    SystemClock.sleep(waitTime);
+                }
+
                 sendSdkClickInternal(sdkClickPackage);
 
                 packageQueue.remove(0);
@@ -96,9 +108,8 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
 
             ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
 
-            // retry
             if (responseData.jsonResponse == null) {
-                sendSdkClick(sdkClickPackage);
+                retrySending(sdkClickPackage);
             }
         } catch (UnsupportedEncodingException e) {
             logErrorMessage(sdkClickPackage, "Sdk_click failed to encode parameters", e);

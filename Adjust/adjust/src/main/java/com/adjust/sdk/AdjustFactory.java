@@ -20,6 +20,8 @@ public class AdjustFactory {
     private static long timerStart = -1;
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
+    private static BackoffStrategy sdkClickBackoffStrategy = null;
+    private static BackoffStrategy packageHandlerBackoffStrategy = null;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -82,6 +84,20 @@ public class AdjustFactory {
             return Constants.ONE_SECOND;
         }
         return subsessionInterval;
+    }
+
+    public static BackoffStrategy getSdkClickBackoffStrategy() {
+        if (sdkClickBackoffStrategy == null) {
+            return BackoffStrategy.SHORT_WAIT;
+        }
+        return sdkClickBackoffStrategy;
+    }
+
+    public static BackoffStrategy getPackageHandlerBackoffStrategy() {
+        if (packageHandlerBackoffStrategy == null) {
+            return BackoffStrategy.LONG_WAIT;
+        }
+        return packageHandlerBackoffStrategy;
     }
 
     public static IActivityHandler getActivityHandler(AdjustConfig config) {
@@ -154,6 +170,14 @@ public class AdjustFactory {
 
     public static void setSubsessionInterval(long subsessionInterval) {
         AdjustFactory.subsessionInterval = subsessionInterval;
+    }
+
+    public static void setSdkClickBackoffStrategy(BackoffStrategy sdkClickBackoffStrategy) {
+        AdjustFactory.sdkClickBackoffStrategy = sdkClickBackoffStrategy;
+    }
+
+    public static void setPackageHandlerBackoffStrategy(BackoffStrategy packageHandlerBackoffStrategy) {
+        AdjustFactory.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy;
     }
 
     public static void setActivityHandler(IActivityHandler activityHandler) {
