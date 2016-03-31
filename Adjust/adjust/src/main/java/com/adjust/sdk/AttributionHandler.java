@@ -19,6 +19,7 @@ public class AttributionHandler implements IAttributionHandler {
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
+    private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
 
     private boolean paused;
     private boolean hasListener;
@@ -36,7 +37,7 @@ public class AttributionHandler implements IAttributionHandler {
                 public void run() {
                     getAttributionInternal();
                 }
-            });
+            }, ATTRIBUTION_TIMER_NAME);
         } else {
             this.logger.error("Timer not initialized, attribution handler is disabled");
         }

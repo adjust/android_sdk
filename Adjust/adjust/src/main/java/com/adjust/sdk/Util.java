@@ -160,7 +160,7 @@ public class Util {
                 getLogger().error("Failed to read %s object (%s)", objectName, e.getMessage());
             }
         } catch (FileNotFoundException e) {
-            getLogger().verbose("%s file not found", objectName);
+            getLogger().debug("%s file not found", objectName);
         } catch (Exception e) {
             getLogger().error("Failed to open %s file for reading (%s)", objectName, e);
         }

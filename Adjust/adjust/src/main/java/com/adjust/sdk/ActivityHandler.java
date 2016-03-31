@@ -42,6 +42,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String ADJUST_PREFIX = "adjust_";
     private static final String ACTIVITY_STATE_NAME = "Activity state";
     private static final String ATTRIBUTION_NAME = "Attribution";
+    private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
+    private static final String BACKGROUND_TIMER_NAME = "Background timer";
 
     private SessionHandler sessionHandler;
     private IPackageHandler packageHandler;
@@ -165,6 +167,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public void trackSubsessionStart() {
+        logger.verbose("Subsession start");
         Message message = Message.obtain();
         message.arg1 = SessionHandler.START;
         sessionHandler.sendMessage(message);
@@ -177,6 +180,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public void trackSubsessionEnd() {
+        logger.verbose("Subsession end");
         Message message = Message.obtain();
         message.arg1 = SessionHandler.END;
         sessionHandler.sendMessage(message);
@@ -522,7 +526,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         if (playAdId == null) {
-            logger.info("Unable to get Google Play Services Advertising ID at start time");
+            logger.warn("Unable to get Google Play Services Advertising ID at start time");
+        } else {
+            logger.debug("Google Play Services Advertising ID read correctly at start time");
         }
 
         if (adjustConfig.defaultTracker != null) {
@@ -546,7 +552,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             public void run() {
                 foregroundTimerFired();
             }
-        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL);
+        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
         scheduler = Executors.newSingleThreadScheduledExecutor();
         backgroundTimer = new TimerOnce(scheduler, new Runnable() {
@@ -554,7 +560,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             public void run() {
                 backgroundTimerFired();
             }
-        });
+        }, BACKGROUND_TIMER_NAME);
     }
 
     private void startInternal() {
@@ -615,11 +621,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             activityState.subsessionCount++;
             activityState.sessionLength += lastInterval;
             activityState.lastActivity = now;
-            writeActivityState();
-            logger.info("Started subsession %d of session %d",
+            logger.verbose("Started subsession %d of session %d",
                     activityState.subsessionCount,
                     activityState.sessionCount);
+            writeActivityState();
+            return;
         }
+
+        logger.verbose("Time span since last activity too short for a new subsession");
     }
 
     private void checkAttributionState() {
@@ -992,7 +1001,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         packageHandler.resumeSending();
     }
 
-
     private boolean updateActivityState(long now) {
         if (!checkActivityState(activityState)) { return false; }
 
@@ -1047,7 +1055,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        logger.debug("Session timer fired");
         packageHandler.sendFirstPackage();
 
         if (updateActivityState(System.currentTimeMillis())) {
@@ -1065,7 +1072,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (backgroundTimer.getFireIn() > 0) {
             return;
         }
-        logger.verbose("Background timer started");
         backgroundTimer.startIn(BACKGROUND_TIMER_INTERVAL);
     }
 

@@ -89,6 +89,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     @Override
     public void closeFirstPackage(ResponseData responseData) {
         isSending.set(false);
+        logger.verbose("Package handler can send");
 
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
@@ -190,6 +191,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         packageQueue.remove(0);
         writePackageQueue();
         isSending.set(false);
+        logger.verbose("Package handler can send");
         sendFirstInternal();
     }
 
