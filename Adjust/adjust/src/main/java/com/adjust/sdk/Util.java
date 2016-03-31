@@ -500,4 +500,12 @@ public class Util {
     public static String getCpuAbi() {
         return Reflection.getCpuAbi();
     }
+
+    public static String getReasonString(String message, Throwable throwable) {
+        if (throwable != null) {
+            return String.format(Locale.US, "%s: %s", message, throwable);
+        } else {
+            return String.format(Locale.US, "%s", message);
+        }
+    }
 }

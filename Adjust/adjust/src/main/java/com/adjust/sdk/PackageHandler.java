@@ -158,11 +158,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void addInternal(ActivityPackage newPackage) {
-        if (newPackage.getActivityKind().equals(ActivityKind.CLICK) && !packageQueue.isEmpty()) {
-            packageQueue.add(1, newPackage);
-        } else {
-            packageQueue.add(newPackage);
-        }
+        packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
 
