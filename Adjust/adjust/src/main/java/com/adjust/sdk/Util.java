@@ -288,7 +288,9 @@ public class Util {
         return connection;
     }
 
-    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
+                                                                  Map<String, String> parameters,
+                                                                  int queueSize)
             throws IOException {
         HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
         connection.setRequestMethod("POST");
@@ -298,14 +300,14 @@ public class Util {
         connection.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(getPostDataString(parameters));
+        wr.writeBytes(getPostDataString(parameters, queueSize));
         wr.flush();
         wr.close();
 
         return connection;
     }
 
-    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+    private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for(Map.Entry<String, String> entry : body.entrySet()) {
@@ -328,6 +330,12 @@ public class Util {
         result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
+
+        result.append("&");
+        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+
 
         return result.toString();
     }

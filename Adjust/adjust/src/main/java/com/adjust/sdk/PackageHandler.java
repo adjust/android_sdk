@@ -180,7 +180,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
 
         ActivityPackage firstPackage = packageQueue.get(0);
-        requestHandler.sendPackage(firstPackage);
+        requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
     }
 
     private void sendNextInternal() {

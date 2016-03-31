@@ -45,9 +45,10 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     @Override
-    public void sendPackage(ActivityPackage pack) {
+    public void sendPackage(ActivityPackage pack, int queueSize) {
         Message message = Message.obtain();
         message.arg1 = InternalHandler.SEND;
+        message.arg2 = queueSize;
         message.obj = pack;
         internalHandler.sendMessage(message);
     }
@@ -74,20 +75,22 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             switch (message.arg1) {
                 case SEND:
                     ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    requestHandler.sendInternal(activityPackage);
+                    int queueSize = message.arg2;
+                    requestHandler.sendInternal(activityPackage, queueSize);
                     break;
             }
         }
     }
 
-    private void sendInternal(ActivityPackage activityPackage) {
+    private void sendInternal(ActivityPackage activityPackage, int queueSize) {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
             HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
                     targetURL,
                     activityPackage.getClientSdk(),
-                    activityPackage.getParameters());
+                    activityPackage.getParameters(),
+                    queueSize);
 
             ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
 

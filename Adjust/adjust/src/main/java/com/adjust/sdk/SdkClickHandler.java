@@ -91,7 +91,8 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
             HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
                     targetURL,
                     sdkClickPackage.getClientSdk(),
-                    sdkClickPackage.getParameters());
+                    sdkClickPackage.getParameters(),
+                    packageQueue.size() - 1);
 
             ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
 
