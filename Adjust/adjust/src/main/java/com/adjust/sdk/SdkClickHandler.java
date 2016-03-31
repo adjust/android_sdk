@@ -3,6 +3,7 @@ package com.adjust.sdk;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.SystemClock;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -76,6 +77,14 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
 
                 ActivityPackage sdkClickPackage = packageQueue.get(0);
 
+                int retries = sdkClickPackage.getRetries();
+
+                if (retries > 0) {
+                    long waitTime = Util.getWaitingTime(retries, BackoffStrategy.SHORT_WAIT);
+                    logger.verbose("Sleeping for %d milliseconds before retrying sdk_click for the %d time", waitTime, retries);
+                    SystemClock.sleep(waitTime);
+                }
+
                 sendSdkClickInternal(sdkClickPackage);
 
                 packageQueue.remove(0);
@@ -96,9 +105,8 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
 
             ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
 
-            // retry
             if (responseData.jsonResponse == null) {
-                sendSdkClick(sdkClickPackage);
+                retrySending(sdkClickPackage);
             }
         } catch (UnsupportedEncodingException e) {
             logErrorMessage(sdkClickPackage, "Sdk_click failed to encode parameters", e);
@@ -111,6 +119,13 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         } catch (Throwable e) {
             logErrorMessage(sdkClickPackage, "Sdk_click runtime exception", e);
         }
+    }
+
+    private void retrySending(ActivityPackage sdkClickPackage) {
+        int retries = sdkClickPackage.increaseRetries();
+
+        logger.error("Retrying sdk_click package for the %d time", retries + 1);
+        sendSdkClick(sdkClickPackage);
     }
 
     private void logErrorMessage(ActivityPackage sdkClickPackage, String message, Throwable throwable) {

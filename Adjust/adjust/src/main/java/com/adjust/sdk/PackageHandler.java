@@ -14,10 +14,12 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 // persistent
@@ -87,12 +89,21 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage(ResponseData responseData) {
-        isSending.set(false);
+    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
         logger.verbose("Package handler can send");
 
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
+
+        int retries = activityPackage.increaseRetries();
+
+        long waitTime = Util.getWaitingTime(retries, BackoffStrategy.LONG_WAIT);
+
+        logger.verbose("Sleeping for %d milliseconds before retrying the %d time", waitTime, retries);
+        SystemClock.sleep(waitTime);
+
+        isSending.set(false);
+        sendFirstPackage();
     }
 
     // interrupt the sending loop after the current request has finished

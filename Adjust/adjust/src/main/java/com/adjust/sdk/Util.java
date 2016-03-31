@@ -39,6 +39,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -515,5 +516,27 @@ public class Util {
         } else {
             return String.format(Locale.US, "%s", message);
         }
+    }
+
+    public static long getWaitingTime(int retries, BackoffStrategy backoffStrategy) {
+        if (retries < backoffStrategy.minRetries) {
+            return 0;
+        }
+        // start with base 0
+        int base = retries - backoffStrategy.minRetries;
+        // get the exponential Time from the base: 1, 2, 4, 8, 16, ... * times the multiplier
+        long exponentialTime = (((long) Math.pow(2, base)) * backoffStrategy.milliSecondMultiplier);
+        // limit the maximum allowed time to wait
+        long ceilingTime = Math.min(exponentialTime, Constants.MAX_WAIT_INTERVAL);
+        Random random = new Random();
+        // add 1 to allow maximum value
+        int jitterFactorBase = random.nextInt(backoffStrategy.maxJitter - backoffStrategy.minJitter + 1);
+        int jitterFactorAdjusted = jitterFactorBase + backoffStrategy.minJitter;
+        double jitterFactor = jitterFactorAdjusted / 100.0;
+        // apply jitter factor
+        double waitingTime =  ceilingTime * jitterFactor;
+
+        // truncate to remove possible max value + 1
+        return (long)waitingTime;
     }
 }

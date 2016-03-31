@@ -11,7 +11,7 @@ public interface IPackageHandler {
 
     public void sendNextPackage(ResponseData responseData);
 
-    public void closeFirstPackage(ResponseData responseData);
+    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage);
 
     public void pauseSending();
 
