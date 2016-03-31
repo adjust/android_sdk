@@ -58,6 +58,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
+    private ISdkClickHandler sdkClickHandler;
 
     public class InternalState {
         boolean enabled;
@@ -547,6 +548,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 toSend(),
                 adjustConfig.hasAttributionChangedListener());
 
+        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend());
+
         foregroundTimer = new TimerCycle(new Runnable() {
             @Override
             public void run() {
@@ -881,8 +884,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         clickPackageBuilder.referrer = referrer;
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, clickTime);
 
-        packageHandler.addPackage(clickPackage);
-        packageHandler.sendFirstPackage();
+        sdkClickHandler.sendSdkClick(clickPackage);
     }
 
     private void readOpenUrlInternal(Uri url, long clickTime) {
@@ -904,8 +906,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         clickPackageBuilder.deeplink = url.toString();
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, clickTime);
 
-        packageHandler.addPackage(clickPackage);
-        packageHandler.sendFirstPackage();
+        sdkClickHandler.sendSdkClick(clickPackage);
     }
 
     private PackageBuilder queryStringClickPackageBuilder(String queryString) {
@@ -994,11 +995,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void pauseSending() {
         attributionHandler.pauseSending();
         packageHandler.pauseSending();
+        sdkClickHandler.pauseSending();
     }
 
     private void resumeSending() {
         attributionHandler.resumeSending();
         packageHandler.resumeSending();
+        sdkClickHandler.resumeSending();
     }
 
     private boolean updateActivityState(long now) {

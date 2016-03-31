@@ -14,6 +14,7 @@ public class AdjustFactory {
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
     private static HttpsURLConnection mockHttpsURLConnection = null;
+    private static ISdkClickHandler sdkClickHandler = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
@@ -101,6 +102,15 @@ public class AdjustFactory {
         return AdjustFactory.mockHttpsURLConnection;
     }
 
+    public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
+        if (sdkClickHandler == null) {
+            return new SdkClickHandler(startsSending);
+        }
+
+        sdkClickHandler.init(startsSending);
+        return sdkClickHandler;
+    }
+
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
@@ -139,5 +149,9 @@ public class AdjustFactory {
 
     public static void setMockHttpsURLConnection(HttpsURLConnection mockHttpsURLConnection) {
         AdjustFactory.mockHttpsURLConnection = mockHttpsURLConnection;
+    }
+
+    public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
+        AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
 }

@@ -115,7 +115,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     // close current package because it failed
     private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
-        final String reasonString = getReasonString(message, throwable);
+        final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
         logger.error(finalMessage);
 
@@ -128,7 +128,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     // send next package because the current package failed
     private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
-        final String reasonString = getReasonString(message, throwable);
+        final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
         logger.error(finalMessage);
 
@@ -136,13 +136,5 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         responseData.message = finalMessage;
 
         packageHandler.sendNextPackage(responseData);
-    }
-
-    private String getReasonString(String message, Throwable throwable) {
-        if (throwable != null) {
-            return String.format(Locale.US, "%s: %s", message, throwable);
-        } else {
-            return String.format(Locale.US, "%s", message);
-        }
     }
 }
