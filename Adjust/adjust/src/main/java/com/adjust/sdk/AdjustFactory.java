@@ -13,13 +13,22 @@ public class AdjustFactory {
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
-    private static HttpsURLConnection mockHttpsURLConnection = null;
+    private static HttpsURLConnection httpsURLConnection = null;
     private static ISdkClickHandler sdkClickHandler = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
+
+    public static class URLGetConnection {
+        HttpsURLConnection httpsURLConnection;
+        URL url;
+        URLGetConnection(HttpsURLConnection httpsURLConnection, URL url) {
+            this.httpsURLConnection = httpsURLConnection;
+            this.url = url;
+        }
+    }
 
     public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
                                                     Context context,
@@ -95,11 +104,19 @@ public class AdjustFactory {
     }
 
     public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
-        if (AdjustFactory.mockHttpsURLConnection == null) {
+        if (AdjustFactory.httpsURLConnection == null) {
             return (HttpsURLConnection)url.openConnection();
         }
 
-        return AdjustFactory.mockHttpsURLConnection;
+        return AdjustFactory.httpsURLConnection;
+    }
+
+    public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
+        if (AdjustFactory.httpsURLConnection == null) {
+            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
+        }
+
+        return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
     }
 
     public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
@@ -147,8 +164,8 @@ public class AdjustFactory {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
-    public static void setMockHttpsURLConnection(HttpsURLConnection mockHttpsURLConnection) {
-        AdjustFactory.mockHttpsURLConnection = mockHttpsURLConnection;
+    public static void setHttpsURLConnection(HttpsURLConnection httpsURLConnection) {
+        AdjustFactory.httpsURLConnection = httpsURLConnection;
     }
 
     public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {

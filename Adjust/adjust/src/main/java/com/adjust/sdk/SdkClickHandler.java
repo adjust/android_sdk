@@ -91,7 +91,8 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
             HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
                     targetURL,
                     sdkClickPackage.getClientSdk(),
-                    sdkClickPackage.getParameters());
+                    sdkClickPackage.getParameters(),
+                    packageQueue.size() - 1);
 
             ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
 
@@ -110,6 +111,13 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         } catch (Throwable e) {
             logErrorMessage(sdkClickPackage, "Sdk_click runtime exception", e);
         }
+    }
+
+    private void retrySending(ActivityPackage sdkClickPackage) {
+        int retries = sdkClickPackage.increaseRetries();
+
+        logger.error("Retrying sdk_click package for the %d time", retries);
+        sendSdkClick(sdkClickPackage);
     }
 
     private void logErrorMessage(ActivityPackage sdkClickPackage, String message, Throwable throwable) {

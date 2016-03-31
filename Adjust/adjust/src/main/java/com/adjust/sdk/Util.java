@@ -280,17 +280,29 @@ public class Util {
         return responseData;
     }
 
-    public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException {
-        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+    public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(String urlString, String clientSdk)
+            throws IOException
+    {
+        URL url = new URL(urlString);
+        AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
+
+        HttpsURLConnection connection = urlGetConnection.httpsURLConnection;
+        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
+
         connection.setRequestMethod("GET");
 
-        return connection;
+        return urlGetConnection;
     }
 
-    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
-            throws IOException {
-        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
+                                                                  Map<String, String> parameters,
+                                                                  int queueSize)
+            throws IOException
+    {
+        URL url = new URL(urlString);
+        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+
+        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
         connection.setRequestMethod("POST");
 
         connection.setUseCaches(false);
@@ -298,14 +310,14 @@ public class Util {
         connection.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(getPostDataString(parameters));
+        wr.writeBytes(getPostDataString(parameters, queueSize));
         wr.flush();
         wr.close();
 
         return connection;
     }
 
-    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+    private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for(Map.Entry<String, String> entry : body.entrySet()) {
@@ -329,20 +341,19 @@ public class Util {
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
 
+        result.append("&");
+        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+
+
         return result.toString();
     }
 
-    public static HttpsURLConnection createHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException {
-        URL url = new URL(urlString);
-
-        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
-
+    public static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
         connection.setReadTimeout(Constants.ONE_MINUTE);
-
-        return connection;
     }
 
     public static boolean checkPermission(Context context, String permission) {

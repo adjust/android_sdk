@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,6 +24,8 @@ public class AttributionHandler implements IAttributionHandler {
 
     private boolean paused;
     private boolean hasListener;
+
+    public URL lastUrlUsed;
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
@@ -150,11 +153,12 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            HttpsURLConnection connection = Util.createGETHttpsURLConnection(
+            AdjustFactory.URLGetConnection urlGetConnection = Util.createGETHttpsURLConnection(
                     buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
-            ResponseData responseData = Util.readHttpResponse(connection, attributionPackage);
+            ResponseData responseData = Util.readHttpResponse(urlGetConnection.httpsURLConnection, attributionPackage);
+            lastUrlUsed = urlGetConnection.url;
 
             if (!(responseData instanceof AttributionResponseData)) {
                 return;
