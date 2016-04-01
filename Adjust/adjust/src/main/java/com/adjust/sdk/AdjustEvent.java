@@ -29,8 +29,8 @@ public class AdjustEvent {
     }
 
     public void addCallbackParameter(String key, String value) {
-        if (!isValidParameter(key, "key", "Callback")) return;
-        if (!isValidParameter(value, "value", "Callback")) return;
+        if (!Util.isValidParameter(key, "key", "Callback")) return;
+        if (!Util.isValidParameter(value, "value", "Callback")) return;
 
         if (callbackParameters == null) {
             callbackParameters = new LinkedHashMap<String, String>();
@@ -44,8 +44,8 @@ public class AdjustEvent {
     }
 
     public void addPartnerParameter(String key, String value) {
-        if (!isValidParameter(key, "key", "Partner")) return;
-        if (!isValidParameter(value, "value", "Partner")) return;
+        if (!Util.isValidParameter(key, "key", "Partner")) return;
+        if (!Util.isValidParameter(value, "value", "Partner")) return;
 
         if (partnerParameters == null) {
             partnerParameters = new LinkedHashMap<String, String>();
@@ -94,19 +94,6 @@ public class AdjustEvent {
             logger.error("Revenue must be set with currency");
             return false;
         }
-        return true;
-    }
-
-    private boolean isValidParameter(String attribute, String attributeType, String parameterName) {
-        if (attribute == null) {
-            logger.error("%s parameter %s is missing", parameterName, attributeType);
-            return false;
-        }
-        if (attribute.equals("")) {
-            logger.error("%s parameter %s is empty", parameterName, attributeType);
-            return false;
-        }
-
         return true;
     }
 }

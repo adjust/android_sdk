@@ -34,7 +34,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("lastInterval", long.class)
     };
 
-    // persistent data
+    // session data
     protected String uuid;
     protected boolean enabled;
     protected boolean askingAttribution;

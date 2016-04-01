@@ -17,10 +17,8 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 
-import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +27,9 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
+import static com.adjust.sdk.Constants.PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
@@ -44,6 +44,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
+    private static final String CALLBACK_PARAMETERS_NAME = "Callback parameters";
+    private static final String PARTNER_PARAMETERS_NAME = "Partner parameters";
 
     private Handler internalHandler;
     private IPackageHandler packageHandler;
@@ -59,6 +61,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
+
+    Map<String, String> sessionCallbackParameters;
+    Map<String, String> sessionPartnerParameters;
 
     public class InternalState {
         boolean enabled;
@@ -102,6 +107,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // read files to have sync values available
         readAttribution(adjustConfig.context);
         readActivityState(adjustConfig.context);
+        readSessionCallbackParameters(adjustConfig.context);
+        readSessionPartnerParameters(adjustConfig.context);
 
         // enabled by default
         if (activityState == null) {
@@ -113,7 +120,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalState.offline = false;
         // in the background by default
         internalState.background = true;
-
 
         init(adjustConfig);
 
@@ -410,6 +416,46 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    @Override
+    public void addSessionCallbackParameter(final String key, final String value) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addSessionCallbackParameterInternal(key, value);
+            }
+        });
+    }
+
+    @Override
+    public void addSessionPartnerParameter(final String key, final String value) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addSessionPartnerParameterInternal(key, value);
+            }
+        });
+    }
+
+    @Override
+    public void updateSessionCallbackParameters(final SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateSessionCallbackParametersInternal(sessionCallbackParametersUpdater);
+            }
+        });
+    }
+
+    @Override
+    public void updateSessionPartnerParameters(final SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateSessionPartnerParametersInternal(sessionPartnerParametersUpdater);
+            }
+        });
+    }
+
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -511,6 +557,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 backgroundTimerFired();
             }
         }, BACKGROUND_TIMER_NAME);
+
+        if (adjustConfig.sessionCallbackParameters != null) {
+            for (Map.Entry<String, String> entry : adjustConfig.sessionCallbackParameters) {
+                addSessionCallbackParameterInternal(entry.getKey(), entry.getValue());
+            }
+            // release unnecessary structure
+            adjustConfig.sessionCallbackParameters = null;
+        }
+
+        if (adjustConfig.sessionPartnerParameters != null) {
+            for (Map.Entry<String, String> entry : adjustConfig.sessionPartnerParameters) {
+                addSessionPartnerParameterInternal(entry.getKey(), entry.getValue());
+            }
+            // release unnecessary structure
+            adjustConfig.sessionCallbackParameters = null;
+        }
     }
 
     private void startInternal() {
@@ -615,6 +677,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         updateActivityState(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        eventBuilder.sessionCallbackParametersCopy = getSessionCallbackParametersCopy();
+        eventBuilder.sessionPartnerParametersCopy = getSessionPartnerParametersCopy();
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
 
@@ -959,15 +1023,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     public static boolean deleteActivityState(Context context) {
-        return context.deleteFile(ACTIVITY_STATE_FILENAME);
+        return Util.deleteFile(context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     public static boolean deleteAttribution(Context context) {
-        return context.deleteFile(ATTRIBUTION_FILENAME);
+        return Util.deleteFile(context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
     }
 
     private void transferSessionPackage(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        builder.sessionCallbackParametersCopy = getSessionCallbackParametersCopy();
+        builder.sessionPartnerParametersCopy = getSessionPartnerParametersCopy();
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
@@ -1040,12 +1106,44 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
+    private void readSessionCallbackParameters(Context context) {
+        try {
+            sessionCallbackParameters = Util.readObject(context,
+                    CALLBACK_PARAMETERS_FILENAME,
+                    CALLBACK_PARAMETERS_NAME,
+                    (Class<Map<String, String>>)((Class)Map.class));
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", CALLBACK_PARAMETERS_NAME, e.getMessage());
+            sessionCallbackParameters = null;
+        }
+    }
+
+    private void readSessionPartnerParameters(Context context) {
+        try {
+            sessionPartnerParameters = Util.readObject(context,
+                    PARTNER_PARAMETERS_FILENAME,
+                    PARTNER_PARAMETERS_NAME,
+                    (Class<Map<String, String>>)((Class)Map.class));
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", PARTNER_PARAMETERS_NAME, e.getMessage());
+            sessionPartnerParameters = null;
+        }
+    }
+
     private synchronized void writeActivityState() {
         Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void writeAttribution() {
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    }
+
+    private void writeSessionCallbackParameters() {
+        Util.writeObject(sessionCallbackParameters, adjustConfig.context, CALLBACK_PARAMETERS_FILENAME, CALLBACK_PARAMETERS_NAME);
+    }
+
+    private void writeSessionPartnerParameters() {
+        Util.writeObject(sessionPartnerParameters, adjustConfig.context, PARTNER_PARAMETERS_FILENAME, PARTNER_PARAMETERS_NAME);
     }
 
     private boolean checkEvent(AdjustEvent event) {
@@ -1087,5 +1185,75 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // doesn't have the option -> depends on being on the background/foreground
         return internalState.isForeground();
+    }
+
+    private void addSessionCallbackParameterInternal(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session callback")) return;
+        if (!Util.isValidParameter(value, "value", "Session callback")) return;
+
+        if (sessionCallbackParameters == null) {
+            sessionCallbackParameters = new LinkedHashMap<String, String>();
+        }
+
+        String previousValue = sessionCallbackParameters.put(key, value);
+
+        if (previousValue != null) {
+            logger.warn("key %s was overwritten", key);
+        }
+        writeSessionCallbackParameters();
+    }
+
+    private void addSessionPartnerParameterInternal(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session partner")) return;
+        if (!Util.isValidParameter(value, "value", "Session partner")) return;
+
+        if (sessionPartnerParameters == null) {
+            sessionPartnerParameters = new LinkedHashMap<String, String>();
+        }
+
+        String previousValue = sessionPartnerParameters.put(key, value);
+
+        if (previousValue != null) {
+            logger.warn("key %s was overwritten", key);
+        }
+        writeSessionPartnerParameters();
+    }
+
+    private void updateSessionCallbackParametersInternal(SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
+        if (sessionCallbackParametersUpdater == null) {
+            logger.error("Session callback parameters updater is null");
+            return;
+        }
+
+        sessionCallbackParameters = sessionCallbackParametersUpdater.updateSessionCallbackParameters(sessionCallbackParameters);
+
+        writeSessionCallbackParameters();
+    }
+
+    private void updateSessionPartnerParametersInternal(SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
+        if (sessionPartnerParametersUpdater == null) {
+            logger.error("Session partner parameters updater is null");
+            return;
+        }
+
+        sessionPartnerParameters = sessionPartnerParametersUpdater.updateSessionPartnerParameters(sessionPartnerParameters);
+
+        writeSessionPartnerParameters();
+    }
+
+    private Map<String, String> getSessionCallbackParametersCopy() {
+        if (sessionCallbackParameters == null) {
+            return null;
+        }
+
+        return new HashMap<String, String>(sessionCallbackParameters);
+    }
+
+    private Map<String, String> getSessionPartnerParametersCopy() {
+        if (sessionPartnerParameters == null) {
+            return null;
+        }
+
+        return new HashMap<String, String>(sessionPartnerParameters);
     }
 }

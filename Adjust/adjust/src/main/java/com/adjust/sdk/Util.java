@@ -177,6 +177,11 @@ public class Util {
     }
 
     public static <T> void writeObject(T object, Context context, String filename, String objectName) {
+        if (object == null) {
+            deleteFile(context, filename, objectName);
+            return;
+        }
+
         Closeable closable = null;
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -204,6 +209,21 @@ public class Util {
         } catch (Exception e) {
             getLogger().error("Failed to close %s file for writing (%s)", objectName, e);
         }
+    }
+
+    public static boolean deleteFile(Context context, String filename, String objectName) {
+        boolean wasDeleted = false;
+        try {
+            wasDeleted =  context.deleteFile(filename);
+            if (wasDeleted) {
+                getLogger().debug("Delete %s successfully", objectName);
+            } else {
+                getLogger().debug("Delete %s not successfully", objectName);
+            }
+        } catch (Exception e) {
+            getLogger().error("Failed to delete %s for writing (%s)", objectName, e);
+        }
+        return wasDeleted;
     }
 
     public static ResponseData readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
@@ -538,5 +558,18 @@ public class Util {
 
         // truncate to remove possible max value + 1
         return (long)waitingTime;
+    }
+
+    public static boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+        if (attribute == null) {
+            getLogger().error("%s parameter %s is missing", parameterName, attributeType);
+            return false;
+        }
+        if (attribute.equals("")) {
+            getLogger().error("%s parameter %s is empty", parameterName, attributeType);
+            return false;
+        }
+
+        return true;
     }
 }

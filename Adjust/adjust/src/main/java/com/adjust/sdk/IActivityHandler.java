@@ -35,4 +35,12 @@ public interface IActivityHandler {
     void setOfflineMode(boolean enabled);
 
     void setAskingAttribution(boolean askingAttribution);
+
+    void addSessionCallbackParameter(String key, String value);
+
+    void addSessionPartnerParameter(String key, String value);
+
+    void updateSessionCallbackParameters(SessionCallbackParametersUpdater sessionCallbackParametersUpdater);
+
+    void updateSessionPartnerParameters(SessionPartnerParametersUpdater sessionPartnerParametersUpdater);
 }

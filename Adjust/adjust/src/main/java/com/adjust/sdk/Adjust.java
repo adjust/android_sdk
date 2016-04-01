@@ -79,6 +79,26 @@ public class Adjust {
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
+
+    public static void addSessionCallbackParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionCallbackParameter(key, value);
+    }
+
+    public static void addSessionPartnerParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionPartnerParameter(key, value);
+    }
+
+    public static void updateSessionCallbackParameters(SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.updateSessionCallbackParameters(sessionCallbackParametersUpdater);
+    }
+
+    public static void updateSessionPartnerParameters(SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.updateSessionPartnerParameters(sessionPartnerParametersUpdater);
+    }
 }
 
 

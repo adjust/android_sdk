@@ -2,6 +2,9 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by pfms on 06/11/14.
  */
@@ -25,9 +28,15 @@ public class AdjustConfig {
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
+    List<Map.Entry<String, String>> sessionCallbackParameters;
+    List<Map.Entry<String, String>> sessionPartnerParameters;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
+
+    private static ILogger getLogger() {
+        return AdjustFactory.getLogger();
+    }
 
     public AdjustConfig(Context context, String appToken, String environment) {
         if (!isValid(context, appToken, environment)) {
@@ -127,14 +136,13 @@ public class AdjustConfig {
     }
 
     private static boolean checkContext(Context context) {
-        ILogger logger = AdjustFactory.getLogger();
         if (context == null) {
-            logger.error("Missing context");
+            getLogger().error("Missing context");
             return false;
         }
 
         if (!Util.checkPermission(context, android.Manifest.permission.INTERNET)) {
-            logger.error("Missing permission: INTERNET");
+            getLogger().error("Missing permission: INTERNET");
             return false;
         }
 
@@ -142,14 +150,13 @@ public class AdjustConfig {
     }
 
     private static boolean checkAppToken(String appToken) {
-        ILogger logger = AdjustFactory.getLogger();
         if (appToken == null) {
-            logger.error("Missing App Token");
+            getLogger().error("Missing App Token");
             return false;
         }
 
         if (appToken.length() != 12) {
-            logger.error("Malformed App Token '%s'", appToken);
+            getLogger().error("Malformed App Token '%s'", appToken);
             return false;
         }
 
@@ -157,7 +164,7 @@ public class AdjustConfig {
     }
 
     private static boolean checkEnvironment(String environment) {
-        ILogger logger = AdjustFactory.getLogger();
+        ILogger logger = getLogger();
         if (environment == null) {
             logger.error("Missing environment");
             return false;

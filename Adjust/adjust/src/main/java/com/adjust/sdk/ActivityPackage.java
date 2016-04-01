@@ -42,6 +42,8 @@ public class ActivityPackage implements Serializable {
     private String suffix;
 
     private int retries;
+    Map<String, String> callbackParameters;
+    Map<String, String> partnerParameters;
 
     public String getPath() {
         return path;
