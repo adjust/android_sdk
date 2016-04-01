@@ -5,7 +5,7 @@ import android.content.Context;
 public interface IPackageHandler {
     public void init(IActivityHandler activityHandler, Context context, boolean startsSending);
 
-    public void addPackage(ActivityPackage pack);
+    public void addPackage(ActivityPackage activityPackage);
 
     public void sendFirstPackage();
 

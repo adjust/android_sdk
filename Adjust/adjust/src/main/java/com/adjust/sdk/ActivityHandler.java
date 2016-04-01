@@ -45,7 +45,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
 
-    private SessionHandler sessionHandler;
+    private Handler internalHandler;
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
@@ -96,7 +96,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         start();
 
         logger = AdjustFactory.getLogger();
-        sessionHandler = new SessionHandler(getLooper(), this);
+        this.internalHandler = new Handler(getLooper());
         internalState = new InternalState();
 
         // read files to have sync values available
@@ -117,9 +117,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         init(adjustConfig);
 
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.INIT;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                initInternal();
+            }
+        });
     }
 
     @Override
@@ -169,9 +172,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     public void trackSubsessionStart() {
         logger.verbose("Subsession start");
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.START;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                startInternal();
+            }
+        });
     }
 
     @Override
@@ -182,13 +188,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     public void trackSubsessionEnd() {
         logger.verbose("Subsession end");
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.END;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                endInternal();
+            }
+        });
     }
 
     @Override
-    public void trackEvent(AdjustEvent event) {
+    public void trackEvent(final AdjustEvent event) {
         if (activityState == null) {
             logger.warn("Event triggered before first application launch.\n" +
                     "This will trigger the SDK start and an install without user interaction" +
@@ -196,10 +205,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             trackSubsessionStart();
         }
 
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.EVENT;
-        message.obj = event;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                trackEventInternal(event);
+            }
+        });
     }
 
     @Override
@@ -311,12 +322,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void readOpenUrl(Uri url, long clickTime) {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.DEEP_LINK;
-        UrlClickTime urlClickTime = new UrlClickTime(url, clickTime);
-        message.obj = urlClickTime;
-        sessionHandler.sendMessage(message);
+    public void readOpenUrl(final Uri url, final long clickTime) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                readOpenUrlInternal(url, clickTime);
+            }
+        });
     }
 
     @Override
@@ -345,36 +357,43 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     @Override
-    public void sendReferrer(String referrer, long clickTime) {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.SEND_REFERRER;
-        ReferrerClickTime referrerClickTime = new ReferrerClickTime(referrer, clickTime);
-        message.obj = referrerClickTime;
-        sessionHandler.sendMessage(message);
+    public void sendReferrer(final String referrer, final long clickTime) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendReferrerInternal(referrer, clickTime);
+            }
+        });
     }
 
     @Override
-    public void launchEventResponseTasks(EventResponseData eventResponseData) {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.EVENT_TASKS;
-        message.obj = eventResponseData;
-        sessionHandler.sendMessage(message);
+    public void launchEventResponseTasks(final EventResponseData eventResponseData) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                launchEventResponseTasksInternal(eventResponseData);
+            }
+        });
     }
 
     @Override
-    public void launchSessionResponseTasks(SessionResponseData sessionResponseData) {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.SESSION_TASKS;
-        message.obj = sessionResponseData;
-        sessionHandler.sendMessage(message);
+    public void launchSessionResponseTasks(final SessionResponseData sessionResponseData) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                launchSessionResponseTasksInternal(sessionResponseData);
+            }
+        });
     }
 
     @Override
-    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.ATTRIBUTION_TASKS;
-        message.obj = attributionResponseData;
-        sessionHandler.sendMessage(message);
+    public void launchAttributionResponseTasks(final AttributionResponseData attributionResponseData) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                launchAttributionResponseTasksInternal(attributionResponseData);
+            }
+        });
     }
 
     public ActivityPackage getAttributionPackage() {
@@ -390,120 +409,31 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return internalState;
     }
 
-    private class UrlClickTime {
-        Uri url;
-        long clickTime;
-
-        UrlClickTime(Uri url, long clickTime) {
-            this.url = url;
-            this.clickTime = clickTime;
-        }
-    }
-
-    private class ReferrerClickTime {
-        String referrer;
-        long clickTime;
-
-        ReferrerClickTime(String referrer, long clickTime) {
-            this.referrer = referrer;
-            this.clickTime = clickTime;
-        }
-    }
-
     private void updateHandlersStatus() {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.UPDATE_HANDLERS_STATUS;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateHandlersStatusInternal();
+            }
+        });
     }
 
     private void foregroundTimerFired() {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.FOREGROUND_TIMER_FIRED;
-        sessionHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                foregroundTimerFiredInternal();
+            }
+        });
     }
 
     private void backgroundTimerFired() {
-        Message message = Message.obtain();
-        message.arg1 = SessionHandler.BACKGROUND_TIMER_FIRED;
-        sessionHandler.sendMessage(message);
-    }
-
-    private static final class SessionHandler extends Handler {
-        private static final int BASE_ADDRESS = 72630;
-        private static final int INIT = BASE_ADDRESS + 1;
-        private static final int START = BASE_ADDRESS + 2;
-        private static final int END = BASE_ADDRESS + 3;
-        private static final int EVENT = BASE_ADDRESS + 4;
-        private static final int EVENT_TASKS = BASE_ADDRESS + 5;
-        private static final int DEEP_LINK = BASE_ADDRESS + 6;
-        private static final int SEND_REFERRER = BASE_ADDRESS + 7;
-        private static final int UPDATE_HANDLERS_STATUS = BASE_ADDRESS + 8;
-        private static final int FOREGROUND_TIMER_FIRED = BASE_ADDRESS + 9;
-        private static final int SESSION_TASKS = BASE_ADDRESS + 10;
-        private static final int ATTRIBUTION_TASKS = BASE_ADDRESS + 11;
-        private static final int BACKGROUND_TIMER_FIRED = BASE_ADDRESS + 12;
-
-        private final WeakReference<ActivityHandler> sessionHandlerReference;
-
-        protected SessionHandler(Looper looper, ActivityHandler sessionHandler) {
-            super(looper);
-            this.sessionHandlerReference = new WeakReference<ActivityHandler>(sessionHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            ActivityHandler sessionHandler = sessionHandlerReference.get();
-            if (sessionHandler == null) {
-                return;
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFiredInternal();
             }
-
-            switch (message.arg1) {
-                case INIT:
-                    sessionHandler.initInternal();
-                    break;
-                case START:
-                    sessionHandler.startInternal();
-                    break;
-                case END:
-                    sessionHandler.endInternal();
-                    break;
-                case EVENT:
-                    AdjustEvent event = (AdjustEvent) message.obj;
-                    sessionHandler.trackEventInternal(event);
-                    break;
-                case EVENT_TASKS:
-                    EventResponseData eventResponseData = (EventResponseData) message.obj;
-                    sessionHandler.launchEventResponseTasksInternal(eventResponseData);
-                    break;
-                case DEEP_LINK:
-                    UrlClickTime urlClickTime = (UrlClickTime) message.obj;
-                    sessionHandler.readOpenUrlInternal(urlClickTime.url, urlClickTime.clickTime);
-                    break;
-                case SEND_REFERRER:
-                    ReferrerClickTime referrerClickTime = (ReferrerClickTime) message.obj;
-                    sessionHandler.sendReferrerInternal(referrerClickTime.referrer, referrerClickTime.clickTime);
-                    break;
-                case UPDATE_HANDLERS_STATUS:
-                    sessionHandler.updateHandlersStatusInternal();
-                    break;
-                case FOREGROUND_TIMER_FIRED:
-                    sessionHandler.foregroundTimerFiredInternal();
-                    break;
-                case SESSION_TASKS:
-                    SessionResponseData sessionResponseData = (SessionResponseData) message.obj;
-                    sessionHandler.launchSessionResponseTasksInternal(sessionResponseData);
-                    break;
-                case ATTRIBUTION_TASKS:
-                    AttributionResponseData attributionResponseData = (AttributionResponseData) message.obj;
-                    sessionHandler.launchAttributionResponseTasksInternal(attributionResponseData);
-                    break;
-                case BACKGROUND_TIMER_FIRED:
-                    sessionHandler.backgroundTimerFiredInternal();
-                    break;
-            }
-        }
+        });
     }
 
     private void initInternal() {

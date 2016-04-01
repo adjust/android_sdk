@@ -27,7 +27,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
-    private final InternalHandler internalHandler;
+    private Handler internalHandler;
     private IRequestHandler requestHandler;
     private IActivityHandler activityHandler;
     private List<ActivityPackage> packageQueue;
@@ -42,14 +42,17 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        this.internalHandler = new InternalHandler(getLooper(), this);
+        this.internalHandler = new Handler(getLooper());
         this.logger = AdjustFactory.getLogger();
 
         init(activityHandler, context, startsSending);
 
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                initInternal();
+            }
+        });
     }
 
     @Override
@@ -61,28 +64,36 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     // add a package to the queue
     @Override
-    public void addPackage(ActivityPackage pack) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.ADD;
-        message.obj = pack;
-        internalHandler.sendMessage(message);
+    public void addPackage(final ActivityPackage activityPackage) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addInternal(activityPackage);
+            }
+        });
     }
 
     // try to send the oldest package
     @Override
     public void sendFirstPackage() {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_FIRST;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstInternal();
+            }
+        });
     }
 
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
     public void sendNextPackage(ResponseData responseData) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_NEXT;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendNextInternal();
+            }
+        });
 
         activityHandler.finishedTrackingActivity(responseData);
     }
@@ -116,46 +127,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     @Override
     public void resumeSending() {
         paused = false;
-    }
-
-    private static final class InternalHandler extends Handler {
-        private static final int INIT = 1;
-        private static final int ADD = 2;
-        private static final int SEND_NEXT = 3;
-        private static final int SEND_FIRST = 4;
-
-        private final WeakReference<PackageHandler> packageHandlerReference;
-
-        protected InternalHandler(Looper looper, PackageHandler packageHandler) {
-            super(looper);
-            this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            PackageHandler packageHandler = packageHandlerReference.get();
-            if (packageHandler == null) {
-                return;
-            }
-
-            switch (message.arg1) {
-                case INIT:
-                    packageHandler.initInternal();
-                    break;
-                case ADD:
-                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    packageHandler.addInternal(activityPackage);
-                    break;
-                case SEND_FIRST:
-                    packageHandler.sendFirstInternal();
-                    break;
-                case SEND_NEXT:
-                    packageHandler.sendNextInternal();
-                    break;
-            }
-        }
     }
 
     // internal methods run in dedicated queue thread
