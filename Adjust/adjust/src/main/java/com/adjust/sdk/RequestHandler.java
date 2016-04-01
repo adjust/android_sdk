@@ -25,7 +25,7 @@ import java.util.Locale;
 import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler extends HandlerThread implements IRequestHandler {
-    private InternalHandler internalHandler;
+    private Handler internalHandler;
     private IPackageHandler packageHandler;
     private ILogger logger;
 
@@ -35,7 +35,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         start();
 
         this.logger = AdjustFactory.getLogger();
-        this.internalHandler = new InternalHandler(getLooper(), this);
+        this.internalHandler = new Handler(getLooper());
         init(packageHandler);
     }
 
@@ -45,41 +45,13 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     @Override
-    public void sendPackage(ActivityPackage pack, int queueSize) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND;
-        message.arg2 = queueSize;
-        message.obj = pack;
-        internalHandler.sendMessage(message);
-    }
-
-    private static final class InternalHandler extends Handler {
-        private static final int SEND = 72400;
-
-        private final WeakReference<RequestHandler> requestHandlerReference;
-
-        protected InternalHandler(Looper looper, RequestHandler requestHandler) {
-            super(looper);
-            this.requestHandlerReference = new WeakReference<RequestHandler>(requestHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            RequestHandler requestHandler = requestHandlerReference.get();
-            if (requestHandler == null) {
-                return;
+    public void sendPackage(final ActivityPackage activityPackage, final int queueSize) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendInternal(activityPackage, queueSize);
             }
-
-            switch (message.arg1) {
-                case SEND:
-                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    int queueSize = message.arg2;
-                    requestHandler.sendInternal(activityPackage, queueSize);
-                    break;
-            }
-        }
+        });
     }
 
     private void sendInternal(ActivityPackage activityPackage, int queueSize) {
