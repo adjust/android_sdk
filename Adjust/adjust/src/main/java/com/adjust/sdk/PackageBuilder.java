@@ -237,7 +237,7 @@ class PackageBuilder {
         }
     }
 
-    private void addString(Map<String, String> parameters, String key, String value) {
+    private static void addString(Map<String, String> parameters, String key, String value) {
         if (TextUtils.isEmpty(value)) {
             return;
         }
@@ -272,7 +272,7 @@ class PackageBuilder {
         addInt(parameters, key, durationInSeconds);
     }
 
-    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+    public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
         if (map == null) {
             return;
         }
@@ -305,7 +305,7 @@ class PackageBuilder {
         addString(parameters, key, doubleString);
     }
 
-    private Map<String, String> mergeParameters(Map<String, String> target,
+    public static Map<String, String> mergeParameters(Map<String, String> target,
                                                 Map<String, String> source,
                                                 String parametersName) {
         if (target == null) {
@@ -314,6 +314,7 @@ class PackageBuilder {
         if (source == null) {
             return target;
         }
+        // make copy of target
         Map<String, String> merged = new HashMap<String, String>(target);
         for (Map.Entry<String, String> keyValuePair : source.entrySet()) {
             String previousValue = merged.put(keyValuePair.getKey(), keyValuePair.getValue());

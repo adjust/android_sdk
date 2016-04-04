@@ -99,6 +99,11 @@ public class Adjust {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.updateSessionPartnerParameters(sessionPartnerParametersUpdater);
     }
+
+    public static void sendFirstPackages() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.sendFirstPackages();
+    }
 }
 
 

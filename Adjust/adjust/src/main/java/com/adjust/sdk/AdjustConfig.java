@@ -28,6 +28,7 @@ public class AdjustConfig {
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
+    Double secondsDelayFirstPackages;
     List<Map.Entry<String, String>> sessionCallbackParameters;
     List<Map.Entry<String, String>> sessionPartnerParameters;
 
@@ -109,6 +110,13 @@ public class AdjustConfig {
 
     public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
         this.onDeeplinkResponseListener = onDeeplinkResponseListener;
+    }
+
+    public void delayFirstPackages(double secondsDelayFirstPackages) {
+        if (secondsDelayFirstPackages < 0) {
+            getLogger().error("Delay time cannot be negative");
+        }
+        this.secondsDelayFirstPackages = secondsDelayFirstPackages;
     }
 
     public boolean hasAttributionChangedListener() {

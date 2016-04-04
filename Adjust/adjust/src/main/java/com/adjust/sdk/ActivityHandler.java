@@ -44,6 +44,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
+    private static final String FIRST_SEND_TIMER_NAME = "First send timer";
     private static final String CALLBACK_PARAMETERS_NAME = "Callback parameters";
     private static final String PARTNER_PARAMETERS_NAME = "Partner parameters";
 
@@ -55,6 +56,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private ScheduledExecutorService scheduler;
     private TimerOnce backgroundTimer;
     private InternalState internalState;
+    private TimerOnce firstSendTimer;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -121,6 +123,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // in the background by default
         internalState.background = true;
 
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        // if it's the first launch
+        if (activityState == null &&
+                // and inital delay is configured
+                adjustConfig.secondsDelayFirstPackages != null)
+        {
+            logger.info("Delay of first session configured");
+            firstSendTimer = new TimerOnce(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    sendFirstPackages();
+                }
+            }, FIRST_SEND_TIMER_NAME);
+        }
+
         init(adjustConfig);
 
         internalHandler.post(new Runnable() {
@@ -174,11 +191,35 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void onResume() {
         internalState.background = false;
 
+        checkStartDelay();
+
         stopBackgroundTimer();
 
         startForegroundTimer();
 
         trackSubsessionStart();
+    }
+
+    private void checkStartDelay() {
+        // first session has already been created
+        if (activityState != null) {
+            return;
+        }
+
+        // it's not configured to start delayed or already finished
+        if (firstSendTimer == null) {
+            return;
+        }
+
+        // the delay has already started
+        if (firstSendTimer.getFireIn() > 0) {
+            return;
+        }
+
+        double secondsDelay = adjustConfig.secondsDelayFirstPackages;
+        long milisecondsDelay = (long)secondsDelay * 1000;
+        firstSendTimer.startIn(milisecondsDelay);
+        logger.info("Waiting %s seconds before starting first session", secondsDelay);
     }
 
     public void trackSubsessionStart() {
@@ -334,7 +375,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public boolean isEnabled() {
         if (activityState != null) {
-            logger.warn("Returning enabled value before starting the sdk");
             return activityState.enabled;
         } else {
             return internalState.isEnabled();
@@ -456,6 +496,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    @Override
+    public void sendFirstPackages() {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstPackagesInternal();
+            }
+        });
+    }
+
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -550,7 +600,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             }
         }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
-        scheduler = Executors.newSingleThreadScheduledExecutor();
         backgroundTimer = new TimerOnce(scheduler, new Runnable() {
             @Override
             public void run() {
@@ -1040,7 +1089,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startForegroundTimer() {
-        // don't start the timer if it's disabled or offline
+        // don't start the timer if it's disabled, offline or delayed
         if (paused()) {
             return;
         }
@@ -1054,7 +1103,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void foregroundTimerFiredInternal() {
         if (paused()) {
-            // stop the timer cycle if it's disabled/offline
+            // stop the timer cycle if it's disabled, offline or delayed
             stopForegroundTimer();
             return;
         }
@@ -1169,11 +1218,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private boolean paused() {
-        return internalState.isOffline() || !this.isEnabled();
+        // is paused if it's offline
+        return internalState.isOffline() ||
+                // or disabled (activity state first, internal state second)
+                !this.isEnabled() ||
+                // or in delayed state
+                this.firstSendTimer != null;
     }
 
     private boolean toSend() {
-        // if it's offline, disabled -> don't send
+        // if it's offline, disabled, delayed -> don't send
         if (paused()) {
             return false;
         }
@@ -1239,6 +1293,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         sessionPartnerParameters = sessionPartnerParametersUpdater.updateSessionPartnerParameters(sessionPartnerParameters);
 
         writeSessionPartnerParameters();
+    }
+
+    private void sendFirstPackagesInternal() {
+        if (firstSendTimer == null) {
+            logger.info("Initial delay expired or never configured");
+            return;
+        }
+        // cancel possible still running timer if it was called by user
+        firstSendTimer.cancel();
+        // no longer delayed
+        firstSendTimer = null;
+        // update possible
+        packageHandler.updateQueue(sessionCallbackParameters, sessionPartnerParameters);
+        // try to start the session
+        trackSubsessionStart();
     }
 
     private Map<String, String> getSessionCallbackParametersCopy() {

@@ -43,4 +43,6 @@ public interface IActivityHandler {
     void updateSessionCallbackParameters(SessionCallbackParametersUpdater sessionCallbackParametersUpdater);
 
     void updateSessionPartnerParameters(SessionPartnerParametersUpdater sessionPartnerParametersUpdater);
+
+    void sendFirstPackages();
 }

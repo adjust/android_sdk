@@ -118,6 +118,11 @@ public class AdjustInstance {
         activityHandler.updateSessionPartnerParameters(sessionPartnerParametersUpdater);
     }
 
+    public void sendFirstPackages() {
+        if (!checkActivityHandler()) return;
+        activityHandler.sendFirstPackages();
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

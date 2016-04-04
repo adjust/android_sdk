@@ -19,6 +19,7 @@ import android.os.SystemClock;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -129,8 +130,17 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         paused = false;
     }
 
-    // internal methods run in dedicated queue thread
+    @Override
+    public void updateQueue(final Map<String, String> sessionCallbackParameters, final Map<String, String> sessionPartnerParameters) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateQueueInternal(sessionCallbackParameters, sessionPartnerParameters);
+            }
+        });
+    }
 
+    // internal methods run in dedicated queue thread
     private void initInternal() {
         requestHandler = AdjustFactory.getRequestHandler(this);
 
@@ -171,6 +181,60 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         isSending.set(false);
         logger.verbose("Package handler can send");
         sendFirstInternal();
+    }
+
+    private void updateQueueInternal(Map<String, String> sessionCallbackParameters, Map<String, String> sessionPartnerParameters) {
+        logger.debug("Updating package handler queue");
+        logger.verbose("Session callback parameters %s", sessionCallbackParameters);
+        logger.verbose("Session partner parameters %s", sessionPartnerParameters);
+
+        // if callback parameters is null or empty
+        if ((sessionCallbackParameters == null || sessionCallbackParameters.size() == 0) &&
+                // and partner parameters as well
+                (sessionPartnerParameters == null || sessionPartnerParameters.size() == 0))
+        {
+            return;
+        }
+
+        for (ActivityPackage activityPackage : packageQueue) {
+            updateParameter(activityPackage, sessionCallbackParameters, "callback", "callback_params");
+            updateParameter(activityPackage, sessionPartnerParameters, "partner", "partner_params");
+        }
+    }
+
+    private void updateParameter(ActivityPackage activityPackage,
+                                                Map<String, String> sessionParameters,
+                                                String parameterName,
+                                                String key)
+    {
+        // no new session parameters to inject
+        if (sessionParameters == null) {
+            return;
+        }
+        // get the current parameters
+        Map<String, String> currentParameters = null;
+        if (parameterName == "callback") {
+            currentParameters = activityPackage.callbackParameters;
+        }
+        if (parameterName == "partner") {
+            currentParameters = activityPackage.partnerParameters;
+        }
+
+        // merge the new session parameters with the current
+        Map<String, String> mergedParameters = PackageBuilder.mergeParameters(sessionParameters, currentParameters, parameterName);
+        // get activity package parameters to save
+        Map<String, String> activityPackageParameters = activityPackage.getParameters();
+        // save the merged parameters
+        PackageBuilder.addMapJson(activityPackageParameters, key, mergedParameters);
+
+        logger.verbose("Updating %s parameters from %s to %s", parameterName, currentParameters, mergedParameters);
+
+        if (parameterName == "callback") {
+            activityPackage.callbackParameters = mergedParameters;
+        }
+        if (parameterName == "partner") {
+            activityPackage.partnerParameters = mergedParameters;
+        }
     }
 
     private void readPackageQueue() {
