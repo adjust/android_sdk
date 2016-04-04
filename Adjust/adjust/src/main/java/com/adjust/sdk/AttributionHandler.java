@@ -182,6 +182,11 @@ public class AttributionHandler implements IAttributionHandler {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
 
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+
+        uriBuilder.appendQueryParameter("sent_at", dateString);
+
         return uriBuilder.build();
     }
 }

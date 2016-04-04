@@ -18,7 +18,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by pfms on 31/03/16.
  */
 public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
-    private final Handler internalHandler;
+    private Handler internalHandler;
     private ILogger logger;
     private boolean paused;
     private List<ActivityPackage> packageQueue;

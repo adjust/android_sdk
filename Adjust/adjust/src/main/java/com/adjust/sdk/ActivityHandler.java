@@ -200,7 +200,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void trackEvent(final AdjustEvent event) {
         if (activityState == null) {
             logger.warn("Event triggered before first application launch.\n" +
-                    "This will trigger the SDK start and an install without user interaction" +
+                    "This will trigger the SDK start and an install without user interaction.\n" +
                     "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
             trackSubsessionStart();
         }
@@ -257,14 +257,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void updateStatus(boolean pausingState, String pausingMessage,
                               String remainsPausedMessage, String unPausingMessage)
     {
+        // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
             updateHandlersStatus();
             return;
         }
 
+        // it is remaining in a pause state
         if (paused()) {
             logger.info(remainsPausedMessage);
+        // it is changing from a pause state to an active state
         } else {
             logger.info(unPausingMessage);
             updateHandlersStatus();
@@ -315,6 +318,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public boolean isEnabled() {
         if (activityState != null) {
+            logger.warn("Returning enabled value before starting the sdk");
             return activityState.enabled;
         } else {
             return internalState.isEnabled();
