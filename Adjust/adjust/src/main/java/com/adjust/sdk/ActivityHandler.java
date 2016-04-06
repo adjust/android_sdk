@@ -270,7 +270,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
-            updateHandlersStatus();
+            updateHandlersStatusAndSend();
             return;
         }
 
@@ -280,7 +280,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // it is changing from a pause state to an active state
         } else {
             logger.info(unPausingMessage);
-            updateHandlersStatus();
+            updateHandlersStatusAndSend();
         }
     }
 
@@ -423,11 +423,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return internalState;
     }
 
-    private void updateHandlersStatus() {
+    private void updateHandlersStatusAndSend() {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
                 updateHandlersStatusInternal();
+                if (!adjustConfig.eventBufferingEnabled) {
+                    packageHandler.sendFirstPackage();
+                }
             }
         });
     }
