@@ -476,6 +476,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    // XXX TODO replace with remove, and reset session callback parameters
     @Override
     public void updateSessionCallbackParameters(final SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
         internalHandler.post(new Runnable() {
@@ -486,6 +487,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    // XXX TODO replace with remove, and reset session partner parameters
     @Override
     public void updateSessionPartnerParameters(final SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
         internalHandler.post(new Runnable() {
@@ -726,9 +728,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         updateActivityState(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+
+        // XXX no need to be copies
         eventBuilder.sessionCallbackParametersCopy = getSessionCallbackParametersCopy();
         eventBuilder.sessionPartnerParametersCopy = getSessionPartnerParametersCopy();
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, this.firstSendTimer != null);
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -1081,6 +1085,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void transferSessionPackage(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        // XXX no need to be copies
         builder.sessionCallbackParametersCopy = getSessionCallbackParametersCopy();
         builder.sessionPartnerParametersCopy = getSessionPartnerParametersCopy();
         ActivityPackage sessionPackage = builder.buildSessionPackage();
@@ -1306,8 +1311,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         firstSendTimer = null;
         // update possible
         packageHandler.updateQueue(sessionCallbackParameters, sessionPartnerParameters);
-        // try to start the session
-        trackSubsessionStart();
+        // update the status and try to send first package
+        updateHandlersStatusAndSend();
     }
 
     private Map<String, String> getSessionCallbackParametersCopy() {

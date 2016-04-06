@@ -42,6 +42,7 @@ public class ActivityPackage implements Serializable {
     private String suffix;
 
     private int retries;
+    // XXX TODO replace with event callback/partner parameters and save them
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 

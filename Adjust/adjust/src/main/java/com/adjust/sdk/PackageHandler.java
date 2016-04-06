@@ -197,11 +197,13 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
 
         for (ActivityPackage activityPackage : packageQueue) {
+            // XXX TODO only merge event packages. Session packages can be overwritten by last session parameters
             updateParameter(activityPackage, sessionCallbackParameters, "callback", "callback_params");
             updateParameter(activityPackage, sessionPartnerParameters, "partner", "partner_params");
         }
     }
 
+    // XXX TODO either inject current parameters or split in two functions
     private void updateParameter(ActivityPackage activityPackage,
                                                 Map<String, String> sessionParameters,
                                                 String parameterName,

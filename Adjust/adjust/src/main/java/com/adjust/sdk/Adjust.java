@@ -90,11 +90,13 @@ public class Adjust {
         adjustInstance.addSessionPartnerParameter(key, value);
     }
 
+    // XXX TODO replace with remove, and reset session callback parameters
     public static void updateSessionCallbackParameters(SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.updateSessionCallbackParameters(sessionCallbackParametersUpdater);
     }
 
+    // XXX TODO replace with remove, and reset session partner parameters
     public static void updateSessionPartnerParameters(SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.updateSessionPartnerParameters(sessionPartnerParametersUpdater);

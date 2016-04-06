@@ -29,6 +29,7 @@ class PackageBuilder {
     String reftag;
     String referrer;
     String deeplink;
+    // XXX no need to be copies
     Map<String, String> sessionCallbackParametersCopy;
     Map<String, String> sessionPartnerParametersCopy;
 
@@ -48,6 +49,7 @@ class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", activityState.lastInterval);
         addString(parameters, "default_tracker", adjustConfig.defaultTracker);
+        // XXX TODO remove to apply in request builder instead
         addMapJson(parameters, "callback_params", sessionCallbackParametersCopy);
         addMapJson(parameters, "partner_params", sessionPartnerParametersCopy);
 
@@ -55,13 +57,14 @@ class PackageBuilder {
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
+
         sessionPackage.callbackParameters = sessionCallbackParametersCopy;
         sessionPackage.partnerParameters = sessionPartnerParametersCopy;
 
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage(AdjustEvent event) {
+    public ActivityPackage buildEventPackage(AdjustEvent event, boolean isDelayed) {
         Map<String, String> parameters = getDefaultParameters();
         addInt(parameters, "event_count", activityState.eventCount);
         addString(parameters, "event_token", event.eventToken);
@@ -78,6 +81,7 @@ class PackageBuilder {
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
+        // XXX TODO use isDelayed to know if event callback/session parameters are saved
         eventPackage.callbackParameters = mergedCallbackParameters;
         eventPackage.partnerParameters = mergedPartnerParameters;
 
