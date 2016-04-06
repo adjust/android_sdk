@@ -2,6 +2,11 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by pfms on 04/12/14.
  */
@@ -10,6 +15,8 @@ public class AdjustInstance {
     private String referrer;
     private long referrerClickTime;
     private ActivityHandler activityHandler;
+    private List<Map.Entry<String, String>> sessionCallbackParameters;
+    private List<Map.Entry<String, String>> sessionPartnerParameters;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -23,8 +30,14 @@ public class AdjustInstance {
 
         adjustConfig.referrer = this.referrer;
         adjustConfig.referrerClickTime = this.referrerClickTime;
+        adjustConfig.sessionCallbackParameters = this.sessionCallbackParameters;
+        adjustConfig.sessionPartnerParameters = this.sessionPartnerParameters;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
+
+        // release the complex instances
+        this.sessionCallbackParameters = null;
+        this.sessionPartnerParameters = null;
     }
 
     public void trackEvent(AdjustEvent event) {
@@ -34,12 +47,12 @@ public class AdjustInstance {
 
     public void onResume() {
         if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionStart();
+        activityHandler.onResume();
     }
 
     public void onPause() {
         if (!checkActivityHandler()) return;
-        activityHandler.trackSubsessionEnd();
+        activityHandler.onPause();
     }
 
     public void setEnabled(boolean enabled) {
@@ -75,6 +88,41 @@ public class AdjustInstance {
         activityHandler.setOfflineMode(enabled);
     }
 
+    public void addSessionCallbackParameter(String key, String value) {
+        if (activityHandler == null) {
+            List<Map.Entry<String, String>> sessionCallbackParameters = getSessionCallbackParameters();
+            Map.Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(key, value);
+            sessionCallbackParameters.add(entry);
+        } else {
+            activityHandler.addSessionCallbackParameter(key, value);
+        }
+    }
+
+    public void addSessionPartnerParameter(String key, String value) {
+        if (activityHandler == null) {
+            List<Map.Entry<String, String>> sessionPartnerParameters = getSessionPartnerParameters();
+            Map.Entry<String, String> entry = new AbstractMap.SimpleEntry<String, String>(key, value);
+            sessionPartnerParameters.add(entry);
+        } else {
+            activityHandler.addSessionPartnerParameter(key, value);
+        }
+    }
+
+    public void updateSessionCallbackParameters(SessionCallbackParametersUpdater sessionCallbackParametersUpdater) {
+        if (!checkActivityHandler()) return;
+        activityHandler.updateSessionCallbackParameters(sessionCallbackParametersUpdater);
+    }
+
+    public void updateSessionPartnerParameters(SessionPartnerParametersUpdater sessionPartnerParametersUpdater) {
+        if (!checkActivityHandler()) return;
+        activityHandler.updateSessionPartnerParameters(sessionPartnerParametersUpdater);
+    }
+
+    public void sendFirstPackages() {
+        if (!checkActivityHandler()) return;
+        activityHandler.sendFirstPackages();
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");
@@ -82,5 +130,19 @@ public class AdjustInstance {
         } else {
             return true;
         }
+    }
+
+    private synchronized List<Map.Entry<String, String>> getSessionCallbackParameters() {
+        if (sessionCallbackParameters == null) {
+            sessionCallbackParameters = new ArrayList<Map.Entry<String, String>>();
+        }
+        return sessionCallbackParameters;
+    }
+
+    private synchronized List<Map.Entry<String, String>> getSessionPartnerParameters() {
+        if (sessionPartnerParameters == null) {
+            sessionPartnerParameters = new ArrayList<Map.Entry<String, String>>();
+        }
+        return sessionPartnerParameters;
     }
 }

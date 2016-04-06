@@ -41,6 +41,11 @@ public class ActivityPackage implements Serializable {
     private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private String suffix;
 
+    private int retries;
+    // XXX TODO replace with event callback/partner parameters and save them
+    Map<String, String> callbackParameters;
+    Map<String, String> partnerParameters;
+
     public String getPath() {
         return path;
     }
@@ -75,6 +80,14 @@ public class ActivityPackage implements Serializable {
 
     public void setSuffix(String suffix) {
         this.suffix = suffix;
+    }
+
+    public int getRetries() {
+        return retries;
+    }
+    public int increaseRetries() {
+        retries++;
+        return retries;
     }
 
     public ActivityPackage(ActivityKind activityKind) {

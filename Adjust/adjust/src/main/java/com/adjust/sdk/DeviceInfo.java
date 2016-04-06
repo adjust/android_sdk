@@ -47,6 +47,8 @@ class DeviceInfo {
     String screenDensity;
     String displayWidth;
     String displayHeight;
+    String hardwareName;
+    String abi;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -79,6 +81,8 @@ class DeviceInfo {
         pluginKeys = Util.getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
+        hardwareName = getHardwareName();
+        abi = getABI();
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -148,6 +152,10 @@ class DeviceInfo {
 
     private String getCountry(Locale locale) {
         return locale.getCountry();
+    }
+
+    private String getHardwareName() {
+        return Build.DISPLAY;
     }
 
     private String getScreenSize(int screenLayout) {
@@ -260,5 +268,17 @@ class DeviceInfo {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private String getABI() {
+        String[] SupportedABIS = Util.getSupportedAbis();
+
+        // SUPPORTED_ABIS is only supported in API level 21
+        // get CPU_ABI instead
+        if (SupportedABIS == null || SupportedABIS.length == 0) {
+            return Util.getCpuAbi();
+        }
+
+        return SupportedABIS[0];
     }
 }

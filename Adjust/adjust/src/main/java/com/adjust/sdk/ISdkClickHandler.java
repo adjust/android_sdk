@@ -1,0 +1,11 @@
+package com.adjust.sdk;
+
+/**
+ * Created by pfms on 31/03/16.
+ */
+public interface ISdkClickHandler {
+    void init(boolean startsSending);
+    void pauseSending();
+    void resumeSending();
+    void sendSdkClick(ActivityPackage sdkClick);
+}

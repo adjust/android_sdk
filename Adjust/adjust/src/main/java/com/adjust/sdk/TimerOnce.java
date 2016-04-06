@@ -1,6 +1,5 @@
 package com.adjust.sdk;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -11,21 +10,31 @@ import java.util.concurrent.TimeUnit;
 public class TimerOnce {
     private ScheduledExecutorService scheduler;
     private ScheduledFuture waitingTask;
+    private String name;
     private Runnable command;
-    private boolean isRunning;
+    private ILogger logger;
 
-    public TimerOnce(ScheduledExecutorService scheduler, Runnable command) {
+    public TimerOnce(ScheduledExecutorService scheduler, Runnable command, String name) {
+        this.name = name;
         this.scheduler = scheduler;
         this.command = command;
-        this.isRunning = false;
+        this.logger = AdjustFactory.getLogger();
     }
 
     public void startIn(long fireIn) {
         // cancel previous
-        if (waitingTask != null) {
-            waitingTask.cancel(false);
-        }
-        waitingTask = scheduler.schedule(command, fireIn, TimeUnit.MILLISECONDS);
+        cancel(false);
+
+        logger.verbose("%s starting. Launching in %d seconds", name, TimeUnit.MILLISECONDS.toSeconds(fireIn));
+
+        waitingTask = scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                logger.verbose("%s fired", name);
+                command.run();
+                waitingTask = null;
+            }
+        }, fireIn, TimeUnit.MILLISECONDS);
     }
 
     public long getFireIn() {
@@ -33,5 +42,20 @@ public class TimerOnce {
             return 0;
         }
         return waitingTask.getDelay(TimeUnit.MILLISECONDS);
+    }
+
+    private void cancel(boolean log) {
+        if (waitingTask != null) {
+            waitingTask.cancel(false);
+        }
+        waitingTask = null;
+
+        if (log) {
+            logger.verbose("%s canceled", name);
+        }
+    }
+
+    public void cancel() {
+        cancel(true);
     }
 }

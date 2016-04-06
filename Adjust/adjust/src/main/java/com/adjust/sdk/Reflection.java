@@ -34,7 +34,9 @@ public class Reflection {
 
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
 
-            return !isLimitedTrackingEnabled;
+            Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
+
+            return isPlayTrackingEnabled;
         } catch (Throwable t) {
             return null;
         }
@@ -89,6 +91,39 @@ public class Reflection {
         } catch (Throwable t) {
             return false;
         }
+    }
+
+    public static String[] getSupportedAbis() {
+        String[] supportedAbis = null;
+        try {
+            Class buildClass = forName("android.os.Build");
+
+            Field supportedAbisField = buildClass.getField("SUPPORTED_ABIS");
+
+            Object supportedAbisObject = supportedAbisField.get(null);
+
+            if (supportedAbisObject instanceof String[]) {
+                supportedAbis = (String[]) supportedAbisObject;
+            }
+        } catch (Exception e) {}
+
+        return supportedAbis;
+    }
+
+    public static String getCpuAbi() {
+        String cpuAbi = null;
+        try {
+            Class buildClass = forName("android.os.Build");
+
+            Field cpuAbiField = buildClass.getField("CPU_ABI");
+
+            Object cpuAbiObject = cpuAbiField.get(null);
+
+            if (cpuAbiObject instanceof String) {
+                cpuAbi = (String) cpuAbiObject;
+            }
+        }catch (Exception e) {}
+        return cpuAbi;
     }
 
     public static Class forName(String className) {

@@ -2,18 +2,22 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.Map;
+
 public interface IPackageHandler {
-    public void init(IActivityHandler activityHandler, Context context, boolean startPaused);
+    void init(IActivityHandler activityHandler, Context context, boolean startsSending);
 
-    public void addPackage(ActivityPackage pack);
+    void addPackage(ActivityPackage activityPackage);
 
-    public void sendFirstPackage();
+    void sendFirstPackage();
 
-    public void sendNextPackage(ResponseData responseData);
+    void sendNextPackage(ResponseData responseData);
 
-    public void closeFirstPackage(ResponseData responseData);
+    void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage);
 
-    public void pauseSending();
+    void pauseSending();
 
-    public void resumeSending();
+    void resumeSending();
+
+    void updateQueue(Map<String, String> sessionCallbackParameters, Map<String, String> sessionPartnerParameters);
 }

@@ -39,6 +39,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -160,7 +161,7 @@ public class Util {
                 getLogger().error("Failed to read %s object (%s)", objectName, e.getMessage());
             }
         } catch (FileNotFoundException e) {
-            getLogger().verbose("%s file not found", objectName);
+            getLogger().debug("%s file not found", objectName);
         } catch (Exception e) {
             getLogger().error("Failed to open %s file for reading (%s)", objectName, e);
         }
@@ -176,6 +177,11 @@ public class Util {
     }
 
     public static <T> void writeObject(T object, Context context, String filename, String objectName) {
+        if (object == null) {
+            deleteFile(context, filename, objectName);
+            return;
+        }
+
         Closeable closable = null;
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -203,6 +209,21 @@ public class Util {
         } catch (Exception e) {
             getLogger().error("Failed to close %s file for writing (%s)", objectName, e);
         }
+    }
+
+    public static boolean deleteFile(Context context, String filename, String objectName) {
+        boolean wasDeleted = false;
+        try {
+            wasDeleted =  context.deleteFile(filename);
+            if (wasDeleted) {
+                getLogger().debug("Delete %s successfully", objectName);
+            } else {
+                getLogger().debug("Delete %s not successfully", objectName);
+            }
+        } catch (Exception e) {
+            getLogger().error("Failed to delete %s for writing (%s)", objectName, e);
+        }
+        return wasDeleted;
     }
 
     public static ResponseData readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
@@ -288,7 +309,9 @@ public class Util {
         return connection;
     }
 
-    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
+                                                                  Map<String, String> parameters,
+                                                                  int queueSize)
             throws IOException {
         HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
         connection.setRequestMethod("POST");
@@ -298,14 +321,14 @@ public class Util {
         connection.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(getPostDataString(parameters));
+        wr.writeBytes(getPostDataString(parameters, queueSize));
         wr.flush();
         wr.close();
 
         return connection;
     }
 
-    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+    private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for(Map.Entry<String, String> entry : body.entrySet()) {
@@ -328,6 +351,12 @@ public class Util {
         result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
+
+        result.append("&");
+        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+
 
         return result.toString();
     }
@@ -491,5 +520,56 @@ public class Util {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
         return String.format(Locale.US, formatString, bigInt);
+    }
+
+    public static String[] getSupportedAbis() {
+        return Reflection.getSupportedAbis();
+    }
+
+    public static String getCpuAbi() {
+        return Reflection.getCpuAbi();
+    }
+
+    public static String getReasonString(String message, Throwable throwable) {
+        if (throwable != null) {
+            return String.format(Locale.US, "%s: %s", message, throwable);
+        } else {
+            return String.format(Locale.US, "%s", message);
+        }
+    }
+
+    public static long getWaitingTime(int retries, BackoffStrategy backoffStrategy) {
+        if (retries < backoffStrategy.minRetries) {
+            return 0;
+        }
+        // start with base 0
+        int base = retries - backoffStrategy.minRetries;
+        // get the exponential Time from the base: 1, 2, 4, 8, 16, ... * times the multiplier
+        long exponentialTime = (((long) Math.pow(2, base)) * backoffStrategy.milliSecondMultiplier);
+        // limit the maximum allowed time to wait
+        long ceilingTime = Math.min(exponentialTime, Constants.MAX_WAIT_INTERVAL);
+        Random random = new Random();
+        // add 1 to allow maximum value
+        int jitterFactorBase = random.nextInt(backoffStrategy.maxJitter - backoffStrategy.minJitter + 1);
+        int jitterFactorAdjusted = jitterFactorBase + backoffStrategy.minJitter;
+        double jitterFactor = jitterFactorAdjusted / 100.0;
+        // apply jitter factor
+        double waitingTime =  ceilingTime * jitterFactor;
+
+        // truncate to remove possible max value + 1
+        return (long)waitingTime;
+    }
+
+    public static boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+        if (attribute == null) {
+            getLogger().error("%s parameter %s is missing", parameterName, attributeType);
+            return false;
+        }
+        if (attribute.equals("")) {
+            getLogger().error("%s parameter %s is empty", parameterName, attributeType);
+            return false;
+        }
+
+        return true;
     }
 }

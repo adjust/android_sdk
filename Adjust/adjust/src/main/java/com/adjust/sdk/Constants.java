@@ -20,9 +20,11 @@ public interface Constants {
     int ONE_SECOND = 1000;
     int ONE_MINUTE = 60 * ONE_SECOND;
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
+    int ONE_HOUR = 2 * THIRTY_MINUTES;
 
     int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
+    int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
 
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
@@ -30,9 +32,12 @@ public interface Constants {
     String CLIENT_SDK = "android4.6.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
+    String DEEPLINK = "deeplink";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
+    String CALLBACK_PARAMETERS_FILENAME = "AdjustCallbackParameters";
+    String PARTNER_PARAMETERS_FILENAME = "AdjustPartnerParameters";
 
     String MALFORMED = "malformed";
     String SMALL = "small";

@@ -14,6 +14,7 @@ public class AdjustFactory {
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
     private static HttpsURLConnection mockHttpsURLConnection = null;
+    private static ISdkClickHandler sdkClickHandler = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
@@ -22,11 +23,11 @@ public class AdjustFactory {
 
     public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
                                                     Context context,
-                                                    boolean startPaused) {
+                                                    boolean startsSending) {
         if (packageHandler == null) {
-            return new PackageHandler(activityHandler, context, startPaused);
+            return new PackageHandler(activityHandler, context, startsSending);
         }
-        packageHandler.init(activityHandler, context, startPaused);
+        packageHandler.init(activityHandler, context, startsSending);
         return packageHandler;
     }
 
@@ -84,12 +85,12 @@ public class AdjustFactory {
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
                                                             ActivityPackage attributionPackage,
-                                                            boolean startPaused,
+                                                            boolean startsSending,
                                                             boolean hasListener) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, startPaused, hasListener);
+            return new AttributionHandler(activityHandler, attributionPackage, startsSending, hasListener);
         }
-        attributionHandler.init(activityHandler, attributionPackage, startPaused, hasListener);
+        attributionHandler.init(activityHandler, attributionPackage, startsSending, hasListener);
         return attributionHandler;
     }
 
@@ -99,6 +100,15 @@ public class AdjustFactory {
         }
 
         return AdjustFactory.mockHttpsURLConnection;
+    }
+
+    public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
+        if (sdkClickHandler == null) {
+            return new SdkClickHandler(startsSending);
+        }
+
+        sdkClickHandler.init(startsSending);
+        return sdkClickHandler;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
@@ -139,5 +149,9 @@ public class AdjustFactory {
 
     public static void setMockHttpsURLConnection(HttpsURLConnection mockHttpsURLConnection) {
         AdjustFactory.mockHttpsURLConnection = mockHttpsURLConnection;
+    }
+
+    public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
+        AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
 }

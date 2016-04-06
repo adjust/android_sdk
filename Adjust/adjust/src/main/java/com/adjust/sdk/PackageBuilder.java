@@ -28,6 +28,10 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
     String referrer;
+    String deeplink;
+    // XXX no need to be copies
+    Map<String, String> sessionCallbackParametersCopy;
+    Map<String, String> sessionPartnerParametersCopy;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -45,28 +49,41 @@ class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         addDuration(parameters, "last_interval", activityState.lastInterval);
         addString(parameters, "default_tracker", adjustConfig.defaultTracker);
+        // XXX TODO remove to apply in request builder instead
+        addMapJson(parameters, "callback_params", sessionCallbackParametersCopy);
+        addMapJson(parameters, "partner_params", sessionPartnerParametersCopy);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
 
+        sessionPackage.callbackParameters = sessionCallbackParametersCopy;
+        sessionPackage.partnerParameters = sessionPartnerParametersCopy;
+
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage(AdjustEvent event) {
+    public ActivityPackage buildEventPackage(AdjustEvent event, boolean isDelayed) {
         Map<String, String> parameters = getDefaultParameters();
         addInt(parameters, "event_count", activityState.eventCount);
         addString(parameters, "event_token", event.eventToken);
         addDouble(parameters, "revenue", event.revenue);
         addString(parameters, "currency", event.currency);
-        addMapJson(parameters, "callback_params", event.callbackParameters);
-        addMapJson(parameters, "partner_params", event.partnerParameters);
+        Map<String, String> mergedCallbackParameters = mergeParameters(sessionCallbackParametersCopy,
+                event.callbackParameters, "callback");
+        addMapJson(parameters, "callback_params", mergedCallbackParameters);
+        Map<String, String> mergedPartnerParameters = mergeParameters(sessionPartnerParametersCopy,
+                event.partnerParameters, "partner");
+        addMapJson(parameters, "partner_params", mergedPartnerParameters);
 
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
+        // XXX TODO use isDelayed to know if event callback/session parameters are saved
+        eventPackage.callbackParameters = mergedCallbackParameters;
+        eventPackage.partnerParameters = mergedPartnerParameters;
 
         return eventPackage;
     }
@@ -79,6 +96,7 @@ class PackageBuilder {
         addString(parameters, "reftag", reftag);
         addMapJson(parameters, "params", extraParameters);
         addString(parameters, "referrer", referrer);
+        addString(parameters, "deeplink", deeplink);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
@@ -150,6 +168,8 @@ class PackageBuilder {
         addString(parameters, "screen_density", deviceInfo.screenDensity);
         addString(parameters, "display_width", deviceInfo.displayWidth);
         addString(parameters, "display_height", deviceInfo.displayHeight);
+        addString(parameters, "hardware_name", deviceInfo.hardwareName);
+        addString(parameters, "cpu_type", deviceInfo.abi);
         fillPluginKeys(parameters);
     }
 
@@ -169,6 +189,7 @@ class PackageBuilder {
         addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+        addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
     }
 
     private void injectActivityState(Map<String, String> parameters) {
@@ -220,7 +241,7 @@ class PackageBuilder {
         }
     }
 
-    private void addString(Map<String, String> parameters, String key, String value) {
+    private static void addString(Map<String, String> parameters, String key, String value) {
         if (TextUtils.isEmpty(value)) {
             return;
         }
@@ -255,7 +276,7 @@ class PackageBuilder {
         addInt(parameters, key, durationInSeconds);
     }
 
-    private void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+    public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
         if (map == null) {
             return;
         }
@@ -286,5 +307,29 @@ class PackageBuilder {
         String doubleString = String.format(Locale.US, "%.5f", value);
 
         addString(parameters, key, doubleString);
+    }
+
+    public static Map<String, String> mergeParameters(Map<String, String> target,
+                                                Map<String, String> source,
+                                                String parametersName) {
+        if (target == null) {
+            return source;
+        }
+        if (source == null) {
+            return target;
+        }
+        // make copy of target
+        Map<String, String> merged = new HashMap<String, String>(target);
+        for (Map.Entry<String, String> keyValuePair : source.entrySet()) {
+            String previousValue = merged.put(keyValuePair.getKey(), keyValuePair.getValue());
+            if (previousValue != null) {
+                logger.warn("key %s with value %s from %s parameters was replaced by value %s",
+                        keyValuePair.getKey(),
+                        previousValue,
+                        parametersName,
+                        keyValuePair.getValue());
+            }
+        }
+        return merged;
     }
 }

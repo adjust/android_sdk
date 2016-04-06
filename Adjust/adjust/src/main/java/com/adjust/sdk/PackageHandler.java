@@ -14,18 +14,21 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-// persistent
+// session
 public class PackageHandler extends HandlerThread implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
-    private final InternalHandler internalHandler;
+    private Handler internalHandler;
     private IRequestHandler requestHandler;
     private IActivityHandler activityHandler;
     private List<ActivityPackage> packageQueue;
@@ -36,62 +39,83 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
-                          boolean startPaused) {
+                          boolean startsSending) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
         start();
-        this.internalHandler = new InternalHandler(getLooper(), this);
+        this.internalHandler = new Handler(getLooper());
         this.logger = AdjustFactory.getLogger();
 
-        init(activityHandler, context, startPaused);
+        init(activityHandler, context, startsSending);
 
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.INIT;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                initInternal();
+            }
+        });
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, Context context, boolean startPaused) {
+    public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
         this.activityHandler = activityHandler;
         this.context = context;
-        this.paused = startPaused;
+        this.paused = !startsSending;
     }
 
     // add a package to the queue
     @Override
-    public void addPackage(ActivityPackage pack) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.ADD;
-        message.obj = pack;
-        internalHandler.sendMessage(message);
+    public void addPackage(final ActivityPackage activityPackage) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addInternal(activityPackage);
+            }
+        });
     }
 
     // try to send the oldest package
     @Override
     public void sendFirstPackage() {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_FIRST;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstInternal();
+            }
+        });
     }
 
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
     public void sendNextPackage(ResponseData responseData) {
-        Message message = Message.obtain();
-        message.arg1 = InternalHandler.SEND_NEXT;
-        internalHandler.sendMessage(message);
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendNextInternal();
+            }
+        });
 
         activityHandler.finishedTrackingActivity(responseData);
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage(ResponseData responseData) {
-        isSending.set(false);
+    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
+        logger.verbose("Package handler can send");
 
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
+
+        int retries = activityPackage.increaseRetries();
+
+        long waitTime = Util.getWaitingTime(retries, BackoffStrategy.LONG_WAIT);
+
+        logger.verbose("Sleeping for %d milliseconds before retrying the %d time", waitTime, retries);
+        SystemClock.sleep(waitTime);
+
+        isSending.set(false);
+        sendFirstPackage();
     }
 
     // interrupt the sending loop after the current request has finished
@@ -106,48 +130,17 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         paused = false;
     }
 
-    private static final class InternalHandler extends Handler {
-        private static final int INIT = 1;
-        private static final int ADD = 2;
-        private static final int SEND_NEXT = 3;
-        private static final int SEND_FIRST = 4;
-
-        private final WeakReference<PackageHandler> packageHandlerReference;
-
-        protected InternalHandler(Looper looper, PackageHandler packageHandler) {
-            super(looper);
-            this.packageHandlerReference = new WeakReference<PackageHandler>(packageHandler);
-        }
-
-        @Override
-        public void handleMessage(Message message) {
-            super.handleMessage(message);
-
-            PackageHandler packageHandler = packageHandlerReference.get();
-            if (packageHandler == null) {
-                return;
+    @Override
+    public void updateQueue(final Map<String, String> sessionCallbackParameters, final Map<String, String> sessionPartnerParameters) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updateQueueInternal(sessionCallbackParameters, sessionPartnerParameters);
             }
-
-            switch (message.arg1) {
-                case INIT:
-                    packageHandler.initInternal();
-                    break;
-                case ADD:
-                    ActivityPackage activityPackage = (ActivityPackage) message.obj;
-                    packageHandler.addInternal(activityPackage);
-                    break;
-                case SEND_FIRST:
-                    packageHandler.sendFirstInternal();
-                    break;
-                case SEND_NEXT:
-                    packageHandler.sendNextInternal();
-                    break;
-            }
-        }
+        });
     }
 
     // internal methods run in dedicated queue thread
-
     private void initInternal() {
         requestHandler = AdjustFactory.getRequestHandler(this);
 
@@ -157,11 +150,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     private void addInternal(ActivityPackage newPackage) {
-        if (newPackage.getActivityKind().equals(ActivityKind.CLICK) && !packageQueue.isEmpty()) {
-            packageQueue.add(1, newPackage);
-        } else {
-            packageQueue.add(newPackage);
-        }
+        packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
 
@@ -183,14 +172,71 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
 
         ActivityPackage firstPackage = packageQueue.get(0);
-        requestHandler.sendPackage(firstPackage);
+        requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
     }
 
     private void sendNextInternal() {
         packageQueue.remove(0);
         writePackageQueue();
         isSending.set(false);
+        logger.verbose("Package handler can send");
         sendFirstInternal();
+    }
+
+    private void updateQueueInternal(Map<String, String> sessionCallbackParameters, Map<String, String> sessionPartnerParameters) {
+        logger.debug("Updating package handler queue");
+        logger.verbose("Session callback parameters %s", sessionCallbackParameters);
+        logger.verbose("Session partner parameters %s", sessionPartnerParameters);
+
+        // if callback parameters is null or empty
+        if ((sessionCallbackParameters == null || sessionCallbackParameters.size() == 0) &&
+                // and partner parameters as well
+                (sessionPartnerParameters == null || sessionPartnerParameters.size() == 0))
+        {
+            return;
+        }
+
+        for (ActivityPackage activityPackage : packageQueue) {
+            // XXX TODO only merge event packages. Session packages can be overwritten by last session parameters
+            updateParameter(activityPackage, sessionCallbackParameters, "callback", "callback_params");
+            updateParameter(activityPackage, sessionPartnerParameters, "partner", "partner_params");
+        }
+    }
+
+    // XXX TODO either inject current parameters or split in two functions
+    private void updateParameter(ActivityPackage activityPackage,
+                                                Map<String, String> sessionParameters,
+                                                String parameterName,
+                                                String key)
+    {
+        // no new session parameters to inject
+        if (sessionParameters == null) {
+            return;
+        }
+        // get the current parameters
+        Map<String, String> currentParameters = null;
+        if (parameterName == "callback") {
+            currentParameters = activityPackage.callbackParameters;
+        }
+        if (parameterName == "partner") {
+            currentParameters = activityPackage.partnerParameters;
+        }
+
+        // merge the new session parameters with the current
+        Map<String, String> mergedParameters = PackageBuilder.mergeParameters(sessionParameters, currentParameters, parameterName);
+        // get activity package parameters to save
+        Map<String, String> activityPackageParameters = activityPackage.getParameters();
+        // save the merged parameters
+        PackageBuilder.addMapJson(activityPackageParameters, key, mergedParameters);
+
+        logger.verbose("Updating %s parameters from %s to %s", parameterName, currentParameters, mergedParameters);
+
+        if (parameterName == "callback") {
+            activityPackage.callbackParameters = mergedParameters;
+        }
+        if (parameterName == "partner") {
+            activityPackage.partnerParameters = mergedParameters;
+        }
     }
 
     private void readPackageQueue() {

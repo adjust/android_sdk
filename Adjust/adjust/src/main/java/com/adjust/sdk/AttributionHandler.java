@@ -19,13 +19,14 @@ public class AttributionHandler implements IAttributionHandler {
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
+    private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
 
     private boolean paused;
     private boolean hasListener;
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused,
+                              boolean startsSending,
                               boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
@@ -36,22 +37,22 @@ public class AttributionHandler implements IAttributionHandler {
                 public void run() {
                     getAttributionInternal();
                 }
-            });
+            }, ATTRIBUTION_TIMER_NAME);
         } else {
             this.logger.error("Timer not initialized, attribution handler is disabled");
         }
 
-        init(activityHandler, attributionPackage, startPaused, hasListener);
+        init(activityHandler, attributionPackage, startsSending, hasListener);
     }
 
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused,
+                     boolean startsSending,
                      boolean hasListener) {
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
-        this.paused = startPaused;
+        this.paused = !startsSending;
         this.hasListener = hasListener;
     }
 
@@ -176,6 +177,11 @@ public class AttributionHandler implements IAttributionHandler {
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+
+        uriBuilder.appendQueryParameter("sent_at", dateString);
 
         return uriBuilder.build();
     }
