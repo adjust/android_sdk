@@ -167,6 +167,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public void onResume() {
         internalState.background = false;
+
+        stopBackgroundTimer();
+
+        startForegroundTimer();
+
         trackSubsessionStart();
     }
 
@@ -183,6 +188,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public void onPause() {
         internalState.background = true;
+
+        stopForegroundTimer();
+
+        startBackgroundTimer();
+
         trackSubsessionEnd();
     }
 
@@ -507,15 +517,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        stopBackgroundTimer();
-
         updateHandlersStatusInternal();
 
         processSession();
 
         checkAttributionState();
-
-        startForegroundTimer();
     }
 
     private void processSession() {
@@ -585,17 +591,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void endInternal() {
-        // stop foreground timer in any situation
-        stopForegroundTimer();
-
-        // if it's offline, disabled
-        // or it can't send in the background
-        // -> pause sdk
-        if (paused() || !adjustConfig.sendInBackground) {
+        // pause sending if it's not allowed to send
+        if (!toSend()) {
             pauseSending();
-        } else {
-        // it it doesn't pause the sdk, it starts the background timer
-            startBackgroundTimer();
         }
 
         if (updateActivityState(System.currentTimeMillis())) {
@@ -1000,8 +998,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startBackgroundTimer() {
-        // don't start the timer if it's disabled or offline
-        if (paused()) {
+        // check if it can send in the background
+        if (!toSend()) {
             return;
         }
 
@@ -1009,6 +1007,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (backgroundTimer.getFireIn() > 0) {
             return;
         }
+
         backgroundTimer.startIn(BACKGROUND_TIMER_INTERVAL);
     }
 
