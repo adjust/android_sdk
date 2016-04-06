@@ -34,7 +34,9 @@ public class Reflection {
 
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
 
-            return !isLimitedTrackingEnabled;
+            Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
+
+            return isPlayTrackingEnabled;
         } catch (Throwable t) {
             return null;
         }
