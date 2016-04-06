@@ -173,6 +173,7 @@ class PackageBuilder {
         addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+        addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
     }
 
     private void injectActivityState(Map<String, String> parameters) {
