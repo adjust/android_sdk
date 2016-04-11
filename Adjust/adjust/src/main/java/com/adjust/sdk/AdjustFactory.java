@@ -67,7 +67,7 @@ public class AdjustFactory {
 
     public static long getTimerStart() {
         if (timerStart == -1) {
-            return 0;
+            return Constants.ONE_MINUTE;
         }
         return timerStart;
     }

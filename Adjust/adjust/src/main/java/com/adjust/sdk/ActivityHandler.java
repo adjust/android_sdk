@@ -451,10 +451,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                updateHandlersStatusInternal();
-                if (!adjustConfig.eventBufferingEnabled) {
-                    packageHandler.sendFirstPackage();
-                }
+                updateHandlersStatusAndSendInternal();
             }
         });
     }
@@ -526,7 +523,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
-        updateHandlersStatusInternal();
+        updateHandlersStatusAndSendInternal();
 
         processSession();
 
@@ -925,11 +922,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return false;
     }
 
-    private void updateHandlersStatusInternal() {
-        if (toSend()) {
-            resumeSending();
-        } else {
+    private void updateHandlersStatusAndSendInternal() {
+        if (!toSend()) {
             pauseSending();
+            return;
+        }
+
+        resumeSending();
+
+        if (!adjustConfig.eventBufferingEnabled) {
+            packageHandler.sendFirstPackage();
         }
     }
 
