@@ -17,10 +17,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 
-import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +92,28 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         setDaemon(true);
         start();
 
+        init(adjustConfig);
+
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                initInternal();
+            }
+        });
+    }
+
+    @Override
+    public void init(AdjustConfig adjustConfig) {
+        this.adjustConfig = adjustConfig;
+
         logger = AdjustFactory.getLogger();
+
+        if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
+            logger.setLogLevel(LogLevel.ASSERT);
+        } else {
+            logger.setLogLevel(adjustConfig.logLevel);
+        }
+
         this.internalHandler = new Handler(getLooper());
         internalState = new InternalState();
 
@@ -114,20 +132,27 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // in the background by default
         internalState.background = true;
 
+        // get timer values
+        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
 
-        init(adjustConfig);
-
-        internalHandler.post(new Runnable() {
+        // create foreground timer
+        foregroundTimer = new TimerCycle(new Runnable() {
             @Override
             public void run() {
-                initInternal();
+                foregroundTimerFired();
             }
-        });
-    }
+        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
-    @Override
-    public void init(AdjustConfig adjustConfig) {
-        this.adjustConfig = adjustConfig;
+        // create background timer
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFired();
+            }
+        }, BACKGROUND_TIMER_NAME);
     }
 
     public static ActivityHandler getInstance(AdjustConfig adjustConfig) {
@@ -328,7 +353,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     @Override
     public boolean isEnabled() {
         if (activityState != null) {
-            logger.warn("Returning enabled value before starting the sdk");
             return activityState.enabled;
         } else {
             return internalState.isEnabled();
@@ -454,19 +478,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void initInternal() {
-        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
-        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
-
-        if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
-            logger.setLogLevel(LogLevel.ASSERT);
-        } else {
-            logger.setLogLevel(adjustConfig.logLevel);
-        }
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Event buffering is enabled");
@@ -475,8 +490,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         if (playAdId == null) {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
+            if (deviceInfo.macSha1 == null &&
+                    deviceInfo.macShortMd5 == null &&
+                    deviceInfo.androidId == null)
+            {
+                logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
+            }
         } else {
-            logger.debug("Google Play Services Advertising ID read correctly at start time");
+            logger.info("Google Play Services Advertising ID read correctly at start time");
         }
 
         if (adjustConfig.defaultTracker != null) {
@@ -496,21 +517,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 adjustConfig.hasAttributionChangedListener());
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend());
-
-        foregroundTimer = new TimerCycle(new Runnable() {
-            @Override
-            public void run() {
-                foregroundTimerFired();
-            }
-        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
-
-        scheduler = Executors.newSingleThreadScheduledExecutor();
-        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                backgroundTimerFired();
-            }
-        }, BACKGROUND_TIMER_NAME);
     }
 
     private void startInternal() {
