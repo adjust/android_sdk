@@ -20,8 +20,10 @@ public class MockRequestHandler implements IRequestHandler {
     }
 
     @Override
-    public void sendPackage(ActivityPackage pack) {
-        testLogger.test(prefix + "sendPackage, " + pack);
+    public void sendPackage(ActivityPackage activityPackage, int queueSize) {
+        testLogger.test(prefix + "sendPackage, activityPackage " + activityPackage);
+        testLogger.test(prefix + "sendPackage, queueSize " + queueSize);
+
         /*
         // respond successfully to the package handler
         if (packageHandler != null && !errorNextSend) {

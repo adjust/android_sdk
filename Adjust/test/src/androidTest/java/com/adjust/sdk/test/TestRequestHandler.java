@@ -43,7 +43,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setPackageHandler(mockPackageHandler);
-        AdjustFactory.setMockHttpsURLConnection(mockHttpsURLConnection);
+        AdjustFactory.setHttpsURLConnection(mockHttpsURLConnection);
 
         activity = getActivity();
         context = activity.getApplicationContext();
@@ -55,7 +55,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        AdjustFactory.setMockHttpsURLConnection(null);
+        AdjustFactory.setHttpsURLConnection(null);
         AdjustFactory.setPackageHandler(null);
         AdjustFactory.setLogger(null);
     }
@@ -101,14 +101,14 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void nullResponseTest() {
         mockHttpsURLConnection.responseType = null;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, -1);
         SystemClock.sleep(1000);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.error("Failed to read response. (lock == null)");
+        assertUtil.error("Failed to read response. (null)");
 
-        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException: lock == null)");
+        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException)");
 
         assertUtil.test("PackageHandler sendNextPackage");
     }
@@ -116,7 +116,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void clientExceptionTest() {
         mockHttpsURLConnection.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, -1);
         SystemClock.sleep(1000);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: CLIENT_PROTOCOL_EXCEPTION");
@@ -129,7 +129,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void serverErrorTest() {
         mockHttpsURLConnection.responseType = ResponseType.INTERNAL_SERVER_ERROR;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, -1);
         SystemClock.sleep(1000);
 
         assertUtil.test("MockHttpsURLConnection getErrorStream, responseType: INTERNAL_SERVER_ERROR");
@@ -144,7 +144,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void wrongJsonTest() {
         mockHttpsURLConnection.responseType = ResponseType.WRONG_JSON;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, -1);
         SystemClock.sleep(1000);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: WRONG_JSON");
@@ -159,7 +159,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void emptyJsonTest() {
         mockHttpsURLConnection.responseType = ResponseType.EMPTY_JSON;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, -1);
         SystemClock.sleep(1000);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: EMPTY_JSON");
@@ -174,10 +174,10 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
     private void messageTest() {
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
-        requestHandler.sendPackage(sessionPackage);
+        requestHandler.sendPackage(sessionPackage, 1);
         SystemClock.sleep(1000);
 
-        mockLogger.test(mockHttpsURLConnection.readRequest());
+        TestActivityPackage.testQueryStringRequest(mockHttpsURLConnection.readRequest(), 1);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: MESSAGE");
 
@@ -190,8 +190,10 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
     private ActivityPackage getSessionPackage() {
         MockAttributionHandler mockAttributionHandler = new MockAttributionHandler(mockLogger);
+        MockSdkClickHandler mockSdkClickHandler = new MockSdkClickHandler(mockLogger);
 
         AdjustFactory.setAttributionHandler(mockAttributionHandler);
+        AdjustFactory.setSdkClickHandler(mockSdkClickHandler);
 
         // deleting the activity state file to simulate a first session
         boolean activityStateDeleted = ActivityHandler.deleteActivityState(context);
@@ -207,7 +209,7 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         // start activity handler with config
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
-        activityHandler.trackSubsessionStart();
+        activityHandler.onResume();
         SystemClock.sleep(3000);
 
         ActivityPackage sessionPackage = mockPackageHandler.queue.get(0);

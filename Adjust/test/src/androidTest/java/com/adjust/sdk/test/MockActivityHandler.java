@@ -33,13 +33,13 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackSubsessionStart() {
-        testLogger.test(prefix + "trackSubsessionStart");
+    public void onResume() {
+        testLogger.test(prefix + "onResume");
     }
 
     @Override
-    public void trackSubsessionEnd() {
-        testLogger.test(prefix + "trackSubsessionEnd");
+    public void onPause() {
+        testLogger.test(prefix + "onPause");
     }
 
     @Override
@@ -106,11 +106,5 @@ public class MockActivityHandler implements IActivityHandler {
     @Override
     public void setAskingAttribution(boolean askingAttribution) {
         testLogger.test(prefix + "setAskingAttribution, " + askingAttribution);
-    }
-
-    @Override
-    public ActivityPackage getAttributionPackage() {
-        testLogger.test(prefix + "getAttributionPackage");
-        return null;
     }
 }

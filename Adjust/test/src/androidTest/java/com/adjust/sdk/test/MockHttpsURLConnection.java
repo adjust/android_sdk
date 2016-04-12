@@ -29,6 +29,7 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
     private ByteArrayOutputStream outputStream;
     public ResponseType responseType;
     public boolean timeout;
+    public Long waitingTime;
 
     protected MockHttpsURLConnection(URL url) {
         super(url);
@@ -44,6 +45,10 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
 
         if (timeout) {
             SystemClock.sleep(10000);
+        }
+
+        if (waitingTime != null) {
+            SystemClock.sleep(waitingTime);
         }
 
         if (responseType == ResponseType.CLIENT_PROTOCOL_EXCEPTION) {
@@ -272,7 +277,12 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
 
     public URL getURL() {
         testLogger.test(prefix + "getURL");
-        return null;
+        return this.url;
+    }
+
+    public void setURL(URL url) {
+        testLogger.test(prefix + "setURL, " + url);
+
     }
 
     public boolean getUseCaches() {

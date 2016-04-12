@@ -21,99 +21,109 @@ public class AssertUtil {
         this.mockLogger = mockLogger;
     }
 
-    public void test(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsTestMessage(String.format(Locale.US, message, parameters)));
+    public String test(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsTestMessage = mockLogger.containsTestMessage(String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsTestMessage.containsMessage);
+        return containsTestMessage.matchMessage;
     }
 
-    public void verbose(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters)));
+    public String verbose(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsVerboseMessage = mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsVerboseMessage.containsMessage);
+        return containsVerboseMessage.matchMessage;
     }
 
-    public void debug(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters)));
+    public String debug(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsDebugMessage = mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsDebugMessage.containsMessage);
+        return containsDebugMessage.matchMessage;
     }
 
-    public void info(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters)));
+    public String info(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsInfoMessage = mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsInfoMessage.containsMessage);
+        return containsInfoMessage.matchMessage;
     }
 
-    public void warn(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters)));
+    public String warn(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsWarnMessage = mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsWarnMessage.containsMessage);
+        return containsWarnMessage.matchMessage;
     }
 
-    public void error(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters)));
+    public String error(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsErrorMessage = mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsErrorMessage.containsMessage);
+        return containsErrorMessage.matchMessage;
     }
 
-    public void Assert(String message, Object... parameters) {
-        Assert.assertTrue(mockLogger.toString(),
-                mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters)));
+    public String Assert(String message, Object... parameters) {
+        MockLogger.ContainsReturn containsAssertMessage = mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters));
+        Assert.assertTrue(mockLogger.toString(), containsAssertMessage.containsMessage);
+        return containsAssertMessage.matchMessage;
     }
 
     public void notInTest(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsTestMessage(message));
+        MockLogger.ContainsReturn containsTestMessage = mockLogger.containsTestMessage(String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsTestMessage.containsMessage);
     }
 
     public void notInVerbose(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsVerboseMessage = mockLogger.containsMessage(VERBOSE, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsVerboseMessage.containsMessage);
     }
 
     public void notInDebug(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsDebugMessage = mockLogger.containsMessage(DEBUG, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsDebugMessage.containsMessage);
     }
 
     public void notInInfo(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsInfoMessage = mockLogger.containsMessage(INFO, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsInfoMessage.containsMessage);
     }
 
     public void notInWarn(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsWarnMessage = mockLogger.containsMessage(WARN, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsWarnMessage.containsMessage);
     }
 
     public void notInError(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsErrorMessage = mockLogger.containsMessage(ERROR, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsErrorMessage.containsMessage);
     }
 
     public void notInAssert(String message, Object... parameters) {
-        Assert.assertFalse(mockLogger.toString(),
-                mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters)));
+        MockLogger.ContainsReturn containsAssertMessage = mockLogger.containsMessage(ASSERT, String.format(Locale.US, message, parameters));
+        Assert.assertFalse(mockLogger.toString(), containsAssertMessage.containsMessage);
     }
 
     public void isNull(Object object) {
-        Assert.assertNull(mockLogger.toString(),
-                object);
+        Assert.assertNull(mockLogger.toString(), object);
     }
 
     public void isNotNull(Object object) {
-        Assert.assertNotNull(mockLogger.toString(),
-                object);
+        Assert.assertNotNull(mockLogger.toString(), object);
     }
 
     public void isTrue(boolean value) {
-        Assert.assertTrue(mockLogger.toString(),
-                value);
+        Assert.assertTrue(mockLogger.toString(), value);
     }
 
     public void isFalse(boolean value) {
-        Assert.assertFalse(mockLogger.toString(),
-                value);
+        Assert.assertFalse(mockLogger.toString(), value);
     }
 
     public void isEqual(String expected, String actual) {
-        Assert.assertEquals(mockLogger.toString(),
-                expected, actual);
+        Assert.assertEquals(mockLogger.toString(), expected, actual);
+    }
+
+    public void isEqual(boolean expected, boolean actual) {
+        Assert.assertEquals(mockLogger.toString(), expected, actual);
+    }
+
+    public void isEqual(int expected, int actual) {
+        Assert.assertEquals(mockLogger.toString(), expected, actual);
     }
 
     public void fail() {
