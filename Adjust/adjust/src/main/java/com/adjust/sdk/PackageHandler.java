@@ -115,10 +115,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
             long waitTime = Util.getWaitingTime(retries, backoffStrategy);
 
-            DecimalFormat df = new DecimalFormat("#.#");
             double waitTimeSeconds = waitTime / 1000.0;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
-            logger.verbose("Sleeping for %s seconds before retrying the %d time", df.format(waitTimeSeconds), retries);
+            logger.verbose("Sleeping for %s seconds before retrying the %d time", secondsString, retries);
             SystemClock.sleep(waitTime);
         }
 

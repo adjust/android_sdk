@@ -36,6 +36,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
@@ -58,6 +59,7 @@ public class Util {
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
+    public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();

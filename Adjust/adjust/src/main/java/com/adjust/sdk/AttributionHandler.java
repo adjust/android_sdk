@@ -101,7 +101,10 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         if (delayInMilliseconds != 0) {
-            logger.debug("Waiting to query attribution in %d milliseconds", delayInMilliseconds);
+            double waitTimeSeconds = delayInMilliseconds / 1000.0;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+            logger.debug("Waiting to query attribution in %s seconds", secondsString);
         }
 
         // set the new time the timer will fire in
