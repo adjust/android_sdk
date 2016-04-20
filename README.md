@@ -129,12 +129,12 @@ If you are *not* targeting the Google Play Store, you can remove the
 
 ![][proguard]
 
-**Important**: If you are for some reason using `-overloadaggressively` flag in
-your Proguard file, in order for the adjust SDK to work properly, consider one
+**Important**: If you are using an `-overloadaggressively` flag in
+your Proguard file, then in order for the adjust SDK to work properly you should consider one
 of two possible scenarios:
 
-* Remove `-overloadaggressively` if you really don't need it
-* Add `-useuniqueclassmembernames` flag as well to your Proguard file
+* Remove `-overloadaggressively` if it is not necessary
+* Add a `-useuniqueclassmembernames` flag to your Proguard file
 
 ### <a id="broadcast_receiver"></a>6. Add broadcast receiver
 
