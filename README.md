@@ -116,8 +116,7 @@ If you are using Proguard, add these lines to your Proguard file:
     int SUCCESS; 
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {
-    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info 
-        getAdvertisingIdInfo (android.content.Context);
+    com.google.android.gms.ads.identifier.AdvertisingIdClient$Info getAdvertisingIdInfo (android.content.Context);
 }
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId ();
@@ -129,6 +128,13 @@ If you are *not* targeting the Google Play Store, you can remove the
 `com.google.android.gms` rules.
 
 ![][proguard]
+
+**Important**: If you are using an `-overloadaggressively` flag in
+your Proguard file, then in order for the adjust SDK to work properly you should consider one
+of two possible scenarios:
+
+* Remove `-overloadaggressively` if it is not necessary
+* Add a `-useuniqueclassmembernames` flag to your Proguard file
 
 ### <a id="broadcast_receiver"></a>6. Add broadcast receiver
 
