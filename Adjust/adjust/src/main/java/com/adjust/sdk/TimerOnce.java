@@ -1,6 +1,5 @@
 package com.adjust.sdk;
 
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -12,12 +11,10 @@ public class TimerOnce {
     private ScheduledExecutorService scheduler;
     private ScheduledFuture waitingTask;
     private Runnable command;
-    private boolean isRunning;
 
     public TimerOnce(ScheduledExecutorService scheduler, Runnable command) {
         this.scheduler = scheduler;
         this.command = command;
-        this.isRunning = false;
     }
 
     public void startIn(long fireIn) {
