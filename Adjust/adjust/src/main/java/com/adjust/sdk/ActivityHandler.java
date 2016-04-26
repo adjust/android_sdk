@@ -234,16 +234,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void trackEvent(final AdjustEvent event) {
-        if (activityState == null) {
-            logger.warn("Event triggered before first application launch.\n" +
-                    "This will trigger the SDK start and an install without user interaction.\n" +
-                    "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
-            trackSubsessionStart();
-        }
-
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
+                if (activityState == null) {
+                    logger.warn("Event triggered before first application launch.\n" +
+                            "This will trigger the SDK start and an install without user interaction.\n" +
+                            "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
+                    startInternal();
+                }
                 trackEventInternal(event);
             }
         });
