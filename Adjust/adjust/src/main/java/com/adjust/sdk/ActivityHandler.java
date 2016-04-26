@@ -94,20 +94,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         init(adjustConfig);
 
-        internalHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                initInternal();
-            }
-        });
-    }
-
-    @Override
-    public void init(AdjustConfig adjustConfig) {
-        this.adjustConfig = adjustConfig;
-
+        // init logger to be available everywhere
         logger = AdjustFactory.getLogger();
-
         if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
             logger.setLogLevel(LogLevel.ASSERT);
         } else {
@@ -132,12 +120,20 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // in the background by default
         internalState.background = true;
 
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                initInternal();
+            }
+        });
+
         // get timer values
         FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
         FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
         BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
 
-        // create foreground timer
+        // initialize timers to be available in onResume/onPause
+        // after initInternal so that the handlers are initialized
         foregroundTimer = new TimerCycle(new Runnable() {
             @Override
             public void run() {
@@ -153,6 +149,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 backgroundTimerFired();
             }
         }, BACKGROUND_TIMER_NAME);
+    }
+
+    @Override
+    public void init(AdjustConfig adjustConfig) {
+        this.adjustConfig = adjustConfig;
     }
 
     public static ActivityHandler getInstance(AdjustConfig adjustConfig) {
