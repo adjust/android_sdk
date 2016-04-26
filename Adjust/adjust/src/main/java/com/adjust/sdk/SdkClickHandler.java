@@ -83,9 +83,13 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
                 int retries = sdkClickPackage.getRetries();
 
                 if (retries > 0) {
-                    long waitTime = Util.getWaitingTime(retries, backoffStrategy);
-                    logger.verbose("Sleeping for %d seconds before retrying sdk_click for the %d time", TimeUnit.MILLISECONDS.toSeconds(waitTime), retries);
-                    SystemClock.sleep(waitTime);
+                    long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+
+                    double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
+                    String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+                    logger.verbose("Sleeping for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
+                    SystemClock.sleep(waitTimeMilliSeconds);
                 }
 
                 sendSdkClickInternal(sdkClickPackage);

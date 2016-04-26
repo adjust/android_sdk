@@ -270,6 +270,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
+        // save new enabled state in internal state
         internalState.enabled = enabled;
 
         if (activityState == null) {
@@ -280,6 +281,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return;
         }
 
+        // save new enabled state in activity state
         activityState.enabled = enabled;
         writeActivityState();
 
@@ -923,6 +925,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void updateHandlersStatusAndSendInternal() {
+        // check if it should stop sending
         if (!toSend()) {
             pauseSending();
             return;
@@ -930,6 +933,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         resumeSending();
 
+        // try to send
         if (!adjustConfig.eventBufferingEnabled) {
             packageHandler.sendFirstPackage();
         }
@@ -1072,7 +1076,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private boolean checkActivityState(ActivityState activityState) {
         if (activityState == null) {
-            logger.error("Missing activity state.");
+            logger.error("Missing activity state");
             return false;
         }
         return true;

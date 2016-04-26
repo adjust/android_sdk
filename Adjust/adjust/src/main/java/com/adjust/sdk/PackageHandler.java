@@ -105,8 +105,6 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // close the package to retry in the future (after temporary failure)
     @Override
     public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
-        logger.verbose("Package handler can send");
-
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
 
@@ -122,7 +120,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
             SystemClock.sleep(waitTime);
         }
 
+        logger.verbose("Package handler can send");
         isSending.set(false);
+
+        // Try to send the same package after sleeping
         sendFirstPackage();
     }
 

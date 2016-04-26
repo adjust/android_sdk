@@ -25,7 +25,9 @@ public class TimerOnce {
         // cancel previous
         cancel(false);
 
-        logger.verbose("%s starting. Launching in %d seconds", name, TimeUnit.MILLISECONDS.toSeconds(fireIn));
+        String fireInSeconds = Util.SecondsDisplayFormat.format(fireIn / 1000.0);
+
+        logger.verbose("%s starting. Launching in %s seconds", name, fireInSeconds);
 
         waitingTask = scheduler.schedule(new Runnable() {
             @Override

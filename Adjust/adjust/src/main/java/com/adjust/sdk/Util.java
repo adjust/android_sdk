@@ -540,8 +540,6 @@ public class Util {
         double jitterFactor = jitterFactorAdjusted / 100.0;
         // apply jitter factor
         double waitingTime =  ceilingTime * jitterFactor;
-
-        // truncate to remove possible max value + 1
         return (long)waitingTime;
     }
 }
