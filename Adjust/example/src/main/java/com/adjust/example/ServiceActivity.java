@@ -1,6 +1,7 @@
 package com.adjust.example;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
@@ -8,12 +9,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.adjust.sdk.Adjust;
+
 public class ServiceActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service);
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        Adjust.appWillOpenUrl(data);
     }
 
     public void onServiceClick(View v) {

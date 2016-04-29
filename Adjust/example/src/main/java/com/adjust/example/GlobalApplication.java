@@ -36,9 +36,6 @@ public class GlobalApplication extends Application {
         // change the log level
         config.setLogLevel(LogLevel.VERBOSE);
 
-        // enable event buffering
-        //config.setEventBufferingEnabled(true);
-
         // set default tracker
         //config.setDefaultTracker("{YourDefaultTracker}");
 
@@ -96,6 +93,12 @@ public class GlobalApplication extends Application {
                 }
             }
         });
+
+        // allow to send in the background
+        config.setSendInBackground(true);
+
+        // enable event buffering
+        //config.setEventBufferingEnabled(true);
 
         Adjust.onCreate(config);
 
