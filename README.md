@@ -433,7 +433,20 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### <a id="attribution_changed_listener"></a>15. Set listener for attribution changes
+### 15. Send in the background
+
+The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is on the background.
+You can change this in your `AdjustConfig` instance:
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setSendInBackground(true);
+
+Adjust.onCreate(config);
+```
+
+### <a id="attribution_changed_listener"></a>16. Set listener for attribution changes
 
 You can register a listener to be notified of tracker attribution changes. Due
 to the different sources considered for attribution, this information can not
@@ -478,7 +491,7 @@ parameter. Here is a quick summary of its properties:
 - `String creative` the creative grouping level of the current install.
 - `String clickLabel` the click label of the current install.
 
-### 16. Set listener for tracked events and sessions
+### 17. Set listener for tracked events and sessions
 
 You can register a listener to be notified when events or sessions are tracked.
 There are four listeners: one for tracking successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed sessions.
@@ -537,7 +550,35 @@ And both event and session failed objects also contain:
 
 - `boolean willRetry` indicates there will be an attempt to resend the package at a later time.
 
-### 17. Disable tracking
+### 18. Set listener for deferred deeplinks
+
+You can register a listener to be notified before a deferred deeplink is opened and decide if the adjust SDK will open it.
+With the `AdjustConfig` instance, before starting the SDK, add the anonymous listener:
+
+```java
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+// evaluate deeplink to be launched
+config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+    @Override
+    public boolean launchReceivedDeeplink(Uri deeplink) {
+        // ...
+        if (allowAdjustSDKToOpenDeeplink(deeplink)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+});
+
+Adjust.onCreate(config);
+```
+
+The listener function will be called after the SDK receives a deffered deeplink from ther server and before open it. 
+Within the listener function you have access to the deeplink and the boolean that you return determines if the SDK will launch the deeplink.
+You could, for example, not allow the SDK open the deeplink at the moment, save it, and open it yourself later.
+
+### 19. Disable tracking
 
 You can disable the adjust SDK from tracking any activities of the current
 device by calling `setEnabled` with parameter `false`. This setting is
@@ -551,7 +592,7 @@ You can check if the adjust SDK is currently enabled by calling the function
 `isEnabled`. It is always possible to activate the adjust SDK by invoking
 `setEnabled` with the enabled parameter as `true`.
 
-### 18. Offline mode
+### 20. Offline mode
 
 You can put the adjust SDK in offline mode to suspend transmission to our servers, 
 while retaining tracked data to be sent later. While in offline mode, all information is saved
@@ -571,7 +612,7 @@ Unlike disabling tracking, this setting is *not remembered*
 bettween sessions. This means that the SDK is in online mode whenever it is started,
 even if the app was terminated in offline mode.
 
-### 19. Device IDs
+### 21. Device IDs
 
 Certain services (such as Google Analytics) require you to coordinate Device and Client IDs in order to prevent duplicate reporting. 
 
