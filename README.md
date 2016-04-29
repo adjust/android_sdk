@@ -67,7 +67,7 @@ these steps:
 following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:8.3.0'
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
     ```
 
     ![][gradle_gps]
