@@ -13,7 +13,7 @@ public enum BackoffStrategy {
     // 0.1-0.2, 0.2-0.4, 0.4-0.8, ... 1h
     SHORT_WAIT(1,                   // min retries
             200,                    // milliseconds multiplier
-            Constants.ONE_MINUTE,   // max wait time
+            Constants.ONE_HOUR,     // max wait time
             0.5,                    // min jitter multiplier
             1.0),                   // max jitter multiplier
 
