@@ -194,18 +194,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void onResume() {
         internalState.background = false;
 
-        stopBackgroundTimer();
-
-        startForegroundTimer();
-
-        trackSubsessionStart();
-    }
-
-    public void trackSubsessionStart() {
-        logger.verbose("Subsession start");
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
+                stopBackgroundTimer();
+
+                startForegroundTimer();
+
+                logger.verbose("Subsession start");
+
                 startInternal();
             }
         });
@@ -215,18 +212,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void onPause() {
         internalState.background = true;
 
-        stopForegroundTimer();
-
-        startBackgroundTimer();
-
-        trackSubsessionEnd();
-    }
-
-    public void trackSubsessionEnd() {
-        logger.verbose("Subsession end");
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
+                stopForegroundTimer();
+
+                startBackgroundTimer();
+
+                logger.verbose("Subsession end");
+
                 endInternal();
             }
         });
