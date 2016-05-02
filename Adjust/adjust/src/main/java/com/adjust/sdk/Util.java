@@ -527,19 +527,24 @@ public class Util {
         if (retries < backoffStrategy.minRetries) {
             return 0;
         }
-        // start with base 0
-        int base = retries - backoffStrategy.minRetries;
-        // get the exponential Time from the base: 1, 2, 4, 8, 16, ... * times the multiplier
-        long exponentialTime = (((long) Math.pow(2, base)) * backoffStrategy.milliSecondMultiplier);
+        // start with expon 0
+        int expon = retries - backoffStrategy.minRetries;
+        // get the exponential Time from the power of 2: 1, 2, 4, 8, 16, ... * times the multiplier
+        long exponentialTime = ((long) Math.pow(2, expon)) * backoffStrategy.milliSecondMultiplier;
         // limit the maximum allowed time to wait
         long ceilingTime = Math.min(exponentialTime, backoffStrategy.maxWait);
-        Random random = new Random();
-        // add 1 to allow maximum value
-        int jitterFactorBase = random.nextInt(backoffStrategy.maxJitter - backoffStrategy.minJitter + 1);
-        int jitterFactorAdjusted = jitterFactorBase + backoffStrategy.minJitter;
-        double jitterFactor = jitterFactorAdjusted / 100.0;
+        // get the random range
+        double randomDouble = randomInRange(backoffStrategy.minRange, backoffStrategy.maxRange);
         // apply jitter factor
-        double waitingTime =  ceilingTime * jitterFactor;
+        double waitingTime =  ceilingTime * randomDouble;
         return (long)waitingTime;
+    }
+
+    private static double randomInRange(double minRange, double maxRange) {
+        Random random = new Random();
+        double range = maxRange - minRange;
+        double scaled = random.nextDouble() * range;
+        double shifted = scaled + minRange;
+        return shifted;
     }
 }
