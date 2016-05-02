@@ -758,28 +758,25 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         final Uri location = Uri.parse(deeplink);
+        final Intent deeplinkIntent = createDeeplinkIntent(location);
 
-        // there is no validation to be made by the user
-        if (adjustConfig.onDeeplinkResponseListener == null) {
-            launchDeeplink(location, handler, deeplink);
-            return;
-        }
-
-        // launch deeplink validation by user
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                boolean toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(location);
+                boolean toLaunchDeeplink = true;
+                if (adjustConfig.onDeeplinkResponseListener != null) {
+                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(location);
+                }
                 if (toLaunchDeeplink) {
-                    launchDeeplink(location, handler, deeplink);
+                    launchDeeplinkMain(deeplinkIntent, deeplink);
                 }
             }
         };
         handler.post(runnable);
     }
 
-    private void launchDeeplink(final Uri location, Handler handler, final String deeplink) {
-        final Intent mapIntent;
+    private Intent createDeeplinkIntent(Uri location) {
+        Intent mapIntent;
         if (adjustConfig.deepLinkComponent == null) {
             mapIntent = new Intent(Intent.ACTION_VIEW, location);
         } else {
@@ -789,9 +786,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         mapIntent.setPackage(adjustConfig.context.getPackageName());
 
+        return mapIntent;
+    }
+
+    private void launchDeeplinkMain(final Intent deeplinkIntent, final String deeplink) {
         // Verify it resolves
         PackageManager packageManager = adjustConfig.context.getPackageManager();
-        List<ResolveInfo> activities = packageManager.queryIntentActivities(mapIntent, 0);
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(deeplinkIntent, 0);
         boolean isIntentSafe = activities.size() > 0;
 
         // Start an activity if it's safe
@@ -801,14 +802,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         // add it to the handler queue
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                logger.info("Open deep link (%s)", deeplink);
-                adjustConfig.context.startActivity(mapIntent);
-            }
-        };
-        handler.post(runnable);
+        logger.info("Open deep link (%s)", deeplink);
+        adjustConfig.context.startActivity(deeplinkIntent);
     }
 
     private void sendReferrerInternal(String referrer, long clickTime) {
