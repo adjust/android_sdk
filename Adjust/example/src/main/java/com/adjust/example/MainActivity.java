@@ -20,6 +20,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_CALLBACK    = "{YourEventToken}";
     private static final String EVENT_TOKEN_PARTNER     = "{YourEventToken}";
 
+    private Button btnEnableDisableSDK;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +32,12 @@ public class MainActivity extends AppCompatActivity {
         Adjust.appWillOpenUrl(data);
 
         // Adjust UI according to SDK state.
-        Button btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);
+        btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         if (Adjust.isEnabled()) {
             btnEnableDisableSDK.setText(R.string.txt_disable_sdk);
