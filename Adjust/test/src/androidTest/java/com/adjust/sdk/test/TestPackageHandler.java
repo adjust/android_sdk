@@ -7,9 +7,14 @@ import android.test.ActivityInstrumentationTestCase2;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.BackoffStrategy;
+import com.adjust.sdk.Constants;
 import com.adjust.sdk.PackageHandler;
 import com.adjust.sdk.ResponseData;
 import com.adjust.sdk.UnknownResponseData;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by pfms on 30/01/15.
@@ -83,19 +88,22 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         secondPackageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        assertUtil.test("RequestHandler sendPackage, clickFirstPackage");
+        assertUtil.test("RequestHandler sendPackage, activityPackage clickFirstPackage");
+        assertUtil.test("RequestHandler sendPackage, queueSize 2");
 
         // send the second click package/ third package
         secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
-        assertUtil.test("RequestHandler sendPackage, clickThirdPackage");
+        assertUtil.test("RequestHandler sendPackage, activityPackage unknownSecondPackage");
+        assertUtil.test("RequestHandler sendPackage, queueSize 1");
 
         // send the unknow package/ second package
         secondPackageHandler.sendNextPackage(null);
         SystemClock.sleep(1000);
 
-        assertUtil.test("RequestHandler sendPackage, unknownSecondPackage");
+        assertUtil.test("RequestHandler sendPackage, activityPackage clickThirdPackage");
+        assertUtil.test("RequestHandler sendPackage, queueSize 0");
     }
 
     public void testSendFirst() {
@@ -107,7 +115,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.EMPTY_QUEUE, null);
+        sendFirstTests(SendFirstState.EMPTY_QUEUE, null, null);
 
         addAndSendFirstPackageTest(packageHandler);
 
@@ -115,30 +123,30 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.IS_SENDING, null);
+        sendFirstTests(SendFirstState.IS_SENDING, null, null);
 
         // try to send paused
         packageHandler.pauseSending();
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.PAUSED, null);
+        sendFirstTests(SendFirstState.PAUSED, null, null);
 
         // unpause, it's still sending
         packageHandler.resumeSending();
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.IS_SENDING, null);
+        sendFirstTests(SendFirstState.IS_SENDING, null, null);
 
         // verify that both paused and isSending are reset with a new session
-        PackageHandler secondSessionPackageHandler = new PackageHandler(mockActivityHandler, context, false);
+        PackageHandler secondSessionPackageHandler = new PackageHandler(mockActivityHandler, context, true);
 
         secondSessionPackageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
         // send the package to request handler
-        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage");
+        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage", 0);
     }
 
     public void testSendNext() {
@@ -155,7 +163,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.IS_SENDING, null);
+        sendFirstTests(SendFirstState.IS_SENDING, null, null);
 
         // add a second package
         addSecondPackageTest(packageHandler);
@@ -167,12 +175,13 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertUtil.debug("Package handler wrote 1 packages");
 
         // try to send the second package
-        sendFirstTests(SendFirstState.SEND, "unknownSecondPackage");
+        sendFirstTests(SendFirstState.SEND, "unknownSecondPackage", 0);
     }
 
     public void testCloseFirstPackage() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testCloseFirstPackage");
+        AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
 
         PackageHandler packageHandler = startPackageHandler();
 
@@ -182,39 +191,138 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.sendFirstPackage();
         SystemClock.sleep(1000);
 
-        sendFirstTests(SendFirstState.IS_SENDING, null);
+        sendFirstTests(SendFirstState.IS_SENDING, null, null);
 
         //send next package
         ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
         UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
-        packageHandler.closeFirstPackage(unknownResponseData);
+        packageHandler.closeFirstPackage(unknownResponseData, null);
         SystemClock.sleep(2000);
+        assertUtil.verbose("Package handler can send");
+        assertUtil.test("ActivityHandler finishedTrackingActivity, message:null timestamp:null json:null");
 
         assertUtil.notInDebug("Package handler wrote");
 
-        packageHandler.sendFirstPackage();
-        SystemClock.sleep(2000);
+        // tries to send the next package after sleeping
+        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage", 0);
+    }
 
-        // try to send the first package again
-        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage");
+    public void testBackoffJitter() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestPackageHandler testBackoffJitter");
+
+        AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.TEST_WAIT);
+
+        PackageHandler packageHandler = startPackageHandler();
+
+        ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
+        UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
+        Pattern pattern = Pattern.compile("Sleeping for (\\d+\\.\\d) seconds before retrying the (\\d+) time");
+
+        // 1st
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        String matchingString = assertUtil.verbose("Sleeping for ");
+        // Sleeping for 0.1 seconds before retrying the 1 time
+
+        checkSleeping(pattern, matchingString, 0.1, 0.2, 1, 0.5, 1);
+
+        // 2nd
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        matchingString = assertUtil.verbose("Sleeping for ");
+
+        checkSleeping(pattern, matchingString, 0.2, 0.4, 1, 0.5, 2);
+
+        // 3rd
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        matchingString = assertUtil.verbose("Sleeping for ");
+
+        checkSleeping(pattern, matchingString, 0.4, 0.8, 1, 0.5, 3);
+
+        // 4th
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        matchingString = assertUtil.verbose("Sleeping for ");
+
+        checkSleeping(pattern, matchingString, 0.8, 1.6, 1, 0.5, 4);
+
+        // 5th
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        matchingString = assertUtil.verbose("Sleeping for ");
+
+        checkSleeping(pattern, matchingString, 1.6, 3.2, 1, 0.5, 5);
+
+        // 6th
+        packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
+        SystemClock.sleep(1500);
+
+        matchingString = assertUtil.verbose("Sleeping for ");
+
+        checkSleeping(pattern, matchingString, 6.4, 12.8, 1, 0.5, 6);
+   }
+
+    private void checkSleeping(Pattern pattern,
+                               String sleepingLog,
+                               double minRange,
+                               double maxRange,
+                               long maxCeiling,
+                               double minCeiling,
+                               int numberRetries)
+    {
+        Matcher matcher = pattern.matcher(sleepingLog);
+
+        if (!matcher.matches()) {
+            assertUtil.fail();
+        }
+        Double sleepingTime = Double.valueOf(matcher.group(1));
+
+        boolean failsCeiling = sleepingTime > maxCeiling;
+        assertUtil.isFalse(failsCeiling);
+
+        if (maxRange < maxCeiling) {
+            boolean failsMinRange = sleepingTime < minRange;
+            assertUtil.isFalse(failsMinRange);
+        } else {
+            boolean failsMinRange = sleepingTime < minCeiling ;
+            assertUtil.isFalse(failsMinRange);
+        }
+
+        if (maxRange < maxCeiling) {
+            boolean failsMaxRange = sleepingTime > maxRange;
+            assertUtil.isFalse(failsMaxRange);
+        } else {
+            boolean failsMaxRange = sleepingTime > maxCeiling;
+            assertUtil.isFalse(failsMaxRange);
+        }
+
+        Integer retryTime = Integer.valueOf(matcher.group(2));
+        assertUtil.isEqual(numberRetries, retryTime);
     }
 
     private PackageHandler startPackageHandler() {
         // delete package queue for fresh start
         deletePackageQueue();
 
-        PackageHandler packageHandler = new PackageHandler(mockActivityHandler, context, false);
+        PackageHandler packageHandler = new PackageHandler(mockActivityHandler, context, true);
 
         SystemClock.sleep(1000);
 
-        assertUtil.verbose("Package queue file not found");
+        assertUtil.debug("Package queue file not found");
 
         return packageHandler;
     }
 
     private PackageHandler addSecondPackageTest(PackageHandler packageHandler) {
         if (packageHandler == null) {
-            packageHandler = new PackageHandler(mockActivityHandler, context, false);
+            packageHandler = new PackageHandler(mockActivityHandler, context, true);
 
             SystemClock.sleep(1000);
 
@@ -251,14 +359,14 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         addPackageTests(1, "unknownFirstPackage");
 
-        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage");
+        sendFirstTests(SendFirstState.SEND, "unknownFirstPackage", 0);
     }
 
     private enum SendFirstState {
         EMPTY_QUEUE, PAUSED, IS_SENDING, SEND
     }
 
-    private void sendFirstTests(SendFirstState sendFirstState, String packageString) {
+    private void sendFirstTests(SendFirstState sendFirstState, String packageString, Integer queueSize) {
         if (sendFirstState == SendFirstState.PAUSED) {
             assertUtil.debug("Package handler is paused");
         } else {
@@ -272,7 +380,8 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         }
 
         if (sendFirstState == SendFirstState.SEND) {
-            assertUtil.test("RequestHandler sendPackage, " + packageString);
+            assertUtil.test("RequestHandler sendPackage, activityPackage " + packageString);
+            assertUtil.test("RequestHandler sendPackage, queueSize " + queueSize);
         } else {
             assertUtil.notInTest("RequestHandler sendPackage");
         }

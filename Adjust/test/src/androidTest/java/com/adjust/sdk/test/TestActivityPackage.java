@@ -24,6 +24,7 @@ public class TestActivityPackage {
     public Boolean deviceKnow;
     public boolean needsResponseDetails;
     public boolean playServices;
+    public boolean eventBufferingEnabled;
     // session
     public Integer sessionCount;
     public String defaultTracker;
@@ -38,9 +39,10 @@ public class TestActivityPackage {
     public String partnerParams;
     // click
     public String reftag;
-    public String deepLinkParameters;
+    public String otherParameters;
     public AdjustAttribution attribution;
     public String referrer;
+    public String deeplink;
 
     public TestActivityPackage(ActivityPackage activityPackage) {
         this.activityPackage = activityPackage;
@@ -49,9 +51,10 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.6.0";
+        clientSdk = "android4.7.0";
         suffix = "";
         attribution = new AdjustAttribution();
+        playServices = true;
     }
 
     public void testSessionPackage(int sessionCount) {
@@ -129,12 +132,16 @@ public class TestActivityPackage {
 
         if (source == Constants.REFTAG) {
             assertParameterEquals("referrer", referrer);
-        } else {
+            assertParameterNull("deeplink");
+        } else if (source == Constants.DEEPLINK) {
+            assertParameterEquals("deeplink", deeplink);
             assertParameterNull("referrer");
+        } else {
+            assertFail();
         }
 
         // params
-        assertJsonParameterEquals("params", deepLinkParameters);
+        assertJsonParameterEquals("params", otherParameters);
 
         // click_time
         // TODO add string click time to compare
@@ -158,6 +165,41 @@ public class TestActivityPackage {
         testDefaultAttributes("attribution", ActivityKind.ATTRIBUTION, "attribution");
 
         testDeviceIdsParameters();
+    }
+
+    public static void testQueryStringRequest(String queryStringRequest, Integer queueSize) {
+        String[] queryPairs = queryStringRequest.split("&");
+        boolean wasSentAtFound = false;
+        boolean wasQueueSizeFound = false;
+        int queueSizeFound = -1;
+
+        for (String pair : queryPairs) {
+            String[] pairComponents = pair.split("=");
+            String key = pairComponents[0];
+            String value = pairComponents[1];
+            if (key.equals("sent_at")) {
+                wasSentAtFound = true;
+            }
+            if (key.equals("queue_size")) {
+                wasQueueSizeFound = true;
+                queueSizeFound = Integer.parseInt(value);
+            }
+        }
+        if (!wasSentAtFound) {
+            Assert.fail(queryStringRequest);
+        }
+
+        if (queueSize == null) {
+            Assert.assertFalse(queryStringRequest, wasQueueSizeFound);
+            return;
+        }
+
+        if (!wasQueueSizeFound) {
+            Assert.fail(queryStringRequest);
+        } else {
+            Assert.assertEquals(queryStringRequest,
+                    queueSize.intValue(), queueSizeFound);
+        }
     }
 
     private void testDefaultAttributes(String path, ActivityKind activityKind, String activityKindString) {
@@ -225,6 +267,10 @@ public class TestActivityPackage {
         assertParameterNotNull("display_width");
         // display_height
         assertParameterNotNull("display_height");
+        // hardware_name
+        assertParameterNotNull("hardware_name");
+        // cpu_type
+        assertParameterNotNull("cpu_type");
     }
 
     private void testDeviceInfoIds() {
@@ -267,6 +313,7 @@ public class TestActivityPackage {
             // tracking_enabled
             assertParameterNull("tracking_enabled");
         }
+        testParameterBoolean("event_buffering_enabled", eventBufferingEnabled);
     }
 
     private void testActivityState() {

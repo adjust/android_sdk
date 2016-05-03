@@ -6,35 +6,33 @@ import android.net.Uri;
  * Created by pfms on 15/12/14.
  */
 public interface IActivityHandler {
-    public void init(AdjustConfig config);
+    void init(AdjustConfig config);
 
-    public void trackSubsessionStart();
+    void onResume();
 
-    public void trackSubsessionEnd();
+    void onPause();
 
-    public void trackEvent(AdjustEvent event);
+    void trackEvent(AdjustEvent event);
 
-    public void finishedTrackingActivity(ResponseData responseData);
+    void finishedTrackingActivity(ResponseData responseData);
 
-    public void setEnabled(boolean enabled);
+    void setEnabled(boolean enabled);
 
-    public boolean isEnabled();
+    boolean isEnabled();
 
-    public void readOpenUrl(Uri url, long clickTime);
+    void readOpenUrl(Uri url, long clickTime);
 
-    public boolean updateAttribution(AdjustAttribution attribution);
+    boolean updateAttribution(AdjustAttribution attribution);
 
-    public void launchEventResponseTasks(EventResponseData eventResponseData);
+    void launchEventResponseTasks(EventResponseData eventResponseData);
 
-    public void launchSessionResponseTasks(SessionResponseData sessionResponseData);
+    void launchSessionResponseTasks(SessionResponseData sessionResponseData);
 
-    public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
+    void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
-    public void sendReferrer(String referrer, long clickTime);
+    void sendReferrer(String referrer, long clickTime);
 
-    public void setOfflineMode(boolean enabled);
+    void setOfflineMode(boolean enabled);
 
-    public void setAskingAttribution(boolean askingAttribution);
-
-    public ActivityPackage getAttributionPackage();
+    void setAskingAttribution(boolean askingAttribution);
 }

@@ -4,6 +4,7 @@ import android.net.Uri;
 
 import org.json.JSONObject;
 
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,13 +20,16 @@ public class AttributionHandler implements IAttributionHandler {
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
+    private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
 
     private boolean paused;
     private boolean hasListener;
 
+    public URL lastUrlUsed;
+
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startPaused,
+                              boolean startsSending,
                               boolean hasListener) {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         logger = AdjustFactory.getLogger();
@@ -36,22 +40,22 @@ public class AttributionHandler implements IAttributionHandler {
                 public void run() {
                     getAttributionInternal();
                 }
-            });
+            }, ATTRIBUTION_TIMER_NAME);
         } else {
             this.logger.error("Timer not initialized, attribution handler is disabled");
         }
 
-        init(activityHandler, attributionPackage, startPaused, hasListener);
+        init(activityHandler, attributionPackage, startsSending, hasListener);
     }
 
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startPaused,
+                     boolean startsSending,
                      boolean hasListener) {
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
-        this.paused = startPaused;
+        this.paused = !startsSending;
         this.hasListener = hasListener;
     }
 
@@ -97,7 +101,10 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         if (delayInMilliseconds != 0) {
-            logger.debug("Waiting to query attribution in %d milliseconds", delayInMilliseconds);
+            double waitTimeSeconds = delayInMilliseconds / 1000.0;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+            logger.debug("Waiting to query attribution in %s seconds", secondsString);
         }
 
         // set the new time the timer will fire in
@@ -149,11 +156,12 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            HttpsURLConnection connection = Util.createGETHttpsURLConnection(
+            AdjustFactory.URLGetConnection urlGetConnection = Util.createGETHttpsURLConnection(
                     buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
-            ResponseData responseData = Util.readHttpResponse(connection, attributionPackage);
+            ResponseData responseData = Util.readHttpResponse(urlGetConnection.httpsURLConnection, attributionPackage);
+            lastUrlUsed = urlGetConnection.url;
 
             if (!(responseData instanceof AttributionResponseData)) {
                 return;
@@ -176,6 +184,11 @@ public class AttributionHandler implements IAttributionHandler {
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormat(now);
+
+        uriBuilder.appendQueryParameter("sent_at", dateString);
 
         return uriBuilder.build();
     }

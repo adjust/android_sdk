@@ -47,7 +47,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setActivityHandler(mockActivityHandler);
-        AdjustFactory.setMockHttpsURLConnection(mockHttpsURLConnection);
+        AdjustFactory.setHttpsURLConnection(mockHttpsURLConnection);
 
         activity = getActivity();
         context = activity.getApplicationContext();
@@ -75,7 +75,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         ActivityHandler activityHandler = ActivityHandler.getInstance(config);
 
         if (activityHandler != null) {
-            activityHandler.trackSubsessionStart();
+            activityHandler.onResume();
         }
 
         SystemClock.sleep(3000);
@@ -95,7 +95,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
     protected void tearDown() throws Exception {
         super.tearDown();
 
-        AdjustFactory.setMockHttpsURLConnection(null);
+        AdjustFactory.setHttpsURLConnection(null);
         AdjustFactory.setActivityHandler(null);
         AdjustFactory.setLogger(null);
 
@@ -108,7 +108,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testGetAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false, true);
+                attributionPackage, true, true);
 
         // test null client
         nullClientTest(attributionHandler);
@@ -127,7 +127,6 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         // test ok response with message
         okMessageTest(attributionHandler);
-
     }
 
     public void testCheckSessionResponse() {
@@ -135,7 +134,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testCheckSessionResponse");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false, true);
+                attributionPackage, true, true);
 
         // new attribution
         JSONObject attributionJson = null;
@@ -177,7 +176,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testAskIn");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false, true);
+                attributionPackage, true, true);
 
         String response = "Response: { \"ask_in\" : 4000 }";
 
@@ -208,7 +207,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.test("ActivityHandler setAskingAttribution, true");
 
         // and waited to for query
-        assertUtil.debug("Waiting to query attribution in 4000 milliseconds");
+        assertUtil.debug("Waiting to query attribution in 4.0 seconds");
 
         SystemClock.sleep(2000);
 
@@ -229,7 +228,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.test("ActivityHandler setAskingAttribution, true");
 
         // and waited to for query
-        assertUtil.debug("Waiting to query attribution in 5000 milliseconds");
+        assertUtil.debug("Waiting to query attribution in 5.0 seconds");
 
         // it was been waiting for 1000 + 2000 + 3000 = 6 seconds
         // check that the mock http client was not called because the original clock was reseted
@@ -238,7 +237,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         // check that it was finally called after 6 seconds after the second ask_in
         SystemClock.sleep(4000);
 
-        okMessageTestLogs();
+        okMessageTestLogs(attributionHandler);
 
         //requestTest(mockHttpClient.lastRequest);
     }
@@ -248,7 +247,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testPause");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, true);
+                attributionPackage, false, true);
 
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
@@ -270,7 +269,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         mockLogger.Assert("TestAttributionHandler testPause");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false, false);
+                attributionPackage, true, false);
 
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
@@ -349,10 +348,12 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
     private void okMessageTest(AttributionHandler attributionHandler) {
         startGetAttributionTest(attributionHandler, ResponseType.MESSAGE);
 
-        okMessageTestLogs();
+        okMessageTestLogs(attributionHandler);
     }
 
-    private void okMessageTestLogs() {
+    private void okMessageTestLogs(AttributionHandler attributionHandler) {
+        TestActivityPackage.testQueryStringRequest(attributionHandler.lastUrlUsed.getQuery(), null);
+
         // check that the mock http client was called
         assertUtil.test("MockHttpsURLConnection getInputStream");
 

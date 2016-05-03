@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,11 +14,13 @@ import android.widget.Toast;
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE      = "{YourEventToken}";
     private static final String EVENT_TOKEN_REVENUE     = "{YourEventToken}";
     private static final String EVENT_TOKEN_CALLBACK    = "{YourEventToken}";
     private static final String EVENT_TOKEN_PARTNER     = "{YourEventToken}";
+
+    private Button btnEnableDisableSDK;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +32,12 @@ public class MainActivity extends ActionBarActivity {
         Adjust.appWillOpenUrl(data);
 
         // Adjust UI according to SDK state.
-        Button btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);
+        btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
 
         if (Adjust.isEnabled()) {
             btnEnableDisableSDK.setText(R.string.txt_disable_sdk);
@@ -122,4 +130,10 @@ public class MainActivity extends ActionBarActivity {
                     Toast.LENGTH_SHORT).show();
         }
     }
+
+    public void onServiceActivityClick(View v) {
+        Intent intent = new Intent(this, ServiceActivity.class);
+        startActivity(intent);
+    }
+
 }

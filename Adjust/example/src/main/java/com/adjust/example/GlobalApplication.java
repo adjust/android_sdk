@@ -2,6 +2,7 @@ package com.adjust.example;
 
 import android.app.Activity;
 import android.app.Application;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,6 +13,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -33,9 +35,6 @@ public class GlobalApplication extends Application {
 
         // change the log level
         config.setLogLevel(LogLevel.VERBOSE);
-
-        // enable event buffering
-        //config.setEventBufferingEnabled(true);
 
         // set default tracker
         //config.setDefaultTracker("{YourDefaultTracker}");
@@ -82,6 +81,21 @@ public class GlobalApplication extends Application {
                 Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
             }
         });
+
+        // evaluate deeplink to be launched
+        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            @Override
+            public boolean launchReceivedDeeplink(Uri deeplink) {
+                Log.d("example", "deeplink to open: " + deeplink);
+                return true;
+            }
+        });
+
+        // allow to send in the background
+        config.setSendInBackground(true);
+
+        // enable event buffering
+        //config.setEventBufferingEnabled(true);
 
         Adjust.onCreate(config);
 

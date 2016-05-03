@@ -36,9 +36,11 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,6 +59,7 @@ public class Util {
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
+    public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -160,7 +163,7 @@ public class Util {
                 getLogger().error("Failed to read %s object (%s)", objectName, e.getMessage());
             }
         } catch (FileNotFoundException e) {
-            getLogger().verbose("%s file not found", objectName);
+            getLogger().debug("%s file not found", objectName);
         } catch (Exception e) {
             getLogger().error("Failed to open %s file for reading (%s)", objectName, e);
         }
@@ -280,17 +283,29 @@ public class Util {
         return responseData;
     }
 
-    public static HttpsURLConnection createGETHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException {
-        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+    public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(String urlString, String clientSdk)
+            throws IOException
+    {
+        URL url = new URL(urlString);
+        AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
+
+        HttpsURLConnection connection = urlGetConnection.httpsURLConnection;
+        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
+
         connection.setRequestMethod("GET");
 
-        return connection;
+        return urlGetConnection;
     }
 
-    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk, Map<String, String> parameters)
-            throws IOException {
-        HttpsURLConnection connection = createHttpsURLConnection(urlString, clientSdk);
+    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
+                                                                  Map<String, String> parameters,
+                                                                  int queueSize)
+            throws IOException
+    {
+        URL url = new URL(urlString);
+        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+
+        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
         connection.setRequestMethod("POST");
 
         connection.setUseCaches(false);
@@ -298,14 +313,14 @@ public class Util {
         connection.setDoOutput(true);
 
         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(getPostDataString(parameters));
+        wr.writeBytes(getPostDataString(parameters, queueSize));
         wr.flush();
         wr.close();
 
         return connection;
     }
 
-    private static String getPostDataString(Map<String, String> body) throws UnsupportedEncodingException {
+    private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
         for(Map.Entry<String, String> entry : body.entrySet()) {
@@ -329,20 +344,19 @@ public class Util {
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
 
+        result.append("&");
+        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+        result.append("=");
+        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+
+
         return result.toString();
     }
 
-    public static HttpsURLConnection createHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException {
-        URL url = new URL(urlString);
-
-        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
-
+    public static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
         connection.setReadTimeout(Constants.ONE_MINUTE);
-
-        return connection;
     }
 
     public static boolean checkPermission(Context context, String permission) {
@@ -491,5 +505,46 @@ public class Util {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
         return String.format(Locale.US, formatString, bigInt);
+    }
+
+    public static String[] getSupportedAbis() {
+        return Reflection.getSupportedAbis();
+    }
+
+    public static String getCpuAbi() {
+        return Reflection.getCpuAbi();
+    }
+
+    public static String getReasonString(String message, Throwable throwable) {
+        if (throwable != null) {
+            return String.format(Locale.US, "%s: %s", message, throwable);
+        } else {
+            return String.format(Locale.US, "%s", message);
+        }
+    }
+
+    public static long getWaitingTime(int retries, BackoffStrategy backoffStrategy) {
+        if (retries < backoffStrategy.minRetries) {
+            return 0;
+        }
+        // start with expon 0
+        int expon = retries - backoffStrategy.minRetries;
+        // get the exponential Time from the power of 2: 1, 2, 4, 8, 16, ... * times the multiplier
+        long exponentialTime = ((long) Math.pow(2, expon)) * backoffStrategy.milliSecondMultiplier;
+        // limit the maximum allowed time to wait
+        long ceilingTime = Math.min(exponentialTime, backoffStrategy.maxWait);
+        // get the random range
+        double randomDouble = randomInRange(backoffStrategy.minRange, backoffStrategy.maxRange);
+        // apply jitter factor
+        double waitingTime =  ceilingTime * randomDouble;
+        return (long)waitingTime;
+    }
+
+    private static double randomInRange(double minRange, double maxRange) {
+        Random random = new Random();
+        double range = maxRange - minRange;
+        double scaled = random.nextDouble() * range;
+        double shifted = scaled + minRange;
+        return shifted;
     }
 }

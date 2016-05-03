@@ -23,8 +23,8 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, Context context, boolean startPaused) {
-        testLogger.test(prefix + "init, startPaused: " + startPaused);
+    public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
+        testLogger.test(prefix + "init, startsSending: " + startsSending);
         this.activityHandler = activityHandler;
         this.context = context;
     }
@@ -51,8 +51,9 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void closeFirstPackage(ResponseData responseData) {
-        testLogger.test(prefix + "closeFirstPackage, " + responseData);
+    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
+        testLogger.test(prefix + "closeFirstPackage, responseData" + responseData);
+        testLogger.test(prefix + "closeFirstPackage, activityPackage" + activityPackage);
     }
 
     @Override

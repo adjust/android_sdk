@@ -13,20 +13,32 @@ public class AdjustFactory {
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
-    private static HttpsURLConnection mockHttpsURLConnection = null;
+    private static HttpsURLConnection httpsURLConnection = null;
+    private static ISdkClickHandler sdkClickHandler = null;
 
     private static long timerInterval = -1;
     private static long timerStart = -1;
     private static long sessionInterval = -1;
     private static long subsessionInterval = -1;
+    private static BackoffStrategy sdkClickBackoffStrategy = null;
+    private static BackoffStrategy packageHandlerBackoffStrategy = null;
+
+    public static class URLGetConnection {
+        HttpsURLConnection httpsURLConnection;
+        URL url;
+        URLGetConnection(HttpsURLConnection httpsURLConnection, URL url) {
+            this.httpsURLConnection = httpsURLConnection;
+            this.url = url;
+        }
+    }
 
     public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
                                                     Context context,
-                                                    boolean startPaused) {
+                                                    boolean startsSending) {
         if (packageHandler == null) {
-            return new PackageHandler(activityHandler, context, startPaused);
+            return new PackageHandler(activityHandler, context, startsSending);
         }
-        packageHandler.init(activityHandler, context, startPaused);
+        packageHandler.init(activityHandler, context, startsSending);
         return packageHandler;
     }
 
@@ -55,7 +67,7 @@ public class AdjustFactory {
 
     public static long getTimerStart() {
         if (timerStart == -1) {
-            return 0;
+            return Constants.ONE_MINUTE;
         }
         return timerStart;
     }
@@ -74,6 +86,20 @@ public class AdjustFactory {
         return subsessionInterval;
     }
 
+    public static BackoffStrategy getSdkClickBackoffStrategy() {
+        if (sdkClickBackoffStrategy == null) {
+            return BackoffStrategy.SHORT_WAIT;
+        }
+        return sdkClickBackoffStrategy;
+    }
+
+    public static BackoffStrategy getPackageHandlerBackoffStrategy() {
+        if (packageHandlerBackoffStrategy == null) {
+            return BackoffStrategy.LONG_WAIT;
+        }
+        return packageHandlerBackoffStrategy;
+    }
+
     public static IActivityHandler getActivityHandler(AdjustConfig config) {
         if (activityHandler == null) {
             return ActivityHandler.getInstance(config);
@@ -84,21 +110,38 @@ public class AdjustFactory {
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
                                                             ActivityPackage attributionPackage,
-                                                            boolean startPaused,
+                                                            boolean startsSending,
                                                             boolean hasListener) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, startPaused, hasListener);
+            return new AttributionHandler(activityHandler, attributionPackage, startsSending, hasListener);
         }
-        attributionHandler.init(activityHandler, attributionPackage, startPaused, hasListener);
+        attributionHandler.init(activityHandler, attributionPackage, startsSending, hasListener);
         return attributionHandler;
     }
 
     public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
-        if (AdjustFactory.mockHttpsURLConnection == null) {
+        if (AdjustFactory.httpsURLConnection == null) {
             return (HttpsURLConnection)url.openConnection();
         }
 
-        return AdjustFactory.mockHttpsURLConnection;
+        return AdjustFactory.httpsURLConnection;
+    }
+
+    public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
+        if (AdjustFactory.httpsURLConnection == null) {
+            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
+        }
+
+        return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
+    }
+
+    public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
+        if (sdkClickHandler == null) {
+            return new SdkClickHandler(startsSending);
+        }
+
+        sdkClickHandler.init(startsSending);
+        return sdkClickHandler;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
@@ -129,6 +172,14 @@ public class AdjustFactory {
         AdjustFactory.subsessionInterval = subsessionInterval;
     }
 
+    public static void setSdkClickBackoffStrategy(BackoffStrategy sdkClickBackoffStrategy) {
+        AdjustFactory.sdkClickBackoffStrategy = sdkClickBackoffStrategy;
+    }
+
+    public static void setPackageHandlerBackoffStrategy(BackoffStrategy packageHandlerBackoffStrategy) {
+        AdjustFactory.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy;
+    }
+
     public static void setActivityHandler(IActivityHandler activityHandler) {
         AdjustFactory.activityHandler = activityHandler;
     }
@@ -137,7 +188,11 @@ public class AdjustFactory {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
-    public static void setMockHttpsURLConnection(HttpsURLConnection mockHttpsURLConnection) {
-        AdjustFactory.mockHttpsURLConnection = mockHttpsURLConnection;
+    public static void setHttpsURLConnection(HttpsURLConnection httpsURLConnection) {
+        AdjustFactory.httpsURLConnection = httpsURLConnection;
+    }
+
+    public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
+        AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
 }

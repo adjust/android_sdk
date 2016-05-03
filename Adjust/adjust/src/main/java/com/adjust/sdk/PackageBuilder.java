@@ -28,6 +28,7 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
     String referrer;
+    String deeplink;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -79,6 +80,7 @@ class PackageBuilder {
         addString(parameters, "reftag", reftag);
         addMapJson(parameters, "params", extraParameters);
         addString(parameters, "referrer", referrer);
+        addString(parameters, "deeplink", deeplink);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
@@ -150,6 +152,8 @@ class PackageBuilder {
         addString(parameters, "screen_density", deviceInfo.screenDensity);
         addString(parameters, "display_width", deviceInfo.displayWidth);
         addString(parameters, "display_height", deviceInfo.displayHeight);
+        addString(parameters, "hardware_name", deviceInfo.hardwareName);
+        addString(parameters, "cpu_type", deviceInfo.abi);
         fillPluginKeys(parameters);
     }
 
@@ -169,6 +173,7 @@ class PackageBuilder {
         addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
+        addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
     }
 
     private void injectActivityState(Map<String, String> parameters) {
