@@ -86,11 +86,8 @@ public class GlobalApplication extends Application {
         config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
-                if (deeplink.getPath().equals("")) {
-                    return false;
-                } else {
-                    return true;
-                }
+                Log.d("example", "deeplink to open: " + deeplink);
+                return true;
             }
         });
 
