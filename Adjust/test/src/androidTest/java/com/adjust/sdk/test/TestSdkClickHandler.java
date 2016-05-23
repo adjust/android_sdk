@@ -201,9 +201,9 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.error("Failed to read response. (null)");
+        assertUtil.error("Failed to read response. (lock == null)");
 
-        assertUtil.error("Failed to track click. (Sdk_click runtime exception: java.lang.NullPointerException)");
+        assertUtil.error("Failed to track click. (Sdk_click runtime exception: java.lang.NullPointerException: lock == null)");
 
         // does not to try to retry
         assertUtil.notInError("Retrying sdk_click package for the");
@@ -232,6 +232,8 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // adds to end of the queue
         assertUtil.debug("Added sdk_click");
+
+        assertUtil.fail();
     }
 
     public void testServerError() {

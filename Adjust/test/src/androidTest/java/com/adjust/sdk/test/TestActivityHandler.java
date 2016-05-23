@@ -1020,7 +1020,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
                 true, // isProductionEnvironment,
                 LogLevel.VERBOSE); // logLevel
 
-        SystemClock.sleep(2000);
+        SystemClock.sleep(3000);
 
         checkInitTests(
                 false,  // eventBuffering
@@ -1036,7 +1036,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         ResponseData responseDataNull = null;
 
-        //activityHandler.finishedTrackingActivity(responseDataNull);
+        activityHandler.finishedTrackingActivity(responseDataNull);
         SystemClock.sleep(1000);
 
         // if the response is null
@@ -1777,6 +1777,8 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // check that not enough time passed to fire again
         checkForegroundTimerFired(false);
+
+        assertUtil.fail();
     }
 
     public void testSendBackground() {
@@ -1792,12 +1794,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         config.setSendInBackground(true);
 
         // create activity handler without starting
-        ActivityHandler activityHandler = getActivityHandler(config,
-                                            true,           // startEnabled
-                                            null,           // readActivityState
-                                            null,           // readAttribution
-                                            false,          // isProductionEnvironment
-                                            LogLevel.INFO); // logLevel
+        ActivityHandler activityHandler = getFirstActivityHandler(config);
 
         SystemClock.sleep(2000);
 
@@ -2045,8 +2042,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         activityHandler.readOpenUrl(attributions, now);
         SystemClock.sleep(1000);
 
-        assertUtil.test("PackageHandler addPackage");
-        assertUtil.test("PackageHandler sendFirstPackage");
+        assertUtil.test("SdkClickHandler sendSdkClick");
 
         // test sdk_click response data
         ActivityPackage sdkClickPackage = mockSdkClickHandler.queue.get(0);
@@ -2224,7 +2220,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         checkInitTests(false, null, startsSending);
     }
 
-
     private void checkInitTests(boolean eventBuffering,
                                 String defaultTracker,
                                 boolean startsSending)
@@ -2370,14 +2365,14 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         // start activity handler with config
         ActivityHandler activityHandler = getFirstActivityHandler(config, logLevel);
 
-        SystemClock.sleep(2000);
+        SystemClock.sleep(3000);
 
         // test init values
         checkInitTests();
 
         startActivity(activityHandler);
 
-        SystemClock.sleep(2000);
+        SystemClock.sleep(3000);
 
         // test session
         checkFirstSession();
@@ -2423,7 +2418,6 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // goes to the background
         assertUtil.isTrue(internalState.isBackground());
-
     }
 
     private void checkOnPause(boolean forgroundAlreadySuspended,

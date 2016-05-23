@@ -198,8 +198,9 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
         packageHandler.closeFirstPackage(unknownResponseData, null);
         SystemClock.sleep(2000);
-        assertUtil.verbose("Package handler can send");
+
         assertUtil.test("ActivityHandler finishedTrackingActivity, message:null timestamp:null json:null");
+        assertUtil.verbose("Package handler can send");
 
         assertUtil.notInDebug("Package handler wrote");
 
