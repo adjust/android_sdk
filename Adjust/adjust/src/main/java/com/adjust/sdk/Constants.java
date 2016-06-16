@@ -29,7 +29,7 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.7.0";
+    String CLIENT_SDK = "android4.7.1";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String DEEPLINK = "deeplink";
@@ -49,7 +49,6 @@ public interface Constants {
     String REFERRER = "referrer";
 
     String ENCODING = "UTF-8";
-    String MD5 = "MD5";
     String SHA1 = "SHA-1";
 
     // List of known plugins, possibly not active

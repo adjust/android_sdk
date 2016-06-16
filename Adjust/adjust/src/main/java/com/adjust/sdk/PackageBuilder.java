@@ -159,7 +159,6 @@ class PackageBuilder {
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
         addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        addString(parameters, "mac_md5", deviceInfo.macShortMd5);
         addString(parameters, "android_id", deviceInfo.androidId);
     }
 
@@ -200,7 +199,6 @@ class PackageBuilder {
 
     private void checkDeviceIds(Map<String, String> parameters) {
         if (!parameters.containsKey("mac_sha1")
-                && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")) {
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");

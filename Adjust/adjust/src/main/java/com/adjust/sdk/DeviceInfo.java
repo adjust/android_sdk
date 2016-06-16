@@ -28,7 +28,6 @@ import static com.adjust.sdk.Constants.XLARGE;
  */
 class DeviceInfo {
     String macSha1;
-    String macShortMd5;
     String androidId;
     String fbAttributionId;
     String clientSdk;
@@ -80,7 +79,6 @@ class DeviceInfo {
         fbAttributionId = getFacebookAttributionId(context);
         pluginKeys = Util.getPluginKeys(context);
         macSha1 = getMacSha1(macAddress);
-        macShortMd5 = getMacShortMd5(macAddress);
         hardwareName = getHardwareName();
         abi = getABI();
     }
@@ -226,16 +224,6 @@ class DeviceInfo {
         String macSha1 = Util.sha1(macAddress);
 
         return macSha1;
-    }
-
-    private String getMacShortMd5(String macAddress) {
-        if (macAddress == null) {
-            return null;
-        }
-        String macShort = macAddress.replaceAll(":", "");
-        String macShortMd5 = Util.md5(macShort);
-
-        return macShortMd5;
     }
 
     private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {

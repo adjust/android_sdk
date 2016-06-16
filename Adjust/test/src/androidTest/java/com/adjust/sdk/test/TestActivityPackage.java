@@ -51,7 +51,7 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.7.0";
+        clientSdk = "android4.7.1";
         suffix = "";
         attribution = new AdjustAttribution();
         playServices = true;
@@ -278,15 +278,11 @@ public class TestActivityPackage {
         if (playServices) {
             // mac_sha1
             assertParameterNull("mac_sha1");
-            // mac_md5
-            assertParameterNull("mac_md5");
             // android_id
             assertParameterNull("android_id");
         } else {
             // mac_sha1
             assertParameterNotNull("mac_sha1");
-            // mac_md5
-            assertParameterNotNull("mac_md5");
             // android_id
             assertParameterNotNull("android_id");
         }
