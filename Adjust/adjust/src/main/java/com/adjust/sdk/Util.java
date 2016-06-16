@@ -48,7 +48,6 @@ import java.util.regex.Pattern;
 import javax.net.ssl.HttpsURLConnection;
 
 import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.SHA1;
 
 /**
@@ -482,10 +481,6 @@ public class Util {
 
     public static String sha1(final String text) {
         return hash(text, SHA1);
-    }
-
-    public static String md5(final String text) {
-        return hash(text, MD5);
     }
 
     public static String hash(final String text, final String method) {

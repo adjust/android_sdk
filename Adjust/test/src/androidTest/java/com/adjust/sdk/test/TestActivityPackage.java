@@ -278,15 +278,11 @@ public class TestActivityPackage {
         if (playServices) {
             // mac_sha1
             assertParameterNull("mac_sha1");
-            // mac_md5
-            assertParameterNull("mac_md5");
             // android_id
             assertParameterNull("android_id");
         } else {
             // mac_sha1
             assertParameterNotNull("mac_sha1");
-            // mac_md5
-            assertParameterNotNull("mac_md5");
             // android_id
             assertParameterNotNull("android_id");
         }
