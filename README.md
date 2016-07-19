@@ -263,18 +263,19 @@ Edit the `onActivityPaused(Activity activity)` method and add a call to `Adjust.
             
             //...
         }
-    }
-    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
     
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
+        private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+            @Override
+            public void onActivityResumed(Activity activity) {
+                Adjust.onResume();
+            }
+    
+            @Override
+            public void onActivityPaused(Activity activity) {
+                Adjust.onPause();
+            }
+            //...
         }
-        //...
     }
     ```
     
