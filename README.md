@@ -23,8 +23,6 @@ If your app is an app which uses web views you would like to use adjust tracking
             * [API level 9 until 13](#session-tracking-api9)
         * [Adjust logging](#adjust-logging)
         * [Build your app](#build-the-app)
-    * [Android manifest](#android-manifest)
-    * [Google Play Services](#google-play-services)
 * [Additional features](#additional-features)
     * [Event tracking](#event-tracking)
         * [Track revenue](#revenue-tracking)
@@ -43,6 +41,10 @@ If your app is an app which uses web views you would like to use adjust tracking
         * [Deferred deep linking scenario](#deeplinking-deferred)
         * [Set up scheme on Android activity](#scheme-android)
         * [Set up custom URL scheme in iOS](#scheme-ios)
+* [Troubleshooting](#troubleshooting)
+    * [I'm seeing the "Session failed (Ignoring too frequent session. ...)" error](#ts-session-failed)
+    * [Is my broadcast receiver capturing the install referrer?](#ts-broadcast-receiver)
+    * [Can I trigger an event at application launch?](#ts-event-at-launch)
 * [License](#license)
 
 ## <a id="example-app"></a>Example app
@@ -55,13 +57,13 @@ the adjust SDK can be integrated.
 These are the minimal steps required to integrate the adjust SDK into your Android project. We are going to assume that you 
 use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
 
-If you're using the [Maven Repository][maven] you can start with [step 3](#sdk-add).
+If you're using the [Maven Repository][maven] you can start with [this step](#sdk-add).
 
-### <a id="sdk-get"></a>1. Get the SDK
+### <a id="sdk-get"></a>Get the SDK
 
 Download the latest version from our [releases page][releases]. Extract the archive in a folder of your choice.
 
-### <a id="sdk-import"></a>2. Import the Adjust module
+### <a id="sdk-import"></a>Import the Adjust module
 
 In the Android Studio menu select `File → Import Module...`.
 
@@ -76,7 +78,7 @@ The `adjust` module should be imported into your Android Studio project afterwar
 
 ![][imported_module]
 
-### <a id="sdk-add"></a>3. Add the SDK to your project
+### <a id="sdk-add"></a>Add the SDK to your project
 
 Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
@@ -92,7 +94,7 @@ If you are using Maven, add this line instead:
 compile 'com.adjust.sdk:adjust-android:4.7.0'
 ```
 
-### <a id="sdk-gps"></a>4. Add Google Play Services
+### <a id="sdk-gps"></a>Add Google Play Services
 
 Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to 
 uniquely identify devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the 
@@ -118,7 +120,7 @@ uniquely identify devices. To allow the adjust SDK to use the Google Advertising
 
     ![][manifest_gps]
 
-### <a id="sdk-permissions"></a>5. Add permissions
+### <a id="sdk-permissions"></a>Add permissions
 
 In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for `INTERNET`
 if it's not present already.
@@ -136,7 +138,7 @@ If you are **not targeting the Google Play Store**, add both of these permission
 
 ![][manifest_permissions]
 
-### <a id="sdk-proguard"></a>6. Proguard settings
+### <a id="sdk-proguard"></a>Proguard settings
 
 If you are using Proguard, add these lines to your Proguard file:
 
@@ -169,7 +171,7 @@ work properly you should consider one of two possible scenarios:
 * Remove `-overloadaggressively` if it is not necessary
 * Add a `-useuniqueclassmembernames` flag to your Proguard file
 
-### <a id="sdk-broadcast-receiver"></a>7. Adjust broadcast receiver
+### <a id="sdk-broadcast-receiver"></a>Adjust broadcast receiver
 
 If you **are not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag 
 inside the `application` tag in your `AndroidManifest.xml`.
@@ -191,7 +193,7 @@ We use this broadcast receiver to retrieve the install referrer, in order to imp
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow 
 [these instructions][referrer] to add the Adjust broadcast receiver.
 
-### <a id="sdk-integrate"></a>8. Integrate the SDK into your app
+### <a id="sdk-integrate"></a>Integrate the SDK into your app
 
 To start with, we'll set up basic session tracking.
 
@@ -261,8 +263,8 @@ your app already, follow these steps:
 
 #### <a id="session-tracking"></a>Session tracking
 
-**Note**: This step is **really important** and please make sure that you implement it properly in your app. By implementing
-it, you will enable proper session tracking by the adjust in your app.
+**Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By 
+implementing it, you will enable proper session tracking by the adjust SDK in your app.
 
 ##### <a id="session-tracking-api14"></a>API level 14 and higher
 
@@ -649,7 +651,7 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as the
 variable `googleAdId`.
 
-### <a id="deep-linking"></a>Deep linking
+### <a id="deeplinking"></a>Deep linking
 
 If you are using the adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to
 get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed 
@@ -707,11 +709,11 @@ Depending on `android:launchMode` setting of your Activity in the `AndroidManife
 possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
 
 There are two possible places in which information about the deep link content will be delivered to your desired Activity 
-via `Intent` object - either in Activity's `onCreate` or `onNewIntent` method. Once one of these methods are triggered 
-after app has been launched, in here you can get the info how does the `deep_link` parameter from the clicked tracker URL 
-look like and maybe use this info to do some additional logic in your app.
+via `Intent` object - either in Activity's `onCreate` or `onNewIntent` method. Once one of these methods is triggered 
+after the app has been launched, in here you can get the info how does the `deep_link` parameter from the clicked tracker 
+URL looks like and maybe use this info to do some additional logic in your app.
 
-You can extract the `deep_link` content from these two methods like this:
+You can extract the deep link content from these two methods like this:
 
 ```java
 @Override
@@ -768,19 +770,20 @@ Adjust.onCreate(config);
 ```
 
 Once the adjust SDK receives the info about the deep link content from the backend, it will deliver you the info about its 
-content in this listener and expect the `boolean` return value from you. This return value indicates your decision on 
+content in this listener and expect the `boolean` return value from you. This return value represents your decision on 
 whether the adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in 
 the standard deep linking scenario) or not. 
 
-If you return `true`, we will launch it and exact same scenario which is described in the [Standard deep linking scenario 
-chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return `false` from
-this listener and based on the deep link content decide on your own what to do next in your app.
+If you return `true`, we will launch it and the exact same scenario which is described in the [Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return 
+`false` from this listener and based on the deep link content decide on your own what to do next in your app.
 
 #### <a id="deeplinking-reattribution">Reattribution via deep links
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please 
-check our [official docs][reattribution-with-deeplinks]. If you are using this feature, in order for your user to be 
-properly reattributed, you need to make one additional call to the adjust SDK in your app.
+check our [official docs][reattribution-with-deeplinks]. 
+
+If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to 
+the adjust SDK in your app.
 
 Once you have received deep link content information in your app, add a call to `Adjust.appWillOpenUrl` method. By making 
 this call, the adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will 
@@ -814,9 +817,9 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-## Troubleshooting
+## <a id="troubleshooting">Troubleshooting
 
-### I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
+### <a id="ts-session-failed">I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
 
 This error typically occurs when testing installs. Uninstalling and reinstalling the app is not enough to trigger a new 
 install. The servers will determine that the SDK has lost its locally aggregated session data and ignore the erroneous 
@@ -840,7 +843,7 @@ http://app.adjust.com/forget_device?app_token={yourAppToken}&adid={adidValue}
 When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were 
 incorrect, the link returns `Device not found`.
 
-### Is my broadcast receiver capturing the install referrer?
+### <a id="ts-broadcast-receiver">Is my broadcast receiver capturing the install referrer?
 
 If you followed the instructions in the [guide](#broadcast_receiver), the broadcast receiver should be configured to send 
 the install referrer to our SDK and to our servers.
@@ -885,7 +888,7 @@ V/Adjust: Path:      /sdk_click
 If you perform this test before launching the app, you won't see the package being sent. The package will be sent once the 
 app is launched.
 
-### Can I trigger an event at application launch?
+### <a id="ts-event-at-launch">Can I trigger an event at application launch?
 
 Not how you might intuitively think. The `onCreate` method on the global `Application` class is called not only at 
 application launch, but also when a system or application event is captured by the app.
