@@ -688,8 +688,9 @@ If you want to trigger an event after the install, use the [attribution changed 
 
 If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
 
-[dashboard]:     http://adjust.com
-[releases]:      https://github.com/adjust/adjust_android_sdk/releases
+[adjust.com]:   http://adjust.com
+[dashboard]:    http://adjust.com
+[releases]:     https://github.com/adjust/adjust_android_sdk/releases
 [import_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
 [select_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
 [imported_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
