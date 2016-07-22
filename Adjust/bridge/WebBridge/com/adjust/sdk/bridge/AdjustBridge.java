@@ -1,4 +1,4 @@
-package com.adjust.webview;
+package com.adjust.sdk.bridge;
 
 import android.net.Uri;
 import android.webkit.WebView;
