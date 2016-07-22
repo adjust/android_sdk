@@ -267,8 +267,8 @@ it, you will enable proper session tracking by the adjust in your app.
 ##### <a id="session-tracking-api14"></a>API level 14 and higher
 
 1. Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this 
-interface, your app is targeting an Android api level inferior to 14. You will have to update manually each Activity by 
-following this [instructions][activity_resume_pause]. If you had `Adjust.onResume` and `Adjust.onPause` calls on each 
+interface, your app is targeting an Android API level inferior to 14. You will have to update manually each Activity by 
+following these [instructions](#session-tracking-api9). If you had `Adjust.onResume` and `Adjust.onPause` calls on each 
 Activity of your app before, you should remove them.
 
     ![][activity_lifecycle_class]
@@ -299,20 +299,21 @@ a instance of the created `ActivityLifecycleCallbacks` class.
             
             //...
         }
-    
-        private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-            @Override
-            public void onActivityResumed(Activity activity) {
-                Adjust.onResume();
-            }
-    
-            @Override
-            public void onActivityPaused(Activity activity) {
-                Adjust.onPause();
-            }
-            //...
-        }
-    }
+
+         private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+             @Override
+             public void onActivityResumed(Activity activity) {
+                 Adjust.onResume();
+             }
+      
+             @Override
+             public void onActivityPaused(Activity activity) {
+                 Adjust.onPause();
+             }
+             
+             //...
+         }
+      }
     ```
     
     ![][activity_lifecycle_register]
