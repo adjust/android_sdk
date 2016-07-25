@@ -27,6 +27,7 @@ adjust.com™ at [adjust.com].
     * [Deep linking](#deeplink)
         * [Standard deep linking scenario](#deeplinking-standard)
         * [Deferred deep linking scenario](#deeplinking-deferred)
+        * [Reattribution via deep links](#deeplinking-reattribution)
 * [License](#license)
 
 ## <a id="basic-integration"></a>Basic integration
@@ -34,7 +35,7 @@ adjust.com™ at [adjust.com].
 ### <a id="native-add">Add native adjust Android SDK
 
 In oder to use adjust SDK in your web views, you need to add native adjust iOS SDK to your app. To install native iOS SDK 
-of adjust, follow the `Basic integration` chapter of our [Android SDK README][android-sdk-readme].
+of adjust, follow the `Basic integration` chapter of our [Android SDK README][android-sdk-basic-integration].
 
 ### <a id="bridge-add">Add the AdjustBridge to your project
 
@@ -125,7 +126,8 @@ public class MainActivity extends Activity {
 }
 ```
 
-By completing this, you have successfully added AdjustBridge to your app and enabled the Javascript bridge to communicate between native adjust Android SDK and your page which will be loaded in web view.
+By completing this, you have successfully added AdjustBridge to your app and enabled the Javascript bridge to communicate 
+between native adjust Android SDK and your page which will be loaded in web view.
 
 ### <a id="bridge-integrate-web"></a>Integrate the AdjustBridge into your web view
 
@@ -282,7 +284,7 @@ for attribution, this information can not by provided synchronously.
 Please make sure to consider our [applicable attribution data policies][attribution-data].
 
 As the callback method is configured using the `AdjustConfig` instance, you should call `setAttributionCallback` before 
-calling `Adjust.appDidLaunch(adjustConfig)`.
+calling `Adjust.onCreate(adjustConfig)`.
 
 ```js
 function attributionCallback(attribution) {
@@ -467,9 +469,13 @@ Adjust.getGoogleAdId(function(googleAdId) {
 
 ### <a id="deeplink">14. Deep linking
 
-To read deep linking mechanism description more in detail, please consult our official [Android SDK README][android-readme-deeplinking].
+To read deep linking mechanism description more in detail, please consult our official 
+[Android SDK README][android-readme-deeplinking].
 
-In order to get deep link info inside your web view, you need to make the calls from native Android app. As described in deep linking section of the official SDK README, deep link content can be delivered to one of two Activity lifecycle methods. In order to deliver deep link info to your page in web view, override appropriate one and add call to `AdjustBridge.deeplinkReceived` method:
+In order to get deep link info inside your web view, you need to make the calls from native Android app. As described in 
+deep linking section of the official SDK README, deep link content can be delivered to one of two Activity lifecycle 
+methods. In order to deliver deep link info to your page in web view, override appropriate one and add call to 
+`AdjustBridge.deeplinkReceived` method:
 
 ```java
 @Override
@@ -512,7 +518,9 @@ protected void onCreate(Bundle savedInstanceState) {
 
 #### <a id="deeplinking-standard">Standard deep linking scenario
 
-In order to get deeplink URL info back to your web view, you should register a callback method in your HTML script called `adjust_deeplink`. This method will then get triggered by the adjust SDK once your app gets opened after clicking on tracker URL with deeplink information in it.
+In order to get deeplink URL info back to your web view, you should register a callback method in your HTML script called 
+`adjust_deeplink`. This method will then get triggered by the adjust SDK once your app gets opened after clicking on tracker
+URL with deeplink information in it.
 
 ```js
 function adjust_deeplink(deeplink) {
@@ -548,10 +556,18 @@ adjustConfig.setOpenDeferredDeeplink(false)
 
 If you do not specify anything, by default, our SDK will try to open the link.
 
-[adjust.com]: http://adjust.com
-[dashboard]: http://adjust.com
+#### <a id="deeplinking-reattribution">Reattribution via deep links
+
+With AdjustBridge, user reattribution with usage of deep links is supported out of box and no additional effort is needed. 
+For more information about this topic, please check our [official Android SDK README][android-sdk-reattribution].
+
+[adjust.com]:                    http://adjust.com
+[dashboard]:                     http://adjust.com
+[callbacks-guide]:               https://docs.adjust.com/en/callbacks
+[event-tracking-guide]:          https://docs.adjust.com/en/event-tracking
+[android-sdk-deeplinking]:       https://github.com/adjust/android_sdk/blob/master/README.md#deeplinking
+[android-sdk-reattribution]:     https://github.com/adjust/android_sdk#deeplinking-reattribution
 [android-sdk-basic-integration]: https://github.com/adjust/android_sdk/blob/master/README.md#basic-integration
-[android-sdk-deeplinking]: https://github.com/adjust/android_sdk/blob/master/README.md#deeplinking
 
 ## <a id="license">License
 
