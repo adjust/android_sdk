@@ -5,6 +5,7 @@ import android.content.Context;
 /**
  * Created by pfms on 06/11/14.
  */
+// TODO: 7/24/16 MAke a getter for environment to make unit testing easier
 public class AdjustConfig {
     Context context;
     String appToken;
@@ -31,7 +32,7 @@ public class AdjustConfig {
 
     public AdjustConfig(Context context, String appToken, String environment) {
         if (!isValid(context, appToken, environment)) {
-            return;
+            throw new IllegalArgumentException("parameters are not valid");
         }
 
         this.context = context.getApplicationContext();

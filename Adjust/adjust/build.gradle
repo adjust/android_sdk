@@ -1,21 +1,101 @@
-apply plugin: 'com.android.library'
+buildscript {
+    ext.repos = {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    repositories repos
 
-android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
-
-    defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 23
-        versionCode 1
-        versionName "4.7.0"
+    dependencies {
+        classpath "com.android.tools.build:gradle:2.1.2"
+        classpath "com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.5"
     }
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+plugins {
+    id "pmd"
+    id "findbugs"
+    id "checkstyle"
 }
 
-task jar(type: Jar) {
-    from 'src/main/java'
+repositories repos
+
+apply plugin: 'com.android.library'
+apply plugin: "com.getkeepsafe.dexcount"
+apply from: rootProject.file("gradle/compile.gradle")
+apply from: rootProject.file("gradle/android.gradle")
+apply from: rootProject.file("gradle/codeQuality.gradle")
+
+dependencies {
+    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'com.google.code.gson:gson:2.4'
+
+    // Espresso Instrumentation Testing
+    androidTestCompile "com.android.support:support-annotations:24.1.0"
+    androidTestCompile "com.android.support.test.espresso:espresso-core:2.2.2"
+    androidTestCompile "com.android.support.test:runner:0.5"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:2.2.2"
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:2.2.2") {
+        exclude module: "appcompat"
+        exclude module: "support-v4"
+        exclude module: "support-v7"
+        exclude module: "design"
+        exclude module: "support-annotations"
+        exclude module: "recyclerview-v7"
+    }
+
+    // Junit
+    testCompile "junit:junit:4.12"
+
+    // Mockito
+    testCompile "org.mockito:mockito-core:2.0.87-beta"
+
+    // EasyMock
+    testCompile "org.easymock:easymock:3.4"
+
+    // PowerMock
+    testCompile "org.powermock:powermock-core:1.6.5"
+    testCompile "org.powermock:powermock-module-junit4:1.6.5"
+
+    // PowerMock + EasyMock extension
+    testCompile "org.powermock:powermock-api-easymock:1.6.5"
+
+    // Robolectric + Support v4
+    testCompile "org.robolectric:shadows-support-v4:3.1.1"
+    testCompile "org.khronos:opengl-api:gl1.1-android-2.1_r1"
+
+    // AssertJ
+    testCompile "com.android.support:support-annotations:24.1.0"
+    testCompile "com.squareup.assertj:assertj-android:1.1.1"
+}
+
+task clearJar(type: Delete) {
+}
+
+task makeJar(type: Copy) {
+    from('${project.buildDir}/intermediates/bundles/release/')
+    into('${project.buildDir}/libs/')
+    include('classes.jar')
+    rename ('classes.jar', 'adjust.jar')
+}
+
+makeJar.dependsOn(clearJar, build)
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+}
+
+task androidJavadocsJar(type: Jar) {
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives androidSourcesJar
+    archives androidJavadocsJar
 }
