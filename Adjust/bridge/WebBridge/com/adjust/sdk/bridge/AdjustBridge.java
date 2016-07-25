@@ -20,8 +20,8 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
-    public static void appDidLaunch(String adjustConfigString) {
-        AdjustBridge.getDefaultInstance().appDidLaunch(adjustConfigString);
+    public static void onCreate(String adjustConfigString) {
+        AdjustBridge.getDefaultInstance().onCreate(adjustConfigString);
     }
 
     @JavascriptInterface

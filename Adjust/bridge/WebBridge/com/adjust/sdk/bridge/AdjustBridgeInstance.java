@@ -94,7 +94,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void appDidLaunch(String adjustConfigString) {
+    public void onCreate(String adjustConfigString) {
         // Initialise SDK only if it's not already initialised.
         if (isInitialized) {
             return;

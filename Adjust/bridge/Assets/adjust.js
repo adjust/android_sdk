@@ -1,5 +1,5 @@
 var Adjust = {
-    appDidLaunch: function (adjustConfig) {
+    onCreate: function (adjustConfig) {
         this.bridge = adjustConfig.getBridge();
 
         if (this.bridge != null) {
@@ -28,7 +28,7 @@ var Adjust = {
                     this.bridge.setDeferredDeeplinkCallback(adjustConfig.getDeferredDeeplinkCallback())
                 }
 
-                this.bridge.appDidLaunch(JSON.stringify(adjustConfig))
+                this.bridge.onCreate(JSON.stringify(adjustConfig))
             }
         }
     },
