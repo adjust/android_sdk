@@ -3,7 +3,7 @@
 This is the Android SDK of adjust™. You can read more about adjust™ at [adjust.com].
 
 If your app is an app which uses web views you would like to use adjust tracking from Javascript code, please consult our 
-[Android web views SDK guide][android-web-views-guide].
+[Android web views SDK guide](doc/web_views.md).
 
 ## Table of contents
 
@@ -923,7 +923,6 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google_play_services]:           http://developer.android.com/google/play-services/setup.html
 [activity_resume_pause]:          doc/activity_resume_pause.md
-[android-web-views-guide]:        https://github.com/adjust/android_sdk/tree/master/doc/web_views.md
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 
