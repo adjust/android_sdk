@@ -38,7 +38,7 @@
                  note that the leading "/" is required for pathPrefix
                  Accepts URIs that begin with "example://”
                 -->
-                <data android:scheme="example" />
+                <data android:scheme="adjustExample" />
             </intent-filter>
         </activity>
 
