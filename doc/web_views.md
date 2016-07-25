@@ -326,7 +326,7 @@ You can register a listener to be notified when events or sessions are tracked. 
 successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed 
 sessions.
 
-Follow these steps and implement the following callback methods for tracking successful events:
+Follow these steps and implement the following callback methods to track successful events:
 
 ```js
 function eventSuccessCallback(eventSuccess) {
@@ -341,7 +341,7 @@ function eventSuccessCallback(eventSuccess) {
 adjustConfig.setEventSuccessCallback(eventSuccessCallback)
 ```
 
-The following delegate callback function for tracking failed events:
+The following delegate callback function to track failed events:
 
 ```js
 function eventFailureCallback(eventFailure) {
@@ -355,7 +355,7 @@ function eventFailureCallback(eventFailure) {
 adjustConfig.setEventFailureCallback(eventFailureCallback)
 ```
 
-For tracking successful sessions:
+To track successful sessions:
 
 ```js
 function sessionSuccessCallback(sessionSuccess) {
@@ -367,7 +367,7 @@ function sessionSuccessCallback(sessionSuccess) {
 adjustConfig.setSessionSuccessCallback(sessionSuccessCallback)
 ```
 
-And for tracking failed sessions:
+And to track failed sessions:
 
 ```js
 function sessionFailureCallback(sessionFailure) {
