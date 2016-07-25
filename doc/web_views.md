@@ -274,7 +274,7 @@ adjustEvent.addPartnerParameter('foo', 'bar')
 Adjust.trackEvent(adjustEvent)
 ```
 
-You can read more about special partners and these integrations in our [guide to special partners.][special-partners]
+You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
 ### <a id="attribution-callback">Attribution callback
 
@@ -561,17 +561,19 @@ If you do not specify anything, by default, our SDK will try to open the link.
 With AdjustBridge, user reattribution with usage of deep links is supported out of box and no additional effort is needed. 
 For more information about this topic, please check our [official Android SDK README][android-sdk-reattribution].
 
-[adjust.com]:                    http://adjust.com
-[dashboard]:                     http://adjust.com
+[dashboard]:   http://adjust.com
+[adjust.com]:  http://adjust.com
+
 [callbacks-guide]:               https://docs.adjust.com/en/callbacks
+[special-partners]:              https://docs.adjust.com/en/special-partners
 [event-tracking-guide]:          https://docs.adjust.com/en/event-tracking
 [android-sdk-deeplinking]:       https://github.com/adjust/android_sdk/blob/master/README.md#deeplinking
 [android-sdk-reattribution]:     https://github.com/adjust/android_sdk#deeplinking-reattribution
 [android-sdk-basic-integration]: https://github.com/adjust/android_sdk/blob/master/README.md#basic-integration
 
-[bridge_add]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_add.png
-[bridge_init_js_android]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_init_js_android.png
-[bridge_install_tracked]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_install_tracked.png
+[bridge_add]:              https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_add.png
+[bridge_init_js_android]:  https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_init_js_android.png
+[bridge_install_tracked]:  https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_install_tracked.png
 
 ## <a id="license">License
 
