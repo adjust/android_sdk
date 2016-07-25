@@ -9,41 +9,41 @@ If your app is an app which uses web views you would like to use adjust tracking
 
 * [Example app](#example-app)
 * [Basic integration](#basic-integration)
-    * [Get the SDK](#sdk-get)
-    * [Import the Adjust module](#sdk-import)
-    * [Add the SDK to your project](#sdk-add)
-    * [Add Google Play Services](#sdk-gps)
-    * [Add permissions](#sdk-permissions)
-    * [Proguard settings](#sdk-proguard)
-    * [Adjust broadcast receiver](#sdk-broadcast-receiver)
-    * [Integrate the SDK into your app](#sdk-integrate)
-        * [Basic setup](#basic-setup)
-        * [Session tracking](#session-tracking)
-            * [API level 14 and higher](#session-tracking-api14)
-            * [API level 9 until 13](#session-tracking-api9)
-        * [Adjust logging](#adjust-logging)
-        * [Build your app](#build-the-app)
+   * [Get the SDK](#sdk-get)
+   * [Import the Adjust module](#sdk-import)
+   * [Add the SDK to your project](#sdk-add)
+   * [Add Google Play Services](#sdk-gps)
+   * [Add permissions](#sdk-permissions)
+   * [Proguard settings](#sdk-proguard)
+   * [Adjust broadcast receiver](#sdk-broadcast-receiver)
+   * [Integrate the SDK into your app](#sdk-integrate)
+   * [Basic setup](#basic-setup)
+   * [Session tracking](#session-tracking)
+      * [API level 14 and higher](#session-tracking-api14)
+      * [API level 9 until 13](#session-tracking-api9)
+   * [Adjust logging](#adjust-logging)
+   * [Build your app](#build-the-app)
 * [Additional features](#additional-features)
-    * [Event tracking](#event-tracking)
-        * [Track revenue](#revenue-tracking)
-            * [In-App Purchase verification](#iap-verification)
-        * [Callback parameters](#callback-parameters)
-        * [Partner parameters](#partner-parameters)
-    * [Attribution callback](#attribution-callback)
-    * [Session and event callbacks](#session-event-callbacks)
-    * [Disable tracking](#disable-tracking)
-    * [Offline mode](#offline-mode)
-    * [Event buffering](#event-buffering)
-    * [Background tracking](#background-tracking)
-    * [Device IDs](#device-ids)
-    * [Deep linking](#deeplinking)
-        * [Standard deep linking scenario](#deeplinking-standard)
-        * [Deferred deep linking scenario](#deeplinking-deferred)
-        * [Reattribution via deep links](#deeplinking-reattribution)
+   * [Event tracking](#event-tracking)
+      * [Track revenue](#revenue-tracking)
+      * [In-App Purchase verification](#iap-verification)
+      * [Callback parameters](#callback-parameters)
+      * [Partner parameters](#partner-parameters)
+   * [Attribution callback](#attribution-callback)
+   * [Session and event callbacks](#session-event-callbacks)
+   * [Disable tracking](#disable-tracking)
+   * [Offline mode](#offline-mode)
+   * [Event buffering](#event-buffering)
+   * [Background tracking](#background-tracking)
+   * [Device IDs](#device-ids)
+   * [Deep linking](#deeplinking)
+      * [Standard deep linking scenario](#deeplinking-standard)
+      * [Deferred deep linking scenario](#deeplinking-deferred)
+      * [Reattribution via deep links](#deeplinking-reattribution)
 * [Troubleshooting](#troubleshooting)
-    * [I'm seeing the "Session failed (Ignoring too frequent session. ...)" error](#ts-session-failed)
-    * [Is my broadcast receiver capturing the install referrer?](#ts-broadcast-receiver)
-    * [Can I trigger an event at application launch?](#ts-event-at-launch)
+   * [I'm seeing the "Session failed (Ignoring too frequent session. ...)" error](#ts-session-failed)
+   * [Is my broadcast receiver capturing the install referrer?](#ts-broadcast-receiver)
+   * [Can I trigger an event at application launch?](#ts-event-at-launch)
 * [License](#license)
 
 ## <a id="example-app"></a>Example app
@@ -196,7 +196,7 @@ If you are already using a different broadcast receiver for the `INSTALL_REFERRE
 
 To start with, we'll set up basic session tracking.
 
-#### <a id="basic-setup"></a>Basic setup
+### <a id="basic-setup"></a>Basic setup
 
 We recommend using a global android [Application][android_application] class to initialize the SDK. If don't have one in 
 your app already, follow these steps:
@@ -260,12 +260,12 @@ your app already, follow these steps:
     from test devices. It is very important that you keep this value meaningful at
     all times! This is especially important if you are tracking revenue.
 
-#### <a id="session-tracking"></a>Session tracking
+### <a id="session-tracking"></a>Session tracking
 
 **Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By 
 implementing it, you will enable proper session tracking by the adjust SDK in your app.
 
-##### <a id="session-tracking-api14"></a>API level 14 and higher
+#### <a id="session-tracking-api14"></a>API level 14 and higher
 
 1. Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this 
 interface, your app is targeting an Android API level inferior to 14. You will have to update manually each Activity by 
@@ -319,7 +319,7 @@ a instance of the created `ActivityLifecycleCallbacks` class.
     
     ![][activity_lifecycle_register]
 
-##### <a id="session-tracking-api9"></a>API level 9 until 13
+#### <a id="session-tracking-api9"></a>API level 9 until 13
 
 If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it to at least `14` to simplify the 
 integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market 
@@ -359,7 +359,7 @@ public class YourActivity extends Activity {
 Repeat these steps for **every** Activity of your app. Don't forget these steps when you create new Activities in the 
 future. Depending on your coding style you might want to implement this in a common superclass of all your Activities.
 
-#### <a id="adjust-logging"></a>Adjust Logging
+### <a id="adjust-logging"></a>Adjust Logging
 
 You can increase or decrease the amount of logs you see in tests by calling `setLogLevel` on your `AdjustConfig` instance 
 with one of the following parameters:
@@ -373,7 +373,7 @@ config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 ```
 
-#### <a id="build-the-app"></a>Build your app
+### <a id="build-the-app"></a>Build your app
 
 Build and run your Android app. In your `LogCat` viewer you can set the filter `tag:Adjust` to hide all other logs. After 
 your app has launched you should see the following Adjust log: `Install tracked`
@@ -415,7 +415,7 @@ You can read more about revenue and event tracking in the [event tracking guide.
 
 The event instance can be used to configure the event even more before tracking it.
 
-##### <a id="iap-verification">In-App Purchase verification
+#### <a id="iap-verification">In-App Purchase verification
 
 If you want to check the validity of In-App Purchases made in your app using Purchase Verification, adjust's server side 
 receipt verification tool, then check out our Android purchase SDK and read more about it 
