@@ -3,7 +3,7 @@ function AdjustConfig(bridge, appToken, environment) {
     this.appToken = appToken;
     this.environment = environment;
 
-    this.sdkPrefix = 'web';
+    this.sdkPrefix = 'web-bridge4.7.0';
 
     this.logLevel = null;
     this.processName = null;
