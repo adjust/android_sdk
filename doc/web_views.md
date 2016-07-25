@@ -246,6 +246,18 @@ adjustEvent.addCallbackParameter('foo', 'bar')
 Adjust.trackEvent(adjustEvent)
 ```
 
+In that case we would track the event and send a request to:
+
+    http://www.adjust.com/callback?key=value&foo=bar
+
+It should be mentioned that we support a variety of placeholders like `{idfa}` that can be used as parameter values. In the 
+resulting callback this placeholder would be replaced with the ID for Advertisers of the current device. Also note that we 
+don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for 
+an event, these parameters won't even be read.
+
+You can read more about using URL callbacks, including a full list of available values, in our 
+[callbacks guide][callbacks-guide].
+
 #### <a id="partner-parameters">Partner parameters
 
 You can also add parameters to be transmitted to network partners, for the integrations that have been activated in your 
@@ -262,19 +274,7 @@ adjustEvent.addPartnerParameter('foo', 'bar')
 Adjust.trackEvent(adjustEvent)
 ```
 
-You can read more about special partners and these integrations in our [guide to special partnersd.][special-partners]
-
-In that case we would track the event and send a request to:
-
-    http://www.adjust.com/callback?key=value&foo=bar
-
-It should be mentioned that we support a variety of placeholders like `{idfa}` that can be used as parameter values. In the 
-resulting callback this placeholder would be replaced with the ID for Advertisers of the current device. Also note that we 
-don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for 
-an event, these parameters won't even be read.
-
-You can read more about using URL callbacks, including a full list of available values, in our 
-[callbacks guide][callbacks-guide].
+You can read more about special partners and these integrations in our [guide to special partners.][special-partners]
 
 ### <a id="attribution-callback">Attribution callback
 
