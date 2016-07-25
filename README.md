@@ -904,45 +904,46 @@ If you want to trigger an event after the install, use the [attribution changed 
 
 If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
 
-[adjust.com]:   http://adjust.com
-[dashboard]:    http://adjust.com
-[releases]:     https://github.com/adjust/adjust_android_sdk/releases
-[import_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
-[select_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
-[imported_module]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
-[gradle_adjust]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
-[gradle_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
-[manifest_gps]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
-[manifest_permissions]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[proguard]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
-[receiver]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
-[application_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
-[manifest_application]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
-[application_config]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[log_message]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
-[activity_lifecycle_class]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
-[activity_lifecycle_methods]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
-[activity_lifecycle_register]: https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
+[dashboard]:                      http://adjust.com
+[adjust.com]:                     http://adjust.com
 
-[referrer]:                 doc/referrer.md
-[attribution-data]:         https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[google_play_services]:     http://developer.android.com/google/play-services/setup.html
-[android_application]:      http://developer.android.com/reference/android/app/Application.html
-[application_name]:         http://developer.android.com/guide/topics/manifest/application-element.html#nm
-[google_ad_id]:             https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
-[callbacks-guide]:          https://docs.adjust.com/en/callbacks
-[event-tracking]:           https://docs.adjust.com/en/event-tracking
-[special-partners]:         https://docs.adjust.com/en/special-partners
-[maven]:                    http://maven.org
-[example]:                  https://github.com/adjust/android_sdk/tree/master/Adjust/example
-[currency-conversion]:      https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
-[activity_resume_pause]:    doc/activity_resume_pause.md
-[android-web-views-guide]:  https://github.com/adjust/android_sdk/tree/master/doc/web_views.md
-[android-dashboard]:        http://developer.android.com/about/dashboards/index.html
-[activity]:                 https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
-[android-purchase-verification]: https://github.com/adjust/android_purchase_sdk
-[android-launch-modes]:     https://developer.android.com/guide/topics/manifest/activity-element.html
-[reattribution-with-deeplinks]: https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[maven]:                          http://maven.org
+[example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[releases]:                       https://github.com/adjust/adjust_android_sdk/releases
+[referrer]:                       doc/referrer.md
+[google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/en/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[application_name]:               http://developer.android.com/guide/topics/manifest/application-element.html#nm
+[special-partners]:               https://docs.adjust.com/en/special-partners
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android_application]:            http://developer.android.com/reference/android/app/Application.html
+[android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
+[google_play_services]:           http://developer.android.com/google/play-services/setup.html
+[activity_resume_pause]:          doc/activity_resume_pause.md
+[android-web-views-guide]:        https://github.com/adjust/android_sdk/tree/master/doc/web_views.md
+[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
+
+[activity]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
+[proguard]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
+[receiver]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
+[gradle_gps]:                   https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
+[log_message]:                  https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
+[manifest_gps]:                 https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
+[gradle_adjust]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
+[import_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
+[select_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
+[imported_module]:              https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
+[application_class]:            https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
+[application_config]:           https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
+[manifest_permissions]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
+[manifest_application]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
+[activity_lifecycle_class]:     https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
+[activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
+[activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 ## License
 
