@@ -569,6 +569,10 @@ For more information about this topic, please check our [official Android SDK RE
 [android-sdk-reattribution]:     https://github.com/adjust/android_sdk#deeplinking-reattribution
 [android-sdk-basic-integration]: https://github.com/adjust/android_sdk/blob/master/README.md#basic-integration
 
+[bridge_add]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_add.png
+[bridge_init_js_android]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_init_js_android.png
+[bridge_install_tracked]: https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_install_tracked.png
+
 ## <a id="license">License
 
 The adjust SDK is licensed under the MIT License.
