@@ -7,9 +7,9 @@ adjust.com™ at [adjust.com].
 
 * [Basic integration](#basic-integration)
     * [Add native adjust Android SDK](#native-add)
-    * [Add the AdjustBridge to your project](#bridge-add)
-    * [Integrate the AdjustBridge into your app](#bridge-integrate-app)
-    * [Integrate the AdjustBridge into your web view](#bridge-integrate-web)
+    * [Add AdjustBridge to your project](#bridge-add)
+    * [Integrate AdjustBridge into your app](#bridge-integrate-app)
+    * [Integrate AdjustBridge into your web view](#bridge-integrate-web)
     * [AdjustBridge logging](#adjust-logging)
     * [Build your app](#build-the-app)
 * [Additional features](#additional-features)
@@ -34,20 +34,19 @@ adjust.com™ at [adjust.com].
 
 ### <a id="native-add">Add native adjust Android SDK
 
-In oder to use adjust SDK in your web views, you need to add native adjust iOS SDK to your app. To install native iOS SDK 
-of adjust, follow the `Basic integration` chapter of our [Android SDK README][android-sdk-basic-integration].
+In oder to use the adjust SDK in your web views, you need to add adjust's native Android SDK to your app. To install the native Android SDK, follow the `Basic integration` chapter of our [Android SDK README][android-sdk-basic-integration].
 
-### <a id="bridge-add">Add the AdjustBridge to your project
+### <a id="bridge-add">Add AdjustBridge to your project
 
-Copy AdjustBridge `.java` files to your project. You can add them to package of your choice, but we recommend you to follow the package naming convention we use by default in our source files. In order to do this, please create `com.adjust.sdk.bridge` package inside your project and copy AdjustBridge `.java` files in there.
+Copy AdjustBridge `.java` files to your project. You can add them to the package of your choice, but we recommend you to follow the package naming convention we use by default in our source files. In order to do this, please create `com.adjust.sdk.bridge` package inside your project and copy AdjustBridge `.java` files in there.
 
 Copy AdjustBridge `.js` files to your project. Add them to your `assets` folder.
 
 ![][bridge_add]
 
-### <a id="bridge-integrate-app"></a>Integrate the AdjustBridge into your app
+### <a id="bridge-integrate-app"></a>Integrate AdjustBridge into your app
 
-In order to properly initialise AdjustBridge instance, you need to pass `Application` reference to it and `WebView` object in which you are loading your HTML page.
+In order to properly initialise the AdjustBridge instance, you need to pass the `Application` reference to it and the `WebView` object in which you are loading your HTML page.
 
 We advise you to define your custom `Application` class and pass the reference in its `onCreate` method:
 
@@ -79,7 +78,7 @@ public class MainActivity extends Activity {
 }
 ```
 
-In case you don't want to add custom `Application` class, you can pass the application reference in this moment as well:
+In case you don't want to add a custom `Application` class, you can pass the application reference now as well:
 
 ```java
 public class MainActivity extends Activity {
@@ -98,7 +97,7 @@ public class MainActivity extends Activity {
 }
 ```
 
-By completing these steps, AdjustBridge has everything it needs to enable communication between our native SDK and your page loaded in web view. Now you need to properly initialise your web view to use AdjustBridge Javascript interface:
+By completing these steps, AdjustBridge has everything it needs to enable the communication between our native SDK and your page loaded in web view. Now you need to properly initialise your web view to use the AdjustBridge Javascript interface:
 
 ```java
 public class MainActivity extends Activity {
@@ -127,9 +126,9 @@ public class MainActivity extends Activity {
 ```
 
 By completing this, you have successfully added AdjustBridge to your app and enabled the Javascript bridge to communicate 
-between native adjust Android SDK and your page which will be loaded in web view.
+between adjust's native Android SDK and your page which will be loaded in web view.
 
-### <a id="bridge-integrate-web"></a>Integrate the AdjustBridge into your web view
+### <a id="bridge-integrate-web"></a>Integrate AdjustBridge into your web view
 
 In your HTML file, add references to the adjust Javascript files:
 
@@ -139,7 +138,7 @@ In your HTML file, add references to the adjust Javascript files:
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 
-Once you added references to Javascript files, you can use them in your HTML file to initialise the adjust SDK:
+Once you added references to the Javascript files, you can use them in your HTML file to initialise the adjust SDK:
 
 ```js
 // ...
@@ -198,7 +197,7 @@ Once you integrate the adjust SDK into your project, you can take advantage of t
 
 ### <a id="event-tracking">Event tracking
 
-You can use adjust to track events. Lets say you want to track every tap on a particular button. You would create a new 
+You can use adjust to track events. Let's say you want to track every tap on a particular button. You would create a new 
 event token in your [dashboard], which has an associated event token - looking something like `abc123`. In your button's 
 `onclick` method you would then add the following lines to track the tap:
 
@@ -214,7 +213,7 @@ The event instance can be used to configure the event even more before tracking 
 #### <a id="revenue-tracking">Revenue tracking
 
 If your users can generate revenue by tapping on advertisements or making in-app purchases you can track those revenues with
-events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
+events. Let's say a tap is worth one Euro cent. You could then track the revenue event like this:
 
 ```js
 var adjustEvent = new AdjustEvent('abc123')
@@ -250,8 +249,8 @@ In that case we would track the event and send a request to:
 
     http://www.adjust.com/callback?key=value&foo=bar
 
-It should be mentioned that we support a variety of placeholders like `{idfa}` that can be used as parameter values. In the 
-resulting callback this placeholder would be replaced with the ID for Advertisers of the current device. Also note that we 
+It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the 
+resulting callback this placeholder would be replaced with the Google Play Services ID of the current device. Also note that we 
 don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for 
 an event, these parameters won't even be read.
 
@@ -278,8 +277,8 @@ You can read more about special partners and these integrations in our [guide to
 
 ### <a id="attribution-callback">Attribution callback
 
-You can register a callback method to be notified of tracker attribution changes. Due to the different sources considered 
-for attribution, this information can not by provided synchronously.
+You can register a callback method to be notified of attribution changes. Due to the different sources considered 
+for attribution, this information cannot by provided synchronously.
 
 Please make sure to consider our [applicable attribution data policies][attribution-data].
 
@@ -323,9 +322,11 @@ the `attribution` parameter. Here is a quick summary of its properties:
 
 ### <a id="event-session-callbacks">Event and session callbacks
 
-You can register a callback method to be notified of successful and failed tracked events and/or sessions.
+You can register a listener to be notified when events or sessions are tracked. There are four listeners: one for tracking 
+successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed 
+sessions.
 
-Follow these steps and implement the following callback methods for successful tracked events:
+Follow these steps and implement the following callback methods for tracking successful events:
 
 ```js
 function eventSuccessCallback(eventSuccess) {
@@ -340,7 +341,7 @@ function eventSuccessCallback(eventSuccess) {
 adjustConfig.setEventSuccessCallback(eventSuccessCallback)
 ```
 
-The following delegate callback function for failed tracked events:
+The following delegate callback function for tracking failed events:
 
 ```js
 function eventFailureCallback(eventFailure) {
@@ -354,7 +355,7 @@ function eventFailureCallback(eventFailure) {
 adjustConfig.setEventFailureCallback(eventFailureCallback)
 ```
 
-For successful tracked sessions:
+For tracking successful sessions:
 
 ```js
 function sessionSuccessCallback(sessionSuccess) {
@@ -366,7 +367,7 @@ function sessionSuccessCallback(sessionSuccess) {
 adjustConfig.setSessionSuccessCallback(sessionSuccessCallback)
 ```
 
-And for failed tracked sessions:
+And for tracking failed sessions:
 
 ```js
 function sessionFailureCallback(sessionFailure) {
@@ -447,7 +448,7 @@ adjustConfig.setEventBufferingEnabled(true)
 
 ### <a id="background-tracking">Background tracking
 
-The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is on the background. You can change
+The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is in the background. You can change
 this behaviour in your `AdjustConfig` instance:
 
 ```js
@@ -469,12 +470,12 @@ Adjust.getGoogleAdId(function(googleAdId) {
 
 ### <a id="deeplink">14. Deep linking
 
-To read deep linking mechanism description more in detail, please consult our official 
+To read the deep linking mechanism description in more detail, please consult our official 
 [Android SDK README][android-readme-deeplinking].
 
-In order to get deep link info inside your web view, you need to make the calls from native Android app. As described in 
+In order to get deep link info inside your web view, you need to make the calls from native Android app. As described in the
 deep linking section of the official SDK README, deep link content can be delivered to one of two Activity lifecycle 
-methods. In order to deliver deep link info to your page in web view, override appropriate one and add call to 
+methods. In order to deliver deep link info to your page in web view, just override the appropriate one and add a call to the
 `AdjustBridge.deeplinkReceived` method:
 
 ```java
@@ -519,7 +520,7 @@ protected void onCreate(Bundle savedInstanceState) {
 #### <a id="deeplinking-standard">Standard deep linking scenario
 
 In order to get deeplink URL info back to your web view, you should register a callback method in your HTML script called 
-`adjust_deeplink`. This method will then get triggered by the adjust SDK once your app gets opened after clicking on tracker
+`adjust_deeplink`. This method will then get triggered by the adjust SDK once your app gets opened after clicking on a tracker
 URL with deeplink information in it.
 
 ```js
@@ -542,11 +543,11 @@ adjustConfig.setDeferredDeeplinkCallback(function(deferredDeeplink) {
 })
 ```
 
-The callback function will be called after the SDK receives a deffered deeplink from ther server and before SDK tries to 
+The callback function will be called after the SDK receives a deferred deeplink from the server and before the SDK tries to 
 open it. 
 
-With another setting on the `AdjustConfig` instance, you have the possibility to say to our SDK should it try to open this 
-link or not. You can do that calling the `setOpenDeferredDeeplink` method:
+With another setting on the `AdjustConfig` instance, you have the possibility to tell our SDK to open this 
+link or not. You can do this by calling the `setOpenDeferredDeeplink` method:
 
 ```js
 adjustConfig.setOpenDeferredDeeplink(true)
