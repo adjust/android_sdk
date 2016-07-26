@@ -1,0 +1,49 @@
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 24
+        versionCode 1
+        versionName "4.7.0"
+        // Espresso test runner
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    // Use the "ndk-build" tool to build libs
+    sourceSets {
+        main {
+            jni {
+                srcDirs = []
+            }
+
+            jniLibs {
+                srcDir "src/main/libs"
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        textReport true
+        textOutput "stdout"
+        checkAllWarnings true
+        warningsAsErrors true
+        abortOnError false
+        showAll true
+        explainIssues true
+        disable "UnusedResources",              // Unused will be removed on release
+                "IconExpectedSize",             // Using the material icons provided from Google
+                "GoogleAppIndexingApiWarning",  // We might want to index our app later
+                "InvalidPackage",               // Butterknife, Okio and Realm
+                "ResourceType",                 // Annotation binding
+                "GradleDependency",
+                "NewerVersionAvailable",
+                "PropertyEscape"                // CI issue with sdk.dir in local.properties
+    }
+}

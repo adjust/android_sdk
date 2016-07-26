@@ -98,6 +98,8 @@ public class Logger implements ILogger {
 
     @Override
     public void Assert(String message, Object... parameters) {
+        // TODO: 7/21/16 Why would this function ever need a try/catch??
+        // TODO: 7/21/16 Also, why is the implementation for MockLogger different?
         try {
             Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
         } catch (Exception e) {

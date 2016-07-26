@@ -54,6 +54,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         super(mainActivity);
     }
 
+    // TODO: 7/22/16 Try to remove the MockLogger and use JUnit and Mockito all the way
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -109,7 +110,7 @@ public class TestActivityHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustConfig config = getConfig();
 
         // start activity handler with config
-        ActivityHandler activityHandler = startAndCheckFirstSession(config);
+        startAndCheckFirstSession(config);
 
         // checking the default values of the first session package
         // should only have one package
