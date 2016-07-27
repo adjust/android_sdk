@@ -105,16 +105,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         this.internalHandler = new Handler(getLooper());
         internalState = new InternalState();
 
-        // read files to have sync values available
-        readAttribution(adjustConfig.context);
-        readActivityState(adjustConfig.context);
-
         // enabled by default
-        if (activityState == null) {
-            internalState.enabled = true;
-        } else {
-            internalState.enabled = activityState.enabled;
-        }
+        internalState.enabled = true;
         // online by default
         internalState.offline = false;
         // in the background by default
@@ -126,29 +118,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 initInternal();
             }
         });
-
-        // get timer values
-        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
-        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-
-        // initialize timers to be available in onResume/onPause
-        // after initInternal so that the handlers are initialized
-        foregroundTimer = new TimerCycle(new Runnable() {
-            @Override
-            public void run() {
-                foregroundTimerFired();
-            }
-        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
-
-        // create background timer
-        scheduler = Executors.newSingleThreadScheduledExecutor();
-        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                backgroundTimerFired();
-            }
-        }, BACKGROUND_TIMER_NAME);
     }
 
     @Override
@@ -474,6 +443,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
 
+        // has to be read in the background
+        readAttribution(adjustConfig.context);
+        readActivityState(adjustConfig.context);
+
+        if (activityState != null) {
+            internalState.enabled = activityState.enabled;
+        }
+
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -500,6 +477,27 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (adjustConfig.referrer != null) {
             sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
         }
+
+        // get timer values
+        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+
+        foregroundTimer = new TimerCycle(new Runnable() {
+            @Override
+            public void run() {
+                foregroundTimerFired();
+            }
+        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
+
+        // create background timer
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFired();
+            }
+        }, BACKGROUND_TIMER_NAME);
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend());
 
