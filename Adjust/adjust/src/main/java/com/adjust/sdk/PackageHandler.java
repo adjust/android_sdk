@@ -197,7 +197,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
 
     private void readPackageQueue() {
         try {
-            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, (Class<List<ActivityPackage>>)((Class)List.class));
+            packageQueue = Util.readObject(context,
+                    PACKAGE_QUEUE_FILENAME,
+                    PACKAGE_QUEUE_NAME,
+                    (Class<List<ActivityPackage>>)(Class)List.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", PACKAGE_QUEUE_NAME, e.getMessage());
             packageQueue = null;

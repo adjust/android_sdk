@@ -37,4 +37,10 @@ public interface IActivityHandler {
     void setAskingAttribution(boolean askingAttribution);
 
     void sendFirstPackages();
+
+    void addExternalDeviceId(String externalDeviceId);
+
+    void addSessionCallbackParameter(String key, String value);
+
+    void addSessionPartnerParameter(String key, String value);
 }

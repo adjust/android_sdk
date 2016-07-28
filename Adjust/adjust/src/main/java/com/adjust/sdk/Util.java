@@ -38,6 +38,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -577,5 +578,42 @@ public class Util {
         double scaled = random.nextDouble() * range;
         double shifted = scaled + minRange;
         return shifted;
+    }
+
+    public static boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+        if (attribute == null) {
+            getLogger().error("%s parameter %s is missing", parameterName, attributeType);
+            return false;
+        }
+        if (attribute.equals("")) {
+            getLogger().error("%s parameter %s is empty", parameterName, attributeType);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Map<String, String> mergeParameters(Map<String, String> target,
+                                                      Map<String, String> source,
+                                                      String parameterName) {
+        if (target == null) {
+            return source;
+        }
+        if (source == null) {
+            return target;
+        }
+        Map<String, String> mergedParameters = new HashMap<String, String>(target);
+        ILogger logger = getLogger();
+        for (Map.Entry<String, String> parameterSourceEntry : source.entrySet()) {
+            String oldValue = mergedParameters.put(parameterSourceEntry.getKey(), parameterSourceEntry.getValue());
+            if (oldValue != null) {
+                logger.warn("Key %s with value %s from %s parameter was replaced by value %s",
+                        parameterSourceEntry.getKey(),
+                        oldValue,
+                        parameterName,
+                        parameterSourceEntry.getValue());
+            }
+        }
+        return mergedParameters;
     }
 }

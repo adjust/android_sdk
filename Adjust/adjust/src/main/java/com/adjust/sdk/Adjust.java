@@ -81,6 +81,21 @@ public class Adjust {
         adjustInstance.sendFirstPackages();
     }
 
+    public static void addExternalDeviceId(String externalDeviceId) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addExternalDeviceId(externalDeviceId);
+    }
+
+    public static void addSessionCallbackParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionCallbackParameter(key, value);
+    }
+
+    public static void addSessionPartnerParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionPartnerParameter(key, value);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }

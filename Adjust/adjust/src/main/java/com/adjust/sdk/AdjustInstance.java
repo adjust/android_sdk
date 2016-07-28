@@ -81,6 +81,30 @@ public class AdjustInstance {
         activityHandler.sendFirstPackages();
     }
 
+    public void addExternalDeviceId(String externalDeviceId) {
+        if (activityHandler != null) {
+            activityHandler.addExternalDeviceId(externalDeviceId);
+        }
+
+        // TODO action list
+    }
+
+    public void addSessionCallbackParameter(String key, String value) {
+        if (activityHandler != null) {
+            activityHandler.addSessionCallbackParameter(key, value);
+        }
+
+        // TODO action list
+    }
+
+    public void addSessionPartnerParameter(String key, String value) {
+        if (activityHandler != null) {
+            activityHandler.addSessionPartnerParameter(key, value);
+        }
+
+        // TODO action list
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

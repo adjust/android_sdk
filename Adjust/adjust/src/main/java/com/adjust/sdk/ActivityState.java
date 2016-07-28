@@ -126,7 +126,6 @@ public class ActivityState implements Serializable, Cloneable {
         return hashCode;
     }
 
-
     private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();
 

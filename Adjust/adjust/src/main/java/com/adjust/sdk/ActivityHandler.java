@@ -27,6 +27,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.LOGTAG;
+import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.SESSION_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
@@ -42,6 +45,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
     private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
+    private static final String SESSION_PARAMETERS_NAME = "Session parameters";
+    private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
+    private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
 
     private Handler internalHandler;
     private IPackageHandler packageHandler;
@@ -58,6 +64,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
+    private SessionParameters sessionParameters;
 
     public class InternalState {
         boolean enabled;
@@ -431,6 +438,37 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             }
         });
     }
+
+    @Override
+    public void addExternalDeviceId(final String externalDeviceId) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addExternalDeviceIdInternal(externalDeviceId);
+            }
+        });
+    }
+
+    @Override
+    public void addSessionCallbackParameter(final String key, final String value) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addSessionCallbackParameterInternal(key, value);
+            }
+        });
+    }
+
+    @Override
+    public void addSessionPartnerParameter(final String key, final String value) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                addSessionPartnerParameterInternal(key, value);
+            }
+        });
+    }
+
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -474,10 +512,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void initInternal() {
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
+        // get timer values
+        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
 
         // has to be read in the background
         readAttribution(adjustConfig.context);
         readActivityState(adjustConfig.context);
+        // read first the Session parameter class
+        readSessionParameters(adjustConfig.context);
+        if (sessionParameters == null) {
+            sessionParameters = new SessionParameters();
+        }
+        readSessionCallbackParameters(adjustConfig.context);
+        readSessionPartnerParameters(adjustConfig.context);
 
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
@@ -509,11 +558,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (adjustConfig.referrer != null) {
             sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
         }
-
-        // get timer values
-        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
-        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
 
         foregroundTimer = new TimerCycle(new Runnable() {
             @Override
@@ -663,7 +707,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         updateActivityState(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters);
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -1023,7 +1067,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void transferSessionPackage(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage();
+        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters);
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -1144,6 +1188,66 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalState.updatePackages = false;
     }
 
+    private void addExternalDeviceIdInternal(String externalDeviceId) {
+        if (!Util.isValidParameter(externalDeviceId, "value", "External Device Id")) return;
+
+        if (sessionParameters.externalDeviceId != null) {
+            logger.warn("External Device Id %s will be overwritten", sessionParameters.externalDeviceId);
+        }
+
+        sessionParameters.externalDeviceId = externalDeviceId;
+
+        writeSessionParameters();
+    }
+
+    private void addSessionCallbackParameterInternal(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session Callback")) return;
+        if (!Util.isValidParameter(value, "value", "Session Callback")) return;
+
+        if (sessionParameters.callbackParameters == null) {
+            sessionParameters.callbackParameters = new LinkedHashMap<String, String>();
+        }
+
+        String oldValue = sessionParameters.callbackParameters.get(key);
+
+        if (value.equals(oldValue)) {
+            logger.verbose("Key %s already present with the same value", key);
+            return;
+        }
+
+        if (oldValue != null) {
+            logger.warn("Key %s will be overwritten", key);
+        }
+
+        sessionParameters.callbackParameters.put(key, value);
+
+        writeSessionCallbackParameters();
+    }
+
+    private void addSessionPartnerParameterInternal(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session Partner")) return;
+        if (!Util.isValidParameter(value, "value", "Session Partner")) return;
+
+        if (sessionParameters.partnerParameters == null) {
+            sessionParameters.partnerParameters = new LinkedHashMap<String, String>();
+        }
+
+        String oldValue = sessionParameters.partnerParameters.get(key);
+
+        if (value.equals(oldValue)) {
+            logger.verbose("Key %s already present with the same value", key);
+            return;
+        }
+
+        if (oldValue != null) {
+            logger.warn("Key %s will be overwritten", key);
+        }
+
+        sessionParameters.partnerParameters.put(key, value);
+
+        writeSessionPartnerParameters();
+    }
+
     private void readActivityState(Context context) {
         try {
             activityState = Util.readObject(context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
@@ -1162,12 +1266,60 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
+    private void readSessionParameters(Context context) {
+        try {
+            sessionParameters = Util.readObject(context,
+                    SESSION_PARAMETERS_FILENAME,
+                    SESSION_PARAMETERS_NAME,
+                    SessionParameters.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_PARAMETERS_NAME, e.getMessage());
+            sessionParameters = null;
+        }
+    }
+
+    private void readSessionCallbackParameters(Context context) {
+        try {
+            sessionParameters.callbackParameters = Util.readObject(context,
+                    SESSION_CALLBACK_PARAMETERS_FILENAME,
+                    SESSION_CALLBACK_PARAMETERS_NAME,
+                    (Class<Map<String,String>>)(Class)Map.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_CALLBACK_PARAMETERS_NAME, e.getMessage());
+            sessionParameters.callbackParameters = null;
+        }
+    }
+
+    private void readSessionPartnerParameters(Context context) {
+        try {
+            sessionParameters.partnerParameters = Util.readObject(context,
+                    SESSION_PARTNER_PARAMETERS_FILENAME,
+                    SESSION_PARTNER_PARAMETERS_NAME,
+                    (Class<Map<String,String>>)(Class)Map.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_PARTNER_PARAMETERS_NAME, e.getMessage());
+            sessionParameters.partnerParameters = null;
+        }
+    }
+
     private synchronized void writeActivityState() {
         Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
     }
 
     private void writeAttribution() {
         Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    }
+
+    private void writeSessionParameters() {
+        Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
+    }
+
+    private void writeSessionCallbackParameters() {
+        Util.writeObject(sessionParameters.callbackParameters, adjustConfig.context, SESSION_CALLBACK_PARAMETERS_FILENAME, SESSION_CALLBACK_PARAMETERS_NAME);
+    }
+
+    private void writeSessionPartnerParameters() {
+        Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
     }
 
     private boolean checkEvent(AdjustEvent event) {
