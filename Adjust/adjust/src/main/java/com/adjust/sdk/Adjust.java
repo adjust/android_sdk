@@ -76,6 +76,11 @@ public class Adjust {
         adjustInstance.setOfflineMode(enabled);
     }
 
+    public static void sendFirstPackages() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.sendFirstPackages();
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }

@@ -16,4 +16,6 @@ public interface IPackageHandler {
     public void pauseSending();
 
     public void resumeSending();
+
+    public void updatePackages();
 }

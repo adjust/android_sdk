@@ -35,4 +35,6 @@ public interface IActivityHandler {
     void setOfflineMode(boolean enabled);
 
     void setAskingAttribution(boolean askingAttribution);
+
+    void sendFirstPackages();
 }

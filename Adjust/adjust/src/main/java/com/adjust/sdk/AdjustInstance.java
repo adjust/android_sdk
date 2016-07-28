@@ -75,6 +75,12 @@ public class AdjustInstance {
         activityHandler.setOfflineMode(enabled);
     }
 
+
+    public void sendFirstPackages() {
+        if (!checkActivityHandler()) return;
+        activityHandler.sendFirstPackages();
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

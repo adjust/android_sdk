@@ -147,6 +147,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         paused = false;
     }
 
+    @Override
+    public void updatePackages() {
+        // TODO implement update
+    }
     // internal methods run in dedicated queue thread
 
     private void initInternal() {

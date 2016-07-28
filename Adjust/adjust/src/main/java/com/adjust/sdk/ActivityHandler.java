@@ -41,6 +41,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
+    private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
 
     private Handler internalHandler;
     private IPackageHandler packageHandler;
@@ -49,6 +50,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private TimerCycle foregroundTimer;
     private ScheduledExecutorService scheduler;
     private TimerOnce backgroundTimer;
+    private TimerOnce delayStartTimer;
     private InternalState internalState;
 
     private DeviceInfo deviceInfo;
@@ -61,6 +63,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         boolean enabled;
         boolean offline;
         boolean background;
+        boolean delayStart;
+        boolean updatePackages;
 
         public boolean isEnabled() {
             return enabled;
@@ -84,6 +88,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         public boolean isForeground() {
             return !background;
+        }
+
+        public boolean isDelayStart() {
+            return delayStart;
+        }
+
+        public boolean isToStartNow() {
+            return !delayStart;
+        }
+
+        public boolean isToUpdatePackages() {
+            return updatePackages;
         }
     }
 
@@ -111,6 +127,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalState.offline = false;
         // in the background by default
         internalState.background = true;
+        // delay start not configured by default
+        internalState.delayStart = false;
 
         internalHandler.post(new Runnable() {
             @Override
@@ -166,6 +184,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
+                delayStart();
+
                 stopBackgroundTimer();
 
                 startForegroundTimer();
@@ -238,9 +258,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(!enabled,
-                    "Package handler and attribution handler will start as paused due to the SDK being disabled",
-                    "Package and attribution handler will still start as paused due to the SDK being offline",
-                    "Package handler and attribution handler will start as active due to the SDK being enabled");
+                    "Handlers will start as paused due to the SDK being disabled",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to the SDK being enabled");
             return;
         }
 
@@ -249,9 +269,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityState();
 
         updateStatus(!enabled,
-                "Pausing package handler and attribution handler due to SDK being disabled",
-                "Package and attribution handler remain paused due to SDK being offline",
-                "Resuming package handler and attribution handler due to SDK being enabled");
+                "Pausing handlers due to SDK being disabled",
+                "Handlers remain paused",
+                "Resuming handlers due to SDK being enabled");
     }
 
     private void updateStatus(boolean pausingState, String pausingMessage,
@@ -260,18 +280,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
-            updateHandlersStatusAndSend();
-            return;
+        }
+        // check if it's remaining in a pause state
+        else if (paused(false)) {
+            // including the sdk click handler
+            if (paused(true)) {
+                logger.info(remainsPausedMessage);
+            } else {
+                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
+            }
+        } else {
+            // it is changing from a pause state to an active state
+            logger.info(unPausingMessage);
         }
 
-        // it is remaining in a pause state
-        if (paused()) {
-            logger.info(remainsPausedMessage);
-        // it is changing from a pause state to an active state
-        } else {
-            logger.info(unPausingMessage);
-            updateHandlersStatusAndSend();
-        }
+        updateHandlersStatusAndSend();
     }
 
     private boolean hasChangedState(boolean previousState, boolean newState,
@@ -303,16 +326,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(offline,
-                    "Package handler and attribution handler will start paused due to SDK being offline",
-                    "Package and attribution handler will still start as paused due to SDK being disabled",
-                    "Package handler and attribution handler will start as active due to SDK being online");
+                    "Handlers will start paused due to SDK being offline",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to SDK being online");
             return;
         }
 
         updateStatus(offline,
-                "Pausing package and attribution handler to put SDK offline mode",
-                "Package and attribution handler remain paused due to SDK being disabled",
-                "Resuming package handler and attribution handler to put SDK in online mode");
+                "Pausing handlers to put SDK offline mode",
+                "Handlers remain paused",
+                "Resuming handlers to put SDK in online mode");
     }
 
     @Override
@@ -399,6 +422,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    @Override
+    public void sendFirstPackages () {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstPackagesInternal();
+            }
+        });
+    }
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -492,22 +524,41 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // create background timer
         scheduler = Executors.newSingleThreadScheduledExecutor();
-        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                backgroundTimerFired();
-            }
-        }, BACKGROUND_TIMER_NAME);
+        if (adjustConfig.sendInBackground) {
+            logger.info("Send in background configured");
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend());
+            backgroundTimer = new TimerOnce(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    backgroundTimerFired();
+                }
+            }, BACKGROUND_TIMER_NAME);
+        }
+
+        // configure delay start timer
+        if (activityState == null &&
+                adjustConfig.delayStart != null &&
+                adjustConfig.delayStart > 0.0)
+        {
+            logger.info("Delay start configured");
+            internalState.delayStart = true;
+            delayStartTimer = new TimerOnce(scheduler, new Runnable() {
+                @Override
+                public void run() {
+                    sendFirstPackages();
+                }
+            }, DELAY_START_TIMER_NAME);
+        }
+
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend(false));
 
         ActivityPackage attributionPackage = getAttributionPackage();
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                toSend(),
+                toSend(false),
                 adjustConfig.hasAttributionChangedListener());
 
-        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend());
+        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend(true));
     }
 
     private void startInternal() {
@@ -929,7 +980,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private void pauseSending() {
         attributionHandler.pauseSending();
         packageHandler.pauseSending();
-        sdkClickHandler.pauseSending();
+        // the conditions to pause the sdk click handler are less restrictive
+        // it's possible for the sdk click handler to be active while others are paused
+        if (!toSend(true)) {
+            sdkClickHandler.pauseSending();
+        }
     }
 
     private void resumeSending() {
@@ -942,6 +997,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (!checkActivityState(activityState)) { return false; }
 
         long lastInterval = now - activityState.lastActivity;
+
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) {
             return false;
@@ -1000,6 +1056,10 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void startBackgroundTimer() {
+        if (backgroundTimer == null) {
+            return;
+        }
+
         // check if it can send in the background
         if (!toSend()) {
             return;
@@ -1014,11 +1074,74 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void stopBackgroundTimer() {
+        if (backgroundTimer == null) {
+            return;
+        }
+
         backgroundTimer.cancel();
     }
 
     private void backgroundTimerFiredInternal() {
         packageHandler.sendFirstPackage();
+    }
+
+    private void delayStart() {
+        // it's not configured to start delayed or already finished
+        if (internalState.isToStartNow()) {
+            return;
+        }
+
+        // the delay has already started
+        if (internalState.isToUpdatePackages()) {
+            return;
+        }
+
+        // check against max start delay
+        double delayStartSeconds = adjustConfig.delayStart != null ? adjustConfig.delayStart : 0.0;
+        long maxDelayStartMilli = AdjustFactory.getMaxDelayStart();
+
+        long delayStartMilli = (long)(delayStartSeconds * 1000);
+        if (delayStartMilli > maxDelayStartMilli) {
+            double maxDelayStartSeconds = maxDelayStartMilli / 1000;
+            String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
+            String maxDelayStartFormatted = Util.SecondsDisplayFormat.format(maxDelayStartSeconds);
+
+            logger.warn("Delay start of %s seconds bigger than max allowed value of %s seconds", delayStartFormatted, maxDelayStartFormatted);
+            delayStartMilli = maxDelayStartMilli;
+            delayStartSeconds = maxDelayStartSeconds;
+        }
+
+        String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
+        logger.info("Waiting %s seconds before starting first session", delayStartFormatted);
+
+        delayStartTimer.startIn(delayStartMilli);
+
+        internalState.updatePackages = true;
+    }
+
+    private void sendFirstPackagesInternal() {
+        if (internalState.isToStartNow()) {
+            logger.info("Start delay expired or never configured");
+            return;
+        }
+
+        // update packages in queue
+        updatePackagesInternal();
+        // no longer is in delay start
+        internalState.delayStart = false;
+        // cancel possible still running timer if it was called by user
+        delayStartTimer.cancel();
+        // and release timer
+        delayStartTimer = null;
+        // update the status and try to send first package
+        updateHandlersStatusAndSendInternal();
+    }
+
+    private void updatePackagesInternal() {
+        // update activity packages
+        packageHandler.updatePackages();
+        // no longer needs to update packages
+        internalState.updatePackages = false;
     }
 
     private void readActivityState(Context context) {
@@ -1070,12 +1193,28 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private boolean paused() {
-        return internalState.isOffline() || !this.isEnabled();
+        return paused(false);
+    }
+
+    private boolean paused(boolean sdkClickHandlerOnly) {
+        if (sdkClickHandlerOnly) {
+            // sdk click handler is paused if either:
+            return internalState.isOffline() ||     // it's offline
+                    !this.isEnabled();              // is disabled
+        }
+        // other handlers are paused if either:
+        return internalState.isOffline()    ||      // it's offline
+                !this.isEnabled()           ||      // is disabled
+                internalState.isDelayStart();       // is in delayed start
     }
 
     private boolean toSend() {
-        // if it's offline, disabled -> don't send
-        if (paused()) {
+        return toSend(false);
+    }
+
+    private boolean toSend(boolean sdkClickHandlerOnly) {
+        // don't send when it's paused
+        if (paused(sdkClickHandlerOnly)) {
             return false;
         }
 

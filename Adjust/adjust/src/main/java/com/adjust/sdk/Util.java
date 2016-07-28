@@ -198,6 +198,7 @@ public class Util {
 
             try {
                 objectStream.writeObject(object);
+
                 getLogger().debug("Wrote %s: %s", objectName, object);
             } catch (NotSerializableException e) {
                 getLogger().error("Failed to serialize %s", objectName);
