@@ -108,23 +108,31 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         responseData.willRetry = true;
         activityHandler.finishedTrackingActivity(responseData);
 
-        if (activityPackage != null) {
-            int retries = activityPackage.increaseRetries();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.verbose("Package handler can send");
+                isSending.set(false);
 
-            long waitTime = Util.getWaitingTime(retries, backoffStrategy);
+                // Try to send the same package after sleeping
+                sendFirstPackage();
+            }
+        };
 
-            double waitTimeSeconds = waitTime / 1000.0;
-            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-            logger.verbose("Sleeping for %s seconds before retrying the %d time", secondsString, retries);
-            SystemClock.sleep(waitTime);
+        if (activityPackage == null) {
+            runnable.run();
+            return;
         }
 
-        logger.verbose("Package handler can send");
-        isSending.set(false);
+        int retries = activityPackage.increaseRetries();
 
-        // Try to send the same package after sleeping
-        sendFirstPackage();
+        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+
+        double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
+        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+        logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
+        internalHandler.postDelayed(runnable, waitTimeMilliSeconds);
     }
 
     // interrupt the sending loop after the current request has finished

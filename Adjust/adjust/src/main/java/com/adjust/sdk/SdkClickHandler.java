@@ -70,34 +70,43 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                if (paused) {
-                    return;
-                }
-
-                if (packageQueue.isEmpty()) {
-                    return;
-                }
-
-                ActivityPackage sdkClickPackage = packageQueue.get(0);
-
-                int retries = sdkClickPackage.getRetries();
-
-                if (retries > 0) {
-                    long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-
-                    double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
-                    String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-                    logger.verbose("Sleeping for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
-                    SystemClock.sleep(waitTimeMilliSeconds);
-                }
-
-                sendSdkClickInternal(sdkClickPackage);
-
-                packageQueue.remove(0);
-                sendNextSdkClick();
+                sendNextSdkClickInternal();
             }
         });
+    }
+
+    private void sendNextSdkClickInternal() {
+        if (paused) {
+            return;
+        }
+
+        if (packageQueue.isEmpty()) {
+            return;
+        }
+
+        final ActivityPackage sdkClickPackage = packageQueue.remove(0);
+        int retries = sdkClickPackage.getRetries();
+
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                sendSdkClickInternal(sdkClickPackage);
+                sendNextSdkClick();
+            }
+        };
+
+        if (retries <= 0) {
+            runnable.run();
+            return;
+        }
+
+        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+
+        double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
+        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+        logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
+        internalHandler.postDelayed(runnable, waitTimeMilliSeconds);
     }
 
     private void sendSdkClickInternal(ActivityPackage sdkClickPackage) {
