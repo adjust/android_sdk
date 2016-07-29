@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.List;
+
 /**
  * Created by pfms on 06/11/14.
  */
@@ -26,6 +28,7 @@ public class AdjustConfig {
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
     Double delayStart;
+    List<IRunActivityHandler> sessionParametersActionsArray;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";

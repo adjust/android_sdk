@@ -32,7 +32,6 @@ import static com.adjust.sdk.Constants.SESSION_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler extends HandlerThread implements IActivityHandler {
-
     private static long FOREGROUND_TIMER_INTERVAL;
     private static long FOREGROUND_TIMER_START;
     private static long BACKGROUND_TIMER_INTERVAL;
@@ -653,6 +652,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
                 adjustConfig.hasAttributionChangedListener());
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend(true));
+
+        sessionParametersActionsInternal(adjustConfig.sessionParametersActionsArray);
+    }
+
+    private void sessionParametersActionsInternal(List<IRunActivityHandler> sessionParametersActionsArray) {
+        if (sessionParametersActionsArray == null) {
+            return;
+        }
+
+        for (IRunActivityHandler sessionParametersAction : sessionParametersActionsArray) {
+            sessionParametersAction.run(this);
+        }
     }
 
     private void startInternal() {
@@ -1238,7 +1249,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalState.updatePackages = false;
     }
 
-    private void addExternalDeviceIdInternal(String externalDeviceId) {
+    public void addExternalDeviceIdInternal(String externalDeviceId) {
         if (!Util.isValidParameter(externalDeviceId, "value", "External Device Id")) return;
 
         if (sessionParameters.externalDeviceId != null) {
@@ -1250,7 +1261,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionParameters();
     }
 
-    private void addSessionCallbackParameterInternal(String key, String value) {
+    public void addSessionCallbackParameterInternal(String key, String value) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
         if (!Util.isValidParameter(value, "value", "Session Callback")) return;
 
@@ -1274,7 +1285,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionCallbackParameters();
     }
 
-    private void addSessionPartnerParameterInternal(String key, String value) {
+    public void addSessionPartnerParameterInternal(String key, String value) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return;
         if (!Util.isValidParameter(value, "value", "Session Partner")) return;
 
@@ -1298,7 +1309,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionPartnerParameters();
     }
 
-    private void removeSessionCallbackParameterInternal(String key) {
+    public void removeSessionCallbackParameterInternal(String key) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
 
         if (sessionParameters.callbackParameters == null) {
@@ -1318,7 +1329,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionCallbackParameters();
     }
 
-    private void removeSessionPartnerParameterInternal(String key) {
+    public void removeSessionPartnerParameterInternal(String key) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return;
 
         if (sessionParameters.partnerParameters == null) {
@@ -1338,7 +1349,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionPartnerParameters();
     }
 
-    private void resetExternalDeviceIdInternal() {
+    public void resetExternalDeviceIdInternal() {
         if (sessionParameters.externalDeviceId == null) {
             logger.warn("External Device Id is not set");
             return;
@@ -1349,7 +1360,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionParameters();
     }
 
-    private void resetSessionCallbackParametersInternal() {
+    public void resetSessionCallbackParametersInternal() {
         if (sessionParameters.callbackParameters == null) {
             logger.warn("Session Callback parameters are not set");
         }
@@ -1359,7 +1370,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeSessionCallbackParameters();
     }
 
-    private void resetSessionPartnerParametersInternal() {
+    public void resetSessionPartnerParametersInternal() {
         if (sessionParameters.partnerParameters == null) {
             logger.warn("Session Partner parameters are not set");
         }

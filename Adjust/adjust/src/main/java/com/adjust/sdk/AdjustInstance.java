@@ -2,14 +2,17 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by pfms on 04/12/14.
  */
 public class AdjustInstance {
-
     private String referrer;
     private long referrerClickTime;
     private ActivityHandler activityHandler;
+    private List<IRunActivityHandler> sessionParametersActionsArray;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -23,6 +26,7 @@ public class AdjustInstance {
 
         adjustConfig.referrer = this.referrer;
         adjustConfig.referrerClickTime = this.referrerClickTime;
+        adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
@@ -81,68 +85,148 @@ public class AdjustInstance {
         activityHandler.sendFirstPackages();
     }
 
-    public void addExternalDeviceId(String externalDeviceId) {
+    public void addExternalDeviceId(final String externalDeviceId) {
         if (activityHandler != null) {
             activityHandler.addExternalDeviceId(externalDeviceId);
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.addExternalDeviceIdInternal(externalDeviceId);
+            }
+        });
     }
 
-    public void addSessionCallbackParameter(String key, String value) {
+    public void addSessionCallbackParameter(final String key, final String value) {
         if (activityHandler != null) {
             activityHandler.addSessionCallbackParameter(key, value);
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.addSessionCallbackParameterInternal(key, value);
+            }
+        });
     }
 
-    public void addSessionPartnerParameter(String key, String value) {
+    public void addSessionPartnerParameter(final String key, final String value) {
         if (activityHandler != null) {
             activityHandler.addSessionPartnerParameter(key, value);
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.addSessionPartnerParameterInternal(key, value);
+            }
+        });
     }
 
-    public void removeSessionCallbackParameter(String key) {
+    public void removeSessionCallbackParameter(final String key) {
         if (activityHandler != null) {
             activityHandler.removeSessionCallbackParameter(key);
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.removeSessionCallbackParameterInternal(key);
+            }
+        });
     }
 
-    public void removeSessionPartnerParameter(String key) {
+    public void removeSessionPartnerParameter(final String key) {
         if (activityHandler != null) {
             activityHandler.removeSessionPartnerParameter(key);
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.removeSessionPartnerParameterInternal(key);
+            }
+        });
     }
 
     public void resetExternalDeviceId() {
         if (activityHandler != null) {
             activityHandler.resetExternalDeviceId();
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.resetExternalDeviceIdInternal();
+            }
+        });
     }
 
     public void resetSessionCallbackParameters() {
         if (activityHandler != null) {
             activityHandler.resetSessionCallbackParameters();
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.resetSessionCallbackParametersInternal();
+            }
+        });
     }
 
     public void resetSessionPartnerParameters() {
         if (activityHandler != null) {
             activityHandler.resetSessionCallbackParameters();
+            return;
         }
 
-        // TODO action list
+        if (sessionParametersActionsArray == null) {
+            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        }
+
+        sessionParametersActionsArray.add(new IRunActivityHandler() {
+            @Override
+            public void run(ActivityHandler activityHandler) {
+                activityHandler.resetSessionPartnerParametersInternal();
+            }
+        });
     }
 
     private boolean checkActivityHandler() {
