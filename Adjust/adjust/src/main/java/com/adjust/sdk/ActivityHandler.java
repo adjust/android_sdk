@@ -469,6 +469,56 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         });
     }
 
+    @Override
+    public void removeSessionCallbackParameter(final String key) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                removeSessionCallbackParameterInternal(key);
+            }
+        });
+    }
+
+    @Override
+    public void removeSessionPartnerParameter(final String key) {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                removeSessionPartnerParameterInternal(key);
+            }
+        });
+    }
+
+    @Override
+    public void resetExternalDeviceId() {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                resetExternalDeviceIdInternal();
+            }
+        });
+    }
+
+    @Override
+    public void resetSessionCallbackParameters() {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                resetSessionCallbackParametersInternal();
+            }
+        });
+    }
+
+    @Override
+    public void resetSessionPartnerParameters() {
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                resetSessionPartnerParametersInternal();
+            }
+        });
+    }
+
     public ActivityPackage getAttributionPackage() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -1244,6 +1294,77 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         sessionParameters.partnerParameters.put(key, value);
+
+        writeSessionPartnerParameters();
+    }
+
+    private void removeSessionCallbackParameterInternal(String key) {
+        if (!Util.isValidParameter(key, "key", "Session Callback")) return;
+
+        if (sessionParameters.callbackParameters == null) {
+            logger.warn("Session Callback parameters are not set");
+            return;
+        }
+
+        String oldValue = sessionParameters.callbackParameters.remove(key);
+
+        if (oldValue == null) {
+            logger.warn("Key %s does not exist", key);
+            return;
+        }
+
+        logger.debug("Key %s will be removed", key);
+
+        writeSessionCallbackParameters();
+    }
+
+    private void removeSessionPartnerParameterInternal(String key) {
+        if (!Util.isValidParameter(key, "key", "Session Partner")) return;
+
+        if (sessionParameters.partnerParameters == null) {
+            logger.warn("Session Partner parameters are not set");
+            return;
+        }
+
+        String oldValue = sessionParameters.partnerParameters.remove(key);
+
+        if (oldValue == null) {
+            logger.warn("Key %s does not exist", key);
+            return;
+        }
+
+        logger.debug("Key %s will be removed", key);
+
+        writeSessionPartnerParameters();
+    }
+
+    private void resetExternalDeviceIdInternal() {
+        if (sessionParameters.externalDeviceId == null) {
+            logger.warn("External Device Id is not set");
+            return;
+        }
+
+        sessionParameters.externalDeviceId = null;
+
+        writeSessionParameters();
+    }
+
+    private void resetSessionCallbackParametersInternal() {
+        if (sessionParameters.callbackParameters == null) {
+            logger.warn("Session Callback parameters are not set");
+        }
+
+        sessionParameters.callbackParameters = null;
+
+        writeSessionCallbackParameters();
+    }
+
+    private void resetSessionPartnerParametersInternal() {
+        if (sessionParameters.partnerParameters == null) {
+            logger.warn("Session Partner parameters are not set");
+        }
+
+        sessionParameters.partnerParameters = null;
 
         writeSessionPartnerParameters();
     }

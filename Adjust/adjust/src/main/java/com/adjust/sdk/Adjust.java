@@ -96,9 +96,32 @@ public class Adjust {
         adjustInstance.addSessionPartnerParameter(key, value);
     }
 
+    public static void removeSessionCallbackParameter(String key) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.removeSessionCallbackParameter(key);
+    }
+
+    public static void removeSessionPartnerParameter(String key) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.removeSessionPartnerParameter(key);
+    }
+
+    public static void resetExternalDeviceId() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.resetExternalDeviceId();
+    }
+
+    public static void resetSessionCallbackParameters() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.resetSessionCallbackParameters();
+    }
+
+    public static void resetSessionPartnerParameters() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.resetSessionPartnerParameters();
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
 }
-
-
