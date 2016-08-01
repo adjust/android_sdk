@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -18,7 +19,19 @@ public class SessionParameters implements Serializable {
     String externalDeviceId;
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
-    
+
+    public SessionParameters deepCopy() {
+        SessionParameters newSessionParameters = new SessionParameters();
+        newSessionParameters.externalDeviceId = this.externalDeviceId;
+        if (this.callbackParameters != null) {
+            newSessionParameters.callbackParameters = new HashMap<String, String>(this.callbackParameters);
+        }
+        if (this.partnerParameters != null) {
+            newSessionParameters.partnerParameters = new HashMap<String, String>(this.partnerParameters);
+        }
+        return newSessionParameters;
+    }
+
     @Override
     public String toString() {
         return "External Device Id: " + externalDeviceId;

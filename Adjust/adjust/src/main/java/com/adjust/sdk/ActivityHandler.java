@@ -135,6 +135,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         internalState.background = true;
         // delay start not configured by default
         internalState.delayStart = false;
+        // does not need to update packages by default
+        internalState.updatePackages = false;
 
         internalHandler.post(new Runnable() {
             @Override
@@ -579,6 +581,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
+            internalState.updatePackages = activityState.updatePackages;
         }
 
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
@@ -602,10 +605,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (adjustConfig.defaultTracker != null) {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
-        }
-
-        if (adjustConfig.referrer != null) {
-            sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
         }
 
         foregroundTimer = new TimerCycle(new Runnable() {
@@ -653,6 +652,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend(true));
 
+        if (this.isToUpdatePackages()) {
+            updatePackagesInternal();
+        }
+
+        if (adjustConfig.referrer != null) {
+            sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
+        }
+
         sessionParametersActionsInternal(adjustConfig.sessionParametersActionsArray);
     }
 
@@ -691,6 +698,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             transferSessionPackage(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
+            activityState.updatePackages = internalState.isToUpdatePackages();
             writeActivityState();
             return;
         }
@@ -768,7 +776,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         updateActivityState(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isDelayStart());
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -1128,7 +1136,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void transferSessionPackage(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters);
+        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -1197,7 +1205,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
 
         // the delay has already started
-        if (internalState.isToUpdatePackages()) {
+        if (this.isToUpdatePackages()) {
             return;
         }
 
@@ -1222,6 +1230,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         delayStartTimer.startIn(delayStartMilli);
 
         internalState.updatePackages = true;
+
+        if (activityState != null) {
+            activityState.updatePackages = true;
+            writeActivityState();
+        }
     }
 
     private void sendFirstPackagesInternal() {
@@ -1244,9 +1257,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     private void updatePackagesInternal() {
         // update activity packages
-        packageHandler.updatePackages();
+        packageHandler.updatePackages(sessionParameters);
         // no longer needs to update packages
         internalState.updatePackages = false;
+        if (activityState != null) {
+            activityState.updatePackages = false;
+            writeActivityState();
+        }
+    }
+
+    private boolean isToUpdatePackages() {
+        if (activityState != null) {
+            return activityState.updatePackages;
+        } else {
+            return internalState.isToUpdatePackages();
+        }
     }
 
     public void addExternalDeviceIdInternal(String externalDeviceId) {

@@ -31,7 +31,8 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("sessionLength", long.class),
             new ObjectStreamField("timeSpent", long.class),
             new ObjectStreamField("lastActivity", long.class),
-            new ObjectStreamField("lastInterval", long.class)
+            new ObjectStreamField("lastInterval", long.class),
+            new ObjectStreamField("updatePackages", boolean.class)
     };
 
     // persistent data
@@ -51,6 +52,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     protected long lastInterval;
 
+    protected boolean updatePackages;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -65,6 +68,7 @@ public class ActivityState implements Serializable, Cloneable {
         timeSpent = -1; // this information will be collected and attached to the next session
         lastActivity = -1;
         lastInterval = -1;
+        updatePackages = false;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -108,6 +112,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(sessionLength, otherActivityState.sessionLength))      return false;
         if (!Util.equalLong(timeSpent, otherActivityState.timeSpent))          return false;
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
+        if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
         return true;
     }
 
@@ -123,6 +128,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(sessionLength);
         hashCode = 37 * hashCode + Util.hashLong(timeSpent);
         hashCode = 37 * hashCode + Util.hashLong(lastInterval);
+        hashCode = 37 * hashCode + Util.hashBoolean(updatePackages);
         return hashCode;
     }
 
@@ -141,6 +147,8 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.readStringField(fields, "uuid", null);
         enabled = Util.readBooleanField(fields, "enabled", true);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
+
+        updatePackages = Util.readBooleanField(fields, "updatePackages", false);
 
         // create UUID for migrating devices
         if (uuid == null) {

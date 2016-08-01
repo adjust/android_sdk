@@ -45,14 +45,16 @@ class PackageBuilder {
         this.createdAt = createdAt;
     }
 
-    public ActivityPackage buildSessionPackage(SessionParameters sessionParameters) {
+    public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityState.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
 
-        PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
-        PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
-        PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+        if (!isInDelay) {
+            PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+        }
 
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
@@ -62,23 +64,32 @@ class PackageBuilder {
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage(AdjustEvent event, SessionParameters sessionParameters) {
+    public ActivityPackage buildEventPackage(AdjustEvent event,
+                                             SessionParameters sessionParameters,
+                                             boolean isInDelay)
+    {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addInt(parameters, "event_count", activityState.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
 
-        PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
-        PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
-                Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback");
-        PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
-                Util.mergeParameters(sessionParameters.partnerParameters, event.partnerParameters, "Partner");
-
+        if (!isInDelay) {
+            PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
+                    Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
+                    Util.mergeParameters(sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
+        }
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
+
+        if (isInDelay) {
+            eventPackage.setCallbackParameters(event.callbackParameters);
+            eventPackage.setPartnerParameters(event.partnerParameters);
+        }
 
         return eventPackage;
     }

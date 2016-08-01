@@ -20,9 +20,14 @@ import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
+import static com.adjust.sdk.Constants.EXTERNAL_DEVICE_ID_PARAMETER;
+import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
 // persistent
 public class PackageHandler extends HandlerThread implements IPackageHandler {
@@ -148,8 +153,19 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     }
 
     @Override
-    public void updatePackages() {
-        // TODO implement update
+    public void updatePackages(SessionParameters sessionParameters) {
+        final SessionParameters sessionParametersCopy;
+        if (sessionParameters != null) {
+            sessionParametersCopy = sessionParameters.deepCopy();
+        } else {
+            sessionParametersCopy = null;
+        }
+        internalHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                updatePackagesInternal(sessionParametersCopy);
+            }
+        });
     }
     // internal methods run in dedicated queue thread
 
@@ -193,6 +209,39 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         isSending.set(false);
         logger.verbose("Package handler can send");
         sendFirstInternal();
+    }
+
+    public void updatePackagesInternal(SessionParameters sessionParameters) {
+        if (sessionParameters == null) {
+            return;
+        }
+        logger.debug("Updating package handler queue");
+        logger.verbose("Session external device id: %s", sessionParameters.externalDeviceId);
+        logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
+        logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
+
+        for (ActivityPackage activityPackage : packageQueue) {
+            Map<String, String> parameters = activityPackage.getParameters();
+            // external device id
+            PackageBuilder.addString(parameters,
+                    EXTERNAL_DEVICE_ID_PARAMETER,
+                    sessionParameters.externalDeviceId);
+
+            // callback parameters
+            Map<String, String> mergedCallbackParameters = Util.mergeParameters(sessionParameters.callbackParameters,
+                    activityPackage.getCallbackParameters(),
+                    "Callback");
+
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, mergedCallbackParameters);
+            // partner parameters
+            Map<String, String> mergedPartnerParameters = Util.mergeParameters(sessionParameters.partnerParameters,
+                    activityPackage.getPartnerParameters(),
+                    "Partner");
+
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
+        }
+
+        writePackageQueue();
     }
 
     private void readPackageQueue() {
