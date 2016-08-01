@@ -840,9 +840,6 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // launch Session tracking listener if available
         launchSessionResponseListener(sessionResponseData, handler);
-
-        // if there is any, try to launch the deeplink
-        prepareDeeplink(sessionResponseData, handler);
     }
 
     private void launchSessionResponseListener(final SessionResponseData sessionResponseData, Handler handler) {
@@ -876,16 +873,19 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchAttributionResponseTasksInternal(AttributionResponseData responseData) {
+    private void launchAttributionResponseTasksInternal(AttributionResponseData attributionResponseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
-        boolean attributionUpdated = updateAttribution(responseData.attribution);
+        boolean attributionUpdated = updateAttribution(attributionResponseData.attribution);
 
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
             launchAttributionListener(handler);
         }
+
+        // if there is any, try to launch the deeplink
+        prepareDeeplink(attributionResponseData.deeplink, handler);
     }
 
     private void launchAttributionListener(Handler handler) {
@@ -902,26 +902,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void prepareDeeplink(ResponseData responseData, final Handler handler) {
-        if (responseData.jsonResponse == null) {
-            return;
-        }
-
-        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
-
+    private void prepareDeeplink(final Uri deeplink, final Handler handler) {
         if (deeplink == null) {
             return;
         }
 
-        final Uri location = Uri.parse(deeplink);
-        final Intent deeplinkIntent = createDeeplinkIntent(location);
+        logger.info("Deferred deeplink received (%s)", deeplink);
+
+        final Intent deeplinkIntent = createDeeplinkIntent(deeplink);
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 boolean toLaunchDeeplink = true;
                 if (adjustConfig.onDeeplinkResponseListener != null) {
-                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(location);
+                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
                 }
                 if (toLaunchDeeplink) {
                     launchDeeplinkMain(deeplinkIntent, deeplink);
@@ -931,12 +926,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private Intent createDeeplinkIntent(Uri location) {
+    private Intent createDeeplinkIntent(Uri deeplink) {
         Intent mapIntent;
         if (adjustConfig.deepLinkComponent == null) {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location);
+            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink);
         } else {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
+            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink, adjustConfig.context, adjustConfig.deepLinkComponent);
         }
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -945,7 +940,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return mapIntent;
     }
 
-    private void launchDeeplinkMain(final Intent deeplinkIntent, final String deeplink) {
+    private void launchDeeplinkMain(Intent deeplinkIntent, Uri deeplink) {
         // Verify it resolves
         PackageManager packageManager = adjustConfig.context.getPackageManager();
         List<ResolveInfo> activities = packageManager.queryIntentActivities(deeplinkIntent, 0);
@@ -953,12 +948,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // Start an activity if it's safe
         if (!isIntentSafe) {
-            logger.error("Unable to open deep link (%s)", deeplink);
+            logger.error("Unable to open deferred deep link (%s)", deeplink);
             return;
         }
 
         // add it to the handler queue
-        logger.info("Open deep link (%s)", deeplink);
+        logger.info("Open deferred deep link (%s)", deeplink);
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 

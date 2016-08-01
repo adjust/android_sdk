@@ -136,7 +136,7 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
-        injectCreatedAt(parameters);
+        injectCommonParameters(parameters);
 
         // general
         checkDeviceIds(parameters);
@@ -149,7 +149,7 @@ class PackageBuilder {
 
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
-        injectCreatedAt(parameters);
+        injectCommonParameters(parameters);
 
         checkDeviceIds(parameters);
 
@@ -206,8 +206,9 @@ class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityState.timeSpent);
     }
 
-    private void injectCreatedAt(Map<String, String> parameters) {
+    private void injectCommonParameters(Map<String, String> parameters) {
         PackageBuilder.addDate(parameters, "created_at", createdAt);
+        PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
     }
 
     private void injectAttribution(Map<String, String> parameters) {
