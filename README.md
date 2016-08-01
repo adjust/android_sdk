@@ -142,6 +142,10 @@ If you are **not targeting the Google Play Store**, add both of these permission
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 -keep class com.adjust.sdk.plugin.MacAddressUtil { 
     java.lang.String getMacAddress(android.content.Context); 
 }
