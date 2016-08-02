@@ -118,11 +118,8 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // init logger to be available everywhere
         logger = AdjustFactory.getLogger();
-        if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
-            logger.setLogLevel(LogLevel.ASSERT);
-        } else {
-            logger.setLogLevel(adjustConfig.logLevel);
-        }
+
+        logger.lockLogLevel();
 
         this.internalHandler = new Handler(getLooper());
         internalState = new InternalState();

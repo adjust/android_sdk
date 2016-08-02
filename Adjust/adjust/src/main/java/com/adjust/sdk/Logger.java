@@ -19,14 +19,19 @@ import static com.adjust.sdk.Constants.LOGTAG;
 public class Logger implements ILogger {
 
     private LogLevel logLevel;
+    private boolean logLevelLocked;
     private static String formatErrorMessage = "Error formating log message: %s, with params: %s";
 
     public Logger() {
         setLogLevel(LogLevel.INFO);
+        logLevelLocked = false;
     }
 
     @Override
     public void setLogLevel(LogLevel logLevel) {
+        if (logLevelLocked) {
+            return;
+        }
         this.logLevel = logLevel;
     }
 
@@ -103,5 +108,10 @@ public class Logger implements ILogger {
         } catch (Exception e) {
             Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
         }
+    }
+
+    @Override
+    public void lockLogLevel() {
+        logLevelLocked = true;
     }
 }
