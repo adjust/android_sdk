@@ -49,12 +49,12 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                sendInternal(activityPackage, queueSize);
+                sendI(activityPackage, queueSize);
             }
         });
     }
 
-    private void sendInternal(ActivityPackage activityPackage, int queueSize) {
+    private void sendI(ActivityPackage activityPackage, int queueSize) {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
@@ -74,18 +74,18 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
             packageHandler.sendNextPackage(responseData);
 
         } catch (UnsupportedEncodingException e) {
-            sendNextPackage(activityPackage, "Failed to encode parameters", e);
+            sendNextPackageI(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
-            closePackage(activityPackage, "Request timed out", e);
+            closePackageI(activityPackage, "Request timed out", e);
         } catch (IOException e) {
-            closePackage(activityPackage, "Request failed", e);
+            closePackageI(activityPackage, "Request failed", e);
         } catch (Throwable e) {
-            sendNextPackage(activityPackage, "Runtime exception", e);
+            sendNextPackageI(activityPackage, "Runtime exception", e);
         }
     }
 
     // close current package because it failed
-    private void closePackage(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void closePackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
@@ -98,7 +98,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     }
 
     // send next package because the current package failed
-    private void sendNextPackage(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void sendNextPackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);

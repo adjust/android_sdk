@@ -38,7 +38,7 @@ public class AttributionHandler implements IAttributionHandler {
             timer = new TimerOnce(scheduler, new Runnable() {
                 @Override
                 public void run() {
-                    getAttributionInternal();
+                    getAttributionI();
                 }
             }, ATTRIBUTION_TIMER_NAME);
         } else {
@@ -69,7 +69,7 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                checkSessionResponseInternal(sessionResponseData);
+                checkSessionResponseI(sessionResponseData);
             }
         });
     }
@@ -78,11 +78,10 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                checkAttributionResponseInternal(attributionResponseData);
+                checkAttributionResponseI(attributionResponseData);
             }
         });
     }
-
 
     @Override
     public void pauseSending() {
@@ -111,7 +110,7 @@ public class AttributionHandler implements IAttributionHandler {
         timer.startIn(delayInMilliseconds);
     }
 
-    private void checkAttributionInternal(ResponseData responseData) {
+    private void checkAttributionI(ResponseData responseData) {
         if (responseData.jsonResponse == null) {
             return;
         }
@@ -131,21 +130,21 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkSessionResponseInternal(SessionResponseData sessionResponseData) {
-        checkAttributionInternal(sessionResponseData);
+    private void checkSessionResponseI(SessionResponseData sessionResponseData) {
+        checkAttributionI(sessionResponseData);
 
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
-    private void checkAttributionResponseInternal(AttributionResponseData attributionResponseData) {
-        checkAttributionInternal(attributionResponseData);
+    private void checkAttributionResponseI(AttributionResponseData attributionResponseData) {
+        checkAttributionI(attributionResponseData);
 
-        checkDeeplink(attributionResponseData);
+        checkDeeplinkI(attributionResponseData);
 
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
-    private void checkDeeplink(AttributionResponseData attributionResponseData) {
+    private void checkDeeplinkI(AttributionResponseData attributionResponseData) {
         if (attributionResponseData.jsonResponse == null) {
             return;
         }
@@ -163,7 +162,7 @@ public class AttributionHandler implements IAttributionHandler {
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
-    private void getAttributionInternal() {
+    private void getAttributionI() {
         if (!hasListener) {
             return;
         }
@@ -177,7 +176,7 @@ public class AttributionHandler implements IAttributionHandler {
 
         try {
             AdjustFactory.URLGetConnection urlGetConnection = Util.createGETHttpsURLConnection(
-                    buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
+                    buildUriI(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
             ResponseData responseData = Util.readHttpResponse(urlGetConnection.httpsURLConnection, attributionPackage);
@@ -194,7 +193,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
     }
 
-    private Uri buildUri(String path, Map<String, String> parameters) {
+    private Uri buildUriI(String path, Map<String, String> parameters) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);

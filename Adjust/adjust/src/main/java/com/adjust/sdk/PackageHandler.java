@@ -59,7 +59,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                initInternal();
+                initI();
             }
         });
     }
@@ -77,7 +77,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                addInternal(activityPackage);
+                addI(activityPackage);
             }
         });
     }
@@ -88,7 +88,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                sendFirstInternal();
+                sendFirstI();
             }
         });
     }
@@ -100,7 +100,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                sendNextInternal();
+                sendNextI();
             }
         });
 
@@ -163,29 +163,29 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                updatePackagesInternal(sessionParametersCopy);
+                updatePackagesI(sessionParametersCopy);
             }
         });
     }
     // internal methods run in dedicated queue thread
 
-    private void initInternal() {
+    private void initI() {
         requestHandler = AdjustFactory.getRequestHandler(this);
 
         isSending = new AtomicBoolean();
 
-        readPackageQueue();
+        readPackageQueueI();
     }
 
-    private void addInternal(ActivityPackage newPackage) {
+    private void addI(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
 
-        writePackageQueue();
+        writePackageQueueI();
     }
 
-    private void sendFirstInternal() {
+    private void sendFirstI() {
         if (packageQueue.isEmpty()) {
             return;
         }
@@ -203,18 +203,19 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
     }
 
-    private void sendNextInternal() {
+    private void sendNextI() {
         packageQueue.remove(0);
-        writePackageQueue();
+        writePackageQueueI();
         isSending.set(false);
         logger.verbose("Package handler can send");
-        sendFirstInternal();
+        sendFirstI();
     }
 
-    public void updatePackagesInternal(SessionParameters sessionParameters) {
+    public void updatePackagesI(SessionParameters sessionParameters) {
         if (sessionParameters == null) {
             return;
         }
+
         logger.debug("Updating package handler queue");
         logger.verbose("Session external device id: %s", sessionParameters.externalDeviceId);
         logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
@@ -241,10 +242,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
         }
 
-        writePackageQueue();
+        writePackageQueueI();
     }
 
-    private void readPackageQueue() {
+    private void readPackageQueueI() {
         try {
             packageQueue = Util.readObject(context,
                     PACKAGE_QUEUE_FILENAME,
@@ -262,7 +263,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
     }
 
-    private void writePackageQueue() {
+    private void writePackageQueueI() {
         Util.writeObject(packageQueue, context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME);
         logger.debug("Package handler wrote %d packages", packageQueue.size());
     }

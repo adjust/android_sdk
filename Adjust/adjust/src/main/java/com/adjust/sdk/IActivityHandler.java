@@ -22,7 +22,7 @@ public interface IActivityHandler {
 
     void readOpenUrl(Uri url, long clickTime);
 
-    boolean updateAttribution(AdjustAttribution attribution);
+    boolean updateAttributionI(AdjustAttribution attribution);
 
     void launchEventResponseTasks(EventResponseData eventResponseData);
 

@@ -70,12 +70,12 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         internalHandler.post(new Runnable() {
             @Override
             public void run() {
-                sendNextSdkClickInternal();
+                sendNextSdkClickI();
             }
         });
     }
 
-    private void sendNextSdkClickInternal() {
+    private void sendNextSdkClickI() {
         if (paused) {
             return;
         }
@@ -90,7 +90,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                sendSdkClickInternal(sdkClickPackage);
+                sendSdkClickI(sdkClickPackage);
                 sendNextSdkClick();
             }
         };
@@ -109,7 +109,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         internalHandler.postDelayed(runnable, waitTimeMilliSeconds);
     }
 
-    private void sendSdkClickInternal(ActivityPackage sdkClickPackage) {
+    private void sendSdkClickI(ActivityPackage sdkClickPackage) {
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
 
         try {
@@ -122,29 +122,29 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
             ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
 
             if (responseData.jsonResponse == null) {
-                retrySending(sdkClickPackage);
+                retrySendingI(sdkClickPackage);
             }
         } catch (UnsupportedEncodingException e) {
-            logErrorMessage(sdkClickPackage, "Sdk_click failed to encode parameters", e);
+            logErrorMessageI(sdkClickPackage, "Sdk_click failed to encode parameters", e);
         } catch (SocketTimeoutException e) {
-            logErrorMessage(sdkClickPackage, "Sdk_click request timed out. Will retry later", e);
-            retrySending(sdkClickPackage);
+            logErrorMessageI(sdkClickPackage, "Sdk_click request timed out. Will retry later", e);
+            retrySendingI(sdkClickPackage);
         } catch (IOException e) {
-            logErrorMessage(sdkClickPackage, "Sdk_click request failed. Will retry later", e);
-            retrySending(sdkClickPackage);
+            logErrorMessageI(sdkClickPackage, "Sdk_click request failed. Will retry later", e);
+            retrySendingI(sdkClickPackage);
         } catch (Throwable e) {
-            logErrorMessage(sdkClickPackage, "Sdk_click runtime exception", e);
+            logErrorMessageI(sdkClickPackage, "Sdk_click runtime exception", e);
         }
     }
 
-    private void retrySending(ActivityPackage sdkClickPackage) {
+    private void retrySendingI(ActivityPackage sdkClickPackage) {
         int retries = sdkClickPackage.increaseRetries();
 
         logger.error("Retrying sdk_click package for the %d time", retries);
         sendSdkClick(sdkClickPackage);
     }
 
-    private void logErrorMessage(ActivityPackage sdkClickPackage, String message, Throwable throwable) {
+    private void logErrorMessageI(ActivityPackage sdkClickPackage, String message, Throwable throwable) {
         final String packageMessage = sdkClickPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s)", packageMessage, reasonString);

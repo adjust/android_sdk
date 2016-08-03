@@ -98,7 +98,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.addExternalDeviceIdInternal(externalDeviceId);
+                activityHandler.addExternalDeviceIdI(externalDeviceId);
             }
         });
     }
@@ -116,7 +116,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.addSessionCallbackParameterInternal(key, value);
+                activityHandler.addSessionCallbackParameterI(key, value);
             }
         });
     }
@@ -134,7 +134,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.addSessionPartnerParameterInternal(key, value);
+                activityHandler.addSessionPartnerParameterI(key, value);
             }
         });
     }
@@ -152,7 +152,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.removeSessionCallbackParameterInternal(key);
+                activityHandler.removeSessionCallbackParameterI(key);
             }
         });
     }
@@ -170,7 +170,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.removeSessionPartnerParameterInternal(key);
+                activityHandler.removeSessionPartnerParameterI(key);
             }
         });
     }
@@ -188,7 +188,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.resetExternalDeviceIdInternal();
+                activityHandler.resetExternalDeviceIdI();
             }
         });
     }
@@ -206,14 +206,14 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.resetSessionCallbackParametersInternal();
+                activityHandler.resetSessionCallbackParametersI();
             }
         });
     }
 
     public void resetSessionPartnerParameters() {
         if (activityHandler != null) {
-            activityHandler.resetSessionCallbackParameters();
+            activityHandler.resetSessionPartnerParameters();
             return;
         }
 
@@ -224,7 +224,7 @@ public class AdjustInstance {
         sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.resetSessionPartnerParametersInternal();
+                activityHandler.resetSessionPartnerParametersI();
             }
         });
     }
