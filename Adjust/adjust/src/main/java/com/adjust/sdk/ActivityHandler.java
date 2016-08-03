@@ -65,6 +65,67 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private ISdkClickHandler sdkClickHandler;
     private SessionParameters sessionParameters;
 
+    @Override
+    public void teardown(boolean deleteState) {
+        if (backgroundTimer != null) {
+            backgroundTimer.cancel(true);
+        }
+        if (foregroundTimer != null) {
+            foregroundTimer.cancel(true);
+        }
+        if (delayStartTimer != null) {
+            delayStartTimer.cancel(true);
+        }
+        if (scheduler != null) {
+            try {
+                scheduler.shutdownNow();
+            } catch(SecurityException se) {}
+        }
+        if (internalHandler == null) {
+            internalHandler.removeCallbacksAndMessages(null);
+        }
+        if (packageHandler != null) {
+            packageHandler.teardown(deleteState);
+        }
+        if (attributionHandler != null) {
+            attributionHandler.teardown();
+        }
+        if (sdkClickHandler != null) {
+            sdkClickHandler.teardown();
+        }
+        if (sessionParameters != null) {
+            if (sessionParameters.callbackParameters != null) {
+                sessionParameters.callbackParameters.clear();
+            }
+            if (sessionParameters.partnerParameters != null) {
+                sessionParameters.partnerParameters.clear();
+            }
+        }
+
+        teardownActivityStateS(deleteState);
+        teardownAttributionS(deleteState);
+        teardownAllSessionParametersS(deleteState);
+
+        internalHandler = null;
+        packageHandler = null;
+        logger = null;
+        foregroundTimer = null;
+        scheduler = null;
+        backgroundTimer = null;
+        delayStartTimer = null;
+        internalState = null;
+        deviceInfo = null;
+        adjustConfig = null;
+        attributionHandler = null;
+        sdkClickHandler = null;
+        sessionParameters = null;
+
+        try {
+            interrupt();
+        } catch (SecurityException se) {}
+        quit();
+    }
+
     public class InternalState {
         boolean enabled;
         boolean offline;
@@ -615,15 +676,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
-        foregroundTimer = new TimerCycle(new Runnable() {
-            @Override
-            public void run() {
-                foregroundTimerFired();
-            }
-        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
+        scheduler = Executors.newSingleThreadScheduledExecutor();
+
+        foregroundTimer = new TimerCycle(scheduler,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        foregroundTimerFired();
+                    }
+                }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
         // create background timer
-        scheduler = Executors.newSingleThreadScheduledExecutor();
         if (adjustConfig.sendInBackground) {
             logger.info("Send in background configured");
 
@@ -1138,6 +1201,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
+    public static boolean deleteSessionParameters(Context context) {
+        return context.deleteFile(SESSION_PARAMETERS_FILENAME);
+    }
+
+    public static boolean deleteSessionCallbackParameters(Context context) {
+        return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME);
+    }
+
+    public static boolean deleteSessionPartnerParameters(Context context) {
+        return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
+    }
+
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
@@ -1467,27 +1542,90 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         writeActivityStateS(null);
     }
 
-    private synchronized void writeActivityStateS(Runnable changeActivityState) {
-        if (changeActivityState != null) {
-            changeActivityState.run();
+    private void writeActivityStateS(Runnable changeActivityState) {
+        synchronized (ActivityState.class) {
+            if (activityState == null) {
+                return;
+            }
+            if (changeActivityState != null) {
+                changeActivityState.run();
+            }
+            Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
         }
-        Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
+    }
+
+    private void teardownActivityStateS(boolean toDelete) {
+        synchronized (ActivityState.class) {
+            if (activityState == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteActivityState(adjustConfig.context);
+            }
+            activityState = null;
+        }
     }
 
     private void writeAttributionI() {
-        Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+        synchronized (AdjustAttribution.class) {
+            if (attribution == null) {
+                return;
+            }
+            Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+        }
+    }
+
+    private void teardownAttributionS(boolean toDelete) {
+        synchronized (AdjustAttribution.class) {
+            if (attribution == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteAttribution(adjustConfig.context);
+            }
+            attribution = null;
+        }
     }
 
     private void writeSessionParametersI() {
-        Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
+        }
     }
 
     private void writeSessionCallbackParametersI() {
-        Util.writeObject(sessionParameters.callbackParameters, adjustConfig.context, SESSION_CALLBACK_PARAMETERS_FILENAME, SESSION_CALLBACK_PARAMETERS_NAME);
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters.callbackParameters, adjustConfig.context, SESSION_CALLBACK_PARAMETERS_FILENAME, SESSION_CALLBACK_PARAMETERS_NAME);
+        }
     }
 
     private void writeSessionPartnerParametersI() {
-        Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
+        }
+    }
+
+    private void teardownAllSessionParametersS(boolean toDelete) {
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteSessionParameters(adjustConfig.context);
+                deleteSessionCallbackParameters(adjustConfig.context);
+                deleteSessionPartnerParameters(adjustConfig.context);
+            }
+            sessionParameters = null;
+        }
     }
 
     private boolean checkEventI(AdjustEvent event) {

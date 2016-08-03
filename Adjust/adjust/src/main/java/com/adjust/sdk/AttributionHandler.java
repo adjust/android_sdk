@@ -27,6 +27,24 @@ public class AttributionHandler implements IAttributionHandler {
 
     public URL lastUrlUsed;
 
+    @Override
+    public void teardown() {
+        logger.verbose("AttributionHandler teardown");
+        if (timer != null) {
+            timer.cancel(true);
+        }
+        if (scheduler != null) {
+            try {
+                scheduler.shutdownNow();
+            } catch(SecurityException se) {}
+        }
+        scheduler = null;
+        activityHandler = null;
+        logger = null;
+        attributionPackage = null;
+        timer = null;
+    }
+
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
                               boolean startsSending,

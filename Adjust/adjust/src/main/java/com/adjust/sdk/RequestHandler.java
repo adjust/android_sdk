@@ -54,6 +54,22 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
         });
     }
 
+    @Override
+    public void teardown() {
+        logger.verbose("RequestHandler teardown");
+        if (internalHandler != null) {
+            internalHandler.removeCallbacksAndMessages(null);
+        }
+        internalHandler = null;
+        packageHandler = null;
+        logger = null;
+
+        try {
+            interrupt();
+        } catch (SecurityException se) {}
+        quit();
+    }
+
     private void sendI(ActivityPackage activityPackage, int queueSize) {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 

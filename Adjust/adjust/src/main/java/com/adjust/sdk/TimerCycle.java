@@ -19,8 +19,8 @@ public class TimerCycle {
     private boolean isPaused;
     private ILogger logger;
 
-    public TimerCycle(Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduler = Executors.newSingleThreadScheduledExecutor();
+    public TimerCycle(ScheduledExecutorService scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
+        this.scheduler = scheduler;
 
         this.name = name;
         this.command = command;
@@ -71,5 +71,11 @@ public class TimerCycle {
         logger.verbose("%s suspended with %s seconds left", name, initialDelaySeconds);
 
         isPaused = true;
+    }
+
+    public void cancel(boolean mayInterruptIfRunning) {
+        if (waitingTask != null) {
+            waitingTask.cancel(mayInterruptIfRunning);
+        }
     }
 }

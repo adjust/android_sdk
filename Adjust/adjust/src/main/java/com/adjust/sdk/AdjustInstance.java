@@ -229,6 +229,12 @@ public class AdjustInstance {
         });
     }
 
+    public void teardown(boolean deleteState) {
+        if (!checkActivityHandler()) return;
+        activityHandler.teardown(deleteState);
+        activityHandler = null;
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

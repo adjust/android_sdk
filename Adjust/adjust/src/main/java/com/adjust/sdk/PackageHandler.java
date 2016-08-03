@@ -44,6 +44,36 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
 
+    @Override
+    public void teardown(boolean deleteState) {
+        logger.verbose("PackageHandler teardown");
+        if (internalHandler == null) {
+            internalHandler.removeCallbacksAndMessages(null);
+        }
+        if (requestHandler != null) {
+            requestHandler.teardown();
+        }
+        if (packageQueue != null) {
+            packageQueue.clear();
+        }
+        if (deleteState && context != null) {
+            deletePackageQueue(context);
+        }
+        internalHandler = null;
+        requestHandler = null;
+        activityHandler = null;
+        packageQueue = null;
+        isSending = null;
+        context = null;
+        logger = null;
+        backoffStrategy = null;
+
+        try {
+            interrupt();
+        } catch (SecurityException se) {}
+        quit();
+    }
+
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {

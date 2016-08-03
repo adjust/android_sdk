@@ -46,9 +46,9 @@ public class TimerOnce {
         return waitingTask.getDelay(TimeUnit.MILLISECONDS);
     }
 
-    private void cancel(boolean log) {
+    private void cancel(boolean mayInterruptIfRunning, boolean log) {
         if (waitingTask != null) {
-            waitingTask.cancel(false);
+            waitingTask.cancel(mayInterruptIfRunning);
         }
         waitingTask = null;
 
@@ -58,6 +58,10 @@ public class TimerOnce {
     }
 
     public void cancel() {
-        cancel(true);
+        cancel(false, true);
+    }
+
+    public void cancel(boolean mayInterruptIfRunning) {
+        cancel(mayInterruptIfRunning, true);
     }
 }

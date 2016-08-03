@@ -16,4 +16,6 @@ public interface IAttributionHandler {
     void pauseSending();
 
     void resumeSending();
+
+    void teardown();
 }

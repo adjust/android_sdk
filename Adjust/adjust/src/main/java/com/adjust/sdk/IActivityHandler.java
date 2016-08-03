@@ -53,4 +53,6 @@ public interface IActivityHandler {
     void resetSessionCallbackParameters();
 
     void resetSessionPartnerParameters();
+
+    void teardown(boolean deleteState);
 }

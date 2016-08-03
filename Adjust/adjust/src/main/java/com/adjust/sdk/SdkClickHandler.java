@@ -24,6 +24,27 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
     private List<ActivityPackage> packageQueue;
     private BackoffStrategy backoffStrategy;
 
+    @Override
+    public void teardown() {
+        logger.verbose("SdkClickHandler teardown");
+        if (internalHandler == null) {
+            internalHandler.removeCallbacksAndMessages(null);
+        }
+        if (packageQueue != null) {
+            packageQueue.clear();
+        }
+
+        internalHandler = null;
+        logger = null;
+        packageQueue = null;
+        backoffStrategy = null;
+
+        try {
+            interrupt();
+        } catch (SecurityException se) {}
+        quit();
+    }
+
     public SdkClickHandler(boolean startsSending) {
         super(Constants.LOGTAG, MIN_PRIORITY);
         setDaemon(true);
