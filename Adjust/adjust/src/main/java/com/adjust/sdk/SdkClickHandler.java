@@ -1,15 +1,11 @@
 package com.adjust.sdk;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.SystemClock;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -17,8 +13,8 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by pfms on 31/03/16.
  */
-public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
-    private Handler internalHandler;
+public class SdkClickHandler implements ISdkClickHandler {
+    private ScheduledExecutorService scheduledExecutorService;
     private ILogger logger;
     private boolean paused;
     private List<ActivityPackage> packageQueue;
@@ -27,32 +23,25 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
     @Override
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
-        if (internalHandler == null) {
-            internalHandler.removeCallbacksAndMessages(null);
+        if (scheduledExecutorService != null) {
+            try {
+                scheduledExecutorService.shutdown();
+            } catch(SecurityException se) {}
         }
         if (packageQueue != null) {
             packageQueue.clear();
         }
 
-        internalHandler = null;
+        scheduledExecutorService = null;
         logger = null;
         packageQueue = null;
         backoffStrategy = null;
-
-        try {
-            interrupt();
-        } catch (SecurityException se) {}
-        quit();
     }
 
     public SdkClickHandler(boolean startsSending) {
-        super(Constants.LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-
         init(startsSending);
         this.logger = AdjustFactory.getLogger();
-        this.internalHandler = new Handler(getLooper());
+        this.scheduledExecutorService = Util.getScheduledExecutorService("SdkClickHandler-");
         this.backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
     }
 
@@ -76,7 +65,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
 
     @Override
     public void sendSdkClick(final ActivityPackage sdkClick) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 packageQueue.add(sdkClick);
@@ -88,7 +77,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
     }
 
     private void sendNextSdkClick() {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 sendNextSdkClickI();
@@ -127,7 +116,7 @@ public class SdkClickHandler extends HandlerThread implements ISdkClickHandler {
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
         logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
-        internalHandler.postDelayed(runnable, waitTimeMilliSeconds);
+        scheduledExecutorService.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
     private void sendSdkClickI(ActivityPackage sdkClickPackage) {

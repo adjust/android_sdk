@@ -43,6 +43,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -615,5 +618,19 @@ public class Util {
             }
         }
         return mergedParameters;
+    }
+
+    public static ScheduledExecutorService getScheduledExecutorService(final String source) {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable runnable) {
+                Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+                thread.setPriority(Thread.MIN_PRIORITY);
+                thread.setName(Constants.THREAD_PREFIX + source + thread.getName());
+                thread.setDaemon(true);
+                getLogger().debug("newThread, name %s, daemon %b", thread.getName(), thread.isDaemon());
+                return thread;
+            }
+        });
     }
 }

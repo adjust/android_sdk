@@ -49,7 +49,7 @@ public class AttributionHandler implements IAttributionHandler {
                               ActivityPackage attributionPackage,
                               boolean startsSending,
                               boolean hasListener) {
-        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler = Util.getScheduledExecutorService("AttributionHandler-");
         logger = AdjustFactory.getLogger();
 
         if (this.scheduler != null) {

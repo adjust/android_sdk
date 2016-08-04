@@ -10,18 +10,10 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
-
-import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -30,11 +22,11 @@ import static com.adjust.sdk.Constants.EXTERNAL_DEVICE_ID_PARAMETER;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
 // persistent
-public class PackageHandler extends HandlerThread implements IPackageHandler {
+public class PackageHandler implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
-    private Handler internalHandler;
+    private ScheduledExecutorService scheduledExecutorService;
     private IRequestHandler requestHandler;
     private IActivityHandler activityHandler;
     private List<ActivityPackage> packageQueue;
@@ -47,8 +39,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     @Override
     public void teardown(boolean deleteState) {
         logger.verbose("PackageHandler teardown");
-        if (internalHandler == null) {
-            internalHandler.removeCallbacksAndMessages(null);
+        if (scheduledExecutorService != null) {
+            try {
+                scheduledExecutorService.shutdown();
+            } catch(SecurityException se) {}
         }
         if (requestHandler != null) {
             requestHandler.teardown();
@@ -59,7 +53,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         if (deleteState && context != null) {
             deletePackageQueue(context);
         }
-        internalHandler = null;
+        scheduledExecutorService = null;
         requestHandler = null;
         activityHandler = null;
         packageQueue = null;
@@ -67,26 +61,18 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         context = null;
         logger = null;
         backoffStrategy = null;
-
-        try {
-            interrupt();
-        } catch (SecurityException se) {}
-        quit();
     }
 
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {
-        super(Constants.LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-        this.internalHandler = new Handler(getLooper());
+        this.scheduledExecutorService = Util.getScheduledExecutorService("PackageHandler-");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
         init(activityHandler, context, startsSending);
 
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 initI();
@@ -104,7 +90,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // add a package to the queue
     @Override
     public void addPackage(final ActivityPackage activityPackage) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 addI(activityPackage);
@@ -115,7 +101,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // try to send the oldest package
     @Override
     public void sendFirstPackage() {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 sendFirstI();
@@ -127,7 +113,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // (after success or possibly permanent failure)
     @Override
     public void sendNextPackage(ResponseData responseData) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 sendNextI();
@@ -167,7 +153,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
         logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
-        internalHandler.postDelayed(runnable, waitTimeMilliSeconds);
+        scheduledExecutorService.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -190,7 +176,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         } else {
             sessionParametersCopy = null;
         }
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 updatePackagesI(sessionParametersCopy);

@@ -9,33 +9,21 @@
 
 package com.adjust.sdk;
 
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-import java.util.Locale;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class RequestHandler extends HandlerThread implements IRequestHandler {
-    private Handler internalHandler;
+public class RequestHandler implements IRequestHandler {
+    private ScheduledExecutorService scheduledExecutorService;
     private IPackageHandler packageHandler;
     private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
-        super(Constants.LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-
         this.logger = AdjustFactory.getLogger();
-        this.internalHandler = new Handler(getLooper());
+        this.scheduledExecutorService = Util.getScheduledExecutorService("RequestHandler-");
         init(packageHandler);
     }
 
@@ -46,7 +34,7 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
 
     @Override
     public void sendPackage(final ActivityPackage activityPackage, final int queueSize) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 sendI(activityPackage, queueSize);
@@ -57,17 +45,14 @@ public class RequestHandler extends HandlerThread implements IRequestHandler {
     @Override
     public void teardown() {
         logger.verbose("RequestHandler teardown");
-        if (internalHandler != null) {
-            internalHandler.removeCallbacksAndMessages(null);
+        if (scheduledExecutorService != null) {
+            try {
+                scheduledExecutorService.shutdown();
+            } catch(SecurityException se) {}
         }
-        internalHandler = null;
+        scheduledExecutorService = null;
         packageHandler = null;
         logger = null;
-
-        try {
-            interrupt();
-        } catch (SecurityException se) {}
-        quit();
     }
 
     private void sendI(ActivityPackage activityPackage, int queueSize) {
