@@ -1,6 +1,5 @@
 package com.adjust.sdk;
 
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -8,13 +7,13 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerOnce {
-    private ScheduledExecutorService scheduler;
+    private CustomScheduledExecutor scheduler;
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
     private ILogger logger;
 
-    public TimerOnce(ScheduledExecutorService scheduler, Runnable command, String name) {
+    public TimerOnce(CustomScheduledExecutor scheduler, Runnable command, String name) {
         this.name = name;
         this.scheduler = scheduler;
         this.command = command;

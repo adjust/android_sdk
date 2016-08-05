@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -14,7 +13,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by pfms on 31/03/16.
  */
 public class SdkClickHandler implements ISdkClickHandler {
-    private ScheduledExecutorService scheduledExecutorService;
+    private CustomScheduledExecutor scheduledExecutor;
     private ILogger logger;
     private boolean paused;
     private List<ActivityPackage> packageQueue;
@@ -23,16 +22,16 @@ public class SdkClickHandler implements ISdkClickHandler {
     @Override
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
-        if (scheduledExecutorService != null) {
+        if (scheduledExecutor != null) {
             try {
-                scheduledExecutorService.shutdown();
+                scheduledExecutor.shutdownNow();
             } catch(SecurityException se) {}
         }
         if (packageQueue != null) {
             packageQueue.clear();
         }
 
-        scheduledExecutorService = null;
+        scheduledExecutor = null;
         logger = null;
         packageQueue = null;
         backoffStrategy = null;
@@ -41,7 +40,7 @@ public class SdkClickHandler implements ISdkClickHandler {
     public SdkClickHandler(boolean startsSending) {
         init(startsSending);
         this.logger = AdjustFactory.getLogger();
-        this.scheduledExecutorService = Util.getScheduledExecutorService("SdkClickHandler-");
+        this.scheduledExecutor = new CustomScheduledExecutor("SdkClickHandler");
         this.backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
     }
 
@@ -65,7 +64,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
     @Override
     public void sendSdkClick(final ActivityPackage sdkClick) {
-        scheduledExecutorService.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 packageQueue.add(sdkClick);
@@ -77,7 +76,7 @@ public class SdkClickHandler implements ISdkClickHandler {
     }
 
     private void sendNextSdkClick() {
-        scheduledExecutorService.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 sendNextSdkClickI();
@@ -116,7 +115,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
         logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
-        scheduledExecutorService.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
+        scheduledExecutor.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
     private void sendSdkClickI(ActivityPackage sdkClickPackage) {

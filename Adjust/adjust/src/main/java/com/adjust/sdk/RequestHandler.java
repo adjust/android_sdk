@@ -12,18 +12,17 @@ package com.adjust.sdk;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.SocketTimeoutException;
-import java.util.concurrent.ScheduledExecutorService;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler implements IRequestHandler {
-    private ScheduledExecutorService scheduledExecutorService;
+    private CustomScheduledExecutor scheduledExecutor;
     private IPackageHandler packageHandler;
     private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
-        this.scheduledExecutorService = Util.getScheduledExecutorService("RequestHandler-");
+        this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler");
         init(packageHandler);
     }
 
@@ -34,7 +33,7 @@ public class RequestHandler implements IRequestHandler {
 
     @Override
     public void sendPackage(final ActivityPackage activityPackage, final int queueSize) {
-        scheduledExecutorService.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 sendI(activityPackage, queueSize);
@@ -45,12 +44,12 @@ public class RequestHandler implements IRequestHandler {
     @Override
     public void teardown() {
         logger.verbose("RequestHandler teardown");
-        if (scheduledExecutorService != null) {
+        if (scheduledExecutor != null) {
             try {
-                scheduledExecutorService.shutdown();
+                scheduledExecutor.shutdownNow();
             } catch(SecurityException se) {}
         }
-        scheduledExecutorService = null;
+        scheduledExecutor = null;
         packageHandler = null;
         logger = null;
     }

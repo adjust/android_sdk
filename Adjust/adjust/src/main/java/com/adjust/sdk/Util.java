@@ -619,18 +619,4 @@ public class Util {
         }
         return mergedParameters;
     }
-
-    public static ScheduledExecutorService getScheduledExecutorService(final String source) {
-        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable runnable) {
-                Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-                thread.setPriority(Thread.MIN_PRIORITY);
-                thread.setName(Constants.THREAD_PREFIX + source + thread.getName());
-                thread.setDaemon(true);
-                getLogger().debug("newThread, name %s, daemon %b", thread.getName(), thread.isDaemon());
-                return thread;
-            }
-        });
-    }
 }

@@ -6,16 +6,12 @@ import org.json.JSONObject;
 
 import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by pfms on 07/11/14.
  */
 public class AttributionHandler implements IAttributionHandler {
-    private ScheduledExecutorService scheduler;
+    private CustomScheduledExecutor scheduledExecutor;
     private IActivityHandler activityHandler;
     private ILogger logger;
     private ActivityPackage attributionPackage;
@@ -33,12 +29,12 @@ public class AttributionHandler implements IAttributionHandler {
         if (timer != null) {
             timer.cancel(true);
         }
-        if (scheduler != null) {
+        if (scheduledExecutor != null) {
             try {
-                scheduler.shutdownNow();
+                scheduledExecutor.shutdownNow();
             } catch(SecurityException se) {}
         }
-        scheduler = null;
+        scheduledExecutor = null;
         activityHandler = null;
         logger = null;
         attributionPackage = null;
@@ -49,11 +45,11 @@ public class AttributionHandler implements IAttributionHandler {
                               ActivityPackage attributionPackage,
                               boolean startsSending,
                               boolean hasListener) {
-        scheduler = Util.getScheduledExecutorService("AttributionHandler-");
+        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
-        if (this.scheduler != null) {
-            timer = new TimerOnce(scheduler, new Runnable() {
+        if (this.scheduledExecutor != null) {
+            timer = new TimerOnce(scheduledExecutor, new Runnable() {
                 @Override
                 public void run() {
                     getAttributionI();
@@ -84,7 +80,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void checkSessionResponse(final SessionResponseData sessionResponseData) {
-        scheduler.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 checkSessionResponseI(sessionResponseData);
@@ -93,7 +89,7 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     public void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
-        scheduler.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 checkAttributionResponseI(attributionResponseData);

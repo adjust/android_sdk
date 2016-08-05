@@ -1,7 +1,5 @@
 package com.adjust.sdk;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -9,7 +7,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private ScheduledExecutorService scheduler;
+    private CustomScheduledExecutor scheduler;
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
@@ -19,7 +17,7 @@ public class TimerCycle {
     private boolean isPaused;
     private ILogger logger;
 
-    public TimerCycle(ScheduledExecutorService scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
+    public TimerCycle(CustomScheduledExecutor scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
         this.scheduler = scheduler;
 
         this.name = name;
