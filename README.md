@@ -3,7 +3,7 @@
 This is the Android SDK of adjust™. You can read more about adjust™ at [adjust.com].
 
 If your app is an app which uses web views and you would like to use adjust tracking from Javascript code, please consult our 
-[Android web views SDK guide](doc/web_views.md).
+[Android web views SDK guide](doc/english/web_views.md).
 
 ## Table of contents
 
@@ -916,13 +916,13 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
 [application_name]:               http://developer.android.com/guide/topics/manifest/application-element.html#nm
 [special-partners]:               https://docs.adjust.com/en/special-partners
-[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/english/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
 [currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
 [android_application]:            http://developer.android.com/reference/android/app/Application.html
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google_play_services]:           http://developer.android.com/google/play-services/setup.html
-[activity_resume_pause]:          doc/activity_resume_pause.md
+[activity_resume_pause]:          doc/english/activity_resume_pause.md
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 
