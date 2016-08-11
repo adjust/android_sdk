@@ -2,8 +2,8 @@
 
 This is the Android SDK of adjust™. You can read more about adjust™ at [adjust.com].
 
-If your app is an app which uses web views and you would like to use adjust tracking from Javascript code, please consult our 
-[Android web views SDK guide](doc/web_views.md).
+If your app is an app which uses web views and you would like to use adjust tracking from Javascript code, please consult 
+our [Android web views SDK guide](doc/web_views.md).
 
 ## Table of contents
 
@@ -36,6 +36,7 @@ If your app is an app which uses web views and you would like to use adjust trac
    * [Event buffering](#event-buffering)
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
+   * [Pre-installed trackers](#pre-installed-trackers)
    * [Deep linking](#deeplinking)
       * [Standard deep linking scenario](#deeplinking-standard)
       * [Deferred deep linking scenario](#deeplinking-deferred)
@@ -49,12 +50,12 @@ If your app is an app which uses web views and you would like to use adjust trac
 
 ## <a id="example-app"></a>Example app
 
-There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on how
-the adjust SDK can be integrated.
+There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on 
+how the adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
-These are the minimal steps required to integrate the adjust SDK into your Android project. We are going to assume that you 
+These are the minimal steps required to integrate the adjust SDK into your Android project. We are going to assume that you
 use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
 
 If you're using the [Maven Repository][maven] you can start with [this step](#sdk-add).
@@ -122,8 +123,8 @@ uniquely identify devices. To allow the adjust SDK to use the Google Advertising
 
 ### <a id="sdk-permissions"></a>Add permissions
 
-In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for `INTERNET`
-if it's not present already.
+In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for 
+`INTERNET` if it's not present already.
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
@@ -177,7 +178,7 @@ work properly you should consider one of two possible scenarios:
 
 ### <a id="sdk-broadcast-receiver"></a>Adjust broadcast receiver
 
-If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag 
+If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag
 inside the `application` tag in your `AndroidManifest.xml`.
 
 ```xml
@@ -203,8 +204,8 @@ To start with, we'll set up basic session tracking.
 
 ### <a id="basic-setup"></a>Basic setup
 
-We recommend using a global android [Application][android_application] class to initialize the SDK. If you don't have one in 
-your app already, follow these steps:
+We recommend using a global android [Application][android_application] class to initialize the SDK. If you don't have one 
+in your app already, follow these steps:
 
 1. Create a class that extends `Application`.
     ![][application_class]
@@ -223,7 +224,8 @@ your app already, follow these steps:
 
     ![][manifest_application]
 
-4. In your `Application` class find or create the `onCreate` method and add the following code to initialize the adjust SDK:
+4. In your `Application` class find or create the `onCreate` method and add the following code to initialize the adjust 
+SDK:
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -284,8 +286,8 @@ Activity of your app before, you should remove them.
 
     ![][activity_lifecycle_methods]
     
-3. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with
-an instance of the created `ActivityLifecycleCallbacks` class.
+3. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` 
+with an instance of the created `ActivityLifecycleCallbacks` class.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -327,7 +329,7 @@ an instance of the created `ActivityLifecycleCallbacks` class.
 #### <a id="session-tracking-api9"></a>API level 9 until 13
 
 If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it to at least `14` to simplify the 
-integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market 
+integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market
 share of the major versions.  
 
 To provide proper session tracking it is required to call certain adjust SDK methods every time any Activity resumes or 
@@ -391,9 +393,9 @@ Once you have integrated the adjust SDK into your project, you can take advantag
 
 ### <a id="event-tracking">Event tracking
 
-You can use adjust to track any event in your app. Suppose you want to track every tap on a button. You would have to create
-a new event token in your [dashboard]. Let's say that event token is `abc123`. In your button's `onClick` method you could 
-then add the following lines to track the click:
+You can use adjust to track any event in your app. Suppose you want to track every tap on a button. You would have to 
+create a new event token in your [dashboard]. Let's say that event token is `abc123`. In your button's `onClick` method you
+could then add the following lines to track the click:
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -402,8 +404,8 @@ Adjust.trackEvent(event);
 
 #### <a id="revenue-tracking">Revenue tracking
 
-If your users can generate revenue by tapping on advertisements or making In-App Purchases you can track those revenues with
-events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
+If your users can generate revenue by tapping on advertisements or making In-App Purchases you can track those revenues 
+with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -450,9 +452,9 @@ http://www.adjust.com/callback?key=value&foo=bar
 ```
 
 It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. 
-In the resulting callback this placeholder would be replaced with the Google Play Services ID  of the current device. Also note that we 
-don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for 
-an event, these parameters won't even be read.
+In the resulting callback this placeholder would be replaced with the Google Play Services ID  of the current device. Also 
+note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a
+callback for an event, these parameters won't even be read.
 
 You can read more about using URL callbacks, including a full list of available values, in our 
 [callbacks guide][callbacks-guide].
@@ -562,8 +564,8 @@ Adjust.onCreate(config);
 ```
 
 The listener function will be called after the SDK tries to send a package to the server. Within the listener function you 
-have access to a response data object specifically for the listener. Here is a quick summary of the success session response
-data object fields:
+have access to a response data object specifically for the listener. Here is a quick summary of the success session 
+response data object fields:
 
 - `String message` the message from the server or the error logged by the SDK.
 - `String timestamp` timestamp from the server.
@@ -587,7 +589,7 @@ You can disable the adjust SDK from tracking any activities of the current devic
 Adjust.setEnabled(false);
 ```
 
-You can check if the adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activate 
+You can check if the adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activatе
 the adjust SDK by invoking `setEnabled` with the enabled parameter as `true`.
 
 ### <a id="offline-mode"></a>Offline mode
@@ -610,8 +612,8 @@ whenever it is started, even if the app was terminated in offline mode.
 
 ### <a id="event-buffering"></a>Event buffering
 
-If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch
-every minute. You can enable event buffering with your `AdjustConfig` instance:
+If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one 
+batch every minute. You can enable event buffering with your `AdjustConfig` instance:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -623,8 +625,8 @@ Adjust.onCreate(config);
 
 ### <a id="background-tracking"></a>Background tracking
 
-The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is in the background. You can change
-this in your `AdjustConfig` instance:
+The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is in the background. You can 
+change this in your `AdjustConfig` instance:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -652,8 +654,33 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 });
 ```
 
-Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as the
-variable `googleAdId`.
+Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as 
+the variable `googleAdId`.
+
+### <a id="pre-installed-trackers">Pre-installed trackers
+
+If you want to use the Adjust SDK to recognize users that found your app
+pre-installed on their device, follow these steps.
+
+1. Create a new tracker in your [dashboard].
+2. Open your app delegate and add set the default tracker of your `AdjustConfig`:
+
+  ```objc
+  AdjustConfig config = new AdjustConfig(this, appToken, environment);
+  config.setDefaultTracker("{TrackerToken}");
+  Adjust.onCreate(config);
+  ```
+
+  Replace `{TrackerToken}` with the tracker token you created in step 2.
+  Please note that the dashboard displays a tracker URL (including
+  `http://app.adjust.com/`). In your source code, you should specify only the
+  six-character token and not the entire URL.
+
+3. Build and run your app. You should see a line like the following in LogCat:
+
+    ```
+    Default tracker: 'abc123'
+    ```
 
 ### <a id="deeplinking"></a>Deep linking
 
@@ -668,8 +695,9 @@ case, the adjust SDK will offer you the mechanism to get the info about the deep
 
 If a user has your app installed and you want it to launch after hitting an adjust tracker URL with the `deep_link` 
 parameter in it, you need enable deep linking in your app. This is being done by choosing a desired **unique scheme name** 
-and assigning it to the Activity which you want to launch once the app opens after the user clicked on the link. This is set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in 
-the manifest file and assign `android:scheme` property value with the desired scheme name:
+and assigning it to the Activity which you want to launch once the app opens after the user clicked on the link. This is 
+set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in the  
+manifest file and assign `android:scheme` property value with the desired scheme name:
 
 ```xml
 <activity
@@ -692,9 +720,9 @@ the manifest file and assign `android:scheme` property value with the desired sc
 </activity>
 ```
 
-With this being set, you need to use the assigned scheme name in the adjust tracker URL's `deep_link` parameter if you want 
-your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link 
-can be built to look something like this:
+With this being set, you need to use the assigned scheme name in the adjust tracker URL's `deep_link` parameter if you want
+your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link can be 
+built to look something like this:
 
 ```
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
@@ -702,16 +730,19 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 
 Please, have in mind that the `deep_link` parameter value in the URL **must be URL encoded**.
 
-After clicking this tracker URL, and with the app set as described above, your app will launch along with the `MainActivity` 
-intent. Inside the `MainActivity` class, you will automatically be provided with the information about the
-`deep_link` parameter content. Once this content is delivered to you, it **will not be encoded**, although it was encoded in the URL.
+After clicking this tracker URL, and with the app set as described above, your app will launch along with the 
+`MainActivity` intent. Inside the `MainActivity` class, you will automatically be provided with the information about the 
+`deep_link` parameter content. Once this content is delivered to you, it **will not be encoded**, although it was encoded 
+in the URL.
 
 Depending on the `android:launchMode` setting of your Activity in the `AndroidManifest.xml` file, information about the 
-`deep_link` parameter content will be delivered to the appropriate place in the Activity file. For more information about the 
-possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
+`deep_link` parameter content will be delivered to the appropriate place in the Activity file. For more information about 
+the possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
 
 There are two possible places in which information about the deep link content will be delivered to your desired Activity 
-via `Intent` object - either in the Activity's `onCreate` or `onNewIntent` method. After the app has launched and one of these methods is triggered, you will be able to get the actual deeplink passed in the `deep_link` parameter in the click URL. You can then use this information to do some additional logic in your app.
+via `Intent` object - either in the Activity's `onCreate` or `onNewIntent` method. After the app has launched and one of 
+these methods is triggered, you will be able to get the actual deeplink passed in the `deep_link` parameter in the click 
+URL. You can then use this information to do some additional logic in your app.
 
 You can extract the deep link content from these two methods like this:
 
@@ -741,10 +772,10 @@ protected void onNewIntent(Intent intent) {
 
 #### <a id="deeplinking-deferred">Deferred deep linking scenario
 
-Deferred deep linking scenario happens when a user clicks on the adjust tracker URL with the `deep_link` parameter in it, but 
-does not have the app installed on the device at the moment of click. After that, the user will get redirected to the Play 
-Store to download and install your app. After opening it for the first time, the content of the `deep_link` parameter will 
-be delivered to the app.
+Deferred deep linking scenario happens when a user clicks on the adjust tracker URL with the `deep_link` parameter in it, 
+but does not have the app installed on the device at the moment of click. After that, the user will get redirected to the 
+Play Store to download and install your app. After opening it for the first time, the content of the `deep_link` parameter 
+will be delivered to the app.
 
 In order to get info about the `deep_link` parameter content in a deferred deep linking scenario, you should set a listener
 method on the `AdjustConfig` object. This will get triggered once the adjust SDK gets the info about the deep link content 
@@ -774,8 +805,10 @@ content in this listener and expect the `boolean` return value from you. This re
 whether the adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in 
 the standard deep linking scenario) or not. 
 
-If you return `true`, we will launch it and the exact same scenario which is described in the [Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return 
-`false` from this listener and based on the deep link content decide on your own what to do next in your app.
+If you return `true`, we will launch it and the exact same scenario which is described in the 
+[Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the 
+Activity, you can return `false` from this listener and based on the deep link content decide on your own what to do next 
+in your app.
 
 #### <a id="deeplinking-reattribution">Reattribution via deep links
 
@@ -786,7 +819,7 @@ If you are using this feature, in order for your user to be properly reattribute
 the adjust SDK in your app.
 
 Once you have received deep link content information in your app, add a call to `Adjust.appWillOpenUrl` method. By making 
-this call, the adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will 
+this call, the adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will
 be sent to the adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link 
 content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new 
 attribution info for this user.
@@ -859,10 +892,19 @@ You can reset the session data of the device in our servers. Check the error mes
 Session failed (Ignoring too frequent session. Last session: YYYY-MM-DDTHH:mm:ss, this session: YYYY-MM-DDTHH:mm:ss, interval: XXs, min interval: 20m) (app_token: {yourAppToken}, adid: {adidValue})
 ```
 
-With the `{yourAppToken}` and `{adidValue}` values filled in below, open the following link:
+With the `{yourAppToken}` and `{adidValue}`/`{gps_adidValue}`/`{androidIDValue}` values filled in below, open one of the following links:
+
 
 ```
 http://app.adjust.com/forget_device?app_token={yourAppToken}&adid={adidValue}
+```
+
+```
+http://app.adjust.com/forget_device?app_token={yourAppToken}&gps_adid={gps_adidValue}
+```
+
+```
+http://app.adjust.com/forget_device?app_token={yourAppToken}&android_id={androidIDValue}
 ```
 
 When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were 
@@ -898,16 +940,16 @@ And a click package added to the SDK's package handler:
 V/Adjust: Path:      /sdk_click
     ClientSdk: android4.6.0
     Parameters:
-    	app_token        abc123abc123
-    	click_time       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
-    	created_at       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
-    	environment      sandbox
-    	gps_adid         12345678-0abc-de12-3456-7890abcdef12
-    	needs_attribution_data 1
-    	referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign
-    	reftag           abc1234
-    	source           reftag
-    	tracking_enabled 1
+      app_token        abc123abc123
+      click_time       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+      created_at       yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z
+      environment      sandbox
+      gps_adid         12345678-0abc-de12-3456-7890abcdef12
+      needs_attribution_data 1
+      referrer         adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign
+      reftag           abc1234
+      source           reftag
+      tracking_enabled 1
 ```
 
 If you perform this test before launching the app, you won't see the package being sent. The package will be sent once the 
@@ -921,8 +963,8 @@ application launch, but also when a system or application event is captured by t
 Our SDK is prepared for initialization at this time, but not actually started. This will only happen when an activity is 
 started, i.e., when a user actually launches the app.
 
-That's why triggering an event at this time will not do what you would expect. Such calls will start the adjust SDK and send
-the events, even when the app was not launched by the user - at a time that depends on external factors of the app. 
+That's why triggering an event at this time will not do what you would expect. Such calls will start the adjust SDK and 
+send the events, even when the app was not launched by the user - at a time that depends on external factors of the app. 
 
 Triggering events at application launch will thus result in inaccuracies in the number of installs and sessions tracked.
 
@@ -970,7 +1012,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
 [activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
-## License
+## <a id="license"></a>License
 
 The adjust SDK is licensed under the MIT License.
 
