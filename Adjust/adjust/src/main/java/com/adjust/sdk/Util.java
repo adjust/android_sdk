@@ -446,13 +446,6 @@ public class Util {
         return first.equals(second);
     }
 
-    public static boolean equalsMap(Map first, Map second) {
-        if (first == null || second == null) {
-            return first == null && second == null;
-        }
-        return first.entrySet().equals(second.entrySet());
-    }
-
     public static boolean equalsDouble(Double first, Double second) {
         if (first == null || second == null) {
             return first == null && second == null;
@@ -508,11 +501,11 @@ public class Util {
         return value.hashCode();
     }
 
-    public static int hashMap(Map value) {
+    public static int hashObject(Object value) {
         if (value == null) {
             return 0;
         }
-        return value.entrySet().hashCode();
+        return value.hashCode();
     }
 
     public static String sha1(final String text) {

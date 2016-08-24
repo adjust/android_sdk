@@ -161,11 +161,11 @@ public class ActivityPackage implements Serializable {
 
         if (!Util.equalString(path, otherActivityPackage.path))         return false;
         if (!Util.equalString(clientSdk, otherActivityPackage.clientSdk))    return false;
-        if (!Util.equalsMap(parameters, otherActivityPackage.parameters))   return false;
+        if (!Util.equalObject(parameters, otherActivityPackage.parameters))   return false;
         if (!Util.equalEnum(activityKind, otherActivityPackage.activityKind)) return false;
         if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
-        if (!Util.equalsMap(callbackParameters, otherActivityPackage.callbackParameters))   return false;
-        if (!Util.equalsMap(partnerParameters, otherActivityPackage.partnerParameters))   return false;
+        if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
+        if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
         return true;
     }
 
@@ -175,11 +175,11 @@ public class ActivityPackage implements Serializable {
             hashCode = 17;
             hashCode = 37 * hashCode + Util.hashString(path);
             hashCode = 37 * hashCode + Util.hashString(clientSdk);
-            hashCode = 37 * hashCode + Util.hashMap(parameters);
+            hashCode = 37 * hashCode + Util.hashObject(parameters);
             hashCode = 37 * hashCode + Util.hashEnum(activityKind);
             hashCode = 37 * hashCode + Util.hashString(suffix);
-            hashCode = 37 * hashCode + Util.hashMap(callbackParameters);
-            hashCode = 37 * hashCode + Util.hashMap(partnerParameters);
+            hashCode = 37 * hashCode + Util.hashObject(callbackParameters);
+            hashCode = 37 * hashCode + Util.hashObject(partnerParameters);
         }
         return hashCode;
     }
