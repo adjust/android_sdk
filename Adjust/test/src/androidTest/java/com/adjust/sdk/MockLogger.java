@@ -1,4 +1,4 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.util.Log;
 import android.util.SparseArray;
@@ -134,6 +134,11 @@ public class MockLogger implements ILogger {
                 LogLevel.ASSERT.getAndroidLogLevel(),
                 "a",
                 Log.ASSERT);
+    }
+
+    @Override
+    public void lockLogLevel() {
+        test("MockLogger lockLogLevel");
     }
 
     public void test(String message) {

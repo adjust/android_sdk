@@ -1,39 +1,39 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
 
-import com.adjust.sdk.ActivityHandler;
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.BackoffStrategy;
-import com.adjust.sdk.SdkClickHandler;
+import com.adjust.sdk.test.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by pfms on 14/04/16.
  */
-public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class TestSdkClickHandler {
     private MockLogger mockLogger;
     private AssertUtil assertUtil;
     private MockHttpsURLConnection mockHttpsURLConnection;
-    private UnitTestActivity activity;
+    private com.adjust.sdk.test.UnitTestActivity activity;
     private Context context;
     private ActivityPackage sdkClickPackage;
 
-    public TestSdkClickHandler() {
-        super(UnitTestActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
 
-    public TestSdkClickHandler(Class<UnitTestActivity> activityClass) {
-        super(activityClass);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         mockLogger = new MockLogger();
         mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
 
@@ -42,15 +42,13 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setHttpsURLConnection(mockHttpsURLConnection);
 
-        activity = getActivity();
+        activity = mActivityRule.getActivity();
         context = activity.getApplicationContext();
         sdkClickPackage = getClickPackage();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() {
         AdjustFactory.setHttpsURLConnection(null);
         AdjustFactory.setLogger(null);
     }
@@ -79,6 +77,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         return sdkClickPackage;
     }
 
+    @Test
     public void testPaused() {
         sdkClickPackage.setClientSdk("Test-First-Click");
         ActivityPackage secondSdkClickPackage = getClickPackage();
@@ -183,6 +182,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.notInTest("MockHttpsURLConnection setRequestProperty");
     }
 
+    @Test
     public void testNullResponse() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testNullResponse");
@@ -210,6 +210,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.notInDebug("Added sdk_click");
     }
 
+    @Test
     public void testClientException() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testClientException");
@@ -232,10 +233,9 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
 
         // adds to end of the queue
         assertUtil.debug("Added sdk_click");
-
-        assertUtil.fail();
     }
 
+    @Test
     public void testServerError() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testServerError");
@@ -256,6 +256,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.error("testResponseError");
     }
 
+    @Test
     public void testWrongJson() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testWrongJson");
@@ -276,6 +277,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.error("Failed to parse json response. (Value not of type java.lang.String cannot be converted to JSONObject)");
     }
 
+    @Test
     public void testEmptyJson() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testWrongJson");
@@ -296,6 +298,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         assertUtil.info("No message found");
     }
 
+    @Test
     public void testMessage() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testWrongJson");
@@ -309,7 +312,7 @@ public class TestSdkClickHandler extends ActivityInstrumentationTestCase2<UnitTe
         sdkClickHandler.sendSdkClick(sdkClickPackage);
         SystemClock.sleep(1000);
 
-        TestActivityPackage.testQueryStringRequest(mockHttpsURLConnection.readRequest(), 0);
+        TestActivityPackage.testQueryStringRequest(mockHttpsURLConnection.readRequest(), null);
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: MESSAGE");
 

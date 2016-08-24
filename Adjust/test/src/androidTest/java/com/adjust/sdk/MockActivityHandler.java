@@ -1,16 +1,6 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.net.Uri;
-
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustAttribution;
-import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.IActivityHandler;
-import com.adjust.sdk.ResponseData;
-import com.adjust.sdk.EventResponseData;
-import com.adjust.sdk.SessionResponseData;
-import com.adjust.sdk.AttributionResponseData;
 
 
 /**
@@ -70,8 +60,8 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public boolean updateAttribution(AdjustAttribution attribution) {
-        testLogger.test(prefix + "updateAttribution, " + attribution);
+    public boolean updateAttributionI(AdjustAttribution attribution) {
+        testLogger.test(prefix + "updateAttributionI, " + attribution);
         return false;
     }
 
@@ -106,5 +96,55 @@ public class MockActivityHandler implements IActivityHandler {
     @Override
     public void setAskingAttribution(boolean askingAttribution) {
         testLogger.test(prefix + "setAskingAttribution, " + askingAttribution);
+    }
+
+    @Override
+    public void sendFirstPackages() {
+        testLogger.test(prefix + "sendFirstPackages");
+    }
+
+    @Override
+    public void addExternalDeviceId(String externalDeviceId) {
+        testLogger.test(prefix + "addExternalDeviceId, " + externalDeviceId);
+    }
+
+    @Override
+    public void addSessionCallbackParameter(String key, String value) {
+        testLogger.test(prefix + "addSessionCallbackParameter key, " + key + ", value, " + value);
+    }
+
+    @Override
+    public void addSessionPartnerParameter(String key, String value) {
+        testLogger.test(prefix + "addSessionPartnerParameter key, " + key + ", value, " + value);
+    }
+
+    @Override
+    public void removeSessionCallbackParameter(String key) {
+        testLogger.test(prefix + "removeSessionCallbackParameter, " + key);
+    }
+
+    @Override
+    public void removeSessionPartnerParameter(String key) {
+        testLogger.test(prefix + "removeSessionPartnerParameter, " + key);
+    }
+
+    @Override
+    public void resetExternalDeviceId() {
+        testLogger.test(prefix + "resetExternalDeviceId");
+    }
+
+    @Override
+    public void resetSessionCallbackParameters() {
+        testLogger.test(prefix + "resetSessionCallbackParameters");
+    }
+
+    @Override
+    public void resetSessionPartnerParameters() {
+        testLogger.test(prefix + "resetSessionPartnerParameters");
+    }
+
+    @Override
+    public void teardown(boolean deleteState) {
+        testLogger.test(prefix + "teardown deleteState, " + deleteState);
     }
 }

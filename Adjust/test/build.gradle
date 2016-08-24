@@ -8,6 +8,9 @@ android {
         minSdkVersion 9
         targetSdkVersion 24
     }
+    defaultConfig {
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
 }
 
 repositories {
@@ -19,4 +22,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-analytics:8.4.0'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':adjust')
+    androidTestCompile 'com.android.support.test:runner:0.4'
+    // Set this dependency to use JUnit 4 rules
+    androidTestCompile 'com.android.support.test:rules:0.4'
 }

@@ -1,8 +1,4 @@
-package com.adjust.sdk.test;
-
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.IPackageHandler;
-import com.adjust.sdk.IRequestHandler;
+package com.adjust.sdk;
 
 public class MockRequestHandler implements IRequestHandler {
     private MockLogger testLogger;
@@ -35,5 +31,10 @@ public class MockRequestHandler implements IRequestHandler {
             packageHandler.closeFirstPackage();
         }
         */
+    }
+
+    @Override
+    public void teardown() {
+        testLogger.test(prefix + "teardown");
     }
 }

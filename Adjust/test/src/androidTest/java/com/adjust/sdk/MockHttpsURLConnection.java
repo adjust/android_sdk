@@ -1,4 +1,4 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.os.SystemClock;
 

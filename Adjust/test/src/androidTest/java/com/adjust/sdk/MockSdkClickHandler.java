@@ -1,7 +1,4 @@
-package com.adjust.sdk.test;
-
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.ISdkClickHandler;
+package com.adjust.sdk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,5 +34,10 @@ public class MockSdkClickHandler implements ISdkClickHandler {
     public void sendSdkClick(ActivityPackage sdkClick) {
         testLogger.test(prefix + "sendSdkClick");
         queue.add(sdkClick);
+    }
+
+    @Override
+    public void teardown() {
+        testLogger.test(prefix + "teardown");
     }
 }

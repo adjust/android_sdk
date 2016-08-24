@@ -1,9 +1,4 @@
-package com.adjust.sdk.test;
-
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.IActivityHandler;
-import com.adjust.sdk.IAttributionHandler;
-import com.adjust.sdk.SessionResponseData;
+package com.adjust.sdk;
 
 /**
  * Created by pfms on 09/01/15.
@@ -50,5 +45,10 @@ public class MockAttributionHandler implements IAttributionHandler {
     @Override
     public void resumeSending() {
         testLogger.test(prefix + "resumeSending");
+    }
+
+    @Override
+    public void teardown() {
+        testLogger.test(prefix + "teardown");
     }
 }

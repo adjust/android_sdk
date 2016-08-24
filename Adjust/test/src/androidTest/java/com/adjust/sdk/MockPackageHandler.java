@@ -1,11 +1,6 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.content.Context;
-
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.IActivityHandler;
-import com.adjust.sdk.IPackageHandler;
-import com.adjust.sdk.ResponseData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +14,6 @@ public class MockPackageHandler implements IPackageHandler {
 
     public MockPackageHandler(MockLogger testLogger) {
         this.testLogger = testLogger;
-        queue = new ArrayList<ActivityPackage>();
     }
 
     @Override
@@ -27,6 +21,7 @@ public class MockPackageHandler implements IPackageHandler {
         testLogger.test(prefix + "init, startsSending: " + startsSending);
         this.activityHandler = activityHandler;
         this.context = context;
+        this.queue = new ArrayList<ActivityPackage>();
     }
 
     @Override
@@ -64,5 +59,15 @@ public class MockPackageHandler implements IPackageHandler {
     @Override
     public void resumeSending() {
         testLogger.test(prefix + "resumeSending");
+    }
+
+    @Override
+    public void updatePackages(SessionParameters sessionParameters) {
+        testLogger.test(prefix + "updatePackages, sessionParameters" + sessionParameters);
+    }
+
+    @Override
+    public void teardown(boolean deleteState) {
+        testLogger.test(prefix + "teardown deleteState, " + deleteState);
     }
 }

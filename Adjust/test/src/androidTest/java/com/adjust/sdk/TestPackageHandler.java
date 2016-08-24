@@ -1,44 +1,44 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.content.Context;
 import android.os.SystemClock;
-import android.test.ActivityInstrumentationTestCase2;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import android.test.suitebuilder.annotation.LargeTest;
 
-import com.adjust.sdk.ActivityKind;
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.BackoffStrategy;
-import com.adjust.sdk.Constants;
-import com.adjust.sdk.PackageHandler;
-import com.adjust.sdk.ResponseData;
-import com.adjust.sdk.UnknownResponseData;
+import com.adjust.sdk.test.*;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by pfms on 30/01/15.
+ * Created by pfms on 22/08/2016.
  */
-public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class TestPackageHandler {
     private MockLogger mockLogger;
     private MockActivityHandler mockActivityHandler;
     protected MockRequestHandler mockRequestHandler;
     private AssertUtil assertUtil;
-    private UnitTestActivity activity;
+    private com.adjust.sdk.test.UnitTestActivity activity;
     private Context context;
 
+    @Rule
+    public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
 
-    public TestPackageHandler() {
-        super(UnitTestActivity.class);
-    }
-
-    public TestPackageHandler(Class<UnitTestActivity> activityClass) {
-        super(activityClass);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         mockLogger = new MockLogger();
         mockActivityHandler = new MockActivityHandler(mockLogger);
         mockRequestHandler = new MockRequestHandler(mockLogger);
@@ -48,18 +48,17 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         AdjustFactory.setLogger(mockLogger);
         AdjustFactory.setRequestHandler(mockRequestHandler);
 
-        activity = getActivity();
+        activity = mActivityRule.getActivity();
         context = activity.getApplicationContext();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() {
         AdjustFactory.setRequestHandler(null);
         AdjustFactory.setLogger(null);
     }
 
+    @Test
     public void testAddPackage() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testAddPackage");
@@ -106,6 +105,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         assertUtil.test("RequestHandler sendPackage, queueSize 0");
     }
 
+    @Test
     public void testSendFirst() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testSendFirst");
@@ -149,6 +149,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.SEND, "unknownFirstPackage", 0);
     }
 
+    @Test
     public void testSendNext() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testSendNext");
@@ -178,6 +179,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.SEND, "unknownSecondPackage", 0);
     }
 
+    @Test
     public void testCloseFirstPackage() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testCloseFirstPackage");
@@ -208,6 +210,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         sendFirstTests(SendFirstState.SEND, "unknownFirstPackage", 0);
     }
 
+    @Test
     public void testBackoffJitter() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestPackageHandler testBackoffJitter");
@@ -218,14 +221,14 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
         UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
-        Pattern pattern = Pattern.compile("Sleeping for (\\d+\\.\\d) seconds before retrying the (\\d+) time");
+        Pattern pattern = Pattern.compile("Waiting for (\\d+\\.\\d) seconds before retrying the (\\d+) time");
 
         // 1st
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        String matchingString = assertUtil.verbose("Sleeping for ");
-        // Sleeping for 0.1 seconds before retrying the 1 time
+        String matchingString = assertUtil.verbose("Waiting for ");
+        // Waiting for 0.1 seconds before retrying the 1 time
 
         checkSleeping(pattern, matchingString, 0.1, 0.2, 1, 0.5, 1);
 
@@ -233,7 +236,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        matchingString = assertUtil.verbose("Sleeping for ");
+        matchingString = assertUtil.verbose("Waiting for ");
 
         checkSleeping(pattern, matchingString, 0.2, 0.4, 1, 0.5, 2);
 
@@ -241,7 +244,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        matchingString = assertUtil.verbose("Sleeping for ");
+        matchingString = assertUtil.verbose("Waiting for ");
 
         checkSleeping(pattern, matchingString, 0.4, 0.8, 1, 0.5, 3);
 
@@ -249,7 +252,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        matchingString = assertUtil.verbose("Sleeping for ");
+        matchingString = assertUtil.verbose("Waiting for ");
 
         checkSleeping(pattern, matchingString, 0.8, 1.6, 1, 0.5, 4);
 
@@ -257,7 +260,7 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        matchingString = assertUtil.verbose("Sleeping for ");
+        matchingString = assertUtil.verbose("Waiting for ");
 
         checkSleeping(pattern, matchingString, 1.6, 3.2, 1, 0.5, 5);
 
@@ -265,10 +268,184 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
         packageHandler.closeFirstPackage(unknownResponseData, activityPackage);
         SystemClock.sleep(1500);
 
-        matchingString = assertUtil.verbose("Sleeping for ");
+        matchingString = assertUtil.verbose("Waiting for ");
 
         checkSleeping(pattern, matchingString, 6.4, 12.8, 1, 0.5, 6);
-   }
+    }
+
+    @Test
+    public void testUpdate() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestPackageHandler testUpdate");
+
+        List<ActivityPackage> delayPackages = createDelayPackages();
+
+        ActivityPackage firstSessionPackage = delayPackages.get(0);
+        ActivityPackage firstEventPackage = delayPackages.get(1);
+        ActivityPackage secondEventPackage = delayPackages.get(2);
+
+        // create event package test
+        TestActivityPackage testFirstSessionPackage = new TestActivityPackage(firstSessionPackage);
+
+        testFirstSessionPackage.testSessionPackage(1);
+
+        // create event package test
+        TestActivityPackage testFirstEventPackage = new TestActivityPackage(firstEventPackage);
+
+        // set event test parameters
+        testFirstEventPackage.eventCount = "1";
+        testFirstEventPackage.suffix = "'event1'";
+        testFirstEventPackage.savedCallbackParameters = new HashMap<String,String>(1);
+        testFirstEventPackage.savedCallbackParameters.put("ceFoo", "ceBar");
+        testFirstEventPackage.savedPartnerParameters = new HashMap<String,String>(1);
+        testFirstEventPackage.savedPartnerParameters.put("peFoo", "peBar");
+
+        // test first event
+        testFirstEventPackage.testEventPackage("event1");
+
+        // create event package test
+        TestActivityPackage testSecondEventPackage = new TestActivityPackage(secondEventPackage);
+
+        // set event test parameters
+        testSecondEventPackage.eventCount = "2";
+        testSecondEventPackage.suffix = "'event2'";
+        testSecondEventPackage.savedCallbackParameters = new HashMap<String,String>(1);
+        testSecondEventPackage.savedCallbackParameters.put("scpKey", "ceBar");
+        testSecondEventPackage.savedPartnerParameters = new HashMap<String,String>(1);
+        testSecondEventPackage.savedPartnerParameters.put("sppKey", "peBar");
+
+        // test second event
+        testSecondEventPackage.testEventPackage("event2");
+
+        //  initialize Package Handler
+        IPackageHandler packageHandler = startPackageHandler();
+
+        sendFirstTests(SendFirstState.EMPTY_QUEUE, null, null);
+
+        packageHandler.addPackage(firstSessionPackage);
+        packageHandler.addPackage(firstEventPackage);
+        packageHandler.addPackage(secondEventPackage);
+
+        SystemClock.sleep(1000);
+
+        addPackageTests(1, "session");
+
+        addPackageTests(2, "event'event1'");
+
+        addPackageTests(3, "event'event2'");
+
+        packageHandler.updatePackages(null);
+
+        SystemClock.sleep(1000);
+
+        assertUtil.notInDebug("Updating package handler queue");
+
+        SessionParameters emptySessionParameters = new SessionParameters();
+        packageHandler.updatePackages(emptySessionParameters);
+
+        SystemClock.sleep(1000);
+
+        assertUtil.debug("Updating package handler queue");
+
+        assertUtil.verbose("Session external device id: null");
+        assertUtil.verbose("Session callback parameters: null");
+        assertUtil.verbose("Session partner parameters: null");
+
+        // writes the non-updated packages
+        assertUtil.debug("Wrote Package queue: [session, event'event1', event'event2']");
+        assertUtil.debug("Package handler wrote 3 packages");
+
+        SessionParameters sessionParameters = new SessionParameters();
+        sessionParameters.externalDeviceId = "sedi";
+        sessionParameters.callbackParameters = new HashMap<String, String>(1);
+        sessionParameters.callbackParameters.put("scpKey", "scpValue");
+        sessionParameters.partnerParameters = new HashMap<String, String>(1);
+        sessionParameters.partnerParameters.put("sppKey", "sppValue");
+
+        packageHandler.updatePackages(sessionParameters);
+
+        SystemClock.sleep(1000);
+
+        assertUtil.debug("Updating package handler queue");
+
+        assertUtil.verbose("Session external device id: sedi");
+        assertUtil.verbose("Session callback parameters: {scpKey=scpValue}");
+        assertUtil.verbose("Session partner parameters: {sppKey=sppValue}");
+
+        assertUtil.warn("Key scpKey with value scpValue from Callback parameter was replaced by value ceBar");
+        assertUtil.warn("Key sppKey with value sppValue from Partner parameter was replaced by value peBar");
+        assertUtil.debug("Package handler wrote 3 packages");
+
+        testFirstSessionPackage.externalDeviceId = "sedi";
+        testFirstSessionPackage.callbackParams = "{scpKey=scpValue}";
+        testFirstSessionPackage.partnerParams = "{sppKey=sppValue}";
+        testFirstSessionPackage.testSessionPackage(1);
+
+        testFirstEventPackage.externalDeviceId = "sedi";
+        testFirstEventPackage.callbackParams = "{scpKey=scpValue, ceFoo=ceBar}";
+        testFirstEventPackage.partnerParams = "{sppKey=sppValue, peFoo=peBar}";
+
+        testFirstEventPackage.testEventPackage("event1");
+
+        testSecondEventPackage.externalDeviceId = "sedi";
+        testSecondEventPackage.callbackParams = "{scpKey=ceBar}";
+        testSecondEventPackage.partnerParams = "{sppKey=peBar}";
+
+        testSecondEventPackage.testEventPackage("event2");
+    }
+
+    private List<ActivityPackage> createDelayPackages() {
+        MockPackageHandler mockPackageHandler = new MockPackageHandler(mockLogger);
+        AdjustFactory.setPackageHandler(mockPackageHandler);
+
+        MockSdkClickHandler mockSdkClickHandler = new MockSdkClickHandler(mockLogger);
+        AdjustFactory.setSdkClickHandler(mockSdkClickHandler);
+
+        MockAttributionHandler mockAttributionHandler = new MockAttributionHandler(mockLogger);
+        AdjustFactory.setAttributionHandler(mockAttributionHandler);
+
+        AdjustFactory.setSessionInterval(-1);
+        AdjustFactory.setSubsessionInterval(-1);
+        AdjustFactory.setTimerInterval(-1);
+        AdjustFactory.setTimerStart(-1);
+
+        ActivityHandler.deleteActivityState(context);
+        ActivityHandler.deleteAttribution(context);
+        ActivityHandler.deleteSessionParameters(context);
+        ActivityHandler.deleteSessionCallbackParameters(context);
+        ActivityHandler.deleteSessionPartnerParameters(context);
+
+        AdjustConfig config = new AdjustConfig(context, "123456789012", "sandbox");
+
+        config.setDelayStart(4);
+
+        IActivityHandler activityHandler = ActivityHandler.getInstance(config);
+
+        activityHandler.addSessionCallbackParameter("scpKey", "scpValue");
+        activityHandler.addSessionPartnerParameter("sppKey", "sppValue");
+
+        activityHandler.onResume();
+
+        AdjustEvent firstEvent = new AdjustEvent("event1");
+        firstEvent.addCallbackParameter("ceFoo", "ceBar");
+        firstEvent.addPartnerParameter("peFoo", "peBar");
+        activityHandler.trackEvent(firstEvent);
+
+        AdjustEvent secondEvent = new AdjustEvent("event2");
+        secondEvent.addCallbackParameter("scpKey", "ceBar");
+        secondEvent.addPartnerParameter("sppKey", "peBar");
+        activityHandler.trackEvent(secondEvent);
+
+        SystemClock.sleep(3000);
+
+        ActivityPackage firstSessionPackage = mockPackageHandler.queue.get(0);
+        ActivityPackage firstEventPackage = mockPackageHandler.queue.get(1);
+        ActivityPackage secondEventPackage = mockPackageHandler.queue.get(2);
+
+        mockLogger.reset();
+
+        return Arrays.asList(firstSessionPackage, firstEventPackage, secondEventPackage);
+    }
 
     private void checkSleeping(Pattern pattern,
                                String sleepingLog,
@@ -407,4 +584,5 @@ public class TestPackageHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         return activityPackage;
     }
+
 }

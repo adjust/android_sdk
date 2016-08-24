@@ -1,4 +1,6 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
+
+import android.net.Uri;
 
 import junit.framework.Assert;
 
@@ -126,7 +128,16 @@ public class AssertUtil {
         Assert.assertEquals(mockLogger.toString(), expected, actual);
     }
 
+    public void isEqual(Uri expected, Uri actual) {
+        Assert.assertEquals(mockLogger.toString(), expected, actual);
+    }
+
     public void fail() {
         Assert.fail(mockLogger.toString());
     }
+
+    public void fail(String extraMessage) {
+        Assert.fail(extraMessage + "\n" + mockLogger.toString());
+    }
+
 }
