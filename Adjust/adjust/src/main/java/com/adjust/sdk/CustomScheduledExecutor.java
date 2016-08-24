@@ -33,7 +33,7 @@ public class CustomScheduledExecutor {
                                 AdjustFactory.getLogger().error("Thread %s with error %s", th.getName(), tr.getMessage());
                             }
                         });
-                        AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
+//                        AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
                         return thread;
                     }
                 }, new RejectedExecutionHandler() {     // Logs rejected runnables rejected from the entering the pool

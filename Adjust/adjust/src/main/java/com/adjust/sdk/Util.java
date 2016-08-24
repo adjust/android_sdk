@@ -147,12 +147,6 @@ public class Util {
         Closeable closable = null;
         T object = null;
         try {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                getLogger().debug("readObject in the background");
-            } else {
-                getLogger().debug("readObject in the foreground");
-            }
-
             FileInputStream inputStream = context.openFileInput(filename);
             closable = inputStream;
 

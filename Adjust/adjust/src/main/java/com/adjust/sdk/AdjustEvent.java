@@ -40,7 +40,7 @@ public class AdjustEvent {
         String previousValue = callbackParameters.put(key, value);
 
         if (previousValue != null) {
-            logger.warn("key %s was overwritten", key);
+            logger.warn("Key %s was overwritten", key);
         }
     }
 
@@ -55,7 +55,7 @@ public class AdjustEvent {
         String previousValue = partnerParameters.put(key, value);
 
         if (previousValue != null) {
-            logger.warn("key %s was overwritten", key);
+            logger.warn("Key %s was overwritten", key);
         }
     }
 

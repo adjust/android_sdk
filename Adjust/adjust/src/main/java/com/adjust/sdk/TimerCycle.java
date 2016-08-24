@@ -13,7 +13,6 @@ public class TimerCycle {
     private Runnable command;
     private long initialDelay;
     private long cycleDelay;
-    private String cycleDelaySeconds;
     private boolean isPaused;
     private ILogger logger;
 
@@ -27,7 +26,11 @@ public class TimerCycle {
         this.isPaused = true;
         this.logger = AdjustFactory.getLogger();
 
-        this.cycleDelaySeconds = Util.SecondsDisplayFormat.format(cycleDelay / 1000.0);
+        String cycleDelaySecondsString = Util.SecondsDisplayFormat.format(cycleDelay / 1000.0);
+
+        String initialDelaySecondsString = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+
+        logger.verbose("%s configured to fire after %s seconds of starting and cycles every %s seconds", name, initialDelaySecondsString, cycleDelaySecondsString);
     }
 
     public void start() {
@@ -36,9 +39,10 @@ public class TimerCycle {
             return;
         }
 
-        String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+        //String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+        //logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
 
-        logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
+        logger.verbose("%s starting", name);
 
         waitingTask = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
