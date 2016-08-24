@@ -1127,6 +1127,8 @@ public class ActivityHandler implements IActivityHandler {
         // it's possible for the sdk click handler to be active while others are paused
         if (!toSendI(true)) {
             sdkClickHandler.pauseSending();
+        } else {
+            sdkClickHandler.resumeSending();
         }
     }
 
@@ -1184,8 +1186,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void startForegroundTimerI() {
-        // don't start the timer if it's disabled or offline
-        if (pausedI()) {
+        // don't start the timer if it's disabled
+        if (!isEnabledI()) {
             return;
         }
 
@@ -1197,13 +1199,15 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void foregroundTimerFiredI() {
-        if (pausedI()) {
-            // stop the timer cycle if it's disabled/offline
+        // stop the timer cycle if it's disabled
+        if (!isEnabledI()) {
             stopForegroundTimerI();
             return;
         }
 
-        packageHandler.sendFirstPackage();
+        if (toSendI()) {
+            packageHandler.sendFirstPackage();
+        }
 
         if (updateActivityStateI(System.currentTimeMillis())) {
             writeActivityStateI();
@@ -1237,7 +1241,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void backgroundTimerFiredI() {
-        packageHandler.sendFirstPackage();
+        if (toSendI()) {
+            packageHandler.sendFirstPackage();
+        }
     }
 
     private void delayStartI() {
