@@ -16,10 +16,13 @@ import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
+    private static int ORDER_ID_MAXCOUNT = 10;
     private transient ILogger logger;
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
@@ -32,7 +35,8 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("timeSpent", long.class),
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
-            new ObjectStreamField("updatePackages", boolean.class)
+            new ObjectStreamField("updatePackages", boolean.class),
+            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class)
     };
 
     // persistent data
@@ -54,6 +58,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     protected boolean updatePackages;
 
+    protected LinkedList<String> orderIds;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -69,6 +75,7 @@ public class ActivityState implements Serializable, Cloneable {
         lastActivity = -1;
         lastInterval = -1;
         updatePackages = false;
+        orderIds = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -77,6 +84,24 @@ public class ActivityState implements Serializable, Cloneable {
         timeSpent = 0; // no time spent yet
         lastActivity = now;
         lastInterval = -1;
+    }
+
+    protected void addOrderId(String orderId) {
+        if (orderIds == null) {
+            orderIds = new LinkedList<String>();
+        }
+
+        if (orderIds.size() >= ORDER_ID_MAXCOUNT) {
+            orderIds.removeLast();
+        }
+        orderIds.addFirst(orderId);
+    }
+
+    protected boolean findOrderId(String orderId) {
+        if (orderIds == null) {
+            return false;
+        }
+        return orderIds.contains(orderId);
     }
 
     @Override
@@ -113,6 +138,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(timeSpent, otherActivityState.timeSpent))          return false;
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
         if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
+        if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
         return true;
     }
 
@@ -129,6 +155,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(timeSpent);
         hashCode = 37 * hashCode + Util.hashLong(lastInterval);
         hashCode = 37 * hashCode + Util.hashBoolean(updatePackages);
+        hashCode = 37 * hashCode + Util.hashObject(orderIds);
         return hashCode;
     }
 
@@ -149,6 +176,8 @@ public class ActivityState implements Serializable, Cloneable {
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);
+
+        orderIds = Util.readObjectField(fields, "orderIds", null);
 
         // create UUID for migrating devices
         if (uuid == null) {

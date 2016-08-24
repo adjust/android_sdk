@@ -12,6 +12,7 @@ public class AdjustEvent {
     String currency;
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
+    String orderId;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -56,6 +57,10 @@ public class AdjustEvent {
         if (previousValue != null) {
             logger.warn("key %s was overwritten", key);
         }
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public boolean isValid() {
