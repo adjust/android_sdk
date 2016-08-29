@@ -29,4 +29,9 @@ dependencies {
     //compile fileTree(dir: '../target', include: ['*.jar'])
     // using maven repository
     //compile 'com.adjust.sdk:adjust-android:4.7.0'
+
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4-beta2'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta2'
+
 }
