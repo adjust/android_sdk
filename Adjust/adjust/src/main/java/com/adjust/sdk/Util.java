@@ -373,11 +373,12 @@ public class Util {
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
 
-        result.append("&");
-        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
-        result.append("=");
-        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
-
+        if (queueSize > 0) {
+            result.append("&");
+            result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+            result.append("=");
+            result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+        }
 
         return result.toString();
     }
