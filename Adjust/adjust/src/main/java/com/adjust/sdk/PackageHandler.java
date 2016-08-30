@@ -10,6 +10,8 @@
 package com.adjust.sdk;
 
 import android.content.Context;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +29,7 @@ public class PackageHandler implements IPackageHandler {
 
     private CustomScheduledExecutor scheduledExecutor;
     private IRequestHandler requestHandler;
-    private IActivityHandler activityHandler;
+    private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private List<ActivityPackage> packageQueue;
     private AtomicBoolean isSending;
     private boolean paused;
@@ -43,6 +45,9 @@ public class PackageHandler implements IPackageHandler {
                 scheduledExecutor.shutdownNow();
             } catch(SecurityException se) {}
         }
+        if (activityHandlerWeakRef != null) {
+            activityHandlerWeakRef.clear();
+        }
         if (requestHandler != null) {
             requestHandler.teardown();
         }
@@ -54,7 +59,7 @@ public class PackageHandler implements IPackageHandler {
         }
         scheduledExecutor = null;
         requestHandler = null;
-        activityHandler = null;
+        activityHandlerWeakRef = null;
         packageQueue = null;
         isSending = null;
         context = null;
@@ -81,7 +86,7 @@ public class PackageHandler implements IPackageHandler {
 
     @Override
     public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
-        this.activityHandler = activityHandler;
+        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.context = context;
         this.paused = !startsSending;
     }
@@ -119,14 +124,21 @@ public class PackageHandler implements IPackageHandler {
             }
         });
 
-        activityHandler.finishedTrackingActivity(responseData);
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        if (activityHandler != null) {
+            activityHandler.finishedTrackingActivity(responseData);
+        }
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
     public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
         responseData.willRetry = true;
-        activityHandler.finishedTrackingActivity(responseData);
+
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        if (activityHandler != null) {
+            activityHandler.finishedTrackingActivity(responseData);
+        }
 
         Runnable runnable = new Runnable() {
             @Override

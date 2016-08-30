@@ -11,13 +11,14 @@ package com.adjust.sdk;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 
 import javax.net.ssl.HttpsURLConnection;
 
 public class RequestHandler implements IRequestHandler {
     private CustomScheduledExecutor scheduledExecutor;
-    private IPackageHandler packageHandler;
+    private WeakReference<IPackageHandler> packageHandlerWeakRef;
     private ILogger logger;
 
     public RequestHandler(IPackageHandler packageHandler) {
@@ -28,7 +29,7 @@ public class RequestHandler implements IRequestHandler {
 
     @Override
     public void init(IPackageHandler packageHandler) {
-        this.packageHandler = packageHandler;
+        this.packageHandlerWeakRef = new WeakReference<IPackageHandler>(packageHandler);
     }
 
     @Override
@@ -49,8 +50,11 @@ public class RequestHandler implements IRequestHandler {
                 scheduledExecutor.shutdownNow();
             } catch(SecurityException se) {}
         }
+        if (packageHandlerWeakRef != null) {
+            packageHandlerWeakRef.clear();
+        }
         scheduledExecutor = null;
-        packageHandler = null;
+        packageHandlerWeakRef = null;
         logger = null;
     }
 
@@ -65,6 +69,11 @@ public class RequestHandler implements IRequestHandler {
                     queueSize);
 
             ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
+
+            IPackageHandler packageHandler = packageHandlerWeakRef.get();
+            if (packageHandler == null) {
+                return;
+            }
 
             if (responseData.jsonResponse == null) {
                 packageHandler.closeFirstPackage(responseData, activityPackage);
@@ -94,6 +103,11 @@ public class RequestHandler implements IRequestHandler {
         ResponseData responseData = ResponseData.buildResponseData(activityPackage);
         responseData.message = finalMessage;
 
+        IPackageHandler packageHandler = packageHandlerWeakRef.get();
+        if (packageHandler == null) {
+            return;
+        }
+
         packageHandler.closeFirstPackage(responseData, activityPackage);
     }
 
@@ -106,6 +120,11 @@ public class RequestHandler implements IRequestHandler {
 
         ResponseData responseData = ResponseData.buildResponseData(activityPackage);
         responseData.message = finalMessage;
+
+        IPackageHandler packageHandler = packageHandlerWeakRef.get();
+        if (packageHandler == null) {
+            return;
+        }
 
         packageHandler.sendNextPackage(responseData);
     }
