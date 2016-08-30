@@ -23,7 +23,7 @@ import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 class PackageBuilder {
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
-    private ActivityState activityState;
+    private ActivityStateCopy activityStateCopy;
     private long createdAt;
 
     // reattributions
@@ -35,19 +35,42 @@ class PackageBuilder {
 
     private static ILogger logger = AdjustFactory.getLogger();
 
+    private class ActivityStateCopy {
+        long lastInterval = -1;
+        int eventCount = -1;
+        String uuid = null;
+        int sessionCount = -1;
+        int subsessionCount = -1;
+        long sessionLength = -1;
+        long timeSpent = -1;
+
+        ActivityStateCopy(ActivityState activityState) {
+            if (activityState == null) {
+                return;
+            }
+            this.lastInterval = activityState.lastInterval;
+            this.eventCount = activityState.eventCount;
+            this.uuid = activityState.uuid;
+            this.sessionCount = activityState.sessionCount;
+            this.subsessionCount = activityState.subsessionCount;
+            this.sessionLength = activityState.sessionLength;
+            this.timeSpent = activityState.timeSpent;
+        }
+    }
+
     public PackageBuilder(AdjustConfig adjustConfig,
                           DeviceInfo deviceInfo,
                           ActivityState activityState,
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
-        this.activityState = activityState == null ? null : activityState.shallowCopy();
+        this.activityStateCopy = new ActivityStateCopy(activityState);
         this.createdAt = createdAt;
     }
 
     public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addDuration(parameters, "last_interval", activityState.lastInterval);
+        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
 
         if (!isInDelay) {
@@ -69,7 +92,7 @@ class PackageBuilder {
                                              boolean isInDelay)
     {
         Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addInt(parameters, "event_count", activityState.eventCount);
+        PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
@@ -199,11 +222,11 @@ class PackageBuilder {
     }
 
     private void injectActivityState(Map<String, String> parameters) {
-        PackageBuilder.addString(parameters, "android_uuid", activityState.uuid);
-        PackageBuilder.addInt(parameters, "session_count", activityState.sessionCount);
-        PackageBuilder.addInt(parameters, "subsession_count", activityState.subsessionCount);
-        PackageBuilder.addDuration(parameters, "session_length", activityState.sessionLength);
-        PackageBuilder.addDuration(parameters, "time_spent", activityState.timeSpent);
+        PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
+        PackageBuilder.addInt(parameters, "session_count", activityStateCopy.sessionCount);
+        PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
+        PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
+        PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
     }
 
     private void injectCommonParameters(Map<String, String> parameters) {

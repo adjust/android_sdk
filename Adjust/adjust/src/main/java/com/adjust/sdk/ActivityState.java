@@ -113,14 +113,6 @@ public class ActivityState implements Serializable, Cloneable {
                 stamp(lastActivity), uuid);
     }
 
-    public ActivityState shallowCopy() {
-        try {
-            return (ActivityState) super.clone();
-        } catch (CloneNotSupportedException e) {
-            return null;
-        }
-    }
-
     @Override
     public boolean equals(Object other) {
         if (other == this) return true;
