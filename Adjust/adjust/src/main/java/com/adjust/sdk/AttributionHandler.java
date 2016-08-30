@@ -28,7 +28,7 @@ public class AttributionHandler implements IAttributionHandler {
     public void teardown() {
         logger.verbose("AttributionHandler teardown");
         if (timer != null) {
-            timer.cancel(true);
+            timer.teardown();
         }
         if (scheduledExecutor != null) {
             try {

@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +8,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerOnce {
-    private CustomScheduledExecutor scheduler;
+    private WeakReference<CustomScheduledExecutor> scheduledExecutorWeakRef;
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
@@ -15,7 +16,7 @@ public class TimerOnce {
 
     public TimerOnce(CustomScheduledExecutor scheduler, Runnable command, String name) {
         this.name = name;
-        this.scheduler = scheduler;
+        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
         this.command = command;
         this.logger = AdjustFactory.getLogger();
     }
@@ -24,11 +25,16 @@ public class TimerOnce {
         // cancel previous
         cancel(false);
 
+        CustomScheduledExecutor scheduledExecutor = scheduledExecutorWeakRef.get();
+        if (scheduledExecutor == null) {
+            return;
+        }
+
         String fireInSeconds = Util.SecondsDisplayFormat.format(fireIn / 1000.0);
 
         logger.verbose("%s starting. Launching in %s seconds", name, fireInSeconds);
 
-        waitingTask = scheduler.schedule(new Runnable() {
+        waitingTask = scheduledExecutor.schedule(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
@@ -45,22 +51,24 @@ public class TimerOnce {
         return waitingTask.getDelay(TimeUnit.MILLISECONDS);
     }
 
-    private void cancel(boolean mayInterruptIfRunning, boolean log) {
+    private void cancel(boolean mayInterruptIfRunning) {
         if (waitingTask != null) {
             waitingTask.cancel(mayInterruptIfRunning);
         }
         waitingTask = null;
 
-        if (log) {
-            logger.verbose("%s canceled", name);
-        }
+        logger.verbose("%s canceled", name);
     }
 
     public void cancel() {
-        cancel(false, true);
+        cancel(false);
     }
 
-    public void cancel(boolean mayInterruptIfRunning) {
-        cancel(mayInterruptIfRunning, true);
+    public void teardown() {
+        cancel(true);
+        if (scheduledExecutorWeakRef != null) {
+            scheduledExecutorWeakRef.clear();
+        }
+        scheduledExecutorWeakRef = null;
     }
 }

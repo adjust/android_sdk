@@ -63,13 +63,13 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public void teardown(boolean deleteState) {
         if (backgroundTimer != null) {
-            backgroundTimer.cancel(true);
+            backgroundTimer.teardown();
         }
         if (foregroundTimer != null) {
-            foregroundTimer.cancel(true);
+            foregroundTimer.teardown();
         }
         if (delayStartTimer != null) {
-            delayStartTimer.cancel(true);
+            delayStartTimer.teardown();
         }
         if (scheduledExecutor != null) {
             try {

@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -7,7 +8,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private CustomScheduledExecutor scheduler;
+    private WeakReference<CustomScheduledExecutor> scheduledExecutorWeakRef;
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
@@ -17,7 +18,7 @@ public class TimerCycle {
     private ILogger logger;
 
     public TimerCycle(CustomScheduledExecutor scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduler = scheduler;
+        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
 
         this.name = name;
         this.command = command;
@@ -39,12 +40,17 @@ public class TimerCycle {
             return;
         }
 
+        CustomScheduledExecutor scheduledExecutor = scheduledExecutorWeakRef.get();
+        if (scheduledExecutor == null) {
+            return;
+        }
+
         //String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
         //logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
 
         logger.verbose("%s starting", name);
 
-        waitingTask = scheduler.scheduleWithFixedDelay(new Runnable() {
+        waitingTask = scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
@@ -66,7 +72,6 @@ public class TimerCycle {
 
         // cancel the timer
         waitingTask.cancel(false);
-        waitingTask = null;
 
         String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
 
@@ -75,9 +80,19 @@ public class TimerCycle {
         isPaused = true;
     }
 
-    public void cancel(boolean mayInterruptIfRunning) {
+    private void cancel(boolean mayInterruptIfRunning) {
         if (waitingTask != null) {
             waitingTask.cancel(mayInterruptIfRunning);
         }
+
+        waitingTask = null;
+    }
+
+    public void teardown() {
+        cancel(true);
+        if (scheduledExecutorWeakRef != null) {
+            scheduledExecutorWeakRef.clear();
+        }
+        scheduledExecutorWeakRef = null;
     }
 }
