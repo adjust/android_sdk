@@ -218,6 +218,8 @@ public class Util {
         ILogger logger = getLogger();
         Integer responseCode = null;
         try {
+            connection.connect();
+
             responseCode = connection.getResponseCode();
             InputStream inputStream;
 
