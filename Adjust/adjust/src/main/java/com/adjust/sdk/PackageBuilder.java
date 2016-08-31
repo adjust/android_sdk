@@ -293,7 +293,7 @@ class PackageBuilder {
             return;
         }
 
-        String dateString = Util.dateFormat(value);
+        String dateString = Util.dateFormatter.format(value);
         PackageBuilder.addString(parameters, key, dateString);
     }
 

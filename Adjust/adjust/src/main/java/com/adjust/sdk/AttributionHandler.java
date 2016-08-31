@@ -232,7 +232,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
+        String dateString = Util.dateFormatter.format(now);
 
         uriBuilder.appendQueryParameter("sent_at", dateString);
 

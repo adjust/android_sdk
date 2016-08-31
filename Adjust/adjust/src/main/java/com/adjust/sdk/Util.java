@@ -59,10 +59,10 @@ import static com.adjust.sdk.Constants.SHA1;
  * Collects utility functions used by Adjust.
  */
 public class Util {
-    private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
+    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
     private static String userAgent;
 
@@ -86,13 +86,6 @@ public class Util {
         }
 
         return String.format(Locale.US, "'%s'", string);
-    }
-
-    public static String dateFormat(long date) {
-        if (dateFormat == null) {
-            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        }
-        return dateFormat.format(date);
     }
 
     public static String getPlayAdId(Context context) {
@@ -369,7 +362,7 @@ public class Util {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
+        String dateString = Util.dateFormatter.format(now);
 
         result.append("&");
         result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
