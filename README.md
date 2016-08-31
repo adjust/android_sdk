@@ -952,7 +952,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
-[referrer]:                       doc/referrer.md
+[referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/en/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
