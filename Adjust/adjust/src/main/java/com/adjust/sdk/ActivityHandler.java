@@ -675,6 +675,8 @@ public class ActivityHandler implements IActivityHandler {
             }, DELAY_START_TIMER_NAME);
         }
 
+        Util.setUserAgent(adjustConfig.userAgent);
+
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
         ActivityPackage attributionPackage = getAttributionPackageI();

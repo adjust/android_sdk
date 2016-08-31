@@ -59,11 +59,12 @@ import static com.adjust.sdk.Constants.SHA1;
  * Collects utility functions used by Adjust.
  */
 public class Util {
-
     private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
+
+    private static String userAgent;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -389,6 +390,9 @@ public class Util {
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
         connection.setReadTimeout(Constants.ONE_MINUTE);
+        if (userAgent != null) {
+            connection.setRequestProperty("User-Agent", userAgent);
+        }
     }
 
     public static boolean checkPermission(Context context, String permission) {
@@ -608,5 +612,9 @@ public class Util {
             }
         }
         return mergedParameters;
+    }
+
+    public static void setUserAgent(String userAgent) {
+        Util.userAgent = userAgent;
     }
 }

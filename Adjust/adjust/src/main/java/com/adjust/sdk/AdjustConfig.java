@@ -30,6 +30,7 @@ public class AdjustConfig {
     List<IRunActivityHandler> sessionParametersActionsArray;
     boolean allowSuppressLogLevel;
     ILogger logger;
+    String userAgent;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -123,6 +124,9 @@ public class AdjustConfig {
         this.delayStart = delayStart;
     }
 
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
     public boolean hasAttributionChangedListener() {
         return onAttributionChangedListener != null;
     }
