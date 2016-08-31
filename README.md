@@ -96,7 +96,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.7.0'
+compile 'com.adjust.sdk:adjust-android:4.9.0'
 ```
 
 ### <a id="sdk-gps"></a>Add Google Play Services
@@ -108,7 +108,7 @@ uniquely identify devices. To allow the adjust SDK to use the Google Advertising
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:8.4.0'
+    compile 'com.google.android.gms:play-services-analytics:9.2.1'
     ```
 
     ![][gradle_gps]
