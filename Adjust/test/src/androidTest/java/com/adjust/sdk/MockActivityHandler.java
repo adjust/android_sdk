@@ -104,11 +104,6 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void addExternalDeviceId(String externalDeviceId) {
-        testLogger.test(prefix + "addExternalDeviceId, " + externalDeviceId);
-    }
-
-    @Override
     public void addSessionCallbackParameter(String key, String value) {
         testLogger.test(prefix + "addSessionCallbackParameter key, " + key + ", value, " + value);
     }
@@ -129,11 +124,6 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void resetExternalDeviceId() {
-        testLogger.test(prefix + "resetExternalDeviceId");
-    }
-
-    @Override
     public void resetSessionCallbackParameters() {
         testLogger.test(prefix + "resetSessionCallbackParameters");
     }
@@ -146,5 +136,10 @@ public class MockActivityHandler implements IActivityHandler {
     @Override
     public void teardown(boolean deleteState) {
         testLogger.test(prefix + "teardown deleteState, " + deleteState);
+    }
+
+    @Override
+    public void setPushToken(String token) {
+        testLogger.test(prefix + "setPushToken token, " + token);
     }
 }

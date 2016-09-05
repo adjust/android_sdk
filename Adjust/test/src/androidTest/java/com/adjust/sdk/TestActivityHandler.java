@@ -59,7 +59,6 @@ public class TestActivityHandler {
         // deleting state to simulate fresh install
         mockLogger.test("Was AdjustActivityState deleted? " + ActivityHandler.deleteActivityState(context));
         mockLogger.test("Was Attribution deleted? " + ActivityHandler.deleteAttribution(context));
-        mockLogger.test("Was Session Parameters deleted? " + ActivityHandler.deleteSessionParameters(context));
         mockLogger.test("Was Session Callback Parameters deleted? " + ActivityHandler.deleteSessionCallbackParameters(context));
         mockLogger.test("Was Session Partner Parameters deleted? " + ActivityHandler.deleteSessionPartnerParameters(context));
 
@@ -516,7 +515,6 @@ public class TestActivityHandler {
 
         assertUtil.error("Event not initialized correctly");
 
-        activityHandler.resetExternalDeviceId();
         activityHandler.resetSessionCallbackParameters();
         activityHandler.resetSessionPartnerParameters();
 
@@ -527,9 +525,6 @@ public class TestActivityHandler {
         activityHandler.removeSessionPartnerParameter(null);
         activityHandler.removeSessionPartnerParameter("");
         activityHandler.removeSessionPartnerParameter("nonExistent");
-
-        activityHandler.addExternalDeviceId(null);
-        activityHandler.addExternalDeviceId("");
 
         activityHandler.addSessionCallbackParameter(null, "value");
         activityHandler.addSessionCallbackParameter("", "value");
@@ -548,7 +543,6 @@ public class TestActivityHandler {
 
         SystemClock.sleep(1500);
 
-        assertUtil.warn("External Device Id is not set");
         assertUtil.warn("Session Callback parameters are not set");
         assertUtil.warn("Session Partner parameters are not set");
 
@@ -559,9 +553,6 @@ public class TestActivityHandler {
         assertUtil.error("Session Partner parameter key is missing");
         assertUtil.error("Session Partner parameter key is empty");
         assertUtil.warn("Session Partner parameters are not set");
-
-        assertUtil.error("External Device Id parameter value is missing");
-        assertUtil.error("External Device Id parameter value is empty");
 
         assertUtil.error("Session Callback parameter key is missing");
         assertUtil.error("Session Callback parameter key is empty");
@@ -2191,11 +2182,6 @@ public class TestActivityHandler {
         config.sessionParametersActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
-                activityHandler.addExternalDeviceIdI("externalDeviceIdTest");
-                activityHandler.addExternalDeviceIdI("externalDeviceIdTest2");
-                activityHandler.resetExternalDeviceIdI();
-                activityHandler.addExternalDeviceIdI("externalDeviceIdTest3");
-
                 //
                 activityHandler.addSessionCallbackParameterI("cKey", "cValue");
                 activityHandler.addSessionCallbackParameterI("cFoo", "cBar");
@@ -2254,7 +2240,6 @@ public class TestActivityHandler {
         // set event test parameters
         testFirstSessionPackage.callbackParams = "{\"cFoo\":\"cBar\"}";
         testFirstSessionPackage.partnerParams = "{\"pFoo\":\"pBar\"}";
-        testFirstSessionPackage.externalDeviceId = "externalDeviceIdTest3";
 
         testFirstSessionPackage.testSessionPackage(1);
 
@@ -2269,7 +2254,6 @@ public class TestActivityHandler {
         testFirstEventPackage.suffix = "'event1'";
         testFirstEventPackage.callbackParams = "{\"cFoo\":\"cBar\"}";
         testFirstEventPackage.partnerParams = "{\"pFoo\":\"pBar\"}";
-        testFirstEventPackage.externalDeviceId = "externalDeviceIdTest3";
 
         testFirstEventPackage.testEventPackage("event1");
 
@@ -2291,7 +2275,6 @@ public class TestActivityHandler {
         StateActivityHandlerInit restartActivityHandlerInit = new StateActivityHandlerInit(restartActivityHandler);
         restartActivityHandlerInit.activityStateAlreadyCreated = true;
         restartActivityHandlerInit.readActivityState = "ec:1 sc:1";
-        restartActivityHandlerInit.readSessionParameters = "External Device Id: externalDeviceIdTest3";
         restartActivityHandlerInit.readCallbackParameters = "{cFoo=cBar}";
         restartActivityHandlerInit.readPartnerParameters = "{pFoo=pBar}";
 
@@ -2337,7 +2320,6 @@ public class TestActivityHandler {
         testSecondEventPackage.suffix = "'event2'";
         testSecondEventPackage.callbackParams = "{\"ceFoo\":\"ceBar\",\"cFoo\":\"cBar\"}";
         testSecondEventPackage.partnerParams = "{\"peFoo\":\"peBar\",\"pFoo\":\"pBar\"}";
-        testSecondEventPackage.externalDeviceId = "externalDeviceIdTest3";
 
         testSecondEventPackage.testEventPackage("event2");
 
@@ -2352,21 +2334,11 @@ public class TestActivityHandler {
         testThirdEventPackage.suffix = "'event3'";
         testThirdEventPackage.callbackParams = "{\"cFoo\":\"ceBar\"}";
         testThirdEventPackage.partnerParams = "{\"pFoo\":\"peBar\"}";
-        testThirdEventPackage.externalDeviceId = "externalDeviceIdTest3";
 
         testThirdEventPackage.testEventPackage("event3");
     }
 
     private void checkSessionParameters() {
-        assertUtil.debug("Wrote Session parameters: External Device Id: externalDeviceIdTest");
-
-        assertUtil.warn("External Device Id externalDeviceIdTest will be overwritten");
-        assertUtil.debug("Wrote Session parameters: External Device Id: externalDeviceIdTest2");
-
-        assertUtil.debug("Wrote Session parameters: External Device Id: null");
-
-        assertUtil.debug("Wrote Session parameters: External Device Id: externalDeviceIdTest3");
-
         //
         assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue}");
         assertUtil.debug("Wrote Session Callback parameters: {cKey=cValue, cFoo=cBar}");
@@ -2823,7 +2795,6 @@ public class TestActivityHandler {
     private void checkInitTests(StateActivityHandlerInit sInit) {
         checkReadFile(sInit.readAttribution, "Attribution");
         checkReadFile(sInit.readActivityState, "Activity state");
-        checkReadFile(sInit.readSessionParameters, "Session parameters");
         checkReadFile(sInit.readCallbackParameters, "Session Callback parameters");
         checkReadFile(sInit.readPartnerParameters, "Session Partner parameters");
 

@@ -19,7 +19,6 @@ public class StateActivityHandlerInit {
     String sendReferrer = null;
     String readActivityState = null;
     String readAttribution = null;
-    String readSessionParameters = null;
     String readCallbackParameters = null;
     String readPartnerParameters = null;
     int foregroundTimerStart = 60;

@@ -347,7 +347,6 @@ public class TestPackageHandler {
 
         assertUtil.debug("Updating package handler queue");
 
-        assertUtil.verbose("Session external device id: null");
         assertUtil.verbose("Session callback parameters: null");
         assertUtil.verbose("Session partner parameters: null");
 
@@ -356,7 +355,6 @@ public class TestPackageHandler {
         assertUtil.debug("Package handler wrote 3 packages");
 
         SessionParameters sessionParameters = new SessionParameters();
-        sessionParameters.externalDeviceId = "sedi";
         sessionParameters.callbackParameters = new HashMap<String, String>(1);
         sessionParameters.callbackParameters.put("scpKey", "scpValue");
         sessionParameters.partnerParameters = new HashMap<String, String>(1);
@@ -368,7 +366,6 @@ public class TestPackageHandler {
 
         assertUtil.debug("Updating package handler queue");
 
-        assertUtil.verbose("Session external device id: sedi");
         assertUtil.verbose("Session callback parameters: {scpKey=scpValue}");
         assertUtil.verbose("Session partner parameters: {sppKey=sppValue}");
 
@@ -376,18 +373,15 @@ public class TestPackageHandler {
         assertUtil.warn("Key sppKey with value sppValue from Partner parameter was replaced by value peBar");
         assertUtil.debug("Package handler wrote 3 packages");
 
-        testFirstSessionPackage.externalDeviceId = "sedi";
         testFirstSessionPackage.callbackParams = "{scpKey=scpValue}";
         testFirstSessionPackage.partnerParams = "{sppKey=sppValue}";
         testFirstSessionPackage.testSessionPackage(1);
 
-        testFirstEventPackage.externalDeviceId = "sedi";
         testFirstEventPackage.callbackParams = "{scpKey=scpValue, ceFoo=ceBar}";
         testFirstEventPackage.partnerParams = "{sppKey=sppValue, peFoo=peBar}";
 
         testFirstEventPackage.testEventPackage("event1");
 
-        testSecondEventPackage.externalDeviceId = "sedi";
         testSecondEventPackage.callbackParams = "{scpKey=ceBar}";
         testSecondEventPackage.partnerParams = "{sppKey=peBar}";
 
@@ -411,7 +405,6 @@ public class TestPackageHandler {
 
         ActivityHandler.deleteActivityState(context);
         ActivityHandler.deleteAttribution(context);
-        ActivityHandler.deleteSessionParameters(context);
         ActivityHandler.deleteSessionCallbackParameters(context);
         ActivityHandler.deleteSessionPartnerParameters(context);
 

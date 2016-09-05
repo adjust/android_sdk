@@ -29,7 +29,6 @@ public class TestActivityPackage {
     public Integer sessionCount;
     public String defaultTracker;
     public Integer subsessionCount;
-    public String externalDeviceId;
     // event
     public String eventToken;
     public String eventCount;
@@ -79,8 +78,6 @@ public class TestActivityPackage {
         }
         // default_tracker
         assertParameterEquals("default_tracker", defaultTracker);
-        // external_device_id
-        assertParameterEquals("external_device_id", externalDeviceId);
         // callback_params
         assertJsonParameterEquals("callback_params", callbackParams);
         // partner_params
@@ -119,8 +116,6 @@ public class TestActivityPackage {
         assertParameterEquals("revenue", revenueString);
         // currency
         assertParameterEquals("currency", currency);
-        // external_device_id
-        assertParameterEquals("external_device_id", externalDeviceId);
         // callback_params
         assertJsonParameterEquals("callback_params", callbackParams);
         // partner_params
