@@ -85,24 +85,6 @@ public class AdjustInstance {
         activityHandler.sendFirstPackages();
     }
 
-    public void addExternalDeviceId(final String externalDeviceId) {
-        if (activityHandler != null) {
-            activityHandler.addExternalDeviceId(externalDeviceId);
-            return;
-        }
-
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        }
-
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
-            @Override
-            public void run(ActivityHandler activityHandler) {
-                activityHandler.addExternalDeviceIdI(externalDeviceId);
-            }
-        });
-    }
-
     public void addSessionCallbackParameter(final String key, final String value) {
         if (activityHandler != null) {
             activityHandler.addSessionCallbackParameter(key, value);
@@ -171,24 +153,6 @@ public class AdjustInstance {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.removeSessionPartnerParameterI(key);
-            }
-        });
-    }
-
-    public void resetExternalDeviceId() {
-        if (activityHandler != null) {
-            activityHandler.resetExternalDeviceId();
-            return;
-        }
-
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        }
-
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
-            @Override
-            public void run(ActivityHandler activityHandler) {
-                activityHandler.resetExternalDeviceIdI();
             }
         });
     }

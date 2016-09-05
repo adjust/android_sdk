@@ -38,8 +38,6 @@ public interface IActivityHandler {
 
     void sendFirstPackages();
 
-    void addExternalDeviceId(String externalDeviceId);
-
     void addSessionCallbackParameter(String key, String value);
 
     void addSessionPartnerParameter(String key, String value);
@@ -47,8 +45,6 @@ public interface IActivityHandler {
     void removeSessionCallbackParameter(String key);
 
     void removeSessionPartnerParameter(String key);
-
-    void resetExternalDeviceId();
 
     void resetSessionCallbackParameters();
 

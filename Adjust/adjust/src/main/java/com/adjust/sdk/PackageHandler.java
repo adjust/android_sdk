@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
-import static com.adjust.sdk.Constants.EXTERNAL_DEVICE_ID_PARAMETER;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
 // persistent
@@ -244,17 +243,11 @@ public class PackageHandler implements IPackageHandler {
         }
 
         logger.debug("Updating package handler queue");
-        logger.verbose("Session external device id: %s", sessionParameters.externalDeviceId);
         logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
         logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
 
         for (ActivityPackage activityPackage : packageQueue) {
             Map<String, String> parameters = activityPackage.getParameters();
-            // external device id
-            PackageBuilder.addString(parameters,
-                    EXTERNAL_DEVICE_ID_PARAMETER,
-                    sessionParameters.externalDeviceId);
-
             // callback parameters
             Map<String, String> mergedCallbackParameters = Util.mergeParameters(sessionParameters.callbackParameters,
                     activityPackage.getCallbackParameters(),

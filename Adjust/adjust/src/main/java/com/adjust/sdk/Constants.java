@@ -38,7 +38,6 @@ public interface Constants {
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
-    String SESSION_PARAMETERS_FILENAME = "AdjustSessionParameters";
     String SESSION_CALLBACK_PARAMETERS_FILENAME = "AdjustSessionCallbackParameters";
     String SESSION_PARTNER_PARAMETERS_FILENAME = "AdjustSessionPartnerParameters";
 
@@ -57,7 +56,6 @@ public interface Constants {
     String MD5 = "MD5";
     String SHA1 = "SHA-1";
 
-    String EXTERNAL_DEVICE_ID_PARAMETER = "external_device_id";
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";
 

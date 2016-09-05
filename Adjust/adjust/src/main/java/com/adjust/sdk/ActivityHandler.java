@@ -24,7 +24,6 @@ import java.util.Map;
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
-import static com.adjust.sdk.Constants.SESSION_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler implements IActivityHandler {
@@ -40,7 +39,6 @@ public class ActivityHandler implements IActivityHandler {
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
     private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
-    private static final String SESSION_PARAMETERS_NAME = "Session parameters";
     private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
     private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
 
@@ -492,16 +490,6 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void addExternalDeviceId(final String externalDeviceId) {
-        scheduledExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                addExternalDeviceIdI(externalDeviceId);
-            }
-        });
-    }
-
-    @Override
     public void addSessionCallbackParameter(final String key, final String value) {
         scheduledExecutor.submit(new Runnable() {
             @Override
@@ -537,16 +525,6 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 removeSessionPartnerParameterI(key);
-            }
-        });
-    }
-
-    @Override
-    public void resetExternalDeviceId() {
-        scheduledExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                resetExternalDeviceIdI();
             }
         });
     }
@@ -614,11 +592,8 @@ public class ActivityHandler implements IActivityHandler {
         // has to be read in the background
         readAttributionI(adjustConfig.context);
         readActivityStateI(adjustConfig.context);
-        // read first the Session parameter class
-        readSessionParametersI(adjustConfig.context);
-        if (sessionParameters == null) {
-            sessionParameters = new SessionParameters();
-        }
+
+        sessionParameters = new SessionParameters();
         readSessionCallbackParametersI(adjustConfig.context);
         readSessionPartnerParametersI(adjustConfig.context);
 
@@ -1180,10 +1155,6 @@ public class ActivityHandler implements IActivityHandler {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
-    public static boolean deleteSessionParameters(Context context) {
-        return context.deleteFile(SESSION_PARAMETERS_FILENAME);
-    }
-
     public static boolean deleteSessionCallbackParameters(Context context) {
         return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME);
     }
@@ -1336,18 +1307,6 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    public void addExternalDeviceIdI(String externalDeviceId) {
-        if (!Util.isValidParameter(externalDeviceId, "value", "External Device Id")) return;
-
-        if (sessionParameters.externalDeviceId != null) {
-            logger.warn("External Device Id %s will be overwritten", sessionParameters.externalDeviceId);
-        }
-
-        sessionParameters.externalDeviceId = externalDeviceId;
-
-        writeSessionParametersI();
-    }
-
     public void addSessionCallbackParameterI(String key, String value) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
         if (!Util.isValidParameter(value, "value", "Session Callback")) return;
@@ -1436,17 +1395,6 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionPartnerParametersI();
     }
 
-    public void resetExternalDeviceIdI() {
-        if (sessionParameters.externalDeviceId == null) {
-            logger.warn("External Device Id is not set");
-            return;
-        }
-
-        sessionParameters.externalDeviceId = null;
-
-        writeSessionParametersI();
-    }
-
     public void resetSessionCallbackParametersI() {
         if (sessionParameters.callbackParameters == null) {
             logger.warn("Session Callback parameters are not set");
@@ -1503,18 +1451,6 @@ public class ActivityHandler implements IActivityHandler {
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ATTRIBUTION_NAME, e.getMessage());
             attribution = null;
-        }
-    }
-
-    private void readSessionParametersI(Context context) {
-        try {
-            sessionParameters = Util.readObject(context,
-                    SESSION_PARAMETERS_FILENAME,
-                    SESSION_PARAMETERS_NAME,
-                    SessionParameters.class);
-        } catch (Exception e) {
-            logger.error("Failed to read %s file (%s)", SESSION_PARAMETERS_NAME, e.getMessage());
-            sessionParameters = null;
         }
     }
 
@@ -1591,15 +1527,6 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void writeSessionParametersI() {
-        synchronized (SessionParameters.class) {
-            if (sessionParameters == null) {
-                return;
-            }
-            Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
-        }
-    }
-
     private void writeSessionCallbackParametersI() {
         synchronized (SessionParameters.class) {
             if (sessionParameters == null) {
@@ -1624,7 +1551,6 @@ public class ActivityHandler implements IActivityHandler {
                 return;
             }
             if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteSessionParameters(adjustConfig.context);
                 deleteSessionCallbackParameters(adjustConfig.context);
                 deleteSessionPartnerParameters(adjustConfig.context);
             }

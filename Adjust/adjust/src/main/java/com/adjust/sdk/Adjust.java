@@ -81,11 +81,6 @@ public class Adjust {
         adjustInstance.sendFirstPackages();
     }
 
-    public static void addExternalDeviceId(String externalDeviceId) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.addExternalDeviceId(externalDeviceId);
-    }
-
     public static void addSessionCallbackParameter(String key, String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.addSessionCallbackParameter(key, value);
@@ -104,11 +99,6 @@ public class Adjust {
     public static void removeSessionPartnerParameter(String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.removeSessionPartnerParameter(key);
-    }
-
-    public static void resetExternalDeviceId() {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetExternalDeviceId();
     }
 
     public static void resetSessionCallbackParameters() {

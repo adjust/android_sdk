@@ -16,7 +16,6 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import static com.adjust.sdk.Constants.EXTERNAL_DEVICE_ID_PARAMETER;
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
@@ -76,7 +75,6 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
 
         if (!isInDelay) {
-            PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
         }
@@ -100,7 +98,6 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "currency", event.currency);
 
         if (!isInDelay) {
-            PackageBuilder.addString(parameters, EXTERNAL_DEVICE_ID_PARAMETER, sessionParameters.externalDeviceId);
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
                     Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
