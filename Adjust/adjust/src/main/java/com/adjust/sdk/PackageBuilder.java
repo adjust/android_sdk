@@ -32,6 +32,7 @@ class PackageBuilder {
     String reftag;
     String referrer;
     String deeplink;
+    long clickTime;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -117,7 +118,7 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source, long clickTime) {
+    public ActivityPackage buildClickPackage(String source) {
         Map<String, String> parameters = getIdsParameters();
 
         PackageBuilder.addString(parameters, "source", source);

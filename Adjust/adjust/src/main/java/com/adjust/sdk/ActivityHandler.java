@@ -1005,7 +1005,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         clickPackageBuilder.referrer = referrer;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, clickTime);
+        clickPackageBuilder.clickTime = clickTime;
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
@@ -1027,7 +1028,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         clickPackageBuilder.deeplink = url.toString();
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, clickTime);
+        clickPackageBuilder.clickTime = clickTime;
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
