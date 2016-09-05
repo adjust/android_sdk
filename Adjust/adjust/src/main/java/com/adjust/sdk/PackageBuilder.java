@@ -32,6 +32,7 @@ class PackageBuilder {
     String reftag;
     String referrer;
     String deeplink;
+    String pushToken;
     long clickTime;
 
     private static ILogger logger = AdjustFactory.getLogger();
@@ -127,6 +128,7 @@ class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
+        PackageBuilder.addString(parameters, "push_token", pushToken);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);

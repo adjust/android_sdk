@@ -235,6 +235,11 @@ public class AdjustInstance {
         activityHandler = null;
     }
 
+    public void setPushToken(String token) {
+        if (!checkActivityHandler()) return;
+        activityHandler.setPushToken(token);
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

@@ -121,6 +121,11 @@ public class Adjust {
         adjustInstance.resetSessionPartnerParameters();
     }
 
+    public static void setPushToken(String token) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.setPushToken(token);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }

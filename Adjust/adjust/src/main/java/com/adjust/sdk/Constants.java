@@ -33,6 +33,7 @@ public interface Constants {
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String DEEPLINK = "deeplink";
+    String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";

@@ -36,7 +36,8 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
             new ObjectStreamField("updatePackages", boolean.class),
-            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class)
+            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
+            new ObjectStreamField("pushToken", String.class)
     };
 
     // persistent data
@@ -60,6 +61,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     protected LinkedList<String> orderIds;
 
+    protected String pushToken;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -76,6 +79,7 @@ public class ActivityState implements Serializable, Cloneable {
         lastInterval = -1;
         updatePackages = false;
         orderIds = null;
+        pushToken = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -131,6 +135,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
         if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
+        if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
         return true;
     }
 
@@ -148,6 +153,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(lastInterval);
         hashCode = 37 * hashCode + Util.hashBoolean(updatePackages);
         hashCode = 37 * hashCode + Util.hashObject(orderIds);
+        hashCode = 37 * hashCode + Util.hashString(pushToken);
         return hashCode;
     }
 
@@ -170,6 +176,8 @@ public class ActivityState implements Serializable, Cloneable {
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);
 
         orderIds = Util.readObjectField(fields, "orderIds", null);
+
+        pushToken = Util.readStringField(fields, "pushToken", null);
 
         // create UUID for migrating devices
         if (uuid == null) {

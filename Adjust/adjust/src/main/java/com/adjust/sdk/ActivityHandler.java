@@ -571,6 +571,16 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
+    public void setPushToken(final String token) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                setPushTokenI(token);
+            }
+        });
+    }
+
     public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -1455,6 +1465,27 @@ public class ActivityHandler implements IActivityHandler {
         sessionParameters.partnerParameters = null;
 
         writeSessionPartnerParametersI();
+    }
+
+    private void setPushTokenI(String token) {
+        if (token == null) {
+            return;
+        }
+
+        if (token.equals(activityState.pushToken)) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        PackageBuilder clickPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        clickPackageBuilder.pushToken = token;
+
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.PUSH);
+        sdkClickHandler.sendSdkClick(clickPackage);
+
+        // save new push token
+        activityState.pushToken = token;
+        writeActivityStateI();
     }
 
     private void readActivityStateI(Context context) {
