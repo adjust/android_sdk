@@ -103,10 +103,12 @@ public class Logger implements ILogger {
 
     @Override
     public void Assert(String message, Object... parameters) {
-        try {
-            Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
-        } catch (Exception e) {
-            Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+        if(logLevel.androidLogLevel <= Log.ASSERT) {
+            try {
+                Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+            }
         }
     }
 
