@@ -41,6 +41,7 @@ our [Android web views SDK guide](doc/web_views.md).
    * [Event buffering](#event-buffering)
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
+   * [Push token](#push-token)
    * [Pre-installed trackers](#pre-installed-trackers)
    * [Deep linking](#deeplinking)
       * [Standard deep linking scenario](#deeplinking-standard)
@@ -755,6 +756,15 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 
 Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as 
 the variable `googleAdId`.
+
+### <a id="push-token"></a>Push token
+
+To send us the push notification token, add the following call to Adjust once you have obtained your token or when ever 
+it's value changed:
+
+```java
+Adjust.setPushToken(pushNotificationsToken);
+```
 
 ### <a id="pre-installed-trackers">Pre-installed trackers
 
