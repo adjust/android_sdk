@@ -8,4 +8,5 @@ public interface ISdkClickHandler {
     void pauseSending();
     void resumeSending();
     void sendSdkClick(ActivityPackage sdkClick);
+    void teardown();
 }

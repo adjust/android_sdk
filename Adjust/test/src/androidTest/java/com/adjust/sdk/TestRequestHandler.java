@@ -1,40 +1,41 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.content.Context;
 import android.os.SystemClock;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
 
-import com.adjust.sdk.ActivityHandler;
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.RequestHandler;
+import com.adjust.sdk.test.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by pfms on 30/01/15.
  */
-public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class TestRequestHandler {
     private MockLogger mockLogger;
     private MockPackageHandler mockPackageHandler;
     private MockHttpsURLConnection mockHttpsURLConnection;
     private AssertUtil assertUtil;
-    private UnitTestActivity activity;
+    private com.adjust.sdk.test.UnitTestActivity activity;
     private Context context;
 
     private ActivityPackage sessionPackage;
     private RequestHandler requestHandler;
 
-    public TestRequestHandler() {
-        super(UnitTestActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
 
-    public TestRequestHandler(Class<UnitTestActivity> activityClass) {
-        super(activityClass);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() throws Exception {
         mockLogger = new MockLogger();
         mockPackageHandler = new MockPackageHandler(mockLogger);
         mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
@@ -45,21 +46,20 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
         AdjustFactory.setPackageHandler(mockPackageHandler);
         AdjustFactory.setHttpsURLConnection(mockHttpsURLConnection);
 
-        activity = getActivity();
+        activity = mActivityRule.getActivity();
         context = activity.getApplicationContext();
 
         sessionPackage = getSessionPackage();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() throws Exception {
         AdjustFactory.setHttpsURLConnection(null);
         AdjustFactory.setPackageHandler(null);
         AdjustFactory.setLogger(null);
     }
 
+    @Test
     public void testSend() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testSend");
@@ -106,9 +106,9 @@ public class TestRequestHandler extends ActivityInstrumentationTestCase2<UnitTes
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.error("Failed to read response. (null)");
+        assertUtil.error("Failed to read response. (lock == null)");
 
-        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException)");
+        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException: lock == null)");
 
         assertUtil.test("PackageHandler sendNextPackage");
     }

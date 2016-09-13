@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.List;
+
 /**
  * Created by pfms on 06/11/14.
  */
@@ -10,7 +12,6 @@ public class AdjustConfig {
     String appToken;
     String environment;
     String processName;
-    LogLevel logLevel;
     String sdkPrefix;
     boolean eventBufferingEnabled;
     String defaultTracker;
@@ -25,11 +26,29 @@ public class AdjustConfig {
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
+    Double delayStart;
+    List<IRunActivityHandler> sessionParametersActionsArray;
+    boolean allowSuppressLogLevel;
+    ILogger logger;
+    String userAgent;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
     public AdjustConfig(Context context, String appToken, String environment) {
+        init(context, appToken, environment, false);
+    }
+
+    public AdjustConfig(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
+        init(context, appToken, environment, allowSuppressLogLevel);
+    }
+
+    private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
+        this.allowSuppressLogLevel = allowSuppressLogLevel;
+        logger = AdjustFactory.getLogger();
+        // default values
+        setLogLevel(LogLevel.INFO, environment);
+
         if (!isValid(context, appToken, environment)) {
             return;
         }
@@ -39,7 +58,6 @@ public class AdjustConfig {
         this.environment = environment;
 
         // default values
-        this.logLevel = LogLevel.INFO;
         this.eventBufferingEnabled = false;
         this.sendInBackground = false;
     }
@@ -57,7 +75,7 @@ public class AdjustConfig {
     }
 
     public void setLogLevel(LogLevel logLevel) {
-        this.logLevel = logLevel;
+        setLogLevel(logLevel, environment);
     }
 
     public void setSdkPrefix(String sdkPrefix) {
@@ -102,6 +120,13 @@ public class AdjustConfig {
         this.onDeeplinkResponseListener = onDeeplinkResponseListener;
     }
 
+    public void setDelayStart(double delayStart) {
+        this.delayStart = delayStart;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
+    }
     public boolean hasAttributionChangedListener() {
         return onAttributionChangedListener != null;
     }
@@ -126,8 +151,29 @@ public class AdjustConfig {
         return true;
     }
 
-    private static boolean checkContext(Context context) {
-        ILogger logger = AdjustFactory.getLogger();
+    private void setLogLevel(LogLevel logLevel, String environment) {
+        LogLevel newLogLevel = null;
+        if (ENVIRONMENT_PRODUCTION.equals(environment)) {
+            // production && allows supress -> Supress
+            if (allowSuppressLogLevel) {
+                newLogLevel = LogLevel.SUPRESS;
+            } else {
+                // production && not allow supress -> Assert
+                newLogLevel = LogLevel.ASSERT;
+            }
+        } else {
+            // not allow supress && try supress -> Assert
+            if (!allowSuppressLogLevel &&
+                    logLevel == LogLevel.SUPRESS) {
+                newLogLevel = LogLevel.ASSERT;
+            } else {
+                newLogLevel = logLevel;
+            }
+        }
+        logger.setLogLevel(newLogLevel);
+    }
+
+    private boolean checkContext(Context context) {
         if (context == null) {
             logger.error("Missing context");
             return false;
@@ -141,8 +187,7 @@ public class AdjustConfig {
         return true;
     }
 
-    private static boolean checkAppToken(String appToken) {
-        ILogger logger = AdjustFactory.getLogger();
+    private boolean checkAppToken(String appToken) {
         if (appToken == null) {
             logger.error("Missing App Token");
             return false;
@@ -156,8 +201,7 @@ public class AdjustConfig {
         return true;
     }
 
-    private static boolean checkEnvironment(String environment) {
-        ILogger logger = AdjustFactory.getLogger();
+    private boolean checkEnvironment(String environment) {
         if (environment == null) {
             logger.error("Missing environment");
             return false;

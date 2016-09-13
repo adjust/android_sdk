@@ -4,16 +4,18 @@ package com.adjust.sdk;
  * Created by pfms on 15/12/14.
  */
 public interface IAttributionHandler {
-    public void init(IActivityHandler activityHandler,
+    void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
                      boolean startsSending,
                      boolean hasListener);
 
-    public void getAttribution();
+    void getAttribution();
 
-    public void checkSessionResponse(SessionResponseData responseData);
+    void checkSessionResponse(SessionResponseData responseData);
 
-    public void pauseSending();
+    void pauseSending();
 
-    public void resumeSending();
+    void resumeSending();
+
+    void teardown();
 }

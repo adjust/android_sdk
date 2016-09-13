@@ -1,44 +1,43 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.SystemClock;
+import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
+import android.test.suitebuilder.annotation.LargeTest;
 
-import com.adjust.sdk.ActivityHandler;
-import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.AttributionHandler;
-import com.adjust.sdk.ResponseData;
-import com.adjust.sdk.SessionResponseData;
+import com.adjust.sdk.test.*;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * Created by pfms on 28/01/15.
  */
-public class TestAttributionHandler extends ActivityInstrumentationTestCase2<UnitTestActivity> {
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class TestAttributionHandler{
     private MockLogger mockLogger;
     private MockActivityHandler mockActivityHandler;
     private MockHttpsURLConnection mockHttpsURLConnection;
     private AssertUtil assertUtil;
-    private UnitTestActivity activity;
+    private com.adjust.sdk.test.UnitTestActivity activity;
     private Context context;
     private ActivityPackage attributionPackage;
     private ActivityPackage firstSessionPackage;
 
-    public TestAttributionHandler() {
-        super(UnitTestActivity.class);
-    }
+    @Rule
+    public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
 
-    public TestAttributionHandler(Class<UnitTestActivity> activityClass) {
-        super(activityClass);
-    }
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Before
+    public void setUp() {
         mockLogger = new MockLogger();
         mockActivityHandler = new MockActivityHandler(mockLogger);
         mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
@@ -49,7 +48,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         AdjustFactory.setActivityHandler(mockActivityHandler);
         AdjustFactory.setHttpsURLConnection(mockHttpsURLConnection);
 
-        activity = getActivity();
+        activity = mActivityRule.getActivity();
         context = activity.getApplicationContext();
 
         savePackages();
@@ -80,7 +79,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
 
         SystemClock.sleep(3000);
 
-        ActivityPackage attributionPackage = activityHandler.getAttributionPackage();
+        ActivityPackage attributionPackage = activityHandler.getAttributionPackageI();
 
         TestActivityPackage attributionPackageTest = new TestActivityPackage(attributionPackage);
 
@@ -91,10 +90,8 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         this.attributionPackage = attributionPackage;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() {
         AdjustFactory.setHttpsURLConnection(null);
         AdjustFactory.setActivityHandler(null);
         AdjustFactory.setLogger(null);
@@ -103,6 +100,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         context = null;
     }
 
+    @Test
     public void testGetAttribution() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testGetAttribution");
@@ -129,6 +127,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         okMessageTest(attributionHandler);
     }
 
+    @Test
     public void testCheckSessionResponse() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testCheckSessionResponse");
@@ -148,7 +147,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
                     "\"creative\"      : \"ctValue\" , " +
                     "\"click_label\"   : \"clValue\" }");
         } catch (JSONException e) {
-            fail(e.getMessage());
+            assertUtil.fail(e.getMessage());
         }
 
         SessionResponseData sessionResponseData = (SessionResponseData) ResponseData.buildResponseData(firstSessionPackage);
@@ -171,6 +170,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.test("ActivityHandler launchSessionResponseTasks, message:null timestamp:null json:{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\",\"click_label\":\"clValue\"}");
     }
 
+    @Test
     public void testAskIn() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testAskIn");
@@ -184,7 +184,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         try {
             askIn4sJson = new JSONObject("{ \"ask_in\" : 4000 }");
         } catch (JSONException e) {
-            fail(e.getMessage());
+            assertUtil.fail(e.getMessage());
         }
 
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
@@ -215,7 +215,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         try {
             askIn5sJson = new JSONObject("{ \"ask_in\" : 5000 }");
         } catch (JSONException e) {
-            fail(e.getMessage());
+            assertUtil.fail(e.getMessage());
         }
 
         sessionResponseData.jsonResponse = askIn5sJson;
@@ -242,6 +242,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         //requestTest(mockHttpClient.lastRequest);
     }
 
+    @Test
     public void testPause() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testPause");
@@ -264,6 +265,7 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         assertUtil.notInTest("MockHttpsURLConnection getInputStream");
     }
 
+    @Test
     public void testWithoutListener() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testPause");
@@ -284,6 +286,54 @@ public class TestAttributionHandler extends ActivityInstrumentationTestCase2<Uni
         //assertUtil.isNull(mockHttpClient.lastRequest);
 
         assertUtil.notInTest("MockHttpsURLConnection getInputStream");
+    }
+
+    @Test
+    public void testDeeplink() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestAttributionHandler testDeeplink");
+
+        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
+                attributionPackage, true, true);
+
+        JSONObject responseJson = new JSONObject();
+
+        SessionResponseData sessionResponseDeeplink = (SessionResponseData) ResponseData.buildResponseData(firstSessionPackage);
+        try {
+            JSONObject internalAttributionJson = new JSONObject();
+            internalAttributionJson.put("deeplink", "testDeeplinkAttribution://");
+
+            responseJson.put("deeplink", "testDeeplinkRoot://");
+            responseJson.put("attribution", internalAttributionJson);
+
+            //sessionResponseDeeplink.jsonResponse = new JSONObject("{ " +
+            //        "\"deeplink\" :  \"testDeeplinkRoot://\" }");
+
+        } catch (JSONException e) {
+            assertUtil.fail(e.getMessage());
+        }
+
+        sessionResponseDeeplink.jsonResponse = responseJson;
+        attributionHandler.checkSessionResponse(sessionResponseDeeplink);
+        SystemClock.sleep(2000);
+
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        assertUtil.test("ActivityHandler launchSessionResponseTasks, message:null timestamp:null " +
+                "json:{\"deeplink\":\"testDeeplinkRoot:\\/\\/\",\"attribution\":{\"deeplink\":\"testDeeplinkAttribution:\\/\\/\"}}");
+
+        AttributionResponseData attributionResponseDeeplink = (AttributionResponseData)ResponseData.buildResponseData(attributionPackage);
+
+        attributionResponseDeeplink.jsonResponse = responseJson;
+        attributionHandler.checkAttributionResponse(attributionResponseDeeplink);
+        SystemClock.sleep(2000);
+
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        assertUtil.test("ActivityHandler launchAttributionResponseTasks, message:null timestamp:null " +
+                "json:{\"deeplink\":\"testDeeplinkRoot:\\/\\/\",\"attribution\":{\"deeplink\":\"testDeeplinkAttribution:\\/\\/\"}}");
+
+        assertUtil.isEqual(attributionResponseDeeplink.deeplink, Uri.parse("testDeeplinkAttribution://"));
     }
 
     private void nullClientTest(AttributionHandler attributionHandler) {

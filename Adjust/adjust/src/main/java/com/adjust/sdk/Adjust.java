@@ -76,9 +76,47 @@ public class Adjust {
         adjustInstance.setOfflineMode(enabled);
     }
 
+    public static void sendFirstPackages() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.sendFirstPackages();
+    }
+
+    public static void addSessionCallbackParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionCallbackParameter(key, value);
+    }
+
+    public static void addSessionPartnerParameter(String key, String value) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.addSessionPartnerParameter(key, value);
+    }
+
+    public static void removeSessionCallbackParameter(String key) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.removeSessionCallbackParameter(key);
+    }
+
+    public static void removeSessionPartnerParameter(String key) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.removeSessionPartnerParameter(key);
+    }
+
+    public static void resetSessionCallbackParameters() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.resetSessionCallbackParameters();
+    }
+
+    public static void resetSessionPartnerParameters() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.resetSessionPartnerParameters();
+    }
+
+    public static void setPushToken(String token) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.setPushToken(token);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
 }
-
-

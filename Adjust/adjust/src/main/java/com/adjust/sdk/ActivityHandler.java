@@ -16,20 +16,17 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.HandlerThread;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
-import static com.adjust.sdk.Constants.LOGTAG;
+import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
-public class ActivityHandler extends HandlerThread implements IActivityHandler {
-
+public class ActivityHandler implements IActivityHandler {
     private static long FOREGROUND_TIMER_INTERVAL;
     private static long FOREGROUND_TIMER_START;
     private static long BACKGROUND_TIMER_INTERVAL;
@@ -41,14 +38,17 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
+    private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
+    private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
+    private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
 
-    private Handler internalHandler;
+    private CustomScheduledExecutor scheduledExecutor;
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
     private TimerCycle foregroundTimer;
-    private ScheduledExecutorService scheduler;
     private TimerOnce backgroundTimer;
+    private TimerOnce delayStartTimer;
     private InternalState internalState;
 
     private DeviceInfo deviceInfo;
@@ -56,11 +56,66 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
+    private SessionParameters sessionParameters;
+
+    @Override
+    public void teardown(boolean deleteState) {
+        if (backgroundTimer != null) {
+            backgroundTimer.teardown();
+        }
+        if (foregroundTimer != null) {
+            foregroundTimer.teardown();
+        }
+        if (delayStartTimer != null) {
+            delayStartTimer.teardown();
+        }
+        if (scheduledExecutor != null) {
+            try {
+                scheduledExecutor.shutdownNow();
+            } catch(SecurityException se) {}
+        }
+        if (packageHandler != null) {
+            packageHandler.teardown(deleteState);
+        }
+        if (attributionHandler != null) {
+            attributionHandler.teardown();
+        }
+        if (sdkClickHandler != null) {
+            sdkClickHandler.teardown();
+        }
+        if (sessionParameters != null) {
+            if (sessionParameters.callbackParameters != null) {
+                sessionParameters.callbackParameters.clear();
+            }
+            if (sessionParameters.partnerParameters != null) {
+                sessionParameters.partnerParameters.clear();
+            }
+        }
+
+        teardownActivityStateS(deleteState);
+        teardownAttributionS(deleteState);
+        teardownAllSessionParametersS(deleteState);
+
+        packageHandler = null;
+        logger = null;
+        foregroundTimer = null;
+        scheduledExecutor = null;
+        backgroundTimer = null;
+        delayStartTimer = null;
+        internalState = null;
+        deviceInfo = null;
+        adjustConfig = null;
+        attributionHandler = null;
+        sdkClickHandler = null;
+        sessionParameters = null;
+    }
 
     public class InternalState {
         boolean enabled;
         boolean offline;
         boolean background;
+        boolean delayStart;
+        boolean updatePackages;
 
         public boolean isEnabled() {
             return enabled;
@@ -85,70 +140,48 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         public boolean isForeground() {
             return !background;
         }
+
+        public boolean isDelayStart() {
+            return delayStart;
+        }
+
+        public boolean isToStartNow() {
+            return !delayStart;
+        }
+
+        public boolean isToUpdatePackages() {
+            return updatePackages;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
-        super(LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-
         init(adjustConfig);
 
         // init logger to be available everywhere
         logger = AdjustFactory.getLogger();
-        if (AdjustConfig.ENVIRONMENT_PRODUCTION.equals(adjustConfig.environment)) {
-            logger.setLogLevel(LogLevel.ASSERT);
-        } else {
-            logger.setLogLevel(adjustConfig.logLevel);
-        }
 
-        this.internalHandler = new Handler(getLooper());
+        logger.lockLogLevel();
+
+        scheduledExecutor = new CustomScheduledExecutor("ActivityHandler");
         internalState = new InternalState();
 
-        // read files to have sync values available
-        readAttribution(adjustConfig.context);
-        readActivityState(adjustConfig.context);
-
         // enabled by default
-        if (activityState == null) {
-            internalState.enabled = true;
-        } else {
-            internalState.enabled = activityState.enabled;
-        }
+        internalState.enabled = true;
         // online by default
         internalState.offline = false;
         // in the background by default
         internalState.background = true;
+        // delay start not configured by default
+        internalState.delayStart = false;
+        // does not need to update packages by default
+        internalState.updatePackages = false;
 
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                initInternal();
+                initI();
             }
         });
-
-        // get timer values
-        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
-        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-
-        // initialize timers to be available in onResume/onPause
-        // after initInternal so that the handlers are initialized
-        foregroundTimer = new TimerCycle(new Runnable() {
-            @Override
-            public void run() {
-                foregroundTimerFired();
-            }
-        }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
-
-        // create background timer
-        scheduler = Executors.newSingleThreadScheduledExecutor();
-        backgroundTimer = new TimerOnce(scheduler, new Runnable() {
-            @Override
-            public void run() {
-                backgroundTimerFired();
-            }
-        }, BACKGROUND_TIMER_NAME);
     }
 
     @Override
@@ -194,16 +227,18 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void onResume() {
         internalState.background = false;
 
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                stopBackgroundTimer();
+                delayStartI();
 
-                startForegroundTimer();
+                stopBackgroundTimerI();
+
+                startForegroundTimerI();
 
                 logger.verbose("Subsession start");
 
-                startInternal();
+                startI();
             }
         });
     }
@@ -212,32 +247,32 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     public void onPause() {
         internalState.background = true;
 
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                stopForegroundTimer();
+                stopForegroundTimerI();
 
-                startBackgroundTimer();
+                startBackgroundTimerI();
 
                 logger.verbose("Subsession end");
 
-                endInternal();
+                endI();
             }
         });
     }
 
     @Override
     public void trackEvent(final AdjustEvent event) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
                 if (activityState == null) {
-                    logger.warn("Event triggered before first application launch.\n" +
-                            "This will trigger the SDK start and an install without user interaction.\n" +
+                    logger.warn("Event tracked before first activity resumed.\n" +
+                            "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
                             "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
-                    startInternal();
+                    startI();
                 }
-                trackEventInternal(event);
+                trackEventI(event);
             }
         });
     }
@@ -251,13 +286,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
-            launchEventResponseTasks((EventResponseData)responseData);
+            launchEventResponseTasksI((EventResponseData)responseData);
             return;
         }
     }
 
     @Override
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(final boolean enabled) {
         // compare with the saved or internal state
         if (!hasChangedState(this.isEnabled(), enabled,
                 "Adjust already enabled", "Adjust already disabled")) {
@@ -269,20 +304,25 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(!enabled,
-                    "Package handler and attribution handler will start as paused due to the SDK being disabled",
-                    "Package and attribution handler will still start as paused due to the SDK being offline",
-                    "Package handler and attribution handler will start as active due to the SDK being enabled");
+                    "Handlers will start as paused due to the SDK being disabled",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to the SDK being enabled");
             return;
         }
 
         // save new enabled state in activity state
-        activityState.enabled = enabled;
-        writeActivityState();
+        Runnable saveEnabled = new Runnable() {
+            @Override
+            public void run() {
+                activityState.enabled = enabled;
+            }
+        };
+        writeActivityStateS(saveEnabled);
 
         updateStatus(!enabled,
-                "Pausing package handler and attribution handler due to SDK being disabled",
-                "Package and attribution handler remain paused due to SDK being offline",
-                "Resuming package handler and attribution handler due to SDK being enabled");
+                "Pausing handlers due to SDK being disabled",
+                "Handlers remain paused",
+                "Resuming handlers due to SDK being enabled");
     }
 
     private void updateStatus(boolean pausingState, String pausingMessage,
@@ -291,18 +331,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
-            updateHandlersStatusAndSend();
-            return;
+        }
+        // check if it's remaining in a pause state
+        else if (pausedI(false)) {                      // safe to use internal version of paused (read only), can suffer from phantom read but not an issue
+            // including the sdk click handler
+            if (pausedI(true)) {
+                logger.info(remainsPausedMessage);
+            } else {
+                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
+            }
+        } else {
+            // it is changing from a pause state to an active state
+            logger.info(unPausingMessage);
         }
 
-        // it is remaining in a pause state
-        if (paused()) {
-            logger.info(remainsPausedMessage);
-        // it is changing from a pause state to an active state
-        } else {
-            logger.info(unPausingMessage);
-            updateHandlersStatusAndSend();
-        }
+        updateHandlersStatusAndSend();
     }
 
     private boolean hasChangedState(boolean previousState, boolean newState,
@@ -334,20 +377,24 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         if (activityState == null) {
             updateStatus(offline,
-                    "Package handler and attribution handler will start paused due to SDK being offline",
-                    "Package and attribution handler will still start as paused due to SDK being disabled",
-                    "Package handler and attribution handler will start as active due to SDK being online");
+                    "Handlers will start paused due to SDK being offline",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to SDK being online");
             return;
         }
 
         updateStatus(offline,
-                "Pausing package and attribution handler to put SDK offline mode",
-                "Package and attribution handler remain paused due to SDK being disabled",
-                "Resuming package handler and attribution handler to put SDK in online mode");
+                "Pausing handlers to put SDK offline mode",
+                "Handlers remain paused",
+                "Resuming handlers to put SDK in online mode");
     }
 
     @Override
     public boolean isEnabled() {
+        return isEnabledI();
+    }
+
+    private boolean isEnabledI() {
         if (activityState != null) {
             return activityState.enabled;
         } else {
@@ -357,16 +404,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
     @Override
     public void readOpenUrl(final Uri url, final long clickTime) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                readOpenUrlInternal(url, clickTime);
+                readOpenUrlI(url, clickTime);
             }
         });
     }
 
     @Override
-    public boolean updateAttribution(AdjustAttribution attribution) {
+    public boolean updateAttributionI(AdjustAttribution attribution) {
         if (attribution == null) {
             return false;
         }
@@ -375,62 +422,144 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             return false;
         }
 
-        saveAttribution(attribution);
+        this.attribution = attribution;
+        writeAttributionI();
         return true;
     }
 
-    private void saveAttribution(AdjustAttribution attribution) {
-        this.attribution = attribution;
-        writeAttribution();
-    }
-
     @Override
-    public void setAskingAttribution(boolean askingAttribution) {
-        activityState.askingAttribution = askingAttribution;
-        writeActivityState();
+    public void setAskingAttribution(final boolean askingAttribution) {
+        Runnable saveAskingAttribution = new Runnable() {
+            @Override
+            public void run() {
+                activityState.askingAttribution = askingAttribution;
+            }
+        };
+
+        writeActivityStateS(saveAskingAttribution);
     }
 
     @Override
     public void sendReferrer(final String referrer, final long clickTime) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendReferrerInternal(referrer, clickTime);
+                sendReferrerI(referrer, clickTime);
             }
         });
     }
 
     @Override
     public void launchEventResponseTasks(final EventResponseData eventResponseData) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                launchEventResponseTasksInternal(eventResponseData);
+                launchEventResponseTasksI(eventResponseData);
             }
         });
     }
 
     @Override
     public void launchSessionResponseTasks(final SessionResponseData sessionResponseData) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                launchSessionResponseTasksInternal(sessionResponseData);
+                launchSessionResponseTasksI(sessionResponseData);
             }
         });
     }
 
     @Override
     public void launchAttributionResponseTasks(final AttributionResponseData attributionResponseData) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                launchAttributionResponseTasksInternal(attributionResponseData);
+                launchAttributionResponseTasksI(attributionResponseData);
             }
         });
     }
 
-    public ActivityPackage getAttributionPackage() {
+    @Override
+    public void sendFirstPackages () {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendFirstPackagesI();
+            }
+        });
+    }
+
+    @Override
+    public void addSessionCallbackParameter(final String key, final String value) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                addSessionCallbackParameterI(key, value);
+            }
+        });
+    }
+
+    @Override
+    public void addSessionPartnerParameter(final String key, final String value) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                addSessionPartnerParameterI(key, value);
+            }
+        });
+    }
+
+    @Override
+    public void removeSessionCallbackParameter(final String key) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                removeSessionCallbackParameterI(key);
+            }
+        });
+    }
+
+    @Override
+    public void removeSessionPartnerParameter(final String key) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                removeSessionPartnerParameterI(key);
+            }
+        });
+    }
+
+    @Override
+    public void resetSessionCallbackParameters() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                resetSessionCallbackParametersI();
+            }
+        });
+    }
+
+    @Override
+    public void resetSessionPartnerParameters() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                resetSessionPartnerParametersI();
+            }
+        });
+    }
+
+    @Override
+    public void setPushToken(final String token) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                setPushTokenI(token);
+            }
+        });
+    }
+
+    public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
                 deviceInfo,
@@ -444,35 +573,34 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
     }
 
     private void updateHandlersStatusAndSend() {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                updateHandlersStatusAndSendInternal();
+                updateHandlersStatusAndSendI();
             }
         });
     }
 
-    private void foregroundTimerFired() {
-        internalHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                foregroundTimerFiredInternal();
-            }
-        });
-    }
-
-    private void backgroundTimerFired() {
-        internalHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                backgroundTimerFiredInternal();
-            }
-        });
-    }
-
-    private void initInternal() {
+    private void initI() {
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
+        // get timer values
+        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
+
+        // has to be read in the background
+        readAttributionI(adjustConfig.context);
+        readActivityStateI(adjustConfig.context);
+
+        sessionParameters = new SessionParameters();
+        readSessionCallbackParametersI(adjustConfig.context);
+        readSessionPartnerParametersI(adjustConfig.context);
+
+        if (activityState != null) {
+            internalState.enabled = activityState.enabled;
+            internalState.updatePackages = activityState.updatePackages;
+        }
 
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
 
@@ -497,36 +625,90 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
-        if (adjustConfig.referrer != null) {
-            sendReferrer(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
+        foregroundTimer = new TimerCycle(scheduledExecutor,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        foregroundTimerFiredI();
+                    }
+                }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
+
+        // create background timer
+        if (adjustConfig.sendInBackground) {
+            logger.info("Send in background configured");
+
+            backgroundTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+                @Override
+                public void run() {
+                    backgroundTimerFiredI();
+                }
+            }, BACKGROUND_TIMER_NAME);
         }
 
-        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSend());
+        // configure delay start timer
+        if (activityState == null &&
+                adjustConfig.delayStart != null &&
+                adjustConfig.delayStart > 0.0)
+        {
+            logger.info("Delay start configured");
+            internalState.delayStart = true;
+            delayStartTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+                @Override
+                public void run() {
+                    sendFirstPackagesI();
+                }
+            }, DELAY_START_TIMER_NAME);
+        }
 
-        ActivityPackage attributionPackage = getAttributionPackage();
+        Util.setUserAgent(adjustConfig.userAgent);
+
+        packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
+
+        ActivityPackage attributionPackage = getAttributionPackageI();
+
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                toSend(),
+                toSendI(false),
                 adjustConfig.hasAttributionChangedListener());
 
-        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSend());
+        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSendI(true));
+
+        if (isToUpdatePackagesI()) {
+            updatePackagesI();
+        }
+
+        if (adjustConfig.referrer != null) {
+            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
+        }
+
+        sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
     }
 
-    private void startInternal() {
+    private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
+        if (sessionParametersActionsArray == null) {
+            return;
+        }
+
+        for (IRunActivityHandler sessionParametersAction : sessionParametersActionsArray) {
+            sessionParametersAction.run(this);
+        }
+    }
+
+    private void startI() {
         // it shouldn't start if it was disabled after a first session
         if (activityState != null
                 && !activityState.enabled) {
             return;
         }
 
-        updateHandlersStatusAndSendInternal();
+        updateHandlersStatusAndSendI();
 
-        processSession();
+        processSessionI();
 
-        checkAttributionState();
+        checkAttributionStateI();
     }
 
-    private void processSession() {
+    private void processSessionI() {
         long now = System.currentTimeMillis();
 
         // very first session
@@ -534,10 +716,11 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
 
-            transferSessionPackage(now);
+            transferSessionPackageI(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
-            writeActivityState();
+            activityState.updatePackages = internalState.isToUpdatePackages();
+            writeActivityStateI();
             return;
         }
 
@@ -546,7 +729,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         if (lastInterval < 0) {
             logger.error(TIME_TRAVEL);
             activityState.lastActivity = now;
-            writeActivityState();
+            writeActivityStateI();
             return;
         }
 
@@ -555,9 +738,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             activityState.sessionCount++;
             activityState.lastInterval = lastInterval;
 
-            transferSessionPackage(now);
+            transferSessionPackageI(now);
             activityState.resetSessionAttributes(now);
-            writeActivityState();
+            writeActivityStateI();
             return;
         }
 
@@ -569,15 +752,15 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             logger.verbose("Started subsession %d of session %d",
                     activityState.subsessionCount,
                     activityState.sessionCount);
-            writeActivityState();
+            writeActivityStateI();
             return;
         }
 
         logger.verbose("Time span since last activity too short for a new subsession");
     }
 
-    private void checkAttributionState() {
-        if (!checkActivityState(activityState)) { return; }
+    private void checkAttributionStateI() {
+        if (!checkActivityStateI(activityState)) { return; }
 
         // if it's a new session
         if (activityState.subsessionCount <= 1) {
@@ -592,29 +775,30 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         attributionHandler.getAttribution();
     }
 
-    private void endInternal() {
+    private void endI() {
         // pause sending if it's not allowed to send
-        if (!toSend()) {
-            pauseSending();
+        if (!toSendI()) {
+            pauseSendingI();
         }
 
-        if (updateActivityState(System.currentTimeMillis())) {
-            writeActivityState();
+        if (updateActivityStateI(System.currentTimeMillis())) {
+            writeActivityStateI();
         }
     }
 
-    private void trackEventInternal(AdjustEvent event) {
-        if (!checkActivityState(activityState)) return;
-        if (!this.isEnabled()) return;
-        if (!checkEvent(event)) return;
+    private void trackEventI(AdjustEvent event) {
+        if (!checkActivityStateI(activityState)) return;
+        if (!isEnabledI()) return;
+        if (!checkEventI(event)) return;
+        if (!checkOrderIdI(event.orderId)) return;
 
         long now = System.currentTimeMillis();
 
         activityState.eventCount++;
-        updateActivityState(now);
+        updateActivityStateI(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isDelayStart());
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -625,13 +809,13 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // if it is in the background and it can send, start the background timer
         if (adjustConfig.sendInBackground && internalState.isBackground()) {
-            startBackgroundTimer();
+            startBackgroundTimerI();
         }
 
-        writeActivityState();
+        writeActivityStateI();
     }
 
-    private void launchEventResponseTasksInternal(final EventResponseData eventResponseData) {
+    private void launchEventResponseTasksI(final EventResponseData eventResponseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // success callback
@@ -664,26 +848,23 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchSessionResponseTasksInternal(SessionResponseData sessionResponseData) {
+    private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
-        boolean attributionUpdated = updateAttribution(sessionResponseData.attribution);
+        boolean attributionUpdated = updateAttributionI(sessionResponseData.attribution);
 
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
-            launchAttributionListener(handler);
+            launchAttributionListenerI(handler);
         }
 
         // launch Session tracking listener if available
-        launchSessionResponseListener(sessionResponseData, handler);
-
-        // if there is any, try to launch the deeplink
-        prepareDeeplink(sessionResponseData, handler);
+        launchSessionResponseListenerI(sessionResponseData, handler);
     }
 
-    private void launchSessionResponseListener(final SessionResponseData sessionResponseData, Handler handler) {
+    private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, Handler handler) {
         // success callback
         if (sessionResponseData.success && adjustConfig.onSessionTrackingSucceededListener != null) {
             logger.debug("Launching success session tracking listener");
@@ -714,19 +895,22 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void launchAttributionResponseTasksInternal(AttributionResponseData responseData) {
+    private void launchAttributionResponseTasksI(AttributionResponseData attributionResponseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
-        boolean attributionUpdated = updateAttribution(responseData.attribution);
+        boolean attributionUpdated = updateAttributionI(attributionResponseData.attribution);
 
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
-            launchAttributionListener(handler);
+            launchAttributionListenerI(handler);
         }
+
+        // if there is any, try to launch the deeplink
+        prepareDeeplinkI(attributionResponseData.deeplink, handler);
     }
 
-    private void launchAttributionListener(Handler handler) {
+    private void launchAttributionListenerI(Handler handler) {
         if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }
@@ -740,26 +924,21 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private void prepareDeeplink(ResponseData responseData, final Handler handler) {
-        if (responseData.jsonResponse == null) {
-            return;
-        }
-
-        final String deeplink = responseData.jsonResponse.optString("deeplink", null);
-
+    private void prepareDeeplinkI(final Uri deeplink, final Handler handler) {
         if (deeplink == null) {
             return;
         }
 
-        final Uri location = Uri.parse(deeplink);
-        final Intent deeplinkIntent = createDeeplinkIntent(location);
+        logger.info("Deferred deeplink received (%s)", deeplink);
+
+        final Intent deeplinkIntent = createDeeplinkIntentI(deeplink);
 
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 boolean toLaunchDeeplink = true;
                 if (adjustConfig.onDeeplinkResponseListener != null) {
-                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(location);
+                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
                 }
                 if (toLaunchDeeplink) {
                     launchDeeplinkMain(deeplinkIntent, deeplink);
@@ -769,12 +948,12 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private Intent createDeeplinkIntent(Uri location) {
+    private Intent createDeeplinkIntentI(Uri deeplink) {
         Intent mapIntent;
         if (adjustConfig.deepLinkComponent == null) {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location);
+            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink);
         } else {
-            mapIntent = new Intent(Intent.ACTION_VIEW, location, adjustConfig.context, adjustConfig.deepLinkComponent);
+            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink, adjustConfig.context, adjustConfig.deepLinkComponent);
         }
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -783,7 +962,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return mapIntent;
     }
 
-    private void launchDeeplinkMain(final Intent deeplinkIntent, final String deeplink) {
+    private void launchDeeplinkMain(Intent deeplinkIntent, Uri deeplink) {
         // Verify it resolves
         PackageManager packageManager = adjustConfig.context.getPackageManager();
         List<ResolveInfo> activities = packageManager.queryIntentActivities(deeplinkIntent, 0);
@@ -791,32 +970,33 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
 
         // Start an activity if it's safe
         if (!isIntentSafe) {
-            logger.error("Unable to open deep link (%s)", deeplink);
+            logger.error("Unable to open deferred deep link (%s)", deeplink);
             return;
         }
 
         // add it to the handler queue
-        logger.info("Open deep link (%s)", deeplink);
+        logger.info("Open deferred deep link (%s)", deeplink);
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
-    private void sendReferrerInternal(String referrer, long clickTime) {
+    private void sendReferrerI(String referrer, long clickTime) {
         if (referrer == null || referrer.length() == 0 ) {
             return;
         }
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilder(referrer);
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(referrer);
 
         if (clickPackageBuilder == null) {
             return;
         }
 
         clickPackageBuilder.referrer = referrer;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, clickTime);
+        clickPackageBuilder.clickTime = clickTime;
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private void readOpenUrlInternal(Uri url, long clickTime) {
+    private void readOpenUrlI(Uri url, long clickTime) {
         if (url == null) {
             return;
         }
@@ -827,18 +1007,19 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
             queryString = "";
         }
 
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilder(queryString);
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(queryString);
         if (clickPackageBuilder == null) {
             return;
         }
 
         clickPackageBuilder.deeplink = url.toString();
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, clickTime);
+        clickPackageBuilder.clickTime = clickTime;
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private PackageBuilder queryStringClickPackageBuilder(String queryString) {
+    private PackageBuilder queryStringClickPackageBuilderI(String queryString) {
         if (queryString == null) {
             return null;
         }
@@ -851,7 +1032,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         String[] queryPairs = queryString.split("&");
 
         for (String pair : queryPairs) {
-            readQueryString(pair, queryStringParameters, queryStringAttribution);
+            readQueryStringI(pair, queryStringParameters, queryStringAttribution);
         }
 
         String reftag = queryStringParameters.remove(Constants.REFTAG);
@@ -865,9 +1046,9 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return builder;
     }
 
-    private boolean readQueryString(String queryString,
-                                    Map<String, String> extraParameters,
-                                    AdjustAttribution queryStringAttribution) {
+    private boolean readQueryStringI(String queryString,
+                                     Map<String, String> extraParameters,
+                                     AdjustAttribution queryStringAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
 
@@ -880,16 +1061,16 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
         if (keyWOutPrefix.length() == 0) return false;
 
-        if (!trySetAttribution(queryStringAttribution, keyWOutPrefix, value)) {
+        if (!trySetAttributionI(queryStringAttribution, keyWOutPrefix, value)) {
             extraParameters.put(keyWOutPrefix, value);
         }
 
         return true;
     }
 
-    private boolean trySetAttribution(AdjustAttribution queryStringAttribution,
-                                      String key,
-                                      String value) {
+    private boolean trySetAttributionI(AdjustAttribution queryStringAttribution,
+                                       String key,
+                                       String value) {
         if (key.equals("tracker")) {
             queryStringAttribution.trackerName = value;
             return true;
@@ -913,14 +1094,14 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return false;
     }
 
-    private void updateHandlersStatusAndSendInternal() {
+    private void updateHandlersStatusAndSendI() {
         // check if it should stop sending
-        if (!toSend()) {
-            pauseSending();
+        if (!toSendI()) {
+            pauseSendingI();
             return;
         }
 
-        resumeSending();
+        resumeSendingI();
 
         // try to send
         if (!adjustConfig.eventBufferingEnabled) {
@@ -928,22 +1109,29 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void pauseSending() {
+    private void pauseSendingI() {
         attributionHandler.pauseSending();
         packageHandler.pauseSending();
-        sdkClickHandler.pauseSending();
+        // the conditions to pause the sdk click handler are less restrictive
+        // it's possible for the sdk click handler to be active while others are paused
+        if (!toSendI(true)) {
+            sdkClickHandler.pauseSending();
+        } else {
+            sdkClickHandler.resumeSending();
+        }
     }
 
-    private void resumeSending() {
+    private void resumeSendingI() {
         attributionHandler.resumeSending();
         packageHandler.resumeSending();
         sdkClickHandler.resumeSending();
     }
 
-    private boolean updateActivityState(long now) {
-        if (!checkActivityState(activityState)) { return false; }
+    private boolean updateActivityStateI(long now) {
+        if (!checkActivityStateI(activityState)) { return false; }
 
         long lastInterval = now - activityState.lastActivity;
+
         // ignore late updates
         if (lastInterval > SESSION_INTERVAL) {
             return false;
@@ -967,43 +1155,57 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
-    private void transferSessionPackage(long now) {
+    public static boolean deleteSessionCallbackParameters(Context context) {
+        return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME);
+    }
+
+    public static boolean deleteSessionPartnerParameters(Context context) {
+        return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
+    }
+
+    private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage();
+        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
 
-    private void startForegroundTimer() {
-        // don't start the timer if it's disabled or offline
-        if (paused()) {
+    private void startForegroundTimerI() {
+        // don't start the timer if it's disabled
+        if (!isEnabledI()) {
             return;
         }
 
         foregroundTimer.start();
     }
 
-    private void stopForegroundTimer() {
+    private void stopForegroundTimerI() {
         foregroundTimer.suspend();
     }
 
-    private void foregroundTimerFiredInternal() {
-        if (paused()) {
-            // stop the timer cycle if it's disabled/offline
-            stopForegroundTimer();
+    private void foregroundTimerFiredI() {
+        // stop the timer cycle if it's disabled
+        if (!isEnabledI()) {
+            stopForegroundTimerI();
             return;
         }
 
-        packageHandler.sendFirstPackage();
+        if (toSendI()) {
+            packageHandler.sendFirstPackage();
+        }
 
-        if (updateActivityState(System.currentTimeMillis())) {
-            writeActivityState();
+        if (updateActivityStateI(System.currentTimeMillis())) {
+            writeActivityStateI();
         }
     }
 
-    private void startBackgroundTimer() {
+    private void startBackgroundTimerI() {
+        if (backgroundTimer == null) {
+            return;
+        }
+
         // check if it can send in the background
-        if (!toSend()) {
+        if (!toSendI()) {
             return;
         }
 
@@ -1015,15 +1217,226 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         backgroundTimer.startIn(BACKGROUND_TIMER_INTERVAL);
     }
 
-    private void stopBackgroundTimer() {
+    private void stopBackgroundTimerI() {
+        if (backgroundTimer == null) {
+            return;
+        }
+
         backgroundTimer.cancel();
     }
 
-    private void backgroundTimerFiredInternal() {
-        packageHandler.sendFirstPackage();
+    private void backgroundTimerFiredI() {
+        if (toSendI()) {
+            packageHandler.sendFirstPackage();
+        }
     }
 
-    private void readActivityState(Context context) {
+    private void delayStartI() {
+        // it's not configured to start delayed or already finished
+        if (internalState.isToStartNow()) {
+            return;
+        }
+
+        // the delay has already started
+        if (isToUpdatePackagesI()) {
+            return;
+        }
+
+        // check against max start delay
+        double delayStartSeconds = adjustConfig.delayStart != null ? adjustConfig.delayStart : 0.0;
+        long maxDelayStartMilli = AdjustFactory.getMaxDelayStart();
+
+        long delayStartMilli = (long)(delayStartSeconds * 1000);
+        if (delayStartMilli > maxDelayStartMilli) {
+            double maxDelayStartSeconds = maxDelayStartMilli / 1000;
+            String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
+            String maxDelayStartFormatted = Util.SecondsDisplayFormat.format(maxDelayStartSeconds);
+
+            logger.warn("Delay start of %s seconds bigger than max allowed value of %s seconds", delayStartFormatted, maxDelayStartFormatted);
+            delayStartMilli = maxDelayStartMilli;
+            delayStartSeconds = maxDelayStartSeconds;
+        }
+
+        String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
+        logger.info("Waiting %s seconds before starting first session", delayStartFormatted);
+
+        delayStartTimer.startIn(delayStartMilli);
+
+        internalState.updatePackages = true;
+
+        if (activityState != null) {
+            activityState.updatePackages = true;
+            writeActivityStateI();
+        }
+    }
+
+    private void sendFirstPackagesI() {
+        if (internalState.isToStartNow()) {
+            logger.info("Start delay expired or never configured");
+            return;
+        }
+
+        // update packages in queue
+        updatePackagesI();
+        // no longer is in delay start
+        internalState.delayStart = false;
+        // cancel possible still running timer if it was called by user
+        delayStartTimer.cancel();
+        // and release timer
+        delayStartTimer = null;
+        // update the status and try to send first package
+        updateHandlersStatusAndSendI();
+    }
+
+    private void updatePackagesI() {
+        // update activity packages
+        packageHandler.updatePackages(sessionParameters);
+        // no longer needs to update packages
+        internalState.updatePackages = false;
+        if (activityState != null) {
+            activityState.updatePackages = false;
+            writeActivityStateI();
+        }
+    }
+
+    private boolean isToUpdatePackagesI() {
+        if (activityState != null) {
+            return activityState.updatePackages;
+        } else {
+            return internalState.isToUpdatePackages();
+        }
+    }
+
+    public void addSessionCallbackParameterI(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session Callback")) return;
+        if (!Util.isValidParameter(value, "value", "Session Callback")) return;
+
+        if (sessionParameters.callbackParameters == null) {
+            sessionParameters.callbackParameters = new LinkedHashMap<String, String>();
+        }
+
+        String oldValue = sessionParameters.callbackParameters.get(key);
+
+        if (value.equals(oldValue)) {
+            logger.verbose("Key %s already present with the same value", key);
+            return;
+        }
+
+        if (oldValue != null) {
+            logger.warn("Key %s will be overwritten", key);
+        }
+
+        sessionParameters.callbackParameters.put(key, value);
+
+        writeSessionCallbackParametersI();
+    }
+
+    public void addSessionPartnerParameterI(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Session Partner")) return;
+        if (!Util.isValidParameter(value, "value", "Session Partner")) return;
+
+        if (sessionParameters.partnerParameters == null) {
+            sessionParameters.partnerParameters = new LinkedHashMap<String, String>();
+        }
+
+        String oldValue = sessionParameters.partnerParameters.get(key);
+
+        if (value.equals(oldValue)) {
+            logger.verbose("Key %s already present with the same value", key);
+            return;
+        }
+
+        if (oldValue != null) {
+            logger.warn("Key %s will be overwritten", key);
+        }
+
+        sessionParameters.partnerParameters.put(key, value);
+
+        writeSessionPartnerParametersI();
+    }
+
+    public void removeSessionCallbackParameterI(String key) {
+        if (!Util.isValidParameter(key, "key", "Session Callback")) return;
+
+        if (sessionParameters.callbackParameters == null) {
+            logger.warn("Session Callback parameters are not set");
+            return;
+        }
+
+        String oldValue = sessionParameters.callbackParameters.remove(key);
+
+        if (oldValue == null) {
+            logger.warn("Key %s does not exist", key);
+            return;
+        }
+
+        logger.debug("Key %s will be removed", key);
+
+        writeSessionCallbackParametersI();
+    }
+
+    public void removeSessionPartnerParameterI(String key) {
+        if (!Util.isValidParameter(key, "key", "Session Partner")) return;
+
+        if (sessionParameters.partnerParameters == null) {
+            logger.warn("Session Partner parameters are not set");
+            return;
+        }
+
+        String oldValue = sessionParameters.partnerParameters.remove(key);
+
+        if (oldValue == null) {
+            logger.warn("Key %s does not exist", key);
+            return;
+        }
+
+        logger.debug("Key %s will be removed", key);
+
+        writeSessionPartnerParametersI();
+    }
+
+    public void resetSessionCallbackParametersI() {
+        if (sessionParameters.callbackParameters == null) {
+            logger.warn("Session Callback parameters are not set");
+        }
+
+        sessionParameters.callbackParameters = null;
+
+        writeSessionCallbackParametersI();
+    }
+
+    public void resetSessionPartnerParametersI() {
+        if (sessionParameters.partnerParameters == null) {
+            logger.warn("Session Partner parameters are not set");
+        }
+
+        sessionParameters.partnerParameters = null;
+
+        writeSessionPartnerParametersI();
+    }
+
+    private void setPushTokenI(String token) {
+        if (token == null) {
+            return;
+        }
+
+        if (token.equals(activityState.pushToken)) {
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        PackageBuilder clickPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        clickPackageBuilder.pushToken = token;
+
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.PUSH);
+        sdkClickHandler.sendSdkClick(clickPackage);
+
+        // save new push token
+        activityState.pushToken = token;
+        writeActivityStateI();
+    }
+
+    private void readActivityStateI(Context context) {
         try {
             activityState = Util.readObject(context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
         } catch (Exception e) {
@@ -1032,7 +1445,7 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private void readAttribution(Context context) {
+    private void readAttributionI(Context context) {
         try {
             attribution = Util.readObject(context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME, AdjustAttribution.class);
         } catch (Exception e) {
@@ -1041,15 +1454,111 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         }
     }
 
-    private synchronized void writeActivityState() {
-        Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
+    private void readSessionCallbackParametersI(Context context) {
+        try {
+            sessionParameters.callbackParameters = Util.readObject(context,
+                    SESSION_CALLBACK_PARAMETERS_FILENAME,
+                    SESSION_CALLBACK_PARAMETERS_NAME,
+                    (Class<Map<String,String>>)(Class)Map.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_CALLBACK_PARAMETERS_NAME, e.getMessage());
+            sessionParameters.callbackParameters = null;
+        }
     }
 
-    private void writeAttribution() {
-        Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+    private void readSessionPartnerParametersI(Context context) {
+        try {
+            sessionParameters.partnerParameters = Util.readObject(context,
+                    SESSION_PARTNER_PARAMETERS_FILENAME,
+                    SESSION_PARTNER_PARAMETERS_NAME,
+                    (Class<Map<String,String>>)(Class)Map.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_PARTNER_PARAMETERS_NAME, e.getMessage());
+            sessionParameters.partnerParameters = null;
+        }
     }
 
-    private boolean checkEvent(AdjustEvent event) {
+    private void writeActivityStateI() {
+        writeActivityStateS(null);
+    }
+
+    private void writeActivityStateS(Runnable changeActivityState) {
+        synchronized (ActivityState.class) {
+            if (activityState == null) {
+                return;
+            }
+            if (changeActivityState != null) {
+                changeActivityState.run();
+            }
+            Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
+        }
+    }
+
+    private void teardownActivityStateS(boolean toDelete) {
+        synchronized (ActivityState.class) {
+            if (activityState == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteActivityState(adjustConfig.context);
+            }
+            activityState = null;
+        }
+    }
+
+    private void writeAttributionI() {
+        synchronized (AdjustAttribution.class) {
+            if (attribution == null) {
+                return;
+            }
+            Util.writeObject(attribution, adjustConfig.context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME);
+        }
+    }
+
+    private void teardownAttributionS(boolean toDelete) {
+        synchronized (AdjustAttribution.class) {
+            if (attribution == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteAttribution(adjustConfig.context);
+            }
+            attribution = null;
+        }
+    }
+
+    private void writeSessionCallbackParametersI() {
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters.callbackParameters, adjustConfig.context, SESSION_CALLBACK_PARAMETERS_FILENAME, SESSION_CALLBACK_PARAMETERS_NAME);
+        }
+    }
+
+    private void writeSessionPartnerParametersI() {
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
+        }
+    }
+
+    private void teardownAllSessionParametersS(boolean toDelete) {
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
+                deleteSessionCallbackParameters(adjustConfig.context);
+                deleteSessionPartnerParameters(adjustConfig.context);
+            }
+            sessionParameters = null;
+        }
+    }
+
+    private boolean checkEventI(AdjustEvent event) {
         if (event == null) {
             logger.error("Event missing");
             return false;
@@ -1063,7 +1572,23 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    private boolean checkActivityState(ActivityState activityState) {
+    private boolean checkOrderIdI(String orderId) {
+        if (orderId == null || orderId.isEmpty()) {
+            return true;  // no order ID given
+        }
+
+        if (activityState.findOrderId(orderId)) {
+            logger.info("Skipping duplicated order ID '%s'", orderId);
+            return false; // order ID found -> used already
+        }
+
+        activityState.addOrderId(orderId);
+        logger.verbose("Added order ID '%s'", orderId);
+        // activity state will get written by caller
+        return true;
+    }
+
+    private boolean checkActivityStateI(ActivityState activityState) {
         if (activityState == null) {
             logger.error("Missing activity state");
             return false;
@@ -1071,13 +1596,29 @@ public class ActivityHandler extends HandlerThread implements IActivityHandler {
         return true;
     }
 
-    private boolean paused() {
-        return internalState.isOffline() || !this.isEnabled();
+    private boolean pausedI() {
+        return pausedI(false);
     }
 
-    private boolean toSend() {
-        // if it's offline, disabled -> don't send
-        if (paused()) {
+    private boolean pausedI(boolean sdkClickHandlerOnly) {
+        if (sdkClickHandlerOnly) {
+            // sdk click handler is paused if either:
+            return internalState.isOffline() ||     // it's offline
+                    !isEnabledI();                  // is disabled
+        }
+        // other handlers are paused if either:
+        return internalState.isOffline()    ||      // it's offline
+                !isEnabledI()               ||      // is disabled
+                internalState.isDelayStart();       // is in delayed start
+    }
+
+    private boolean toSendI() {
+        return toSendI(false);
+    }
+
+    private boolean toSendI(boolean sdkClickHandlerOnly) {
+        // don't send when it's paused
+        if (pausedI(sdkClickHandlerOnly)) {
             return false;
         }
 

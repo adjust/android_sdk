@@ -22,7 +22,7 @@ public interface IActivityHandler {
 
     void readOpenUrl(Uri url, long clickTime);
 
-    boolean updateAttribution(AdjustAttribution attribution);
+    boolean updateAttributionI(AdjustAttribution attribution);
 
     void launchEventResponseTasks(EventResponseData eventResponseData);
 
@@ -35,4 +35,22 @@ public interface IActivityHandler {
     void setOfflineMode(boolean enabled);
 
     void setAskingAttribution(boolean askingAttribution);
+
+    void sendFirstPackages();
+
+    void addSessionCallbackParameter(String key, String value);
+
+    void addSessionPartnerParameter(String key, String value);
+
+    void removeSessionCallbackParameter(String key);
+
+    void removeSessionPartnerParameter(String key);
+
+    void resetSessionCallbackParameters();
+
+    void resetSessionPartnerParameters();
+
+    void teardown(boolean deleteState);
+
+    void setPushToken(String token);
 }

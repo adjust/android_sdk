@@ -1,4 +1,4 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
@@ -37,6 +37,8 @@ public class TestActivityPackage {
     public String currency;
     public String callbackParams;
     public String partnerParams;
+    public Map<String, String> savedCallbackParameters;
+    public Map<String, String> savedPartnerParameters;
     // click
     public String reftag;
     public String otherParameters;
@@ -51,7 +53,7 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.7.0";
+        clientSdk = "android4.10.0";
         suffix = "";
         attribution = new AdjustAttribution();
         playServices = true;
@@ -76,6 +78,10 @@ public class TestActivityPackage {
         }
         // default_tracker
         assertParameterEquals("default_tracker", defaultTracker);
+        // callback_params
+        assertJsonParameterEquals("callback_params", callbackParams);
+        // partner_params
+        assertJsonParameterEquals("partner_params", partnerParams);
     }
 
     public void testEventPackage(String eventToken) {
@@ -114,6 +120,23 @@ public class TestActivityPackage {
         assertJsonParameterEquals("callback_params", callbackParams);
         // partner_params
         assertJsonParameterEquals("partner_params", partnerParams);
+
+        // saved callback parameters
+        if (savedCallbackParameters == null) {
+            Assert.assertNull(activityPackage.getExtendedString(),
+                    activityPackage.getCallbackParameters());
+        } else {
+            Assert.assertTrue(activityPackage.getExtendedString(),
+                    savedCallbackParameters.equals(activityPackage.getCallbackParameters()));
+        }
+        // saved partner parameters
+        if (savedPartnerParameters == null) {
+            Assert.assertNull(activityPackage.getExtendedString(),
+                    activityPackage.getPartnerParameters());
+        } else {
+            Assert.assertTrue(activityPackage.getExtendedString(),
+                    savedPartnerParameters.equals(activityPackage.getPartnerParameters()));
+        }
     }
 
     public void testClickPackage(String source) {

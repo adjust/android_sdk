@@ -10,28 +10,25 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.SystemClock;
 
 import java.lang.ref.WeakReference;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
+import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
+
 // persistent
-public class PackageHandler extends HandlerThread implements IPackageHandler {
+public class PackageHandler implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
-    private Handler internalHandler;
+    private CustomScheduledExecutor scheduledExecutor;
     private IRequestHandler requestHandler;
-    private IActivityHandler activityHandler;
+    private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private List<ActivityPackage> packageQueue;
     private AtomicBoolean isSending;
     private boolean paused;
@@ -39,29 +36,56 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
 
+    @Override
+    public void teardown(boolean deleteState) {
+        logger.verbose("PackageHandler teardown");
+        if (scheduledExecutor != null) {
+            try {
+                scheduledExecutor.shutdownNow();
+            } catch(SecurityException se) {}
+        }
+        if (activityHandlerWeakRef != null) {
+            activityHandlerWeakRef.clear();
+        }
+        if (requestHandler != null) {
+            requestHandler.teardown();
+        }
+        if (packageQueue != null) {
+            packageQueue.clear();
+        }
+        if (deleteState && context != null) {
+            deletePackageQueue(context);
+        }
+        scheduledExecutor = null;
+        requestHandler = null;
+        activityHandlerWeakRef = null;
+        packageQueue = null;
+        isSending = null;
+        context = null;
+        logger = null;
+        backoffStrategy = null;
+    }
+
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {
-        super(Constants.LOGTAG, MIN_PRIORITY);
-        setDaemon(true);
-        start();
-        this.internalHandler = new Handler(getLooper());
+        this.scheduledExecutor = new CustomScheduledExecutor("PackageHandler");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
         init(activityHandler, context, startsSending);
 
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                initInternal();
+                initI();
             }
         });
     }
 
     @Override
     public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
-        this.activityHandler = activityHandler;
+        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.context = context;
         this.paused = !startsSending;
     }
@@ -69,10 +93,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // add a package to the queue
     @Override
     public void addPackage(final ActivityPackage activityPackage) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                addInternal(activityPackage);
+                addI(activityPackage);
             }
         });
     }
@@ -80,10 +104,10 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // try to send the oldest package
     @Override
     public void sendFirstPackage() {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendFirstInternal();
+                sendFirstI();
             }
         });
     }
@@ -92,39 +116,54 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
     // (after success or possibly permanent failure)
     @Override
     public void sendNextPackage(ResponseData responseData) {
-        internalHandler.post(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendNextInternal();
+                sendNextI();
             }
         });
 
-        activityHandler.finishedTrackingActivity(responseData);
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        if (activityHandler != null) {
+            activityHandler.finishedTrackingActivity(responseData);
+        }
     }
 
     // close the package to retry in the future (after temporary failure)
     @Override
     public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
         responseData.willRetry = true;
-        activityHandler.finishedTrackingActivity(responseData);
 
-        if (activityPackage != null) {
-            int retries = activityPackage.increaseRetries();
-
-            long waitTime = Util.getWaitingTime(retries, backoffStrategy);
-
-            double waitTimeSeconds = waitTime / 1000.0;
-            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-            logger.verbose("Sleeping for %s seconds before retrying the %d time", secondsString, retries);
-            SystemClock.sleep(waitTime);
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        if (activityHandler != null) {
+            activityHandler.finishedTrackingActivity(responseData);
         }
 
-        logger.verbose("Package handler can send");
-        isSending.set(false);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                logger.verbose("Package handler can send");
+                isSending.set(false);
 
-        // Try to send the same package after sleeping
-        sendFirstPackage();
+                // Try to send the same package after sleeping
+                sendFirstPackage();
+            }
+        };
+
+        if (activityPackage == null) {
+            runnable.run();
+            return;
+        }
+
+        int retries = activityPackage.increaseRetries();
+
+        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+
+        double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
+        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+        logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
+        scheduledExecutor.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -139,25 +178,40 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         paused = false;
     }
 
+    @Override
+    public void updatePackages(SessionParameters sessionParameters) {
+        final SessionParameters sessionParametersCopy;
+        if (sessionParameters != null) {
+            sessionParametersCopy = sessionParameters.deepCopy();
+        } else {
+            sessionParametersCopy = null;
+        }
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                updatePackagesI(sessionParametersCopy);
+            }
+        });
+    }
     // internal methods run in dedicated queue thread
 
-    private void initInternal() {
+    private void initI() {
         requestHandler = AdjustFactory.getRequestHandler(this);
 
         isSending = new AtomicBoolean();
 
-        readPackageQueue();
+        readPackageQueueI();
     }
 
-    private void addInternal(ActivityPackage newPackage) {
+    private void addI(ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
 
-        writePackageQueue();
+        writePackageQueueI();
     }
 
-    private void sendFirstInternal() {
+    private void sendFirstI() {
         if (packageQueue.isEmpty()) {
             return;
         }
@@ -175,17 +229,48 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
     }
 
-    private void sendNextInternal() {
+    private void sendNextI() {
         packageQueue.remove(0);
-        writePackageQueue();
+        writePackageQueueI();
         isSending.set(false);
         logger.verbose("Package handler can send");
-        sendFirstInternal();
+        sendFirstI();
     }
 
-    private void readPackageQueue() {
+    public void updatePackagesI(SessionParameters sessionParameters) {
+        if (sessionParameters == null) {
+            return;
+        }
+
+        logger.debug("Updating package handler queue");
+        logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
+        logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
+
+        for (ActivityPackage activityPackage : packageQueue) {
+            Map<String, String> parameters = activityPackage.getParameters();
+            // callback parameters
+            Map<String, String> mergedCallbackParameters = Util.mergeParameters(sessionParameters.callbackParameters,
+                    activityPackage.getCallbackParameters(),
+                    "Callback");
+
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, mergedCallbackParameters);
+            // partner parameters
+            Map<String, String> mergedPartnerParameters = Util.mergeParameters(sessionParameters.partnerParameters,
+                    activityPackage.getPartnerParameters(),
+                    "Partner");
+
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
+        }
+
+        writePackageQueueI();
+    }
+
+    private void readPackageQueueI() {
         try {
-            packageQueue = Util.readObject(context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME, (Class<List<ActivityPackage>>)((Class)List.class));
+            packageQueue = Util.readObject(context,
+                    PACKAGE_QUEUE_FILENAME,
+                    PACKAGE_QUEUE_NAME,
+                    (Class<List<ActivityPackage>>)(Class)List.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", PACKAGE_QUEUE_NAME, e.getMessage());
             packageQueue = null;
@@ -198,7 +283,7 @@ public class PackageHandler extends HandlerThread implements IPackageHandler {
         }
     }
 
-    private void writePackageQueue() {
+    private void writePackageQueueI() {
         Util.writeObject(packageQueue, context, PACKAGE_QUEUE_FILENAME, PACKAGE_QUEUE_NAME);
         logger.debug("Package handler wrote %d packages", packageQueue.size());
     }

@@ -1,7 +1,6 @@
 package com.adjust.sdk;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.lang.ref.WeakReference;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -9,18 +8,17 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private ScheduledExecutorService scheduler;
+    private WeakReference<CustomScheduledExecutor> scheduledExecutorWeakRef;
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
     private long initialDelay;
     private long cycleDelay;
-    private String cycleDelaySeconds;
     private boolean isPaused;
     private ILogger logger;
 
-    public TimerCycle(Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduler = Executors.newSingleThreadScheduledExecutor();
+    public TimerCycle(CustomScheduledExecutor scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
+        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
 
         this.name = name;
         this.command = command;
@@ -29,7 +27,11 @@ public class TimerCycle {
         this.isPaused = true;
         this.logger = AdjustFactory.getLogger();
 
-        this.cycleDelaySeconds = Util.SecondsDisplayFormat.format(cycleDelay / 1000.0);
+        String cycleDelaySecondsString = Util.SecondsDisplayFormat.format(cycleDelay / 1000.0);
+
+        String initialDelaySecondsString = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+
+        logger.verbose("%s configured to fire after %s seconds of starting and cycles every %s seconds", name, initialDelaySecondsString, cycleDelaySecondsString);
     }
 
     public void start() {
@@ -38,11 +40,17 @@ public class TimerCycle {
             return;
         }
 
-        String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+        CustomScheduledExecutor scheduledExecutor = scheduledExecutorWeakRef.get();
+        if (scheduledExecutor == null) {
+            return;
+        }
 
-        logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
+        //String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
+        //logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
 
-        waitingTask = scheduler.scheduleWithFixedDelay(new Runnable() {
+        logger.verbose("%s starting", name);
+
+        waitingTask = scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
@@ -64,12 +72,27 @@ public class TimerCycle {
 
         // cancel the timer
         waitingTask.cancel(false);
-        waitingTask = null;
 
         String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
 
         logger.verbose("%s suspended with %s seconds left", name, initialDelaySeconds);
 
         isPaused = true;
+    }
+
+    private void cancel(boolean mayInterruptIfRunning) {
+        if (waitingTask != null) {
+            waitingTask.cancel(mayInterruptIfRunning);
+        }
+
+        waitingTask = null;
+    }
+
+    public void teardown() {
+        cancel(true);
+        if (scheduledExecutorWeakRef != null) {
+            scheduledExecutorWeakRef.clear();
+        }
+        scheduledExecutorWeakRef = null;
     }
 }

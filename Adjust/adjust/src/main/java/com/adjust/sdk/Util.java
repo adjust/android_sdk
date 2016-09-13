@@ -38,6 +38,7 @@ import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -55,11 +56,12 @@ import static com.adjust.sdk.Constants.SHA1;
  * Collects utility functions used by Adjust.
  */
 public class Util {
-
-    private static SimpleDateFormat dateFormat;
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
+    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+
+    private static String userAgent;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -81,13 +83,6 @@ public class Util {
         }
 
         return String.format(Locale.US, "'%s'", string);
-    }
-
-    public static String dateFormat(long date) {
-        if (dateFormat == null) {
-            dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-        }
-        return dateFormat.format(date);
     }
 
     public static String getPlayAdId(Context context) {
@@ -192,6 +187,7 @@ public class Util {
 
             try {
                 objectStream.writeObject(object);
+
                 getLogger().debug("Wrote %s: %s", objectName, object);
             } catch (NotSerializableException e) {
                 getLogger().error("Failed to serialize %s", objectName);
@@ -213,6 +209,8 @@ public class Util {
         ILogger logger = getLogger();
         Integer responseCode = null;
         try {
+            connection.connect();
+
             responseCode = connection.getResponseCode();
             InputStream inputStream;
 
@@ -286,15 +284,24 @@ public class Util {
     public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(String urlString, String clientSdk)
             throws IOException
     {
-        URL url = new URL(urlString);
-        AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
+        HttpsURLConnection connection = null;
+        try {
+            URL url = new URL(urlString);
+            AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
 
-        HttpsURLConnection connection = urlGetConnection.httpsURLConnection;
-        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
+            connection = urlGetConnection.httpsURLConnection;
+            setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
 
-        connection.setRequestMethod("GET");
+            connection.setRequestMethod("GET");
 
-        return urlGetConnection;
+            return urlGetConnection;
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
@@ -302,22 +309,37 @@ public class Util {
                                                                   int queueSize)
             throws IOException
     {
-        URL url = new URL(urlString);
-        HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+        DataOutputStream wr = null;
+        HttpsURLConnection connection = null;
+        try {
+            URL url = new URL(urlString);
+            connection = AdjustFactory.getHttpsURLConnection(url);
 
-        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
-        connection.setRequestMethod("POST");
+            setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
+            connection.setRequestMethod("POST");
 
-        connection.setUseCaches(false);
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
+            connection.setUseCaches(false);
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
 
-        DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(getPostDataString(parameters, queueSize));
-        wr.flush();
-        wr.close();
+            wr = new DataOutputStream(connection.getOutputStream());
+            wr.writeBytes(getPostDataString(parameters, queueSize));
 
-        return connection;
+            return connection;
+        } catch (IOException e) {
+            throw e;
+        } finally {
+            try {
+                if (wr != null) {
+                    wr.flush();
+                    wr.close();
+                }
+            }catch (Exception e) { }
+
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
     }
 
     private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
@@ -337,18 +359,19 @@ public class Util {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
+        String dateString = Util.dateFormatter.format(now);
 
         result.append("&");
         result.append(URLEncoder.encode("sent_at", Constants.ENCODING));
         result.append("=");
         result.append(URLEncoder.encode(dateString, Constants.ENCODING));
 
-        result.append("&");
-        result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
-        result.append("=");
-        result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
-
+        if (queueSize > 0) {
+            result.append("&");
+            result.append(URLEncoder.encode("queue_size", Constants.ENCODING));
+            result.append("=");
+            result.append(URLEncoder.encode("" + queueSize, Constants.ENCODING));
+        }
 
         return result.toString();
     }
@@ -357,6 +380,9 @@ public class Util {
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
         connection.setReadTimeout(Constants.ONE_MINUTE);
+        if (userAgent != null) {
+            connection.setRequestProperty("User-Agent", userAgent);
+        }
     }
 
     public static boolean checkPermission(Context context, String permission) {
@@ -409,13 +435,6 @@ public class Util {
             return first == null && second == null;
         }
         return first.equals(second);
-    }
-
-    public static boolean equalsMap(Map first, Map second) {
-        if (first == null || second == null) {
-            return first == null && second == null;
-        }
-        return first.entrySet().equals(second.entrySet());
     }
 
     public static boolean equalsDouble(Double first, Double second) {
@@ -473,11 +492,11 @@ public class Util {
         return value.hashCode();
     }
 
-    public static int hashMap(Map value) {
+    public static int hashObject(Object value) {
         if (value == null) {
             return 0;
         }
-        return value.entrySet().hashCode();
+        return value.hashCode();
     }
 
     public static String sha1(final String text) {
@@ -546,5 +565,46 @@ public class Util {
         double scaled = random.nextDouble() * range;
         double shifted = scaled + minRange;
         return shifted;
+    }
+
+    public static boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+        if (attribute == null) {
+            getLogger().error("%s parameter %s is missing", parameterName, attributeType);
+            return false;
+        }
+        if (attribute.equals("")) {
+            getLogger().error("%s parameter %s is empty", parameterName, attributeType);
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Map<String, String> mergeParameters(Map<String, String> target,
+                                                      Map<String, String> source,
+                                                      String parameterName) {
+        if (target == null) {
+            return source;
+        }
+        if (source == null) {
+            return target;
+        }
+        Map<String, String> mergedParameters = new HashMap<String, String>(target);
+        ILogger logger = getLogger();
+        for (Map.Entry<String, String> parameterSourceEntry : source.entrySet()) {
+            String oldValue = mergedParameters.put(parameterSourceEntry.getKey(), parameterSourceEntry.getValue());
+            if (oldValue != null) {
+                logger.warn("Key %s with value %s from %s parameter was replaced by value %s",
+                        parameterSourceEntry.getKey(),
+                        oldValue,
+                        parameterName,
+                        parameterSourceEntry.getValue());
+            }
+        }
+        return mergedParameters;
+    }
+
+    public static void setUserAgent(String userAgent) {
+        Util.userAgent = userAgent;
     }
 }

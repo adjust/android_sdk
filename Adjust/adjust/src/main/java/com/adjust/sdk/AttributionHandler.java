@@ -4,19 +4,16 @@ import android.net.Uri;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by pfms on 07/11/14.
  */
 public class AttributionHandler implements IAttributionHandler {
-    private ScheduledExecutorService scheduler;
-    private IActivityHandler activityHandler;
+    private CustomScheduledExecutor scheduledExecutor;
+    private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private ILogger logger;
     private ActivityPackage attributionPackage;
     private TimerOnce timer;
@@ -27,18 +24,39 @@ public class AttributionHandler implements IAttributionHandler {
 
     public URL lastUrlUsed;
 
+    @Override
+    public void teardown() {
+        logger.verbose("AttributionHandler teardown");
+        if (timer != null) {
+            timer.teardown();
+        }
+        if (scheduledExecutor != null) {
+            try {
+                scheduledExecutor.shutdownNow();
+            } catch(SecurityException se) {}
+        }
+        if (activityHandlerWeakRef != null) {
+            activityHandlerWeakRef.clear();
+        }
+        scheduledExecutor = null;
+        activityHandlerWeakRef = null;
+        logger = null;
+        attributionPackage = null;
+        timer = null;
+    }
+
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
                               boolean startsSending,
                               boolean hasListener) {
-        scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
-        if (this.scheduler != null) {
-            timer = new TimerOnce(scheduler, new Runnable() {
+        if (this.scheduledExecutor != null) {
+            timer = new TimerOnce(scheduledExecutor, new Runnable() {
                 @Override
                 public void run() {
-                    getAttributionInternal();
+                    getAttributionI();
                 }
             }, ATTRIBUTION_TIMER_NAME);
         } else {
@@ -53,7 +71,7 @@ public class AttributionHandler implements IAttributionHandler {
                      ActivityPackage attributionPackage,
                      boolean startsSending,
                      boolean hasListener) {
-        this.activityHandler = activityHandler;
+        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.attributionPackage = attributionPackage;
         this.paused = !startsSending;
         this.hasListener = hasListener;
@@ -66,23 +84,31 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void checkSessionResponse(final SessionResponseData sessionResponseData) {
-        scheduler.submit(new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                checkSessionResponseInternal(sessionResponseData);
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+                checkSessionResponseI(activityHandler, sessionResponseData);
             }
         });
     }
 
-    private void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
-        scheduler.submit(new Runnable() {
+    public void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                checkAttributionResponseInternal(attributionResponseData);
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+
+                checkAttributionResponseI(activityHandler, attributionResponseData);
             }
         });
     }
-
 
     @Override
     public void pauseSending() {
@@ -111,7 +137,7 @@ public class AttributionHandler implements IAttributionHandler {
         timer.startIn(delayInMilliseconds);
     }
 
-    private void checkAttributionInternal(ResponseData responseData) {
+    private void checkAttributionI(IActivityHandler activityHandler, ResponseData responseData) {
         if (responseData.jsonResponse == null) {
             return;
         }
@@ -131,19 +157,39 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkSessionResponseInternal(SessionResponseData sessionResponseData) {
-        checkAttributionInternal(sessionResponseData);
+    private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
+        checkAttributionI(activityHandler, sessionResponseData);
 
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
-    private void checkAttributionResponseInternal(AttributionResponseData attributionResponseData) {
-        checkAttributionInternal(attributionResponseData);
+    private void checkAttributionResponseI(IActivityHandler activityHandler, AttributionResponseData attributionResponseData) {
+        checkAttributionI(activityHandler, attributionResponseData);
+
+        checkDeeplinkI(attributionResponseData);
 
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
-    private void getAttributionInternal() {
+    private void checkDeeplinkI(AttributionResponseData attributionResponseData) {
+        if (attributionResponseData.jsonResponse == null) {
+            return;
+        }
+
+        JSONObject attributionJson = attributionResponseData.jsonResponse.optJSONObject("attribution");
+        if (attributionJson == null) {
+            return;
+        }
+
+        String deeplinkString = attributionJson.optString("deeplink", null);
+        if (deeplinkString == null) {
+            return;
+        }
+
+        attributionResponseData.deeplink = Uri.parse(deeplinkString);
+    }
+
+    private void getAttributionI() {
         if (!hasListener) {
             return;
         }
@@ -157,7 +203,7 @@ public class AttributionHandler implements IAttributionHandler {
 
         try {
             AdjustFactory.URLGetConnection urlGetConnection = Util.createGETHttpsURLConnection(
-                    buildUri(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
+                    buildUriI(attributionPackage.getPath(), attributionPackage.getParameters()).toString(),
                     attributionPackage.getClientSdk());
 
             ResponseData responseData = Util.readHttpResponse(urlGetConnection.httpsURLConnection, attributionPackage);
@@ -174,7 +220,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
     }
 
-    private Uri buildUri(String path, Map<String, String> parameters) {
+    private Uri buildUriI(String path, Map<String, String> parameters) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);
@@ -186,7 +232,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormat(now);
+        String dateString = Util.dateFormatter.format(now);
 
         uriBuilder.appendQueryParameter("sent_at", dateString);
 

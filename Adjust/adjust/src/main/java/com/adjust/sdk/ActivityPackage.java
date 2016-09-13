@@ -25,9 +25,11 @@ public class ActivityPackage implements Serializable {
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("path", String.class),
             new ObjectStreamField("clientSdk", String.class),
-            new ObjectStreamField("parameters", (Class<Map<String,String>>)((Class)Map.class)),
+            new ObjectStreamField("parameters", (Class<Map<String,String>>)(Class)Map.class),
             new ObjectStreamField("activityKind", ActivityKind.class),
-            new ObjectStreamField("suffix", String.class)
+            new ObjectStreamField("suffix", String.class),
+            new ObjectStreamField("callbackParameters", (Class<Map<String,String>>)(Class)Map.class),
+            new ObjectStreamField("partnerParameters", (Class<Map<String,String>>)(Class)Map.class),
     };
 
     private transient int hashCode;
@@ -40,6 +42,10 @@ public class ActivityPackage implements Serializable {
     // logs
     private ActivityKind activityKind = ActivityKind.UNKNOWN;
     private String suffix;
+
+    // delay
+    private Map<String, String> callbackParameters;
+    private Map<String, String> partnerParameters;
 
     private int retries;
 
@@ -67,6 +73,14 @@ public class ActivityPackage implements Serializable {
         this.parameters = parameters;
     }
 
+    public void setCallbackParameters(Map<String, String> callbackParameters) {
+        this.callbackParameters = callbackParameters;
+    }
+
+    public void setPartnerParameters(Map<String, String> partnerParameters) {
+        this.partnerParameters = partnerParameters;
+    }
+
     public ActivityKind getActivityKind() {
         return activityKind;
     }
@@ -85,6 +99,14 @@ public class ActivityPackage implements Serializable {
     public int increaseRetries() {
         retries++;
         return retries;
+    }
+
+    public Map<String, String> getCallbackParameters() {
+        return callbackParameters;
+    }
+
+    public Map<String, String> getPartnerParameters() {
+        return partnerParameters;
     }
 
     public ActivityPackage(ActivityKind activityKind) {
@@ -126,6 +148,8 @@ public class ActivityPackage implements Serializable {
         parameters = Util.readObjectField(fields, "parameters", null);
         activityKind = Util.readObjectField(fields, "activityKind", ActivityKind.UNKNOWN);
         suffix = Util.readStringField(fields, "suffix", null);
+        callbackParameters = Util.readObjectField(fields, "callbackParameters", null);
+        partnerParameters = Util.readObjectField(fields, "partnerParameters", null);
     }
 
     @Override
@@ -137,9 +161,11 @@ public class ActivityPackage implements Serializable {
 
         if (!Util.equalString(path, otherActivityPackage.path))         return false;
         if (!Util.equalString(clientSdk, otherActivityPackage.clientSdk))    return false;
-        if (!Util.equalsMap(parameters, otherActivityPackage.parameters))   return false;
+        if (!Util.equalObject(parameters, otherActivityPackage.parameters))   return false;
         if (!Util.equalEnum(activityKind, otherActivityPackage.activityKind)) return false;
         if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
+        if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
+        if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
         return true;
     }
 
@@ -149,9 +175,11 @@ public class ActivityPackage implements Serializable {
             hashCode = 17;
             hashCode = 37 * hashCode + Util.hashString(path);
             hashCode = 37 * hashCode + Util.hashString(clientSdk);
-            hashCode = 37 * hashCode + Util.hashMap(parameters);
+            hashCode = 37 * hashCode + Util.hashObject(parameters);
             hashCode = 37 * hashCode + Util.hashEnum(activityKind);
             hashCode = 37 * hashCode + Util.hashString(suffix);
+            hashCode = 37 * hashCode + Util.hashObject(callbackParameters);
+            hashCode = 37 * hashCode + Util.hashObject(partnerParameters);
         }
         return hashCode;
     }

@@ -22,6 +22,7 @@ public class AdjustFactory {
     private static long subsessionInterval = -1;
     private static BackoffStrategy sdkClickBackoffStrategy = null;
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
+    private static long maxDelayStart = -1;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -142,6 +143,13 @@ public class AdjustFactory {
 
         sdkClickHandler.init(startsSending);
         return sdkClickHandler;
+    }
+
+    public static long getMaxDelayStart() {
+        if (maxDelayStart == -1) {
+            return Constants.ONE_SECOND * 10; // 10 seconds
+        }
+        return maxDelayStart;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {

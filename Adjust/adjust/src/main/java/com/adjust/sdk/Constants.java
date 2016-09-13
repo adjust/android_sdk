@@ -29,13 +29,17 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.7.0";
+    String CLIENT_SDK = "android4.10.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String DEEPLINK = "deeplink";
+    String PUSH = "push";
+    String THREAD_PREFIX = "Adjust-";
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
+    String SESSION_CALLBACK_PARAMETERS_FILENAME = "AdjustSessionCallbackParameters";
+    String SESSION_PARTNER_PARAMETERS_FILENAME = "AdjustSessionPartnerParameters";
 
     String MALFORMED = "malformed";
     String SMALL = "small";
@@ -51,6 +55,9 @@ public interface Constants {
     String ENCODING = "UTF-8";
     String MD5 = "MD5";
     String SHA1 = "SHA-1";
+
+    String CALLBACK_PARAMETERS = "callback_params";
+    String PARTNER_PARAMETERS = "partner_params";
 
     // List of known plugins, possibly not active
     List<String> PLUGINS = Arrays.asList();

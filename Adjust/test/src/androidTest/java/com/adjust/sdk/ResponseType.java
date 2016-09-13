@@ -1,4 +1,4 @@
-package com.adjust.sdk.test;
+package com.adjust.sdk;
 
 /**
  * Created by pfms on 28/01/15.
