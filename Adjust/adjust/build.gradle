@@ -1,49 +1,59 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 24
+  compileSdkVersion 24
     buildToolsVersion "24.0.1"
 
     defaultConfig {
-        minSdkVersion 9
+      minSdkVersion 9
         targetSdkVersion 24
         versionCode 1
         versionName "4.7.0"
     }
+
+    //enforce java 8
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+  lintOptions {
+    abortOnError false
+  }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 task clearJar(type: Delete) {
-    delete '${project.buildDir}/outputs/adjust.jar'
+  delete 'build/outputs/ProjectName.jar'
 }
 
 task makeJar(type: Copy) {
-    from('${project.buildDir}/intermediates/bundles/release/')
-    into('${project.buildDir}/libs/')
+  from('build/intermediates/bundles/release/')
+    into('build/outputs/')
     include('classes.jar')
-    rename ('classes.jar', 'adjust.jar')
+    rename ('classes.jar', 'Adjust.jar')
 }
 
 makeJar.dependsOn(clearJar, build)
 
-task androidJavadocs(type: Javadoc) {
+  task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-}
+  }
 
 task androidJavadocsJar(type: Jar) {
-    classifier = 'javadoc'
+  classifier = 'javadoc'
     from androidJavadocs.destinationDir
 }
 
 task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
+  classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives androidSourcesJar
+  archives androidSourcesJar
     archives androidJavadocsJar
 }
