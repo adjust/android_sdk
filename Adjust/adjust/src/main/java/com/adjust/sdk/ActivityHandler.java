@@ -267,8 +267,8 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 if (activityState == null) {
-                    logger.warn("Event triggered before first application launch.\n" +
-                            "This will trigger the SDK start and an install without user interaction.\n" +
+                    logger.warn("Event tracked before first activity resumed.\n" +
+                            "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
                             "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
                     startI();
                 }
