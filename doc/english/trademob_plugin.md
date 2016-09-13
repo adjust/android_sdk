@@ -3,7 +3,7 @@
 Add the dependency of the adjust sdk with the Trademob plugin:
 
 ```
-compile 'com.adjust.sdk:adjust-android-trademob:4.9.0'
+compile 'com.adjust.sdk:adjust-android-trademob:4.10.0'
 ```
 
 Or integrate adjust with Trademob events by following these steps:

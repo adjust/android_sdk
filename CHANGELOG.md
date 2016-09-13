@@ -1,4 +1,4 @@
-### Version 4.9.0 ( 2016)
+### Version 4.10.0 ( 2016)
 #### Added
  - Support for `Supress` log level
  - Allow to delay the start of the first session
