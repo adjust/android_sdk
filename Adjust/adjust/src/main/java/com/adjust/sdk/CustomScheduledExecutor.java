@@ -44,6 +44,7 @@ public class CustomScheduledExecutor {
         }
         );
         this.source = source;
+        executor.setKeepAliveTime(10L, TimeUnit.MILLISECONDS);
         executor.allowCoreThreadTimeOut(true);
     }
 
