@@ -32,7 +32,6 @@ our [Android web views SDK guide](doc/web_views.md).
    * [Session parameters](#session-parameters)
       * [Session callback parameters](#session-callback-parameters)
       * [Session partner parameters](#session-partner-parameters)
-      * [External device id](#external-device-id)
       * [Delay start](#delay-start)
    * [Attribution callback](#attribution-callback)
    * [Session and event callbacks](#session-event-callbacks)
@@ -373,8 +372,8 @@ future. Depending on your coding style you might want to implement this in a com
 
 ### <a id="adjust-logging"></a>Adjust Logging
 
-You can increase or decrease the amount of logs that you see during testing by calling `setLogLevel` on your `AdjustConfig` instance
-with one of the following parameters:
+You can increase or decrease the amount of logs that you see during testing by calling `setLogLevel` on your `AdjustConfig`
+instance with one of the following parameters:
 
 ```java
 config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
@@ -458,7 +457,8 @@ http://www.adjust.com/callback?key=value&foo=bar
 
 It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values.
 In the resulting callback this placeholder would be replaced with the Google Play Services ID  of the current device. Also
-note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
+note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered 
+a callback for an event, these parameters won't even be read.
 
 You can read more about using URL callbacks, including a full list of available values, in our
 [callbacks guide][callbacks-guide].
@@ -489,14 +489,16 @@ Once you have added any of these parameters, you don't need to add them every ti
 If you add the same parameter twice, there will be no effect.
 
 These session parameters can be called before the adjust SDK is launched to make sure they are sent even on install.
-If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the adjust SDK to allow this behaviour.
+If you need to send them with an install, but can only obtain the needed values after launch, it's possible to 
+[delay](#delay-start) the first launch of the adjust SDK to allow this behaviour.
 
 #### <a id="session-callback-parameters"> Session callback parameters
 
 The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every event or session of the adjust SDK.
 
 The session callback parameters have a similar interface to the event callback parameters.
-Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionCallbackParameter(String key, String value)`:
+Instead of adding the key and it's value to an event, it's added through a call to 
+`Adjust.addSessionCallbackParameter(String key, String value)`:
 
 ```java
 Adjust.addSessionCallbackParameter("foo", "bar");
@@ -504,15 +506,18 @@ Adjust.addSessionCallbackParameter("foo", "bar");
 
 The session callback parameters will be merged with the callback parameters added to an event.
 The callback parameters added to an event have precedence over the session callback parameters.
-Meaning that, when adding a callback parameter to an event with the same key to one added from the session, the value that prevails is the callback parameter added to the event.
+Meaning that, when adding a callback parameter to an event with the same key to one added from the session, the value that 
+prevails is the callback parameter added to the event.
 
-It's possible to remove a specific session callback parameter by passing the desiring key to the method `Adjust.removeSessionCallbackParameter(String key)`.
+It's possible to remove a specific session callback parameter by passing the desiring key to the method 
+`Adjust.removeSessionCallbackParameter(String key)`.
 
 ```java
 Adjust.removeSessionCallbackParameter("foo");
 ```
 
-If you wish to remove all keys and their corresponding values from the session callback parameters, you can reset it with the method `Adjust.resetSessionCallbackParameters()`.
+If you wish to remove all keys and their corresponding values from the session callback parameters, you can reset it with 
+the method `Adjust.resetSessionCallbackParameters()`.
 
 ```java
 Adjust.resetSessionCallbackParameters();
@@ -520,12 +525,14 @@ Adjust.resetSessionCallbackParameters();
 
 #### <a id="session-partner-parameters"> Session partner parameters
 
-In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session of the adjust SDK, there is also session partner parameters.
+In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session 
+of the adjust SDK, there is also session partner parameters.
 
 These will be transmitted to network partners, for the integrations that have been activated in your adjust [dashboard].
 
 The session partner parameters have a similar interface to the event partner parameters.
-Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionPartnerParameter(String key, String value)`:
+Instead of adding the key and it's value to an event, it's added through a call to 
+`Adjust.addSessionPartnerParameter(String key, String value)`:
 
 ```java
 Adjust.addSessionPartnerParameter("foo", "bar");
@@ -533,39 +540,27 @@ Adjust.addSessionPartnerParameter("foo", "bar");
 
 The session partner parameters will be merged with the partner parameters added to an event.
 The partner parameters added to an event have precedence over the session partner parameters.
-Meaning that, when adding a partner parameter to an event with the same key to one added from the session, the value that prevails is the partner parameter added to the event.
+Meaning that, when adding a partner parameter to an event with the same key to one added from the session, the value that 
+prevails is the partner parameter added to the event.
 
-It's possible to remove a specific session partner parameter by passing the desiring key to the method `Adjust.removeSessionPartnerParameter(String key)`.
+It's possible to remove a specific session partner parameter by passing the desiring key to the method 
+`Adjust.removeSessionPartnerParameter(String key)`.
 
 ```java
 Adjust.removeSessionPartnerParameter("foo");
 ```
 
-If you wish to remove all keys and their corresponding values from the session partner parameters, you can reset it with the method `Adjust.resetSessionPartnerParameters()`.
+If you wish to remove all keys and their corresponding values from the session partner parameters, you can reset it with 
+the method `Adjust.resetSessionPartnerParameters()`.
 
 ```java
 Adjust.resetSessionPartnerParameters();
 ```
 
-#### <a id="external-device-id"> External device id
-
-The adjust SDK uses device ids that are available from iOS, but your app might have other sources of identifiers that can help features like ad conversion.
-
-To save your unique identifier in the session parameters that are send in every request and session, call the `Adjust.addExternalDeviceId(String externalDeviceId)` method:
-
-```java
-Adjust.addExternalDeviceId("customDeviceId");
-```
-
-It's also possible to remove the saved unique identifier by calling the method `Adjust.resetExternalDeviceId()`:
-
-```java
-Adjust.resetExternalDeviceId();
-```
-
 #### <a id="delay-start"> Delay start
 
-Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
+Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, 
+to be sent on install.
 
 Set the initial delay time in seconds with the method `setDelayStart` in the `AdjustConfig` instance:
 
@@ -574,7 +569,8 @@ adjustConfig.setDelayStart(5.5);
 ```
 
 In this case, this will make the adjust SDK not send the initial install session and any event created for 5.5 seconds.
-After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the adjust SDK will resume as usual.
+After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be 
+added to the delayed install session and events and the adjust SDK will resume as usual.
 
 The maximum delay start time of the adjust SDK is 10 seconds.
 
