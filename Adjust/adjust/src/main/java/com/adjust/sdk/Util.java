@@ -297,10 +297,6 @@ public class Util {
             return urlGetConnection;
         } catch (IOException e) {
             throw e;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
     }
 
@@ -335,10 +331,6 @@ public class Util {
                     wr.close();
                 }
             }catch (Exception e) { }
-
-            if (connection != null) {
-                connection.disconnect();
-            }
         }
     }
 
