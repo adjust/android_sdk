@@ -96,7 +96,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.10.1'
+compile 'com.adjust.sdk:adjust-android:4.10.2'
 ```
 
 ### <a id="sdk-gps"></a>Add Google Play Services
