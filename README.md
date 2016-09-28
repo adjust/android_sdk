@@ -26,6 +26,7 @@ our [Android web views SDK guide](doc/web_views.md).
 * [Additional features](#additional-features)
    * [Event tracking](#event-tracking)
       * [Track revenue](#revenue-tracking)
+      * [Revenue deduplication](#revenue-deduplication)
       * [In-App Purchase verification](#iap-verification)
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
@@ -382,6 +383,21 @@ config.setLogLevel(LogLevel.INFO);      // the default
 config.setLogLevel(LogLevel.WARN);      // disable info logging
 config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
+config.setLogLevel(LogLevel.SUPRESS);   // disable all log output
+```
+
+In case you want all your log output to be disabled, beside setting the log level to suppress, you should also use 
+constructor for `AdjustConfig` object which gets boolean parameter indicating whether suppress log level should be supported 
+or not:
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
+AdjustConfig config = new AdjustConfig(this, appToken, environment, true);
+config.setLogLevel(LogLevel.SUPRESS);
+
+Adjust.onCreate(config);
 ```
 
 ### <a id="build-the-app"></a>Build your app
@@ -406,7 +422,7 @@ AdjustEvent event = new AdjustEvent("abc123");
 Adjust.trackEvent(event);
 ```
 
-#### <a id="revenue-tracking">Revenue tracking
+### <a id="revenue-tracking">Revenue tracking
 
 If your users can generate revenue by tapping on advertisements or making In-App Purchases you can track those revenues
 with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
@@ -426,7 +442,25 @@ You can read more about revenue and event tracking in the [event tracking guide.
 
 The event instance can be used to configure the event further before tracking it:
 
-#### <a id="iap-verification">In-App Purchase verification
+### <a id="revenue-deduplication">Revenue deduplication
+
+You can also add an optional order ID to avoid tracking duplicate revenues. The last ten order IDs are remembered, and 
+revenue events with duplicate order IDs are skipped. This is especially useful for In-App Purchase tracking. You can see an 
+example below.
+
+If you want to track in-app purchases, please make sure to call the `trackEvent` only if the purchase is finished and item is 
+purchased. That way you can avoid tracking revenue that is not actually being generated.
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setRevenue(0.01, "EUR");
+event.setOrderId("{OrderId}");
+
+Adjust.trackEvent(event);
+```
+
+### <a id="iap-verification">In-App Purchase verification
 
 If you want to check the validity of In-App Purchases made in your app using Purchase Verification, adjust's server side
 receipt verification tool, then check out our Android purchase SDK to read more about it
@@ -480,7 +514,7 @@ event.addPartnerParameter("foo", "bar");
 Adjust.trackEvent(event);
 ```
 
-You can read more about special partners and these integrations in our [guide to special partners.][special-partners]
+You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
 ### <a id="session-parameters">Set up session parameters
 
@@ -494,7 +528,8 @@ If you need to send them with an install, but can only obtain the needed values 
 
 #### <a id="session-callback-parameters"> Session callback parameters
 
-The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every event or session of the adjust SDK.
+The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every 
+event or session of the adjust SDK.
 
 The session callback parameters have a similar interface to the event callback parameters.
 Instead of adding the key and it's value to an event, it's added through a call to 
@@ -972,7 +1007,8 @@ You can reset the session data of the device in our servers. Check the error mes
 Session failed (Ignoring too frequent session. Last session: YYYY-MM-DDTHH:mm:ss, this session: YYYY-MM-DDTHH:mm:ss, interval: XXs, min interval: 20m) (app_token: {yourAppToken}, adid: {adidValue})
 ```
 
-With the `{yourAppToken}` and `{adidValue}`/`{gps_adidValue}`/`{androidIDValue}` values filled in below, open one of the following links:
+With the `{yourAppToken}` and `{adidValue}`/`{gps_adidValue}`/`{androidIDValue}` values filled in below, open one of the 
+following links:
 
 
 ```
