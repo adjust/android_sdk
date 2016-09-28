@@ -277,7 +277,7 @@ SDK:
 **Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By
 implementing it, you will enable proper session tracking by the adjust SDK in your app.
 
-#### <a id="session-tracking-api14"></a>API level 14 and higher
+### <a id="session-tracking-api14"></a>API level 14 and higher
 
 1. Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this
 interface, your app is targeting an Android API level inferior to 14. You will have to update manually each Activity by
@@ -331,7 +331,7 @@ with an instance of the created `ActivityLifecycleCallbacks` class.
 
     ![][activity_lifecycle_register]
 
-#### <a id="session-tracking-api9"></a>API level 9 until 13
+### <a id="session-tracking-api9"></a>API level 9 until 13
 
 If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it to at least `14` to simplify the
 integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market
@@ -466,7 +466,7 @@ If you want to check the validity of In-App Purchases made in your app using Pur
 receipt verification tool, then check out our Android purchase SDK to read more about it
 [here][android-purchase-verification].
 
-#### <a id="callback-parameters">Callback parameters
+### <a id="callback-parameters">Callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the
 event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance
@@ -497,7 +497,7 @@ a callback for an event, these parameters won't even be read.
 You can read more about using URL callbacks, including a full list of available values, in our
 [callbacks guide][callbacks-guide].
 
-#### <a id="partner-parameters">Partner parameters
+### <a id="partner-parameters">Partner parameters
 
 You can also add parameters to be transmitted to network partners, which have been activated in your
 adjust dashboard.
@@ -526,7 +526,7 @@ These session parameters can be called before the adjust SDK is launched to make
 If you need to send them with an install, but can only obtain the needed values after launch, it's possible to 
 [delay](#delay-start) the first launch of the adjust SDK to allow this behaviour.
 
-#### <a id="session-callback-parameters"> Session callback parameters
+### <a id="session-callback-parameters">Session callback parameters
 
 The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every 
 event or session of the adjust SDK.
@@ -558,7 +558,7 @@ the method `Adjust.resetSessionCallbackParameters()`.
 Adjust.resetSessionCallbackParameters();
 ```
 
-#### <a id="session-partner-parameters"> Session partner parameters
+### <a id="session-partner-parameters">Session partner parameters
 
 In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session 
 of the adjust SDK, there is also session partner parameters.
@@ -592,7 +592,7 @@ the method `Adjust.resetSessionPartnerParameters()`.
 Adjust.resetSessionPartnerParameters();
 ```
 
-#### <a id="delay-start"> Delay start
+### <a id="delay-start">Delay start
 
 Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, 
 to be sent on install.
@@ -831,7 +831,7 @@ standard deep linking scenario, Android platform natively offers the possibility
 link content. Deferred deep linking scenario is something which Android platform doesn't support out of box and for this
 case, the adjust SDK will offer you the mechanism to get the info about the deep link content.
 
-#### <a id="deeplinking-standard">Standard deep linking scenario
+### <a id="deeplinking-standard">Standard deep linking scenario
 
 If a user has your app installed and you want it to launch after hitting an adjust tracker URL with the `deep_link`
 parameter in it, you need enable deep linking in your app. This is being done by choosing a desired **unique scheme name**
@@ -910,7 +910,7 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-#### <a id="deeplinking-deferred">Deferred deep linking scenario
+### <a id="deeplinking-deferred">Deferred deep linking scenario
 
 Deferred deep linking scenario happens when a user clicks on the adjust tracker URL with the `deep_link` parameter in it,
 but does not have the app installed on the device at the moment of click. After that, the user will get redirected to the
@@ -950,7 +950,7 @@ If you return `true`, we will launch it and the exact same scenario which is des
 Activity, you can return `false` from this listener and based on the deep link content decide on your own what to do next
 in your app.
 
-#### <a id="deeplinking-reattribution">Reattribution via deep links
+### <a id="deeplinking-reattribution">Reattribution via deep links
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please
 check our [official docs][reattribution-with-deeplinks].
