@@ -49,6 +49,7 @@ class DeviceInfo {
     String displayHeight;
     String hardwareName;
     String abi;
+    String buildName;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -83,6 +84,7 @@ class DeviceInfo {
         macShortMd5 = getMacShortMd5(macAddress);
         hardwareName = getHardwareName();
         abi = getABI();
+        buildName = getBuildName();
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -154,10 +156,13 @@ class DeviceInfo {
         return locale.getCountry();
     }
 
+    private String getBuildName() {
+        return Build.ID;
+    }
+
     private String getHardwareName() {
         return Build.DISPLAY;
     }
-
     private String getScreenSize(int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 

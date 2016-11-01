@@ -199,6 +199,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
+        PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         fillPluginKeys(parameters);
     }
 
