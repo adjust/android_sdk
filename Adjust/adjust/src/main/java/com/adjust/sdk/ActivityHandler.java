@@ -668,8 +668,7 @@ public class ActivityHandler implements IActivityHandler {
 
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                toSendI(false),
-                adjustConfig.hasAttributionChangedListener());
+                toSendI(false));
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(toSendI(true));
 

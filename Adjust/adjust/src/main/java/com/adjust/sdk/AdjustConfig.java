@@ -127,9 +127,6 @@ public class AdjustConfig {
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
     }
-    public boolean hasAttributionChangedListener() {
-        return onAttributionChangedListener != null;
-    }
 
     public boolean hasListener() {
         return onAttributionChangedListener != null

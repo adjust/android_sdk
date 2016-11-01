@@ -20,7 +20,6 @@ public class AttributionHandler implements IAttributionHandler {
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
 
     private boolean paused;
-    private boolean hasListener;
 
     public URL lastUrlUsed;
 
@@ -47,8 +46,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
-                              boolean startsSending,
-                              boolean hasListener) {
+                              boolean startsSending) {
         scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
@@ -63,18 +61,16 @@ public class AttributionHandler implements IAttributionHandler {
             this.logger.error("Timer not initialized, attribution handler is disabled");
         }
 
-        init(activityHandler, attributionPackage, startsSending, hasListener);
+        init(activityHandler, attributionPackage, startsSending);
     }
 
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startsSending,
-                     boolean hasListener) {
+                     boolean startsSending) {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.attributionPackage = attributionPackage;
         this.paused = !startsSending;
-        this.hasListener = hasListener;
     }
 
     @Override
@@ -190,10 +186,6 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void getAttributionI() {
-        if (!hasListener) {
-            return;
-        }
-
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;

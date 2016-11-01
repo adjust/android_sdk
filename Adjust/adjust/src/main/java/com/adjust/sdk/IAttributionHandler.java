@@ -6,8 +6,7 @@ package com.adjust.sdk;
 public interface IAttributionHandler {
     void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startsSending,
-                     boolean hasListener);
+                     boolean startsSending);
 
     void getAttribution();
 
