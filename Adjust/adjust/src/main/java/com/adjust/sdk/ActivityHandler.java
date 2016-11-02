@@ -17,9 +17,11 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
@@ -605,6 +607,8 @@ public class ActivityHandler implements IActivityHandler {
             internalState.updatePackages = activityState.updatePackages;
         }
 
+        readConfigFile(adjustConfig.context);
+
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -684,6 +688,25 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
+    }
+
+    private void readConfigFile(Context context) {
+        Properties properties;
+        try
+        {
+            InputStream inputStream = context.getAssets().open("adjust_config.properties");
+            properties = new Properties();
+            properties.load(inputStream);
+        } catch (Exception e) {
+            logger.debug("Unable to load config property file (%s)", e.getMessage());
+            return;
+        }
+        logger.verbose("config file read and loaded");
+
+        String defaulTracker = properties.getProperty("defaultTracker");
+        if (defaulTracker != null) {
+            adjustConfig.defaultTracker = defaulTracker;
+        }
     }
 
     private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
