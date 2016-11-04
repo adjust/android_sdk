@@ -599,4 +599,8 @@ public class Util {
     public static void setUserAgent(String userAgent) {
         Util.userAgent = userAgent;
     }
+
+    public static String getVmInstructionSet() {
+        return Reflection.getVmInstructionSet();
+    }
 }

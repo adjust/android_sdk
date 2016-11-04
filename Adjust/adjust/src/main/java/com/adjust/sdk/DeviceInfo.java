@@ -50,6 +50,7 @@ class DeviceInfo {
     String hardwareName;
     String abi;
     String buildName;
+    String vmInstructionSet;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -85,6 +86,7 @@ class DeviceInfo {
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
+        vmInstructionSet = getVmInstructionSet();
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -285,5 +287,9 @@ class DeviceInfo {
         }
 
         return SupportedABIS[0];
+    }
+
+    private String getVmInstructionSet() {
+        return Util.getVmInstructionSet();
     }
 }

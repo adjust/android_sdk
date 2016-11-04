@@ -200,6 +200,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
+        PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
         fillPluginKeys(parameters);
     }
 
