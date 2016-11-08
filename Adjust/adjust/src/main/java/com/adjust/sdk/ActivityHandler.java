@@ -692,8 +692,8 @@ public class ActivityHandler implements IActivityHandler {
 
     private void readConfigFile(Context context) {
         Properties properties;
-        try
-        {
+
+        try  {
             InputStream inputStream = context.getAssets().open("adjust_config.properties");
             properties = new Properties();
             properties.load(inputStream);
@@ -701,11 +701,13 @@ public class ActivityHandler implements IActivityHandler {
             logger.debug("Unable to load config property file (%s)", e.getMessage());
             return;
         }
+
         logger.verbose("config file read and loaded");
 
-        String defaulTracker = properties.getProperty("defaultTracker");
-        if (defaulTracker != null) {
-            adjustConfig.defaultTracker = defaulTracker;
+        String defaultTracker = properties.getProperty("defaultTracker");
+
+        if (defaultTracker != null) {
+            adjustConfig.defaultTracker = defaultTracker;
         }
     }
 
