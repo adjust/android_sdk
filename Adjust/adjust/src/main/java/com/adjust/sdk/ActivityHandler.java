@@ -554,6 +554,9 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
+                if (activityState == null) {
+                    startI();
+                }
                 setPushTokenI(token);
             }
         });
@@ -719,6 +722,7 @@ public class ActivityHandler implements IActivityHandler {
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.isToUpdatePackages();
+            activityState.pushToken = adjustConfig.pushToken;
             writeActivityStateI();
             return;
         }

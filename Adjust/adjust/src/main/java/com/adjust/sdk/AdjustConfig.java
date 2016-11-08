@@ -31,6 +31,7 @@ public class AdjustConfig {
     boolean allowSuppressLogLevel;
     ILogger logger;
     String userAgent;
+    String pushToken;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";

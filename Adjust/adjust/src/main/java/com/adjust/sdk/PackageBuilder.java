@@ -221,6 +221,7 @@ class PackageBuilder {
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addString(parameters, "push_token", adjustConfig.pushToken);
     }
 
     private void injectActivityState(Map<String, String> parameters) {
