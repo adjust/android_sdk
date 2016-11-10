@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 03/12/15.
  */
-public abstract class ResponseData {
+public class ResponseData {
     public ActivityKind activityKind;
     public String message;
     public String timestamp;
@@ -16,6 +16,8 @@ public abstract class ResponseData {
     public boolean willRetry;
     public JSONObject jsonResponse;
     public AdjustAttribution attribution;
+
+    protected ResponseData() {}
 
     public static ResponseData buildResponseData(ActivityPackage activityPackage) {
         ActivityKind activityKind = activityPackage.getActivityKind();
@@ -30,11 +32,8 @@ public abstract class ResponseData {
             case EVENT:
                 responseData = new EventResponseData(activityPackage);
                 break;
-            case CLICK:
-                responseData = new ClickResponseData();
-                break;
             default:
-                responseData = new UnknownResponseData();
+                responseData = new ResponseData();
                 break;
         }
 
