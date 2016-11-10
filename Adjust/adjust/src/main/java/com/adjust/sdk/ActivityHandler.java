@@ -1423,16 +1423,21 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (token.equals(activityState.pushToken)) {
+        logger.verbose("activityState == null %b", activityState == null);
+
+        boolean isTokenEqual = token.equals(activityState.pushToken);
+
+        logger.verbose("isTokenEqual %b", isTokenEqual);
+        if (isTokenEqual           ) {
             return;
         }
 
         long now = System.currentTimeMillis();
-        PackageBuilder clickPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        clickPackageBuilder.pushToken = token;
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        infoPackageBuilder.pushToken = token;
 
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.PUSH);
-        sdkClickHandler.sendSdkClick(clickPackage);
+        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
+        sdkClickHandler.sendSdkClick(infoPackage);
 
         // save new push token
         activityState.pushToken = token;

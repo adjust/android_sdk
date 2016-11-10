@@ -1,7 +1,7 @@
 package com.adjust.sdk;
 
 public enum ActivityKind {
-    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION;
+    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION, INFO;
 
     public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {
@@ -12,6 +12,8 @@ public enum ActivityKind {
             return CLICK;
         } else if ("attribution".equals(string)) {
             return ATTRIBUTION;
+        } else if ("info".equals(string)) {
+            return INFO;
         } else {
             return UNKNOWN;
         }
@@ -28,6 +30,8 @@ public enum ActivityKind {
                 return "click";
             case ATTRIBUTION:
                 return "attribution";
+            case INFO:
+                return "info";
             default:
                 return "unknown";
         }

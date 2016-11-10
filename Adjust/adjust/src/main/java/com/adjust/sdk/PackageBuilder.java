@@ -125,11 +125,25 @@ class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
-        PackageBuilder.addString(parameters, "push_token", pushToken);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
+        clickPackage.setSuffix("");
+        clickPackage.setParameters(parameters);
+
+        return clickPackage;
+    }
+
+    public ActivityPackage buildInfoPackage(String source) {
+        Map<String, String> parameters = getIdsParameters();
+
+        PackageBuilder.addString(parameters, "source", source);
+        PackageBuilder.addString(parameters, "push_token", pushToken);
+        injectAttribution(parameters);
+
+        ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
+        clickPackage.setPath("/sdk_info");
         clickPackage.setSuffix("");
         clickPackage.setParameters(parameters);
 
