@@ -698,11 +698,11 @@ public class ActivityHandler implements IActivityHandler {
             properties = new Properties();
             properties.load(inputStream);
         } catch (Exception e) {
-            logger.debug("Unable to load config property file (%s)", e.getMessage());
+            logger.debug("%s file not found in this app", e.getMessage());
             return;
         }
 
-        logger.verbose("config file read and loaded");
+        logger.verbose("adjust_config.properties file read and loaded");
 
         String defaultTracker = properties.getProperty("defaultTracker");
 
