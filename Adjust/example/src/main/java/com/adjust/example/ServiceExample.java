@@ -14,7 +14,7 @@ import com.adjust.sdk.AdjustEvent;
  * Created by pfms on 16/03/16.
  */
 public class ServiceExample extends Service {
-    private static final String EVENT_TOKEN_BACKGROUND      = "{YourEventToken}";
+    private static final String EVENT_TOKEN_BACKGROUND  = "pkd28h";
 
     private static boolean flip = true;
 
