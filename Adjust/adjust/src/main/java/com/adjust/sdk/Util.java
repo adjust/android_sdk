@@ -11,6 +11,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Looper;
 
@@ -602,5 +603,13 @@ public class Util {
 
     public static String getVmInstructionSet() {
         return Reflection.getVmInstructionSet();
+    }
+
+    public static Locale getLocale(Configuration configuration) {
+        Locale locale = Reflection.getLocaleFromLocaleList(configuration);
+        if (locale != null) {
+            return locale;
+        }
+        return Reflection.getLocaleFromField(configuration);
     }
 }

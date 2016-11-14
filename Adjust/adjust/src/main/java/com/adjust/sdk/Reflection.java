@@ -1,6 +1,7 @@
 package com.adjust.sdk;
 
 import android.content.Context;
+import android.content.res.Configuration;
 
 import com.adjust.sdk.plugin.Plugin;
 
@@ -10,6 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.adjust.sdk.Constants.PLUGINS;
@@ -108,6 +110,27 @@ public class Reflection {
             cpuAbi = (String) readField("android.os.Build", "CPU_ABI");
         }catch (Throwable t) {}
         return cpuAbi;
+    }
+
+    public static Locale getLocaleFromLocaleList(Configuration configuration) {
+        Locale locale = null;
+        try {
+            Object localesList = invokeInstanceMethod(configuration, "getLocales", null);
+            if (localesList ==  null) {
+                return null;
+            }
+            locale = (Locale)invokeInstanceMethod(localesList, "get", new Class[]{int.class}, 0);
+
+        }catch (Throwable t) {}
+        return locale;
+    }
+
+    public static Locale getLocaleFromField(Configuration configuration) {
+        Locale locale = null;
+        try {
+            locale = (Locale)readField("android.content.res.Configuration", "locale", configuration);
+        }catch (Throwable t) {}
+        return locale;
     }
 
     public static Class forName(String className) {

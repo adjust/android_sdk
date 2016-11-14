@@ -57,7 +57,7 @@ class DeviceInfo {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
-        Locale locale = configuration.locale;
+        Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
