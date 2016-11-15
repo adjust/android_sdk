@@ -6,7 +6,10 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
+import java.text.*;
 import java.util.Map;
+
+import static android.R.string.no;
 
 /**
  * Created by pfms on 07/11/14.
@@ -33,7 +36,8 @@ public class AttributionHandler implements IAttributionHandler {
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException se) {
+            }
         }
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
@@ -52,16 +56,12 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
-        if (this.scheduledExecutor != null) {
-            timer = new TimerOnce(scheduledExecutor, new Runnable() {
-                @Override
-                public void run() {
-                    getAttributionI();
-                }
-            }, ATTRIBUTION_TIMER_NAME);
-        } else {
-            this.logger.error("Timer not initialized, attribution handler is disabled");
-        }
+        timer = new TimerOnce(scheduledExecutor, new Runnable() {
+            @Override
+            public void run() {
+                getAttributionI();
+            }
+        }, ATTRIBUTION_TIMER_NAME);
 
         init(activityHandler, attributionPackage, startsSending, hasListener);
     }
@@ -213,7 +213,7 @@ public class AttributionHandler implements IAttributionHandler {
                 return;
             }
 
-            checkAttributionResponse((AttributionResponseData)responseData);
+            checkAttributionResponse((AttributionResponseData) responseData);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
@@ -232,7 +232,9 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormatter.format(now);
+
+        final DateFormat dateFormat = new SimpleDateFormat(Util.DATE_FORMAT);
+        String dateString = dateFormat.format(now);
 
         uriBuilder.appendQueryParameter("sent_at", dateString);
 

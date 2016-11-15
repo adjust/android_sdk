@@ -110,7 +110,7 @@ public class ActivityHandler implements IActivityHandler {
         sessionParameters = null;
     }
 
-    public class InternalState {
+    public static class InternalState {
         boolean enabled;
         boolean offline;
         boolean background;
@@ -1246,9 +1246,9 @@ public class ActivityHandler implements IActivityHandler {
         double delayStartSeconds = adjustConfig.delayStart != null ? adjustConfig.delayStart : 0.0;
         long maxDelayStartMilli = AdjustFactory.getMaxDelayStart();
 
-        long delayStartMilli = (long)(delayStartSeconds * 1000);
+        long delayStartMilli = (long) (delayStartSeconds * (double) 1000);
         if (delayStartMilli > maxDelayStartMilli) {
-            double maxDelayStartSeconds = maxDelayStartMilli / 1000;
+            double maxDelayStartSeconds = maxDelayStartMilli / (double) 1000;
             String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
             String maxDelayStartFormatted = Util.SecondsDisplayFormat.format(maxDelayStartSeconds);
 
@@ -1594,10 +1594,6 @@ public class ActivityHandler implements IActivityHandler {
             return false;
         }
         return true;
-    }
-
-    private boolean pausedI() {
-        return pausedI(false);
     }
 
     private boolean pausedI(boolean sdkClickHandlerOnly) {

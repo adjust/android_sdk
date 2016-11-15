@@ -16,7 +16,7 @@ import com.adjust.sdk.AdjustEvent;
 public class ServiceExample extends Service {
     private static final String EVENT_TOKEN_BACKGROUND      = "{YourEventToken}";
 
-    private static boolean flip = true;
+    private static volatile boolean flip = true;
 
     public ServiceExample() {
         super();
@@ -38,16 +38,10 @@ public class ServiceExample extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int startDefaultOption = super.onStartCommand(intent, flags, startId);
+        super.onStartCommand(intent, flags, startId);
         Log.d("example", "ServiceExample onStartCommand");
 
-        if (flip) {
-            Adjust.setEnabled(false);
-            flip = false;
-        } else {
-            Adjust.setEnabled(true);
-            flip = true;
-        }
+        Adjust.setEnabled(!Adjust.isEnabled());
 
         new AsyncTask<Void,Void,Void>() {
             @Override

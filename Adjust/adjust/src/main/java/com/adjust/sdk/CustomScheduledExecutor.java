@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class CustomScheduledExecutor {
     private ScheduledThreadPoolExecutor executor;
-    private String source;
 //    private AtomicInteger threadCounter = new AtomicInteger(1);
 
     public CustomScheduledExecutor(final String source) {
@@ -43,7 +42,6 @@ public class CustomScheduledExecutor {
             }
         }
         );
-        this.source = source;
         executor.setKeepAliveTime(10L, TimeUnit.MILLISECONDS);
         executor.allowCoreThreadTimeOut(true);
     }
@@ -67,7 +65,7 @@ public class CustomScheduledExecutor {
         return executor.schedule(new RunnableWrapper(command), delay, unit);
     }
 
-    private class RunnableWrapper implements Runnable {
+    private static class RunnableWrapper implements Runnable {
         private Runnable runnable;
 //        private long created;
 //        private int threadNumber;

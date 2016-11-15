@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class ActivityState implements Serializable, Cloneable {
+public class ActivityState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
     private static int ORDER_ID_MAXCOUNT = 10;
     private transient ILogger logger;

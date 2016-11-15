@@ -119,14 +119,14 @@ public class ActivityPackage implements Serializable {
 
     public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format(Locale.US, "Path:      %s\n", path));
-        builder.append(String.format(Locale.US, "ClientSdk: %s\n", clientSdk));
+        builder.append(String.format(Locale.US, "Path:      %s%n", path));
+        builder.append(String.format(Locale.US, "ClientSdk: %s%n", clientSdk));
 
         if (parameters != null) {
             builder.append("Parameters:");
             SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
             for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
-                builder.append(String.format(Locale.US, "\n\t%-16s %s", entry.getKey(),  entry.getValue()));
+                builder.append(String.format(Locale.US, "%n\t%-16s %s", entry.getKey(),  entry.getValue()));
             }
         }
         return builder.toString();

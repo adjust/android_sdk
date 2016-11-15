@@ -36,8 +36,7 @@ import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -56,10 +55,9 @@ import static com.adjust.sdk.Constants.SHA1;
  * Collects utility functions used by Adjust.
  */
 public class Util {
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
+    public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
-    public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
     private static String userAgent;
 
@@ -113,7 +111,6 @@ public class Util {
 
             @Override
             protected void onPostExecute(String playAdiId) {
-                ILogger logger = AdjustFactory.getLogger();
                 onDeviceIdRead.onGoogleAdIdRead(playAdiId);
             }
         }.execute(context);
@@ -208,6 +205,9 @@ public class Util {
         StringBuffer sb = new StringBuffer();
         ILogger logger = getLogger();
         Integer responseCode = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader bufferedReader = null;
+
         try {
             connection.connect();
 
@@ -220,8 +220,8 @@ public class Util {
                 inputStream = connection.getInputStream();
             }
 
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            inputStreamReader = new InputStreamReader(inputStream);
+            bufferedReader = new BufferedReader(inputStreamReader);
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
@@ -233,6 +233,13 @@ public class Util {
         } finally {
             if (connection != null) {
                 connection.disconnect();
+            }
+
+            try {
+                bufferedReader.close();
+                inputStreamReader.close();
+            } catch (Exception e) {
+                throw e;
             }
         }
 
@@ -330,7 +337,9 @@ public class Util {
                     wr.flush();
                     wr.close();
                 }
-            }catch (Exception e) { }
+            } catch (Exception e) {
+                throw e;
+            }
         }
     }
 
@@ -351,7 +360,8 @@ public class Util {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormatter.format(now);
+        final DateFormat dateFormat = new SimpleDateFormat(Util.DATE_FORMAT);
+        String dateString = dateFormat.format(now);
 
         result.append("&");
         result.append(URLEncoder.encode("sent_at", Constants.ENCODING));

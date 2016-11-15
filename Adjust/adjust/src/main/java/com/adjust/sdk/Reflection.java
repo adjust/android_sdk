@@ -38,7 +38,7 @@ public class Reflection {
 
             return isPlayTrackingEnabled;
         } catch (Throwable t) {
-            return null;
+            return false;
         }
     }
 
@@ -95,41 +95,52 @@ public class Reflection {
 
     public static String[] getSupportedAbis() {
         String[] supportedAbis = null;
+        Class buildClass = forName("android.os.Build");
+
         try {
-            Class buildClass = forName("android.os.Build");
+            Field supportedAbisField = null;
+            if (buildClass != null) {
+                supportedAbisField = buildClass.getField("SUPPORTED_ABIS");
+            }
 
-            Field supportedAbisField = buildClass.getField("SUPPORTED_ABIS");
-
+            assert supportedAbisField != null;
             Object supportedAbisObject = supportedAbisField.get(null);
 
             if (supportedAbisObject instanceof String[]) {
                 supportedAbis = (String[]) supportedAbisObject;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         return supportedAbis;
     }
 
     public static String getCpuAbi() {
         String cpuAbi = null;
+        Class buildClass = forName("android.os.Build");
+
         try {
-            Class buildClass = forName("android.os.Build");
+            Field cpuAbiField = null;
+            if (buildClass != null) {
+                cpuAbiField = buildClass.getField("CPU_ABI");
+            }
 
-            Field cpuAbiField = buildClass.getField("CPU_ABI");
-
-            Object cpuAbiObject = cpuAbiField.get(null);
+            Object cpuAbiObject = null;
+            if (cpuAbiField != null) {
+                cpuAbiObject = cpuAbiField.get(null);
+            }
 
             if (cpuAbiObject instanceof String) {
                 cpuAbi = (String) cpuAbiObject;
             }
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return cpuAbi;
     }
 
     public static Class forName(String className) {
         try {
-            Class classObject = Class.forName(className);
-            return classObject;
+            return (Class) Class.forName(className);
         } catch (Throwable t) {
             return null;
         }

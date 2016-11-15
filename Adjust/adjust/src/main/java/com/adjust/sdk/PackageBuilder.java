@@ -13,6 +13,7 @@ import android.text.TextUtils;
 
 import org.json.JSONObject;
 
+import java.text.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -36,7 +37,7 @@ class PackageBuilder {
 
     private static ILogger logger = AdjustFactory.getLogger();
 
-    private class ActivityStateCopy {
+    private static class ActivityStateCopy {
         long lastInterval = -1;
         int eventCount = -1;
         String uuid = null;
@@ -293,7 +294,8 @@ class PackageBuilder {
             return;
         }
 
-        String dateString = Util.dateFormatter.format(value);
+        final DateFormat dateFormat = new SimpleDateFormat(Util.DATE_FORMAT);
+        String dateString = dateFormat.format(value);
         PackageBuilder.addString(parameters, key, dateString);
     }
 
