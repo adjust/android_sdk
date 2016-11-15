@@ -26,7 +26,7 @@ import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
-public class ActivityHandler implements IActivityHandler {
+public final class ActivityHandler implements IActivityHandler {
     private static long FOREGROUND_TIMER_INTERVAL;
     private static long FOREGROUND_TIMER_START;
     private static long BACKGROUND_TIMER_INTERVAL;
@@ -59,7 +59,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
 
     @Override
-    public void teardown(boolean deleteState) {
+    public void teardown(final boolean deleteState) {
         if (backgroundTimer != null) {
             backgroundTimer.teardown();
         }
@@ -72,7 +72,9 @@ public class ActivityHandler implements IActivityHandler {
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException se) {
+
+            }
         }
         if (packageHandler != null) {
             packageHandler.teardown(deleteState);
@@ -111,50 +113,50 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     public static class InternalState {
-        boolean enabled;
-        boolean offline;
-        boolean background;
-        boolean delayStart;
-        boolean updatePackages;
+        private boolean enabled;
+        private boolean offline;
+        private boolean background;
+        private boolean delayStart;
+        private boolean updatePackages;
 
-        public boolean isEnabled() {
+        public final boolean isEnabled() {
             return enabled;
         }
 
-        public boolean isDisabled() {
+        public final boolean isDisabled() {
             return !enabled;
         }
 
-        public boolean isOffline() {
+        public final boolean isOffline() {
             return offline;
         }
 
-        public boolean isOnline() {
+        public final boolean isOnline() {
             return !offline;
         }
 
-        public boolean isBackground() {
+        public final boolean isBackground() {
             return background;
         }
 
-        public boolean isForeground() {
+        public final boolean isForeground() {
             return !background;
         }
 
-        public boolean isDelayStart() {
+        public final boolean isDelayStart() {
             return delayStart;
         }
 
-        public boolean isToStartNow() {
+        public final boolean isToStartNow() {
             return !delayStart;
         }
 
-        public boolean isToUpdatePackages() {
+        public final boolean isToUpdatePackages() {
             return updatePackages;
         }
     }
 
-    private ActivityHandler(AdjustConfig adjustConfig) {
+    private ActivityHandler(final AdjustConfig adjustConfig) {
         init(adjustConfig);
 
         // init logger to be available everywhere
@@ -185,11 +187,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void init(AdjustConfig adjustConfig) {
+    public void init(final AdjustConfig adjustConfig) {
         this.adjustConfig = adjustConfig;
     }
 
-    public static ActivityHandler getInstance(AdjustConfig adjustConfig) {
+    public static ActivityHandler getInstance(final AdjustConfig adjustConfig) {
         if (adjustConfig == null) {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return null;
@@ -326,8 +328,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void updateStatus(boolean pausingState, String pausingMessage,
-                              String remainsPausedMessage, String unPausingMessage)
-    {
+                              String remainsPausedMessage, String unPausingMessage) {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
@@ -348,9 +349,8 @@ public class ActivityHandler implements IActivityHandler {
         updateHandlersStatusAndSend();
     }
 
-    private boolean hasChangedState(boolean previousState, boolean newState,
-                                    String trueMessage, String falseMessage)
-    {
+    private boolean hasChangedState(final boolean previousState, final boolean newState,
+                                    final String trueMessage, final String falseMessage) {
         if (previousState != newState) {
             return true;
         }
@@ -365,7 +365,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setOfflineMode(boolean offline) {
+    public void setOfflineMode(final boolean offline) {
         // compare with the internal state
         if (!hasChangedState(internalState.isOffline(), offline,
                 "Adjust already in offline mode",
@@ -613,8 +613,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
             if (deviceInfo.macSha1 == null &&
                     deviceInfo.macShortMd5 == null &&
-                    deviceInfo.androidId == null)
-            {
+                    deviceInfo.androidId == null) {
                 logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
             }
         } else {
@@ -648,8 +647,7 @@ public class ActivityHandler implements IActivityHandler {
         // configure delay start timer
         if (activityState == null &&
                 adjustConfig.delayStart != null &&
-                adjustConfig.delayStart > 0.0)
-        {
+                adjustConfig.delayStart > 0.0) {
             logger.info("Delay start configured");
             internalState.delayStart = true;
             delayStartTimer = new TimerOnce(scheduledExecutor, new Runnable() {
@@ -684,7 +682,7 @@ public class ActivityHandler implements IActivityHandler {
         sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
     }
 
-    private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
+    private void sessionParametersActionsI(final List<IRunActivityHandler> sessionParametersActionsArray) {
         if (sessionParametersActionsArray == null) {
             return;
         }
@@ -760,7 +758,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void checkAttributionStateI() {
-        if (!checkActivityStateI(activityState)) { return; }
+        if (!checkActivityStateI(activityState)) {
+            return;
+        }
 
         // if it's a new session
         if (activityState.subsessionCount <= 1) {
@@ -848,7 +848,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
+    private void launchSessionResponseTasksI(final SessionResponseData sessionResponseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
@@ -864,7 +864,7 @@ public class ActivityHandler implements IActivityHandler {
         launchSessionResponseListenerI(sessionResponseData, handler);
     }
 
-    private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, Handler handler) {
+    private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, final Handler handler) {
         // success callback
         if (sessionResponseData.success && adjustConfig.onSessionTrackingSucceededListener != null) {
             logger.debug("Launching success session tracking listener");
@@ -895,7 +895,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void launchAttributionResponseTasksI(AttributionResponseData attributionResponseData) {
+    private void launchAttributionResponseTasksI(final AttributionResponseData attributionResponseData) {
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
@@ -910,7 +910,7 @@ public class ActivityHandler implements IActivityHandler {
         prepareDeeplinkI(attributionResponseData.deeplink, handler);
     }
 
-    private void launchAttributionListenerI(Handler handler) {
+    private void launchAttributionListenerI(final Handler handler) {
         if (adjustConfig.onAttributionChangedListener == null) {
             return;
         }
@@ -948,7 +948,7 @@ public class ActivityHandler implements IActivityHandler {
         handler.post(runnable);
     }
 
-    private Intent createDeeplinkIntentI(Uri deeplink) {
+    private Intent createDeeplinkIntentI(final Uri deeplink) {
         Intent mapIntent;
         if (adjustConfig.deepLinkComponent == null) {
             mapIntent = new Intent(Intent.ACTION_VIEW, deeplink);
@@ -962,7 +962,7 @@ public class ActivityHandler implements IActivityHandler {
         return mapIntent;
     }
 
-    private void launchDeeplinkMain(Intent deeplinkIntent, Uri deeplink) {
+    private void launchDeeplinkMain(final Intent deeplinkIntent, final Uri deeplink) {
         // Verify it resolves
         PackageManager packageManager = adjustConfig.context.getPackageManager();
         List<ResolveInfo> activities = packageManager.queryIntentActivities(deeplinkIntent, 0);
@@ -979,7 +979,7 @@ public class ActivityHandler implements IActivityHandler {
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
-    private void sendReferrerI(String referrer, long clickTime) {
+    private void sendReferrerI(final String referrer, final long clickTime) {
         if (referrer == null || referrer.length() == 0 ) {
             return;
         }
@@ -996,7 +996,7 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private void readOpenUrlI(Uri url, long clickTime) {
+    private void readOpenUrlI(final Uri url, final long clickTime) {
         if (url == null) {
             return;
         }
@@ -1019,7 +1019,7 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private PackageBuilder queryStringClickPackageBuilderI(String queryString) {
+    private PackageBuilder queryStringClickPackageBuilderI(final String queryString) {
         if (queryString == null) {
             return null;
         }
@@ -1046,9 +1046,9 @@ public class ActivityHandler implements IActivityHandler {
         return builder;
     }
 
-    private boolean readQueryStringI(String queryString,
-                                     Map<String, String> extraParameters,
-                                     AdjustAttribution queryStringAttribution) {
+    private boolean readQueryStringI(final String queryString,
+                                     final Map<String, String> extraParameters,
+                                     final AdjustAttribution queryStringAttribution) {
         String[] pairComponents = queryString.split("=");
         if (pairComponents.length != 2) return false;
 
@@ -1068,9 +1068,9 @@ public class ActivityHandler implements IActivityHandler {
         return true;
     }
 
-    private boolean trySetAttributionI(AdjustAttribution queryStringAttribution,
-                                       String key,
-                                       String value) {
+    private boolean trySetAttributionI(final AdjustAttribution queryStringAttribution,
+                                       final String key,
+                                       final String value) {
         if (key.equals("tracker")) {
             queryStringAttribution.trackerName = value;
             return true;
@@ -1127,8 +1127,10 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.resumeSending();
     }
 
-    private boolean updateActivityStateI(long now) {
-        if (!checkActivityStateI(activityState)) { return false; }
+    private boolean updateActivityStateI(final long now) {
+        if (!checkActivityStateI(activityState)) {
+            return false;
+        }
 
         long lastInterval = now - activityState.lastActivity;
 
@@ -1147,23 +1149,23 @@ public class ActivityHandler implements IActivityHandler {
         return true;
     }
 
-    public static boolean deleteActivityState(Context context) {
+    public static boolean deleteActivityState(final Context context) {
         return context.deleteFile(ACTIVITY_STATE_FILENAME);
     }
 
-    public static boolean deleteAttribution(Context context) {
+    public static boolean deleteAttribution(final Context context) {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
-    public static boolean deleteSessionCallbackParameters(Context context) {
+    public static boolean deleteSessionCallbackParameters(final Context context) {
         return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME);
     }
 
-    public static boolean deleteSessionPartnerParameters(Context context) {
+    public static boolean deleteSessionPartnerParameters(final Context context) {
         return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
     }
 
-    private void transferSessionPackageI(long now) {
+    private void transferSessionPackageI(final long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
         packageHandler.addPackage(sessionPackage);
@@ -1307,12 +1309,12 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    public void addSessionCallbackParameterI(String key, String value) {
+    public void addSessionCallbackParameterI(final String key, final String value) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
         if (!Util.isValidParameter(value, "value", "Session Callback")) return;
 
         if (sessionParameters.callbackParameters == null) {
-            sessionParameters.callbackParameters = new LinkedHashMap<String, String>();
+            sessionParameters.callbackParameters = new LinkedHashMap<>();
         }
 
         String oldValue = sessionParameters.callbackParameters.get(key);
@@ -1331,12 +1333,12 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionCallbackParametersI();
     }
 
-    public void addSessionPartnerParameterI(String key, String value) {
+    public void addSessionPartnerParameterI(final String key, final String value) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return;
         if (!Util.isValidParameter(value, "value", "Session Partner")) return;
 
         if (sessionParameters.partnerParameters == null) {
-            sessionParameters.partnerParameters = new LinkedHashMap<String, String>();
+            sessionParameters.partnerParameters = new LinkedHashMap<>();
         }
 
         String oldValue = sessionParameters.partnerParameters.get(key);
@@ -1355,7 +1357,7 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionPartnerParametersI();
     }
 
-    public void removeSessionCallbackParameterI(String key) {
+    public void removeSessionCallbackParameterI(final String key) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
 
         if (sessionParameters.callbackParameters == null) {
@@ -1375,7 +1377,7 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionCallbackParametersI();
     }
 
-    public void removeSessionPartnerParameterI(String key) {
+    public void removeSessionPartnerParameterI(final String key) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return;
 
         if (sessionParameters.partnerParameters == null) {
@@ -1415,7 +1417,7 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionPartnerParametersI();
     }
 
-    private void setPushTokenI(String token) {
+    private void setPushTokenI(final String token) {
         if (token == null) {
             return;
         }
@@ -1436,7 +1438,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
     }
 
-    private void readActivityStateI(Context context) {
+    private void readActivityStateI(final Context context) {
         try {
             activityState = Util.readObject(context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME, ActivityState.class);
         } catch (Exception e) {
@@ -1445,7 +1447,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void readAttributionI(Context context) {
+    private void readAttributionI(final Context context) {
         try {
             attribution = Util.readObject(context, ATTRIBUTION_FILENAME, ATTRIBUTION_NAME, AdjustAttribution.class);
         } catch (Exception e) {
@@ -1454,7 +1456,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void readSessionCallbackParametersI(Context context) {
+    private void readSessionCallbackParametersI(final Context context) {
         try {
             sessionParameters.callbackParameters = Util.readObject(context,
                     SESSION_CALLBACK_PARAMETERS_FILENAME,
@@ -1466,7 +1468,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void readSessionPartnerParametersI(Context context) {
+    private void readSessionPartnerParametersI(final Context context) {
         try {
             sessionParameters.partnerParameters = Util.readObject(context,
                     SESSION_PARTNER_PARAMETERS_FILENAME,
@@ -1482,7 +1484,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateS(null);
     }
 
-    private void writeActivityStateS(Runnable changeActivityState) {
+    private void writeActivityStateS(final Runnable changeActivityState) {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
@@ -1494,7 +1496,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownActivityStateS(boolean toDelete) {
+    private void teardownActivityStateS(final boolean toDelete) {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
@@ -1515,7 +1517,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAttributionS(boolean toDelete) {
+    private void teardownAttributionS(final boolean toDelete) {
         synchronized (AdjustAttribution.class) {
             if (attribution == null) {
                 return;
@@ -1545,7 +1547,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAllSessionParametersS(boolean toDelete) {
+    private void teardownAllSessionParametersS(final boolean toDelete) {
         synchronized (SessionParameters.class) {
             if (sessionParameters == null) {
                 return;
@@ -1558,7 +1560,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private boolean checkEventI(AdjustEvent event) {
+    private boolean checkEventI(final AdjustEvent event) {
         if (event == null) {
             logger.error("Event missing");
             return false;
@@ -1572,7 +1574,7 @@ public class ActivityHandler implements IActivityHandler {
         return true;
     }
 
-    private boolean checkOrderIdI(String orderId) {
+    private boolean checkOrderIdI(final String orderId) {
         if (orderId == null || orderId.isEmpty()) {
             return true;  // no order ID given
         }
@@ -1588,7 +1590,7 @@ public class ActivityHandler implements IActivityHandler {
         return true;
     }
 
-    private boolean checkActivityStateI(ActivityState activityState) {
+    private boolean checkActivityStateI(final ActivityState activityState) {
         if (activityState == null) {
             logger.error("Missing activity state");
             return false;
@@ -1596,7 +1598,7 @@ public class ActivityHandler implements IActivityHandler {
         return true;
     }
 
-    private boolean pausedI(boolean sdkClickHandlerOnly) {
+    private boolean pausedI(final boolean sdkClickHandlerOnly) {
         if (sdkClickHandlerOnly) {
             // sdk click handler is paused if either:
             return internalState.isOffline() ||     // it's offline
@@ -1612,7 +1614,7 @@ public class ActivityHandler implements IActivityHandler {
         return toSendI(false);
     }
 
-    private boolean toSendI(boolean sdkClickHandlerOnly) {
+    private boolean toSendI(final boolean sdkClickHandlerOnly) {
         // don't send when it's paused
         if (pausedI(sdkClickHandlerOnly)) {
             return false;
