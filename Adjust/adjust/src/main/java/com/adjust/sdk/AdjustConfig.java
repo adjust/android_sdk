@@ -35,15 +35,15 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
-    public AdjustConfig(Context context, String appToken, String environment) {
+    public AdjustConfig(final Context context, final String appToken, final String environment) {
         init(context, appToken, environment, false);
     }
 
-    public AdjustConfig(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
+    public AdjustConfig(final Context context, final String appToken, final String environment, final boolean allowSuppressLogLevel) {
         init(context, appToken, environment, allowSuppressLogLevel);
     }
 
-    private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
+    private void init(final Context context, final String appToken, final String environment, final boolean allowSuppressLogLevel) {
         this.allowSuppressLogLevel = allowSuppressLogLevel;
         logger = AdjustFactory.getLogger();
         // default values
@@ -62,7 +62,7 @@ public class AdjustConfig {
         this.sendInBackground = false;
     }
 
-    public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
+    public final void setEventBufferingEnabled(final Boolean eventBufferingEnabled) {
         if (eventBufferingEnabled == null) {
             this.eventBufferingEnabled = false;
             return;
@@ -70,68 +70,69 @@ public class AdjustConfig {
         this.eventBufferingEnabled = eventBufferingEnabled;
     }
 
-    public void setSendInBackground(boolean sendInBackground) {
+    public final void setSendInBackground(final boolean sendInBackground) {
         this.sendInBackground = sendInBackground;
     }
 
-    public void setLogLevel(LogLevel logLevel) {
+    public final void setLogLevel(final LogLevel logLevel) {
         setLogLevel(logLevel, environment);
     }
 
-    public void setSdkPrefix(String sdkPrefix) {
+    public final void setSdkPrefix(final String sdkPrefix) {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void setProcessName(String processName) { this.processName = processName; }
+    public final void setProcessName(final String processName) { this.processName = processName; }
 
-    public void setDefaultTracker(String defaultTracker) {
+    public final void setDefaultTracker(final String defaultTracker) {
         this.defaultTracker = defaultTracker;
     }
 
-    public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
+    public final void setOnAttributionChangedListener(final OnAttributionChangedListener onAttributionChangedListener) {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public void setDeviceKnown(boolean deviceKnown) {
+    public final void setDeviceKnown(final boolean deviceKnown) {
         this.deviceKnown = deviceKnown;
     }
 
-    public void setDeepLinkComponent(Class deepLinkComponent) {
+    public final void setDeepLinkComponent(final Class deepLinkComponent) {
         this.deepLinkComponent = deepLinkComponent;
     }
 
-    public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
+    public final void setOnEventTrackingSucceededListener(final OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
         this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
     }
 
-    public void setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener) {
+    public final void setOnEventTrackingFailedListener(final OnEventTrackingFailedListener onEventTrackingFailedListener) {
         this.onEventTrackingFailedListener = onEventTrackingFailedListener;
     }
 
-    public void setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener) {
+    public final void setOnSessionTrackingSucceededListener(final OnSessionTrackingSucceededListener onSessionTrackingSucceededListener) {
         this.onSessionTrackingSucceededListener = onSessionTrackingSucceededListener;
     }
 
-    public void setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
+    public final void setOnSessionTrackingFailedListener(final OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
         this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
     }
 
-    public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
+    public final void setOnDeeplinkResponseListener(final OnDeeplinkResponseListener onDeeplinkResponseListener) {
         this.onDeeplinkResponseListener = onDeeplinkResponseListener;
     }
 
-    public void setDelayStart(double delayStart) {
+    public final void setDelayStart(final double delayStart) {
         this.delayStart = delayStart;
     }
 
-    public void setUserAgent(String userAgent) {
+    public final void setUserAgent(final String userAgent) {
         this.userAgent = userAgent;
     }
-    public boolean hasAttributionChangedListener() {
+
+    public final boolean hasAttributionChangedListener() {
         return onAttributionChangedListener != null;
     }
 
-    public boolean hasListener() {
+    public final boolean hasListener() {
         return onAttributionChangedListener != null
                 || onEventTrackingSucceededListener != null
                 || onEventTrackingFailedListener != null
@@ -139,19 +140,15 @@ public class AdjustConfig {
                 || onSessionTrackingFailedListener != null;
     }
 
-    public boolean isValid() {
+    public final boolean isValid() {
         return appToken != null;
     }
 
-    private boolean isValid(Context context, String appToken, String environment) {
-        if (!checkAppToken(appToken)) return false;
-        if (!checkEnvironment(environment)) return false;
-        if (!checkContext(context)) return false;
-
-        return true;
+    private boolean isValid(final Context context, final String appToken, final String environment) {
+        return checkAppToken(appToken) && checkEnvironment(environment) && checkContext(context);
     }
 
-    private void setLogLevel(LogLevel logLevel, String environment) {
+    private void setLogLevel(final LogLevel logLevel, final String environment) {
         LogLevel newLogLevel = null;
         if (ENVIRONMENT_PRODUCTION.equals(environment)) {
             // production && allows supress -> Supress
@@ -173,7 +170,7 @@ public class AdjustConfig {
         logger.setLogLevel(newLogLevel);
     }
 
-    private boolean checkContext(Context context) {
+    private boolean checkContext(final Context context) {
         if (context == null) {
             logger.error("Missing context");
             return false;
@@ -187,7 +184,7 @@ public class AdjustConfig {
         return true;
     }
 
-    private boolean checkAppToken(String appToken) {
+    private boolean checkAppToken(final String appToken) {
         if (appToken == null) {
             logger.error("Missing App Token");
             return false;
@@ -201,7 +198,7 @@ public class AdjustConfig {
         return true;
     }
 
-    private boolean checkEnvironment(String environment) {
+    private boolean checkEnvironment(final String environment) {
         if (environment == null) {
             logger.error("Missing environment");
             return false;

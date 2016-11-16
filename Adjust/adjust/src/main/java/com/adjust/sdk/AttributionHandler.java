@@ -6,7 +6,10 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.net.URL;
+import java.text.*;
 import java.util.Map;
+
+import static android.R.string.no;
 
 /**
  * Created by pfms on 07/11/14.
@@ -22,10 +25,10 @@ public class AttributionHandler implements IAttributionHandler {
     private boolean paused;
     private boolean hasListener;
 
-    public URL lastUrlUsed;
+    private URL lastUrlUsed;
 
     @Override
-    public void teardown() {
+    public final void teardown() {
         logger.verbose("AttributionHandler teardown");
         if (timer != null) {
             timer.teardown();
@@ -33,7 +36,8 @@ public class AttributionHandler implements IAttributionHandler {
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException ignored) {
+            }
         }
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
@@ -45,32 +49,28 @@ public class AttributionHandler implements IAttributionHandler {
         timer = null;
     }
 
-    public AttributionHandler(IActivityHandler activityHandler,
-                              ActivityPackage attributionPackage,
-                              boolean startsSending,
-                              boolean hasListener) {
+    public AttributionHandler(final IActivityHandler activityHandler,
+                              final ActivityPackage attributionPackage,
+                              final boolean startsSending,
+                              final boolean hasListener) {
         scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
-        if (this.scheduledExecutor != null) {
-            timer = new TimerOnce(scheduledExecutor, new Runnable() {
-                @Override
-                public void run() {
-                    getAttributionI();
-                }
-            }, ATTRIBUTION_TIMER_NAME);
-        } else {
-            this.logger.error("Timer not initialized, attribution handler is disabled");
-        }
+        timer = new TimerOnce(scheduledExecutor, new Runnable() {
+            @Override
+            public void run() {
+                getAttributionI();
+            }
+        }, ATTRIBUTION_TIMER_NAME);
 
         init(activityHandler, attributionPackage, startsSending, hasListener);
     }
 
     @Override
-    public void init(IActivityHandler activityHandler,
-                     ActivityPackage attributionPackage,
-                     boolean startsSending,
-                     boolean hasListener) {
+    public final void init(final IActivityHandler activityHandler,
+                     final ActivityPackage attributionPackage,
+                     final boolean startsSending,
+                     final boolean hasListener) {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.attributionPackage = attributionPackage;
         this.paused = !startsSending;
@@ -78,12 +78,12 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void getAttribution() {
+    public final void getAttribution() {
         getAttribution(0);
     }
 
     @Override
-    public void checkSessionResponse(final SessionResponseData sessionResponseData) {
+    public final void checkSessionResponse(final SessionResponseData sessionResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -96,7 +96,7 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
-    public void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
+    public final void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -111,16 +111,16 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void pauseSending() {
+    public final void pauseSending() {
         paused = true;
     }
 
     @Override
-    public void resumeSending() {
+    public final void resumeSending() {
         paused = false;
     }
 
-    private void getAttribution(long delayInMilliseconds) {
+    private void getAttribution(final long delayInMilliseconds) {
         // don't reset if new time is shorter than last one
         if (timer.getFireIn() > delayInMilliseconds) {
             return;
@@ -137,7 +137,8 @@ public class AttributionHandler implements IAttributionHandler {
         timer.startIn(delayInMilliseconds);
     }
 
-    private void checkAttributionI(IActivityHandler activityHandler, ResponseData responseData) {
+    private void checkAttributionI(final IActivityHandler activityHandler,
+                                         final ResponseData responseData) {
         if (responseData.jsonResponse == null) {
             return;
         }
@@ -157,13 +158,15 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(attributionJson);
     }
 
-    private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
+    private void checkSessionResponseI(final IActivityHandler activityHandler,
+                                       final SessionResponseData sessionResponseData) {
         checkAttributionI(activityHandler, sessionResponseData);
 
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
-    private void checkAttributionResponseI(IActivityHandler activityHandler, AttributionResponseData attributionResponseData) {
+    private void checkAttributionResponseI(final IActivityHandler activityHandler,
+                                           final AttributionResponseData attributionResponseData) {
         checkAttributionI(activityHandler, attributionResponseData);
 
         checkDeeplinkI(attributionResponseData);
@@ -171,7 +174,7 @@ public class AttributionHandler implements IAttributionHandler {
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
-    private void checkDeeplinkI(AttributionResponseData attributionResponseData) {
+    private void checkDeeplinkI(final AttributionResponseData attributionResponseData) {
         if (attributionResponseData.jsonResponse == null) {
             return;
         }
@@ -213,14 +216,14 @@ public class AttributionHandler implements IAttributionHandler {
                 return;
             }
 
-            checkAttributionResponse((AttributionResponseData)responseData);
+            checkAttributionResponse((AttributionResponseData) responseData);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
-            return;
         }
     }
 
-    private Uri buildUriI(String path, Map<String, String> parameters) {
+    private Uri buildUriI(final String path,
+                          final Map<String, String> parameters) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         uriBuilder.scheme(Constants.SCHEME);
@@ -232,10 +235,16 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         long now = System.currentTimeMillis();
-        String dateString = Util.dateFormatter.format(now);
+
+        final DateFormat dateFormat = new SimpleDateFormat(Util.DATE_FORMAT);
+        String dateString = dateFormat.format(now);
 
         uriBuilder.appendQueryParameter("sent_at", dateString);
 
         return uriBuilder.build();
+    }
+
+    public URL getLastUrlUsed() {
+        return lastUrlUsed;
     }
 }

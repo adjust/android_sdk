@@ -37,12 +37,14 @@ public class PackageHandler implements IPackageHandler {
     private BackoffStrategy backoffStrategy;
 
     @Override
-    public void teardown(boolean deleteState) {
+    public final void teardown(final boolean deleteState) {
         logger.verbose("PackageHandler teardown");
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException ignored) {
+
+            }
         }
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
@@ -66,9 +68,9 @@ public class PackageHandler implements IPackageHandler {
         backoffStrategy = null;
     }
 
-    public PackageHandler(IActivityHandler activityHandler,
-                          Context context,
-                          boolean startsSending) {
+    PackageHandler(final IActivityHandler activityHandler,
+                   final Context context,
+                   final boolean startsSending) {
         this.scheduledExecutor = new CustomScheduledExecutor("PackageHandler");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
@@ -84,15 +86,17 @@ public class PackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
-        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
+    public final void init(final IActivityHandler activityHandler,
+                           final Context context,
+                           final boolean startsSending) {
+        this.activityHandlerWeakRef = new WeakReference<>(activityHandler);
         this.context = context;
         this.paused = !startsSending;
     }
 
     // add a package to the queue
     @Override
-    public void addPackage(final ActivityPackage activityPackage) {
+    public final void addPackage(final ActivityPackage activityPackage) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -103,7 +107,7 @@ public class PackageHandler implements IPackageHandler {
 
     // try to send the oldest package
     @Override
-    public void sendFirstPackage() {
+    public final void sendFirstPackage() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -115,7 +119,7 @@ public class PackageHandler implements IPackageHandler {
     // remove oldest package and try to send the next one
     // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage(ResponseData responseData) {
+    public final void sendNextPackage(final ResponseData responseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -131,7 +135,8 @@ public class PackageHandler implements IPackageHandler {
 
     // close the package to retry in the future (after temporary failure)
     @Override
-    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
+    public final void closeFirstPackage(final ResponseData responseData,
+                                  final ActivityPackage activityPackage) {
         responseData.willRetry = true;
 
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -168,18 +173,18 @@ public class PackageHandler implements IPackageHandler {
 
     // interrupt the sending loop after the current request has finished
     @Override
-    public void pauseSending() {
+    public final void pauseSending() {
         paused = true;
     }
 
     // allow sending requests again
     @Override
-    public void resumeSending() {
+    public final void resumeSending() {
         paused = false;
     }
 
     @Override
-    public void updatePackages(SessionParameters sessionParameters) {
+    public final void updatePackages(final SessionParameters sessionParameters) {
         final SessionParameters sessionParametersCopy;
         if (sessionParameters != null) {
             sessionParametersCopy = sessionParameters.deepCopy();
@@ -203,7 +208,7 @@ public class PackageHandler implements IPackageHandler {
         readPackageQueueI();
     }
 
-    private void addI(ActivityPackage newPackage) {
+    private void addI(final ActivityPackage newPackage) {
         packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
@@ -237,7 +242,7 @@ public class PackageHandler implements IPackageHandler {
         sendFirstI();
     }
 
-    public void updatePackagesI(SessionParameters sessionParameters) {
+    public final void updatePackagesI(final SessionParameters sessionParameters) {
         if (sessionParameters == null) {
             return;
         }
@@ -270,7 +275,7 @@ public class PackageHandler implements IPackageHandler {
             packageQueue = Util.readObject(context,
                     PACKAGE_QUEUE_FILENAME,
                     PACKAGE_QUEUE_NAME,
-                    (Class<List<ActivityPackage>>)(Class)List.class);
+                    (Class<List<ActivityPackage>>) (Class)List.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", PACKAGE_QUEUE_NAME, e.getMessage());
             packageQueue = null;
@@ -288,7 +293,7 @@ public class PackageHandler implements IPackageHandler {
         logger.debug("Package handler wrote %d packages", packageQueue.size());
     }
 
-    public static Boolean deletePackageQueue(Context context) {
+    public static Boolean deletePackageQueue(final Context context) {
         return context.deleteFile(PACKAGE_QUEUE_FILENAME);
     }
 }

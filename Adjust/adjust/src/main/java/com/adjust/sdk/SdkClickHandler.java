@@ -20,13 +20,14 @@ public class SdkClickHandler implements ISdkClickHandler {
     private BackoffStrategy backoffStrategy;
 
     @Override
-    public void teardown() {
+    public final void teardown() {
         logger.verbose("SdkClickHandler teardown");
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException ignored) {}
         }
+
         if (packageQueue != null) {
             packageQueue.clear();
         }
@@ -37,7 +38,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         backoffStrategy = null;
     }
 
-    public SdkClickHandler(boolean startsSending) {
+    SdkClickHandler(final boolean startsSending) {
         init(startsSending);
         this.logger = AdjustFactory.getLogger();
         this.scheduledExecutor = new CustomScheduledExecutor("SdkClickHandler");
@@ -45,25 +46,25 @@ public class SdkClickHandler implements ISdkClickHandler {
     }
 
     @Override
-    public void init(boolean startsSending) {
+    public final void init(final boolean startsSending) {
         this.paused = !startsSending;
         this.packageQueue = new ArrayList<ActivityPackage>();
     }
 
     @Override
-    public void pauseSending() {
+    public final void pauseSending() {
         paused = true;
     }
 
     @Override
-    public void resumeSending() {
+    public final void resumeSending() {
         paused = false;
 
         sendNextSdkClick();
     }
 
     @Override
-    public void sendSdkClick(final ActivityPackage sdkClick) {
+    public final void sendSdkClick(final ActivityPackage sdkClick) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -118,7 +119,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         scheduledExecutor.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
     }
 
-    private void sendSdkClickI(ActivityPackage sdkClickPackage) {
+    private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
 
         try {
@@ -146,14 +147,16 @@ public class SdkClickHandler implements ISdkClickHandler {
         }
     }
 
-    private void retrySendingI(ActivityPackage sdkClickPackage) {
+    private void retrySendingI(final ActivityPackage sdkClickPackage) {
         int retries = sdkClickPackage.increaseRetries();
 
         logger.error("Retrying sdk_click package for the %d time", retries);
         sendSdkClick(sdkClickPackage);
     }
 
-    private void logErrorMessageI(ActivityPackage sdkClickPackage, String message, Throwable throwable) {
+    private void logErrorMessageI(final ActivityPackage sdkClickPackage,
+                                  final String message,
+                                  final Throwable throwable) {
         final String packageMessage = sdkClickPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s)", packageMessage, reasonString);

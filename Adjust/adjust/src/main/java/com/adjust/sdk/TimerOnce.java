@@ -14,14 +14,16 @@ public class TimerOnce {
     private Runnable command;
     private ILogger logger;
 
-    public TimerOnce(CustomScheduledExecutor scheduler, Runnable command, String name) {
+    TimerOnce(final CustomScheduledExecutor scheduler,
+              final Runnable command,
+              final String name) {
         this.name = name;
         this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
         this.command = command;
         this.logger = AdjustFactory.getLogger();
     }
 
-    public void startIn(long fireIn) {
+    public final void startIn(final long fireIn) {
         // cancel previous
         cancel(false);
 
@@ -44,14 +46,14 @@ public class TimerOnce {
         }, fireIn, TimeUnit.MILLISECONDS);
     }
 
-    public long getFireIn() {
+    public final long getFireIn() {
         if (waitingTask == null) {
             return 0;
         }
         return waitingTask.getDelay(TimeUnit.MILLISECONDS);
     }
 
-    private void cancel(boolean mayInterruptIfRunning) {
+    private void cancel(final boolean mayInterruptIfRunning) {
         if (waitingTask != null) {
             waitingTask.cancel(mayInterruptIfRunning);
         }
@@ -60,11 +62,11 @@ public class TimerOnce {
         logger.verbose("%s canceled", name);
     }
 
-    public void cancel() {
+    public final void cancel() {
         cancel(false);
     }
 
-    public void teardown() {
+    public final void teardown() {
         cancel(true);
         if (scheduledExecutorWeakRef != null) {
             scheduledExecutorWeakRef.clear();

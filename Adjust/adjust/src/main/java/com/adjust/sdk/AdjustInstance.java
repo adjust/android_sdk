@@ -18,7 +18,7 @@ public class AdjustInstance {
         return AdjustFactory.getLogger();
     }
 
-    public void onCreate(AdjustConfig adjustConfig) {
+    public final void onCreate(final AdjustConfig adjustConfig) {
         if (activityHandler != null) {
             getLogger().error("Adjust already initialized");
             return;
@@ -31,38 +31,38 @@ public class AdjustInstance {
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
 
-    public void trackEvent(AdjustEvent event) {
+    public final void trackEvent(final AdjustEvent event) {
         if (!checkActivityHandler()) return;
         activityHandler.trackEvent(event);
     }
 
-    public void onResume() {
+    public final void onResume() {
         if (!checkActivityHandler()) return;
         activityHandler.onResume();
     }
 
-    public void onPause() {
+    public final void onPause() {
         if (!checkActivityHandler()) return;
         activityHandler.onPause();
     }
 
-    public void setEnabled(boolean enabled) {
+    public final void setEnabled(final boolean enabled) {
         if (!checkActivityHandler()) return;
         activityHandler.setEnabled(enabled);
     }
 
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         if (!checkActivityHandler()) return false;
         return activityHandler.isEnabled();
     }
 
-    public void appWillOpenUrl(Uri url) {
+    public final void appWillOpenUrl(final Uri url) {
         if (!checkActivityHandler()) return;
         long clickTime = System.currentTimeMillis();
         activityHandler.readOpenUrl(url, clickTime);
     }
 
-    public void sendReferrer(String referrer) {
+    public final void sendReferrer(final String referrer) {
         long clickTime = System.currentTimeMillis();
         // sendReferrer might be triggered before Adjust
         if (activityHandler == null) {
@@ -74,18 +74,18 @@ public class AdjustInstance {
         }
     }
 
-    public void setOfflineMode(boolean enabled) {
+    public final void setOfflineMode(final boolean enabled) {
         if (!checkActivityHandler()) return;
         activityHandler.setOfflineMode(enabled);
     }
 
 
-    public void sendFirstPackages() {
+    public final void sendFirstPackages() {
         if (!checkActivityHandler()) return;
         activityHandler.sendFirstPackages();
     }
 
-    public void addSessionCallbackParameter(final String key, final String value) {
+    public final void addSessionCallbackParameter(final String key, final String value) {
         if (activityHandler != null) {
             activityHandler.addSessionCallbackParameter(key, value);
             return;
@@ -103,14 +103,14 @@ public class AdjustInstance {
         });
     }
 
-    public void addSessionPartnerParameter(final String key, final String value) {
+    public final void addSessionPartnerParameter(final String key, final String value) {
         if (activityHandler != null) {
             activityHandler.addSessionPartnerParameter(key, value);
             return;
         }
 
         if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+            sessionParametersActionsArray = new ArrayList<>();
         }
 
         sessionParametersActionsArray.add(new IRunActivityHandler() {
@@ -121,14 +121,14 @@ public class AdjustInstance {
         });
     }
 
-    public void removeSessionCallbackParameter(final String key) {
+    public final void removeSessionCallbackParameter(final String key) {
         if (activityHandler != null) {
             activityHandler.removeSessionCallbackParameter(key);
             return;
         }
 
         if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+            sessionParametersActionsArray = new ArrayList<>();
         }
 
         sessionParametersActionsArray.add(new IRunActivityHandler() {
@@ -139,14 +139,14 @@ public class AdjustInstance {
         });
     }
 
-    public void removeSessionPartnerParameter(final String key) {
+    public final void removeSessionPartnerParameter(final String key) {
         if (activityHandler != null) {
             activityHandler.removeSessionPartnerParameter(key);
             return;
         }
 
         if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+            sessionParametersActionsArray = new ArrayList<>();
         }
 
         sessionParametersActionsArray.add(new IRunActivityHandler() {
@@ -157,14 +157,14 @@ public class AdjustInstance {
         });
     }
 
-    public void resetSessionCallbackParameters() {
+    public final void resetSessionCallbackParameters() {
         if (activityHandler != null) {
             activityHandler.resetSessionCallbackParameters();
             return;
         }
 
         if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+            sessionParametersActionsArray = new ArrayList<>();
         }
 
         sessionParametersActionsArray.add(new IRunActivityHandler() {
@@ -175,14 +175,14 @@ public class AdjustInstance {
         });
     }
 
-    public void resetSessionPartnerParameters() {
+    public final void resetSessionPartnerParameters() {
         if (activityHandler != null) {
             activityHandler.resetSessionPartnerParameters();
             return;
         }
 
         if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+            sessionParametersActionsArray = new ArrayList<>();
         }
 
         sessionParametersActionsArray.add(new IRunActivityHandler() {
@@ -193,13 +193,13 @@ public class AdjustInstance {
         });
     }
 
-    public void teardown(boolean deleteState) {
+    public final void teardown(final boolean deleteState) {
         if (!checkActivityHandler()) return;
         activityHandler.teardown(deleteState);
         activityHandler = null;
     }
 
-    public void setPushToken(String token) {
+    public final void setPushToken(final String token) {
         if (!checkActivityHandler()) return;
         activityHandler.setPushToken(token);
     }

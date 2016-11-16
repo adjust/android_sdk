@@ -7,7 +7,7 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class AdjustFactory {
+public final class AdjustFactory {
     private static IPackageHandler packageHandler = null;
     private static IRequestHandler requestHandler = null;
     private static IAttributionHandler attributionHandler = null;
@@ -24,18 +24,23 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
 
-    public static class URLGetConnection {
+    private AdjustFactory() {
+
+    }
+
+    public static final class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
         URL url;
-        URLGetConnection(HttpsURLConnection httpsURLConnection, URL url) {
+
+        URLGetConnection(final HttpsURLConnection httpsURLConnection, final URL url) {
             this.httpsURLConnection = httpsURLConnection;
             this.url = url;
         }
     }
 
-    public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
-                                                    Context context,
-                                                    boolean startsSending) {
+    public static IPackageHandler getPackageHandler(final ActivityHandler activityHandler,
+                                                    final Context context,
+                                                    final boolean startsSending) {
         if (packageHandler == null) {
             return new PackageHandler(activityHandler, context, startsSending);
         }
@@ -43,7 +48,7 @@ public class AdjustFactory {
         return packageHandler;
     }
 
-    public static IRequestHandler getRequestHandler(IPackageHandler packageHandler) {
+    public static IRequestHandler getRequestHandler(final IPackageHandler packageHandler) {
         if (requestHandler == null) {
             return new RequestHandler(packageHandler);
         }
@@ -101,7 +106,7 @@ public class AdjustFactory {
         return packageHandlerBackoffStrategy;
     }
 
-    public static IActivityHandler getActivityHandler(AdjustConfig config) {
+    public static IActivityHandler getActivityHandler(final AdjustConfig config) {
         if (activityHandler == null) {
             return ActivityHandler.getInstance(config);
         }
@@ -109,10 +114,10 @@ public class AdjustFactory {
         return activityHandler;
     }
 
-    public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
-                                                            ActivityPackage attributionPackage,
-                                                            boolean startsSending,
-                                                            boolean hasListener) {
+    public static IAttributionHandler getAttributionHandler(final IActivityHandler activityHandler,
+                                                            final ActivityPackage attributionPackage,
+                                                            final boolean startsSending,
+                                                            final boolean hasListener) {
         if (attributionHandler == null) {
             return new AttributionHandler(activityHandler, attributionPackage, startsSending, hasListener);
         }
@@ -120,23 +125,23 @@ public class AdjustFactory {
         return attributionHandler;
     }
 
-    public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
+    public static HttpsURLConnection getHttpsURLConnection(final URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return (HttpsURLConnection)url.openConnection();
+            return (HttpsURLConnection) url.openConnection();
         }
 
         return AdjustFactory.httpsURLConnection;
     }
 
-    public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
+    public static URLGetConnection getHttpsURLGetConnection(final URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
+            return new URLGetConnection((HttpsURLConnection) url.openConnection(), url);
         }
 
         return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
     }
 
-    public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
+    public static ISdkClickHandler getSdkClickHandler(final boolean startsSending) {
         if (sdkClickHandler == null) {
             return new SdkClickHandler(startsSending);
         }
@@ -152,55 +157,59 @@ public class AdjustFactory {
         return maxDelayStart;
     }
 
-    public static void setPackageHandler(IPackageHandler packageHandler) {
+    public static void setMaxDelayStart(final long maxDelayStart) {
+        AdjustFactory.maxDelayStart = maxDelayStart;
+    }
+
+    public static void setPackageHandler(final IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
 
-    public static void setRequestHandler(IRequestHandler requestHandler) {
+    public static void setRequestHandler(final IRequestHandler requestHandler) {
         AdjustFactory.requestHandler = requestHandler;
     }
 
-    public static void setLogger(ILogger logger) {
+    public static void setLogger(final ILogger logger) {
         AdjustFactory.logger = logger;
     }
 
-    public static void setTimerInterval(long timerInterval) {
+    public static void setTimerInterval(final long timerInterval) {
         AdjustFactory.timerInterval = timerInterval;
     }
 
-    public static void setTimerStart(long timerStart) {
+    public static void setTimerStart(final long timerStart) {
         AdjustFactory.timerStart = timerStart;
     }
 
-    public static void setSessionInterval(long sessionInterval) {
+    public static void setSessionInterval(final long sessionInterval) {
         AdjustFactory.sessionInterval = sessionInterval;
     }
 
-    public static void setSubsessionInterval(long subsessionInterval) {
+    public static void setSubsessionInterval(final long subsessionInterval) {
         AdjustFactory.subsessionInterval = subsessionInterval;
     }
 
-    public static void setSdkClickBackoffStrategy(BackoffStrategy sdkClickBackoffStrategy) {
+    public static void setSdkClickBackoffStrategy(final BackoffStrategy sdkClickBackoffStrategy) {
         AdjustFactory.sdkClickBackoffStrategy = sdkClickBackoffStrategy;
     }
 
-    public static void setPackageHandlerBackoffStrategy(BackoffStrategy packageHandlerBackoffStrategy) {
+    public static void setPackageHandlerBackoffStrategy(final BackoffStrategy packageHandlerBackoffStrategy) {
         AdjustFactory.packageHandlerBackoffStrategy = packageHandlerBackoffStrategy;
     }
 
-    public static void setActivityHandler(IActivityHandler activityHandler) {
+    public static void setActivityHandler(final IActivityHandler activityHandler) {
         AdjustFactory.activityHandler = activityHandler;
     }
 
-    public static void setAttributionHandler(IAttributionHandler attributionHandler) {
+    public static void setAttributionHandler(final IAttributionHandler attributionHandler) {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
-    public static void setHttpsURLConnection(HttpsURLConnection httpsURLConnection) {
+    public static void setHttpsURLConnection(final HttpsURLConnection httpsURLConnection) {
         AdjustFactory.httpsURLConnection = httpsURLConnection;
     }
 
-    public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
+    public static void setSdkClickHandler(final ISdkClickHandler sdkClickHandler) {
         AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
 }

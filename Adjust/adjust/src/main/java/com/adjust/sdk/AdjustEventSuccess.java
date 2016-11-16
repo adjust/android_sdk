@@ -15,7 +15,7 @@ public class AdjustEventSuccess {
     public JSONObject jsonResponse;
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, "Event Success msg:%s time:%s adid:%s event:%s json:%s",
             message, timestamp, adid, eventToken, jsonResponse);
     }

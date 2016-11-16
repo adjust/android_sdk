@@ -17,7 +17,7 @@ import android.net.Uri;
  * Use the methods of this class to tell Adjust about the usage of your app.
  * See the README for details.
  */
-public class Adjust {
+public final class Adjust {
 
     private static AdjustInstance defaultInstance;
 
@@ -31,12 +31,12 @@ public class Adjust {
         return defaultInstance;
     }
 
-    public static void onCreate(AdjustConfig adjustConfig) {
+    public static void onCreate(final AdjustConfig adjustConfig) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.onCreate(adjustConfig);
     }
 
-    public static void trackEvent(AdjustEvent event) {
+    public static void trackEvent(final AdjustEvent event) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.trackEvent(event);
     }
@@ -51,7 +51,7 @@ public class Adjust {
         adjustInstance.onPause();
     }
 
-    public static void setEnabled(boolean enabled) {
+    public static void setEnabled(final boolean enabled) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setEnabled(enabled);
     }
@@ -61,17 +61,17 @@ public class Adjust {
         return adjustInstance.isEnabled();
     }
 
-    public static void appWillOpenUrl(Uri url) {
+    public static void appWillOpenUrl(final Uri url) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.appWillOpenUrl(url);
     }
 
-    public static void setReferrer(String referrer) {
+    public static void setReferrer(final String referrer) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.sendReferrer(referrer);
     }
 
-    public static void setOfflineMode(boolean enabled) {
+    public static void setOfflineMode(final boolean enabled) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setOfflineMode(enabled);
     }
@@ -81,22 +81,22 @@ public class Adjust {
         adjustInstance.sendFirstPackages();
     }
 
-    public static void addSessionCallbackParameter(String key, String value) {
+    public static void addSessionCallbackParameter(final String key, final String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.addSessionCallbackParameter(key, value);
     }
 
-    public static void addSessionPartnerParameter(String key, String value) {
+    public static void addSessionPartnerParameter(final String key, final String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.addSessionPartnerParameter(key, value);
     }
 
-    public static void removeSessionCallbackParameter(String key) {
+    public static void removeSessionCallbackParameter(final String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.removeSessionCallbackParameter(key);
     }
 
-    public static void removeSessionPartnerParameter(String key) {
+    public static void removeSessionPartnerParameter(final String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.removeSessionPartnerParameter(key);
     }
@@ -111,12 +111,13 @@ public class Adjust {
         adjustInstance.resetSessionPartnerParameters();
     }
 
-    public static void setPushToken(String token) {
+    public static void setPushToken(final String token) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setPushToken(token);
     }
 
-    public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
+    public static void getGoogleAdId(final Context context,
+                                     final OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
 }

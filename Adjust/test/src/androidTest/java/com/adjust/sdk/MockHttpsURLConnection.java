@@ -78,9 +78,7 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
     private InputStream getMockResponse(String response)
             throws IOException {
 
-        InputStream stream = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
-
-        return stream;
+        return new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
     }
 
 

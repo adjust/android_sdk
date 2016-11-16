@@ -6,7 +6,7 @@ package com.adjust.sdk;
 public class EventResponseData extends ResponseData {
     public String eventToken;
 
-    public EventResponseData(ActivityPackage activityPackage) {
+    public EventResponseData(final ActivityPackage activityPackage) {
         eventToken = activityPackage.getParameters().get("event_token");
     }
 

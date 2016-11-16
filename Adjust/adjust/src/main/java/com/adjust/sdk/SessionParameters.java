@@ -15,13 +15,13 @@ public class SessionParameters {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
-    public SessionParameters deepCopy() {
+    SessionParameters deepCopy() {
         SessionParameters newSessionParameters = new SessionParameters();
         if (this.callbackParameters != null) {
-            newSessionParameters.callbackParameters = new HashMap<String, String>(this.callbackParameters);
+            newSessionParameters.callbackParameters = new HashMap<>(this.callbackParameters);
         }
         if (this.partnerParameters != null) {
-            newSessionParameters.partnerParameters = new HashMap<String, String>(this.partnerParameters);
+            newSessionParameters.partnerParameters = new HashMap<>(this.partnerParameters);
         }
         return newSessionParameters;
     }

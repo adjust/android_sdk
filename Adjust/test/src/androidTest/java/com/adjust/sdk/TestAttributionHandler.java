@@ -192,7 +192,7 @@ public class TestAttributionHandler{
         SessionResponseData sessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
         sessionResponseData.jsonResponse = askIn4sJson;
 
-        attributionHandler.checkSessionResponse(sessionResponseData);;
+        attributionHandler.checkSessionResponse(sessionResponseData);
 
         // sleep enough not to trigger the timer
         SystemClock.sleep(1000);
@@ -402,7 +402,7 @@ public class TestAttributionHandler{
     }
 
     private void okMessageTestLogs(AttributionHandler attributionHandler) {
-        TestActivityPackage.testQueryStringRequest(attributionHandler.lastUrlUsed.getQuery(), null);
+        TestActivityPackage.testQueryStringRequest(attributionHandler.getLastUrlUsed().getQuery(), null);
 
         // check that the mock http client was called
         assertUtil.test("MockHttpsURLConnection getInputStream");

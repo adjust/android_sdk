@@ -25,11 +25,11 @@ public class ActivityPackage implements Serializable {
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("path", String.class),
             new ObjectStreamField("clientSdk", String.class),
-            new ObjectStreamField("parameters", (Class<Map<String,String>>)(Class)Map.class),
+            new ObjectStreamField("parameters", (Class<Map<String, String>>) (Class) Map.class),
             new ObjectStreamField("activityKind", ActivityKind.class),
             new ObjectStreamField("suffix", String.class),
-            new ObjectStreamField("callbackParameters", (Class<Map<String,String>>)(Class)Map.class),
-            new ObjectStreamField("partnerParameters", (Class<Map<String,String>>)(Class)Map.class),
+            new ObjectStreamField("callbackParameters", (Class<Map<String, String>>) (Class) Map.class),
+            new ObjectStreamField("partnerParameters", (Class<Map<String, String>>) (Class) Map.class),
     };
 
     private transient int hashCode;
@@ -49,98 +49,99 @@ public class ActivityPackage implements Serializable {
 
     private int retries;
 
-    public String getPath() {
+    public final String getPath() {
         return path;
     }
 
-    public void setPath(String path) {
+    public final void setPath(final String path) {
         this.path = path;
     }
 
-    public String getClientSdk() {
+    public final String getClientSdk() {
         return clientSdk;
     }
 
-    public void setClientSdk(String clientSdk) {
+    public final void setClientSdk(final String clientSdk) {
         this.clientSdk = clientSdk;
     }
 
-    public Map<String, String> getParameters() {
+    public final Map<String, String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
+    public final void setParameters(final Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
-    public void setCallbackParameters(Map<String, String> callbackParameters) {
+    public final void setCallbackParameters(final Map<String, String> callbackParameters) {
         this.callbackParameters = callbackParameters;
     }
 
-    public void setPartnerParameters(Map<String, String> partnerParameters) {
+    public final void setPartnerParameters(final Map<String, String> partnerParameters) {
         this.partnerParameters = partnerParameters;
     }
 
-    public ActivityKind getActivityKind() {
+    public final ActivityKind getActivityKind() {
         return activityKind;
     }
 
-    public String getSuffix() {
+    public final String getSuffix() {
         return suffix;
     }
 
-    public void setSuffix(String suffix) {
+    public final void setSuffix(final String suffix) {
         this.suffix = suffix;
     }
 
-    public int getRetries() {
+    public final int getRetries() {
         return retries;
     }
-    public int increaseRetries() {
+
+    public final int increaseRetries() {
         retries++;
         return retries;
     }
 
-    public Map<String, String> getCallbackParameters() {
+    public final Map<String, String> getCallbackParameters() {
         return callbackParameters;
     }
 
-    public Map<String, String> getPartnerParameters() {
+    public final Map<String, String> getPartnerParameters() {
         return partnerParameters;
     }
 
-    public ActivityPackage(ActivityKind activityKind) {
+    public ActivityPackage(final ActivityKind activityKind) {
         this.activityKind = activityKind;
     }
 
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, "%s%s", activityKind.toString(), suffix);
     }
 
-    public String getExtendedString() {
+    public final String getExtendedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format(Locale.US, "Path:      %s\n", path));
-        builder.append(String.format(Locale.US, "ClientSdk: %s\n", clientSdk));
+        builder.append(String.format(Locale.US, "Path:      %s%n", path));
+        builder.append(String.format(Locale.US, "ClientSdk: %s%n", clientSdk));
 
         if (parameters != null) {
             builder.append("Parameters:");
-            SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
-            for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
-                builder.append(String.format(Locale.US, "\n\t%-16s %s", entry.getKey(),  entry.getValue()));
+            SortedMap<String, String> sortedParameters = new TreeMap<String, String>(parameters);
+            for (Map.Entry<String, String> entry : sortedParameters.entrySet()) {
+                builder.append(String.format(Locale.US, "%n\t%-16s %s", entry.getKey(), entry.getValue()));
             }
         }
         return builder.toString();
     }
 
-    protected String getFailureMessage() {
+    protected final String getFailureMessage() {
         return String.format(Locale.US, "Failed to track %s%s", activityKind.toString(), suffix);
     }
 
-    private void writeObject(ObjectOutputStream stream) throws IOException {
+    private void writeObject(final ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
     }
 
-    private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+    private void readObject(final ObjectInputStream stream) throws ClassNotFoundException, IOException {
         ObjectInputStream.GetField fields = stream.readFields();
 
         path = Util.readStringField(fields, "path", null);
@@ -153,24 +154,27 @@ public class ActivityPackage implements Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public final boolean equals(final Object other) {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
         ActivityPackage otherActivityPackage = (ActivityPackage) other;
 
-        if (!Util.equalString(path, otherActivityPackage.path))         return false;
-        if (!Util.equalString(clientSdk, otherActivityPackage.clientSdk))    return false;
-        if (!Util.equalObject(parameters, otherActivityPackage.parameters))   return false;
+        if (!Util.equalString(path, otherActivityPackage.path)) return false;
+        if (!Util.equalString(clientSdk, otherActivityPackage.clientSdk)) return false;
+        if (!Util.equalObject(parameters, otherActivityPackage.parameters)) return false;
         if (!Util.equalEnum(activityKind, otherActivityPackage.activityKind)) return false;
-        if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
-        if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
-        if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
+        if (!Util.equalString(suffix, otherActivityPackage.suffix)) return false;
+        if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))
+            return false;
+        if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))
+            return false;
+
         return true;
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         if (hashCode == 0) {
             hashCode = 17;
             hashCode = 37 * hashCode + Util.hashString(path);

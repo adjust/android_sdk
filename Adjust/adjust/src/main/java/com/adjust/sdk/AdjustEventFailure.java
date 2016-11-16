@@ -16,7 +16,7 @@ public class AdjustEventFailure {
     public JSONObject jsonResponse;
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, "Event Failure msg:%s time:%s adid:%s event:%s retry:%b json:%s",
             message, timestamp, adid, eventToken, willRetry, jsonResponse);
     }

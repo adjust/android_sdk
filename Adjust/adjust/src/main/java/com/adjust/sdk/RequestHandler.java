@@ -21,19 +21,20 @@ public class RequestHandler implements IRequestHandler {
     private WeakReference<IPackageHandler> packageHandlerWeakRef;
     private ILogger logger;
 
-    public RequestHandler(IPackageHandler packageHandler) {
+    public RequestHandler(final IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
         this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler");
         init(packageHandler);
     }
 
     @Override
-    public void init(IPackageHandler packageHandler) {
-        this.packageHandlerWeakRef = new WeakReference<IPackageHandler>(packageHandler);
+    public final void init(final IPackageHandler packageHandler) {
+        this.packageHandlerWeakRef = new WeakReference<>(packageHandler);
     }
 
     @Override
-    public void sendPackage(final ActivityPackage activityPackage, final int queueSize) {
+    public final void sendPackage(final ActivityPackage activityPackage,
+                                  final int queueSize) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -43,13 +44,16 @@ public class RequestHandler implements IRequestHandler {
     }
 
     @Override
-    public void teardown() {
+    public final void teardown() {
         logger.verbose("RequestHandler teardown");
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException ignored) {
+
+            }
         }
+
         if (packageHandlerWeakRef != null) {
             packageHandlerWeakRef.clear();
         }
@@ -58,7 +62,8 @@ public class RequestHandler implements IRequestHandler {
         logger = null;
     }
 
-    private void sendI(ActivityPackage activityPackage, int queueSize) {
+    private void sendI(final ActivityPackage activityPackage,
+                       final int queueSize) {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
@@ -94,7 +99,9 @@ public class RequestHandler implements IRequestHandler {
     }
 
     // close current package because it failed
-    private void closePackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void closePackageI(final ActivityPackage activityPackage,
+                               final String message,
+                               final Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
@@ -112,7 +119,9 @@ public class RequestHandler implements IRequestHandler {
     }
 
     // send next package because the current package failed
-    private void sendNextPackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
+    private void sendNextPackageI(final ActivityPackage activityPackage,
+                                  final String message,
+                                  final Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
         String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);

@@ -17,13 +17,10 @@ import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
-public class ActivityState implements Serializable, Cloneable {
+class ActivityState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private static int ORDER_ID_MAXCOUNT = 10;
-    private transient ILogger logger;
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
@@ -36,35 +33,34 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
             new ObjectStreamField("updatePackages", boolean.class),
-            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
+            new ObjectStreamField("orderIds", (Class<LinkedList<String>>) (Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class)
     };
 
     // persistent data
-    protected String uuid;
-    protected boolean enabled;
-    protected boolean askingAttribution;
+    String uuid;
+    boolean enabled;
+    boolean askingAttribution;
 
     // global counters
-    protected int eventCount;
-    protected int sessionCount;
+    int eventCount;
+    int sessionCount;
 
     // session attributes
-    protected int subsessionCount;
-    protected long sessionLength;   // all durations in milliseconds
-    protected long timeSpent;
-    protected long lastActivity;    // all times in milliseconds since 1970
+    int subsessionCount;
+    long sessionLength;   // all durations in milliseconds
+    long timeSpent;
+    long lastActivity;    // all times in milliseconds since 1970
 
-    protected long lastInterval;
+    long lastInterval;
 
-    protected boolean updatePackages;
+    boolean updatePackages;
 
-    protected LinkedList<String> orderIds;
+    LinkedList<String> orderIds;
 
-    protected String pushToken;
+    String pushToken;
 
     protected ActivityState() {
-        logger = AdjustFactory.getLogger();
         // create UUID for new devices
         uuid = Util.createUuid();
         enabled = true;
@@ -82,7 +78,7 @@ public class ActivityState implements Serializable, Cloneable {
         pushToken = null;
     }
 
-    protected void resetSessionAttributes(long now) {
+    protected void resetSessionAttributes(final long now) {
         subsessionCount = 1; // first subsession
         sessionLength = 0; // no session length yet
         timeSpent = 0; // no time spent yet
@@ -90,18 +86,19 @@ public class ActivityState implements Serializable, Cloneable {
         lastInterval = -1;
     }
 
-    protected void addOrderId(String orderId) {
+    protected void addOrderId(final String orderId) {
         if (orderIds == null) {
-            orderIds = new LinkedList<String>();
+            orderIds = new LinkedList<>();
         }
 
-        if (orderIds.size() >= ORDER_ID_MAXCOUNT) {
+        final int orderIdMaxcount = 10;
+        if (orderIds.size() >= orderIdMaxcount) {
             orderIds.removeLast();
         }
         orderIds.addFirst(orderId);
     }
 
-    protected boolean findOrderId(String orderId) {
+    protected boolean findOrderId(final String orderId) {
         if (orderIds == null) {
             return false;
         }
@@ -109,7 +106,7 @@ public class ActivityState implements Serializable, Cloneable {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US,
                 "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
                 eventCount, sessionCount, subsessionCount,
@@ -135,8 +132,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
         if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
-        if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
-        return true;
+        return Util.equalString(pushToken, otherActivityState.pushToken);
     }
 
     @Override
@@ -157,16 +153,16 @@ public class ActivityState implements Serializable, Cloneable {
         return hashCode;
     }
 
-    private void readObject(ObjectInputStream stream) throws IOException, ClassNotFoundException {
+    private void readObject(final ObjectInputStream stream) throws IOException, ClassNotFoundException {
         GetField fields = stream.readFields();
 
         eventCount = Util.readIntField(fields, "eventCount", 0);
         sessionCount = Util.readIntField(fields, "sessionCount", 0);
         subsessionCount = Util.readIntField(fields, "subsessionCount", -1);
-        sessionLength = Util.readLongField(fields, "sessionLength", -1l);
-        timeSpent = Util.readLongField(fields, "timeSpent", -1l);
-        lastActivity = Util.readLongField(fields, "lastActivity", -1l);
-        lastInterval = Util.readLongField(fields, "lastInterval", -1l);
+        sessionLength = Util.readLongField(fields, "sessionLength", -1L);
+        timeSpent = Util.readLongField(fields, "timeSpent", -1L);
+        lastActivity = Util.readLongField(fields, "lastActivity", -1L);
+        lastInterval = Util.readLongField(fields, "lastInterval", -1L);
 
         // new fields
         uuid = Util.readStringField(fields, "uuid", null);
@@ -185,17 +181,17 @@ public class ActivityState implements Serializable, Cloneable {
         }
     }
 
-    private void writeObject(ObjectOutputStream stream) throws IOException {
+    private void writeObject(final ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
      }
 
-    private static String stamp(long dateMillis) {
+    private static String stamp(final long dateMillis) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateMillis);
         return String.format(Locale.US,
                 "%02d:%02d:%02d",
-                calendar.HOUR_OF_DAY,
-                calendar.MINUTE,
-                calendar.SECOND);
+                Calendar.HOUR_OF_DAY,
+                Calendar.MINUTE,
+                Calendar.SECOND);
     }
 }

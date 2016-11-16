@@ -32,7 +32,7 @@ public class AdjustAttribution implements Serializable {
     public String creative;
     public String clickLabel;
 
-    public static AdjustAttribution fromJson(JSONObject jsonObject) {
+    public static AdjustAttribution fromJson(final JSONObject jsonObject) {
         if (jsonObject == null) return null;
 
         AdjustAttribution attribution = new AdjustAttribution();
@@ -49,7 +49,7 @@ public class AdjustAttribution implements Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
+    public final boolean equals(final Object other) {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
@@ -66,7 +66,7 @@ public class AdjustAttribution implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         int hashCode = 17;
         hashCode = 37 * hashCode + Util.hashString(trackerToken);
         hashCode = 37 * hashCode + Util.hashString(trackerName);
@@ -80,16 +80,16 @@ public class AdjustAttribution implements Serializable {
 
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel);
     }
 
-    private void writeObject(ObjectOutputStream stream) throws IOException {
+    private void writeObject(final ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
     }
 
-    private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
+    private void readObject(final ObjectInputStream stream) throws ClassNotFoundException, IOException {
         stream.defaultReadObject();
     }
 
