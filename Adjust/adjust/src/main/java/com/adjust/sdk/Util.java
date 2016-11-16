@@ -9,11 +9,13 @@
 
 package com.adjust.sdk;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Looper;
+import android.provider.Settings.Secure;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -611,5 +613,26 @@ public class Util {
             return locale;
         }
         return Reflection.getLocaleFromField(configuration);
+    }
+
+    public static String getFireAdvertisingId(ContentResolver contentResolver) {
+        if (contentResolver == null)
+        try {
+            // get advertising
+            return Secure.getString(contentResolver, "advertising_id");
+        } catch (Exception ex) {
+            // not supported
+        }
+        return null;
+    }
+
+    public static Boolean getFireTrackingEnabled(ContentResolver contentResolver) {
+        try {
+            // get user's tracking preference
+            return Secure.getInt(contentResolver, "limit_ad_tracking") == 0;
+        } catch (Exception ex) {
+            // not supported
+        }
+        return null;
     }
 }

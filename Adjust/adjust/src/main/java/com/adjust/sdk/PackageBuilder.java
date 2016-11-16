@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import android.content.ContentResolver;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
@@ -236,6 +237,11 @@ class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "push_token", adjustConfig.pushToken);
+        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
+        String fireAdId = Util.getFireAdvertisingId(contentResolver);
+        PackageBuilder.addString(parameters, "fire_adid", fireAdId);
+        Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
     }
 
     private void injectActivityState(Map<String, String> parameters) {

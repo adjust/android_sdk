@@ -61,6 +61,7 @@ class DeviceInfo {
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
+        ContentResolver contentResolver = context.getContentResolver();
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
