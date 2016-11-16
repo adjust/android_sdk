@@ -616,7 +616,9 @@ public class Util {
     }
 
     public static String getFireAdvertisingId(ContentResolver contentResolver) {
-        if (contentResolver == null)
+        if (contentResolver == null) {
+            return null;
+        }
         try {
             // get advertising
             return Secure.getString(contentResolver, "advertising_id");
