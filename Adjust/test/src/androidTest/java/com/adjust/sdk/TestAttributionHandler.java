@@ -402,7 +402,7 @@ public class TestAttributionHandler{
     }
 
     private void okMessageTestLogs(AttributionHandler attributionHandler) {
-        TestActivityPackage.testQueryStringRequest(attributionHandler.lastUrlUsed.getQuery(), null);
+        TestActivityPackage.testQueryStringRequest(attributionHandler.getLastUrlUsed().getQuery(), null);
 
         // check that the mock http client was called
         assertUtil.test("MockHttpsURLConnection getInputStream");

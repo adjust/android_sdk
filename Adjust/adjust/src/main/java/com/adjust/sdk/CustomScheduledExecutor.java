@@ -46,22 +46,24 @@ public class CustomScheduledExecutor {
         executor.allowCoreThreadTimeOut(true);
     }
 
-    public Future<?> submit(Runnable task) {
+    public final Future<?> submit(final Runnable task) {
         return executor.submit(task);
     }
 
-    public void shutdownNow() {
+    public final void shutdownNow() {
         executor.shutdownNow();
     }
 
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-//        AdjustFactory.getLogger().verbose("CustomScheduledExecutor scheduleWithFixedDelay from %s source, with %d delay and %d initial delay",
-//                source, delay, initialDelay);
+    public final ScheduledFuture<?> scheduleWithFixedDelay(final Runnable command,
+                                                           final long initialDelay,
+                                                           final long delay,
+                                                           final TimeUnit unit) {
         return executor.scheduleWithFixedDelay(new RunnableWrapper(command), initialDelay, delay, unit);
     }
 
-    public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-//        AdjustFactory.getLogger().verbose("CustomScheduledExecutor schedule from %s source, with %d delay", source, delay);
+    public final ScheduledFuture<?> schedule(final Runnable command,
+                                       final long delay,
+                                       final TimeUnit unit) {
         return executor.schedule(new RunnableWrapper(command), delay, unit);
     }
 
@@ -70,7 +72,7 @@ public class CustomScheduledExecutor {
 //        private long created;
 //        private int threadNumber;
 
-        public RunnableWrapper(Runnable runnable) {
+        RunnableWrapper(final Runnable runnable) {
             this.runnable = runnable;
 //            created = System.currentTimeMillis();
 //            threadNumber = threadCounter.getAndIncrement();
@@ -78,7 +80,7 @@ public class CustomScheduledExecutor {
         }
 
         @Override
-        public void run() {
+        public final void run() {
             try {
 //                long before = System.currentTimeMillis();
 //                AdjustFactory.getLogger().verbose("RunnableWrapper %d from %s source, before running at %d", threadNumber, source, before);

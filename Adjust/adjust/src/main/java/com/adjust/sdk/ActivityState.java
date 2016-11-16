@@ -34,32 +34,32 @@ class ActivityState implements Serializable {
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
             new ObjectStreamField("updatePackages", boolean.class),
-            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
+            new ObjectStreamField("orderIds", (Class<LinkedList<String>>) (Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class)
     };
 
     // persistent data
-    private String uuid;
-    private boolean enabled;
-    private boolean askingAttribution;
+    String uuid;
+    boolean enabled;
+    boolean askingAttribution;
 
     // global counters
-    private int eventCount;
-    private int sessionCount;
+    int eventCount;
+    int sessionCount;
 
     // session attributes
-    private int subsessionCount;
-    private long sessionLength;   // all durations in milliseconds
-    private long timeSpent;
-    private long lastActivity;    // all times in milliseconds since 1970
+    int subsessionCount;
+    long sessionLength;   // all durations in milliseconds
+    long timeSpent;
+    long lastActivity;    // all times in milliseconds since 1970
 
-    private long lastInterval;
+    long lastInterval;
 
-    private boolean updatePackages;
+    boolean updatePackages;
 
-    private LinkedList<String> orderIds;
+    LinkedList<String> orderIds;
 
-    private String pushToken;
+    String pushToken;
 
     protected ActivityState() {
         // create UUID for new devices

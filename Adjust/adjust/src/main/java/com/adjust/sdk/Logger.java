@@ -17,7 +17,6 @@ import java.util.Locale;
 import static com.adjust.sdk.Constants.LOGTAG;
 
 public class Logger implements ILogger {
-
     private LogLevel logLevel;
     private boolean logLevelLocked;
     private static String formatErrorMessage = "Error formating log message: %s, with params: %s";
@@ -28,7 +27,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void setLogLevel(LogLevel logLevel) {
+    public final void setLogLevel(final LogLevel logLevel) {
         if (logLevelLocked) {
             return;
         }
@@ -36,7 +35,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void setLogLevelString(String logLevelString) {
+    public final void setLogLevelString(final String logLevelString) {
         if (null != logLevelString) {
             try {
                 setLogLevel(LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
@@ -47,7 +46,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void verbose(String message, Object... parameters) {
+    public final void verbose(final String message, final Object... parameters) {
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             try {
                 Log.v(LOGTAG, String.format(Locale.US, message, parameters));
@@ -58,7 +57,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void debug(String message, Object... parameters) {
+    public final void debug(final String message, final Object... parameters) {
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             try {
                 Log.d(LOGTAG, String.format(Locale.US, message, parameters));
@@ -69,7 +68,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void info(String message, Object... parameters) {
+    public final void info(final String message, final Object... parameters) {
         if (logLevel.androidLogLevel <= Log.INFO) {
             try {
                 Log.i(LOGTAG, String.format(Locale.US, message, parameters));
@@ -80,7 +79,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void warn(String message, Object... parameters) {
+    public final void warn(final String message, final Object... parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
             try {
                 Log.w(LOGTAG, String.format(Locale.US, message, parameters));
@@ -91,7 +90,7 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void error(String message, Object... parameters) {
+    public void error(final String message, final Object... parameters) {
         if (logLevel.androidLogLevel <= Log.ERROR) {
             try {
                 Log.e(LOGTAG, String.format(Locale.US, message, parameters));
@@ -102,8 +101,8 @@ public class Logger implements ILogger {
     }
 
     @Override
-    public void Assert(String message, Object... parameters) {
-        if(logLevel.androidLogLevel <= Log.ASSERT) {
+    public final void Assert(final String message, final Object... parameters) {
+        if (logLevel.androidLogLevel <= Log.ASSERT) {
             try {
                 Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
             } catch (Exception e) {

@@ -17,6 +17,7 @@ import java.text.*;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
@@ -46,7 +47,7 @@ class PackageBuilder {
         long sessionLength = -1;
         long timeSpent = -1;
 
-        ActivityStateCopy(ActivityState activityState) {
+        ActivityStateCopy(final ActivityState activityState) {
             if (activityState == null) {
                 return;
             }
@@ -60,17 +61,18 @@ class PackageBuilder {
         }
     }
 
-    public PackageBuilder(AdjustConfig adjustConfig,
-                          DeviceInfo deviceInfo,
-                          ActivityState activityState,
-                          long createdAt) {
+    PackageBuilder(final AdjustConfig adjustConfig,
+                   final DeviceInfo deviceInfo,
+                   final ActivityState activityState,
+                   final long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
         this.activityStateCopy = new ActivityStateCopy(activityState);
         this.createdAt = createdAt;
     }
 
-    public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
+    public ActivityPackage buildSessionPackage(final SessionParameters sessionParameters,
+                                               final boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
@@ -88,10 +90,9 @@ class PackageBuilder {
         return sessionPackage;
     }
 
-    public ActivityPackage buildEventPackage(AdjustEvent event,
-                                             SessionParameters sessionParameters,
-                                             boolean isInDelay)
-    {
+    public ActivityPackage buildEventPackage(final AdjustEvent event,
+                                             final SessionParameters sessionParameters,
+                                             final boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
@@ -117,7 +118,7 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source) {
+    public ActivityPackage buildClickPackage(final String source) {
         Map<String, String> parameters = getIdsParameters();
 
         PackageBuilder.addString(parameters, "source", source);
@@ -148,14 +149,14 @@ class PackageBuilder {
         return attributionPackage;
     }
 
-    private ActivityPackage getDefaultActivityPackage(ActivityKind activityKind) {
+    private ActivityPackage getDefaultActivityPackage(final ActivityKind activityKind) {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
     }
 
     private Map<String, String> getDefaultParameters() {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
 
         injectDeviceInfo(parameters);
         injectConfig(parameters);
@@ -169,7 +170,7 @@ class PackageBuilder {
     }
 
     private Map<String, String> getIdsParameters() {
-        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> parameters = new HashMap<>();
 
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
@@ -180,7 +181,7 @@ class PackageBuilder {
         return parameters;
     }
 
-    private void injectDeviceInfo(Map<String, String> parameters) {
+    private void injectDeviceInfo(final Map<String, String> parameters) {
         injectDeviceInfoIds(parameters);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
@@ -203,13 +204,13 @@ class PackageBuilder {
         fillPluginKeys(parameters);
     }
 
-    private void injectDeviceInfoIds(Map<String, String> parameters) {
+    private void injectDeviceInfoIds(final Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
         PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
     }
 
-    private void injectConfig(Map<String, String> parameters) {
+    private void injectConfig(final Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
@@ -222,7 +223,7 @@ class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
     }
 
-    private void injectActivityState(Map<String, String> parameters) {
+    private void injectActivityState(final Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addInt(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
@@ -230,12 +231,12 @@ class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
     }
 
-    private void injectCommonParameters(Map<String, String> parameters) {
+    private void injectCommonParameters(final Map<String, String> parameters) {
         PackageBuilder.addDate(parameters, "created_at", createdAt);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
     }
 
-    private void injectAttribution(Map<String, String> parameters) {
+    private void injectAttribution(final Map<String, String> parameters) {
         if (attribution == null) {
             return;
         }
@@ -245,7 +246,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "creative", attribution.creative);
     }
 
-    private void checkDeviceIds(Map<String, String> parameters) {
+    private void checkDeviceIds(final Map<String, String> parameters) {
         if (!parameters.containsKey("mac_sha1")
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
@@ -254,7 +255,7 @@ class PackageBuilder {
         }
     }
 
-    private void fillPluginKeys(Map<String, String> parameters) {
+    private void fillPluginKeys(final Map<String, String> parameters) {
         if (deviceInfo.pluginKeys == null) {
             return;
         }
@@ -264,7 +265,7 @@ class PackageBuilder {
         }
     }
 
-    private String getEventSuffix(AdjustEvent event) {
+    private String getEventSuffix(final AdjustEvent event) {
         if (event.revenue == null) {
             return String.format(Locale.US, "'%s'", event.eventToken);
         } else {
@@ -272,7 +273,9 @@ class PackageBuilder {
         }
     }
 
-    public static void addString(Map<String, String> parameters, String key, String value) {
+    public static void addString(final Map<String, String> parameters,
+                                 final String key,
+                                 final String value) {
         if (TextUtils.isEmpty(value)) {
             return;
         }
@@ -280,7 +283,9 @@ class PackageBuilder {
         parameters.put(key, value);
     }
 
-    public static void addInt(Map<String, String> parameters, String key, long value) {
+    public static void addInt(final Map<String, String> parameters,
+                              final String key,
+                              final long value) {
         if (value < 0) {
             return;
         }
@@ -289,7 +294,9 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, key, valueString);
     }
 
-    public static void addDate(Map<String, String> parameters, String key, long value) {
+    public static void addDate(final Map<String, String> parameters,
+                               final String key,
+                               final long value) {
         if (value < 0) {
             return;
         }
@@ -299,7 +306,9 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, key, dateString);
     }
 
-    public static void addDuration(Map<String, String> parameters, String key, long durationInMilliSeconds) {
+    public static void addDuration(final Map<String, String> parameters,
+                                   final String key,
+                                   final long durationInMilliSeconds) {
         if (durationInMilliSeconds < 0) {
             return;
         }
@@ -308,7 +317,9 @@ class PackageBuilder {
         PackageBuilder.addInt(parameters, key, durationInSeconds);
     }
 
-    public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+    public static void addMapJson(final Map<String, String> parameters,
+                                  final String key,
+                                  final Map<String, String> map) {
         if (map == null) {
             return;
         }
@@ -323,7 +334,9 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, key, jsonString);
     }
 
-    public static void addBoolean(Map<String, String> parameters, String key, Boolean value) {
+    public static void addBoolean(final Map<String, String> parameters,
+                                  final String key,
+                                  final Boolean value) {
         if (value == null) {
             return;
         }
@@ -333,7 +346,9 @@ class PackageBuilder {
         PackageBuilder.addInt(parameters, key, intValue);
     }
 
-    public static void addDouble(Map<String, String> parameters, String key, Double value) {
+    public static void addDouble(final Map<String, String> parameters,
+                                 final String key,
+                                 final Double value) {
         if (value == null) return;
 
         String doubleString = String.format(Locale.US, "%.5f", value);

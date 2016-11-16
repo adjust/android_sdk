@@ -16,7 +16,7 @@ import static com.adjust.sdk.Constants.REFERRER;
 
 public class AdjustReferrerReceiver extends BroadcastReceiver {
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public final void onReceive(final Context context, final Intent intent) {
         String rawReferrer = intent.getStringExtra(REFERRER);
         if (null == rawReferrer) {
             return;

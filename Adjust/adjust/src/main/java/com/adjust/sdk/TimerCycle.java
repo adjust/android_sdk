@@ -17,8 +17,12 @@ public class TimerCycle {
     private boolean isPaused;
     private ILogger logger;
 
-    public TimerCycle(CustomScheduledExecutor scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
+    TimerCycle(final CustomScheduledExecutor scheduler,
+               final Runnable command,
+               final long initialDelay,
+               final long cycleDelay,
+               final String name) {
+        this.scheduledExecutorWeakRef = new WeakReference<>(scheduler);
 
         this.name = name;
         this.command = command;
@@ -34,7 +38,7 @@ public class TimerCycle {
         logger.verbose("%s configured to fire after %s seconds of starting and cycles every %s seconds", name, initialDelaySecondsString, cycleDelaySecondsString);
     }
 
-    public void start() {
+    public final void start() {
         if (!isPaused) {
             logger.verbose("%s is already started", name);
             return;
@@ -61,7 +65,7 @@ public class TimerCycle {
         isPaused = false;
     }
 
-    public void suspend() {
+    public final void suspend() {
         if (isPaused) {
             logger.verbose("%s is already suspended", name);
             return;
@@ -80,7 +84,7 @@ public class TimerCycle {
         isPaused = true;
     }
 
-    private void cancel(boolean mayInterruptIfRunning) {
+    private void cancel(final boolean mayInterruptIfRunning) {
         if (waitingTask != null) {
             waitingTask.cancel(mayInterruptIfRunning);
         }
@@ -88,7 +92,7 @@ public class TimerCycle {
         waitingTask = null;
     }
 
-    public void teardown() {
+    public final void teardown() {
         cancel(true);
         if (scheduledExecutorWeakRef != null) {
             scheduledExecutorWeakRef.clear();

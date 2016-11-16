@@ -116,8 +116,8 @@ public final class ActivityHandler implements IActivityHandler {
         private boolean enabled;
         private boolean offline;
         private boolean background;
-        private boolean delayStart;
-        private boolean updatePackages;
+        boolean delayStart;
+        boolean updatePackages;
 
         public final boolean isEnabled() {
             return enabled;
@@ -187,7 +187,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void init(final AdjustConfig adjustConfig) {
+    public final void init(final AdjustConfig adjustConfig) {
         this.adjustConfig = adjustConfig;
     }
 
@@ -226,7 +226,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void onResume() {
+    public final void onResume() {
         internalState.background = false;
 
         scheduledExecutor.submit(new Runnable() {
@@ -246,7 +246,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void onPause() {
+    public final void onPause() {
         internalState.background = true;
 
         scheduledExecutor.submit(new Runnable() {
@@ -264,7 +264,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackEvent(final AdjustEvent event) {
+    public final void trackEvent(final AdjustEvent event) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -280,21 +280,21 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void finishedTrackingActivity(ResponseData responseData) {
+    public final void finishedTrackingActivity(final ResponseData responseData) {
         // redirect session responses to attribution handler to check for attribution information
         if (responseData instanceof SessionResponseData) {
-            attributionHandler.checkSessionResponse((SessionResponseData)responseData);
+            attributionHandler.checkSessionResponse((SessionResponseData) responseData);
             return;
         }
+
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
-            launchEventResponseTasksI((EventResponseData)responseData);
-            return;
+            launchEventResponseTasksI((EventResponseData) responseData);
         }
     }
 
     @Override
-    public void setEnabled(final boolean enabled) {
+    public final void setEnabled(final boolean enabled) {
         // compare with the saved or internal state
         if (!hasChangedState(this.isEnabled(), enabled,
                 "Adjust already enabled", "Adjust already disabled")) {
@@ -327,12 +327,15 @@ public final class ActivityHandler implements IActivityHandler {
                 "Resuming handlers due to SDK being enabled");
     }
 
-    private void updateStatus(boolean pausingState, String pausingMessage,
-                              String remainsPausedMessage, String unPausingMessage) {
+    private void updateStatus(final boolean pausingState,
+                              final String pausingMessage,
+                              final String remainsPausedMessage,
+                              final String unPausingMessage) {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
         }
+
         // check if it's remaining in a pause state
         else if (pausedI(false)) {                      // safe to use internal version of paused (read only), can suffer from phantom read but not an issue
             // including the sdk click handler
@@ -349,8 +352,10 @@ public final class ActivityHandler implements IActivityHandler {
         updateHandlersStatusAndSend();
     }
 
-    private boolean hasChangedState(final boolean previousState, final boolean newState,
-                                    final String trueMessage, final String falseMessage) {
+    private boolean hasChangedState(final boolean previousState,
+                                    final boolean newState,
+                                    final String trueMessage,
+                                    final String falseMessage) {
         if (previousState != newState) {
             return true;
         }
@@ -365,7 +370,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setOfflineMode(final boolean offline) {
+    public final void setOfflineMode(final boolean offline) {
         // compare with the internal state
         if (!hasChangedState(internalState.isOffline(), offline,
                 "Adjust already in offline mode",
@@ -390,7 +395,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public boolean isEnabled() {
+    public final boolean isEnabled() {
         return isEnabledI();
     }
 
@@ -403,7 +408,8 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void readOpenUrl(final Uri url, final long clickTime) {
+    public final void readOpenUrl(final Uri url,
+                                  final long clickTime) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -413,7 +419,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public boolean updateAttributionI(AdjustAttribution attribution) {
+    public final boolean updateAttributionI(final AdjustAttribution attribution) {
         if (attribution == null) {
             return false;
         }
@@ -428,7 +434,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setAskingAttribution(final boolean askingAttribution) {
+    public final void setAskingAttribution(final boolean askingAttribution) {
         Runnable saveAskingAttribution = new Runnable() {
             @Override
             public void run() {
@@ -440,7 +446,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendReferrer(final String referrer, final long clickTime) {
+    public final void sendReferrer(final String referrer, final long clickTime) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -450,7 +456,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void launchEventResponseTasks(final EventResponseData eventResponseData) {
+    public final void launchEventResponseTasks(final EventResponseData eventResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -460,7 +466,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void launchSessionResponseTasks(final SessionResponseData sessionResponseData) {
+    public final void launchSessionResponseTasks(final SessionResponseData sessionResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -470,7 +476,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void launchAttributionResponseTasks(final AttributionResponseData attributionResponseData) {
+    public final void launchAttributionResponseTasks(final AttributionResponseData attributionResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -480,7 +486,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendFirstPackages () {
+    public final void sendFirstPackages() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -490,7 +496,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void addSessionCallbackParameter(final String key, final String value) {
+    public final void addSessionCallbackParameter(final String key, final String value) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -500,7 +506,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void addSessionPartnerParameter(final String key, final String value) {
+    public final void addSessionPartnerParameter(final String key, final String value) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -510,7 +516,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void removeSessionCallbackParameter(final String key) {
+    public final void removeSessionCallbackParameter(final String key) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -520,7 +526,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void removeSessionPartnerParameter(final String key) {
+    public final void removeSessionPartnerParameter(final String key) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -530,7 +536,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void resetSessionCallbackParameters() {
+    public final void resetSessionCallbackParameters() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -540,7 +546,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void resetSessionPartnerParameters() {
+    public final void resetSessionPartnerParameters() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -550,7 +556,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setPushToken(final String token) {
+    public final void setPushToken(final String token) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -786,7 +792,7 @@ public final class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void trackEventI(AdjustEvent event) {
+    private void trackEventI(final AdjustEvent event) {
         if (!checkActivityStateI(activityState)) return;
         if (!isEnabledI()) return;
         if (!checkEventI(event)) return;
@@ -864,7 +870,8 @@ public final class ActivityHandler implements IActivityHandler {
         launchSessionResponseListenerI(sessionResponseData, handler);
     }
 
-    private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, final Handler handler) {
+    private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData,
+                                                final Handler handler) {
         // success callback
         if (sessionResponseData.success && adjustConfig.onSessionTrackingSucceededListener != null) {
             logger.debug("Launching success session tracking listener");
@@ -980,7 +987,7 @@ public final class ActivityHandler implements IActivityHandler {
     }
 
     private void sendReferrerI(final String referrer, final long clickTime) {
-        if (referrer == null || referrer.length() == 0 ) {
+        if (referrer == null || referrer.length() == 0) {
             return;
         }
         PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(referrer);
@@ -1461,7 +1468,7 @@ public final class ActivityHandler implements IActivityHandler {
             sessionParameters.callbackParameters = Util.readObject(context,
                     SESSION_CALLBACK_PARAMETERS_FILENAME,
                     SESSION_CALLBACK_PARAMETERS_NAME,
-                    (Class<Map<String,String>>)(Class)Map.class);
+                    (Class<Map<String, String>>) (Class) Map.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", SESSION_CALLBACK_PARAMETERS_NAME, e.getMessage());
             sessionParameters.callbackParameters = null;
@@ -1473,7 +1480,7 @@ public final class ActivityHandler implements IActivityHandler {
             sessionParameters.partnerParameters = Util.readObject(context,
                     SESSION_PARTNER_PARAMETERS_FILENAME,
                     SESSION_PARTNER_PARAMETERS_NAME,
-                    (Class<Map<String,String>>)(Class)Map.class);
+                    (Class<Map<String, String>>) (Class) Map.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", SESSION_PARTNER_PARAMETERS_NAME, e.getMessage());
             sessionParameters.partnerParameters = null;
@@ -1605,8 +1612,8 @@ public final class ActivityHandler implements IActivityHandler {
                     !isEnabledI();                  // is disabled
         }
         // other handlers are paused if either:
-        return internalState.isOffline()    ||      // it's offline
-                !isEnabledI()               ||      // is disabled
+        return internalState.isOffline() ||      // it's offline
+                !isEnabledI() ||      // is disabled
                 internalState.isDelayStart();       // is in delayed start
     }
 

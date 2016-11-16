@@ -35,11 +35,11 @@ public enum BackoffStrategy {
     double minRange;
     double maxRange;
 
-    BackoffStrategy(int minRetries,
-                    long milliSecondMultiplier,
-                    long maxWait,
-                    double minRange,
-                    double maxRange) {
+    BackoffStrategy(final int minRetries,
+                    final long milliSecondMultiplier,
+                    final long maxWait,
+                    final double minRange,
+                    final double maxRange) {
         this.minRetries = minRetries;
         this.milliSecondMultiplier = milliSecondMultiplier;
         this.maxWait = maxWait;

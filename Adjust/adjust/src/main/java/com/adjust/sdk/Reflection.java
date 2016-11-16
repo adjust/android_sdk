@@ -16,7 +16,7 @@ import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
 
-    public static String getPlayAdId(Context context) {
+    public static String getPlayAdId(final Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
 
@@ -28,46 +28,40 @@ public class Reflection {
         }
     }
 
-    public static Boolean isPlayTrackingEnabled(Context context) {
+    public static Boolean isPlayTrackingEnabled(final Context context) {
         try {
-            Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
+            Object advertisingInfoObject = getAdvertisingInfoObject(context);
 
-            Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
+            Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(advertisingInfoObject, "isLimitAdTrackingEnabled", null);
 
-            Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
-
-            return isPlayTrackingEnabled;
+            return (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
         } catch (Throwable t) {
             return false;
         }
     }
 
-    public static String getMacAddress(Context context) {
+    public static String getMacAddress(final Context context) {
         try {
-            String macSha1 = (String) invokeStaticMethod(
+            return (String) invokeStaticMethod(
                     "com.adjust.sdk.plugin.MacAddressUtil",
                     "getMacAddress",
                     new Class[]{Context.class}, context
             );
-
-            return macSha1;
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public static String getAndroidId(Context context) {
+    public static String getAndroidId(final Context context) {
         try {
-            String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
+            return (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
                     , new Class[]{Context.class}, context);
-
-            return androidId;
         } catch (Throwable t) {
             return null;
         }
     }
 
-    private static Object getAdvertisingInfoObject(Context context)
+    private static Object getAdvertisingInfoObject(final Context context)
             throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
                 "getAdvertisingIdInfo",
@@ -75,18 +69,16 @@ public class Reflection {
         );
     }
 
-    private static boolean isConnectionResultSuccess(Integer statusCode) {
+    private static boolean isConnectionResultSuccess(final Integer statusCode) {
         if (statusCode == null) {
             return false;
         }
 
         try {
-            Class ConnectionResultClass = Class.forName("com.google.android.gms.common.ConnectionResult");
+            Class connectionResultClass = Class.forName("com.google.android.gms.common.ConnectionResult");
+            Field successField = connectionResultClass.getField("SUCCESS");
 
-            Field SuccessField = ConnectionResultClass.getField("SUCCESS");
-
-            int successStatusCode = SuccessField.getInt(null);
-
+            int successStatusCode = successField.getInt(null);
             return successStatusCode == statusCode;
         } catch (Throwable t) {
             return false;
@@ -109,7 +101,7 @@ public class Reflection {
             if (supportedAbisObject instanceof String[]) {
                 supportedAbis = (String[]) supportedAbisObject;
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         return supportedAbis;
@@ -133,12 +125,12 @@ public class Reflection {
             if (cpuAbiObject instanceof String) {
                 cpuAbi = (String) cpuAbiObject;
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return cpuAbi;
     }
 
-    public static Class forName(String className) {
+    public static Class forName(final String className) {
         try {
             return (Class) Class.forName(className);
         } catch (Throwable t) {
@@ -146,59 +138,66 @@ public class Reflection {
         }
     }
 
-    public static Object createDefaultInstance(String className) {
+    public static Object createDefaultInstance(final String className) {
         Class classObject = forName(className);
-        Object instance = createDefaultInstance(classObject);
-        return instance;
+        return createDefaultInstance(classObject);
     }
 
-    public static Object createDefaultInstance(Class classObject) {
+    public static Object createDefaultInstance(final Class classObject) {
         try {
-            Object instance = classObject.newInstance();
-            return instance;
+            return classObject.newInstance();
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public static Object createInstance(String className, Class[] cArgs, Object... args) {
+    public static Object createInstance(final String className,
+                                        final Class[] cArgs,
+                                        final Object... args) {
         try {
             Class classObject = Class.forName(className);
             @SuppressWarnings("unchecked")
             Constructor constructor = classObject.getConstructor(cArgs);
-            Object instance = constructor.newInstance(args);
-            return instance;
+            return constructor.newInstance(args);
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public static Object invokeStaticMethod(String className, String methodName, Class[] cArgs, Object... args)
+    public static Object invokeStaticMethod(final String className,
+                                            final String methodName,
+                                            final Class[] cArgs,
+                                            final Object... args)
             throws Exception {
         Class classObject = Class.forName(className);
 
         return invokeMethod(classObject, methodName, null, cArgs, args);
     }
 
-    public static Object invokeInstanceMethod(Object instance, String methodName, Class[] cArgs, Object... args)
+    public static Object invokeInstanceMethod(final Object instance,
+                                              final String methodName,
+                                              final Class[] cArgs,
+                                              final Object... args)
             throws Exception {
         Class classObject = instance.getClass();
 
         return invokeMethod(classObject, methodName, instance, cArgs, args);
     }
 
-    public static Object invokeMethod(Class classObject, String methodName, Object instance, Class[] cArgs, Object... args)
+    public static Object invokeMethod(final Class classObject,
+                                      final String methodName,
+                                      final Object instance,
+                                      final Class[] cArgs,
+                                      final Object... args)
             throws Exception {
         @SuppressWarnings("unchecked")
         Method methodObject = classObject.getMethod(methodName, cArgs);
 
-        Object resultObject = methodObject.invoke(instance, args);
-
-        return resultObject;
+        return methodObject.invoke(instance, args);
     }
 
-    public static Map<String, String> getPluginKeys(Context context) {
-        Map<String, String> pluginKeys = new HashMap<String, String>();
+    public static Map<String, String> getPluginKeys(final Context context) {
+        Map<String, String> pluginKeys = new HashMap<>();
 
         for (Plugin plugin : getPlugins()) {
             Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
@@ -215,7 +214,7 @@ public class Reflection {
     }
 
     private static List<Plugin> getPlugins() {
-        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
+        List<Plugin> plugins = new ArrayList<>(PLUGINS.size());
 
         for (String pluginName : PLUGINS) {
             Object pluginObject = Reflection.createDefaultInstance(pluginName);

@@ -17,7 +17,7 @@ public abstract class ResponseData {
     public JSONObject jsonResponse;
     public AdjustAttribution attribution;
 
-    public static ResponseData buildResponseData(ActivityPackage activityPackage) {
+    public static ResponseData buildResponseData(final ActivityPackage activityPackage) {
         ActivityKind activityKind = activityPackage.getActivityKind();
         ResponseData responseData;
         switch (activityKind) {
@@ -44,7 +44,7 @@ public abstract class ResponseData {
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         return String.format(Locale.US, "message:%s timestamp:%s json:%s",
                 message, timestamp, jsonResponse);
     }

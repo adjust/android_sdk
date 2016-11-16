@@ -69,7 +69,7 @@ public class Util {
         return UUID.randomUUID().toString();
     }
 
-    public static String quote(String string) {
+    public static String quote(final String string) {
         if (string == null) {
             return null;
         }
@@ -83,11 +83,11 @@ public class Util {
         return String.format(Locale.US, "'%s'", string);
     }
 
-    public static String getPlayAdId(Context context) {
+    public static String getPlayAdId(final Context context) {
         return Reflection.getPlayAdId(context);
     }
 
-    public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
+    public static void getGoogleAdId(final Context context, final OnDeviceIdsRead onDeviceIdRead) {
         ILogger logger = AdjustFactory.getLogger();
         if (Looper.myLooper() != Looper.getMainLooper()) {
             logger.debug("GoogleAdId being read in the background");
@@ -99,9 +99,9 @@ public class Util {
         }
 
         logger.debug("GoogleAdId being read in the foreground");
-        new AsyncTask<Context,Void,String>() {
+        new AsyncTask<Context, Void, String>() {
             @Override
-            protected String doInBackground(Context... params) {
+            protected String doInBackground(final Context... params) {
                 ILogger logger = AdjustFactory.getLogger();
                 Context innerContext = params[0];
                 String innerResult = Util.getPlayAdId(innerContext);
@@ -110,28 +110,32 @@ public class Util {
             }
 
             @Override
-            protected void onPostExecute(String playAdiId) {
+            protected void onPostExecute(final String playAdiId) {
                 onDeviceIdRead.onGoogleAdIdRead(playAdiId);
             }
         }.execute(context);
     }
 
-    public static Boolean isPlayTrackingEnabled(Context context) {
+    public static Boolean isPlayTrackingEnabled(final Context context) {
         return Reflection.isPlayTrackingEnabled(context);
     }
 
-    public static String getMacAddress(Context context) {
+    public static String getMacAddress(final Context context) {
         return Reflection.getMacAddress(context);
     }
 
-    public static Map<String, String> getPluginKeys(Context context) {
+    public static Map<String, String> getPluginKeys(final Context context) {
         return Reflection.getPluginKeys(context);
     }
-    public static String getAndroidId(Context context) {
+
+    public static String getAndroidId(final Context context) {
         return Reflection.getAndroidId(context);
     }
 
-    public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
+    public static <T> T readObject(final Context context,
+                                   final String filename,
+                                   final String objectName,
+                                   final Class<T> type) {
         Closeable closable = null;
         T object = null;
         try {
@@ -170,7 +174,10 @@ public class Util {
         return object;
     }
 
-    public static <T> void writeObject(T object, Context context, String filename, String objectName) {
+    public static <T> void writeObject(final T object,
+                                       final Context context,
+                                       final String filename,
+                                       final String objectName) {
         Closeable closable = null;
         try {
             FileOutputStream outputStream = context.openFileOutput(filename, Context.MODE_PRIVATE);
@@ -201,8 +208,9 @@ public class Util {
         }
     }
 
-    public static ResponseData readHttpResponse(HttpsURLConnection connection, ActivityPackage activityPackage) throws Exception {
-        StringBuffer sb = new StringBuffer();
+    public static ResponseData readHttpResponse(final HttpsURLConnection connection,
+                                                final ActivityPackage activityPackage) throws Exception {
+        StringBuilder sb = new StringBuilder();
         ILogger logger = getLogger();
         Integer responseCode = null;
         InputStreamReader inputStreamReader = null;
@@ -236,8 +244,12 @@ public class Util {
             }
 
             try {
-                bufferedReader.close();
-                inputStreamReader.close();
+                if (bufferedReader != null) {
+                    bufferedReader.close();
+                }
+                if (inputStreamReader != null) {
+                    inputStreamReader.close();
+                }
             } catch (Exception e) {
                 throw e;
             }
@@ -248,7 +260,7 @@ public class Util {
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
-        if (stringResponse == null || stringResponse.length() == 0) {
+        if (stringResponse.length() == 0) {
             return responseData;
         }
 
@@ -277,8 +289,7 @@ public class Util {
             message = "No message found";
         }
 
-        if (responseCode != null &&
-                responseCode == HttpsURLConnection.HTTP_OK) {
+        if (responseCode == HttpsURLConnection.HTTP_OK) {
             logger.info("%s", message);
             responseData.success = true;
         } else {
@@ -288,31 +299,27 @@ public class Util {
         return responseData;
     }
 
-    public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException
-    {
-        HttpsURLConnection connection = null;
-        try {
-            URL url = new URL(urlString);
-            AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
+    public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(final String urlString,
+                                                                             final String clientSdk)
+            throws IOException {
+        HttpsURLConnection connection;
+        URL url = new URL(urlString);
+        AdjustFactory.URLGetConnection urlGetConnection = AdjustFactory.getHttpsURLGetConnection(url);
 
-            connection = urlGetConnection.httpsURLConnection;
-            setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
+        connection = urlGetConnection.httpsURLConnection;
+        setDefaultHttpsUrlConnectionProperties(connection, clientSdk);
 
-            connection.setRequestMethod("GET");
+        connection.setRequestMethod("GET");
 
-            return urlGetConnection;
-        } catch (IOException e) {
-            throw e;
-        }
+        return urlGetConnection;
     }
 
-    public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
-                                                                  Map<String, String> parameters,
-                                                                  int queueSize)
-            throws IOException
-    {
-        DataOutputStream wr = null;
+    public static HttpsURLConnection createPOSTHttpsURLConnection(final String urlString,
+                                                                  final String clientSdk,
+                                                                  final Map<String, String> parameters,
+                                                                  final int queueSize)
+            throws IOException {
+        DataOutputStream dataOutputStream = null;
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(urlString);
@@ -325,17 +332,17 @@ public class Util {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            wr = new DataOutputStream(connection.getOutputStream());
-            wr.writeBytes(getPostDataString(parameters, queueSize));
+            dataOutputStream = new DataOutputStream(connection.getOutputStream());
+            dataOutputStream.writeBytes(getPostDataString(parameters, queueSize));
 
             return connection;
         } catch (IOException e) {
             throw e;
         } finally {
             try {
-                if (wr != null) {
-                    wr.flush();
-                    wr.close();
+                if (dataOutputStream != null) {
+                    dataOutputStream.flush();
+                    dataOutputStream.close();
                 }
             } catch (Exception e) {
                 throw e;
@@ -343,10 +350,11 @@ public class Util {
         }
     }
 
-    private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
+    private static String getPostDataString(final Map<String, String> body,
+                                            final int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
-        for(Map.Entry<String, String> entry : body.entrySet()) {
+        for (Map.Entry<String, String> entry : body.entrySet()) {
             String encodedName = URLEncoder.encode(entry.getKey(), Constants.ENCODING);
             String value = entry.getValue();
             String encodedValue = value != null ? URLEncoder.encode(value, Constants.ENCODING) : "";
@@ -378,7 +386,8 @@ public class Util {
         return result.toString();
     }
 
-    public static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
+    public static void setDefaultHttpsUrlConnectionProperties(final HttpsURLConnection connection,
+                                                              final String clientSdk) {
         connection.setRequestProperty("Client-SDK", clientSdk);
         connection.setConnectTimeout(Constants.ONE_MINUTE);
         connection.setReadTimeout(Constants.ONE_MINUTE);
@@ -387,16 +396,21 @@ public class Util {
         }
     }
 
-    public static boolean checkPermission(Context context, String permission) {
+    public static boolean checkPermission(final Context context,
+                                          final String permission) {
         int result = context.checkCallingOrSelfPermission(permission);
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static String readStringField(ObjectInputStream.GetField fields, String name, String defaultValue) {
+    public static String readStringField(final ObjectInputStream.GetField fields,
+                                         final String name,
+                                         final String defaultValue) {
         return readObjectField(fields, name, defaultValue);
     }
 
-    public static <T> T readObjectField(ObjectInputStream.GetField fields, String name, T defaultValue) {
+    public static <T> T readObjectField(final ObjectInputStream.GetField fields,
+                                        final String name,
+                                        final T defaultValue) {
         try {
             return (T) fields.get(name, defaultValue);
         } catch (Exception e) {
@@ -405,7 +419,9 @@ public class Util {
         }
     }
 
-    public static boolean readBooleanField(ObjectInputStream.GetField fields, String name, boolean defaultValue) {
+    public static boolean readBooleanField(final ObjectInputStream.GetField fields,
+                                           final String name,
+                                           final boolean defaultValue) {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
@@ -414,7 +430,9 @@ public class Util {
         }
     }
 
-    public static int readIntField(ObjectInputStream.GetField fields, String name, int defaultValue) {
+    public static int readIntField(final ObjectInputStream.GetField fields,
+                                   final String name,
+                                   final int defaultValue) {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
@@ -423,7 +441,9 @@ public class Util {
         }
     }
 
-    public static long readLongField(ObjectInputStream.GetField fields, String name, long defaultValue) {
+    public static long readLongField(final ObjectInputStream.GetField fields,
+                                     final String name,
+                                     final long defaultValue) {
         try {
             return fields.get(name, defaultValue);
         } catch (Exception e) {
@@ -432,69 +452,72 @@ public class Util {
         }
     }
 
-    public static boolean equalObject(Object first, Object second) {
+    public static boolean equalObject(final Object first,
+                                      final Object second) {
         if (first == null || second == null) {
             return first == null && second == null;
         }
         return first.equals(second);
     }
 
-    public static boolean equalsDouble(Double first, Double second) {
+    public static boolean equalsDouble(final Double first,
+                                       final Double second) {
         if (first == null || second == null) {
             return first == null && second == null;
         }
         return Double.doubleToLongBits(first) == Double.doubleToLongBits(second);
     }
 
-    public static boolean equalString(String first, String second) {
+    public static boolean equalString(final String first,
+                                      final String second) {
         return equalObject(first, second);
     }
 
-    public static boolean equalEnum(Enum first, Enum second) {
+    public static boolean equalEnum(final Enum first, final Enum second) {
         return equalObject(first, second);
     }
 
-    public static boolean equalLong(Long first, Long second) {
+    public static boolean equalLong(final Long first, final Long second) {
         return equalObject(first, second);
     }
 
-    public static boolean equalInt(Integer first, Integer second) {
+    public static boolean equalInt(final Integer first, final Integer second) {
         return equalObject(first, second);
     }
 
-    public static boolean equalBoolean(Boolean first, Boolean second) {
+    public static boolean equalBoolean(final Boolean first, final Boolean second) {
         return equalObject(first, second);
     }
 
-    public static int hashBoolean(Boolean value) {
+    public static int hashBoolean(final Boolean value) {
         if (value == null) {
             return 0;
         }
         return value.hashCode();
     }
 
-    public static int hashLong(Long value) {
+    public static int hashLong(final Long value) {
         if (value == null) {
             return 0;
         }
         return value.hashCode();
     }
 
-    public static int hashString(String value) {
+    public static int hashString(final String value) {
         if (value == null) {
             return 0;
         }
         return value.hashCode();
     }
 
-    public static int hashEnum(Enum value) {
+    public static int hashEnum(final Enum value) {
         if (value == null) {
             return 0;
         }
         return value.hashCode();
     }
 
-    public static int hashObject(Object value) {
+    public static int hashObject(final Object value) {
         if (value == null) {
             return 0;
         }
@@ -536,7 +559,8 @@ public class Util {
         return Reflection.getCpuAbi();
     }
 
-    public static String getReasonString(String message, Throwable throwable) {
+    public static String getReasonString(final String message,
+                                         final Throwable throwable) {
         if (throwable != null) {
             return String.format(Locale.US, "%s: %s", message, throwable);
         } else {
@@ -544,7 +568,8 @@ public class Util {
         }
     }
 
-    public static long getWaitingTime(int retries, BackoffStrategy backoffStrategy) {
+    public static long getWaitingTime(final int retries,
+                                      final BackoffStrategy backoffStrategy) {
         if (retries < backoffStrategy.minRetries) {
             return 0;
         }
@@ -557,11 +582,12 @@ public class Util {
         // get the random range
         double randomDouble = randomInRange(backoffStrategy.minRange, backoffStrategy.maxRange);
         // apply jitter factor
-        double waitingTime =  ceilingTime * randomDouble;
-        return (long)waitingTime;
+        double waitingTime = ceilingTime * randomDouble;
+        return (long) waitingTime;
     }
 
-    private static double randomInRange(double minRange, double maxRange) {
+    private static double randomInRange(final double minRange,
+                                        final double maxRange) {
         Random random = new Random();
         double range = maxRange - minRange;
         double scaled = random.nextDouble() * range;
@@ -569,7 +595,9 @@ public class Util {
         return shifted;
     }
 
-    public static boolean isValidParameter(String attribute, String attributeType, String parameterName) {
+    public static boolean isValidParameter(final String attribute,
+                                           final String attributeType,
+                                           final String parameterName) {
         if (attribute == null) {
             getLogger().error("%s parameter %s is missing", parameterName, attributeType);
             return false;
@@ -582,9 +610,9 @@ public class Util {
         return true;
     }
 
-    public static Map<String, String> mergeParameters(Map<String, String> target,
-                                                      Map<String, String> source,
-                                                      String parameterName) {
+    public static Map<String, String> mergeParameters(final Map<String, String> target,
+                                                      final Map<String, String> source,
+                                                      final String parameterName) {
         if (target == null) {
             return source;
         }
@@ -606,7 +634,7 @@ public class Util {
         return mergedParameters;
     }
 
-    public static void setUserAgent(String userAgent) {
+    public static void setUserAgent(final String userAgent) {
         Util.userAgent = userAgent;
     }
 }

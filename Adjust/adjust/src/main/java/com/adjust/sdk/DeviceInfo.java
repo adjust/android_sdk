@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import android.annotation.*;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -51,14 +52,30 @@ class DeviceInfo {
     String abi;
     Map<String, String> pluginKeys;
 
-    DeviceInfo(Context context, String sdkPrefix) {
+    @SuppressWarnings("deprecation")
+    private static Locale getSystemLocaleLegacy(final Configuration config) {
+        return config.locale;
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private static Locale getSystemLocale(final Configuration config) {
+        return config.getLocales().get(0);
+    }
+
+    DeviceInfo(final Context context, final String sdkPrefix) {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
-        Locale locale = configuration.locale;
+        Locale locale;
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = getSystemLocale(configuration);
+        } else {
+            locale = getSystemLocaleLegacy(configuration);
+        }
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -85,7 +102,8 @@ class DeviceInfo {
         abi = getABI();
     }
 
-    private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
+    private String getMacAddress(final Context context,
+                                 final boolean isGooglePlayServicesAvailable) {
         if (!isGooglePlayServicesAvailable) {
             if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
                 AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
@@ -96,11 +114,11 @@ class DeviceInfo {
         }
     }
 
-    private String getPackageName(Context context) {
+    private String getPackageName(final Context context) {
         return context.getPackageName();
     }
 
-    private String getAppVersion(Context context) {
+    private String getAppVersion(final Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();
             String name = context.getPackageName();
@@ -111,7 +129,7 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceType(int screenLayout) {
+    private String getDeviceType(final int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
@@ -146,11 +164,11 @@ class DeviceInfo {
         return "" + Build.VERSION.SDK_INT;
     }
 
-    private String getLanguage(Locale locale) {
+    private String getLanguage(final Locale locale) {
         return locale.getLanguage();
     }
 
-    private String getCountry(Locale locale) {
+    private String getCountry(final Locale locale) {
         return locale.getCountry();
     }
 
@@ -158,7 +176,7 @@ class DeviceInfo {
         return Build.DISPLAY;
     }
 
-    private String getScreenSize(int screenLayout) {
+    private String getScreenSize(final int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
         switch (screenSize) {
@@ -175,7 +193,7 @@ class DeviceInfo {
         }
     }
 
-    private String getScreenFormat(int screenLayout) {
+    private String getScreenFormat(final int screenLayout) {
         int screenFormat = screenLayout & Configuration.SCREENLAYOUT_LONG_MASK;
 
         switch (screenFormat) {
@@ -188,7 +206,7 @@ class DeviceInfo {
         }
     }
 
-    private String getScreenDensity(DisplayMetrics displayMetrics) {
+    private String getScreenDensity(final DisplayMetrics displayMetrics) {
         int density = displayMetrics.densityDpi;
         int low = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_LOW) / 2;
         int high = (DisplayMetrics.DENSITY_MEDIUM + DisplayMetrics.DENSITY_HIGH) / 2;
@@ -203,15 +221,15 @@ class DeviceInfo {
         return MEDIUM;
     }
 
-    private String getDisplayWidth(DisplayMetrics displayMetrics) {
+    private String getDisplayWidth(final DisplayMetrics displayMetrics) {
         return String.valueOf(displayMetrics.widthPixels);
     }
 
-    private String getDisplayHeight(DisplayMetrics displayMetrics) {
+    private String getDisplayHeight(final DisplayMetrics displayMetrics) {
         return String.valueOf(displayMetrics.heightPixels);
     }
 
-    private String getClientSdk(String sdkPrefix) {
+    private String getClientSdk(final String sdkPrefix) {
         if (sdkPrefix == null) {
             return Constants.CLIENT_SDK;
         } else {
@@ -219,7 +237,7 @@ class DeviceInfo {
         }
     }
 
-    private String getMacSha1(String macAddress) {
+    private String getMacSha1(final String macAddress) {
         if (macAddress == null) {
             return null;
         }
@@ -228,17 +246,17 @@ class DeviceInfo {
         return macSha1;
     }
 
-    private String getMacShortMd5(String macAddress) {
+    private String getMacShortMd5(final String macAddress) {
         if (macAddress == null) {
             return null;
         }
         String macShort = macAddress.replaceAll(":", "");
-        String macShortMd5 = Util.md5(macShort);
 
-        return macShortMd5;
+        return Util.md5(macShort);
     }
 
-    private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {
+    private String getAndroidId(final Context context,
+                                final boolean isGooglePlayServicesAvailable) {
         if (!isGooglePlayServicesAvailable) {
             return Util.getAndroidId(context);
         } else {

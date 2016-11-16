@@ -16,25 +16,27 @@ public class AdjustEvent {
 
     private static ILogger logger = AdjustFactory.getLogger();
 
-    public AdjustEvent(String eventToken) {
-        if (!checkEventToken(eventToken, logger)) return;
+    public AdjustEvent(final String eventToken) {
+        if (!checkEventToken(eventToken, logger)) {
+            return;
+        }
 
         this.eventToken = eventToken;
     }
 
-    public void setRevenue(double revenue, String currency) {
+    public final void setRevenue(final double revenue, final String currency) {
         if (!checkRevenue(revenue, currency)) return;
 
         this.revenue = revenue;
         this.currency = currency;
     }
 
-    public void addCallbackParameter(String key, String value) {
+    public final void addCallbackParameter(final String key, final String value) {
         if (!Util.isValidParameter(key, "key", "Callback")) return;
         if (!Util.isValidParameter(value, "value", "Callback")) return;
 
         if (callbackParameters == null) {
-            callbackParameters = new LinkedHashMap<String, String>();
+            callbackParameters = new LinkedHashMap<>();
         }
 
         String previousValue = callbackParameters.put(key, value);
@@ -44,12 +46,12 @@ public class AdjustEvent {
         }
     }
 
-    public void addPartnerParameter(String key, String value) {
+    public final void addPartnerParameter(final String key, final String value) {
         if (!Util.isValidParameter(key, "key", "Partner")) return;
         if (!Util.isValidParameter(value, "value", "Partner")) return;
 
         if (partnerParameters == null) {
-            partnerParameters = new LinkedHashMap<String, String>();
+            partnerParameters = new LinkedHashMap<>();
         }
 
         String previousValue = partnerParameters.put(key, value);
@@ -59,15 +61,15 @@ public class AdjustEvent {
         }
     }
 
-    public void setOrderId(String orderId) {
+    public final void setOrderId(final String orderId) {
         this.orderId = orderId;
     }
 
-    public boolean isValid() {
+    public final boolean isValid() {
         return eventToken != null;
     }
 
-    private static boolean checkEventToken(String eventToken, ILogger logger) {
+    private static boolean checkEventToken(final String eventToken, final ILogger logger) {
         if (eventToken == null) {
             logger.error("Missing Event Token");
             return false;
@@ -79,7 +81,7 @@ public class AdjustEvent {
         return true;
     }
 
-    private boolean checkRevenue(Double revenue, String currency) {
+    private boolean checkRevenue(final Double revenue, final String currency) {
         if (revenue != null) {
             if (revenue < 0.0) {
                 logger.error("Invalid amount %.5f", revenue);
