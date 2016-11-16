@@ -290,6 +290,13 @@ class DeviceInfo {
     }
 
     private String getVmInstructionSet() {
-        return Util.getVmInstructionSet();
+        String instructionSet = Util.getVmInstructionSet();
+        if (instructionSet == null) {
+            System.loadLibrary("native-lib");
+            instructionSet = nativeISA();
+        }
+        return instructionSet;
     }
+
+    private native String nativeISA();
 }
