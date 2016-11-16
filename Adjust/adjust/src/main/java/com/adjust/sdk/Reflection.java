@@ -18,11 +18,9 @@ public class Reflection {
 
     public static String getPlayAdId(final Context context) {
         try {
-            Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
+            Object advertisingInfoObject = getAdvertisingInfoObject(context);
 
-            String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
-
-            return playAdid;
+            return (String) invokeInstanceMethod(advertisingInfoObject, "getId", null);
         } catch (Throwable t) {
             return null;
         }

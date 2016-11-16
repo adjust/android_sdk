@@ -27,8 +27,6 @@ import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public final class ActivityHandler implements IActivityHandler {
-    private static long FOREGROUND_TIMER_INTERVAL;
-    private static long FOREGROUND_TIMER_START;
     private static long BACKGROUND_TIMER_INTERVAL;
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
@@ -221,8 +219,7 @@ public final class ActivityHandler implements IActivityHandler {
             }
         }
 
-        ActivityHandler activityHandler = new ActivityHandler(adjustConfig);
-        return activityHandler;
+        return new ActivityHandler(adjustConfig);
     }
 
     @Override
@@ -591,8 +588,8 @@ public final class ActivityHandler implements IActivityHandler {
         SESSION_INTERVAL = AdjustFactory.getSessionInterval();
         SUBSESSION_INTERVAL = AdjustFactory.getSubsessionInterval();
         // get timer values
-        FOREGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
-        FOREGROUND_TIMER_START = AdjustFactory.getTimerStart();
+        long timerInterval = AdjustFactory.getTimerInterval();
+        long timerStart = AdjustFactory.getTimerStart();
         BACKGROUND_TIMER_INTERVAL = AdjustFactory.getTimerInterval();
 
         // has to be read in the background
@@ -636,7 +633,7 @@ public final class ActivityHandler implements IActivityHandler {
                     public void run() {
                         foregroundTimerFiredI();
                     }
-                }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
+                }, timerStart, timerInterval, FOREGROUND_TIMER_NAME);
 
         // create background timer
         if (adjustConfig.sendInBackground) {

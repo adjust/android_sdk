@@ -241,9 +241,8 @@ class DeviceInfo {
         if (macAddress == null) {
             return null;
         }
-        String macSha1 = Util.sha1(macAddress);
 
-        return macSha1;
+        return Util.sha1(macAddress);
     }
 
     private String getMacShortMd5(final String macAddress) {

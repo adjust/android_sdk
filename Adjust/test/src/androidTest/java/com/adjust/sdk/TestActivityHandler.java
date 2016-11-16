@@ -1469,7 +1469,7 @@ public class TestActivityHandler {
             }
         });
 
-        ActivityHandler secondRestartActivityHandler = getActivityHandler(config);;
+        ActivityHandler secondRestartActivityHandler = getActivityHandler(config);
 
         SystemClock.sleep(1500);
 

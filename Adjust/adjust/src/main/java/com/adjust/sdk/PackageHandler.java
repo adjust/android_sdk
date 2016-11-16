@@ -234,7 +234,7 @@ public class PackageHandler implements IPackageHandler {
         requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
     }
 
-    private final void sendNextI() {
+    private void sendNextI() {
         packageQueue.remove(0);
         writePackageQueueI();
         isSending.set(false);

@@ -21,7 +21,7 @@ public class CustomScheduledExecutor {
         executor = new ScheduledThreadPoolExecutor(1,                                        // Single thread
                 new ThreadFactory() {                   // Creator of daemon threads
                     @Override
-                    public Thread newThread(Runnable runnable) {
+                    public Thread newThread(final Runnable runnable) {
                         Thread thread = Executors.defaultThreadFactory().newThread(runnable);
                         thread.setPriority(Thread.MIN_PRIORITY);
                         thread.setName(Constants.THREAD_PREFIX + thread.getName() + source);

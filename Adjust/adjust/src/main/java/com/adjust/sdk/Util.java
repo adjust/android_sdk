@@ -591,8 +591,7 @@ public class Util {
         Random random = new Random();
         double range = maxRange - minRange;
         double scaled = random.nextDouble() * range;
-        double shifted = scaled + minRange;
-        return shifted;
+        return scaled + minRange;
     }
 
     public static boolean isValidParameter(final String attribute,

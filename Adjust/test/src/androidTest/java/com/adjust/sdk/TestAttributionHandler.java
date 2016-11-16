@@ -192,7 +192,7 @@ public class TestAttributionHandler{
         SessionResponseData sessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
         sessionResponseData.jsonResponse = askIn4sJson;
 
-        attributionHandler.checkSessionResponse(sessionResponseData);;
+        attributionHandler.checkSessionResponse(sessionResponseData);
 
         // sleep enough not to trigger the timer
         SystemClock.sleep(1000);

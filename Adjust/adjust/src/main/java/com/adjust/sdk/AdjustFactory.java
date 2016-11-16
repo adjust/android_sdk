@@ -127,7 +127,7 @@ public final class AdjustFactory {
 
     public static HttpsURLConnection getHttpsURLConnection(final URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return (HttpsURLConnection)url.openConnection();
+            return (HttpsURLConnection) url.openConnection();
         }
 
         return AdjustFactory.httpsURLConnection;
@@ -135,7 +135,7 @@ public final class AdjustFactory {
 
     public static URLGetConnection getHttpsURLGetConnection(final URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
+            return new URLGetConnection((HttpsURLConnection) url.openConnection(), url);
         }
 
         return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
@@ -155,6 +155,10 @@ public final class AdjustFactory {
             return Constants.ONE_SECOND * 10; // 10 seconds
         }
         return maxDelayStart;
+    }
+
+    public static void setMaxDelayStart(final long maxDelayStart) {
+        AdjustFactory.maxDelayStart = maxDelayStart;
     }
 
     public static void setPackageHandler(final IPackageHandler packageHandler) {

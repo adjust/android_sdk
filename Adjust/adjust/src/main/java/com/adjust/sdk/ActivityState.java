@@ -21,7 +21,6 @@ import java.util.Locale;
 
 class ActivityState implements Serializable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private static int ORDER_ID_MAXCOUNT = 10;
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
@@ -89,10 +88,11 @@ class ActivityState implements Serializable {
 
     protected void addOrderId(final String orderId) {
         if (orderIds == null) {
-            orderIds = new LinkedList<String>();
+            orderIds = new LinkedList<>();
         }
 
-        if (orderIds.size() >= ORDER_ID_MAXCOUNT) {
+        final int orderIdMaxcount = 10;
+        if (orderIds.size() >= orderIdMaxcount) {
             orderIds.removeLast();
         }
         orderIds.addFirst(orderId);

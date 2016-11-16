@@ -169,6 +169,7 @@ public class ActivityPackage implements Serializable {
             return false;
         if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))
             return false;
+
         return true;
     }
 
