@@ -17,7 +17,7 @@ import android.net.Uri;
  * Use the methods of this class to tell Adjust about the usage of your app.
  * See the README for details.
  */
-public class Adjust {
+public final class Adjust {
 
     private static AdjustInstance defaultInstance;
 

@@ -9,7 +9,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 
-public class MacAddressUtil {
+public final class MacAddressUtil {
+    private MacAddressUtil() {
+
+    }
+
     public static String getMacAddress(Context context) {
         final String rawAddress = getRawMacAddress(context);
         if (rawAddress == null) {
@@ -39,7 +43,7 @@ public class MacAddressUtil {
             if (wifiAddress != null) {
                 return wifiAddress;
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
             /* no-op */
         }
 

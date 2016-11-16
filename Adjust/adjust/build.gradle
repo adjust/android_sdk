@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'pmd'
 
 android {
     compileSdkVersion 24
@@ -29,6 +30,21 @@ task makeJar(type: Copy) {
 
 makeJar.dependsOn(clearJar, build)
 
+task pmd (type: Pmd, dependsOn: assembleDebug) {
+
+    description 'Run pmd'
+    group 'verification'
+
+    ruleSets = ["basic", "braces", "strings", "design", "unusedcode"]
+    source = fileTree('src/main/java')
+    classpath = files(project.configurations.compile.files)
+
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
 }
@@ -41,6 +57,9 @@ task androidJavadocsJar(type: Jar) {
 task androidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
+}
+pmd {
+    toolVersion = '4.3'
 }
 
 artifacts {
