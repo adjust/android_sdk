@@ -1,3 +1,22 @@
+### Version 4.10.3 (XXth November 2016)
+#### Fixed
+- Remove unnecessary attribution changed listner check
+- Use reflection to get locale information
+
+#### Changed
+- Send push token with dedicated package sdk_info
+- Refactor Reflection class
+
+#### Removed
+- Remove unused response types
+
+#### Added
+- Send `os_buid` with BUILD.ID info
+- Send fire ad id and is tracking enable information
+- Send vm ISA information from native code
+
+---
+
 ### Version 4.10.2 (16th September 2016)
 #### Changed
 Remove disconnect after URLConnection creation. Allow to do it after response is read
