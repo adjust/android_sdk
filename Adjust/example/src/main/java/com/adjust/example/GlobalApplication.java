@@ -29,6 +29,13 @@ import com.squareup.leakcanary.LeakCanary;
 public class GlobalApplication extends Application {
     @Override
     public void onCreate() {
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        super.onCreate();
+
         LeakCanary.install(this);
 
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
@@ -41,91 +48,127 @@ public class GlobalApplication extends Application {
                 .penaltyLog()
                 .build());
 
-        super.onCreate();
-        // configure Adjust
-        String appToken = "qwerty123456";
-
+        // Configure adjust SDK.
+        String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-        // change the log level
+        // Change the log level.
         config.setLogLevel(LogLevel.VERBOSE);
 
-        // set default tracker
-        //config.setDefaultTracker("{YourDefaultTracker}");
-
-        // set process name
-        //config.setProcessName("com.adjust.example");
-
-        // set attribution delegate
+        // Set attribution delegate.
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
             public void onAttributionChanged(AdjustAttribution attribution) {
-                Log.d("example", "attribution: " + attribution.toString());
+                Log.d("example", "Attribution callback called!");
+                Log.d("example", "Attribution: " + attribution.toString());
             }
         });
 
-        // set event success tracking delegate
+        // Set event success tracking delegate.
         config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
             @Override
             public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
-                Log.d("example", "success event tracking: " + eventSuccessResponseData.toString());
+                Log.d("example", "Event success callback called!");
+                Log.d("example", "Event success data: " + eventSuccessResponseData.toString());
             }
         });
 
-        // set event failure tracking delegate
+        // Set event failure tracking delegate.
         config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
             public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
-                Log.d("example", "failed event tracking: " + eventFailureResponseData.toString());
+                Log.d("example", "Event failure callback called!");
+                Log.d("example", "Event failure data: " + eventFailureResponseData.toString());
             }
         });
 
-        // set session success tracking delegate
+        // Set session success tracking delegate.
         config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
             @Override
             public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
-                Log.d("example", "success session tracking: " + sessionSuccessResponseData.toString());
+                Log.d("example", "Session success callback called!");
+                Log.d("example", "Session success data: " + sessionSuccessResponseData.toString());
             }
         });
 
-        // set session failure tracking delegate
+        // Set session failure tracking delegate.
         config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
             @Override
             public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
-                Log.d("example", "failed session tracking: " + sessionFailureResponseData.toString());
+                Log.d("example", "Session failure callback called!");
+                Log.d("example", "Session failure data: " + sessionFailureResponseData.toString());
             }
         });
 
-        // evaluate deeplink to be launched
+        // Evaluate deferred deep link to be launched.
         config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
-                Log.d("example", "deeplink to open: " + deeplink);
+                Log.d("example", "Deferred deep link callback called!");
+                Log.d("example", "Deep link URL: " + deeplink);
+
                 return true;
             }
         });
 
-        // allow to send in the background
+        // Set default tracker.
+        // config.setDefaultTracker("{YourDefaultTracker}");
+
+        // Set process name.
+        // config.setProcessName("com.adjust.examples");
+
+        // Allow to send in the background.
         config.setSendInBackground(true);
 
-        // enable event buffering
-        //config.setEventBufferingEnabled(true);
+        // Enable event buffering.
+        // config.setEventBufferingEnabled(true);
 
+        // Delay first session.
+        // config.setDelayStart(7);
+
+        // Add session callback parameters.
+        Adjust.addSessionCallbackParameter("sc_foo", "sc_bar");
+        Adjust.addSessionCallbackParameter("sc_key", "sc_value");
+
+        // Add session partner parameters.
+        Adjust.addSessionPartnerParameter("sp_foo", "sp_bar");
+        Adjust.addSessionPartnerParameter("sp_key", "sp_value");
+
+        // Remove session callback parameters.
+        Adjust.removeSessionCallbackParameter("sc_foo");
+
+        // Remove session partner parameters.
+        Adjust.removeSessionPartnerParameter("sp_key");
+
+        // Remove all session callback parameters.
+        Adjust.resetSessionCallbackParameters();
+
+        // Remove all session partner parameters.
+        Adjust.resetSessionPartnerParameters();
+
+        // Initialise the adjust SDK.
         Adjust.onCreate(config);
 
-        // register onResume and onPause events of all activities
-        // for applications with minSdkVersion >= 14
+        // Abort delay for the first session introduced with setDelayStart method.
+        // Adjust.sendFirstPackages();
+
+        // Register onResume and onPause events of all activities
+        // for applications with minSdkVersion >= 14.
         registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
-        // put the SDK in offline mode
-        //Adjust.setOfflineMode(true);
+        // Put the SDK in offline mode.
+        // Adjust.setOfflineMode(true);
 
-        // disable the SDK
-        //Adjust.setEnabled(false);
+        // Disable the SDK
+        // Adjust.setEnabled(false);
+
+        // Send push notification token.
+        // Adjust.setPushToken("token");
     }
 
-    // you can use this class if your app is for Android 4.0 or higher
+    // You can use this class if your app is for Android 4.0 or higher
     private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
         @Override
         public void onActivityResumed(Activity activity) {
@@ -138,28 +181,18 @@ public class GlobalApplication extends Application {
         }
 
         @Override
-        public void onActivityStopped(Activity activity) {
-
-        }
+        public void onActivityStopped(Activity activity) {}
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-        }
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
         @Override
-        public void onActivityDestroyed(Activity activity) {
-
-        }
+        public void onActivityDestroyed(Activity activity) {}
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
-        }
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
         @Override
-        public void onActivityStarted(Activity activity) {
-
-        }
+        public void onActivityStarted(Activity activity) {}
     }
 }

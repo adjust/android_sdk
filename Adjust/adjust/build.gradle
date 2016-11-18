@@ -1,14 +1,28 @@
 apply plugin: 'com.android.library'
 
+def getVersionName() {
+    return "4.10.3"
+}
+
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode 1
-        versionName "4.10.2"
+        versionName getVersionName()
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
     }
 }
 
@@ -17,14 +31,14 @@ dependencies {
 }
 
 task clearJar(type: Delete) {
-    delete '${project.buildDir}/outputs/adjust.jar'
+    delete "build/outputs/adjust-${getVersionName()}.jar"
 }
 
 task makeJar(type: Copy) {
-    from('${project.buildDir}/intermediates/bundles/release/')
-    into('${project.buildDir}/libs/')
+    from('build/intermediates/bundles/release/')
+    into('build/outputs/')
     include('classes.jar')
-    rename ('classes.jar', 'adjust.jar')
+    rename ('classes.jar', "adjust-${getVersionName()}.jar")
 }
 
 makeJar.dependsOn(clearJar, build)

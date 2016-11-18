@@ -49,16 +49,19 @@ class DeviceInfo {
     String displayHeight;
     String hardwareName;
     String abi;
+    String buildName;
+    String vmInstructionSet;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
-        Locale locale = configuration.locale;
+        Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
+        ContentResolver contentResolver = context.getContentResolver();
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -83,6 +86,8 @@ class DeviceInfo {
         macShortMd5 = getMacShortMd5(macAddress);
         hardwareName = getHardwareName();
         abi = getABI();
+        buildName = getBuildName();
+        vmInstructionSet = getVmInstructionSet();
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -154,10 +159,13 @@ class DeviceInfo {
         return locale.getCountry();
     }
 
+    private String getBuildName() {
+        return Build.ID;
+    }
+
     private String getHardwareName() {
         return Build.DISPLAY;
     }
-
     private String getScreenSize(int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -281,4 +289,15 @@ class DeviceInfo {
 
         return SupportedABIS[0];
     }
+
+    private String getVmInstructionSet() {
+        String instructionSet = Util.getVmInstructionSet();
+        if (instructionSet == null) {
+            System.loadLibrary("native-lib");
+            instructionSet = nativeISA();
+        }
+        return instructionSet;
+    }
+
+    private native String nativeISA();
 }

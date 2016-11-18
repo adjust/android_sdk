@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import android.content.ContentResolver;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
@@ -125,11 +126,25 @@ class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
-        PackageBuilder.addString(parameters, "push_token", pushToken);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
+        clickPackage.setSuffix("");
+        clickPackage.setParameters(parameters);
+
+        return clickPackage;
+    }
+
+    public ActivityPackage buildInfoPackage(String source) {
+        Map<String, String> parameters = getIdsParameters();
+
+        PackageBuilder.addString(parameters, "source", source);
+        PackageBuilder.addString(parameters, "push_token", pushToken);
+        injectAttribution(parameters);
+
+        ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
+        clickPackage.setPath("/sdk_info");
         clickPackage.setSuffix("");
         clickPackage.setParameters(parameters);
 
@@ -199,6 +214,8 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
+        PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
+        PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
         fillPluginKeys(parameters);
     }
 
@@ -219,6 +236,12 @@ class PackageBuilder {
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addString(parameters, "push_token", adjustConfig.pushToken);
+        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
+        String fireAdId = Util.getFireAdvertisingId(contentResolver);
+        PackageBuilder.addString(parameters, "fire_adid", fireAdId);
+        Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
     }
 
     private void injectActivityState(Map<String, String> parameters) {

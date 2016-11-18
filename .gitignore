@@ -71,3 +71,6 @@ atlassian-ide-plugin.xml
 
 # add exception for private libraries
 google-services.json
+
+# generated native code
+.externalNativeBuild/

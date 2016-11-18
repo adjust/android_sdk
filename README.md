@@ -97,7 +97,7 @@ compile project(":adjust")
 If you are using Maven, add this line instead:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.10.2'
+compile 'com.adjust.sdk:adjust-android:4.10.3'
 ```
 
 ### <a id="sdk-gps"></a>Add Google Play Services
@@ -168,6 +168,20 @@ If you are using Proguard, add these lines to your Proguard file:
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
+}
+-keep class dalvik.system.VMRuntime {
+    java.lang.String getRuntime();
+}
+-keep class android.os.Build {
+    java.lang.String[] SUPPORTED_ABIS;
+    java.lang.String CPU_ABI;
+}
+-keep class android.content.res.Configuration {
+    android.os.LocaledList getLocales();
+    java.util.Locale locale;
+}
+-keep class android.os.LocaledList {
+    java.util.Locale get(int);
 }
 ```
 

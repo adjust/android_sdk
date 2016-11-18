@@ -554,6 +554,9 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
+                if (activityState == null) {
+                    startI();
+                }
                 setPushTokenI(token);
             }
         });
@@ -668,8 +671,7 @@ public class ActivityHandler implements IActivityHandler {
 
         attributionHandler = AdjustFactory.getAttributionHandler(this,
                 attributionPackage,
-                toSendI(false),
-                adjustConfig.hasAttributionChangedListener());
+                toSendI(false));
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(toSendI(true));
 
@@ -720,6 +722,7 @@ public class ActivityHandler implements IActivityHandler {
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.isToUpdatePackages();
+            activityState.pushToken = adjustConfig.pushToken;
             writeActivityStateI();
             return;
         }
@@ -1425,11 +1428,11 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         long now = System.currentTimeMillis();
-        PackageBuilder clickPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        clickPackageBuilder.pushToken = token;
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        infoPackageBuilder.pushToken = token;
 
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.PUSH);
-        sdkClickHandler.sendSdkClick(clickPackage);
+        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
+        sdkClickHandler.sendSdkClick(infoPackage);
 
         // save new push token
         activityState.pushToken = token;

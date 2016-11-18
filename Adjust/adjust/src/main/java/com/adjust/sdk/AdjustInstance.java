@@ -13,6 +13,7 @@ public class AdjustInstance {
     private long referrerClickTime;
     private ActivityHandler activityHandler;
     private List<IRunActivityHandler> sessionParametersActionsArray;
+    private String pushToken;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -27,6 +28,7 @@ public class AdjustInstance {
         adjustConfig.referrer = this.referrer;
         adjustConfig.referrerClickTime = this.referrerClickTime;
         adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
+        adjustConfig.pushToken = pushToken;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
@@ -200,8 +202,12 @@ public class AdjustInstance {
     }
 
     public void setPushToken(String token) {
-        if (!checkActivityHandler()) return;
-        activityHandler.setPushToken(token);
+        pushToken = token;
+
+        if (activityHandler != null) {
+            activityHandler.setPushToken(token);
+            return;
+        }
     }
 
     private boolean checkActivityHandler() {

@@ -31,6 +31,7 @@ public class AdjustConfig {
     boolean allowSuppressLogLevel;
     ILogger logger;
     String userAgent;
+    String pushToken;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -126,9 +127,6 @@ public class AdjustConfig {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-    public boolean hasAttributionChangedListener() {
-        return onAttributionChangedListener != null;
     }
 
     public boolean hasListener() {
