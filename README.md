@@ -169,6 +169,20 @@ If you are using Proguard, add these lines to your Proguard file:
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
 }
+-keep class dalvik.system.VMRuntime {
+    java.lang.String getRuntime();
+}
+-keep class android.os.Build {
+    java.lang.String[] SUPPORTED_ABIS;
+    java.lang.String CPU_ABI;
+}
+-keep class android.content.res.Configuration {
+    android.os.LocaledList getLocales();
+    java.util.Locale locale;
+}
+-keep class android.os.LocaledList {
+    java.util.Locale get(int);
+}
 ```
 
 If you are **not targeting the Google Play Store**, you can remove the `com.google.android.gms` rules.
