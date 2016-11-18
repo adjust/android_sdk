@@ -1,339 +1,344 @@
-### Version 4.10.3 (XXth November 2016)
+### Version 4.10.3 (18th November 2016)
+#### Added
+- Added sending of `os_buid` with BUILD.ID info
+- Added sending of the Fire Advertising ID and it's tracking enabled/disabled information.
+- Added sending of the vm ISA information from native code.
+
 #### Fixed
-- Remove unnecessary attribution changed listner check
-- Use reflection to get locale information
+- Removed unnecessary attribution changed listner check.
+- Using reflection to get locale information due to old method deprecation.
 
 #### Changed
-- Send push token with dedicated package sdk_info
-- Refactor Reflection class
-
-#### Removed
-- Remove unused response types
-
-#### Added
-- Send `os_buid` with BUILD.ID info
-- Send fire ad id and is tracking enable information
-- Send vm ISA information from native code
+- Sending push token with dedicated package called `sdk_info`.
+- Refactored `Reflection` class.
+- Removed unused response types.
 
 ---
 
 ### Version 4.10.2 (16th September 2016)
 #### Changed
-Remove disconnect after URLConnection creation. Allow to do it after response is read
+- Removed disconnect after URLConnection creation. Allow to do it after response is read.
 
 ---
 
 ### Version 4.10.1 (14th September 2016)
-#### Added
-- Set explicit keep alive time for ScheduledThreadPoolExecutor to prevent wrong default of older API's
+#### Fixed
+- Setting explicit keep alive time for `ScheduledThreadPoolExecutor` to prevent wrong default of older APIs.
 
 ---
 
 ### Version 4.10.0 (13th September 2016)
 #### Added
-- Support for Suppress log level
-- Allow to delay the start of the first session
-- Support for session parameters to be send in every session/event:
-- Callback parameters
-- Partner parameters
-- Inject User-agent of each request
-- Teardown
-- Reading permission in the manifest
+- Added support for suppress log level.
+- Added possibility to delay first session.
+- Added support for session parameters to be sent in every session/event.
+- Added possibility to inject custom user agent to each request.
+- Added teardown method.
+- Added reading of the permissions from the manifest.
+
+#### Changed
+- Updated docs.
 
 ---
 
 ### Version 4.7.0 (4th May 2016)
 #### Added
-- Send in the background feature
-- Deeplink launch callback listener with decision to launch
-- Correct behaviour so the SDK does not start when is put enabled/disabled or online/offline
-- Send all referrer and deeplink with sdk_click
-- Send sdk_click more immediately with a dedicated handler
+- Added background tracking feature.
+- Added deferred deep link callback listener with decision whether deep link should be launched or not.
 
----
+#### Changed
+- Send whole referrer and deep link with sdk_click.
+- Send `sdk_click` immediately with a dedicated handler.
+- Updated docs.
 
-### Version 4.3.0 (11th September 2015)
 #### Fixed
-- Fixed errors on `pre iOS 8` due to accessing `calendarWithIdentifier` method.
+- Correct behaviour so the SDK does not start when is put enabled/disabled or online/offline.
 
 ---
 
 ### Version 4.6.0 (15th March 2016)
 #### Added
-- Delegate callbacks for tracked events and sessions.
+- Added delegate callbacks for tracked events and sessions.
+
+---
+
+### Version 4.3.0 (11th September 2015)
+#### Fixed
+- Fixed errors on `pre iOS 8` devices due to accessing `calendarWithIdentifier` method.
 
 ---
 
 ### Version 4.2.3 (8th February 2016)
-#### Added
-- Fix Sociomantic plugin
-- Rename get device ids
+#### Fixed
+- Fixed Sociomantic plugin.
+
+#### Changed
+- Renamed getting of device identifiers.
 
 ---
 
 ### Version 4.2.2 (1st February 2016)
-#### Added
-- Easy access to Google Play Ad Id
+#### Changed
+- Eased access to Google Play Advertising Id.
 
 ---
 
 ### Version 4.2.1 (8th January 2016)
 #### Changed
-- Send api level and replace os version
-- Update proguard rules to add inner class notation
+- Send `api_level` and replace `os_version`.
+- Update ProGuard rules to add inner class notation.
 
 ---
 
 ### Version 4.2.0 (22nd December 2015)
 #### Added
-- Add gradle to the repository.
-- Update different tools versions.
+- Added gradle to the repository.
+- Exposing `setDeviceKnown` method in `AdjustConfig` class.
+
+#### Changed
+- Updated different tools versions.
 - Explicit cast of read objects.
-- Explicitly naming of deeplink recipient.
-- Explicit setting of target package of deeplink.
-- Exposing setDeviceKnown method in AdjustConfig class.
+- Explicit naming of deep link recipient.
+- Explicit setting of target package of deep link.
 
 ---
 
 ### Version 4.1.5 (30th November 2015)
 #### Added
-- Update criteo plugin to send deeplink
-- Create pom files for plugins to publish in maven repository
+- Added pom.xml files for plugins to publish in maven repository.
+
+#### Changed
+- Updated Criteo plugin to send deep link.
 
 ---
 
 ### Version 4.1.4 (16th November 2015)
 #### Added
-- Adds support for Trademob plugin. Follow the plugin [guide](doc/trademob_plugin.md)
+- Added support for Trademob plugin.
 
 ---
 
 ### Version 4.1.3 (26th October 2015)
-#### Added
-- Catch possible error in reading files, a Class cast exception, if trying to read different file than expected
+#### Fixed
+- Catch possible error in reading files, a class cast exception, if trying to read different file than expected.
 
 ---
 
 ### Version 4.1.2 (28th August 2015)
-#### Added
-- HttpClient replaced by HttpURLConnection
-- Send full referrer if it contains an adjust parameter
-
+#### Changed
+- Replaced `HttpClient` by `HttpURLConnection`.
+- Sending full referrer if it contains an adjust parameter(s).
 
 ---
 
 ### Version 4.1.1 (29th July 2015)
-#### Added
-- Check if state is valid to prevent exception
-
+#### Fixed
+- Checking if state is valid to prevent exception.
 
 ---
 
 ### Version 4.1.0 (17th July 2015)
-#### Added
-- Preventing access to invalid state
-- Doc update
-
+#### Changed
+- Preventing access to invalid state.
+- Updated docs.
 
 ---
 
 ### Version 4.0.9 (30th June 2015)
 #### Added
-- Add sociomantic partner id
-- Read response of click packages
-- Revenue logs match value send
+- Added Sociomantic `partner_id`.
+- Added reading of responses to click packages.
+
+#### Changed
+- Revenue logs match value send.
 
 ---
 
 ### Version 4.0.8 (10th June 2015)
-#### Added
-- Install referrer does not send the first session
-- Timer is not created every time it starts
-- Hash functions accessible for plugins
+#### Fixed
+- Install referrer does not send the first session.
+
+#### Changed
+- Timer is not created every time it starts.
+- Hash functions are now accessible for plugins.
 
 ---
 
 ### Version 4.0.7 (5th June 2015)
 #### Added
-- New click label parameter in attribution
-- Inject optional parameters in criteo events
-- Add partner id optional parameter in criteo
+- Added new `click label` parameter in attribution.
+- Added injection of optional parameters in Criteo events.
+- Added `partner_id` optional parameter in Criteo.
 
 ---
 
 ### Version 4.0.6 (8th May 2015)
-#### Fixed
-- Support for muti-process apps
-- Criteo plugin update
+#### Added
+- Added support for muti-process apps.
+
+#### Changed
+- Updated Criteo plugin.
 
 ---
 
 ### Version 4.0.5 (30th April 2015)
-#### Added
-- Criteo plugin update
-- Google Play Services availability check changed
+#### Changed
+- Updated Criteo plugin.
+- Changed Google Play Services availability check.
 
 ---
 
 ### Version 4.0.4 (23rd April 2015)
 #### Changed
-- Prefix sociomantic params to avoid ambiguities
-
+- Prefixed Sociomantic params to avoid ambiguities.
 
 ---
 
 ### Version 4.0.3 (20th April 2015)
 #### Added
-- Added Sociomantic plugin
-- Fix Criteo product string parsing
-- Update documentation to Google play services v7
+- Added Sociomantic plugin.
+
+#### Changed
+- Updated documentation to Google play services v7.
+
+#### Fixed
+- Fixed Criteo product string parsing.
 
 ---
 
 ### Version 4.0.2 (25th March 2015)
-#### Fixed
-- String formatting using US locale.
-- Closes issue #102 and PR #100 
+#### Changed
+- Formatting string using US locale.
 
 ---
 
 ### Version 4.0.1 (23rd March 2015)
-#### Fixed
-- Update Criteo Plugin with new events
-- See doc for more information.
+#### Changed
+- Updated Criteo Plugin with new events.
 - Improved serialization and migration.
 
 ---
 
 ### Version 4.0.0 (13th March 2015)
 #### Added
-- Replaced Response Data delegate with Attribution changed delegate
-- Config objects to launch SDK and track events
-- Send currency with revenue
-- Add Partner parameters
-- Offline mode
-- Criteo plugin allows to track Criteo type of events
-- See [doc](https://github.com/adjust/android_sdk/blob/master/doc/criteo_plugin.md) for more information.
+- Added config objects to launch SDK and track events.
+- Added sending of currency with revenue.
+- Added partner parameters feature.
+- Added offline mode feature.
+- Added Criteo plugin that allows to track Criteo type of events.
+
+#### Changed
+- Replaced response data delegate with attribution changed delegate.
 
 ---
 
 ### Version 3.6.2 (22nd December 2014)
 #### Changed
-- Change Android SDK target to 21, a.k.a, Lollipop
-
+- Changed Android SDK target to 21, a.k.a, Lollipop.
 
 ---
 
 ### Version 3.6.1 (3rd December 2014)
-#### Fixed
-- You can now call the Adjust api with a Context instead of an Activity.
-Updated pom.xml for maven
+#### Changed
+- You can now call the Adjust API with a `Context` instead of an `Activity`.
+- Updated pom.xml for Maven.
 
 ---
 
 ### Version 3.6.0 (3rd December 2014)
 #### Added
-- Creation of the plugin mechanism for the SDK.
-
+- Added creation of the plugin mechanism for the SDK.
 
 ---
 
 ### Version 3.5.0 (25th July 2014)
 #### Added
-- Use Google advertisement ID as default device ID. If Google Play Services is present, don't send MAC Address.
-- Remove Google Play Services jar. Only the one provided by the app is needed.
+- Added usage of Google Advertisement ID as default device ID. If Google Play Services is present, don't send MAC Address.
+
+#### Changed
+- Removed Google Play Services `.jar` file. Only the one provided by the app is needed.
 
 ---
 
 ### Version 3.4.0 (17th July 2014)
 #### Added
-- Opens deeplink if the server responds with one after the install
-
+- Added opening of the deep link if the server responds with one after the install.
 
 ---
 
 ### Version 3.3.6 (16th July 2014)
-#### Changed
-- Fix check malformed app token
-- Fixed bug that didn't handle malformed app token properly
-
+#### Fixed
+- Fixed check for malformed app token.
+- Fixed bug that didn't handle malformed app token properly.
 
 ---
 
 ### Version 3.3.5 (1st July 2014)
 #### Added
-- Send tracking_enabled to know if the user opt-out of tracking
-- Always sending Google Play Services Advertisement Id
+- Added sending of `tracking_enabled` to know if the user opted out of tracking.
 
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+#### Changed
+- Always sending Google Play Services Advertisement Id.
 
 ---
 
 ### Version 3.3.4 (25th January 2014)
 #### Added
-- New response data fields for tracker information
+- Added new response data fields for tracker information.
 
 ---
 
 ### Version 3.3.3 (10th January 2014)
 #### Added
-- Removed static dependency to Google Play
-- Android Studio build via Gradle.properties
-- Google Advertising ID obtained via reflection
+- Added Android Studio build via gradle.properties.
 
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+#### Changed
+- Removed static dependency to Google Play Services library.
+- Obtaining Google Advertising ID via reflection.
 
 ---
 
 ### Version 3.3.2 (8th May 2014)
 #### Added
-- Using local repository in Maven for Google Play Services dependency.
-- Instructions at [Maven Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/maven.md).
-
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+- Added local repository in Maven for Google Play Services dependency.
 
 ---
 
 ### Version 3.3.1 (29th April 2014)
-#### Added
-- Gradle build fix
+#### Fixed
+- Added Gradle build fix.
 
 ---
 
 ### Version 3.3.0 (16th April 2014)
 #### Added
-- Add deep link parameters
-- Fix new fields on migrating devices
+- Added deep link parameters.
 
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+#### Fixed
+- Fixed new fields on migrating devices.
 
 ---
 
 ### Version 3.2.0 (7th April 2014)
 #### Added
-- Add option to disable and enable the SDK temporarily.
-- Added support for Google Play Services Advertising ID
-
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+- Added option to disable and enable the SDK temporarily.
+- Added support for Google Play Services Advertising ID.
 
 ---
 
 ### Version 3.0.0 (24th February 2014)
 #### Added
-- In-App Source Access
-- Add listener to support in-app source access.
+- Added In-App source access.
+- Added listener to support In-App source access.
 
 #### Changed
-- We renamed `AdjustIo` to `Adjust`. 
-
-Please refer to the [migration guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md) to update your projects.
+- Renamed `AdjustIo` to `Adjust`.
 
 ---
 
 ### Version 2.1.6 (13th January 2014)
 #### Added
-- Add option to disable offline tracking
-- Added event buffering feature.
+- Added option to disable offline tracking.
 - Added `sandbox` environment.
 - Added sending of `tracking_enabled` parameter.
 
@@ -341,72 +346,66 @@ Please refer to the [migration guide](https://github.com/adjust/adjust_android_s
 
 ### Version 2.1.5 (10th January 2014)
 #### Fixed
-Fix bugs introduced in recent refactorings.
+- Fixed bugs introduced in recent refactorings.
 
 ---
 
 ### Version 2.1.4 (26th November 2013)
 #### Added
-- Handle PackageQueue persistence NullPointerExceptions
+- Added `PackageQueue` persistence handling of `NullPointerExceptions`.
 
 ---
 
 ### Version 2.1.3 (21st November 2013)
 #### Added
-Support for SDK wrappers for Unity and Adobe Air
-Also fixes a crash that resulted from our changed ActivityPackage representation that was introduced in `v2.1.2`.
+- Added support for SDK wrappers for Unity and Adobe AIR.
 
-[Migration Guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+#### Fixed
+- Fixed a crash that resulted from our changed `ActivityPackage` representation that was introduced in `v2.1.2`.
 
 ---
 
 ### Version 2.1.2 (15th November 2013)
-#### Added
-- Big cleanup, fix context crash
+#### Changed
+- Performed big code cleanup.
+
+#### Fixed
+- Fixed context crash.
 
 ---
 
 ### Version 2.1.1 (1st October 2013)
-#### Added
-- Update version in pom.xml
-
-Check out our [migration guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+#### Changed
+- Updated version in pom.xml file.
 
 ---
 
 ### Version 2.1.0 (18th September 2013)
 #### Added
-- Buffered, sandbox, tracker 
-- event buffering
-- sandbox environment
-- default tracker
-
-Check out our [migration guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md).
+- Added event buffering feature.
+- Added default tracker feature.
 
 ---
 
 ### Version 2.0.1 (17th August 2012)
-#### Changed
-- Fix memory leak
-- Use `ApplicationContext` instead of `ActivityContext` to avoid leakage.
-
-Check out our [migration guide](https://github.com/adjust/adjust_android_sdk/blob/master/doc/migrate.md) to upgrade from `v1.x`.
+#### Fixed
+- Fixed memory leaking issue.
+- Using `ApplicationContext` instead of `ActivityContext` to avoid leakage.
 
 ---
 
 ### Version 2.0 (16th July 2013)
-#### Changed
-- Asynchronous, persistent, aggregated
-- support for iOS7
-- session aggregation
-- meta information for sessions and events
-- offline tracking
-- persistent storage (crash safe)
-- multi threaded
-- Add migration guide
+#### Added
+- Added support for iOS 7.
+- Added session aggregation.
+- Added meta information for sessions and events.
+- Added offline tracking feature.
+- Added persistent storage (crash safe).
+- Added multi-threading.
+- Added migration guide.
 
 ---
 
 ### Version 1.0.0 (24th October 2012)
 #### Added
-- Initial release of the adjust SDK for android.
+- Initial release of the adjust SDK for Android.
