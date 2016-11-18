@@ -2,7 +2,6 @@
     package="com.adjust.sdk">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-sdk
         android:minSdkVersion="9"
