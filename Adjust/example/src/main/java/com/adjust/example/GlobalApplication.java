@@ -34,6 +34,7 @@ public class GlobalApplication extends Application {
             // You should not init your app in this process.
             return;
         }
+        super.onCreate();
 
         LeakCanary.install(this);
 
@@ -46,8 +47,6 @@ public class GlobalApplication extends Application {
                 .detectAll()
                 .penaltyLog()
                 .build());
-
-        super.onCreate();
 
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
