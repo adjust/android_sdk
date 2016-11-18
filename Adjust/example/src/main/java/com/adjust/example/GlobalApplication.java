@@ -51,20 +51,12 @@ public class GlobalApplication extends Application {
 
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
-
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
         // Change the log level.
         config.setLogLevel(LogLevel.VERBOSE);
-
-        Adjust.setPushToken("token");
-
-        // Set default tracker.
-        // config.setDefaultTracker("{YourDefaultTracker}");
-
-        // Set process name.
-        // config.setProcessName("com.adjust.examples");
 
         // Set attribution delegate.
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
@@ -122,13 +114,46 @@ public class GlobalApplication extends Application {
             }
         });
 
+        // Set default tracker.
+        // config.setDefaultTracker("{YourDefaultTracker}");
+
+        // Set process name.
+        // config.setProcessName("com.adjust.examples");
+
         // Allow to send in the background.
         config.setSendInBackground(true);
 
         // Enable event buffering.
         // config.setEventBufferingEnabled(true);
 
+        // Delay first session.
+        // config.setDelayStart(7);
+
+        // Add session callback parameters.
+        Adjust.addSessionCallbackParameter("sc_foo", "sc_bar");
+        Adjust.addSessionCallbackParameter("sc_key", "sc_value");
+
+        // Add session partner parameters.
+        Adjust.addSessionPartnerParameter("sp_foo", "sp_bar");
+        Adjust.addSessionPartnerParameter("sp_key", "sp_value");
+
+        // Remove session callback parameters.
+        Adjust.removeSessionCallbackParameter("sc_foo");
+
+        // Remove session partner parameters.
+        Adjust.removeSessionPartnerParameter("sp_key");
+
+        // Remove all session callback parameters.
+        Adjust.resetSessionCallbackParameters();
+
+        // Remove all session partner parameters.
+        Adjust.resetSessionPartnerParameters();
+
+        // Initialise the adjust SDK.
         Adjust.onCreate(config);
+
+        // Abort delay for the first session introduced with setDelayStart method.
+        // Adjust.sendFirstPackages();
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.
@@ -139,6 +164,9 @@ public class GlobalApplication extends Application {
 
         // Disable the SDK
         // Adjust.setEnabled(false);
+
+        // Send push notification token.
+        // Adjust.setPushToken("token");
     }
 
     // You can use this class if your app is for Android 4.0 or higher
