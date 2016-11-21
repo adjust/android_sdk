@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 def getVersionName() {
-    return "4.10.3"
+    return "4.10.4"
 }
 
 android {
@@ -13,16 +13,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName getVersionName()
-        externalNativeBuild {
-            cmake {
-                cppFlags ""
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
     }
 }
 
