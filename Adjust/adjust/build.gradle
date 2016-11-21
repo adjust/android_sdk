@@ -13,16 +13,6 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName getVersionName()
-        externalNativeBuild {
-            cmake {
-                cppFlags ""
-            }
-        }
-    }
-    externalNativeBuild {
-        cmake {
-            path "CMakeLists.txt"
-        }
     }
 }
 
