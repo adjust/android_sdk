@@ -1,3 +1,9 @@
+### Version 4.10.4 (22nd November 2016)
+#### Removed
+- Native c++ code for checking CPU architecture
+
+---
+
 ### Version 4.10.3 (18th November 2016)
 #### Added
 - Added sending of `os_buid` with BUILD.ID info
