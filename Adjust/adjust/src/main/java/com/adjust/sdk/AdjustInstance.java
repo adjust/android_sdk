@@ -2,8 +2,13 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
+import static com.adjust.sdk.Constants.STATE_BACKGROUND_ENABLED;
+import static com.adjust.sdk.Constants.STATE_DELAY_START;
+import static com.adjust.sdk.Constants.STATE_SDK_ENABLED;
+import static com.adjust.sdk.Constants.STATE_SDK_OFFLINE;
+import static com.adjust.sdk.Constants.STATE_TO_UPDATE_PACKAGES;
 
 /**
  * Created by pfms on 04/12/14.

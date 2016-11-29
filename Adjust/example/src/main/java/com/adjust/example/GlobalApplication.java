@@ -7,20 +7,7 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.util.Log;
 
-import com.adjust.sdk.Adjust;
-import com.adjust.sdk.AdjustAttribution;
-import com.adjust.sdk.AdjustConfig;
-import com.adjust.sdk.AdjustEventFailure;
-import com.adjust.sdk.AdjustEventSuccess;
-import com.adjust.sdk.LogLevel;
-import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
-import com.adjust.sdk.OnEventTrackingFailedListener;
-import com.adjust.sdk.OnEventTrackingSucceededListener;
-import com.adjust.sdk.OnSessionTrackingFailedListener;
-import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.adjust.sdk.AdjustSessionFailure;
-import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.*;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -47,6 +34,8 @@ public class GlobalApplication extends Application {
                 .detectAll()
                 .penaltyLog()
                 .build());
+
+        AdjustFactory.connectToAnalyzer("192.168.2.14", "9999");
 
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
@@ -151,6 +140,8 @@ public class GlobalApplication extends Application {
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
 
+        AdjustFactory.reportState("Site 1", config);
+
         // Abort delay for the first session introduced with setDelayStart method.
         // Adjust.sendFirstPackages();
 
@@ -181,18 +172,24 @@ public class GlobalApplication extends Application {
         }
 
         @Override
-        public void onActivityStopped(Activity activity) {}
+        public void onActivityStopped(Activity activity) {
+        }
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+        }
 
         @Override
-        public void onActivityDestroyed(Activity activity) {}
+        public void onActivityDestroyed(Activity activity) {
+            AdjustFactory.shutdownAnalyzer();
+        }
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        }
 
         @Override
-        public void onActivityStarted(Activity activity) {}
+        public void onActivityStarted(Activity activity) {
+        }
     }
 }

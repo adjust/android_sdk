@@ -1,11 +1,18 @@
 package com.adjust.sdk;
 
 import android.content.Context;
+import android.os.*;
+import android.util.*;
 
-import java.io.IOException;
-import java.net.URL;
+import org.json.*;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import javax.net.ssl.HttpsURLConnection;
+
+import static android.content.ContentValues.TAG;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
@@ -24,9 +31,12 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
 
+    private static Socket analyzerSocket;
+
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
         URL url;
+
         URLGetConnection(HttpsURLConnection httpsURLConnection, URL url) {
             this.httpsURLConnection = httpsURLConnection;
             this.url = url;
@@ -121,7 +131,7 @@ public class AdjustFactory {
 
     public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return (HttpsURLConnection)url.openConnection();
+            return (HttpsURLConnection) url.openConnection();
         }
 
         return AdjustFactory.httpsURLConnection;
@@ -129,7 +139,7 @@ public class AdjustFactory {
 
     public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
         if (AdjustFactory.httpsURLConnection == null) {
-            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
+            return new URLGetConnection((HttpsURLConnection) url.openConnection(), url);
         }
 
         return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
@@ -201,5 +211,79 @@ public class AdjustFactory {
 
     public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
         AdjustFactory.sdkClickHandler = sdkClickHandler;
+    }
+
+    public static void connectToAnalyzer(String host, String port) {
+        if(analyzerSocket != null) {
+            logger.warn("Analyzer socket is already open");
+            return;
+        }
+
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                try {
+                    analyzerSocket = new Socket(
+                            params[0],
+                            Integer.parseInt(params[1]));
+                } catch (IOException e) {
+                    Log.e(TAG, "connectToAnalyzer: " + e.getLocalizedMessage());
+                }
+                return null;
+            }
+        }.execute(host, port);
+    }
+
+    public static void shutdownAnalyzer() {
+        if(analyzerSocket == null) {
+            logger.warn("Analyzer socket is null");
+            return;
+        }
+
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                try {
+                    analyzerSocket.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "connectToAnalyzer: " + e.getLocalizedMessage());
+                }
+                return null;
+            }
+        }.execute();
+    }
+
+    public static void reportState(String callsite, AdjustConfig adjustConfig) {
+        if(analyzerSocket == null) {
+            logger.warn("Analyzer socket is null");
+            return;
+        }
+
+        Map<String, Object> map = new TreeMap<>();
+        map.put("call_site", callsite);
+        map.putAll(adjustConfig.getState());
+        map.putAll(getActivityHandler(adjustConfig).getState());
+
+        String json = new JSONObject(map).toString();
+
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                try {
+                    OutputStream out = analyzerSocket.getOutputStream();
+                    out.write((params[0] + '\n').getBytes());
+//                InputStream in = socket.getInputStream();
+//                byte buf[] = new byte[1024];
+//                int nbytes;
+//                while ((nbytes = in.read(buf)) != -1) {
+//                    sb.append(new String(buf, 0, nbytes));
+//                }
+                } catch (IOException ignored) {
+                    Log.e(TAG, "doInBackground: " + ignored.getLocalizedMessage());
+                }
+
+                return null;
+            }
+        }.execute(json);
     }
 }

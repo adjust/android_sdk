@@ -9,22 +9,17 @@
 
 package com.adjust.sdk;
 
-import android.app.ActivityManager;
-import android.content.Context;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
-import android.os.Handler;
+import android.app.*;
+import android.content.*;
+import android.content.pm.*;
+import android.net.*;
+import android.os.*;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import org.json.*;
 
-import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
-import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
-import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
-import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
+import java.util.*;
+
+import static com.adjust.sdk.Constants.*;
 
 public class ActivityHandler implements IActivityHandler {
     private static long FOREGROUND_TIMER_INTERVAL;
@@ -72,7 +67,8 @@ public class ActivityHandler implements IActivityHandler {
         if (scheduledExecutor != null) {
             try {
                 scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+            } catch (SecurityException se) {
+            }
         }
         if (packageHandler != null) {
             packageHandler.teardown(deleteState);
@@ -108,50 +104,6 @@ public class ActivityHandler implements IActivityHandler {
         attributionHandler = null;
         sdkClickHandler = null;
         sessionParameters = null;
-    }
-
-    public class InternalState {
-        boolean enabled;
-        boolean offline;
-        boolean background;
-        boolean delayStart;
-        boolean updatePackages;
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public boolean isDisabled() {
-            return !enabled;
-        }
-
-        public boolean isOffline() {
-            return offline;
-        }
-
-        public boolean isOnline() {
-            return !offline;
-        }
-
-        public boolean isBackground() {
-            return background;
-        }
-
-        public boolean isForeground() {
-            return !background;
-        }
-
-        public boolean isDelayStart() {
-            return delayStart;
-        }
-
-        public boolean isToStartNow() {
-            return !delayStart;
-        }
-
-        public boolean isToUpdatePackages() {
-            return updatePackages;
-        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -281,12 +233,12 @@ public class ActivityHandler implements IActivityHandler {
     public void finishedTrackingActivity(ResponseData responseData) {
         // redirect session responses to attribution handler to check for attribution information
         if (responseData instanceof SessionResponseData) {
-            attributionHandler.checkSessionResponse((SessionResponseData)responseData);
+            attributionHandler.checkSessionResponse((SessionResponseData) responseData);
             return;
         }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
-            launchEventResponseTasksI((EventResponseData)responseData);
+            launchEventResponseTasksI((EventResponseData) responseData);
             return;
         }
     }
@@ -326,8 +278,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void updateStatus(boolean pausingState, String pausingMessage,
-                              String remainsPausedMessage, String unPausingMessage)
-    {
+                              String remainsPausedMessage, String unPausingMessage) {
         // it is changing from an active state to a pause state
         if (pausingState) {
             logger.info(pausingMessage);
@@ -349,8 +300,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private boolean hasChangedState(boolean previousState, boolean newState,
-                                    String trueMessage, String falseMessage)
-    {
+                                    String trueMessage, String falseMessage) {
         if (previousState != newState) {
             return true;
         }
@@ -480,7 +430,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendFirstPackages () {
+    public void sendFirstPackages() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -616,8 +566,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
             if (deviceInfo.macSha1 == null &&
                     deviceInfo.macShortMd5 == null &&
-                    deviceInfo.androidId == null)
-            {
+                    deviceInfo.androidId == null) {
                 logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
             }
         } else {
@@ -651,8 +600,7 @@ public class ActivityHandler implements IActivityHandler {
         // configure delay start timer
         if (activityState == null &&
                 adjustConfig.delayStart != null &&
-                adjustConfig.delayStart > 0.0)
-        {
+                adjustConfig.delayStart > 0.0) {
             logger.info("Delay start configured");
             internalState.delayStart = true;
             delayStartTimer = new TimerOnce(scheduledExecutor, new Runnable() {
@@ -763,7 +711,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void checkAttributionStateI() {
-        if (!checkActivityStateI(activityState)) { return; }
+        if (!checkActivityStateI(activityState)) {
+            return;
+        }
 
         // if it's a new session
         if (activityState.subsessionCount <= 1) {
@@ -983,7 +933,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void sendReferrerI(String referrer, long clickTime) {
-        if (referrer == null || referrer.length() == 0 ) {
+        if (referrer == null || referrer.length() == 0) {
             return;
         }
         PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(referrer);
@@ -1131,7 +1081,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private boolean updateActivityStateI(long now) {
-        if (!checkActivityStateI(activityState)) { return false; }
+        if (!checkActivityStateI(activityState)) {
+            return false;
+        }
 
         long lastInterval = now - activityState.lastActivity;
 
@@ -1249,7 +1201,7 @@ public class ActivityHandler implements IActivityHandler {
         double delayStartSeconds = adjustConfig.delayStart != null ? adjustConfig.delayStart : 0.0;
         long maxDelayStartMilli = AdjustFactory.getMaxDelayStart();
 
-        long delayStartMilli = (long)(delayStartSeconds * 1000);
+        long delayStartMilli = (long) (delayStartSeconds * 1000);
         if (delayStartMilli > maxDelayStartMilli) {
             double maxDelayStartSeconds = maxDelayStartMilli / 1000;
             String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
@@ -1462,7 +1414,7 @@ public class ActivityHandler implements IActivityHandler {
             sessionParameters.callbackParameters = Util.readObject(context,
                     SESSION_CALLBACK_PARAMETERS_FILENAME,
                     SESSION_CALLBACK_PARAMETERS_NAME,
-                    (Class<Map<String,String>>)(Class)Map.class);
+                    (Class<Map<String, String>>) (Class) Map.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", SESSION_CALLBACK_PARAMETERS_NAME, e.getMessage());
             sessionParameters.callbackParameters = null;
@@ -1474,7 +1426,7 @@ public class ActivityHandler implements IActivityHandler {
             sessionParameters.partnerParameters = Util.readObject(context,
                     SESSION_PARTNER_PARAMETERS_FILENAME,
                     SESSION_PARTNER_PARAMETERS_NAME,
-                    (Class<Map<String,String>>)(Class)Map.class);
+                    (Class<Map<String, String>>) (Class) Map.class);
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", SESSION_PARTNER_PARAMETERS_NAME, e.getMessage());
             sessionParameters.partnerParameters = null;
@@ -1610,8 +1562,8 @@ public class ActivityHandler implements IActivityHandler {
                     !isEnabledI();                  // is disabled
         }
         // other handlers are paused if either:
-        return internalState.isOffline()    ||      // it's offline
-                !isEnabledI()               ||      // is disabled
+        return internalState.isOffline() ||      // it's offline
+                !isEnabledI() ||      // is disabled
                 internalState.isDelayStart();       // is in delayed start
     }
 
@@ -1632,5 +1584,78 @@ public class ActivityHandler implements IActivityHandler {
 
         // doesn't have the option -> depends on being on the background/foreground
         return internalState.isForeground();
+    }
+
+    public class InternalState {
+        boolean enabled;
+        boolean offline;
+        boolean background;
+        boolean delayStart;
+        boolean updatePackages;
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public boolean isDisabled() {
+            return !enabled;
+        }
+
+        public boolean isOffline() {
+            return offline;
+        }
+
+        public boolean isOnline() {
+            return !offline;
+        }
+
+        public boolean isBackground() {
+            return background;
+        }
+
+        public boolean isForeground() {
+            return !background;
+        }
+
+        public boolean isDelayStart() {
+            return delayStart;
+        }
+
+        public boolean isToStartNow() {
+            return !delayStart;
+        }
+
+        public boolean isToUpdatePackages() {
+            return updatePackages;
+        }
+    }
+
+    @Override
+    public Map<String, Object> getState() {
+        Map<String, Object> data = new HashMap<>();
+        data.put(STATE_SDK_ENABLED, internalState.enabled);
+        data.put(STATE_SDK_OFFLINE, internalState.offline);
+        data.put(STATE_BACKGROUND_ENABLED, internalState.background);
+        data.put(STATE_TO_UPDATE_PACKAGES, internalState.updatePackages);
+        //data.put(STATE_PUSH_TOKEN, activityState.pushToken);
+
+        if (sessionParameters != null) {
+            if (sessionParameters.callbackParameters != null) {
+                data.put(STATE_CALLBACK_PARAMETERS, new JSONObject(sessionParameters.callbackParameters).toString());
+            } else {
+                data.put(STATE_CALLBACK_PARAMETERS, new JSONObject().toString());
+            }
+
+            if (sessionParameters.partnerParameters != null) {
+                data.put(STATE_PARTNER_PARAMETERS, new JSONObject(sessionParameters.partnerParameters).toString());
+            } else {
+                data.put(STATE_PARTNER_PARAMETERS, new JSONObject().toString());
+            }
+        } else {
+            data.put(STATE_CALLBACK_PARAMETERS, new JSONObject().toString());
+            data.put(STATE_PARTNER_PARAMETERS, new JSONObject().toString());
+        }
+
+        return data;
     }
 }
