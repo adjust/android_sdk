@@ -17,11 +17,16 @@
 
 ### Version 4.10.2 (16th September 2016)
 #### Changed
-- Removed disconnect after URLConnection creation. Allow to do it after response is read.
+- Removed disconnect after `URLConnection` creation. Allow to do it after response is read.
+
+#### Fixed
+- Fixed bug in network communication for some Android API levels from SDK v4.10.1.
 
 ---
 
 ### Version 4.10.1 (14th September 2016)
+**SDK v4.10.1 should not be integrated, since we noticed errors in network communication for some Android API levels.**
+
 #### Fixed
 - Setting explicit keep alive time for `ScheduledThreadPoolExecutor` to prevent wrong default of older APIs.
 
