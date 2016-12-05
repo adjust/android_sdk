@@ -104,6 +104,8 @@ public class ActivityHandler implements IActivityHandler {
         attributionHandler = null;
         sdkClickHandler = null;
         sessionParameters = null;
+
+        AdjustFactory.teardown();
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -1635,7 +1637,6 @@ public class ActivityHandler implements IActivityHandler {
         Map<String, Object> data = new HashMap<>();
         data.put(STATE_SDK_ENABLED, internalState.enabled);
         data.put(STATE_SDK_OFFLINE, internalState.offline);
-        data.put(STATE_BACKGROUND_ENABLED, internalState.background);
         data.put(STATE_TO_UPDATE_PACKAGES, internalState.updatePackages);
         //data.put(STATE_PUSH_TOKEN, activityState.pushToken);
 

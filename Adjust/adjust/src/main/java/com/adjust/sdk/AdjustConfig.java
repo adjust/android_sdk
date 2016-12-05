@@ -4,13 +4,10 @@ import android.content.Context;
 
 import java.util.*;
 
-import static android.R.attr.data;
-import static com.adjust.sdk.Constants.*;
-
 /**
  * Created by pfms on 06/11/14.
  */
-public class AdjustConfig implements IStateable {
+public class AdjustConfig {
     Context context;
     String appToken;
     String environment;
@@ -226,27 +223,5 @@ public class AdjustConfig implements IStateable {
 
         logger.error("Unknown environment '%s'", environment);
         return false;
-    }
-
-    @Override
-    public Map<String, Object> getState() {
-        Map<String, Object> data = new HashMap<>();
-        data.put(STATE_DEFAULT_TRACKER, defaultTracker);
-        data.put(STATE_IS_ATTRIBUTION_CALLBACK_IMPLEMENNTED, onAttributionChangedListener != null);
-        data.put(STATE_IS_EVENT_TRACKING_SUCCEEDED_CALLBACK_IMPLEMENTED, onEventTrackingFailedListener != null);
-        data.put(STATE_IS_EVENT_TRACKING_FAILED_CALLBACK_IMPLEMENTED, onEventTrackingFailedListener != null);
-        data.put(STATE_IS_SESSION_TRACKING_SUCCEEDED_CALLBACK_IMPLEMENTED, onSessionTrackingSucceededListener != null);
-        data.put(STATE_IS_SESSION_TRACKING_FAILED_CALLBACK_IMPLEMENTED, onSessionTrackingFailedListener != null);
-        data.put(STATE_IS_DEFERRED_DEEPLINK_CALLBACK_IMPLEMENTED, onDeeplinkResponseListener != null);
-        data.put(STATE_ALLOW_SUPPRESS_LOG_LEVEL, allowSuppressLogLevel);
-        data.put(STATE_USER_AGENT, userAgent);
-        data.put(STATE_APP_TOKEN, appToken);
-        data.put(STATE_ENVIRONMENT, environment);
-        data.put(STATE_PROCESS_NAME, processName);
-        data.put(STATE_SDK_PREFIX, sdkPrefix);
-        data.put(STATE_REFERRER, referrer);
-        data.put(STATE_DELAY_START, delayStart);
-
-        return data;
     }
 }

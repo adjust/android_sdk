@@ -1,45 +1,65 @@
 package com.adjust.example;
 
-import android.app.Activity;
-import android.app.Application;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.StrictMode;
-import android.util.Log;
+import android.net.*;
+import android.support.test.filters.*;
+import android.support.test.rule.*;
+import android.support.test.runner.*;
+import android.util.*;
 
 import com.adjust.sdk.*;
-import com.squareup.leakcanary.LeakCanary;
+
+import org.junit.*;
+import org.junit.runner.*;
+
+import dalvik.annotation.*;
+import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static android.support.test.espresso.action.ViewActions.typeText;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.withId;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 /**
- * Created by pfms on 17/12/14.
+ * Created by ab on 01/12/2016.
  */
-public class GlobalApplication extends Application {
-    @Override
-    public void onCreate() {
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
-        super.onCreate();
 
-        LeakCanary.install(this);
+@RunWith(AndroidJUnit4.class)
+@LargeTest
+public class HelloWorldEspressoTest {
+    @Rule
+    public ActivityTestRule<MainActivity> mainActivityActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .penaltyDialog()
-                .build());
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectAll()
-                .penaltyLog()
-                .build());
+    @Test
+    public void foo() {
+//        initAdjust();
 
+//        AdjustAnalyzer.reportState("foo() 1");
+
+//        onView(withId(R.id.btnEnableDisableOfflineMode))
+//                .perform(click());
+
+//        AdjustAnalyzer.reportState("foo() 2");
+
+        onView(withId(R.id.btnEnableDisableSDK))
+                .perform(click());
+
+//        AdjustAnalyzer.reportState("foo() 3");
+
+        onView(withId(R.id.btnEnableDisableSDK))
+                .perform(click());
+
+//        AdjustAnalyzer.reportState("foo() 4");
+
+//        AdjustAnalyzer.shutdownAnalyzer();
+    }
+
+    private void initAdjust() {
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 
-        AdjustConfig config = new AdjustConfig(this, appToken, environment);
+        AdjustConfig config = new AdjustConfig(mainActivityActivityTestRule.getActivity(), appToken, environment);
 
         // Change the log level.
         config.setLogLevel(LogLevel.VERBOSE);
@@ -136,7 +156,12 @@ public class GlobalApplication extends Application {
         Adjust.resetSessionPartnerParameters();
 
         // Initialise the adjust SDK.
-        AdjustAnalyzer.connectToAnalyzer("192.168.178.41", "9999", config);
+        AdjustAnalyzer.connectToAnalyzer("172.16.150.242", "9999", config);
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         Adjust.onCreate(config);
 
         // Abort delay for the first session introduced with setDelayStart method.
@@ -144,7 +169,6 @@ public class GlobalApplication extends Application {
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.
-        registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
         // Put the SDK in offline mode.
         // Adjust.setOfflineMode(true);
@@ -154,39 +178,5 @@ public class GlobalApplication extends Application {
 
         // Send push notification token.
         // Adjust.setPushToken("token");
-    }
-
-    // You can use this class if your app is for Android 4.0 or higher
-    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-            AdjustAnalyzer.shutdownAnalyzer();
-        }
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-        }
     }
 }

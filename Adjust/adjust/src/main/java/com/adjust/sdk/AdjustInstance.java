@@ -35,7 +35,7 @@ public class AdjustInstance {
         adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
         adjustConfig.pushToken = pushToken;
 
-        activityHandler = ActivityHandler.getInstance(adjustConfig);
+        activityHandler = (ActivityHandler) AdjustFactory.getActivityHandler(adjustConfig);
     }
 
     public void trackEvent(AdjustEvent event) {

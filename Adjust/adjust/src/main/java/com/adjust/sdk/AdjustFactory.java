@@ -31,7 +31,15 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
 
-    private static Socket analyzerSocket;
+    public static void teardown() {
+        packageHandler = null;
+        requestHandler = null;
+        attributionHandler = null;
+        activityHandler = null;
+        logger = null;
+        httpsURLConnection = null;
+        sdkClickHandler = null;
+    }
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -47,17 +55,17 @@ public class AdjustFactory {
                                                     Context context,
                                                     boolean startsSending) {
         if (packageHandler == null) {
-            return new PackageHandler(activityHandler, context, startsSending);
+            packageHandler = new PackageHandler(activityHandler, context, startsSending);
         }
-        packageHandler.init(activityHandler, context, startsSending);
+
         return packageHandler;
     }
 
     public static IRequestHandler getRequestHandler(IPackageHandler packageHandler) {
         if (requestHandler == null) {
-            return new RequestHandler(packageHandler);
+            requestHandler = new RequestHandler(packageHandler);
         }
-        requestHandler.init(packageHandler);
+
         return requestHandler;
     }
 
@@ -65,6 +73,7 @@ public class AdjustFactory {
         if (logger == null) {
             // Logger needs to be "static" to retain the configuration throughout the app
             logger = new Logger();
+
         }
         return logger;
     }
@@ -113,9 +122,22 @@ public class AdjustFactory {
 
     public static IActivityHandler getActivityHandler(AdjustConfig config) {
         if (activityHandler == null) {
-            return ActivityHandler.getInstance(config);
+            activityHandler = ActivityHandler.getInstance(config);
+            if(activityHandler == null) {
+                return null;
+            }
         }
-        activityHandler.init(config);
+
+        return activityHandler;
+    }
+
+    public static IActivityHandler getActivityHandler() {
+        if (activityHandler == null) {
+            logger.error("Trying to retrieve ActivityHandler without AdjustConfig. " +
+                    "Call Adjust.create() first before calling this function");
+            return null;
+        }
+
         return activityHandler;
     }
 
@@ -123,34 +145,33 @@ public class AdjustFactory {
                                                             ActivityPackage attributionPackage,
                                                             boolean startsSending) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, startsSending);
+           attributionHandler = new AttributionHandler(activityHandler, attributionPackage, startsSending);
         }
-        attributionHandler.init(activityHandler, attributionPackage, startsSending);
+
         return attributionHandler;
     }
 
     public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
-        if (AdjustFactory.httpsURLConnection == null) {
-            return (HttpsURLConnection) url.openConnection();
+        if (httpsURLConnection == null) {
+            httpsURLConnection = (HttpsURLConnection) url.openConnection();
         }
 
-        return AdjustFactory.httpsURLConnection;
+        return httpsURLConnection;
     }
 
     public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
-        if (AdjustFactory.httpsURLConnection == null) {
-            return new URLGetConnection((HttpsURLConnection) url.openConnection(), url);
+        if (httpsURLConnection == null) {
+            httpsURLConnection = (HttpsURLConnection) url.openConnection();
         }
 
-        return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
+        return new URLGetConnection(httpsURLConnection, url);
     }
 
     public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
         if (sdkClickHandler == null) {
-            return new SdkClickHandler(startsSending);
+            sdkClickHandler = new SdkClickHandler(startsSending);
         }
 
-        sdkClickHandler.init(startsSending);
         return sdkClickHandler;
     }
 
@@ -213,77 +234,4 @@ public class AdjustFactory {
         AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
 
-    public static void connectToAnalyzer(String host, String port) {
-        if(analyzerSocket != null) {
-            logger.warn("Analyzer socket is already open");
-            return;
-        }
-
-        new AsyncTask<String, Void, Void>() {
-            @Override
-            protected Void doInBackground(String... params) {
-                try {
-                    analyzerSocket = new Socket(
-                            params[0],
-                            Integer.parseInt(params[1]));
-                } catch (IOException e) {
-                    Log.e(TAG, "connectToAnalyzer: " + e.getLocalizedMessage());
-                }
-                return null;
-            }
-        }.execute(host, port);
-    }
-
-    public static void shutdownAnalyzer() {
-        if(analyzerSocket == null) {
-            logger.warn("Analyzer socket is null");
-            return;
-        }
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                try {
-                    analyzerSocket.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "connectToAnalyzer: " + e.getLocalizedMessage());
-                }
-                return null;
-            }
-        }.execute();
-    }
-
-    public static void reportState(String callsite, AdjustConfig adjustConfig) {
-        if(analyzerSocket == null) {
-            logger.warn("Analyzer socket is null");
-            return;
-        }
-
-        Map<String, Object> map = new TreeMap<>();
-        map.put("call_site", callsite);
-        map.putAll(adjustConfig.getState());
-        map.putAll(getActivityHandler(adjustConfig).getState());
-
-        String json = new JSONObject(map).toString();
-
-        new AsyncTask<String, Void, Void>() {
-            @Override
-            protected Void doInBackground(String... params) {
-                try {
-                    OutputStream out = analyzerSocket.getOutputStream();
-                    out.write((params[0] + '\n').getBytes());
-//                InputStream in = socket.getInputStream();
-//                byte buf[] = new byte[1024];
-//                int nbytes;
-//                while ((nbytes = in.read(buf)) != -1) {
-//                    sb.append(new String(buf, 0, nbytes));
-//                }
-                } catch (IOException ignored) {
-                    Log.e(TAG, "doInBackground: " + ignored.getLocalizedMessage());
-                }
-
-                return null;
-            }
-        }.execute(json);
-    }
 }

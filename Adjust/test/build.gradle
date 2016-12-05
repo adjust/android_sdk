@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     compile 'com.google.code.gson:gson:2.4'
-    compile 'com.google.android.gms:play-services-analytics:9.8.0'
+    compile 'com.google.android.gms:play-services-analytics:10.0.1'
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':adjust')
     androidTestCompile 'com.android.support.test:runner:0.5'

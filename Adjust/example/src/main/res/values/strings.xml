@@ -18,4 +18,5 @@
     <string name="txt_disable_offline_mode">Disable offline mode</string>
     <string name="txt_sdk_is_enabled">Adjust SDK is ENABLED!</string>
     <string name="txt_sdk_is_disabled">Adjust SDK is DISABLED!</string>
+    <string name="btn_report_state">Report State to Analyzer</string>
 </resources>

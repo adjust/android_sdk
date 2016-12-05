@@ -79,7 +79,6 @@ public interface Constants {
     String STATE_IS_DEFERRED_DEEPLINK_CALLBACK_IMPLEMENTED = "is_deferred_deeplink_callback_implemented";
     String STATE_ALLOW_SUPPRESS_LOG_LEVEL = "allow_suppress_log_level";
     String STATE_USER_AGENT = "user_agent";
-    String STATE_LOG_LEVEL = "allow_suppress_log_level";
     String STATE_APP_TOKEN = "app_token";
     String STATE_ENVIRONMENT = "environment";
     String STATE_PROCESS_NAME = "process_name";
