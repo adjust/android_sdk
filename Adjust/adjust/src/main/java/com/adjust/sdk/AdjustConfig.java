@@ -129,14 +129,6 @@ public class AdjustConfig {
         this.userAgent = userAgent;
     }
 
-    public boolean hasListener() {
-        return onAttributionChangedListener != null
-                || onEventTrackingSucceededListener != null
-                || onEventTrackingFailedListener != null
-                || onSessionTrackingSucceededListener != null
-                || onSessionTrackingFailedListener != null;
-    }
-
     public boolean isValid() {
         return appToken != null;
     }
