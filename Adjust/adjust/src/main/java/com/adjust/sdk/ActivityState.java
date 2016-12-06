@@ -37,7 +37,8 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("lastInterval", long.class),
             new ObjectStreamField("updatePackages", boolean.class),
             new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
-            new ObjectStreamField("pushToken", String.class)
+            new ObjectStreamField("pushToken", String.class),
+            new ObjectStreamField("adid", String.class),
     };
 
     // persistent data
@@ -62,6 +63,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected LinkedList<String> orderIds;
 
     protected String pushToken;
+    protected String adid;
 
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
@@ -80,6 +82,7 @@ public class ActivityState implements Serializable, Cloneable {
         updatePackages = false;
         orderIds = null;
         pushToken = null;
+        adid = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -136,6 +139,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
         if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
+        if (!Util.equalString(adid, otherActivityState.adid)) return false;
         return true;
     }
 
@@ -154,6 +158,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashBoolean(updatePackages);
         hashCode = 37 * hashCode + Util.hashObject(orderIds);
         hashCode = 37 * hashCode + Util.hashString(pushToken);
+        hashCode = 37 * hashCode + Util.hashString(adid);
         return hashCode;
     }
 
@@ -178,6 +183,8 @@ public class ActivityState implements Serializable, Cloneable {
         orderIds = Util.readObjectField(fields, "orderIds", null);
 
         pushToken = Util.readStringField(fields, "pushToken", null);
+
+        adid = Util.readStringField(fields, "adid", null);
 
         // create UUID for migrating devices
         if (uuid == null) {

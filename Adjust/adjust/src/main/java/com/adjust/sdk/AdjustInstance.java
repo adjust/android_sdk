@@ -210,6 +210,11 @@ public class AdjustInstance {
         }
     }
 
+    public String getAdid() {
+        if (!checkActivityHandler()) return null;
+        return activityHandler.getAdid();
+    }
+
     private boolean checkActivityHandler() {
         if (activityHandler == null) {
             getLogger().error("Adjust not initialized correctly");

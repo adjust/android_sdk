@@ -288,7 +288,7 @@ public class ActivityHandler implements IActivityHandler {
         }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
-            launchEventResponseTasksI((EventResponseData)responseData);
+            launchEventResponseTasks((EventResponseData)responseData);
             return;
         }
     }
@@ -412,6 +412,20 @@ public class ActivityHandler implements IActivityHandler {
                 readOpenUrlI(url, clickTime);
             }
         });
+    }
+
+    private void updateAdidI(final String adid) {
+        if (adid == null) {
+            return;
+        }
+
+        if (adid.equals(activityState.adid)) {
+            return;
+        }
+
+        activityState.adid = adid;
+        writeActivityStateI();
+        return;
     }
 
     @Override
@@ -562,6 +576,13 @@ public class ActivityHandler implements IActivityHandler {
                 setPushTokenI(token);
             }
         });
+    }
+
+    public String getAdid() {
+        if (activityState == null) {
+            return null;
+        }
+        return activityState.adid;
     }
 
     public ActivityPackage getAttributionPackageI() {
@@ -844,6 +865,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchEventResponseTasksI(final EventResponseData eventResponseData) {
+        // try to update adid from response
+        updateAdidI(eventResponseData.adid);
+
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // success callback
@@ -877,6 +901,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
+        // try to update adid from response
+        updateAdidI(sessionResponseData.adid);
+
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
@@ -924,6 +951,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchAttributionResponseTasksI(AttributionResponseData attributionResponseData) {
+        // try to update adid from response
+        updateAdidI(attributionResponseData.adid);
+
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
