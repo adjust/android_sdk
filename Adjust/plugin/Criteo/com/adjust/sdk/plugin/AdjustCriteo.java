@@ -22,71 +22,65 @@ public class AdjustCriteo {
     private static String checkInDateInternal;
     private static String checkOutDateInternal;
     private static String partnerIdInternal;
+    private static String userSegmentInternal;
+    private static String customerIdInternal;
 
-    public static void injectViewListingIntoEvent(AdjustEvent event, List<String> productIds, String customerId) {
+    public static void injectViewListingIntoEvent(AdjustEvent event, List<String> productIds) {
         String jsonProducts = createCriteoVLFromProducts(productIds);
-        event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
         injectOptionalParams(event);
     }
 
-    public static void injectViewProductIntoEvent(AdjustEvent event, String productId, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectViewProductIntoEvent(AdjustEvent event, String productId) {
         event.addPartnerParameter("criteo_p", productId);
 
         injectOptionalParams(event);
     }
 
-    public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products, String customerId) {
+    public static void injectCartIntoEvent(AdjustEvent event, List<CriteoProduct> products) {
         String jsonProducts = createCriteoVBFromProducts(products);
 
-        event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("criteo_p", jsonProducts);
 
         injectOptionalParams(event);
     }
 
-    public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String transactionId, String customerId) {
+    public static void injectTransactionConfirmedIntoEvent(AdjustEvent event, List<CriteoProduct> products, String transactionId, String newCustomer) {
         String jsonProducts = createCriteoVBFromProducts(products);
 
-        event.addPartnerParameter("customer_id", customerId);
         event.addPartnerParameter("transaction_id", transactionId);
         event.addPartnerParameter("criteo_p", jsonProducts);
+        event.addPartnerParameter("new_customer", newCustomer);
 
         injectOptionalParams(event);
     }
 
-    public static void injectUserLevelIntoEvent(AdjustEvent event, long uiLevel, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectUserLevelIntoEvent(AdjustEvent event, long uiLevel) {
         event.addPartnerParameter("ui_level", String.valueOf(uiLevel));
 
         injectOptionalParams(event);
     }
 
-    public static void injectUserStatusIntoEvent(AdjustEvent event, String uiStatus, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectUserStatusIntoEvent(AdjustEvent event, String uiStatus) {
         event.addPartnerParameter("ui_status", uiStatus);
 
         injectOptionalParams(event);
     }
 
-    public static void injectAchievementUnlockedIntoEvent(AdjustEvent event, String uiAchievement, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectAchievementUnlockedIntoEvent(AdjustEvent event, String uiAchievement) {
         event.addPartnerParameter("ui_achievmnt", uiAchievement);
 
         injectOptionalParams(event);
     }
 
-    public static void injectCustomEventIntoEvent(AdjustEvent event, String uiData, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectCustomEventIntoEvent(AdjustEvent event, String uiData) {
         event.addPartnerParameter("ui_data", uiData);
 
         injectOptionalParams(event);
     }
 
-    public static void injectCustomEvent2IntoEvent(AdjustEvent event, String uiData2, long uiData3, String customerId) {
-        event.addPartnerParameter("customer_id", customerId);
+    public static void injectCustomEvent2IntoEvent(AdjustEvent event, String uiData2, long uiData3) {
         event.addPartnerParameter("ui_data2", uiData2);
         event.addPartnerParameter("ui_data3", String.valueOf(uiData3));
 
@@ -106,6 +100,14 @@ public class AdjustCriteo {
         partnerIdInternal = partnerId;
     }
 
+    public static void injectUserSegmentIntoCriteoEvents(String userSegment) {
+        userSegmentInternal = userSegment;
+    }
+
+    public static void injectCustomerIdIntoCriteoEvents(String customerId) {
+        customerIdInternal = customerId;
+    }
+
     public static void injectDeeplinkIntoEvent(AdjustEvent event, Uri url) {
         if (url == null) {
             return;
@@ -120,6 +122,8 @@ public class AdjustCriteo {
         injectHashEmail(event);
         injectSearchDates(event);
         injectPartnerId(event);
+        injectUserSegment(event);
+        injectCustomerId(event);
     }
 
     private static void injectHashEmail(AdjustEvent event) {
@@ -146,6 +150,21 @@ public class AdjustCriteo {
         }
 
         event.addPartnerParameter("criteo_partner_id", partnerIdInternal);
+    }
+
+    private static void injectUserSegment(AdjustEvent event) {
+        if (userSegmentInternal == null || userSegmentInternal.isEmpty()) {
+            return;
+        }
+
+        event.addPartnerParameter("user_segment", userSegmentInternal);
+    }
+
+    private static void injectCustomerId(AdjustEvent event) {
+        if (customerIdInternal == null || customerIdInternal.isEmpty()) {
+            return;
+        }
+        event.addPartnerParameter("customer_id", customerIdInternal);
     }
 
     private static String createCriteoVLFromProducts(List<String> productIds) {
