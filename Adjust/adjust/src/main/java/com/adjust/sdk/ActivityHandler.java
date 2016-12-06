@@ -1452,16 +1452,15 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        infoPackageBuilder.pushToken = token;
-
-        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
-        sdkClickHandler.sendSdkClick(infoPackage);
-
         // save new push token
         activityState.pushToken = token;
         writeActivityStateI();
+
+        long now = System.currentTimeMillis();
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+
+        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
+        sdkClickHandler.sendSdkClick(infoPackage);
     }
 
     private void readActivityStateI(Context context) {
