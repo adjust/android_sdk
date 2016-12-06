@@ -585,6 +585,10 @@ public class ActivityHandler implements IActivityHandler {
         return activityState.adid;
     }
 
+    public AdjustAttribution getAttribution() {
+        return attribution;
+    }
+
     public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
