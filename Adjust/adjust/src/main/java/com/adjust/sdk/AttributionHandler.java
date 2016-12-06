@@ -150,7 +150,7 @@ public class AttributionHandler implements IAttributionHandler {
         activityHandler.setAskingAttribution(false);
 
         JSONObject attributionJson = responseData.jsonResponse.optJSONObject("attribution");
-        responseData.attribution = AdjustAttribution.fromJson(attributionJson);
+        responseData.attribution = AdjustAttribution.fromJson(attributionJson, responseData.adid);
     }
 
     private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
