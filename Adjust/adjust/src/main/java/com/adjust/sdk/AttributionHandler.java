@@ -50,16 +50,12 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
         logger = AdjustFactory.getLogger();
 
-        if (this.scheduledExecutor != null) {
-            timer = new TimerOnce(scheduledExecutor, new Runnable() {
-                @Override
-                public void run() {
-                    getAttributionI();
-                }
-            }, ATTRIBUTION_TIMER_NAME);
-        } else {
-            this.logger.error("Timer not initialized, attribution handler is disabled");
-        }
+        timer = new TimerOnce(scheduledExecutor, new Runnable() {
+            @Override
+            public void run() {
+                sendAttributionRequestI();
+            }
+        }, ATTRIBUTION_TIMER_NAME);
 
         init(activityHandler, attributionPackage, startsSending);
     }
@@ -75,7 +71,12 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void getAttribution() {
-        getAttribution(0);
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                getAttributionI(0);
+            }
+        });
     }
 
     @Override
@@ -116,7 +117,7 @@ public class AttributionHandler implements IAttributionHandler {
         paused = false;
     }
 
-    private void getAttribution(long delayInMilliseconds) {
+    private void getAttributionI(long delayInMilliseconds) {
         // don't reset if new time is shorter than last one
         if (timer.getFireIn() > delayInMilliseconds) {
             return;
@@ -143,7 +144,7 @@ public class AttributionHandler implements IAttributionHandler {
         if (timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
 
-            getAttribution(timerMilliseconds);
+            getAttributionI(timerMilliseconds);
 
             return;
         }
@@ -185,7 +186,7 @@ public class AttributionHandler implements IAttributionHandler {
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
-    private void getAttributionI() {
+    private void sendAttributionRequestI() {
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;
