@@ -657,6 +657,10 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
+        if (adjustConfig.pushToken != null) {
+            logger.info("Push token: '%s'", adjustConfig.pushToken);
+        }
+
         foregroundTimer = new TimerCycle(scheduledExecutor,
                 new Runnable() {
                     @Override

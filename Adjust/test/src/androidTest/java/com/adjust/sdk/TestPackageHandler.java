@@ -197,7 +197,7 @@ public class TestPackageHandler {
 
         //send next package
         ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
-        UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
+        ResponseData unknownResponseData = ResponseData.buildResponseData(activityPackage);
         packageHandler.closeFirstPackage(unknownResponseData, null);
         SystemClock.sleep(2000);
 
@@ -220,7 +220,7 @@ public class TestPackageHandler {
         PackageHandler packageHandler = startPackageHandler();
 
         ActivityPackage activityPackage = new ActivityPackage(ActivityKind.UNKNOWN);
-        UnknownResponseData unknownResponseData = (UnknownResponseData) ResponseData.buildResponseData(activityPackage);
+        ResponseData unknownResponseData = ResponseData.buildResponseData(activityPackage);
         Pattern pattern = Pattern.compile("Waiting for (\\d+\\.\\d) seconds before retrying the (\\d+) time");
 
         // 1st

@@ -17,10 +17,8 @@ public class MockAttributionHandler implements IAttributionHandler {
     @Override
     public void init(IActivityHandler activityHandler,
                      ActivityPackage attributionPackage,
-                     boolean startsSending,
-                     boolean hasListener) {
-        testLogger.test(prefix + "init, startsSending: " + startsSending +
-                ", hasListener: " + hasListener);
+                     boolean startsSending) {
+        testLogger.test(prefix + "init, startsSending: " + startsSending);
         this.activityHandler = activityHandler;
         this.attributionPackage = attributionPackage;
     }

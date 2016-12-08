@@ -106,7 +106,7 @@ public class TestAttributionHandler{
         mockLogger.Assert("TestAttributionHandler testGetAttribution");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, true);
+                attributionPackage, true);
 
         // test null client
         nullClientTest(attributionHandler);
@@ -133,7 +133,7 @@ public class TestAttributionHandler{
         mockLogger.Assert("TestAttributionHandler testCheckSessionResponse");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, true);
+                attributionPackage, true);
 
         // new attribution
         JSONObject attributionJson = null;
@@ -176,7 +176,7 @@ public class TestAttributionHandler{
         mockLogger.Assert("TestAttributionHandler testAskIn");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, true);
+                attributionPackage, true);
 
         String response = "Response: { \"ask_in\" : 4000 }";
 
@@ -248,7 +248,7 @@ public class TestAttributionHandler{
         mockLogger.Assert("TestAttributionHandler testPause");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, false, true);
+                attributionPackage, false);
 
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 
@@ -266,35 +266,12 @@ public class TestAttributionHandler{
     }
 
     @Test
-    public void testWithoutListener() {
-        // assert test name to read better in logcat
-        mockLogger.Assert("TestAttributionHandler testPause");
-
-        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, false);
-
-        mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
-
-        attributionHandler.getAttribution();
-
-        SystemClock.sleep(1000);
-
-        // check that the activity handler is not paused
-        assertUtil.notInDebug("Attribution handler is paused");
-
-        // but it did not call the http client
-        //assertUtil.isNull(mockHttpClient.lastRequest);
-
-        assertUtil.notInTest("MockHttpsURLConnection getInputStream");
-    }
-
-    @Test
     public void testDeeplink() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testDeeplink");
 
         AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
-                attributionPackage, true, true);
+                attributionPackage, true);
 
         JSONObject responseJson = new JSONObject();
 
