@@ -236,22 +236,12 @@ class PackageBuilder {
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
-        PackageBuilder.addString(parameters, "push_token", getPushToken());
+        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         String fireAdId = Util.getFireAdvertisingId(contentResolver);
         PackageBuilder.addString(parameters, "fire_adid", fireAdId);
         Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
-    }
-
-    private String getPushToken() {
-        if (activityStateCopy.pushToken != null) {
-            return activityStateCopy.pushToken;
-        }
-        if (adjustConfig.pushToken != null) {
-            return adjustConfig.pushToken;
-        }
-        return null;
     }
 
     private void injectActivityState(Map<String, String> parameters) {

@@ -659,6 +659,9 @@ public class ActivityHandler implements IActivityHandler {
 
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
+            if (activityState != null) {
+                setPushToken(adjustConfig.pushToken);
+            }
         }
 
         foregroundTimer = new TimerCycle(scheduledExecutor,
@@ -771,12 +774,12 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
+            activityState.pushToken = adjustConfig.pushToken;
 
             transferSessionPackageI(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.isToUpdatePackages();
-            activityState.pushToken = adjustConfig.pushToken;
             writeActivityStateI();
             return;
         }
