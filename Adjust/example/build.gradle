@@ -10,6 +10,8 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -21,8 +23,9 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:25.0.0'
-    compile 'com.google.android.gms:play-services-analytics:9.8.0'
+//    compile 'com.android.support:support-annotations:25.0.1'
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.google.android.gms:play-services-analytics:10.0.1'
     // imported module
     compile project(":adjust")
     // running mvn package
@@ -34,4 +37,18 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5'
 
+//    androidTestcompile 'com.android.support:support-annotations:25.0.1'
+//    androidTestCompile 'com.android.support:support-annotations:25.0.1'
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ('com.android.support.test:runner:0.5') {
+        exclude module: 'support-annotations'
+    }
+//    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.2'
+
+//    androidTestCompile 'com.android.support:support-annotations:23.1.0'
+//    androidTestCompile 'com.android.support.test:runner:0.4.1'
+//    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+//    androidTestCompile 'com.android.support.test.espresso:espresso-web:2.2.1'
 }

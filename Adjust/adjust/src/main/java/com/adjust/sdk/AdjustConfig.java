@@ -2,7 +2,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by pfms on 06/11/14.
@@ -83,7 +83,9 @@ public class AdjustConfig {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void setProcessName(String processName) { this.processName = processName; }
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;

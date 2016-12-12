@@ -5,7 +5,7 @@ import android.net.Uri;
 /**
  * Created by pfms on 15/12/14.
  */
-public interface IActivityHandler {
+public interface IActivityHandler extends IStateable {
     void init(AdjustConfig config);
 
     void onResume();
