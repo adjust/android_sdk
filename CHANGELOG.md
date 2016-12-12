@@ -1,6 +1,12 @@
+### Version 4.10.4 (22nd November 2016)
+#### Changed
+- Removed native C++ code for checking CPU architecture.
+
+---
+
 ### Version 4.10.3 (18th November 2016)
 #### Added
-- Added sending of `os_buid` with BUILD.ID info
+- Added sending of `os_buid` with `BUILD.ID` info.
 - Added sending of the Fire Advertising ID and it's tracking enabled/disabled information.
 - Added sending of the vm ISA information from native code.
 
