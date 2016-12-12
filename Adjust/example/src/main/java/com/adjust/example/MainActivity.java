@@ -131,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onReportState(View v) {
-        AdjustAnalyzer.reportState("onReportState() method");
+//        AdjustAnalyzer.reportState("onReportState() method");
+        AdjustAnalyzer.reportFooToRestApi("onReportState() method");
     }
 
     public void onServiceActivityClick(View v) {

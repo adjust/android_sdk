@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 16/02/16.
  */
-public class AdjustSessionSuccess {
+public class AdjustSessionSuccess implements IEvent {
     public String message;
     public String timestamp;
     public String adid;
@@ -17,5 +17,10 @@ public class AdjustSessionSuccess {
     public String toString() {
         return String.format(Locale.US, "Session Success msg:%s time:%s adid:%s json:%s",
                 message, timestamp, adid, jsonResponse);
+    }
+
+    @Override
+    public String getState() {
+        return "My session success State";
     }
 }

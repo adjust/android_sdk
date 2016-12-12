@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by pfms on 05/11/14.
  */
-public class AdjustEvent {
+public class AdjustEvent implements IEvent {
     String eventToken;
     Double revenue;
     String currency;
@@ -100,5 +100,10 @@ public class AdjustEvent {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String getState() {
+        return "My Event State";
     }
 }

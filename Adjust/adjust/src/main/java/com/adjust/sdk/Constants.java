@@ -29,6 +29,7 @@ public interface Constants {
     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
 
     String BASE_URL = "https://app.adjust.com";
+//    String BASE_URL = "http://172.16.150.242:8080/";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.10.4";

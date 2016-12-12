@@ -9,6 +9,8 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.net.ssl.*;
+
 import static android.content.ContentValues.TAG;
 import static com.adjust.sdk.AdjustFactory.getActivityHandler;
 import static com.adjust.sdk.Constants.STATE_ALLOW_SUPPRESS_LOG_LEVEL;
@@ -128,8 +130,6 @@ public final class AdjustAnalyzer {
                     analyzerSocket = new Socket(
                             params[0],
                             Integer.parseInt(params[1]));
-
-                    Log.e(TAG, "doInBackground: analyzerSocket: " + analyzerSocket);
                 } catch (IOException e) {
                     Log.e(TAG, "connectToAnalyzer: " + e.getLocalizedMessage());
                 }
@@ -198,4 +198,221 @@ public final class AdjustAnalyzer {
         }.execute(json);
     }
 
+    public static void reportFooToRestApi(String callsite) {
+        final String targetURL = "http://172.16.150.242:8080/";
+//        final String targetURL = "http://httpbin.org/post";
+        final Map<String, String> map = new HashMap<>();
+        map.put("name", callsite);
+
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name", "new todo");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        new AsyncTask<String, Void, Void>() {
+            @Override
+            protected Void doInBackground(String... params) {
+                URL url = null;
+                try {
+                    url = new URL(targetURL);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setDoOutput(true);
+                    conn.setInstanceFollowRedirects(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+
+                    String input = "{\n" +
+                            "\t\"name\": \"aaa\"\n" +
+                            "}";
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(jsonObject.toString().getBytes());
+                    os.flush();
+
+                    Log.d("ADJUST", String.valueOf(conn.getResponseCode()));
+
+                    BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+
+                    String output;
+                    Log.d("ADJUST", "Output from Server .... \n");
+                    while ((output = br.readLine()) != null) {
+                        Log.d("ADJUST", output);
+                    }
+
+                    conn.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+        }.execute();
+    }
+//        ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
+//
+//            IPackageHandler packageHandler = packageHandlerWeakRef.get();
+//            if (packageHandler == null) {
+//                return;
+//            }
+//
+//            if (responseData.jsonResponse == null) {
+//                packageHandler.closeFirstPackage(responseData, activityPackage);
+//                return;
+//            }
+//
+//            packageHandler.sendNextPackage(responseData);
+//    }
+
+//    public static void reportEvent(String callsite, IEvent event) {
+//        if (analyzerSocket == null) {
+//            AdjustFactory.getLogger().warn("Analyzer socket is null");
+//            return;
+//        }
+//
+//        Map<String, Object> map = new TreeMap<>();
+//        map.put("callsite", callsite);
+//        map.putAll(event.getState());
+//
+//        String json = new JSONObject(map).toString();
+//
+//        new AsyncTask<String, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(String... params) {
+//                try {
+//                    OutputStream out = analyzerSocket.getOutputStream();
+//                    out.write((params[0] + '\n').getBytes());
+////                InputStream in = socket.getInputStream();
+////                byte buf[] = new byte[1024];
+////                int nbytes;
+////                while ((nbytes = in.read(buf)) != -1) {
+////                    sb.append(new String(buf, 0, nbytes));
+////                }
+//                } catch (IOException ignored) {
+//                    Log.e(TAG, "doInBackground: " + ignored.getLocalizedMessage());
+//                }
+//
+//                return null;
+//            }
+//        }.execute(json);
+//    }
 }
+
+
+
+
+/*
+    public static void reportFooToRestApi(String callsite) {
+        final String targetURL = "http://172.16.150.242:8080/todos";
+        final Map<String, String> map = new HashMap<>();
+        map.put("name", callsite);
+
+        new AsyncTask<String, Void, Void>() {
+            String server_response;
+
+            @Override
+            protected Void doInBackground(String... params) {
+                HttpURLConnection connection = null;
+                try {
+                    URL url = new URL(targetURL);
+                    connection = (HttpURLConnection) url.openConnection();
+
+                    int responseCode = connection.getResponseCode();
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        server_response = readStream(connection.getInputStream());
+                        Log.v("CatalogClient", server_response);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                try {
+//                    connection = Util.createPOSTHttpURLConnection(
+//                            targetURL,
+//                            map,
+//                            1);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                Log.e("Response", "" + server_response);
+            }
+
+            private String readStream(InputStream in) {
+                BufferedReader reader = null;
+                StringBuffer response = new StringBuffer();
+                try {
+                    reader = new BufferedReader(new InputStreamReader(in));
+                    String line = "";
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                return response.toString();
+            }
+        }.execute();
+    }
+//        ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
+//
+//            IPackageHandler packageHandler = packageHandlerWeakRef.get();
+//            if (packageHandler == null) {
+//                return;
+//            }
+//
+//            if (responseData.jsonResponse == null) {
+//                packageHandler.closeFirstPackage(responseData, activityPackage);
+//                return;
+//            }
+//
+//            packageHandler.sendNextPackage(responseData);
+//    }
+
+//    public static void reportEvent(String callsite, IEvent event) {
+//        if (analyzerSocket == null) {
+//            AdjustFactory.getLogger().warn("Analyzer socket is null");
+//            return;
+//        }
+//
+//        Map<String, Object> map = new TreeMap<>();
+//        map.put("callsite", callsite);
+//        map.putAll(event.getState());
+//
+//        String json = new JSONObject(map).toString();
+//
+//        new AsyncTask<String, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(String... params) {
+//                try {
+//                    OutputStream out = analyzerSocket.getOutputStream();
+//                    out.write((params[0] + '\n').getBytes());
+////                InputStream in = socket.getInputStream();
+////                byte buf[] = new byte[1024];
+////                int nbytes;
+////                while ((nbytes = in.read(buf)) != -1) {
+////                    sb.append(new String(buf, 0, nbytes));
+////                }
+//                } catch (IOException ignored) {
+//                    Log.e(TAG, "doInBackground: " + ignored.getLocalizedMessage());
+//                }
+//
+//                return null;
+//            }
+//        }.execute(json);
+//    }
+ */

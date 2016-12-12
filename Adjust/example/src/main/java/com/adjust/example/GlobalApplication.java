@@ -118,25 +118,25 @@ public class GlobalApplication extends Application {
         // Add session callback parameters.
         Adjust.addSessionCallbackParameter("sc_foo", "sc_bar");
         Adjust.addSessionCallbackParameter("sc_key", "sc_value");
-
-        // Add session partner parameters.
+//
+//        // Add session partner parameters.
         Adjust.addSessionPartnerParameter("sp_foo", "sp_bar");
         Adjust.addSessionPartnerParameter("sp_key", "sp_value");
-
-        // Remove session callback parameters.
-        Adjust.removeSessionCallbackParameter("sc_foo");
-
-        // Remove session partner parameters.
-        Adjust.removeSessionPartnerParameter("sp_key");
+//
+//        // Remove session callback parameters.
+//        Adjust.removeSessionCallbackParameter("sc_foo");
+//
+//        // Remove session partner parameters.
+//        Adjust.removeSessionPartnerParameter("sp_key");
 
         // Remove all session callback parameters.
-        Adjust.resetSessionCallbackParameters();
+//        Adjust.resetSessionCallbackParameters();
 
         // Remove all session partner parameters.
-        Adjust.resetSessionPartnerParameters();
+//        Adjust.resetSessionPartnerParameters();
 
         // Initialise the adjust SDK.
-        AdjustAnalyzer.connectToAnalyzer("192.168.178.41", "9999", config);
+//        AdjustAnalyzer.connectToAnalyzer("172.16.150.242", "9999", config);
         Adjust.onCreate(config);
 
         // Abort delay for the first session introduced with setDelayStart method.
@@ -178,7 +178,7 @@ public class GlobalApplication extends Application {
 
         @Override
         public void onActivityDestroyed(Activity activity) {
-            AdjustAnalyzer.shutdownAnalyzer();
+//            AdjustAnalyzer.shutdownAnalyzer();
         }
 
         @Override

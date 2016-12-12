@@ -36,8 +36,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -104,7 +103,7 @@ public class Util {
         }
 
         logger.debug("GoogleAdId being read in the foreground");
-        new AsyncTask<Context,Void,String>() {
+        new AsyncTask<Context, Void, String>() {
             @Override
             protected String doInBackground(Context... params) {
                 ILogger logger = AdjustFactory.getLogger();
@@ -133,6 +132,7 @@ public class Util {
     public static Map<String, String> getPluginKeys(Context context) {
         return Reflection.getPluginKeys(context);
     }
+
     public static String getAndroidId(Context context) {
         return Reflection.getAndroidId(context);
     }
@@ -285,8 +285,7 @@ public class Util {
     }
 
     public static AdjustFactory.URLGetConnection createGETHttpsURLConnection(String urlString, String clientSdk)
-            throws IOException
-    {
+            throws IOException {
         HttpsURLConnection connection = null;
         try {
             URL url = new URL(urlString);
@@ -306,8 +305,7 @@ public class Util {
     public static HttpsURLConnection createPOSTHttpsURLConnection(String urlString, String clientSdk,
                                                                   Map<String, String> parameters,
                                                                   int queueSize)
-            throws IOException
-    {
+            throws IOException {
         DataOutputStream wr = null;
         HttpsURLConnection connection = null;
         try {
@@ -333,14 +331,15 @@ public class Util {
                     wr.flush();
                     wr.close();
                 }
-            }catch (Exception e) { }
+            } catch (Exception e) {
+            }
         }
     }
 
     private static String getPostDataString(Map<String, String> body, int queueSize) throws UnsupportedEncodingException {
         StringBuilder result = new StringBuilder();
 
-        for(Map.Entry<String, String> entry : body.entrySet()) {
+        for (Map.Entry<String, String> entry : body.entrySet()) {
             String encodedName = URLEncoder.encode(entry.getKey(), Constants.ENCODING);
             String value = entry.getValue();
             String encodedValue = value != null ? URLEncoder.encode(value, Constants.ENCODING) : "";
@@ -550,8 +549,8 @@ public class Util {
         // get the random range
         double randomDouble = randomInRange(backoffStrategy.minRange, backoffStrategy.maxRange);
         // apply jitter factor
-        double waitingTime =  ceilingTime * randomDouble;
-        return (long)waitingTime;
+        double waitingTime = ceilingTime * randomDouble;
+        return (long) waitingTime;
     }
 
     private static double randomInRange(double minRange, double maxRange) {
@@ -617,12 +616,12 @@ public class Util {
 
     public static String getFireAdvertisingId(ContentResolver contentResolver) {
         if (contentResolver == null)
-        try {
-            // get advertising
-            return Secure.getString(contentResolver, "advertising_id");
-        } catch (Exception ex) {
-            // not supported
-        }
+            try {
+                // get advertising
+                return Secure.getString(contentResolver, "advertising_id");
+            } catch (Exception ex) {
+                // not supported
+            }
         return null;
     }
 

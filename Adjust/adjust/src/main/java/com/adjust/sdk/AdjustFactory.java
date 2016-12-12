@@ -123,7 +123,7 @@ public class AdjustFactory {
     public static IActivityHandler getActivityHandler(AdjustConfig config) {
         if (activityHandler == null) {
             activityHandler = ActivityHandler.getInstance(config);
-            if(activityHandler == null) {
+            if (activityHandler == null) {
                 return null;
             }
         }
@@ -145,7 +145,7 @@ public class AdjustFactory {
                                                             ActivityPackage attributionPackage,
                                                             boolean startsSending) {
         if (attributionHandler == null) {
-           attributionHandler = new AttributionHandler(activityHandler, attributionPackage, startsSending);
+            attributionHandler = new AttributionHandler(activityHandler, attributionPackage, startsSending);
         }
 
         return attributionHandler;
@@ -155,6 +155,10 @@ public class AdjustFactory {
         if (httpsURLConnection == null) {
             httpsURLConnection = (HttpsURLConnection) url.openConnection();
         }
+
+        Properties systemProperties = System.getProperties();
+        systemProperties.setProperty("http.proxyHost","http://www.google.com");
+        systemProperties.setProperty("http.proxyPort","8080");
 
         return httpsURLConnection;
     }

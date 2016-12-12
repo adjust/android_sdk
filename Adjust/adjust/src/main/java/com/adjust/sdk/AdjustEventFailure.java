@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Created by pfms on 04/01/16.
  */
-public class AdjustEventFailure {
+public class AdjustEventFailure implements IEvent {
     public String message;
     public String timestamp;
     public String adid;
@@ -19,5 +19,10 @@ public class AdjustEventFailure {
     public String toString() {
         return String.format(Locale.US, "Event Failure msg:%s time:%s adid:%s event:%s retry:%b json:%s",
             message, timestamp, adid, eventToken, willRetry, jsonResponse);
+    }
+
+    @Override
+    public String getState() {
+        return "My Event Failure State";
     }
 }
