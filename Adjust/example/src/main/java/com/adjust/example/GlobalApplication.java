@@ -165,7 +165,7 @@ public class GlobalApplication extends Application {
         // Adjust.setEnabled(false);
 
         // Send push notification token.
-        Adjust.setPushToken("token");
+        // Adjust.setPushToken("token");
     }
 
     // You can use this class if your app is for Android 4.0 or higher
