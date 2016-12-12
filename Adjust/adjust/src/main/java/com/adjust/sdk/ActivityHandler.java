@@ -1501,7 +1501,8 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
-        sdkClickHandler.sendSdkClick(infoPackage);
+        packageHandler.addPackage(infoPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void readActivityStateI(Context context) {

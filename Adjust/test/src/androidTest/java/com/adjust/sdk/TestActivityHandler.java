@@ -2598,11 +2598,20 @@ public class TestActivityHandler {
         SystemClock.sleep(1500);
 
         // check it was added to sdk click handler
-        assertUtil.test("SdkClickHandler sendSdkClick");
-        assertUtil.isEqual(1, mockSdkClickHandler.queue.size());
+        assertUtil.notInTest("SdkClickHandler sendSdkClick");
+        assertUtil.isEqual(0, mockSdkClickHandler.queue.size());
+
+        // check that info package was added
+        assertUtil.test("PackageHandler addPackage");
+
+        // check that event was sent to package handler
+        assertUtil.test("PackageHandler sendFirstPackage");
+
+        // checking that the info package was added
+        assertUtil.isEqual(3, mockPackageHandler.queue.size());
 
         // get the click package
-        ActivityPackage sdkInfoPackage = mockSdkClickHandler.queue.get(0);
+        ActivityPackage sdkInfoPackage = mockPackageHandler.queue.get(2);
 
         // create activity package test
         TestActivityPackage testInfoPackage = new TestActivityPackage(sdkInfoPackage);
