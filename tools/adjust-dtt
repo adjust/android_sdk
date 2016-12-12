@@ -1,0 +1,207 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+require 'fileutils'
+
+def unpack_apk(apk_path)
+    puts "\n[adjust-dtt][i]: Unpacking the APK file ..."
+    status = system({"APK_FILE" => apk_path}, "apktool d -f $APK_FILE")
+
+    if status == false
+        abort "\n[adjust-dtt][e]: Aborting...\n\n"
+    end
+end
+
+def repack_apk(apk_name, store_name)
+    puts "[adjust-dtt][i]: Packing the APK file ..."
+    status = system({"APK_NAME" => apk_name,
+                     "STORE_NAME" => store_name},
+                     "apktool b $APK_NAME -o ${APK_NAME}_${STORE_NAME}.apk")
+
+    if status == false
+        abort "\n[adjust-dtt][e]: Aborting...\n\n"
+    end
+end
+
+def sign_apk(apk_path, store_name, keystore_path, keystore_pass, keystore_alias)
+    puts "[adjust-dtt][i]: Signing the APK file ..."
+    status = system({"APK_FILE" => apk_path,
+                     "STORE_NAME" => store_name,
+                     "SIGN_KEYSTORE_FILE" => keystore_path,
+                     "SIGN_KEYSTORE_PASS" => keystore_pass,
+                     "SIGN_KEYSTORE_ALIAS" => keystore_alias},
+                     "jarsigner -keystore $SIGN_KEYSTORE_FILE -storepass $SIGN_KEYSTORE_PASS ${APK_FILE}_${STORE_NAME}.apk $SIGN_KEYSTORE_ALIAS")
+
+    if status == false
+        abort "\n[adjust-dtt][e]: Aborting...\n\n"
+    end
+end
+
+def cleanup(apk_folder)
+    # Tilting at windmills.
+    FileUtils.rm_rf(apk_folder) unless apk_folder == "/"
+end
+
+def check_parameters(apk_path, keystore_path, keystore_pass, keystore_alias, default_tracker)
+    # Check if fields are nil or empty.
+    # Abort if any of them is.
+    should_abort = 0
+
+    if apk_path.to_s.empty?
+        puts "\n[adjust-dtt][e]: APK file path not set."
+        should_abort = 1
+    end
+
+    if keystore_path.to_s.empty?
+        puts "\n[adjust-dtt][e]: Keystore file path not set."
+        should_abort = 1
+    end
+
+    if keystore_pass.to_s.empty?
+        puts "\n[adjust-dtt][e]: Keystore password not set."
+        should_abort = 1
+    end
+
+    if keystore_alias.to_s.empty?
+        puts "\n[adjust-dtt][e]: Keystore alias not set."
+        should_abort = 1
+    end
+
+    if default_tracker.to_s.empty?
+        puts "\n[adjust-dtt][e]: Default tracker token not set."
+        should_abort = 1
+    end
+
+    if should_abort == 1
+        abort "\n[adjust-dtt][e]: Aborting...\n\n"
+    end
+end
+
+def append_default_tracker(config_file, default_tracker)
+    puts "[adjust-dtt][i]: defaultTracker field will now be added to the adjust_config.properties file ..."
+    puts "[adjust-dtt][i]: Writing defaultTracker=#{default_tracker} to adjust_config.properties file ..."
+
+    open(config_file, 'a') { |f| f.puts "defaultTracker=#{default_tracker}" }
+
+    puts "[adjust-dtt][i]: defaultTracker property successfully added."
+end
+
+def process_unpacked_apk(apk_assets, config_file, default_tracker)
+    if Dir.exist?(apk_assets)
+        puts "[adjust-dtt][i]: Assets folder found!"
+        puts "[adjust-dtt][i]: Checking if adjust_config.properties file exist in the assets folder ..."
+
+        if File.file?(config_file)
+            puts "[adjust-dtt][i]: adjust_config.properties file found."
+            puts "[adjust-dtt][i]: Checking if defaultTracker property has been set ..."
+
+            lines = File.readlines(config_file).grep(/defaultTracker=/)
+
+            if lines.size > 0
+                current_tracker_value = lines[0].partition('defaultTracker=').last
+
+                puts "[adjust-dtt][i]: defaultTracker is set to value: #{current_tracker_value}"
+
+                if current_tracker_value == default_tracker
+                    puts "[adjust-dtt][i]: defaultTracker value from YAML config file matches with the one found in adjust_config.properties file."
+                    puts "[adjust-dtt][i]: No updates in adjust_config.properties file needed."
+                else
+                    puts "[adjust-dtt][i]: defaultTracker value from YAML config file differs from the one found in adjust_config.properties file."
+                    puts "[adjust-dtt][i]: Replacing #{current_tracker_value} with #{default_tracker}..."
+
+                    replacement_line = "defaultTracker=#{default_tracker}"
+                    File.write(config_file, File.open(config_file, &:read).gsub(lines[0], replacement_line))
+
+                    puts "[adjust-dtt][i]: Old line: #{lines[0]}"
+                    puts "[adjust-dtt][i]: Replaced with: #{replacement_line}"
+                end
+            else
+                puts "[adjust-dtt][i]: defaultTracker is not set."
+
+                append_default_tracker(config_file, default_tracker)
+            end
+        else
+            puts "[adjust-dtt][i]: adjust_config.file doesn't exist in the assets folder. Creating one ..."
+
+            # Create adjust_config.properties file inside of assets folder.
+            puts "[adjust-dtt][i]: adjust_config.properties file will be created inside of the assets folder."
+
+            append_default_tracker(config_file, default_tracker)
+        end
+    else
+        puts "[adjust-dtt][i]: Assets folder not found!"
+        puts "[adjust-dtt][i]: Creating assets folder and adding adjust_config.properties file to it ..."
+
+        # Create assets folder.
+        FileUtils.mkdir_p(apk_assets)
+
+        puts "[adjust-dtt][i]: Assets folder created."
+
+        # Create adjust_config.properties file inside of assets folder.
+        puts "[adjust-dtt][i]: adjust_config.properties file will be created inside of the assets folder."
+
+        append_default_tracker(config_file, default_tracker)
+    end
+end
+
+def edit_apk_for_store(store_name, store_config)
+    # Load YAML config file fields.
+    adj_apk_path = store_config['apk_path']
+    adj_keystore_path = store_config['keystore_path']
+    adj_keystore_pass = store_config['keystore_pass']
+    adj_keystore_alias = store_config['keystore_alias']
+    adj_default_tracker = store_config['default_tracker']
+
+    used_apk_path = adj_apk_path.to_s.empty? ? $adjg_apk_path : adj_apk_path
+    used_keystore_path = adj_keystore_path.to_s.empty? ? $adjg_keystore_path : adj_keystore_path
+    used_keystore_pass = adj_keystore_pass.to_s.empty? ? $adjg_keystore_pass : adj_keystore_pass
+    used_keystore_alias = adj_keystore_alias.to_s.empty? ? $adjg_keystore_alias : adj_keystore_alias
+
+    # Check the parameters.
+    check_parameters(used_apk_path, used_keystore_path, used_keystore_pass, used_keystore_alias, adj_default_tracker)
+
+    # Generate help stuff.
+    adj_apk_name = File.basename(used_apk_path, ".apk")
+    adj_apk_folder = File.join(File.dirname(used_apk_path), adj_apk_name)
+    adj_apk_assets = File.join(adj_apk_folder, "assets")
+    adj_config_file = File.join(adj_apk_assets, "adjust_config.properties")
+    adj_apk_path_wo_ext = File.expand_path(File.basename(used_apk_path, File.extname(used_apk_path)))
+
+    # Unpack the APK file first.
+    unpack_apk(used_apk_path)
+
+    # Process the unpacked APK file.
+    process_unpacked_apk(adj_apk_assets, adj_config_file, adj_default_tracker)
+
+    # Repack the APK file.
+    repack_apk(adj_apk_name, store_name)
+
+    # Sign the APK file.
+    sign_apk(adj_apk_path_wo_ext, store_name, used_keystore_path, used_keystore_pass, used_keystore_alias)
+
+    # Clean the folder.
+    cleanup(adj_apk_folder)
+end
+
+if __FILE__ == $PROGRAM_NAME
+    # Check number of arguments.
+    if ARGV.length == 0
+        abort "\n[adjust-dtt][e]: YAML configuration file name is needed. \n[adjust-dtt][e]: Aborting...\n\n"
+    elsif ARGV.length > 1
+        abort "\n[adjust-dtt][e]: The program takes only one parameter. \n[adjust-dtt][e]: Aborting...\n\n"
+    end
+
+    # Load YAML config file and it's content.
+    yaml_config_content = YAML.load_file(ARGV[0])
+
+    $adjg_apk_path = yaml_config_content['apk_path']
+    $adjg_keystore_path = yaml_config_content['keystore_path']
+    $adjg_keystore_pass = yaml_config_content['keystore_pass']
+    $adjg_keystore_alias = yaml_config_content['keystore_alias']
+
+    yaml_config_content['stores'].each do |store_name, store_config|
+        edit_apk_for_store(store_name, store_config)
+    end
+
+    puts "[adjust-dtt][i]: Done.\n\n"
+end
