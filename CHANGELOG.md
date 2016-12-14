@@ -1,3 +1,25 @@
+### Version 4.11.0 (14th December 2016)
+#### Added
+- Added sending of Amazon Fire Advertising Identifier.
+- Added `adid` field to the attribution callback response.
+- Added possibility to set default tracker for the app by adding `adjust_config.properties` file to the `assets` folder of your app. Mostly meant to be used by the `Adjust Store & Pre-install Tracker Tool`.
+- Added method `Adjust.getAdid()` to be able to get `adid` value at any time after obtaining it, not only when session/event callbacks have been triggered.
+- Added methd `Adjust.getAttribution()` to be able to get current attribution value at any time after obtaining it, not only when attribution callback has been triggered.
+
+#### Changed
+- Updated Criteo plugin:
+    - Added new partner parameter `user_segment` to be sent in `injectUserSegmentIntoCriteoEvents` (for all Criteo events).
+    - Moved `customer_id` to be sent in `injectCustomerIdIntoCriteoEvents` (for all Criteo events).
+    - Added new partner parameter `new_customer` to be sent in `injectTransactionConfirmedIntoEvent`.
+- Firing attribution request as soon as install has been tracked, regardless of presence of attribution callback implementation in user's app.
+- Refactored attribution timer code.
+- Updated docs.
+
+#### Fixed
+- Now reading push token value from activity state file when sending package.
+
+---
+
 ### Version 4.10.4 (22nd November 2016)
 #### Changed
 - Removed native C++ code for checking CPU architecture.
