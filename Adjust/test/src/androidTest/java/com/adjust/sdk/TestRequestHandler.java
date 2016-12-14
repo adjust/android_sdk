@@ -106,9 +106,9 @@ public class TestRequestHandler {
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.error("Failed to read response. (lock == null)");
+        assertUtil.error("Failed to read response. (null)");
 
-        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException: lock == null)");
+        assertUtil.error("Failed to track session. (Runtime exception: java.lang.NullPointerException)");
 
         assertUtil.test("PackageHandler sendNextPackage");
     }

@@ -32,7 +32,6 @@ class PackageBuilder {
     String reftag;
     String referrer;
     String deeplink;
-    String pushToken;
     long clickTime;
 
     private static ILogger logger = AdjustFactory.getLogger();
@@ -45,6 +44,7 @@ class PackageBuilder {
         int subsessionCount = -1;
         long sessionLength = -1;
         long timeSpent = -1;
+        String pushToken = null;
 
         ActivityStateCopy(ActivityState activityState) {
             if (activityState == null) {
@@ -57,6 +57,7 @@ class PackageBuilder {
             this.subsessionCount = activityState.subsessionCount;
             this.sessionLength = activityState.sessionLength;
             this.timeSpent = activityState.timeSpent;
+            this.pushToken = activityState.pushToken;
         }
     }
 
@@ -140,7 +141,6 @@ class PackageBuilder {
         Map<String, String> parameters = getIdsParameters();
 
         PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addString(parameters, "push_token", pushToken);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
@@ -229,14 +229,14 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
-        PackageBuilder.addBoolean(parameters, "needs_response_details", adjustConfig.hasListener());
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
 
         String playAdId = Util.getPlayAdId(adjustConfig.context);
         PackageBuilder.addString(parameters, "gps_adid", playAdId);
         Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
-        PackageBuilder.addString(parameters, "push_token", adjustConfig.pushToken);
+        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         String fireAdId = Util.getFireAdvertisingId(contentResolver);
         PackageBuilder.addString(parameters, "fire_adid", fireAdId);

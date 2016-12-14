@@ -1081,13 +1081,6 @@ public class TestActivityHandler {
         // create activity package test
         TestActivityPackage testActivityPackage = new TestActivityPackage(firstSessionPackage);
 
-        testActivityPackage.needsResponseDetails =
-                stateDelegates.attributionDelegatePresent ||
-                        stateDelegates.eventSuccessDelegatePresent ||
-                        stateDelegates.eventFailureDelegatePresent ||
-                        stateDelegates.sessionSuccessDelegatePresent ||
-                        stateDelegates.sessionFailureDelegatePresent;
-
         // set first session
         testActivityPackage.testSessionPackage(1);
 
@@ -1187,7 +1180,7 @@ public class TestActivityHandler {
 
         // test sdk_click response data
         ActivityPackage sdkClickPackage = mockSdkClickHandler.queue.get(0);
-        ClickResponseData clickResponseData = (ClickResponseData)ResponseData.buildResponseData(sdkClickPackage);
+        ResponseData clickResponseData = ResponseData.buildResponseData(sdkClickPackage);
 
         activityHandler.finishedTrackingActivity(clickResponseData);
         SystemClock.sleep(1000);
@@ -1342,7 +1335,7 @@ public class TestActivityHandler {
         ActivityHandler firstActivityHandler = startAndCheckFirstSession(config);
 
         JSONObject nullJsonObject = null;
-        AdjustAttribution nullAttribution = AdjustAttribution.fromJson(nullJsonObject);
+        AdjustAttribution nullAttribution = AdjustAttribution.fromJson(nullJsonObject, null); //XXX
 
         // check if Attribution wasn't built
         assertUtil.isNull(nullAttribution);
@@ -1357,13 +1350,13 @@ public class TestActivityHandler {
         } catch (JSONException e) {
             assertUtil.fail(e.getMessage());
         }
-        AdjustAttribution emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
+        AdjustAttribution emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse, null); // XXX
 
         // check that updates attribution
         assertUtil.isTrue(firstActivityHandler.updateAttributionI(emptyAttribution));
         assertUtil.debug("Wrote Attribution: tt:null tn:null net:null cam:null adg:null cre:null cl:null");
 
-        emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse);
+        emptyAttribution = AdjustAttribution.fromJson(emptyJsonResponse, null); // XXX
 
         // test first session package
         ActivityPackage firstSessionPackage = mockPackageHandler.queue.get(0);
@@ -1432,7 +1425,7 @@ public class TestActivityHandler {
         } catch (JSONException e) {
             assertUtil.fail(e.getMessage());
         }
-        AdjustAttribution firstAttribution = AdjustAttribution.fromJson(firstAttributionJson);
+        AdjustAttribution firstAttribution = AdjustAttribution.fromJson(firstAttributionJson, null); // XXX
 
         //check that it updates
         sessionResponseDataWithAttribution.attribution = firstAttribution;
@@ -1511,7 +1504,7 @@ public class TestActivityHandler {
         } catch (JSONException e) {
             assertUtil.fail(e.getMessage());
         }
-        AdjustAttribution secondAttribution = AdjustAttribution.fromJson(secondAttributionJson);
+        AdjustAttribution secondAttribution = AdjustAttribution.fromJson(secondAttributionJson, null); // XXX
 
         //check that it updates
         attributionResponseDataWithAttribution.attribution = secondAttribution;
@@ -1931,7 +1924,7 @@ public class TestActivityHandler {
         } catch (JSONException e) {
             assertUtil.fail(e.getMessage());
         }
-        AdjustAttribution attribution = AdjustAttribution.fromJson(jsonAttribution);
+        AdjustAttribution attribution = AdjustAttribution.fromJson(jsonAttribution, null); // XXX
 
         // update the attribution
         activityHandler.updateAttributionI(attribution);
@@ -2530,6 +2523,106 @@ public class TestActivityHandler {
     }
 
     @Test
+    public void testPushToken() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestActivityHandler testPushToken");
+
+        AdjustConfig config = getConfig();
+        // set the push token before the sdk starts
+        config.pushToken = "preStartPushToken";
+
+        // start activity handler with config
+        ActivityHandler activityHandler = getActivityHandler(config);
+
+        SystemClock.sleep(1500);
+
+        // test init values
+        StateActivityHandlerInit stateActivityHandlerInit = new StateActivityHandlerInit(activityHandler);
+        stateActivityHandlerInit.pushToken = "preStartPushToken";
+        checkInitTests(stateActivityHandlerInit);
+
+        resumeActivity(activityHandler);
+
+        SystemClock.sleep(1500);
+
+        // test session
+        checkFirstSession();
+
+        // create the first Event
+        AdjustEvent firstEvent = new AdjustEvent("event1");
+
+        // track event
+        activityHandler.trackEvent(firstEvent);
+
+        SystemClock.sleep(1500);
+
+        // checking the default values of the first session package
+        assertUtil.isEqual(2, mockPackageHandler.queue.size());
+
+        ActivityPackage activityPackage = mockPackageHandler.queue.get(0);
+
+        // create activity package test
+        TestActivityPackage testActivityPackage = new TestActivityPackage(activityPackage);
+        testActivityPackage.pushToken = "preStartPushToken";
+
+        // set first session
+        testActivityPackage.testSessionPackage(1);
+
+        // first event
+        ActivityPackage firstEventPackage = mockPackageHandler.queue.get(1);
+
+        // create event package test
+        TestActivityPackage testFirstEventPackage = new TestActivityPackage(firstEventPackage);
+
+        // set event test parameters
+        testFirstEventPackage.eventCount = "1";
+        testFirstEventPackage.suffix = "'event1'";
+        testFirstEventPackage.pushToken = "preStartPushToken";
+
+        // test first event
+        testFirstEventPackage.testEventPackage("event1");
+
+        // try to update with the same push token
+        activityHandler.setPushToken("preStartPushToken");
+        SystemClock.sleep(1500);
+
+        // should not have added a new package either in the package handler
+        assertUtil.isEqual(2, mockPackageHandler.queue.size());
+
+        // nor the click handler
+        assertUtil.notInTest("SdkClickHandler sendSdkClick");
+        assertUtil.isEqual(0, mockSdkClickHandler.queue.size());
+
+        // update with new push token
+        activityHandler.setPushToken("newPushToken");
+        SystemClock.sleep(1500);
+
+        // check it was added to sdk click handler
+        assertUtil.notInTest("SdkClickHandler sendSdkClick");
+        assertUtil.isEqual(0, mockSdkClickHandler.queue.size());
+
+        // check that info package was added
+        assertUtil.test("PackageHandler addPackage");
+
+        // check that event was sent to package handler
+        assertUtil.test("PackageHandler sendFirstPackage");
+
+        // checking that the info package was added
+        assertUtil.isEqual(3, mockPackageHandler.queue.size());
+
+        // get the click package
+        ActivityPackage sdkInfoPackage = mockPackageHandler.queue.get(2);
+
+        // create activity package test
+        TestActivityPackage testInfoPackage = new TestActivityPackage(sdkInfoPackage);
+
+        testInfoPackage.pushToken = "newPushToken";
+
+        // test the first deeplink
+        testInfoPackage.testInfoPackage("push");
+    }
+
+    @Test
     public void testUpdateStart() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestActivityHandler testUpdateStart");
@@ -2817,6 +2910,13 @@ public class TestActivityHandler {
             assertUtil.info("Default tracker: '%s'", sInit.defaultTracker);
         } else {
             assertUtil.notInInfo("Default tracker: ");
+        }
+
+        // check push token
+        if (sInit.pushToken != null) {
+            assertUtil.info("Push token: '%s'", sInit.pushToken);
+        } else {
+            assertUtil.notInInfo("Push token: ");
         }
 
         // check foreground timer was created

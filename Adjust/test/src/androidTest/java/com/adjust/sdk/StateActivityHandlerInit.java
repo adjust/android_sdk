@@ -12,6 +12,7 @@ public class StateActivityHandlerInit {
     boolean startsSending = false;
     boolean sdkClickHandlerAlsoStartsPaused = true;
     String defaultTracker = null;
+    String pushToken = null;
     boolean eventBufferingIsEnabled = false;
     boolean sendInBackgroundConfigured = false;
     boolean delayStartConfigured = false;

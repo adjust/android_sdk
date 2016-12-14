@@ -201,9 +201,9 @@ public class TestSdkClickHandler {
 
         assertUtil.test("MockHttpsURLConnection getInputStream, responseType: null");
 
-        assertUtil.error("Failed to read response. (lock == null)");
+        assertUtil.error("Failed to read response. (null)");
 
-        assertUtil.error("Failed to track click. (Sdk_click runtime exception: java.lang.NullPointerException: lock == null)");
+        assertUtil.error("Failed to track click. (Sdk_click runtime exception: java.lang.NullPointerException)");
 
         // does not to try to retry
         assertUtil.notInError("Retrying sdk_click package for the");

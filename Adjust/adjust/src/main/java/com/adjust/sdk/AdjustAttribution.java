@@ -21,7 +21,8 @@ public class AdjustAttribution implements Serializable {
             new ObjectStreamField("campaign", String.class),
             new ObjectStreamField("adgroup", String.class),
             new ObjectStreamField("creative", String.class),
-            new ObjectStreamField("clickLabel", String.class)
+            new ObjectStreamField("clickLabel", String.class),
+            new ObjectStreamField("adid", String.class),
     };
 
     public String trackerToken;
@@ -31,8 +32,9 @@ public class AdjustAttribution implements Serializable {
     public String adgroup;
     public String creative;
     public String clickLabel;
+    public String adid;
 
-    public static AdjustAttribution fromJson(JSONObject jsonObject) {
+    public static AdjustAttribution fromJson(JSONObject jsonObject, String adid) {
         if (jsonObject == null) return null;
 
         AdjustAttribution attribution = new AdjustAttribution();
@@ -44,6 +46,7 @@ public class AdjustAttribution implements Serializable {
         attribution.adgroup = jsonObject.optString("adgroup", null);
         attribution.creative = jsonObject.optString("creative", null);
         attribution.clickLabel = jsonObject.optString("click_label", null);
+        attribution.adid = adid;
 
         return attribution;
     }
@@ -62,6 +65,8 @@ public class AdjustAttribution implements Serializable {
         if (!Util.equalString(adgroup, otherAttribution.adgroup)) return false;
         if (!Util.equalString(creative, otherAttribution.creative)) return false;
         if (!Util.equalString(clickLabel, otherAttribution.clickLabel)) return false;
+        if (!Util.equalString(adid, otherAttribution.adid)) return false;
+
         return true;
     }
 
@@ -75,14 +80,15 @@ public class AdjustAttribution implements Serializable {
         hashCode = 37 * hashCode + Util.hashString(adgroup);
         hashCode = 37 * hashCode + Util.hashString(creative);
         hashCode = 37 * hashCode + Util.hashString(clickLabel);
+        hashCode = 37 * hashCode + Util.hashString(adid);
+
         return hashCode;
     }
 
-
     @Override
     public String toString() {
-        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s",
-                trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel);
+        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s adid:%s",
+                trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel, adid);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
@@ -92,5 +98,4 @@ public class AdjustAttribution implements Serializable {
     private void readObject(ObjectInputStream stream) throws ClassNotFoundException, IOException {
         stream.defaultReadObject();
     }
-
 }

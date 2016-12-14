@@ -22,9 +22,9 @@ public class TestActivityPackage {
     public String environment;
     public String clientSdk;
     public Boolean deviceKnow;
-    public boolean needsResponseDetails;
     public boolean playServices;
     public boolean eventBufferingEnabled;
+    public String pushToken;
     // session
     public Integer sessionCount;
     public String defaultTracker;
@@ -53,7 +53,7 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.10.4";
+        clientSdk = "android4.11.0";
         suffix = "";
         attribution = new AdjustAttribution();
         playServices = true;
@@ -183,6 +183,23 @@ public class TestActivityPackage {
         }
     }
 
+    public void testInfoPackage(String source) {
+        // test default package attributes
+        testDefaultAttributes("/sdk_info", ActivityKind.INFO, "info");
+
+        // check device ids parameters
+        testDeviceIdsParameters();
+
+        // click parameters
+        // source
+        assertParameterEquals("source", source);
+
+        if (source == Constants.PUSH) {
+        } else {
+            assertFail();
+        }
+    }
+
     public void testAttributionPackage() {
         // test default package attributes
         testDefaultAttributes("attribution", ActivityKind.ATTRIBUTION, "attribution");
@@ -294,6 +311,10 @@ public class TestActivityPackage {
         assertParameterNotNull("hardware_name");
         // cpu_type
         assertParameterNotNull("cpu_type");
+        // os_build
+        assertParameterNotNull("os_build");
+        // vm_isa
+        assertParameterNotNull("vm_isa");
     }
 
     private void testDeviceInfoIds() {
@@ -323,7 +344,7 @@ public class TestActivityPackage {
         // device_known
         testParameterBoolean("device_known", deviceKnow);
         // needs_attribution_data
-        testParameterBoolean("needs_response_details", needsResponseDetails);
+        testParameterBoolean("needs_response_details", true);
         // play services
         if (playServices) {
             // gps_adid
@@ -336,7 +357,10 @@ public class TestActivityPackage {
             // tracking_enabled
             assertParameterNull("tracking_enabled");
         }
+        // event_buffering_enabled
         testParameterBoolean("event_buffering_enabled", eventBufferingEnabled);
+        // push_token
+        assertParameterEquals("push_token", pushToken);
     }
 
     private void testActivityState() {

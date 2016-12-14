@@ -17,9 +17,11 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
@@ -286,7 +288,7 @@ public class ActivityHandler implements IActivityHandler {
         }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
-            launchEventResponseTasksI((EventResponseData)responseData);
+            launchEventResponseTasks((EventResponseData)responseData);
             return;
         }
     }
@@ -410,6 +412,20 @@ public class ActivityHandler implements IActivityHandler {
                 readOpenUrlI(url, clickTime);
             }
         });
+    }
+
+    private void updateAdidI(final String adid) {
+        if (adid == null) {
+            return;
+        }
+
+        if (adid.equals(activityState.adid)) {
+            return;
+        }
+
+        activityState.adid = adid;
+        writeActivityStateI();
+        return;
     }
 
     @Override
@@ -562,6 +578,17 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    public String getAdid() {
+        if (activityState == null) {
+            return null;
+        }
+        return activityState.adid;
+    }
+
+    public AdjustAttribution getAttribution() {
+        return attribution;
+    }
+
     public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -605,6 +632,8 @@ public class ActivityHandler implements IActivityHandler {
             internalState.updatePackages = activityState.updatePackages;
         }
 
+        readConfigFile(adjustConfig.context);
+
         deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -626,6 +655,13 @@ public class ActivityHandler implements IActivityHandler {
 
         if (adjustConfig.defaultTracker != null) {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
+        }
+
+        if (adjustConfig.pushToken != null) {
+            logger.info("Push token: '%s'", adjustConfig.pushToken);
+            if (activityState != null) {
+                setPushToken(adjustConfig.pushToken);
+            }
         }
 
         foregroundTimer = new TimerCycle(scheduledExecutor,
@@ -686,6 +722,27 @@ public class ActivityHandler implements IActivityHandler {
         sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
     }
 
+    private void readConfigFile(Context context) {
+        Properties properties;
+
+        try  {
+            InputStream inputStream = context.getAssets().open("adjust_config.properties");
+            properties = new Properties();
+            properties.load(inputStream);
+        } catch (Exception e) {
+            logger.debug("%s file not found in this app", e.getMessage());
+            return;
+        }
+
+        logger.verbose("adjust_config.properties file read and loaded");
+
+        String defaultTracker = properties.getProperty("defaultTracker");
+
+        if (defaultTracker != null) {
+            adjustConfig.defaultTracker = defaultTracker;
+        }
+    }
+
     private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
         if (sessionParametersActionsArray == null) {
             return;
@@ -717,12 +774,12 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
+            activityState.pushToken = adjustConfig.pushToken;
 
             transferSessionPackageI(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.isToUpdatePackages();
-            activityState.pushToken = adjustConfig.pushToken;
             writeActivityStateI();
             return;
         }
@@ -819,6 +876,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchEventResponseTasksI(final EventResponseData eventResponseData) {
+        // try to update adid from response
+        updateAdidI(eventResponseData.adid);
+
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // success callback
@@ -852,6 +912,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
+        // try to update adid from response
+        updateAdidI(sessionResponseData.adid);
+
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
@@ -899,6 +962,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void launchAttributionResponseTasksI(AttributionResponseData attributionResponseData) {
+        // try to update adid from response
+        updateAdidI(attributionResponseData.adid);
+
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
 
         // try to update the attribution
@@ -1427,16 +1493,16 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        infoPackageBuilder.pushToken = token;
-
-        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
-        sdkClickHandler.sendSdkClick(infoPackage);
-
         // save new push token
         activityState.pushToken = token;
         writeActivityStateI();
+
+        long now = System.currentTimeMillis();
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+
+        ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
+        packageHandler.addPackage(infoPackage);
+        packageHandler.sendFirstPackage();
     }
 
     private void readActivityStateI(Context context) {
