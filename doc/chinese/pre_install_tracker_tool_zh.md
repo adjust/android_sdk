@@ -12,7 +12,7 @@ Mac OS X默认安装Ruby。如果您的Linux发行版未默认安装Ruby，请�
 
 参阅这里了解如何安装apktool: https://ibotpeaches.github.io/Apktool/install/
 
-如果您已在机器上安装了用于Mac OS X的`brew`包管理器(http://brew.sh/)，您可以通过运行以下命令轻松安装apktool：
+如果您已在机器上安装了用于Mac OS X的`brew`包管理器 (http://brew.sh/) ，您可以通过运行以下命令轻松安装apktool：
 
 ```
 brew install apktool
@@ -32,7 +32,7 @@ JDK安装带一个`bin`文件夹，(如果您使用和以上相同的安装路�
 
 在此文件夹中，您可以找到`jarsigner`工具，该工具对于后续使用`adjust-dtt`工具是必要的。
 
-`adjust-dtt'工具假定此两个工具（`apktool`和`jarsigner`）的路径都被添加至您的系统`PATH`变量中。 如果还未完成添加，您需要将包含这此两个工具的文件夹添加至`PATH`变量。
+`adjust-dtt`工具假定此两个工具 (`apktool` and `jarsigner`) 的路径都被添加至您的系统`PATH`变量中。 如果还未完成添加，您需要将包含这此两个工具的文件夹添加至`PATH`变量。
 
 **注意**: 如果您使用推荐方式（官方安装向导或`brew`）来添加`apktool`，您可以从终端的任何位置运行`apktool`（它的路径将被自动添加至`PATH`变量），但是如果您决定以其它方式，即其位置不是作为`PATH`变量一部分的方式来添加`apktool`，您需要添加一个包含文件夹到`PATH`变量。
 
@@ -53,7 +53,7 @@ $HOME/.bash_profile
 export PATH="/Users/dummy/some/random/folder:/Library/Java/JavaVirtualMachines/jdk 1.8.0_102.jdk/Contents/Home/bin:$PATH"
 ```
 
-在`apktool`自动存在于您的`PATH`（比如`brew`安装自带）的情况下，您无需再添加路径至`PATH`变量。而是添加下行（参考上例），而不是上行：
+在`apktool`自动存在于您的`PATH`（比如`brew`安装自带）的情况下，您无需再添加路径至`PATH`变量。而是（参考上例）添加下行，而不是上行：
 
 ```
 export PATH="/Library/Java/JavaVirtualMachines/jdk1.8.0_102.jdk/Contents/Home/bin: $PATH"
