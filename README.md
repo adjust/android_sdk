@@ -146,16 +146,7 @@ If you are **not targeting the Google Play Store**, add both of these permission
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
--keepclassmembers enum * {
-    public static **[] values();
-    public static ** valueOf(java.lang.String);
-}
--keep class com.adjust.sdk.plugin.MacAddressUtil {
-    java.lang.String getMacAddress(android.content.Context);
-}
--keep class com.adjust.sdk.plugin.AndroidIdUtil {
-    java.lang.String getAndroidId(android.content.Context);
-}
+-keep public class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
@@ -183,13 +174,6 @@ If you are using Proguard, add these lines to your Proguard file:
 ```
 
 If you are **not targeting the Google Play Store**, you can remove the `com.google.android.gms` rules.
-
-![][proguard]
-
-**Important**: If you are using an `-overloadaggressively` flag in your Proguard file, then in order for the adjust SDK to work properly you should consider one of two possible scenarios:
-
-* Remove `-overloadaggressively` if it is not necessary
-* Add a `-useuniqueclassmembernames` flag to your Proguard file
 
 ### <a id="sdk-broadcast-receiver"></a>Adjust broadcast receiver
 
