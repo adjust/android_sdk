@@ -1,4 +1,4 @@
-package com.adjust.example;
+package com.adjust.examples;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
