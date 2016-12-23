@@ -580,6 +580,7 @@ The listener function will be called after the SDK receives the final attributio
 - `String adgroup` the ad group grouping level of the current install.
 - `String creative` the creative grouping level of the current install.
 - `String clickLabel` the click label of the current install.
+- `String adid` the adjust device identifier.
 
 ### <a id="session-event-callbacks"></a>Session and event callbacks
 
