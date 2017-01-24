@@ -1,6 +1,6 @@
 ## Integrate adjust with Adobe SDK
 
-To integrate adjust with all tracked events of Adobe SDK, you must send adjust attribution data to Adobe SDK after receiving the attribution response from our backend. Follow the steps of the [attribution callback][attribution-callback] chapter in our Android SDK guide to implement it. The delegate function can be set as the following, to use the Adobe SDK API:
+To integrate adjust with all tracked events of Adobe SDK, you must send adjust attribution data to Adobe SDK after receiving the attribution response from our backend. Follow the steps of the [attribution callback][attribution-callback] chapter in our Android SDK guide to implement it. The callback method can be set as the following, to use the Adobe SDK API:
 
 ```java
 public class YourApplicationClass extends Application {
@@ -39,4 +39,4 @@ public class YourApplicationClass extends Application {
 Before you implement this interface, please take care to consider [possible conditions for usage of some of your data][attribution_data].
 
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[attribution-callback]: ../../../#attribution-callback
+[attribution-callback]: https://github.com/adjust/android_sdk#attribution-callback
