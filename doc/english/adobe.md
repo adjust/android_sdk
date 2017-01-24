@@ -22,12 +22,17 @@ public class YourApplicationClass extends Application {
             public void onAttributionChanged(Attribution attribution) {
                 Map<String,Object> dataAdjust = new HashMap<String,Object>();
                 
-                dataAdjust.put("Adjust Network", adjustAttribution.network); // Do not change the key "Adjust Network". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Campaign", adjustAttribution.campaign); // Do not change the key "Adjust Campaign". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Adgroup", adjustAttribution.adgroup); // Do not change the key "Adjust Adgroup". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Creative", adjustAttribution.creative); // Do not change the key "Adjust Creative". This key is being used in the Data Connector Processing Rule
+                // Do not change the key "Adjust Network". This key is being used in the Data Connector Processing Rule
+                dataAdjust.put("Adjust Network", adjustAttribution.network);
+                // Do not change the key "Adjust Campaign". This key is being used in the Data Connector Processing Rule
+                dataAdjust.put("Adjust Campaign", adjustAttribution.campaign);
+                // Do not change the key "Adjust Adgroup". This key is being used in the Data Connector Processing Rule
+                dataAdjust.put("Adjust Adgroup", adjustAttribution.adgroup);
+                // Do not change the key "Adjust Creative". This key is being used in the Data Connector Processing Rule
+                dataAdjust.put("Adjust Creative", adjustAttribution.creative);
 
-                Analytics.trackAction("Adjust Campaign Data Received",dataAdjust); // Send Data to Adobe using Track Action
+                // Send Data to Adobe using Track Action
+                Analytics.trackAction("Adjust Campaign Data Received", dataAdjust);
             }
         });
 
@@ -36,7 +41,7 @@ public class YourApplicationClass extends Application {
 }
 ```
 
-Before you implement this interface, please take care to consider [possible conditions for usage of some of your data][attribution_data].
+Before you implement this interface, please take care to consider [possible conditions for usage of some of your data][attribution-data].
 
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [attribution-callback]: https://github.com/adjust/android_sdk#attribution-callback
