@@ -39,4 +39,4 @@ public class YourApplicationClass extends Application {
 Before you implement this interface, please take care to consider [possible conditions for usage of some of your data][attribution_data].
 
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[attribution-callback]: ../../#attribution-callback
+[attribution-callback]: ../../../#attribution-callback
