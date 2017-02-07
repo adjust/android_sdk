@@ -9,7 +9,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.util.*;
+import android.util.DisplayMetrics;
 
 import java.util.Locale;
 import java.util.Map;
