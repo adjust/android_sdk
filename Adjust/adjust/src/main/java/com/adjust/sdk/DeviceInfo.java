@@ -9,7 +9,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.util.DisplayMetrics;
+import android.util.*;
 
 import java.util.Locale;
 import java.util.Map;
@@ -61,9 +61,10 @@ class DeviceInfo {
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
+        ContentResolver contentResolver = context.getContentResolver();
 
         packageName = getPackageName(context);
-        appVersion = getAppVersion();
+        appVersion = getAppVersion(context);
         deviceType = getDeviceType(screenLayout);
         deviceName = getDeviceName();
         deviceManufacturer = getDeviceManufacturer();
@@ -104,8 +105,15 @@ class DeviceInfo {
         return context.getPackageName();
     }
 
-    private String getAppVersion() {
-        return com.adjust.sdk.BuildConfig.VERSION_NAME;
+    private String getAppVersion(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            String name = context.getPackageName();
+            PackageInfo info = packageManager.getPackageInfo(name, 0);
+            return info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            return null;
+        }
     }
 
     private String getDeviceType(int screenLayout) {
