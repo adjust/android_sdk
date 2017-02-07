@@ -61,10 +61,9 @@ class DeviceInfo {
         int screenLayout = configuration.screenLayout;
         boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
         String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
-        ContentResolver contentResolver = context.getContentResolver();
 
         packageName = getPackageName(context);
-        appVersion = getAppVersion(context);
+        appVersion = getAppVersion();
         deviceType = getDeviceType(screenLayout);
         deviceName = getDeviceName();
         deviceManufacturer = getDeviceManufacturer();
@@ -105,15 +104,8 @@ class DeviceInfo {
         return context.getPackageName();
     }
 
-    private String getAppVersion(Context context) {
-        try {
-            PackageManager packageManager = context.getPackageManager();
-            String name = context.getPackageName();
-            PackageInfo info = packageManager.getPackageInfo(name, 0);
-            return info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            return null;
-        }
+    private String getAppVersion() {
+        return com.adjust.sdk.BuildConfig.VERSION_NAME;
     }
 
     private String getDeviceType(int screenLayout) {
