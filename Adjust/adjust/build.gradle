@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
-def getVersionName() {
-    return "4.11.0"
+class Globals {
+    static String versionName = '4.11.0'
 }
 
 android {
@@ -12,7 +12,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 25
         versionCode 1
-        versionName getVersionName()
+        versionName "${Globals.versionName}"
     }
 }
 
@@ -21,14 +21,14 @@ dependencies {
 }
 
 task clearJar(type: Delete) {
-    delete "build/outputs/adjust-${getVersionName()}.jar"
+    delete "build/outputs/adjust-${Globals.versionName}.jar"
 }
 
 task makeJar(type: Copy) {
     from('build/intermediates/bundles/release/')
     into('build/outputs/')
     include('classes.jar')
-    rename ('classes.jar', "adjust-${getVersionName()}.jar")
+    rename ('classes.jar', "adjust-${Globals.versionName}.jar")
 }
 
 makeJar.dependsOn(clearJar, build)
