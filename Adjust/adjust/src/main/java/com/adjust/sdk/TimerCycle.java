@@ -8,7 +8,8 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private WeakReference<CustomScheduledExecutor> scheduledExecutorWeakRef;
+    private CustomScheduledExecutor executor;
+
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
@@ -17,8 +18,8 @@ public class TimerCycle {
     private boolean isPaused;
     private ILogger logger;
 
-    public TimerCycle(CustomScheduledExecutor scheduler, Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
+    public TimerCycle(Runnable command, long initialDelay, long cycleDelay, String name) {
+        this.executor = new CustomScheduledExecutor(name, true);
 
         this.name = name;
         this.command = command;
@@ -40,17 +41,9 @@ public class TimerCycle {
             return;
         }
 
-        CustomScheduledExecutor scheduledExecutor = scheduledExecutorWeakRef.get();
-        if (scheduledExecutor == null) {
-            return;
-        }
-
-        //String initialDelaySeconds = Util.SecondsDisplayFormat.format(initialDelay / 1000.0);
-        //logger.verbose("%s starting in %s seconds and cycle every %s seconds", name, initialDelaySeconds, cycleDelaySeconds);
-
         logger.verbose("%s starting", name);
 
-        waitingTask = scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
+        waitingTask = executor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
@@ -90,9 +83,14 @@ public class TimerCycle {
 
     public void teardown() {
         cancel(true);
-        if (scheduledExecutorWeakRef != null) {
-            scheduledExecutorWeakRef.clear();
+
+        if (executor != null) {
+            try {
+                executor.shutdownNow();
+            } catch (SecurityException ignored) {
+            }
         }
-        scheduledExecutorWeakRef = null;
+
+        executor = null;
     }
 }

@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
+import android.util.*;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -164,7 +165,7 @@ public class ActivityHandler implements IActivityHandler {
 
         logger.lockLogLevel();
 
-        scheduledExecutor = new CustomScheduledExecutor("ActivityHandler");
+        scheduledExecutor = new CustomScheduledExecutor("ActivityHandler", false);
         internalState = new InternalState();
 
         // enabled by default
@@ -664,7 +665,7 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
-        foregroundTimer = new TimerCycle(scheduledExecutor,
+        foregroundTimer = new TimerCycle(
                 new Runnable() {
                     @Override
                     public void run() {

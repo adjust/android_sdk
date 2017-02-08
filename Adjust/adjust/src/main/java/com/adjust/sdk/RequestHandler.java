@@ -23,7 +23,7 @@ public class RequestHandler implements IRequestHandler {
 
     public RequestHandler(IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
-        this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler");
+        this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler", false);
         init(packageHandler);
     }
 
