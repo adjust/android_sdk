@@ -69,7 +69,7 @@ public class PackageHandler implements IPackageHandler {
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {
-        this.scheduledExecutor = new CustomScheduledExecutor("PackageHandler");
+        this.scheduledExecutor = new CustomScheduledExecutor("PackageHandler", false);
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
