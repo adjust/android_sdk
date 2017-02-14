@@ -201,11 +201,11 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-#### Customer Id
+#### Customer ID
 
-It's possible to attach the customer id to every Criteo event with the `injectCustomerIdIntoCriteoEvents` method. The customer id will be sent with every Criteo event for the duration of the application lifecycle, so it must be set again when the app is re-lauched.
+It's possible to attach the customer ID to every Criteo event with the `injectCustomerIdIntoCriteoEvents` method. The customer ID will be sent with every Criteo event for the duration of the application life cycle, so it must be set again when the app is re-launched.
 
-The customer id can be removed by setting the `injectCustomerIdIntoCriteoEvents` value with `null`.
+The customer ID can be removed by setting the `injectCustomerIdIntoCriteoEvents` value to `null`.
 
 ```java
 import com.adjust.sdk.plugin.AdjustCriteo;
@@ -215,9 +215,9 @@ AdjustCriteo.injectCustomerIdIntoCriteoEvents("{CriteoCustomerId}");
 
 #### User Segment
 
-It's possible to attach the user segment to every Criteo event with the `injectUserSegmentIntoCriteoEvents` method. The user segment will be sent with every Criteo event for the duration of the application lifecycle, so it must be set again when the app is re-lauched.
+It's possible to attach the user segment to every Criteo event with the `injectUserSegmentIntoCriteoEvents` method. The user segment will be sent with every Criteo event for the duration of the application life cycle, so it must be set again when the app is re-launched.
 
-The customer id can be removed by setting the `injectUserSegmentIntoCriteoEvents` value with `null`.
+The user segment can be removed by setting the `injectUserSegmentIntoCriteoEvents` value to `null`.
 
 ```java
 import com.adjust.sdk.plugin.AdjustCriteo;
