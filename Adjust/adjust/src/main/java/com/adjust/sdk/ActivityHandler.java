@@ -119,6 +119,8 @@ public class ActivityHandler implements IActivityHandler {
         boolean background;
         boolean delayStart;
         boolean updatePackages;
+        boolean firstLaunch;
+        boolean sessionResponseProcessed;
 
         public boolean isEnabled() {
             return enabled;
@@ -155,6 +157,14 @@ public class ActivityHandler implements IActivityHandler {
         public boolean isToUpdatePackages() {
             return updatePackages;
         }
+
+        public boolean isFirstLaunch() {
+            return firstLaunch;
+        }
+
+        public boolean isSessionResponseProcessed() {
+            return sessionResponseProcessed;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -178,6 +188,8 @@ public class ActivityHandler implements IActivityHandler {
         internalState.delayStart = false;
         // does not need to update packages by default
         internalState.updatePackages = false;
+        // does not have the session response by default
+        internalState.sessionResponseProcessed = false;
 
         scheduledExecutor.submit(new Runnable() {
             @Override
@@ -631,6 +643,9 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
             internalState.updatePackages = activityState.updatePackages;
+            internalState.firstLaunch = false;
+        } else {
+            internalState.firstLaunch = true; // first launch if activity state is null
         }
 
         readConfigFile(adjustConfig.context);
@@ -823,9 +838,12 @@ public class ActivityHandler implements IActivityHandler {
     private void checkAttributionStateI() {
         if (!checkActivityStateI(activityState)) { return; }
 
-        // if it's a new session
-        if (activityState.subsessionCount <= 1) {
-            return;
+        // if it's the first launch
+        if (internalState.isFirstLaunch()) {
+            // and it hasn't received the session response
+            if (!internalState.isSessionResponseProcessed()) {
+                return;
+            }
         }
 
         // if there is already an attribution saved and there was no attribution being asked
@@ -929,6 +947,9 @@ public class ActivityHandler implements IActivityHandler {
 
         // launch Session tracking listener if available
         launchSessionResponseListenerI(sessionResponseData, handler);
+
+        // mark session response has proccessed
+        internalState.sessionResponseProcessed = true;
     }
 
     private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, Handler handler) {
