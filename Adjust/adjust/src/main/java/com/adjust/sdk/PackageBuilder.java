@@ -75,6 +75,7 @@ class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
+        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
