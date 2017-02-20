@@ -53,6 +53,7 @@ class DeviceInfo {
     String buildName;
     String vmInstructionSet;
     String appInstallTime;
+    String appUpdateTime;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -91,6 +92,7 @@ class DeviceInfo {
         buildName = getBuildName();
         vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
+        appUpdateTime = getAppUpdateTime(context);
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -304,6 +306,19 @@ class DeviceInfo {
             PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
 
             String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.firstInstallTime));
+
+            return appInstallTime;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String getAppUpdateTime(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.lastUpdateTime));
 
             return appInstallTime;
         } catch (Exception ex) {
