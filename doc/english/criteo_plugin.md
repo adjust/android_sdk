@@ -29,7 +29,7 @@ AdjustEvent event = new AdjustEvent("{viewListingEventToken}");
 
 List<String> productIds = Arrays.asList("productId1", "productId2", "productId3");
 
-AdjustCriteo.injectViewListingIntoEvent(event, productIds, "customerId1");
+AdjustCriteo.injectViewListingIntoEvent(event, productIds);
 
 Adjust.trackEvent(event);
 ```
@@ -41,7 +41,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{viewProductEventToken}");
 
-AdjustCriteo.injectViewProductIntoEvent(event, "productId1", "customerId1");
+AdjustCriteo.injectViewProductIntoEvent(event, "productId1");
 
 Adjust.trackEvent(event);
 ```
@@ -59,7 +59,7 @@ CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
 
 List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
 
-AdjustCriteo.injectCartIntoEvent(event, products, "customerId1");
+AdjustCriteo.injectCartIntoEvent(event, products);
 
 Adjust.trackEvent(event);
 ```
@@ -77,7 +77,7 @@ CriteoProduct product3 = new CriteoProduct(50, 2, "productId3");
 
 List<CriteoProduct> products = Arrays.asList(product1, product2, product3);
 
-AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "transactionId", "customerId1");
+AdjustCriteo.injectTransactionConfirmedIntoEvent(event, products, "transactionId", "newCustomerId");
 
 Adjust.trackEvent(event);
 ```
@@ -89,7 +89,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{userLevelEventToken}");
 
-AdjustCriteo.injectUserLevelIntoEvent(event, 1, "customerId1");
+AdjustCriteo.injectUserLevelIntoEvent(event, 1);
 
 Adjust.trackEvent(event);
 ```
@@ -101,7 +101,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{userStatusEventToken}");
 
-AdjustCriteo.injectUserStatusIntoEvent(event, "uiStatusValue", "customerId1");
+AdjustCriteo.injectUserStatusIntoEvent(event, "uiStatusValue");
 
 Adjust.trackEvent(event);
 ```
@@ -113,7 +113,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{achievementUnlockedEventToken}");
 
-AdjustCriteo.injectAchievementUnlockedIntoEvent(event, "AchievementUnlocked", "customerId1");
+AdjustCriteo.injectAchievementUnlockedIntoEvent(event, "AchievementUnlocked");
 
 Adjust.trackEvent(event);
 ```
@@ -125,7 +125,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{customEventEventToken}");
 
-AdjustCriteo.injectCustomEventIntoEvent(event, "uiDataValue", "customerId1");
+AdjustCriteo.injectCustomEventIntoEvent(event, "uiDataValue");
 
 Adjust.trackEvent(event);
 ```
@@ -137,7 +137,7 @@ import com.adjust.sdk.plugin.AdjustCriteo;
 
 AdjustEvent event = new AdjustEvent("{customEvent2EventToken}");
 
-AdjustCriteo.injectCustomEvent2IntoEvent(event, "uiData2Value", 3, "customerId1");
+AdjustCriteo.injectCustomEvent2IntoEvent(event, "uiData2Value", 3);
 
 Adjust.trackEvent(event);
 ```
@@ -199,4 +199,28 @@ protected void onCreate(Bundle savedInstanceState) {
     
     //...
 }
+```
+
+#### Customer ID
+
+It's possible to attach the customer ID to every Criteo event with the `injectCustomerIdIntoCriteoEvents` method. The customer ID will be sent with every Criteo event for the duration of the application life cycle, so it must be set again when the app is re-launched.
+
+The customer ID can be removed by setting the `injectCustomerIdIntoCriteoEvents` value to `null`.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectCustomerIdIntoCriteoEvents("{CriteoCustomerId}");
+```
+
+#### User Segment
+
+It's possible to attach the user segment to every Criteo event with the `injectUserSegmentIntoCriteoEvents` method. The user segment will be sent with every Criteo event for the duration of the application life cycle, so it must be set again when the app is re-launched.
+
+The user segment can be removed by setting the `injectUserSegmentIntoCriteoEvents` value to `null`.
+
+```java
+import com.adjust.sdk.plugin.AdjustCriteo;
+
+AdjustCriteo.injectUserSegmentIntoCriteoEvents("{CriteoUserSegment}");
 ```
