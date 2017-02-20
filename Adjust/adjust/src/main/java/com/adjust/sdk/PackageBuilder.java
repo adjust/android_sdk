@@ -141,7 +141,6 @@ class PackageBuilder {
         Map<String, String> parameters = getIdsParameters();
 
         PackageBuilder.addString(parameters, "source", source);
-        injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
         clickPackage.setPath("/sdk_info");
