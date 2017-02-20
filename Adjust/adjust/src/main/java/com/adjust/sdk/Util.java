@@ -38,7 +38,10 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.KeyStore;
 import java.security.MessageDigest;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -50,6 +53,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.MD5;
@@ -212,7 +218,7 @@ public class Util {
         ILogger logger = getLogger();
         Integer responseCode = null;
         try {
-            connection.connect();
+            // connection.connect();
 
             responseCode = connection.getResponseCode();
             InputStream inputStream;
@@ -320,6 +326,14 @@ public class Util {
             connection.setUseCaches(false);
             connection.setDoInput(true);
             connection.setDoOutput(true);
+
+            connection.connect();
+
+            if (isConnectionValid(connection)) {
+                parameters.put("tce", "0");
+            } else {
+                parameters.put("tce", "1");
+            }
 
             wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(getPostDataString(parameters, queueSize));
@@ -636,5 +650,65 @@ public class Util {
             // not supported
         }
         return null;
+    }
+
+    private static boolean isConnectionValid(HttpsURLConnection connection) {
+        String trustedThumbprint = "5fb7ee0633e259dbad0c4c9ae6d38f1a61c7dc25";
+
+        try {
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init((KeyStore) null);
+
+            TrustManager[] trustManagers = tmf.getTrustManagers();
+            final X509TrustManager x509Tm = (X509TrustManager) trustManagers[0];
+
+            X509Certificate issuers[] = x509Tm.getAcceptedIssuers();
+
+            try {
+                Certificate[] certs = connection.getServerCertificates();
+                X509Certificate intermediate = (X509Certificate)certs[certs.length-1];
+
+                for (int i = 0; i < issuers.length; i++){
+                    try {
+                        intermediate.verify(issuers[i].getPublicKey());
+
+                        // Verification ok. issuers[i] is the issuer.
+                        MessageDigest md = MessageDigest.getInstance("SHA1");
+                        byte[] publicKey = md.digest(issuers[i].getEncoded());
+                        String hexString = byte2HexFormatted(publicKey);
+
+                        if (hexString.equalsIgnoreCase(trustedThumbprint)) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } catch (Exception e) {}
+                }
+            } catch (Exception e) {}
+        } catch (Exception ex) {}
+
+        return false;
+    }
+
+    private static String byte2HexFormatted(byte[] arr) {
+        StringBuilder str = new StringBuilder(arr.length * 2);
+
+        for (int i = 0; i < arr.length; i++) {
+            String h = Integer.toHexString(arr[i]);
+            int l = h.length();
+
+            if (l == 1) {
+                h = "0" + h;
+            }
+
+            if (l > 2) {
+                h = h.substring(l - 2, l);
+            }
+
+            str.append(h.toUpperCase());
+
+            // if (i < (arr.length - 1)) str.append(':');
+        }
+        return str.toString();
     }
 }
