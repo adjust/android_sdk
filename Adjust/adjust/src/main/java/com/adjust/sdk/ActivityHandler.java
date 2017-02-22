@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Handler;
 import android.util.*;
 
@@ -1074,7 +1075,15 @@ public class ActivityHandler implements IActivityHandler {
         if (referrer == null || referrer.length() == 0 ) {
             return;
         }
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(referrer);
+
+        logger.verbose("Referrer to parse (%s)", referrer);
+
+        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
+        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
+        querySanitizer.setAllowUnregisteredParamaters(true);
+        querySanitizer.parseQuery(referrer);
+
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
 
         if (clickPackageBuilder == null) {
             return;
@@ -1092,13 +1101,15 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        String queryString = url.getQuery();
+        String urlString = url.toString();
+        logger.verbose("Url to parse (%s)", url);
 
-        if (queryString == null && url.toString().length() > 0) {
-            queryString = "";
-        }
+        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
+        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
+        querySanitizer.setAllowUnregisteredParamaters(true);
+        querySanitizer.parseUrl(urlString);
 
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(queryString);
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
         if (clickPackageBuilder == null) {
             return;
         }
@@ -1110,20 +1121,19 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private PackageBuilder queryStringClickPackageBuilderI(String queryString) {
-        if (queryString == null) {
+    private PackageBuilder queryStringClickPackageBuilderI(
+            List<UrlQuerySanitizer.ParameterValuePair> queryList) {
+        if (queryList == null) {
             return null;
         }
 
         Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
 
-        logger.verbose("Reading query string (%s)", queryString);
-
-        String[] queryPairs = queryString.split("&");
-
-        for (String pair : queryPairs) {
-            readQueryStringI(pair, queryStringParameters, queryStringAttribution);
+        for (UrlQuerySanitizer.ParameterValuePair parameterValuePair : queryList) {
+            readQueryStringI(parameterValuePair.mParameter,
+                    parameterValuePair.mValue,
+                    queryStringParameters, queryStringAttribution);
         }
 
         String reftag = queryStringParameters.remove(Constants.REFTAG);
@@ -1137,17 +1147,13 @@ public class ActivityHandler implements IActivityHandler {
         return builder;
     }
 
-    private boolean readQueryStringI(String queryString,
+    private boolean readQueryStringI(String key, String value,
                                      Map<String, String> extraParameters,
                                      AdjustAttribution queryStringAttribution) {
-        String[] pairComponents = queryString.split("=");
-        if (pairComponents.length != 2) return false;
+        if (key == null || value == null) { return false; }
 
-        String key = pairComponents[0];
-        if (!key.startsWith(ADJUST_PREFIX)) return false;
-
-        String value = pairComponents[1];
-        if (value.length() == 0) return false;
+        // parameter key does not start with "adjust_"
+        if (!key.startsWith(ADJUST_PREFIX)) { return false; }
 
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
         if (keyWOutPrefix.length() == 0) return false;
