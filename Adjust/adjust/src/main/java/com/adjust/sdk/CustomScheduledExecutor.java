@@ -8,32 +8,38 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-//import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.*;
 
 /**
  * Created by pfms on 05/08/2016.
  */
-public class CustomScheduledExecutor {
-    private ScheduledThreadPoolExecutor executor;
+public final class CustomScheduledExecutor {
     private String source;
-//    private AtomicInteger threadCounter = new AtomicInteger(1);
+    private ScheduledThreadPoolExecutor executor;
+    private final AtomicInteger threadCounter = new AtomicInteger(1);
 
-    public CustomScheduledExecutor(final String source) {
-        executor = new ScheduledThreadPoolExecutor(1,                                        // Single thread
+
+    public CustomScheduledExecutor(final String source, boolean doKeepAlive) {
+        this.source = source;
+
+        executor = new ScheduledThreadPoolExecutor(1,   // Single thread
                 new ThreadFactory() {                   // Creator of daemon threads
                     @Override
                     public Thread newThread(Runnable runnable) {
-                        Thread thread = Executors.defaultThreadFactory().newThread(runnable);
+                        Thread thread = Executors.defaultThreadFactory().newThread(new RunnableWrapper(runnable));
+
                         thread.setPriority(Thread.MIN_PRIORITY);
-                        thread.setName(Constants.THREAD_PREFIX + thread.getName() + source);
+                        thread.setName(Constants.THREAD_PREFIX + thread.getName() + "-" + source);
                         thread.setDaemon(true);
+
                         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
                             @Override
                             public void uncaughtException(Thread th, Throwable tr) {
                                 AdjustFactory.getLogger().error("Thread %s with error %s", th.getName(), tr.getMessage());
                             }
                         });
-//                        AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
+
+                        //AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
                         return thread;
                     }
                 }, new RejectedExecutionHandler() {     // Logs rejected runnables rejected from the entering the pool
@@ -43,9 +49,11 @@ public class CustomScheduledExecutor {
             }
         }
         );
-        this.source = source;
-        executor.setKeepAliveTime(10L, TimeUnit.MILLISECONDS);
-        executor.allowCoreThreadTimeOut(true);
+
+        if (!doKeepAlive) {
+            executor.setKeepAliveTime(10L, TimeUnit.MILLISECONDS);
+            executor.allowCoreThreadTimeOut(true);
+        }
     }
 
     public Future<?> submit(Runnable task) {
@@ -59,12 +67,12 @@ public class CustomScheduledExecutor {
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
 //        AdjustFactory.getLogger().verbose("CustomScheduledExecutor scheduleWithFixedDelay from %s source, with %d delay and %d initial delay",
 //                source, delay, initialDelay);
-        return executor.scheduleWithFixedDelay(new RunnableWrapper(command), initialDelay, delay, unit);
+        return executor.scheduleWithFixedDelay(command, initialDelay, delay, unit);
     }
 
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
 //        AdjustFactory.getLogger().verbose("CustomScheduledExecutor schedule from %s source, with %d delay", source, delay);
-        return executor.schedule(new RunnableWrapper(command), delay, unit);
+        return executor.schedule(command, delay, unit);
     }
 
     private class RunnableWrapper implements Runnable {
@@ -87,6 +95,7 @@ public class CustomScheduledExecutor {
                 runnable.run();
 //                long after = System.currentTimeMillis();
 //                AdjustFactory.getLogger().verbose("RunnableWrapper %d from %s source, after running at %d", threadNumber, source, after);
+
             } catch (Throwable t) {
                 AdjustFactory.getLogger().error("Runnable error %s", t.getMessage());
             }

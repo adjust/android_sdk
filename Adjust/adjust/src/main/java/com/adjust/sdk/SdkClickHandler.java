@@ -40,7 +40,7 @@ public class SdkClickHandler implements ISdkClickHandler {
     public SdkClickHandler(boolean startsSending) {
         init(startsSending);
         this.logger = AdjustFactory.getLogger();
-        this.scheduledExecutor = new CustomScheduledExecutor("SdkClickHandler");
+        this.scheduledExecutor = new CustomScheduledExecutor("SdkClickHandler", false);
         this.backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
     }
 

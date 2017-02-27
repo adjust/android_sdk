@@ -47,7 +47,7 @@ public class AttributionHandler implements IAttributionHandler {
     public AttributionHandler(IActivityHandler activityHandler,
                               ActivityPackage attributionPackage,
                               boolean startsSending) {
-        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler");
+        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler", false);
         logger = AdjustFactory.getLogger();
 
         timer = new TimerOnce(scheduledExecutor, new Runnable() {

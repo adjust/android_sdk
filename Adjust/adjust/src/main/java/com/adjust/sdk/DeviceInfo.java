@@ -111,7 +111,7 @@ class DeviceInfo {
             String name = context.getPackageName();
             PackageInfo info = packageManager.getPackageInfo(name, 0);
             return info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (Exception e) {
             return null;
         }
     }

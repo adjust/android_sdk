@@ -1,3 +1,10 @@
+### Version 4.11.1 (27th February 2017)
+#### Fixed
+- Prevent multiple created threads mentioned in android_sdk#265
+- Protect Package Manager from throwing unexpected exceptions like in android_sdk#266
+
+---
+
 ### Version 4.11.0 (14th December 2016)
 #### Added
 - Added sending of Amazon Fire Advertising Identifier.
