@@ -3,7 +3,7 @@
 Add the dependency of the adjust sdk with the Criteo plugin:
 
 ```
-compile 'com.adjust.sdk:adjust-android-criteo:4.11.0'
+compile 'com.adjust.sdk:adjust-android-criteo:4.11.1'
 ```
 
 Or integrate adjust with Criteo events by following these steps:
