@@ -39,7 +39,7 @@ public final class CustomScheduledExecutor {
                             }
                         });
 
-                        AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
+                        //AdjustFactory.getLogger().verbose("Thread %s created", thread.getName());
                         return thread;
                     }
                 }, new RejectedExecutionHandler() {     // Logs rejected runnables rejected from the entering the pool
@@ -65,13 +65,13 @@ public final class CustomScheduledExecutor {
     }
 
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-        AdjustFactory.getLogger().verbose("CustomScheduledExecutor scheduleWithFixedDelay from %s source, with %d delay and %d initial delay",
-                source, delay, initialDelay);
+//        AdjustFactory.getLogger().verbose("CustomScheduledExecutor scheduleWithFixedDelay from %s source, with %d delay and %d initial delay",
+//                source, delay, initialDelay);
         return executor.scheduleWithFixedDelay(command, initialDelay, delay, unit);
     }
 
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-        AdjustFactory.getLogger().verbose("CustomScheduledExecutor schedule from %s source, with %d delay", source, delay);
+//        AdjustFactory.getLogger().verbose("CustomScheduledExecutor schedule from %s source, with %d delay", source, delay);
         return executor.schedule(command, delay, unit);
     }
 
