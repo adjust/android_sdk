@@ -1022,7 +1022,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 The adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2016 adjust GmbH,
+Copyright (c) 2012-2017 adjust GmbH,
 http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
