@@ -1,3 +1,20 @@
+### Version 4.11.2 (xxth March 2017)
+#### Added
+- Added sending of the app's install time.
+- Added sending of the app's update time.
+- Added connection validity checks.
+
+#### Changed
+- Garantee that access of Activity handler of internal methods are done thru it's executor
+- Update gradle version
+
+#### Fixed
+- Fixed random occurrence of attribution request being fired before session request.
+- Fix query string parsing
+- Use separate executor in background timer like previously done for foreground timer
+
+---
+
 ### Version 4.11.1 (27th February 2017)
 #### Fixed
 - Prevent multiple created threads mentioned in android_sdk#265

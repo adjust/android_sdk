@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 def getVersionName() {
-    return "4.11.1"
+    return "4.11.2"
 }
 
 android {
