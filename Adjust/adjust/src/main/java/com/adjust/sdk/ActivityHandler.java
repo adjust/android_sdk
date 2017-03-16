@@ -601,6 +601,15 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    public void backgroundTimerFired() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFiredI();
+            }
+        });
+    }
+
     public String getAdid() {
         if (activityState == null) {
             return null;
@@ -702,10 +711,10 @@ public class ActivityHandler implements IActivityHandler {
         if (adjustConfig.sendInBackground) {
             logger.info("Send in background configured");
 
-            backgroundTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+            backgroundTimer = new TimerOnce(new Runnable() {
                 @Override
                 public void run() {
-                    backgroundTimerFiredI();
+                    backgroundTimerFired();
                 }
             }, BACKGROUND_TIMER_NAME);
         }
@@ -717,10 +726,10 @@ public class ActivityHandler implements IActivityHandler {
         {
             logger.info("Delay start configured");
             internalState.delayStart = true;
-            delayStartTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+            delayStartTimer = new TimerOnce(new Runnable() {
                 @Override
                 public void run() {
-                    sendFirstPackagesI();
+                    sendFirstPackages();
                 }
             }, DELAY_START_TIMER_NAME);
         }

@@ -10,7 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.adjust.sdk.*;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustEvent;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE      = "g3mfiw";
