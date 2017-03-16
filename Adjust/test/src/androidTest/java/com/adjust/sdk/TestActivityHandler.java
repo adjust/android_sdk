@@ -862,6 +862,7 @@ public class TestActivityHandler {
         Uri attributions = Uri.parse("AdjustTests://example.com/path/inApp?adjust_tracker=trackerValue&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
         Uri extraParams = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=bar&other=stuff&adjust_key=value");
         Uri mixed = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=bar&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
+        Uri encodedSeparators = Uri.parse("AdjustTests://example.com/path/inApp?adjust_foo=b%26a%3B%3Dr&adjust_campaign=campaign%3DValue%26&other=stuff");
         Uri emptyQueryString = Uri.parse("AdjustTests://");
         Uri emptyString = Uri.parse("");
         Uri nullUri = null;
@@ -874,6 +875,7 @@ public class TestActivityHandler {
         activityHandler.readOpenUrl(attributions, now);
         activityHandler.readOpenUrl(extraParams, now);
         activityHandler.readOpenUrl(mixed, now);
+        activityHandler.readOpenUrl(encodedSeparators, now);
         activityHandler.readOpenUrl(emptyQueryString, now);
         activityHandler.readOpenUrl(emptyString, now);
         activityHandler.readOpenUrl(nullUri, now);
@@ -883,15 +885,35 @@ public class TestActivityHandler {
 
         SystemClock.sleep(1000);
 
-        // three click packages: attributions, extraParams and mixed
-        for (int i = 7; i > 0; i--) {
-            assertUtil.test("SdkClickHandler sendSdkClick");
-        }
+        assertUtil.verbose("Url to parse (%s)", attributions);
+        assertUtil.test("SdkClickHandler sendSdkClick");
 
+        assertUtil.verbose("Url to parse (%s)", extraParams);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", mixed);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", encodedSeparators);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", emptyQueryString);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", single);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", prefix);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Url to parse (%s)", incomplete);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        // check that it did not send any other click package
         assertUtil.notInTest("SdkClickHandler sendSdkClick");
 
-        // 7 clicks
-        assertUtil.isEqual(7, mockSdkClickHandler.queue.size());
+        // 8 clicks
+        assertUtil.isEqual(8, mockSdkClickHandler.queue.size());
 
         // get the click package
         ActivityPackage attributionClickPackage = mockSdkClickHandler.queue.get(0);
@@ -952,7 +974,28 @@ public class TestActivityHandler {
         testMixedClickPackage.testClickPackage("deeplink");
 
         // get the click package
-        ActivityPackage emptyQueryStringClickPackage = mockSdkClickHandler.queue.get(3);
+        ActivityPackage encodedClickPackage = mockSdkClickHandler.queue.get(3);
+
+        // create activity package test
+        TestActivityPackage testEncodedClickPackage = new TestActivityPackage(encodedClickPackage);
+
+        // create the attribution
+        AdjustAttribution thirdAttribution = new AdjustAttribution();
+        thirdAttribution.campaign = "campaign=Value&";
+
+        // and set it
+        testEncodedClickPackage.attribution = thirdAttribution;
+
+        // other deep link parameters
+        testEncodedClickPackage.otherParameters = "{\"foo\":\"b&a;=r\"}";
+
+        testEncodedClickPackage.deeplink = encodedSeparators.toString();
+
+        // test the third deeplink
+        testEncodedClickPackage.testClickPackage("deeplink");
+
+        // get the click package
+        ActivityPackage emptyQueryStringClickPackage = mockSdkClickHandler.queue.get(4);
 
         // create activity package test
         TestActivityPackage testEmptyQueryStringClickPackage = new TestActivityPackage(emptyQueryStringClickPackage);
@@ -962,7 +1005,7 @@ public class TestActivityHandler {
         testEmptyQueryStringClickPackage.testClickPackage("deeplink");
 
         // get the click package
-        ActivityPackage singleClickPackage = mockSdkClickHandler.queue.get(4);
+        ActivityPackage singleClickPackage = mockSdkClickHandler.queue.get(5);
 
         // create activity package test
         TestActivityPackage testSingleClickPackage = new TestActivityPackage(singleClickPackage);
@@ -972,7 +1015,7 @@ public class TestActivityHandler {
         testSingleClickPackage.testClickPackage("deeplink");
 
         // get the click package
-        ActivityPackage prefixClickPackage = mockSdkClickHandler.queue.get(5);
+        ActivityPackage prefixClickPackage = mockSdkClickHandler.queue.get(6);
 
         // create activity package test
         TestActivityPackage testPrefixClickPackage = new TestActivityPackage(prefixClickPackage);
@@ -982,7 +1025,7 @@ public class TestActivityHandler {
         testPrefixClickPackage.testClickPackage("deeplink");
 
         // get the click package
-        ActivityPackage incompleteClickPackage = mockSdkClickHandler.queue.get(6);
+        ActivityPackage incompleteClickPackage = mockSdkClickHandler.queue.get(7);
 
         // create activity package test
         TestActivityPackage testIncompleteClickPackage = new TestActivityPackage(incompleteClickPackage );
@@ -1705,6 +1748,7 @@ public class TestActivityHandler {
         String reftag = "adjust_reftag=referrerValue";
         String extraParams = "adjust_foo=bar&other=stuff&adjust_key=value";
         String mixed = "adjust_foo=bar&other=stuff&adjust_reftag=referrerValue";
+        String encodedSeparators = "adjust_foo=b%26a%3B%3Dr&adjust_reftag=referrer%3DValue%26&other=stuff";
         String empty = "";
         String nullString = null;
         String single = "adjust_foo";
@@ -1714,6 +1758,7 @@ public class TestActivityHandler {
         activityHandler.sendReferrer(reftag, now);
         activityHandler.sendReferrer(extraParams, now);
         activityHandler.sendReferrer(mixed, now);
+        activityHandler.sendReferrer(encodedSeparators, now);
         activityHandler.sendReferrer(empty, now);
         activityHandler.sendReferrer(nullString, now);
         activityHandler.sendReferrer(single, now);
@@ -1721,29 +1766,32 @@ public class TestActivityHandler {
         activityHandler.sendReferrer(incomplete, now);
         SystemClock.sleep(2000);
 
-        assertUtil.verbose("Reading query string (%s)", reftag);
+        assertUtil.verbose("Referrer to parse (%s)", reftag);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        assertUtil.verbose("Reading query string (%s)", extraParams);
+        assertUtil.verbose("Referrer to parse (%s)", extraParams);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        assertUtil.verbose("Reading query string (%s)", mixed);
+        assertUtil.verbose("Referrer to parse (%s)", mixed);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        assertUtil.verbose("Reading query string (%s)", single);
+        assertUtil.verbose("Referrer to parse (%s)", encodedSeparators);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        assertUtil.verbose("Reading query string (%s)", prefix);
+        assertUtil.verbose("Referrer to parse (%s)", single);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        assertUtil.verbose("Reading query string (%s)", incomplete);
+        assertUtil.verbose("Referrer to parse (%s)", prefix);
+        assertUtil.test("SdkClickHandler sendSdkClick");
+
+        assertUtil.verbose("Referrer to parse (%s)", incomplete);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
         // check that it did not send any other click package
         assertUtil.notInTest("SdkClickHandler sendSdkClick");
 
         // 7 click
-        assertUtil.isEqual(7, mockSdkClickHandler.queue.size());
+        assertUtil.isEqual(8, mockSdkClickHandler.queue.size());
 
         ActivityPackage referrerBeforeLaunchPacakge = mockSdkClickHandler.queue.get(0);
 
@@ -1792,7 +1840,22 @@ public class TestActivityHandler {
         testMixedClickPackage.testClickPackage("reftag");
 
         // get the click package
-        ActivityPackage singleClickPackage = mockSdkClickHandler.queue.get(4);
+        ActivityPackage encodedClickPackage = mockSdkClickHandler.queue.get(4);
+
+        // create activity package test
+        TestActivityPackage testEncodedClickPackage = new TestActivityPackage(encodedClickPackage);
+
+        testEncodedClickPackage.reftag = "referrer=Value&";
+        testEncodedClickPackage.referrer = encodedSeparators;
+
+        // other deep link parameters
+        testEncodedClickPackage.otherParameters = "{\"foo\":\"b&a;=r\"}";
+
+        // test the third deeplink
+        testMixedClickPackage.testClickPackage("reftag");
+
+        // get the click package
+        ActivityPackage singleClickPackage = mockSdkClickHandler.queue.get(5);
 
         // create activity package test
         TestActivityPackage testSingleClickPackage = new TestActivityPackage(singleClickPackage);
@@ -1802,7 +1865,7 @@ public class TestActivityHandler {
         testSingleClickPackage.testClickPackage("reftag");
 
         // get the click package
-        ActivityPackage prefixClickPackage = mockSdkClickHandler.queue.get(5);
+        ActivityPackage prefixClickPackage = mockSdkClickHandler.queue.get(6);
 
         // create activity package test
         TestActivityPackage testPrefixClickPackage = new TestActivityPackage(prefixClickPackage);
@@ -1812,7 +1875,7 @@ public class TestActivityHandler {
         testPrefixClickPackage.testClickPackage("reftag");
 
         // get the click package
-        ActivityPackage incompleteClickPackage = mockSdkClickHandler.queue.get(6);
+        ActivityPackage incompleteClickPackage = mockSdkClickHandler.queue.get(7);
 
         // create activity package test
         TestActivityPackage testIncompleteClickPackage = new TestActivityPackage(incompleteClickPackage);
@@ -2959,10 +3022,10 @@ public class TestActivityHandler {
         }
 
         if (sInit.sendReferrer != null) {
-            assertUtil.verbose("Reading query string (%s)", sInit.sendReferrer);
+            assertUtil.verbose("Referrer to parse (%s)", sInit.sendReferrer);
             assertUtil.test("SdkClickHandler sendSdkClick");
         } else {
-            assertUtil.notInVerbose("Reading query string ");
+            assertUtil.notInVerbose("Referrer to parse ");
             assertUtil.notInTest("SdkClickHandler sendSdkClick");
         }
     }
