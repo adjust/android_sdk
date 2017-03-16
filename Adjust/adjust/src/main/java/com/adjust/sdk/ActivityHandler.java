@@ -592,6 +592,15 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    public void foregroundTimerFired() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                foregroundTimerFiredI();
+            }
+        });
+    }
+
     public String getAdid() {
         if (activityState == null) {
             return null;
@@ -685,7 +694,7 @@ public class ActivityHandler implements IActivityHandler {
                 new Runnable() {
                     @Override
                     public void run() {
-                        foregroundTimerFiredI();
+                        foregroundTimerFired();
                     }
                 }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
