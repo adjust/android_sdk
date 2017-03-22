@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.util.DisplayMetrics;
 
+import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
@@ -51,6 +52,8 @@ class DeviceInfo {
     String abi;
     String buildName;
     String vmInstructionSet;
+    String appInstallTime;
+    String appUpdateTime;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -88,6 +91,8 @@ class DeviceInfo {
         abi = getABI();
         buildName = getBuildName();
         vmInstructionSet = getVmInstructionSet();
+        appInstallTime = getAppInstallTime(context);
+        appUpdateTime = getAppUpdateTime(context);
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -293,5 +298,31 @@ class DeviceInfo {
     private String getVmInstructionSet() {
         String instructionSet = Util.getVmInstructionSet();
         return instructionSet;
+    }
+
+    private String getAppInstallTime(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.firstInstallTime));
+
+            return appInstallTime;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private String getAppUpdateTime(Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.lastUpdateTime));
+
+            return appInstallTime;
+        } catch (Exception ex) {
+            return null;
+        }
     }
 }

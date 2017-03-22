@@ -50,10 +50,10 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor = new CustomScheduledExecutor("AttributionHandler", false);
         logger = AdjustFactory.getLogger();
 
-        timer = new TimerOnce(scheduledExecutor, new Runnable() {
+        timer = new TimerOnce(new Runnable() {
             @Override
             public void run() {
-                sendAttributionRequestI();
+                sendAttributionRequest();
             }
         }, ATTRIBUTION_TIMER_NAME);
 
@@ -115,6 +115,15 @@ public class AttributionHandler implements IAttributionHandler {
     @Override
     public void resumeSending() {
         paused = false;
+    }
+
+    public void sendAttributionRequest() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendAttributionRequestI();
+            }
+        });
     }
 
     private void getAttributionI(long delayInMilliseconds) {

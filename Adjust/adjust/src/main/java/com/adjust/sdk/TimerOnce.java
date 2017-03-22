@@ -8,15 +8,16 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerOnce {
-    private WeakReference<CustomScheduledExecutor> scheduledExecutorWeakRef;
+    private CustomScheduledExecutor executor;
+
     private ScheduledFuture waitingTask;
     private String name;
     private Runnable command;
     private ILogger logger;
 
-    public TimerOnce(CustomScheduledExecutor scheduler, Runnable command, String name) {
+    public TimerOnce(Runnable command, String name) {
         this.name = name;
-        this.scheduledExecutorWeakRef = new WeakReference<CustomScheduledExecutor>(scheduler);
+        this.executor = new CustomScheduledExecutor(name, true);
         this.command = command;
         this.logger = AdjustFactory.getLogger();
     }
@@ -25,16 +26,11 @@ public class TimerOnce {
         // cancel previous
         cancel(false);
 
-        CustomScheduledExecutor scheduledExecutor = scheduledExecutorWeakRef.get();
-        if (scheduledExecutor == null) {
-            return;
-        }
-
         String fireInSeconds = Util.SecondsDisplayFormat.format(fireIn / 1000.0);
 
         logger.verbose("%s starting. Launching in %s seconds", name, fireInSeconds);
 
-        waitingTask = scheduledExecutor.schedule(new Runnable() {
+        waitingTask = executor.schedule(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
@@ -66,9 +62,7 @@ public class TimerOnce {
 
     public void teardown() {
         cancel(true);
-        if (scheduledExecutorWeakRef != null) {
-            scheduledExecutorWeakRef.clear();
-        }
-        scheduledExecutorWeakRef = null;
+
+        executor = null;
     }
 }

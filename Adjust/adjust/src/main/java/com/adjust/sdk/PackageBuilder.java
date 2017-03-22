@@ -75,6 +75,8 @@ class PackageBuilder {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
+        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
@@ -141,7 +143,6 @@ class PackageBuilder {
         Map<String, String> parameters = getIdsParameters();
 
         PackageBuilder.addString(parameters, "source", source);
-        injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
         clickPackage.setPath("/sdk_info");

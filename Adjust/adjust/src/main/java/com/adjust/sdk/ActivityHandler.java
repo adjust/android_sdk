@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.net.UrlQuerySanitizer;
 import android.os.Handler;
 import android.util.*;
 
@@ -119,6 +120,8 @@ public class ActivityHandler implements IActivityHandler {
         boolean background;
         boolean delayStart;
         boolean updatePackages;
+        boolean firstLaunch;
+        boolean sessionResponseProcessed;
 
         public boolean isEnabled() {
             return enabled;
@@ -155,6 +158,14 @@ public class ActivityHandler implements IActivityHandler {
         public boolean isToUpdatePackages() {
             return updatePackages;
         }
+
+        public boolean isFirstLaunch() {
+            return firstLaunch;
+        }
+
+        public boolean isSessionResponseProcessed() {
+            return sessionResponseProcessed;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -178,6 +189,8 @@ public class ActivityHandler implements IActivityHandler {
         internalState.delayStart = false;
         // does not need to update packages by default
         internalState.updatePackages = false;
+        // does not have the session response by default
+        internalState.sessionResponseProcessed = false;
 
         scheduledExecutor.submit(new Runnable() {
             @Override
@@ -579,6 +592,24 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    public void foregroundTimerFired() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                foregroundTimerFiredI();
+            }
+        });
+    }
+
+    public void backgroundTimerFired() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                backgroundTimerFiredI();
+            }
+        });
+    }
+
     public String getAdid() {
         if (activityState == null) {
             return null;
@@ -631,6 +662,9 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
             internalState.updatePackages = activityState.updatePackages;
+            internalState.firstLaunch = false;
+        } else {
+            internalState.firstLaunch = true; // first launch if activity state is null
         }
 
         readConfigFile(adjustConfig.context);
@@ -669,7 +703,7 @@ public class ActivityHandler implements IActivityHandler {
                 new Runnable() {
                     @Override
                     public void run() {
-                        foregroundTimerFiredI();
+                        foregroundTimerFired();
                     }
                 }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
@@ -677,10 +711,10 @@ public class ActivityHandler implements IActivityHandler {
         if (adjustConfig.sendInBackground) {
             logger.info("Send in background configured");
 
-            backgroundTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+            backgroundTimer = new TimerOnce(new Runnable() {
                 @Override
                 public void run() {
-                    backgroundTimerFiredI();
+                    backgroundTimerFired();
                 }
             }, BACKGROUND_TIMER_NAME);
         }
@@ -692,10 +726,10 @@ public class ActivityHandler implements IActivityHandler {
         {
             logger.info("Delay start configured");
             internalState.delayStart = true;
-            delayStartTimer = new TimerOnce(scheduledExecutor, new Runnable() {
+            delayStartTimer = new TimerOnce(new Runnable() {
                 @Override
                 public void run() {
-                    sendFirstPackagesI();
+                    sendFirstPackages();
                 }
             }, DELAY_START_TIMER_NAME);
         }
@@ -823,9 +857,12 @@ public class ActivityHandler implements IActivityHandler {
     private void checkAttributionStateI() {
         if (!checkActivityStateI(activityState)) { return; }
 
-        // if it's a new session
-        if (activityState.subsessionCount <= 1) {
-            return;
+        // if it's the first launch
+        if (internalState.isFirstLaunch()) {
+            // and it hasn't received the session response
+            if (!internalState.isSessionResponseProcessed()) {
+                return;
+            }
         }
 
         // if there is already an attribution saved and there was no attribution being asked
@@ -929,6 +966,9 @@ public class ActivityHandler implements IActivityHandler {
 
         // launch Session tracking listener if available
         launchSessionResponseListenerI(sessionResponseData, handler);
+
+        // mark session response has proccessed
+        internalState.sessionResponseProcessed = true;
     }
 
     private void launchSessionResponseListenerI(final SessionResponseData sessionResponseData, Handler handler) {
@@ -1053,7 +1093,15 @@ public class ActivityHandler implements IActivityHandler {
         if (referrer == null || referrer.length() == 0 ) {
             return;
         }
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(referrer);
+
+        logger.verbose("Referrer to parse (%s)", referrer);
+
+        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
+        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
+        querySanitizer.setAllowUnregisteredParamaters(true);
+        querySanitizer.parseQuery(referrer);
+
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
 
         if (clickPackageBuilder == null) {
             return;
@@ -1071,13 +1119,15 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        String queryString = url.getQuery();
+        String urlString = url.toString();
+        logger.verbose("Url to parse (%s)", url);
 
-        if (queryString == null && url.toString().length() > 0) {
-            queryString = "";
-        }
+        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
+        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
+        querySanitizer.setAllowUnregisteredParamaters(true);
+        querySanitizer.parseUrl(urlString);
 
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(queryString);
+        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
         if (clickPackageBuilder == null) {
             return;
         }
@@ -1089,20 +1139,19 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private PackageBuilder queryStringClickPackageBuilderI(String queryString) {
-        if (queryString == null) {
+    private PackageBuilder queryStringClickPackageBuilderI(
+            List<UrlQuerySanitizer.ParameterValuePair> queryList) {
+        if (queryList == null) {
             return null;
         }
 
         Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
         AdjustAttribution queryStringAttribution = new AdjustAttribution();
 
-        logger.verbose("Reading query string (%s)", queryString);
-
-        String[] queryPairs = queryString.split("&");
-
-        for (String pair : queryPairs) {
-            readQueryStringI(pair, queryStringParameters, queryStringAttribution);
+        for (UrlQuerySanitizer.ParameterValuePair parameterValuePair : queryList) {
+            readQueryStringI(parameterValuePair.mParameter,
+                    parameterValuePair.mValue,
+                    queryStringParameters, queryStringAttribution);
         }
 
         String reftag = queryStringParameters.remove(Constants.REFTAG);
@@ -1116,17 +1165,13 @@ public class ActivityHandler implements IActivityHandler {
         return builder;
     }
 
-    private boolean readQueryStringI(String queryString,
+    private boolean readQueryStringI(String key, String value,
                                      Map<String, String> extraParameters,
                                      AdjustAttribution queryStringAttribution) {
-        String[] pairComponents = queryString.split("=");
-        if (pairComponents.length != 2) return false;
+        if (key == null || value == null) { return false; }
 
-        String key = pairComponents[0];
-        if (!key.startsWith(ADJUST_PREFIX)) return false;
-
-        String value = pairComponents[1];
-        if (value.length() == 0) return false;
+        // parameter key does not start with "adjust_"
+        if (!key.startsWith(ADJUST_PREFIX)) { return false; }
 
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
         if (keyWOutPrefix.length() == 0) return false;
