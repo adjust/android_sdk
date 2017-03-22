@@ -1,4 +1,4 @@
-### Version 4.11.2 (xxth March 2017)
+### Version 4.11.2 (22nd March 2017)
 #### Added
 - Added sending of the app's install time.
 - Added sending of the app's update time.
