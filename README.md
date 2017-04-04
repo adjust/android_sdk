@@ -3,7 +3,7 @@
 This is the Android SDK of adjust™. You can read more about adjust™ at [adjust.com].
 
 If your app is an app which uses web views and you would like to use adjust tracking from Javascript code, please consult
-our [Android web views SDK guide](doc/web_views.md).
+our [Android web views SDK guide](doc/english/web_views.md).
 
 ## Table of contents
 
@@ -940,7 +940,7 @@ You can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver
 
 If you set the log level to `verbose`, you should be able to see the log from reading the referrer:
 
-````
+```
 V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
 ```
 
