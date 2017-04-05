@@ -1,3 +1,10 @@
+### Version 4.11.3 (5th April 2017)
+#### Changed
+- Removed connection validity checks.
+- Refactored networking code.
+
+---
+
 ### Version 4.11.2 (22nd March 2017)
 #### Added
 - Added sending of the app's install time.
