@@ -38,7 +38,7 @@ public class UtilNetworking {
         try {
             URL url = new URL(urlString);
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
-            Map<String, String> parameters = new HashMap<>(activityPackage.getParameters());
+            Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
 
@@ -67,7 +67,7 @@ public class UtilNetworking {
 
     public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage) throws Exception {
         try {
-            Map<String, String> parameters = new HashMap<>(activityPackage.getParameters());
+            Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
             Uri uri = buildUri(activityPackage.getPath(), parameters);
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
