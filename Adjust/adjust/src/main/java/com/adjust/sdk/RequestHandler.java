@@ -62,13 +62,7 @@ public class RequestHandler implements IRequestHandler {
         String targetURL = Constants.BASE_URL + activityPackage.getPath();
 
         try {
-            HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
-                    targetURL,
-                    activityPackage.getClientSdk(),
-                    activityPackage.getParameters(),
-                    queueSize);
-
-            ResponseData responseData = Util.readHttpResponse(connection, activityPackage);
+            ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, activityPackage, queueSize);
 
             IPackageHandler packageHandler = packageHandlerWeakRef.get();
             if (packageHandler == null) {
@@ -81,7 +75,6 @@ public class RequestHandler implements IRequestHandler {
             }
 
             packageHandler.sendNextPackage(responseData);
-
         } catch (UnsupportedEncodingException e) {
             sendNextPackageI(activityPackage, "Failed to encode parameters", e);
         } catch (SocketTimeoutException e) {

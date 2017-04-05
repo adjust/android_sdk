@@ -122,13 +122,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
 
         try {
-            HttpsURLConnection connection = Util.createPOSTHttpsURLConnection(
-                    targetURL,
-                    sdkClickPackage.getClientSdk(),
-                    sdkClickPackage.getParameters(),
-                    packageQueue.size() - 1);
-
-            ResponseData responseData = Util.readHttpResponse(connection, sdkClickPackage);
+            ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, sdkClickPackage, packageQueue.size() - 1);
 
             if (responseData.jsonResponse == null) {
                 retrySendingI(sdkClickPackage);
