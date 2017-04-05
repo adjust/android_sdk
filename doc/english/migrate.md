@@ -1,4 +1,4 @@
-## Migrate your adjust SDK for Android to 4.11.2 from 3.6.2
+## Migrate your adjust SDK for Android to 4.11.3 from 3.6.2
 
 ### The Application class
 

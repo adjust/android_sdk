@@ -127,14 +127,6 @@ public class AdjustFactory {
         return AdjustFactory.httpsURLConnection;
     }
 
-    public static URLGetConnection getHttpsURLGetConnection(URL url) throws IOException {
-        if (AdjustFactory.httpsURLConnection == null) {
-            return new URLGetConnection((HttpsURLConnection)url.openConnection(), url);
-        }
-
-        return new URLGetConnection(AdjustFactory.httpsURLConnection, url);
-    }
-
     public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
         if (sdkClickHandler == null) {
             return new SdkClickHandler(startsSending);
