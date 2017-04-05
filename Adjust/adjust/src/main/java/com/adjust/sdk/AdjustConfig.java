@@ -198,13 +198,13 @@ public class AdjustConfig {
         }
 
         if (environment.equals(AdjustConfig.ENVIRONMENT_SANDBOX)) {
-            logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
+            logger.warn("SANDBOX: Adjust is running in Sandbox mode. " +
                     "Use this setting for testing. " +
                     "Don't forget to set the environment to `production` before publishing!");
             return true;
         }
         if (environment.equals(AdjustConfig.ENVIRONMENT_PRODUCTION)) {
-            logger.Assert(
+            logger.warn(
                     "PRODUCTION: Adjust is running in Production mode. " +
                             "Use this setting only for the build that you want to publish. " +
                             "Set the environment to `sandbox` if you want to test your app!");
