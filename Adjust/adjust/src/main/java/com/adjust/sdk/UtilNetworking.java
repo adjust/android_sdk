@@ -200,16 +200,13 @@ public class UtilNetworking {
     }
 
     private static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
-        if (clientSdk != null) {
-            connection.setRequestProperty("Client-SDK", clientSdk);
-        }
+        connection.setRequestProperty("Client-SDK", clientSdk);
+        connection.setConnectTimeout(Constants.ONE_MINUTE);
+        connection.setReadTimeout(Constants.ONE_MINUTE);
 
         if (userAgent != null) {
             connection.setRequestProperty("User-Agent", userAgent);
         }
-
-        connection.setConnectTimeout(Constants.ONE_MINUTE);
-        connection.setReadTimeout(Constants.ONE_MINUTE);
     }
 
     private static Uri buildUri(String path, Map<String, String> parameters) {
