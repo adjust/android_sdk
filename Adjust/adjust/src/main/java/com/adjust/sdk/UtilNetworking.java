@@ -7,7 +7,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -54,8 +53,6 @@ public class UtilNetworking {
             ResponseData responseData = readHttpResponse(connection, activityPackage);
 
             return responseData;
-        } catch (IOException e) {
-            throw e;
         } catch (Exception e) {
             throw e;
         } finally {
@@ -82,8 +79,6 @@ public class UtilNetworking {
             ResponseData responseData = readHttpResponse(connection, activityPackage);
 
             return responseData;
-        } catch (IOException e) {
-            throw e;
         } catch (Exception e) {
             throw e;
         }
