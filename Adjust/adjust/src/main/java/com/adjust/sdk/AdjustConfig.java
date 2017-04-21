@@ -142,25 +142,7 @@ public class AdjustConfig {
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {
-        LogLevel newLogLevel = null;
-        if (ENVIRONMENT_PRODUCTION.equals(environment)) {
-            // production && allows supress -> Supress
-            if (allowSuppressLogLevel) {
-                newLogLevel = LogLevel.SUPRESS;
-            } else {
-                // production && not allow supress -> Assert
-                newLogLevel = LogLevel.ASSERT;
-            }
-        } else {
-            // not allow supress && try supress -> Assert
-            if (!allowSuppressLogLevel &&
-                    logLevel == LogLevel.SUPRESS) {
-                newLogLevel = LogLevel.ASSERT;
-            } else {
-                newLogLevel = logLevel;
-            }
-        }
-        logger.setLogLevel(newLogLevel);
+        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
 
     private boolean checkContext(Context context) {
@@ -198,13 +180,13 @@ public class AdjustConfig {
         }
 
         if (environment.equals(AdjustConfig.ENVIRONMENT_SANDBOX)) {
-            logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
+            logger.warnInProduction("SANDBOX: Adjust is running in Sandbox mode. " +
                     "Use this setting for testing. " +
                     "Don't forget to set the environment to `production` before publishing!");
             return true;
         }
         if (environment.equals(AdjustConfig.ENVIRONMENT_PRODUCTION)) {
-            logger.Assert(
+            logger.warnInProduction(
                     "PRODUCTION: Adjust is running in Production mode. " +
                             "Use this setting only for the build that you want to publish. " +
                             "Set the environment to `sandbox` if you want to test your app!");

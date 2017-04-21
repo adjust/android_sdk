@@ -20,26 +20,29 @@ public class Logger implements ILogger {
 
     private LogLevel logLevel;
     private boolean logLevelLocked;
+    private boolean isProductionEnvironment;
     private static String formatErrorMessage = "Error formating log message: %s, with params: %s";
 
     public Logger() {
-        setLogLevel(LogLevel.INFO);
+        isProductionEnvironment = false;
         logLevelLocked = false;
+        setLogLevel(LogLevel.INFO, isProductionEnvironment);
     }
 
     @Override
-    public void setLogLevel(LogLevel logLevel) {
+    public void setLogLevel(LogLevel logLevel, boolean isProductionEnvironment) {
         if (logLevelLocked) {
             return;
         }
         this.logLevel = logLevel;
+        this.isProductionEnvironment = isProductionEnvironment;
     }
 
     @Override
-    public void setLogLevelString(String logLevelString) {
+    public void setLogLevelString(String logLevelString, boolean isProductionEnvironment) {
         if (null != logLevelString) {
             try {
-                setLogLevel(LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)));
+                setLogLevel(LogLevel.valueOf(logLevelString.toUpperCase(Locale.US)), isProductionEnvironment);
             } catch (IllegalArgumentException iae) {
                 error("Malformed logLevel '%s', falling back to 'info'", logLevelString);
             }
@@ -48,6 +51,9 @@ public class Logger implements ILogger {
 
     @Override
     public void verbose(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             try {
                 Log.v(LOGTAG, String.format(Locale.US, message, parameters));
@@ -59,6 +65,9 @@ public class Logger implements ILogger {
 
     @Override
     public void debug(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             try {
                 Log.d(LOGTAG, String.format(Locale.US, message, parameters));
@@ -70,6 +79,9 @@ public class Logger implements ILogger {
 
     @Override
     public void info(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if (logLevel.androidLogLevel <= Log.INFO) {
             try {
                 Log.i(LOGTAG, String.format(Locale.US, message, parameters));
@@ -81,6 +93,9 @@ public class Logger implements ILogger {
 
     @Override
     public void warn(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if (logLevel.androidLogLevel <= Log.WARN) {
             try {
                 Log.w(LOGTAG, String.format(Locale.US, message, parameters));
@@ -91,7 +106,22 @@ public class Logger implements ILogger {
     }
 
     @Override
+    public void warnInProduction(String message, Object... parameters) {
+        if (logLevel.androidLogLevel <= Log.WARN) {
+            try {
+                Log.w(LOGTAG, String.format(Locale.US, message, parameters));
+            } catch (Exception e) {
+                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+            }
+        }
+    }
+
+
+    @Override
     public void error(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if (logLevel.androidLogLevel <= Log.ERROR) {
             try {
                 Log.e(LOGTAG, String.format(Locale.US, message, parameters));
@@ -103,6 +133,9 @@ public class Logger implements ILogger {
 
     @Override
     public void Assert(String message, Object... parameters) {
+        if (isProductionEnvironment) {
+            return;
+        }
         if(logLevel.androidLogLevel <= Log.ASSERT) {
             try {
                 Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
