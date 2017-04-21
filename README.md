@@ -107,7 +107,7 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:9.2.1'
+    compile 'com.google.android.gms:play-services-analytics:10.2.1'
     ```
 
     ![][gradle_gps]
