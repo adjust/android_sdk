@@ -91,6 +91,21 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
+    @Override
+    public void checkSdkClickResponse(final SdkClickResponseData sdkClickResponseData) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+
+                checkSdkClickResponseI(activityHandler, sdkClickResponseData);
+            }
+        });
+    }
+
     public void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
         scheduledExecutor.submit(new Runnable() {
             @Override
@@ -165,6 +180,12 @@ public class AttributionHandler implements IAttributionHandler {
         checkAttributionI(activityHandler, sessionResponseData);
 
         activityHandler.launchSessionResponseTasks(sessionResponseData);
+    }
+
+    private void checkSdkClickResponseI(IActivityHandler activityHandler, SdkClickResponseData sdkClickResponseData) {
+        checkAttributionI(activityHandler, sdkClickResponseData);
+
+        activityHandler.launchSdkClickResponseTasks(sdkClickResponseData);
     }
 
     private void checkAttributionResponseI(IActivityHandler activityHandler, AttributionResponseData attributionResponseData) {

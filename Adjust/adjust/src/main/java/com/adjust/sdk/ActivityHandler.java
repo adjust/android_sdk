@@ -300,6 +300,11 @@ public class ActivityHandler implements IActivityHandler {
             attributionHandler.checkSessionResponse((SessionResponseData)responseData);
             return;
         }
+        // redirect sdk click responses to attribution handler to check for attribution information
+        if (responseData instanceof SdkClickResponseData) {
+            attributionHandler.checkSdkClickResponse((SdkClickResponseData)responseData);
+            return;
+        }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
             launchEventResponseTasks((EventResponseData)responseData);
@@ -485,6 +490,16 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 launchEventResponseTasksI(eventResponseData);
+            }
+        });
+    }
+
+    @Override
+    public void launchSdkClickResponseTasks(final SdkClickResponseData sdkClickResponseData) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                launchSdkClickResponseTasksI(sdkClickResponseData);
             }
         });
     }
@@ -744,7 +759,7 @@ public class ActivityHandler implements IActivityHandler {
                 attributionPackage,
                 toSendI(false));
 
-        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSendI(true));
+        sdkClickHandler = AdjustFactory.getSdkClickHandler(this, toSendI(true));
 
         if (isToUpdatePackagesI()) {
             updatePackagesI();
@@ -946,6 +961,22 @@ public class ActivityHandler implements IActivityHandler {
             handler.post(runnable);
 
             return;
+        }
+    }
+
+    private void launchSdkClickResponseTasksI(SdkClickResponseData sdkClickResponseData) {
+        // try to update adid from response
+        updateAdidI(sdkClickResponseData.adid);
+
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttributionI(sdkClickResponseData.attribution);
+
+        // if attribution changed, launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListenerI(handler);
         }
     }
 

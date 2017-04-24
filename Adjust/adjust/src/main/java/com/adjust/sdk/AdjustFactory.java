@@ -127,12 +127,12 @@ public class AdjustFactory {
         return AdjustFactory.httpsURLConnection;
     }
 
-    public static ISdkClickHandler getSdkClickHandler(boolean startsSending) {
+    public static ISdkClickHandler getSdkClickHandler(IActivityHandler activityHandler, boolean startsSending) {
         if (sdkClickHandler == null) {
-            return new SdkClickHandler(startsSending);
+            return new SdkClickHandler(activityHandler, startsSending);
         }
 
-        sdkClickHandler.init(startsSending);
+        sdkClickHandler.init(activityHandler, startsSending);
         return sdkClickHandler;
     }
 

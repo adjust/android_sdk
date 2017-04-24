@@ -28,6 +28,8 @@ public interface IActivityHandler {
 
     void launchSessionResponseTasks(SessionResponseData sessionResponseData);
 
+    void launchSdkClickResponseTasks(SdkClickResponseData sdkClickResponseData);
+
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
     void sendReferrer(String referrer, long clickTime);
