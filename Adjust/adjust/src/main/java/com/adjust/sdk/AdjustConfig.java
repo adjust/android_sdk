@@ -28,7 +28,6 @@ public class AdjustConfig {
     boolean sendInBackground;
     Double delayStart;
     List<IRunActivityHandler> sessionParametersActionsArray;
-    boolean allowSuppressLogLevel;
     ILogger logger;
     String userAgent;
     String pushToken;
@@ -45,7 +44,6 @@ public class AdjustConfig {
     }
 
     private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
-        this.allowSuppressLogLevel = allowSuppressLogLevel;
         logger = AdjustFactory.getLogger();
         // default values
         setLogLevel(LogLevel.INFO, environment);
