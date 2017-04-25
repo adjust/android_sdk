@@ -1188,6 +1188,9 @@ public class ActivityHandler implements IActivityHandler {
         String reftag = queryStringParameters.remove(Constants.REFTAG);
 
         long now = System.currentTimeMillis();
+        long lastInterval = now - activityState.lastActivity;
+        activityState.lastInterval = lastInterval;
+
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
