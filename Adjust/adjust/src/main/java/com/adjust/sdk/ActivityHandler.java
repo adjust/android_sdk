@@ -1151,6 +1151,9 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         String urlString = url.toString();
+        if (urlString == null || urlString.length() == 0) {
+            return;
+        }
         logger.verbose("Url to parse (%s)", url);
 
         UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
@@ -1208,7 +1211,9 @@ public class ActivityHandler implements IActivityHandler {
         if (!key.startsWith(ADJUST_PREFIX)) { return false; }
 
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
-        if (keyWOutPrefix.length() == 0) return false;
+        if (keyWOutPrefix.length() == 0) { return false; }
+
+        if (value.length() == 0) { return false;}
 
         if (!trySetAttributionI(queryStringAttribution, keyWOutPrefix, value)) {
             extraParameters.put(keyWOutPrefix, value);
