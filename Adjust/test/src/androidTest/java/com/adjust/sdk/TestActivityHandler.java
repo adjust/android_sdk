@@ -2764,39 +2764,46 @@ public class TestActivityHandler {
         config.setLogLevel(LogLevel.ERROR);
         config.setLogLevel(LogLevel.ASSERT);
 
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.VERBOSE);
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.DEBUG);
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO);
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.WARN);
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ERROR);
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.VERBOSE + ", isProductionEnvironment: false");
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.DEBUG + ", isProductionEnvironment: false");
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO + ", isProductionEnvironment: false");
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.WARN + ", isProductionEnvironment: false");
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ERROR + ", isProductionEnvironment: false");
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT + ", isProductionEnvironment: false");
 
         config.setLogLevel(LogLevel.SUPRESS);
 
         // chooses Assert because config object was not configured to allow suppress
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS + ", isProductionEnvironment: false");
 
         // init log level with assert because it was not configured to allow suppress
-        config = getConfig(LogLevel.ASSERT, "production", "123456789012", false, context);
+        config = getConfig("production", "123456789012", false, context);
 
         config.setLogLevel(LogLevel.SUPRESS);
+
         // chooses Assert because config object was not configured to allow suppress
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS + ", isProductionEnvironment: true");
 
         // init with info because it's sandbox
-        config = getConfig(LogLevel.INFO, "sandbox", "123456789012", true, context);
+        config = getConfig("sandbox", "123456789012", true, context);
 
         config.setLogLevel(LogLevel.SUPRESS);
         // chooses Supress because config object was configured to allow suppress
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS);
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS + ", isProductionEnvironment: false");
 
         // init with info because it's sandbox
-        config = getConfig(LogLevel.SUPRESS, "production", "123456789012", true, context);
+        config = getConfig("production", "123456789012", true, context);
 
         config.setLogLevel(LogLevel.ASSERT);
 
         // chooses Supress because config object was configured to allow suppress
-        assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS);
+        //assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS);
+        // changed when log in production was introduced
+        assertUtil.test("MockLogger setLogLevel: " + LogLevel.ASSERT + ", isProductionEnvironment: true");
     }
 
     @Test
@@ -2855,15 +2862,10 @@ public class TestActivityHandler {
     }
 
     private AdjustConfig getConfig() {
-        return getConfig(null);
+        return getConfig("sandbox", "123456789012", false, context);
     }
 
-    private AdjustConfig getConfig(LogLevel logLevel) {
-        return getConfig(logLevel, "sandbox", "123456789012", false, context);
-    }
-
-    private AdjustConfig getConfig(LogLevel initLogLevel,
-                                   String environment,
+    private AdjustConfig getConfig(String environment,
                                    String appToken,
                                    boolean allowSupressLogLevel,
                                    Context context)
@@ -2877,12 +2879,11 @@ public class TestActivityHandler {
         }
 
         if (adjustConfig != null) {
-            if (initLogLevel != null) {
-                assertUtil.test("MockLogger setLogLevel: " + initLogLevel);
-            }
             if (environment == "sandbox") {
+                assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO + ", isProductionEnvironment: " + false);
                 assertUtil.warn("SANDBOX: Adjust is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
             } else if (environment == "production") {
+                assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO + ", isProductionEnvironment: " + true);
                 assertUtil.warn("PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
             } else {
                 assertUtil.fail();
