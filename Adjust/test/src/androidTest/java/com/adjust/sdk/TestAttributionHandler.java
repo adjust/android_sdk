@@ -32,6 +32,7 @@ public class TestAttributionHandler{
     private Context context;
     private ActivityPackage attributionPackage;
     private ActivityPackage firstSessionPackage;
+    private ActivityPackage sdkClickPackage;
 
     @Rule
     public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
@@ -59,9 +60,11 @@ public class TestAttributionHandler{
     private void savePackages() {
         MockAttributionHandler mockAttributionHandler = new MockAttributionHandler(mockLogger);
         MockPackageHandler mockPackageHandler = new MockPackageHandler(mockLogger);
+        MockSdkClickHandler mockSdkClickHandler = new MockSdkClickHandler(mockLogger);
 
         AdjustFactory.setAttributionHandler(mockAttributionHandler);
         AdjustFactory.setPackageHandler(mockPackageHandler);
+        AdjustFactory.setSdkClickHandler(mockSdkClickHandler);
 
         // deleting the activity state file to simulate a first session
         boolean activityStateDeleted = ActivityHandler.deleteActivityState(context);
@@ -77,6 +80,11 @@ public class TestAttributionHandler{
             activityHandler.onResume();
         }
 
+        Uri attributions = Uri.parse("AdjustTests://example.com/path/inApp?adjust_tracker=trackerValue&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
+        long now = System.currentTimeMillis();
+
+        activityHandler.readOpenUrl(attributions, now);
+
         SystemClock.sleep(3000);
 
         ActivityPackage attributionPackage = activityHandler.getAttributionPackageI();
@@ -87,7 +95,13 @@ public class TestAttributionHandler{
 
         this.firstSessionPackage = mockPackageHandler.queue.get(0);
 
+        this.sdkClickPackage = mockSdkClickHandler.queue.get(0);
+
         this.attributionPackage = attributionPackage;
+
+        AdjustFactory.setAttributionHandler(null);
+        AdjustFactory.setPackageHandler(null);
+        AdjustFactory.setSdkClickHandler(null);
     }
 
     @After
@@ -171,6 +185,49 @@ public class TestAttributionHandler{
     }
 
     @Test
+    public void testCheckSdkClickResponse() {
+        // assert test name to read better in logcat
+        mockLogger.Assert("TestAttributionHandler testCheckSdkClickResponse");
+
+        AttributionHandler attributionHandler = new AttributionHandler(mockActivityHandler,
+                attributionPackage, true);
+
+        // new attribution
+        JSONObject attributionJson = null;
+        try {
+            attributionJson = new JSONObject("{ " +
+                    "\"tracker_token\" : \"ttValue\" , " +
+                    "\"tracker_name\"  : \"tnValue\" , " +
+                    "\"network\"       : \"nValue\" , " +
+                    "\"campaign\"      : \"cpValue\" , " +
+                    "\"adgroup\"       : \"aValue\" , " +
+                    "\"creative\"      : \"ctValue\" , " +
+                    "\"click_label\"   : \"clValue\" }");
+        } catch (JSONException e) {
+            assertUtil.fail(e.getMessage());
+        }
+
+        SdkClickResponseData sdkClickResponseData = (SdkClickResponseData) ResponseData.buildResponseData(sdkClickPackage);
+        sdkClickResponseData.jsonResponse = attributionJson;
+
+        attributionHandler.checkSdkClickResponse(sdkClickResponseData);
+
+        SystemClock.sleep(1000);
+
+        // updated set askingAttribution to false
+        assertUtil.test("ActivityHandler setAskingAttribution, false");
+
+        // it did not update to true
+        assertUtil.notInTest("ActivityHandler setAskingAttribution, true");
+
+        // and waiting for query
+        assertUtil.notInDebug("Waiting to query attribution");
+
+        // check attribution was called without ask_in
+        assertUtil.test("ActivityHandler launchSdkClickResponseTasks, message:null timestamp:null json:{\"tracker_token\":\"ttValue\",\"tracker_name\":\"tnValue\",\"network\":\"nValue\",\"campaign\":\"cpValue\",\"adgroup\":\"aValue\",\"creative\":\"ctValue\",\"click_label\":\"clValue\"}");
+    }
+
+    @Test
     public void testAskIn() {
         // assert test name to read better in logcat
         mockLogger.Assert("TestAttributionHandler testAskIn");
@@ -192,7 +249,7 @@ public class TestAttributionHandler{
         SessionResponseData sessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
         sessionResponseData.jsonResponse = askIn4sJson;
 
-        attributionHandler.checkSessionResponse(sessionResponseData);;
+        attributionHandler.checkSessionResponse(sessionResponseData);
 
         // sleep enough not to trigger the timer
         SystemClock.sleep(1000);
