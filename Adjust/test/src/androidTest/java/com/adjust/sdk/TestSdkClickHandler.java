@@ -28,6 +28,7 @@ public class TestSdkClickHandler {
     private com.adjust.sdk.test.UnitTestActivity activity;
     private Context context;
     private ActivityPackage sdkClickPackage;
+    private MockActivityHandler mockActivityHandler;
 
     @Rule
     public ActivityTestRule<com.adjust.sdk.test.UnitTestActivity> mActivityRule = new ActivityTestRule(com.adjust.sdk.test.UnitTestActivity.class);
@@ -36,6 +37,7 @@ public class TestSdkClickHandler {
     public void setUp() {
         mockLogger = new MockLogger();
         mockHttpsURLConnection = new MockHttpsURLConnection(null, mockLogger);
+        mockActivityHandler = new MockActivityHandler(mockLogger);
 
         assertUtil = new AssertUtil(mockLogger);
 
@@ -88,7 +90,7 @@ public class TestSdkClickHandler {
         // assert test name to read better in logcat
         mockLogger.Assert("TestRequestHandler testPaused");
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(false);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, false);
 
         mockHttpsURLConnection.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
@@ -189,7 +191,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = null;
 
@@ -217,7 +219,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = ResponseType.CLIENT_PROTOCOL_EXCEPTION;
 
@@ -242,7 +244,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = ResponseType.INTERNAL_SERVER_ERROR;
 
@@ -263,7 +265,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = ResponseType.WRONG_JSON;
 
@@ -284,7 +286,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = ResponseType.EMPTY_JSON;
 
@@ -305,7 +307,7 @@ public class TestSdkClickHandler {
 
         AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
 
-        SdkClickHandler sdkClickHandler = new SdkClickHandler(true);
+        SdkClickHandler sdkClickHandler = new SdkClickHandler(mockActivityHandler, true);
 
         mockHttpsURLConnection.responseType = ResponseType.MESSAGE;
 

@@ -9,6 +9,7 @@ public class MockAttributionHandler implements IAttributionHandler {
     IActivityHandler activityHandler;
     ActivityPackage attributionPackage;
     SessionResponseData lastSessionResponseData;
+    SdkClickResponseData lastSdkClickResponseData;
 
     public MockAttributionHandler(MockLogger testLogger) {
         this.testLogger = testLogger;
@@ -29,10 +30,17 @@ public class MockAttributionHandler implements IAttributionHandler {
     }
 
     @Override
-    public void checkSessionResponse(SessionResponseData responseData) {
+    public void checkSessionResponse(SessionResponseData sessionResponseData) {
         testLogger.test(prefix + "checkSessionResponse");
 
-        this.lastSessionResponseData = responseData;
+        this.lastSessionResponseData = sessionResponseData;
+    }
+
+    @Override
+    public void checkSdkClickResponse(SdkClickResponseData sdkClickResponseData) {
+        testLogger.test(prefix + "checkSdkClickResponse");
+
+        this.lastSdkClickResponseData = sdkClickResponseData;
     }
 
     @Override

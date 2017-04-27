@@ -10,13 +10,15 @@ public class MockSdkClickHandler implements ISdkClickHandler {
     private MockLogger testLogger;
     private String prefix = "SdkClickHandler ";
     List<ActivityPackage> queue;
+    IActivityHandler activityHandler;
 
     public MockSdkClickHandler(MockLogger testLogger) {
         this.testLogger = testLogger;
         queue = new ArrayList<ActivityPackage>();
     }
     @Override
-    public void init(boolean startsSending) {
+    public void init(IActivityHandler activityHandler, boolean startsSending) {
+        this.activityHandler = activityHandler;
         testLogger.test(prefix + "init, startsSending: " + startsSending);
     }
 

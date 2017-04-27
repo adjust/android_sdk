@@ -61,12 +61,13 @@ public class MockLogger implements ILogger {
     }
 
     @Override
-    public void setLogLevel(LogLevel logLevel) {
-        test("MockLogger setLogLevel: " + logLevel);
+    public void setLogLevel(LogLevel logLevel, boolean isProductionEnvironment) {
+        test("MockLogger setLogLevel: " + logLevel + ", isProductionEnvironment: " + isProductionEnvironment);
     }
 
     @Override
-    public void setLogLevelString(String logLevelString) {
+    public void setLogLevelString(String logLevelString, boolean isProductionEnvironment) {
+        test("MockLogger setLogLevelString: " + logLevelString + ", isProductionEnvironment: " + isProductionEnvironment);
     }
 
     private void logMessage(String message, Integer iLoglevel, String messagePrefix, int priority) {
@@ -114,6 +115,14 @@ public class MockLogger implements ILogger {
 
     @Override
     public void warn(String message, Object... parameters) {
+        logMessage(String.format(Locale.US, message, parameters),
+                LogLevel.WARN.getAndroidLogLevel(),
+                "w",
+                Log.WARN);
+    }
+
+    @Override
+    public void warnInProduction(String message, Object... parameters) {
         logMessage(String.format(Locale.US, message, parameters),
                 LogLevel.WARN.getAndroidLogLevel(),
                 "w",
