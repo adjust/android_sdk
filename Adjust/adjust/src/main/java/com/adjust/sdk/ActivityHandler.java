@@ -766,7 +766,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (adjustConfig.referrer != null) {
-            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
+            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime);
         }
 
         sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
@@ -1174,7 +1174,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private PackageBuilder queryStringClickPackageBuilderI(
-            List<UrlQuerySanitizer.ParameterValuePair> queryList) {
+            List<UrlQuerySanitizer.ParameterValuePair> queryList)
+    {
         if (queryList == null) {
             return null;
         }
@@ -1191,9 +1192,12 @@ public class ActivityHandler implements IActivityHandler {
         String reftag = queryStringParameters.remove(Constants.REFTAG);
 
         long now = System.currentTimeMillis();
-        long lastInterval = now - activityState.lastActivity;
-        activityState.lastInterval = lastInterval;
-
+        // check of activity state != null
+        //  because referrer can be called before onResume
+        if (activityState != null) {
+            long lastInterval = now - activityState.lastActivity;
+            activityState.lastInterval = lastInterval;
+        }
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
