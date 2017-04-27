@@ -321,5 +321,8 @@ public class TestSdkClickHandler {
         assertUtil.verbose("Response: { \"message\" : \"response OK\"}");
 
         assertUtil.info("response OK");
+
+        // sends response to activity handler to be checked
+        assertUtil.test("ActivityHandler finishedTrackingActivity, message:response OK timestamp:null json:{\"message\":\"response OK\"}");
     }
 }
