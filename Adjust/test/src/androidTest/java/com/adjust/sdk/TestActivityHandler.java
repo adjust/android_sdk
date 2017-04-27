@@ -1136,8 +1136,11 @@ public class TestActivityHandler {
 
         // attribution handler should always receive the session response
         assertUtil.test("AttributionHandler checkSessionResponse");
-        // the first session does not trigger the event response delegate
 
+        // attribution handler does not receive sdk click
+        assertUtil.notInTest("AttributionHandler checkSdkClickResponse");
+
+        // the first session does not trigger the event response delegate
         assertUtil.notInDebug("Launching success event tracking listener");
         assertUtil.notInDebug("Launching failed event tracking listener");
 
@@ -1223,13 +1226,17 @@ public class TestActivityHandler {
 
         // test sdk_click response data
         ActivityPackage sdkClickPackage = mockSdkClickHandler.queue.get(0);
-        ResponseData clickResponseData = ResponseData.buildResponseData(sdkClickPackage);
+        SdkClickResponseData sdkClickResponseData = (SdkClickResponseData) ResponseData.buildResponseData(sdkClickPackage);
 
-        activityHandler.finishedTrackingActivity(clickResponseData);
+        activityHandler.finishedTrackingActivity(sdkClickResponseData);
         SystemClock.sleep(1000);
 
-        // attribution handler should never receive the click response
+        // attribution handler receives the click response
+        assertUtil.test("AttributionHandler checkSdkClickResponse");
+
+        // attribution handler does not receive session response
         assertUtil.notInTest("AttributionHandler checkSessionResponse");
+
         // it doesn't trigger the any event delegate
         assertUtil.notInDebug("Launching success event tracking listener");
         assertUtil.notInDebug("Launching failed event tracking listener");
@@ -1890,7 +1897,6 @@ public class TestActivityHandler {
         // assert test name to read better in logcat
         mockLogger.Assert("TestActivityHandler testGetAttribution");
 
-        //AdjustFactory.setTimerStart(500);
         AdjustFactory.setSessionInterval(4000);
 
         /// if (activityState.subsessionCount > 1) {
