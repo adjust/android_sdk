@@ -1,3 +1,14 @@
+### Version 4.11.4 (xth April/May 2017)
+#### Changed
+- Replaced Assert logs to warn
+- Removed limitation of SUPPRESS log level, possible to use it in any situation
+
+#### Added
+- Check if sdk_click response contains attribution information
+- Attributable parameters send with every sdk_click
+
+---
+
 ### Version 4.11.3 (5th April 2017)
 #### Changed
 - Removed connection validity checks.
