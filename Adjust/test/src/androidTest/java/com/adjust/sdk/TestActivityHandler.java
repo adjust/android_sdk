@@ -1806,7 +1806,7 @@ public class TestActivityHandler {
 
         referrerBeforeLaunchTest.referrer = referrerBeforeLaunch;
 
-        referrerBeforeLaunchTest.testClickPackage("reftag");
+        referrerBeforeLaunchTest.testClickPackage("reftag", false);
 
         ActivityPackage reftagClickPackage = mockSdkClickHandler.queue.get(1);
 

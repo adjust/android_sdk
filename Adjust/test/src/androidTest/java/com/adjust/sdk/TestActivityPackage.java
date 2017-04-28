@@ -140,11 +140,15 @@ public class TestActivityPackage {
     }
 
     public void testClickPackage(String source) {
+        testClickPackage(source, true);
+    }
+
+    public void testClickPackage(String source, boolean hasActivityState) {
         // test default package attributes
         testDefaultAttributes("/sdk_click", ActivityKind.CLICK, "click");
 
         // check device ids parameters
-        testDeviceIdsParameters();
+        testDefaultParameters(hasActivityState);
 
         // click parameters
         // source
@@ -259,9 +263,17 @@ public class TestActivityPackage {
     }
 
     private void testDefaultParameters() {
+        testDefaultParameters(true);
+    }
+
+    private void testDefaultParameters(boolean hasActivityState) {
         testDeviceInfo();
         testConfig();
-        testActivityState();
+        if (hasActivityState) {
+            testActivityState();
+        } else {
+            testWithoutActivityState();
+        }
         testCreatedAt();
     }
 
@@ -361,6 +373,19 @@ public class TestActivityPackage {
         testParameterBoolean("event_buffering_enabled", eventBufferingEnabled);
         // push_token
         assertParameterEquals("push_token", pushToken);
+    }
+
+    private void testWithoutActivityState() {
+        // android_uuid
+        assertParameterNull("android_uuid");
+        // session_count
+        assertParameterNull("session_count");
+        // subsession_count
+        assertParameterNull("subsession_count");
+        // session_length
+        assertParameterNull("session_length");
+        // time_spent
+        assertParameterNull("time_spent");
     }
 
     private void testActivityState() {
