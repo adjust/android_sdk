@@ -1,27 +1,25 @@
 ## Trademobプラグイン
 
-Add the dependency of the adjust sdk with the Trademob plugin:
+Adjust SDKとTrademobプラグインのdependencyを追加してください。
 
 ```
 compile 'com.adjust.sdk:adjust-android-trademob:4.11.3'
 ```
 
 Or integrate adjust with Trademob events by following these steps:
+もしくは、以下の手順でAdjustとTrademobイベントを連携できます。
 
-1. Locate the `plugin/Trademob` folder inside the downloaded archive from our
-   [releases page](https://github.com/adjust/android_sdk/releases).
+1. `plugin/Trademob`フォルダを[releases page](https://github.com/adjust/android_sdk/releases)からダウンロードアーカイブに置いてください。
 
-2. Open the `adjust` module in Android Studio and locate the
-   `plugin` package folder in `adjust/java/com/adjust/sdk`.
+2. Android Studio上で`adjust`モジュールを開き、`plugin`パッケージフォルダを`adjust/java/com/adjust/sdk`に置いてください。
 
-3. Drag the `AdjustTrademob.java` and `TrademobItem.java` files from the
-   downloaded `plugin/Trademob/com/adjust/sdk/plugin` folder into the `plugin` folder in the `adjust` project.
+3. ダウンロードした`plugin/Trademob/com/adjust/sdk/plugin`フォルダから`AdjustTrademob.java`と`TrademobItem.java`ファイルをドラッグし、`adjust`プロジェクトの`plugin`フォルダに入れてください。
 
-For questions regarding this plugin, please reach out to `eugenio.warglien@trademob.com`
+プラグインに関するご質問は、`eugenio.warglien@trademob.com`までご連絡ください。
 
-You can now use Trademob event in the following ways:
+これで下記の例のようにTrademobイベントを利用できます。
 
-### View Listing
+### リストを見る
 
 ```java
 import com.adjust.sdk.plugin.AdjustTrademob;
@@ -39,7 +37,7 @@ AdjustTrademob.injectViewListingIntoEvent(event, items, metadata);
 Adjust.trackEvent(event);
 ```
 
-### View Item
+### 商品を見る
 
 ```java
 import com.adjust.sdk.plugin.AdjustTrademob;
@@ -55,7 +53,7 @@ AdjustTrademob.injectViewItemIntoEvent(event, "itemId1", metadata);
 Adjust.trackEvent(event);
 ```
 
-### Add to Basket
+### 買い物かごに追加
 
 ```java
 import com.adjust.sdk.plugin.AdjustTrademob;
@@ -74,7 +72,7 @@ AdjustTrademob.injectAddToBasketIntoEvent(event, items, null);
 Adjust.trackEvent(event);
 ```
 
-### Checkout
+### チェックアウト
 
 ```java
 import com.adjust.sdk.plugin.AdjustTrademob;
