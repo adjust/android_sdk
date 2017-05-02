@@ -46,7 +46,11 @@ public class AdjustConfig {
     private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
         logger = AdjustFactory.getLogger();
         // default values
-        setLogLevel(LogLevel.INFO, environment);
+        if (allowSuppressLogLevel && AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment)) {
+            setLogLevel(LogLevel.SUPRESS, environment);
+        } else {
+            setLogLevel(LogLevel.INFO, environment);
+        }
 
         if (!isValid(context, appToken, environment)) {
             return;
