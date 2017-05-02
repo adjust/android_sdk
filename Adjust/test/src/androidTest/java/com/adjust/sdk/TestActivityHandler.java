@@ -1127,9 +1127,15 @@ public class TestActivityHandler {
         // set first session
         testActivityPackage.testSessionPackage(1);
 
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+
         // simulate a successful session
         SessionResponseData successSessionResponseData = (SessionResponseData) ResponseData.buildResponseData(firstSessionPackage);
         successSessionResponseData.success = true;
+        successSessionResponseData.message = "Session successfully tracked";
+        successSessionResponseData.timestamp = dateString;
+        successSessionResponseData.adid = "adidValue";
 
         activityHandler.finishedTrackingActivity(successSessionResponseData);
         SystemClock.sleep(1000);
@@ -1150,8 +1156,10 @@ public class TestActivityHandler {
         // if present, the first session triggers the success session delegate
         if (stateDelegates.sessionSuccessDelegatePresent) {
             assertUtil.debug("Launching success session tracking listener");
+            assertUtil.test("onFinishedSessionTrackingSucceeded: Session Success msg:Session successfully tracked time:" + dateString + " adid:adidValue json:null");
         } else {
             assertUtil.notInDebug("Launching success session tracking delegate");
+            assertUtil.notInTest("onFinishedSessionTrackingSucceeded: Session Success ");
         }
         // it doesn't trigger the failure session delegate
         assertUtil.notInDebug("Launching failed session tracking listener");
@@ -1159,6 +1167,9 @@ public class TestActivityHandler {
         // simulate a failure session
         SessionResponseData failureSessionResponseData = (SessionResponseData)ResponseData.buildResponseData(firstSessionPackage);
         failureSessionResponseData.success = false;
+        failureSessionResponseData.message = "Session failure tracked";
+        failureSessionResponseData.timestamp = dateString;
+        failureSessionResponseData.adid = "adidValue";
 
         activityHandler.launchSessionResponseTasks(failureSessionResponseData);
         SystemClock.sleep(1000);
@@ -1169,8 +1180,10 @@ public class TestActivityHandler {
         // if present, the first session triggers the failure session delegate
         if (stateDelegates.sessionFailureDelegatePresent) {
             assertUtil.debug("Launching failed session tracking listener");
+            assertUtil.test("onFinishedSessionTrackingFailed: Session Failure msg:Session failure tracked time:" + dateString+ " adid:adidValue retry:false json:null");
         } else {
             assertUtil.notInDebug("Launching failed session tracking listener");
+            assertUtil.notInTest("onFinishedSessionTrackingFailed: Session Failure ");
         }
 
         // test success event response data
@@ -1180,6 +1193,9 @@ public class TestActivityHandler {
         ActivityPackage eventPackage = mockPackageHandler.queue.get(1);
         EventResponseData eventSuccessResponseData = (EventResponseData)ResponseData.buildResponseData(eventPackage);
         eventSuccessResponseData.success = true;
+        eventSuccessResponseData.message = "Event successfully tracked";
+        eventSuccessResponseData.timestamp = dateString;
+        eventSuccessResponseData.adid = "adidValue";
 
         activityHandler.finishedTrackingActivity(eventSuccessResponseData);
         SystemClock.sleep(1000);
@@ -1190,8 +1206,10 @@ public class TestActivityHandler {
         // if present, the success event triggers the success event delegate
         if (stateDelegates.eventSuccessDelegatePresent) {
             assertUtil.debug("Launching success event tracking listener");
+            assertUtil.test("onFinishedEventTrackingSucceeded: Event Success msg:Event successfully tracked time:" + dateString + " adid:adidValue event:abc123 json:null");
         } else {
             assertUtil.notInDebug("Launching success event tracking listener");
+            assertUtil.notInTest("onFinishedEventTrackingSucceeded: Event Success ");
         }
         // it doesn't trigger the failure event delegate
         assertUtil.notInDebug("Launching failed event tracking listener");
@@ -1199,6 +1217,9 @@ public class TestActivityHandler {
         // test failure event response data
         EventResponseData eventFailureResponseData = (EventResponseData)ResponseData.buildResponseData(eventPackage);
         eventFailureResponseData.success = false;
+        eventFailureResponseData.message = "Event failure tracked";
+        eventFailureResponseData.timestamp = dateString;
+        eventFailureResponseData.adid = "adidValue";
 
         activityHandler.finishedTrackingActivity(eventFailureResponseData);
         SystemClock.sleep(1000);
@@ -1209,15 +1230,16 @@ public class TestActivityHandler {
         // if present, the failure event triggers the failure event delegate
         if (stateDelegates.eventFailureDelegatePresent) {
             assertUtil.debug("Launching failed event tracking listener");
+            assertUtil.test("onFinishedEventTrackingFailed: Event Failure msg:Event failure tracked time:" + dateString + " adid:adidValue event:abc123 retry:false json:null");
         } else {
             assertUtil.notInDebug("Launching failed event tracking listener");
+            assertUtil.notInTest("onFinishedEventTrackingFailed: Event Failure ");
         }
         // it doesn't trigger the success event delegate
         assertUtil.notInDebug("Launching success event tracking listener");
 
         // test click
         Uri attributions = Uri.parse("AdjustTests://example.com/path/inApp?adjust_tracker=trackerValue&other=stuff&adjust_campaign=campaignValue&adjust_adgroup=adgroupValue&adjust_creative=creativeValue");
-        long now = System.currentTimeMillis();
 
         activityHandler.readOpenUrl(attributions, now);
         SystemClock.sleep(1000);
