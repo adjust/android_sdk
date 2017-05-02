@@ -2888,8 +2888,11 @@ public class TestActivityHandler {
             if (environment == "sandbox") {
                 assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO + ", isProductionEnvironment: " + false);
                 assertUtil.warn("SANDBOX: Adjust is running in Sandbox mode. Use this setting for testing. Don't forget to set the environment to `production` before publishing!");
-            } else if (environment == "production") {
+            } else if (environment == "production" && !allowSupressLogLevel) {
                 assertUtil.test("MockLogger setLogLevel: " + LogLevel.INFO + ", isProductionEnvironment: " + true);
+                assertUtil.warn("PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
+            } else if (environment == "production" && allowSupressLogLevel) {
+                assertUtil.test("MockLogger setLogLevel: " + LogLevel.SUPRESS + ", isProductionEnvironment: " + true);
                 assertUtil.warn("PRODUCTION: Adjust is running in Production mode. Use this setting only for the build that you want to publish. Set the environment to `sandbox` if you want to test your app!");
             } else {
                 assertUtil.fail();
