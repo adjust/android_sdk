@@ -107,7 +107,7 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:9.2.1'
+    compile 'com.google.android.gms:play-services-analytics:10.2.1'
     ```
 
     ![][gradle_gps]
@@ -716,6 +716,8 @@ For each device with your app installed on it, adjust backend generates unique *
 String adid = Adjust.getAdid();
 ```
 
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
+
 **Note**: Information about **adid** is available after app installation has been tracked by the adjust backend. From that moment on, adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
 
 ### <a id="user-attribution"></a>User attribution
@@ -725,6 +727,8 @@ Like described in [attribution callback scetion](#attribution-callback), this ca
 ```java
 AdjustAttribution attribution = Adjust.getAttribution();
 ```
+
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
 **Note**: Information about current attribution is available after app installation has been tracked by the adjust backend and attribution callback has been initially triggered. From that moment on, adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialised and attribution callback has been initially triggered.
 
