@@ -716,7 +716,7 @@ For each device with your app installed on it, adjust backend generates unique *
 String adid = Adjust.getAdid();
 ```
 
-**Note**: This method works from Adjust SDK v4.11.0 and above
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
 **Note**: Information about **adid** is available after app installation has been tracked by the adjust backend. From that moment on, adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
 
@@ -728,7 +728,7 @@ Like described in [attribution callback scetion](#attribution-callback), this ca
 AdjustAttribution attribution = Adjust.getAttribution();
 ```
 
-**Note**: This method works from Adjust SDK v4.11.0 and above*
+**Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
 **Note**: Information about current attribution is available after app installation has been tracked by the adjust backend and attribution callback has been initially triggered. From that moment on, adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialised and attribution callback has been initially triggered.
 
