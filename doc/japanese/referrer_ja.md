@@ -1,9 +1,8 @@
-## Support multiple broadcast receivers
+## 複数のブロードキャストレシーバへのサポート
 
-If multiple SDKs need to register a broadcast receiver for the
-`INSTALL_REFERRER` intent in your app, you will have to implement your own
-`BroadcastReceiver` that calls all the other receivers that you want to
-support. It should look like this [1]:
+複数のSDKでアプリの`INSTALL_REFERRER`インテントにブロードキャストレシーバを登録する必要がある場合、
+サポートしたい他のすべてのレシーバをコールする`BroadcastReceiver`を独自に実装する必要があります。
+それはこのような形になります。[1]
 
 ```java
 public class InstallReceiver extends BroadcastReceiver {
@@ -18,9 +17,8 @@ public class InstallReceiver extends BroadcastReceiver {
 }
 ```
 
-Make sure to adjust the list of supported receviers and fix the imports. You
-also need to update your `AndroidManifest.xml` to use your own
-`InstallReceiver`:
+対象レシーバのリストの調整とインポートの記述を必ず確認してください。
+独自`InstallReceiver`を使うには、`AndroidManifest.xml`の更新も必要です。
 
 ```xml
 <receiver
@@ -32,11 +30,11 @@ also need to update your `AndroidManifest.xml` to use your own
 </receiver>
 ```
 
-Make sure to adjust your package name.
+パッケージ名を必ず確認してください。
 
 ---
 
-References and related links:
+参考および関連リンク
 
 - [1] http://stackoverflow.com/questions/14158841/android-google-analytics-v2-broadcast-receiver-for-all-sdks
 - [2] http://stackoverflow.com/questions/4093150/get-referrer-after-installing-app-from-android-market
