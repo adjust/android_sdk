@@ -1915,17 +1915,22 @@ public class TestActivityHandler {
     }
 
     @Test
-    public void testGetAttribution() {
+    public void testCheckAttributionState() {
         // assert test name to read better in logcat
-        mockLogger.Assert("TestActivityHandler testGetAttribution");
+        mockLogger.Assert("TestActivityHandler testCheckAttributionState");
+
+        // if it's the first launch
+        //if (internalState.isFirstLaunch()) {
+        //    if (!internalState.isSessionResponseProcessed()) {
+        //        return;
+        //    }
+        //}
+        //if (attribution != null && !activityState.askingAttribution) {
+        //    return;
+        //}
+        //attributionHandler.getAttribution();
 
         AdjustFactory.setSessionInterval(4000);
-
-        /// if (activityState.subsessionCount > 1) {
-        ///     if (attribution == null || activityState.askingAttribution) {
-        ///         getAttributionHandler().getAttribution();
-        ///     }
-        /// }
 
         // create the config to start the session
         AdjustConfig config = getConfig();
@@ -1949,119 +1954,141 @@ public class TestActivityHandler {
 
         SystemClock.sleep(1500);
 
-        // subsession count is 1
-        // attribution is null,
-        // askingAttribution is false by default,
-        // -> Not called
+        // it's first launch
+        // session response has not been processed
+        // attribution is null
+        // -> not called
 
-        // test first session start
         StateSession newSessionState = new StateSession(StateSession.SessionType.NEW_SESSION);
         newSessionState.getAttributionIsCalled = false;
         checkStartInternal(newSessionState);
 
-        // subsession count increased to 2
-        // attribution is still null,
-        // askingAttribution is still false,
-        // -> Called
+        ActivityPackage firstSessionPackage = mockPackageHandler.queue.get(0);
 
         // trigger a new sub session
         activityHandler.onResume();
         SystemClock.sleep(2000);
 
-        checkSubSession(1, 2, true);
+        // does not call because the session has not been processed
+        checkSubSession(1, 2, false);
 
-        // subsession count increased to 3
-        // attribution is still null,
-        // askingAttribution is set to true,
-        // -> Called
+        // it's first launch
+        // session response has been processed
+        // attribution is null
+        // -> called
 
-        // set asking attribution
-        activityHandler.setAskingAttribution(true);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:1 ssc:2");
+        // simulate a successful session
+        SessionResponseData successSessionResponseData = (SessionResponseData) ResponseData.buildResponseData(firstSessionPackage);
+        successSessionResponseData.success = true;
+        successSessionResponseData.message = "Session successfully tracked";
+        successSessionResponseData.adid = "adidValue";
 
-        // trigger a new session
+        activityHandler.launchSessionResponseTasks(successSessionResponseData);
+
+        // trigger a new sub session
         activityHandler.onResume();
         SystemClock.sleep(2000);
 
+        // does call because the session has been processed
         checkSubSession(1, 3, true);
 
-        // subsession is reset to 1 with new session
-        // attribution is still null,
-        // askingAttribution is set to true,
-        // -> Not called
+        // it's first launch
+        // session response has been processed
+        // attribution is not null
+        // askingAttribution is false
+        // -> not called
 
-        SystemClock.sleep(3000); // 5 seconds = 2 + 3
-        activityHandler.onResume();
-        SystemClock.sleep(2000);
-
-        checkFurtherSessions(2, false);
-
-        // subsession count increased to 2
-        // attribution is set,
-        // askingAttribution is set to true,
-        // -> Called
-
-        JSONObject jsonAttribution = null;
-
-        try {
-            jsonAttribution = new JSONObject("{ " +
-                    "\"tracker_token\" : \"ttValue\" , " +
-                    "\"tracker_name\"  : \"tnValue\" , " +
-                    "\"network\"       : \"nValue\" , " +
-                    "\"campaign\"      : \"cpValue\" , " +
-                    "\"adgroup\"       : \"aValue\" , " +
-                    "\"creative\"      : \"ctValue\" , " +
-                    "\"click_label\"   : \"clValue\" }");
-        } catch (JSONException e) {
-            assertUtil.fail(e.getMessage());
-        }
-        AdjustAttribution attribution = AdjustAttribution.fromJson(jsonAttribution, null); // XXX
-
-        // update the attribution
-        activityHandler.updateAttributionI(attribution);
-
-        // attribution was updated
-        assertUtil.debug("Wrote Attribution: tt:ttValue tn:tnValue net:nValue cam:cpValue adg:aValue cre:ctValue cl:clValue");
-
-        // trigger a new sub session
-        activityHandler.onResume();
-        SystemClock.sleep(2000);
-
-        checkSubSession(2, 2, true);
-        // subsession count is reset to 1
-        // attribution is set,
-        // askingAttribution is set to true,
-        // -> Not called
-
-        SystemClock.sleep(3000); // 5 seconds = 2 + 3
-        activityHandler.onResume();
-        SystemClock.sleep(2000);
-
-        checkFurtherSessions(3, false);
-        // subsession increased to 2
-        // attribution is set,
-        // askingAttribution is set to false
-        // -> Not called
+        // save the new attribution
+        successSessionResponseData.attribution = new AdjustAttribution();
+        successSessionResponseData.attribution.trackerName = "trackerName";
+        activityHandler.launchSessionResponseTasks(successSessionResponseData);
 
         activityHandler.setAskingAttribution(false);
-        assertUtil.debug("Wrote Activity state: ec:0 sc:3 ssc:1");
 
         // trigger a new sub session
         activityHandler.onResume();
         SystemClock.sleep(2000);
 
-        checkSubSession(3, 2, false);
+        // does call because the session has been processed
+        checkSubSession(1, 4, false);
 
-        // subsession is reset to 1
-        // attribution is set,
-        // askingAttribution is set to false
-        // -> Not called
+        // it's first launch
+        // session response has been processed
+        // attribution is not null
+        // askingAttribution is true
+        // -> called
 
-        SystemClock.sleep(3000); // 5 seconds = 2 + 3
+        activityHandler.setAskingAttribution(true);
+
+        // trigger a new sub session
         activityHandler.onResume();
         SystemClock.sleep(2000);
 
-        checkFurtherSessions(4, false);
+        // does call because the session has been processed
+        checkSubSession(1, 5, true);
+
+        // it's not first launch
+        // attribution is null
+        // -> called
+
+        // finish activity handler
+        activityHandler.teardown(false);
+        // delete attribution
+        ActivityHandler.deleteAttribution(context);
+
+        // start new activity handler
+        SystemClock.sleep(5000);
+        activityHandler = getActivityHandler(config);
+
+        SystemClock.sleep(1500);
+
+        // test init values
+        StateActivityHandlerInit stateActivityHandlerInit = new StateActivityHandlerInit(activityHandler);
+        stateActivityHandlerInit.readActivityState = "ec:0 sc:1 ssc:5";
+
+        checkInitTests(stateActivityHandlerInit);
+
+        resumeActivity(activityHandler);
+
+        SystemClock.sleep(1500);
+
+        newSessionState = new StateSession(StateSession.SessionType.NEW_SESSION);
+        newSessionState.getAttributionIsCalled = true;
+        newSessionState.sessionCount = 2;
+        checkStartInternal(newSessionState);
+
+        // it's not first launch
+        // attribution is not null
+        // askingAttribution is true
+        // -> called
+
+        // save the new attribution
+        successSessionResponseData.attribution = new AdjustAttribution();
+        successSessionResponseData.attribution.trackerName = "trackerName";
+        activityHandler.launchSessionResponseTasks(successSessionResponseData);
+
+        activityHandler.setAskingAttribution(true);
+
+        // trigger a new sub session
+        activityHandler.onResume();
+        SystemClock.sleep(2000);
+
+        // does call because the session has been processed
+        checkSubSession(2, 2, true);
+
+        // it's not first launch
+        // attribution is not null
+        // askingAttribution is false
+        // -> not called
+
+        activityHandler.setAskingAttribution(false);
+
+        // trigger a new sub session
+        activityHandler.onResume();
+        SystemClock.sleep(2000);
+
+        // does call because the session has been processed
+        checkSubSession(2, 3, false);
     }
 
     @Test
