@@ -10,7 +10,9 @@ public interface IAttributionHandler {
 
     void getAttribution();
 
-    void checkSessionResponse(SessionResponseData responseData);
+    void checkSessionResponse(SessionResponseData sessionResponseData);
+
+    void checkSdkClickResponse(SdkClickResponseData sdkClickResponseData);
 
     void pauseSending();
 

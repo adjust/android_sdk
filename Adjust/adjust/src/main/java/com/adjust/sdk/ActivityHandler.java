@@ -300,6 +300,11 @@ public class ActivityHandler implements IActivityHandler {
             attributionHandler.checkSessionResponse((SessionResponseData)responseData);
             return;
         }
+        // redirect sdk click responses to attribution handler to check for attribution information
+        if (responseData instanceof SdkClickResponseData) {
+            attributionHandler.checkSdkClickResponse((SdkClickResponseData)responseData);
+            return;
+        }
         // check if it's an event response
         if (responseData instanceof EventResponseData) {
             launchEventResponseTasks((EventResponseData)responseData);
@@ -485,6 +490,16 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 launchEventResponseTasksI(eventResponseData);
+            }
+        });
+    }
+
+    @Override
+    public void launchSdkClickResponseTasks(final SdkClickResponseData sdkClickResponseData) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                launchSdkClickResponseTasksI(sdkClickResponseData);
             }
         });
     }
@@ -744,14 +759,14 @@ public class ActivityHandler implements IActivityHandler {
                 attributionPackage,
                 toSendI(false));
 
-        sdkClickHandler = AdjustFactory.getSdkClickHandler(toSendI(true));
+        sdkClickHandler = AdjustFactory.getSdkClickHandler(this, toSendI(true));
 
         if (isToUpdatePackagesI()) {
             updatePackagesI();
         }
 
         if (adjustConfig.referrer != null) {
-            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime); // send to background queue to make sure that activityState is valid
+            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime);
         }
 
         sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
@@ -949,6 +964,22 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    private void launchSdkClickResponseTasksI(SdkClickResponseData sdkClickResponseData) {
+        // try to update adid from response
+        updateAdidI(sdkClickResponseData.adid);
+
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+
+        // try to update the attribution
+        boolean attributionUpdated = updateAttributionI(sdkClickResponseData.attribution);
+
+        // if attribution changed, launch attribution changed delegate
+        if (attributionUpdated) {
+            launchAttributionListenerI(handler);
+        }
+    }
+
     private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
         // try to update adid from response
         updateAdidI(sessionResponseData.adid);
@@ -1109,7 +1140,7 @@ public class ActivityHandler implements IActivityHandler {
 
         clickPackageBuilder.referrer = referrer;
         clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, sessionParameters);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
@@ -1120,6 +1151,9 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         String urlString = url.toString();
+        if (urlString == null || urlString.length() == 0) {
+            return;
+        }
         logger.verbose("Url to parse (%s)", url);
 
         UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
@@ -1134,13 +1168,14 @@ public class ActivityHandler implements IActivityHandler {
 
         clickPackageBuilder.deeplink = url.toString();
         clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, sessionParameters);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
 
     private PackageBuilder queryStringClickPackageBuilderI(
-            List<UrlQuerySanitizer.ParameterValuePair> queryList) {
+            List<UrlQuerySanitizer.ParameterValuePair> queryList)
+    {
         if (queryList == null) {
             return null;
         }
@@ -1157,6 +1192,12 @@ public class ActivityHandler implements IActivityHandler {
         String reftag = queryStringParameters.remove(Constants.REFTAG);
 
         long now = System.currentTimeMillis();
+        // check of activity state != null
+        //  because referrer can be called before onResume
+        if (activityState != null) {
+            long lastInterval = now - activityState.lastActivity;
+            activityState.lastInterval = lastInterval;
+        }
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
@@ -1174,7 +1215,9 @@ public class ActivityHandler implements IActivityHandler {
         if (!key.startsWith(ADJUST_PREFIX)) { return false; }
 
         String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
-        if (keyWOutPrefix.length() == 0) return false;
+        if (keyWOutPrefix.length() == 0) { return false; }
+
+        if (value.length() == 0) { return false;}
 
         if (!trySetAttributionI(queryStringAttribution, keyWOutPrefix, value)) {
             extraParameters.put(keyWOutPrefix, value);

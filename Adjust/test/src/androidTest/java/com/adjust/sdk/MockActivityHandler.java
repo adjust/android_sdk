@@ -78,6 +78,12 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void launchSdkClickResponseTasks(SdkClickResponseData sdkClickResponseData) {
+        testLogger.test(prefix + "launchSdkClickResponseTasks, " + sdkClickResponseData);
+        this.lastResponseData = sdkClickResponseData;
+    }
+
+    @Override
     public void launchAttributionResponseTasks(AttributionResponseData attributionResponseData) {
         testLogger.test(prefix + "launchAttributionResponseTasks, " + attributionResponseData);
         this.lastResponseData = attributionResponseData;

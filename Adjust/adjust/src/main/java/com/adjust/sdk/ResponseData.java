@@ -26,6 +26,9 @@ public class ResponseData {
             case SESSION:
                 responseData = new SessionResponseData();
                 break;
+            case CLICK:
+                responseData = new SdkClickResponseData();
+                break;
             case ATTRIBUTION:
                 responseData = new AttributionResponseData();
                 break;

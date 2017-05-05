@@ -1,3 +1,13 @@
+### Version 4.11.4 (5th May 2017)
+#### Added
+- Added check if `sdk_click` package response contains attribution information.
+- Added sending of attributable parameters with every `sdk_click` package.
+
+#### Changed
+- Replaced `assert` level logs with `warn` level.
+
+---
+
 ### Version 4.11.3 (5th April 2017)
 #### Changed
 - Removed connection validity checks.

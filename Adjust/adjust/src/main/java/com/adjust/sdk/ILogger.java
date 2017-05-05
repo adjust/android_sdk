@@ -1,9 +1,9 @@
 package com.adjust.sdk;
 
 public interface ILogger {
-    void setLogLevel(LogLevel logLevel);
+    void setLogLevel(LogLevel logLevel, boolean isProductionEnvironment);
 
-    void setLogLevelString(String logLevelString);
+    void setLogLevelString(String logLevelString, boolean isProductionEnvironment);
 
     void verbose(String message, Object... parameters);
 
@@ -12,6 +12,7 @@ public interface ILogger {
     void info(String message, Object... parameters);
 
     void warn(String message, Object... parameters);
+    void warnInProduction(String message, Object... parameters);
 
     void error(String message, Object... parameters);
 

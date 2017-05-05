@@ -72,15 +72,12 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
-        Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
-        PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
-        PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+        Map<String, String> parameters;
 
         if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
-            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+            parameters = getAttributableParameters(sessionParameters);
+        } else {
+            parameters = getAttributableParameters(null);
         }
 
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
@@ -120,8 +117,8 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source) {
-        Map<String, String> parameters = getIdsParameters();
+    public ActivityPackage buildClickPackage(String source, SessionParameters sessionParameters) {
+        Map<String, String> parameters = getAttributableParameters(sessionParameters);
 
         PackageBuilder.addString(parameters, "source", source);
         PackageBuilder.addDate(parameters, "click_time", clickTime);
@@ -167,6 +164,21 @@ class PackageBuilder {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
+    }
+
+    private Map<String, String> getAttributableParameters(SessionParameters sessionParameters) {
+        Map<String, String> parameters = getDefaultParameters();
+        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
+        PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
+        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+        if (sessionParameters != null) {
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+        }
+
+        return parameters;
     }
 
     private Map<String, String> getDefaultParameters() {

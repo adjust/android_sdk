@@ -28,7 +28,6 @@ public class AdjustConfig {
     boolean sendInBackground;
     Double delayStart;
     List<IRunActivityHandler> sessionParametersActionsArray;
-    boolean allowSuppressLogLevel;
     ILogger logger;
     String userAgent;
     String pushToken;
@@ -45,10 +44,13 @@ public class AdjustConfig {
     }
 
     private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
-        this.allowSuppressLogLevel = allowSuppressLogLevel;
         logger = AdjustFactory.getLogger();
         // default values
-        setLogLevel(LogLevel.INFO, environment);
+        if (allowSuppressLogLevel && AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment)) {
+            setLogLevel(LogLevel.SUPRESS, environment);
+        } else {
+            setLogLevel(LogLevel.INFO, environment);
+        }
 
         if (!isValid(context, appToken, environment)) {
             return;
@@ -142,25 +144,7 @@ public class AdjustConfig {
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {
-        LogLevel newLogLevel = null;
-        if (ENVIRONMENT_PRODUCTION.equals(environment)) {
-            // production && allows supress -> Supress
-            if (allowSuppressLogLevel) {
-                newLogLevel = LogLevel.SUPRESS;
-            } else {
-                // production && not allow supress -> Assert
-                newLogLevel = LogLevel.ASSERT;
-            }
-        } else {
-            // not allow supress && try supress -> Assert
-            if (!allowSuppressLogLevel &&
-                    logLevel == LogLevel.SUPRESS) {
-                newLogLevel = LogLevel.ASSERT;
-            } else {
-                newLogLevel = logLevel;
-            }
-        }
-        logger.setLogLevel(newLogLevel);
+        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
 
     private boolean checkContext(Context context) {
@@ -198,13 +182,13 @@ public class AdjustConfig {
         }
 
         if (environment.equals(AdjustConfig.ENVIRONMENT_SANDBOX)) {
-            logger.Assert("SANDBOX: Adjust is running in Sandbox mode. " +
+            logger.warnInProduction("SANDBOX: Adjust is running in Sandbox mode. " +
                     "Use this setting for testing. " +
                     "Don't forget to set the environment to `production` before publishing!");
             return true;
         }
         if (environment.equals(AdjustConfig.ENVIRONMENT_PRODUCTION)) {
-            logger.Assert(
+            logger.warnInProduction(
                     "PRODUCTION: Adjust is running in Production mode. " +
                             "Use this setting only for the build that you want to publish. " +
                             "Set the environment to `sandbox` if you want to test your app!");
