@@ -1,11 +1,10 @@
-### Version 4.11.4 (xth April/May 2017)
-#### Changed
-- Replaced Assert logs to warn
-- Removed limitation of SUPPRESS log level, possible to use it in any situation
-
+### Version 4.11.4 (5th May 2017)
 #### Added
-- Check if sdk_click response contains attribution information
-- Attributable parameters send with every sdk_click
+- Added check if `sdk_click` package response contains attribution information.
+- Added sending of attributable parameters with every `sdk_click` package.
+
+#### Changed
+- Replaced `assert` level logs with `warn` level.
 
 ---
 
