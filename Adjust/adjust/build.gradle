@@ -13,6 +13,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName getVersionName()
+        consumerProguardFiles 'adjust-proguard-rules.txt'
     }
 }
 
