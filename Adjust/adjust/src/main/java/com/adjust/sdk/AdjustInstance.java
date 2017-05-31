@@ -11,7 +11,7 @@ import java.util.List;
 public class AdjustInstance {
     private String referrer;
     private long referrerClickTime;
-    private ActivityHandler activityHandler;
+    private IActivityHandler activityHandler;
     private List<IRunActivityHandler> sessionParametersActionsArray;
     private String pushToken;
 
@@ -30,7 +30,7 @@ public class AdjustInstance {
         adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
         adjustConfig.pushToken = pushToken;
 
-        activityHandler = ActivityHandler.getInstance(adjustConfig);
+        activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
     }
 
     public void trackEvent(AdjustEvent event) {

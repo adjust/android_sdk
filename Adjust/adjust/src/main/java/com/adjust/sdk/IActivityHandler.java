@@ -56,5 +56,9 @@ public interface IActivityHandler {
 
     void setPushToken(String token);
 
+    String getAdid();
+
+    AdjustAttribution getAttribution();
+
     String getBasePath();
 }
