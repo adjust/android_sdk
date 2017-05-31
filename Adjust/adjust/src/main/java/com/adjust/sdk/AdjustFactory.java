@@ -4,8 +4,18 @@ import android.content.Context;
 
 import java.io.IOException;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
@@ -24,6 +34,7 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
+    private static UtilNetworking.IConnectionOptions connectionOptions = null;
 
     // Getters
     public static class URLGetConnection {
@@ -149,6 +160,13 @@ public class AdjustFactory {
         return AdjustFactory.baseUrl;
     }
 
+    public static UtilNetworking.IConnectionOptions getConnectionOptions() {
+        if (connectionOptions == null) {
+            return new UtilNetworking.ConnectionOptions();
+        }
+        return connectionOptions;
+    }
+
     // Teardown
 
     public static void teardown(Context context, boolean deleteState) {
@@ -222,4 +240,86 @@ public class AdjustFactory {
     public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
         AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
+
+    public static void setTestingMode(String baseUrl) {
+        AdjustFactory.baseUrl = baseUrl;
+        AdjustFactory.connectionOptions = new UtilNetworking.IConnectionOptions() {
+            @Override
+            public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk) {
+                UtilNetworking.ConnectionOptions defaultConnectionOption = new UtilNetworking.ConnectionOptions();
+                defaultConnectionOption.applyConnectionOptions(connection, clientSdk);
+                try {
+                    SSLContext sc = SSLContext.getInstance("TLS");
+                    sc.init(null, new TrustManager[]{
+                            new X509TrustManager() {
+                                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                                    getLogger().verbose("getAcceptedIssuers");
+                                    return null;
+                                }
+                                public void checkClientTrusted(
+                                        X509Certificate[] certs, String authType) {
+                                    getLogger().verbose("checkClientTrusted ");
+                                }
+                                public void checkServerTrusted(
+                                        X509Certificate[] certs, String authType) throws CertificateException {
+                                    getLogger().verbose("checkServerTrusted ");
+
+                                    String serverThumbprint = "7BCFF44099A35BC093BB48C5A6B9A516CDFDA0D1";
+                                    X509Certificate certificate = certs[0];
+
+                                    MessageDigest md = null;
+                                    try {
+                                        md = MessageDigest.getInstance("SHA1");
+                                        byte[] publicKey = md.digest(certificate.getEncoded());
+                                        String hexString = byte2HexFormatted(publicKey);
+
+                                        if (!hexString.equalsIgnoreCase(serverThumbprint)) {
+                                            throw new CertificateException();
+                                        }
+                                    } catch (NoSuchAlgorithmException e) {
+                                        getLogger().error("testingMode error %s", e.getMessage());
+                                    } catch (CertificateEncodingException e) {
+                                        getLogger().error("testingMode error %s", e.getMessage());
+                                    }
+                                }
+                            }
+                    }, new java.security.SecureRandom());
+                    connection.setSSLSocketFactory(sc.getSocketFactory());
+
+                    connection.setHostnameVerifier(new HostnameVerifier() {
+                        @Override
+                        public boolean verify(String hostname, SSLSession session) {
+                            getLogger().verbose("verify hostname ");
+                            return true;
+                        }
+                    });
+                } catch (Exception e) {
+                    getLogger().error("testingMode error %s", e.getMessage());
+                }
+            }
+        };
+    }
+
+    private static String byte2HexFormatted(byte[] arr) {
+        StringBuilder str = new StringBuilder(arr.length * 2);
+
+        for (int i = 0; i < arr.length; i++) {
+            String h = Integer.toHexString(arr[i]);
+            int l = h.length();
+
+            if (l == 1) {
+                h = "0" + h;
+            }
+
+            if (l > 2) {
+                h = h.substring(l - 2, l);
+            }
+
+            str.append(h.toUpperCase());
+
+            // if (i < (arr.length - 1)) str.append(':');
+        }
+        return str.toString();
+    }
+
 }
