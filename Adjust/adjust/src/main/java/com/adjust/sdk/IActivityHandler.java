@@ -73,4 +73,5 @@ public interface IActivityHandler {
 
     SessionParameters getSessionParameters();
 
+    String getBasePath();
 }

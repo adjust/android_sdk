@@ -56,6 +56,8 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     private BackoffStrategy backoffStrategy;
 
+    private String basePath;
+
     /**
      * Sending queue.
      */
@@ -89,10 +91,11 @@ public class SdkClickHandler implements ISdkClickHandler {
      * {@inheritDoc}
      */
     @Override
-    public void init(final IActivityHandler activityHandler, final boolean startsSending) {
-        paused = !startsSending;
-        packageQueue = new ArrayList<ActivityPackage>();
-        activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
+    public void init(IActivityHandler activityHandler, boolean startsSending) {
+        this.paused = !startsSending;
+        this.packageQueue = new ArrayList<ActivityPackage>();
+        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
+        this.basePath = activityHandler.getBasePath();
     }
 
     /**
@@ -303,7 +306,13 @@ public class SdkClickHandler implements ISdkClickHandler {
             installReferrer = sdkClickPackage.getParameters().get("referrer");
         }
 
-        String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
+        String url = AdjustFactory.getBaseUrl();
+
+        if (basePath != null) {
+            url += basePath;
+        }
+
+        String targetURL = url + sdkClickPackage.getPath();
 
         try {
             SdkClickResponseData responseData = (SdkClickResponseData) UtilNetworking.createPOSTHttpsURLConnection(

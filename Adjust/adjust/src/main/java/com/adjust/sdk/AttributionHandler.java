@@ -20,6 +20,7 @@ public class AttributionHandler implements IAttributionHandler {
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
 
     private boolean paused;
+    private String basePath;
 
     @Override
     public void teardown() {
@@ -55,6 +56,7 @@ public class AttributionHandler implements IAttributionHandler {
             }
         }, ATTRIBUTION_TIMER_NAME);
 
+        basePath = activityHandler.getBasePath();
         init(activityHandler, attributionPackage, startsSending);
     }
 
@@ -223,7 +225,7 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage);
+            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath);
 
             if (!(responseData instanceof AttributionResponseData)) {
                 return;

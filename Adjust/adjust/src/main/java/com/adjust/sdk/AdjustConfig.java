@@ -33,6 +33,7 @@ public class AdjustConfig {
     boolean startOffline;
     String secretId;
     String appSecret;
+    String basePath;
     boolean readMobileEquipmentIdentity;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
@@ -141,6 +142,10 @@ public class AdjustConfig {
 
     public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {
         this.readMobileEquipmentIdentity = readMobileEquipmentIdentity;
+    }
+
+    public void setBasePath(String basePath) {
+        this.basePath = basePath;
     }
 
     public boolean isValid() {

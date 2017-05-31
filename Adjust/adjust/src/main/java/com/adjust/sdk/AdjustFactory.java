@@ -23,7 +23,9 @@ public class AdjustFactory {
     private static BackoffStrategy sdkClickBackoffStrategy = null;
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
+    private static String baseUrl = Constants.BASE_URL;
 
+    // Getters
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
         URL url;
@@ -142,6 +144,12 @@ public class AdjustFactory {
         }
         return maxDelayStart;
     }
+
+    public static String getBaseUrl() {
+        return AdjustFactory.baseUrl;
+    }
+
+    // Setters
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
