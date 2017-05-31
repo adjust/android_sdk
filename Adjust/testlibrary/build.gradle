@@ -1,0 +1,32 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile 'com.google.code.gson:gson:2.8.0'
+}
+
+task clearJar(type: Delete) {
+    delete "build/outputs/adjust-testing.jar"
+}
+
+task makeJar(type: Copy) {
+    from('build/intermediates/bundles/debug/')
+    into('build/outputs/')
+    include('classes.jar')
+    rename('classes.jar', "adjust-testing.jar")
+}
+
+makeJar.dependsOn(clearJar, build)

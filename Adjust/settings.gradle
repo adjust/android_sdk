@@ -1,1 +1,1 @@
-include ':adjust', ':test', ':example'
+include ':adjust', ':test', ':example', ':testlibrary', ':testapp'

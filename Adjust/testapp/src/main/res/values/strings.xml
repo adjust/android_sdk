@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestApp</string>
+
+    <string name="btn_start_test_session">Start Test Session</string>
+</resources>
