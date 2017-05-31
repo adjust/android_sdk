@@ -929,6 +929,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onEventTrackingSucceededListener == null) {
+                        return;
+                    }
                     adjustConfig.onEventTrackingSucceededListener.onFinishedEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
                 }
             };
@@ -943,6 +949,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onEventTrackingFailedListener == null) {
+                        return;
+                    }
                     adjustConfig.onEventTrackingFailedListener.onFinishedEventTrackingFailed(eventResponseData.getFailureResponseData());
                 }
             };
@@ -1004,6 +1016,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onSessionTrackingSucceededListener == null) {
+                        return;
+                    }
                     adjustConfig.onSessionTrackingSucceededListener.onFinishedSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
                 }
             };
@@ -1018,6 +1036,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onSessionTrackingFailedListener == null) {
+                        return;
+                    }
                     adjustConfig.onSessionTrackingFailedListener.onFinishedSessionTrackingFailed(sessionResponseData.getFailureResponseData());
                 }
             };
@@ -1053,6 +1077,12 @@ public class ActivityHandler implements IActivityHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (adjustConfig == null) {
+                    return;
+                }
+                if (adjustConfig.onAttributionChangedListener == null) {
+                    return;
+                }
                 adjustConfig.onAttributionChangedListener.onAttributionChanged(attribution);
             }
         };
@@ -1071,6 +1101,9 @@ public class ActivityHandler implements IActivityHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (adjustConfig == null) {
+                    return;
+                }
                 boolean toLaunchDeeplink = true;
                 if (adjustConfig.onDeeplinkResponseListener != null) {
                     toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
