@@ -20,6 +20,7 @@ public class SdkClickHandler implements ISdkClickHandler {
     private List<ActivityPackage> packageQueue;
     private BackoffStrategy backoffStrategy;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
+    private String basePath;
 
     @Override
     public void teardown() {
@@ -53,6 +54,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         this.paused = !startsSending;
         this.packageQueue = new ArrayList<ActivityPackage>();
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
+        this.basePath = activityHandler.getBasePath();
     }
 
     @Override
@@ -124,7 +126,12 @@ public class SdkClickHandler implements ISdkClickHandler {
     }
 
     private void sendSdkClickI(ActivityPackage sdkClickPackage) {
-        String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
+        String url = AdjustFactory.getBaseUrl();
+        if (basePath != null) {
+            url += basePath;
+        }
+
+        String targetURL = url + sdkClickPackage.getPath();
 
         try {
             ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, sdkClickPackage, packageQueue.size() - 1);

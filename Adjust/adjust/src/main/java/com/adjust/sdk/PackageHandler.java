@@ -35,6 +35,7 @@ public class PackageHandler implements IPackageHandler {
     private Context context;
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
+    private String basePath;
 
     @Override
     public void teardown(boolean deleteState) {
@@ -88,6 +89,7 @@ public class PackageHandler implements IPackageHandler {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.context = context;
         this.paused = !startsSending;
+        this.basePath = activityHandler.getBasePath();
     }
 
     // add a package to the queue
@@ -193,6 +195,12 @@ public class PackageHandler implements IPackageHandler {
             }
         });
     }
+
+    @Override
+    public String getBasePath() {
+        return this.basePath;
+    }
+
     // internal methods run in dedicated queue thread
 
     private void initI() {

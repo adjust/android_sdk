@@ -54,6 +54,7 @@ public class ActivityHandler implements IActivityHandler {
     private TimerOnce backgroundTimer;
     private TimerOnce delayStartTimer;
     private InternalState internalState;
+    private String basePath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -636,6 +637,11 @@ public class ActivityHandler implements IActivityHandler {
         return attribution;
     }
 
+    @Override
+    public String getBasePath() {
+        return this.basePath;
+    }
+
     public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -750,6 +756,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         UtilNetworking.setUserAgent(adjustConfig.userAgent);
+
+        this.basePath = adjustConfig.basePath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
