@@ -115,6 +115,13 @@ public class ActivityHandler implements IActivityHandler {
         sessionParameters = null;
     }
 
+    static void deleteState(Context context) {
+        deleteActivityState(context);
+        deleteAttribution(context);
+        deleteSessionCallbackParameters(context);
+        deleteSessionPartnerParameters(context);
+    }
+
     public class InternalState {
         boolean enabled;
         boolean offline;

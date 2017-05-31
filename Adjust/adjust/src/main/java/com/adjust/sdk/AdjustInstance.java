@@ -196,9 +196,13 @@ public class AdjustInstance {
     }
 
     public void teardown(boolean deleteState) {
-        if (!checkActivityHandler()) return;
-        activityHandler.teardown(deleteState);
+        if (activityHandler != null) {
+            activityHandler.teardown(deleteState);
+        }
+        referrer = null;
         activityHandler = null;
+        sessionParametersActionsArray = null;
+        pushToken = null;
     }
 
     public void setPushToken(String token) {
