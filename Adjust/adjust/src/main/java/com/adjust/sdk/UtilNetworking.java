@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -39,8 +40,9 @@ public class UtilNetworking {
             URL url = new URL(urlString);
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
+            IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
 
-            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
+            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
             connection.setRequestMethod("POST");
             connection.setUseCaches(false);
@@ -71,8 +73,9 @@ public class UtilNetworking {
             Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+            IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
 
-            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
+            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
             connection.setRequestMethod("GET");
 
@@ -199,22 +202,13 @@ public class UtilNetworking {
         return result.toString();
     }
 
-    private static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
-        connection.setRequestProperty("Client-SDK", clientSdk);
-        connection.setConnectTimeout(Constants.ONE_MINUTE);
-        connection.setReadTimeout(Constants.ONE_MINUTE);
-
-        if (userAgent != null) {
-            connection.setRequestProperty("User-Agent", userAgent);
-        }
-    }
-
     private static Uri buildUri(String path, Map<String, String> parameters, String basePath) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         String scheme = Constants.SCHEME;
         String authority = Constants.AUTHORITY;
         String initialPath = "";
+
         try {
             String url = AdjustFactory.getBaseUrl();
             if (basePath != null) {
@@ -243,5 +237,22 @@ public class UtilNetworking {
         uriBuilder.appendQueryParameter("sent_at", dateString);
 
         return uriBuilder.build();
+    }
+
+    public interface IConnectionOptions {
+        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
+    }
+
+    static class ConnectionOptions implements IConnectionOptions {
+        @Override
+        public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk) {
+            connection.setRequestProperty("Client-SDK", clientSdk);
+            connection.setConnectTimeout(Constants.ONE_MINUTE);
+            connection.setReadTimeout(Constants.ONE_MINUTE);
+
+            if (userAgent != null) {
+                connection.setRequestProperty("User-Agent", userAgent);
+            }
+        }
     }
 }
