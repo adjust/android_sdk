@@ -19,7 +19,7 @@ import android.net.Uri;
  */
 public class Adjust {
 
-    private static AdjustInstance defaultInstance;
+    static AdjustInstance defaultInstance;
 
     private Adjust() {
     }

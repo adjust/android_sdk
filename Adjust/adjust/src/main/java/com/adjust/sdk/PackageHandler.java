@@ -67,6 +67,10 @@ public class PackageHandler implements IPackageHandler {
         backoffStrategy = null;
     }
 
+    static void deleteState(Context context) {
+        deletePackageQueue(context);
+    }
+
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {

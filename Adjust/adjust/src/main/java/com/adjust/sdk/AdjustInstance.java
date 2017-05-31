@@ -324,12 +324,17 @@ public class AdjustInstance {
      * @param deleteState boolean indicating should internal Adjust files also be removed or not
      */
     public void teardown(final boolean deleteState) {
-        if (!checkActivityHandler()) {
-            return;
+        if (activityHandler != null) {
+            activityHandler.teardown(deleteState);
         }
 
         activityHandler.teardown(deleteState);
+
         activityHandler = null;
+        preLaunchActionsArray = null;
+        pushToken = null;
+        startEnabled = null;
+        startOffline = false;
     }
 
     /**
