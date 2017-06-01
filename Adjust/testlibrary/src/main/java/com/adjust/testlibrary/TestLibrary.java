@@ -44,6 +44,7 @@ public class TestLibrary {
     BlockingQueue<String> waitControlQueue;
 
     String testNames = null;
+    boolean exitAfterEnd = true;
 
     public TestLibrary(String baseUrl, ICommandRawJsonListener commandRawJsonListener) {
         this(baseUrl);
@@ -90,9 +91,12 @@ public class TestLibrary {
         waitControlQueue = null;
     }
 
-
     public void setTests(String testNames) {
         this.testNames = testNames;
+    }
+
+    public void doNotExitAfterEnd() {
+        this.exitAfterEnd = false;
     }
 
     public void initTestSession(final String clientSdk) {
@@ -151,6 +155,9 @@ public class TestLibrary {
             controlChannel = null;
             teardown(false);
             debug("TestSessionEnd received");
+            if (exitAfterEnd) {
+                exit();
+            }
             return;
         }
 
@@ -226,13 +233,14 @@ public class TestLibrary {
 
     private void endTestI() {
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test"));
-        this.currentTest = null;
         if (httpResponse == null) {
+            if (exitAfterEnd) {
+                exit();
+            }
             return;
         }
 
         readHeadersI(httpResponse);
-        exit();
     }
 
     private void waitI(Map<String, List<String>> params) throws InterruptedException {
