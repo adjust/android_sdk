@@ -42,20 +42,20 @@ public class UtilsNetworking {
         return sendPostI(path, clientSdk, null, null);
     }
 
-    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testName) {
-        return sendPostI(path, clientSdk, testName, null);
+    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testNames) {
+        return sendPostI(path, clientSdk, testNames, null);
     }
 
     public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, Map<String, String> postBody) {
         return sendPostI(path, clientSdk, null, postBody);
     }
 
-    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testName, Map<String, String> postBody) {
+    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testNames, Map<String, String> postBody) {
         String targetURL = TestLibrary.baseUrl + path;
 
         try {
             connectionOptions.clientSdk = clientSdk;
-            connectionOptions.testName = testName;
+            connectionOptions.testNames = testNames;
 
             HttpsURLConnection connection = createPOSTHttpsURLConnection(
                     targetURL, postBody, connectionOptions);
@@ -135,15 +135,15 @@ public class UtilsNetworking {
 
     static class ConnectionOptions implements IConnectionOptions {
         public String clientSdk;
-        public String testName;
+        public String testNames;
 
         @Override
         public void applyConnectionOptions(HttpsURLConnection connection) {
             if (clientSdk != null) {
                 connection.setRequestProperty("Client-SDK", clientSdk);
             }
-            if (testName != null) {
-                connection.setRequestProperty("Test-Name", testName);
+            if (testNames != null) {
+                connection.setRequestProperty("Test-Names", testNames);
             }
             //Inject local ip address for Jenkins script
             connection.setRequestProperty("Local-Ip", getIPAddress(true));
