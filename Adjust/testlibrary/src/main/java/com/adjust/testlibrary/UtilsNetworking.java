@@ -35,20 +35,28 @@ public class UtilsNetworking {
     static HostnameVerifier hostnameVerifier;
 
     public static UtilsNetworking.HttpResponse sendPostI(String path) {
-        return sendPostI(path, null, null);
+        return sendPostI(path, null, null, null);
     }
 
     public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk) {
-        return sendPostI(path, clientSdk, null);
+        return sendPostI(path, clientSdk, null, null);
+    }
+
+    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testName) {
+        return sendPostI(path, clientSdk, testName, null);
     }
 
     public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, Map<String, String> postBody) {
+        return sendPostI(path, clientSdk, null, postBody);
+    }
+
+    public static UtilsNetworking.HttpResponse sendPostI(String path, String clientSdk, String testName, Map<String, String> postBody) {
         String targetURL = TestLibrary.baseUrl + path;
 
         try {
-            if (clientSdk != null) {
-                connectionOptions.clientSdk = clientSdk;
-            }
+            connectionOptions.clientSdk = clientSdk;
+            connectionOptions.testName = testName;
+
             HttpsURLConnection connection = createPOSTHttpsURLConnection(
                     targetURL, postBody, connectionOptions);
             UtilsNetworking.HttpResponse httpResponse = readHttpResponse(connection);
@@ -127,15 +135,19 @@ public class UtilsNetworking {
 
     static class ConnectionOptions implements IConnectionOptions {
         public String clientSdk;
+        public String testName;
 
         @Override
         public void applyConnectionOptions(HttpsURLConnection connection) {
-            if (this.clientSdk != null) {
+            if (clientSdk != null) {
                 connection.setRequestProperty("Client-SDK", clientSdk);
-
-                //Inject local ip address for Jenkins script
-                connection.setRequestProperty("Local-Ip", getIPAddress(true));
             }
+            if (testName != null) {
+                connection.setRequestProperty("Test-Name", testName);
+            }
+            //Inject local ip address for Jenkins script
+            connection.setRequestProperty("Local-Ip", getIPAddress(true));
+
             connection.setConnectTimeout(ONE_MINUTE);
             connection.setReadTimeout(ONE_MINUTE);
             try {

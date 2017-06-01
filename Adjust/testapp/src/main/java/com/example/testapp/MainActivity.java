@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTestSession() {
         testLibrary.initTestSession("android4.11.4");
+        //testLibrary.initTest("android4.11.4", "Test_Event");
     }
 
     public void onStartTestSession(View v) {
