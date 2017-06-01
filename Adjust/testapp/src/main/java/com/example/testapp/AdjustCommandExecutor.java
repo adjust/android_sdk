@@ -398,14 +398,23 @@ public class AdjustCommandExecutor {
     }
 
     private void removeSessionCallbackParameter() {
-        String key = command.getFirstParameterValue("key");
-        Adjust.removeSessionCallbackParameter(key);
+        if (command.containsParameter("key")) {
+            List<String> keys = command.parameters.get("key");
+            for (int i = 0; i<keys.size() ; i = i+1) {
+                String key = keys.get(i);
+                Adjust.removeSessionCallbackParameter(key);
+            }
+        }
     }
 
     private void removeSessionPartnerParameter() {
-        String key = command.getFirstParameterValue("key");
-
-        Adjust.removeSessionPartnerParameter(key);
+        if (command.containsParameter("key")) {
+            List<String> keys = command.parameters.get("key");
+            for (int i = 0; i<keys.size() ; i = i+1) {
+                String key = keys.get(i);
+                Adjust.removeSessionPartnerParameter(key);
+            }
+        }
     }
 
     private void resetSessionCallbackParameters() {
