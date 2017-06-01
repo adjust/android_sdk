@@ -43,6 +43,8 @@ public class TestLibrary {
     Gson gson = new Gson();
     BlockingQueue<String> waitControlQueue;
 
+    String testNames = null;
+
     public TestLibrary(String baseUrl, ICommandRawJsonListener commandRawJsonListener) {
         this(baseUrl);
         this.commandRawJsonListener = commandRawJsonListener;
@@ -88,6 +90,11 @@ public class TestLibrary {
         waitControlQueue = null;
     }
 
+
+    public void setTests(String testNames) {
+        this.testNames = testNames;
+    }
+
     public void initTestSession(final String clientSdk) {
         resetTestLibrary();
 
@@ -97,18 +104,6 @@ public class TestLibrary {
                 sendTestSessionI(clientSdk);
             }
         });
-    }
-
-    public void initTest(final String clientSdk, final String testName) {
-        resetTestLibrary();
-
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                initTestI(clientSdk, testName);
-            }
-        });
-
     }
 
     public void sendInfoToServer(final Map<String, String> infoToServer) {
@@ -130,16 +125,7 @@ public class TestLibrary {
     }
 
     private void sendTestSessionI(String clientSdk) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk);
-        if (httpResponse == null) {
-            return;
-        }
-
-        readHeadersI(httpResponse);
-    }
-
-    private void initTestI(String clientSdk, String testName) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testName);
+        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testNames);
         if (httpResponse == null) {
             return;
         }
