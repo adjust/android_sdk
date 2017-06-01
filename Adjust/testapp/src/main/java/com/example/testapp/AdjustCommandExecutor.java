@@ -209,7 +209,9 @@ public class AdjustCommandExecutor {
                     sessionSuccessDataMap.put("message", sessionSuccessResponseData.message);
                     sessionSuccessDataMap.put("timestamp", sessionSuccessResponseData.timestamp);
                     sessionSuccessDataMap.put("adid", sessionSuccessResponseData.adid);
-                    sessionSuccessDataMap.put("jsonResponse", sessionSuccessResponseData.jsonResponse.toString());
+                    if (sessionSuccessResponseData.jsonResponse != null) {
+                        sessionSuccessDataMap.put("jsonResponse", sessionSuccessResponseData.jsonResponse.toString());
+                    }
                     MainActivity.testLibrary.sendInfoToServer(sessionSuccessDataMap);
                 }
             });
@@ -225,7 +227,9 @@ public class AdjustCommandExecutor {
                     sessionFailureDataMap.put("timestamp", sessionFailureResponseData.timestamp);
                     sessionFailureDataMap.put("adid", sessionFailureResponseData.adid);
                     sessionFailureDataMap.put("willRetry", String.valueOf(sessionFailureResponseData.willRetry));
-                    sessionFailureDataMap.put("jsonResponse", sessionFailureResponseData.jsonResponse.toString());
+                    if (sessionFailureResponseData.jsonResponse != null) {
+                        sessionFailureDataMap.put("jsonResponse", sessionFailureResponseData.jsonResponse.toString());
+                    }
                     MainActivity.testLibrary.sendInfoToServer(sessionFailureDataMap);
                 }
             });
@@ -241,7 +245,9 @@ public class AdjustCommandExecutor {
                     eventSuccessDataMap.put("timestamp", eventSuccessResponseData.timestamp);
                     eventSuccessDataMap.put("adid", eventSuccessResponseData.adid);
                     eventSuccessDataMap.put("eventToken", eventSuccessResponseData.eventToken);
-                    eventSuccessDataMap.put("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
+                    if (eventSuccessResponseData.jsonResponse != null ) {
+                        eventSuccessDataMap.put("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
+                    }
                     MainActivity.testLibrary.sendInfoToServer(eventSuccessDataMap);
                 }
             });
@@ -258,7 +264,9 @@ public class AdjustCommandExecutor {
                     eventFailureDataMap.put("adid", eventFailureResponseData.adid);
                     eventFailureDataMap.put("eventToken", eventFailureResponseData.eventToken);
                     eventFailureDataMap.put("willRetry", String.valueOf(eventFailureResponseData.willRetry));
-                    eventFailureDataMap.put("jsonResponse", eventFailureResponseData.jsonResponse.toString());
+                    if (eventFailureResponseData.jsonResponse != null) {
+                        eventFailureDataMap.put("jsonResponse", eventFailureResponseData.jsonResponse.toString());
+                    }
                     MainActivity.testLibrary.sendInfoToServer(eventFailureDataMap);
                 }
             });
