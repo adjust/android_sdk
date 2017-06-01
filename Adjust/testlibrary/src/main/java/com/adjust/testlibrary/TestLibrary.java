@@ -99,6 +99,18 @@ public class TestLibrary {
         });
     }
 
+    public void initTest(final String clientSdk, final String testName) {
+        resetTestLibrary();
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                initTestI(clientSdk, testName);
+            }
+        });
+
+    }
+
     public void sendInfoToServer(final Map<String, String> infoToServer) {
         executor.submit(new Runnable() {
             @Override
@@ -119,6 +131,15 @@ public class TestLibrary {
 
     private void sendTestSessionI(String clientSdk) {
         UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk);
+        if (httpResponse == null) {
+            return;
+        }
+
+        readHeadersI(httpResponse);
+    }
+
+    private void initTestI(String clientSdk, String testName) {
+        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testName);
         if (httpResponse == null) {
             return;
         }
