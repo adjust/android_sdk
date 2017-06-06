@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm -vf app.apk
+cd ../Adjust
+./gradlew clean :testapp:assemble
+cp testapp/build/outputs/apk/testapp-debug.apk ../script/app.apk

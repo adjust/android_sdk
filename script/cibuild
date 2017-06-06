@@ -1,0 +1,120 @@
+#!/bin/bash
+export PYTHONIOENCODING=utf8
+
+APK_PATH=app.apk
+PACKAGE_NAME=com.example.testapp
+ACTIVITY_NAME=MainActivity
+
+ANDROID_TARGET=$1
+ANDROID_TAG="google_apis"
+ANDROID_ABI="x86"
+
+function create_avd {
+    echo "[*cibuild*] Creating AVD: ci_avd"
+
+    echo no | avdmanager create avd --force --name ci_avd --package "$ANDROID_TARGET" --tag "$ANDROID_TAG" --abi "$ANDROID_ABI"
+}
+
+function start-emulator {
+    echo "[*cibuild*] Starting emulator: ci_avd"
+    ${ANDROID_HOME}/tools/emulator -avd ci_avd -no-boot-anim -no-window &
+
+    # This waits for emulator to start up
+    echo  "[*cibuild*] Waiting for emulator to boot completely"
+    wait_for_boot_complete "getprop dev.bootcomplete" 1
+    wait_for_boot_complete "getprop sys.boot_completed" 1
+
+    echo "[*cibuild*] Boot completed"
+
+    #echo "[*cibuild*] Removing app"
+    #adb uninstall $PACKAGE_NAME 
+
+    echo "[*cibuild*] Installing app"
+    adb install $APK_PATH
+
+    echo "[*cibuild*] Run app"
+    adb shell am start -n $PACKAGE_NAME/.$ACTIVITY_NAME
+
+    echo "[*cibuild*] Sleeping..."
+    sleep 30
+    echo "[*cibuild*] Woke up!"
+
+    wait_for_boot_complete_inverse "ps" $PACKAGE_NAME
+    echo "[*cibuild*] Finished with $PACKAGE_NAME"
+
+    local ip_addr=`adb shell ifconfig eth0 | grep 'inet addr' | cut -d ':' -f 2 | cut -d ' ' -f 1`
+    echo "[*cibuild*] ip_address for avd is $ip_addr"
+
+    echo "[*cibuild*] Killing all running emulators..."
+    adb devices | grep emulator | cut -f1 | while read line; do adb -s $line emu kill; done
+    echo "[*cibuild*] emulators killed"
+
+    # echo logs and get the test result
+    output_logs_and_get_test_result $ip_addr
+}
+
+function output_logs_and_get_test_result {
+    local ip_addr=$1
+
+    echo "[*] ip_address for ci_avd is $ip_addr"
+    
+    local test_result_json=`curl "http://localhost:8080/test_status?ipAddr=$ip_addr"`
+    local test_result_status=`echo $test_result_json | python -c "import sys, json; print json.load(sys.stdin)['status']"`
+    local test_result_message=`echo $test_result_json | python -c "import sys, json; print json.load(sys.stdin)['message']"`
+    echo "[*] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*] >> START test for ci_avd\n"
+    echo "[*] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*] >> Status: $test_result_status"
+    echo "[*] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*] >> Logs: "
+    printf "$test_result_message"
+    echo ""
+    echo "[*] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    echo "[*] >> END test for ci_avd"
+    echo "[*] >>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+
+    exit $test_result_status
+}
+
+function wait_for_boot_complete_inverse {
+    local boot_property=$1  
+    local boot_property_test=$2
+
+    echo "[*cibuild*] Checking $boot_property... against $boot_property_test"
+    local result=`adb shell $boot_property 2>/dev/null | grep "$boot_property_test"`
+
+    while [ -n "$result" ]; do
+        sleep 1
+        result=`adb shell $boot_property 2>/dev/null | grep "$boot_property_test"`
+    done
+}
+
+function wait_for_boot_complete {
+    local boot_property=$1  
+    local boot_property_test=$2
+
+    echo "[*cibuild*] Checking $boot_property... against $boot_property_test"
+    local result=`adb shell $boot_property 2>/dev/null | grep "$boot_property_test"`
+
+    while [ -z "$result" ]; do
+        sleep 1
+        result=`adb shell $boot_property 2>/dev/null | grep "$boot_property_test"`
+    done
+}
+
+function main {
+    create_avd
+    start-emulator
+}
+
+## Entry point
+if [ "$#" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    echo "Usage: $0 ANDROID_TARGET"
+    echo "Example: cibuild 'system-images;android-25;google_apis;x86'"
+    exit 1
+fi
+
+cd $(dirname $0) 
+./makeproject
+main
