@@ -147,6 +147,11 @@ public class AdjustCommandExecutor {
             adjustConfig.setLogLevel(logLevel);
         }
 
+        if (command.containsParameter("sdkPrefix")) {
+            String sdkPrefix = command.getFirstParameterValue("sdkPrefix");
+            adjustConfig.setSdkPrefix(sdkPrefix);
+        }
+
         if (command.containsParameter("defaultTracker")) {
             String defaultTracker = command.getFirstParameterValue("defaultTracker");
             adjustConfig.setDefaultTracker(defaultTracker);
