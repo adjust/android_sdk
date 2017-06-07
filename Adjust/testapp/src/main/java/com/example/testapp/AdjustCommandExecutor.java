@@ -191,16 +191,16 @@ public class AdjustCommandExecutor {
                 @Override
                 public void onAttributionChanged(AdjustAttribution attribution) {
                     Log.d("TestApp", "attribution = " + attribution.toString());
-                    Map<String, String> attributionMap = new HashMap<String, String>(8);
-                    attributionMap.put("trackerToken", attribution.trackerToken);
-                    attributionMap.put("trackerName", attribution.trackerName);
-                    attributionMap.put("network", attribution.network);
-                    attributionMap.put("campaign", attribution.campaign);
-                    attributionMap.put("adgroup", attribution.adgroup);
-                    attributionMap.put("creative", attribution.creative);
-                    attributionMap.put("clickLabel", attribution.clickLabel);
-                    attributionMap.put("adid", attribution.adid);
-                    MainActivity.testLibrary.sendInfoToServer(attributionMap);
+
+                    MainActivity.testLibrary.addInfoToSend("trackerToken", attribution.trackerToken);
+                    MainActivity.testLibrary.addInfoToSend("trackerName", attribution.trackerName);
+                    MainActivity.testLibrary.addInfoToSend("network", attribution.network);
+                    MainActivity.testLibrary.addInfoToSend("campaign", attribution.campaign);
+                    MainActivity.testLibrary.addInfoToSend("adgroup", attribution.adgroup);
+                    MainActivity.testLibrary.addInfoToSend("creative", attribution.creative);
+                    MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
+                    MainActivity.testLibrary.addInfoToSend("adid", attribution.adid);
+                    MainActivity.testLibrary.sendInfoToServer();
                 }
             });
         }
@@ -210,14 +210,14 @@ public class AdjustCommandExecutor {
                 @Override
                 public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                     Log.d("TestApp", "session_success = " + sessionSuccessResponseData.toString());
-                    Map<String, String> sessionSuccessDataMap = new HashMap<String, String>();
-                    sessionSuccessDataMap.put("message", sessionSuccessResponseData.message);
-                    sessionSuccessDataMap.put("timestamp", sessionSuccessResponseData.timestamp);
-                    sessionSuccessDataMap.put("adid", sessionSuccessResponseData.adid);
+
+                    MainActivity.testLibrary.addInfoToSend("message", sessionSuccessResponseData.message);
+                    MainActivity.testLibrary.addInfoToSend("timestamp", sessionSuccessResponseData.timestamp);
+                    MainActivity.testLibrary.addInfoToSend("adid", sessionSuccessResponseData.adid);
                     if (sessionSuccessResponseData.jsonResponse != null) {
-                        sessionSuccessDataMap.put("jsonResponse", sessionSuccessResponseData.jsonResponse.toString());
+                        MainActivity.testLibrary.addInfoToSend("jsonResponse", sessionSuccessResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer(sessionSuccessDataMap);
+                    MainActivity.testLibrary.sendInfoToServer();
                 }
             });
         }
@@ -227,15 +227,15 @@ public class AdjustCommandExecutor {
                 @Override
                 public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
                     Log.d("TestApp", "session_fail = " + sessionFailureResponseData.toString());
-                    Map<String, String> sessionFailureDataMap = new HashMap<String, String>();
-                    sessionFailureDataMap.put("message", sessionFailureResponseData.message);
-                    sessionFailureDataMap.put("timestamp", sessionFailureResponseData.timestamp);
-                    sessionFailureDataMap.put("adid", sessionFailureResponseData.adid);
-                    sessionFailureDataMap.put("willRetry", String.valueOf(sessionFailureResponseData.willRetry));
+
+                    MainActivity.testLibrary.addInfoToSend("message", sessionFailureResponseData.message);
+                    MainActivity.testLibrary.addInfoToSend("timestamp", sessionFailureResponseData.timestamp);
+                    MainActivity.testLibrary.addInfoToSend("adid", sessionFailureResponseData.adid);
+                    MainActivity.testLibrary.addInfoToSend("willRetry", String.valueOf(sessionFailureResponseData.willRetry));
                     if (sessionFailureResponseData.jsonResponse != null) {
-                        sessionFailureDataMap.put("jsonResponse", sessionFailureResponseData.jsonResponse.toString());
+                        MainActivity.testLibrary.addInfoToSend("jsonResponse", sessionFailureResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer(sessionFailureDataMap);
+                    MainActivity.testLibrary.sendInfoToServer();
                 }
             });
         }
@@ -245,15 +245,15 @@ public class AdjustCommandExecutor {
                 @Override
                 public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                     Log.d("TestApp", "event_success = " + eventSuccessResponseData.toString());
-                    Map<String, String> eventSuccessDataMap = new HashMap<String, String>();
-                    eventSuccessDataMap.put("message", eventSuccessResponseData.message);
-                    eventSuccessDataMap.put("timestamp", eventSuccessResponseData.timestamp);
-                    eventSuccessDataMap.put("adid", eventSuccessResponseData.adid);
-                    eventSuccessDataMap.put("eventToken", eventSuccessResponseData.eventToken);
+
+                    MainActivity.testLibrary.addInfoToSend("message", eventSuccessResponseData.message);
+                    MainActivity.testLibrary.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
+                    MainActivity.testLibrary.addInfoToSend("adid", eventSuccessResponseData.adid);
+                    MainActivity.testLibrary.addInfoToSend("eventToken", eventSuccessResponseData.eventToken);
                     if (eventSuccessResponseData.jsonResponse != null ) {
-                        eventSuccessDataMap.put("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
+                        MainActivity.testLibrary.addInfoToSend("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer(eventSuccessDataMap);
+                    MainActivity.testLibrary.sendInfoToServer();
                 }
             });
         }
@@ -263,16 +263,16 @@ public class AdjustCommandExecutor {
                 @Override
                 public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                     Log.d("TestApp", "event_fail = " + eventFailureResponseData.toString());
-                    Map<String, String> eventFailureDataMap = new HashMap<String, String>();
-                    eventFailureDataMap.put("message", eventFailureResponseData.message);
-                    eventFailureDataMap.put("timestamp", eventFailureResponseData.timestamp);
-                    eventFailureDataMap.put("adid", eventFailureResponseData.adid);
-                    eventFailureDataMap.put("eventToken", eventFailureResponseData.eventToken);
-                    eventFailureDataMap.put("willRetry", String.valueOf(eventFailureResponseData.willRetry));
+
+                    MainActivity.testLibrary.addInfoToSend("message", eventFailureResponseData.message);
+                    MainActivity.testLibrary.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
+                    MainActivity.testLibrary.addInfoToSend("adid", eventFailureResponseData.adid);
+                    MainActivity.testLibrary.addInfoToSend("eventToken", eventFailureResponseData.eventToken);
+                    MainActivity.testLibrary.addInfoToSend("willRetry", String.valueOf(eventFailureResponseData.willRetry));
                     if (eventFailureResponseData.jsonResponse != null) {
-                        eventFailureDataMap.put("jsonResponse", eventFailureResponseData.jsonResponse.toString());
+                        MainActivity.testLibrary.addInfoToSend("jsonResponse", eventFailureResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer(eventFailureDataMap);
+                    MainActivity.testLibrary.sendInfoToServer();
                 }
             });
         }
