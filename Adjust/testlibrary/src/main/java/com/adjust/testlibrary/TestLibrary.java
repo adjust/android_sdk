@@ -66,6 +66,7 @@ public class TestLibrary {
         debug("base url: %s", baseUrl);
     }
 
+    // resets test library to initial state
     void resetTestLibrary() {
         teardown(true);
 
@@ -73,6 +74,7 @@ public class TestLibrary {
         waitControlQueue = new LinkedBlockingQueue<String>();
     }
 
+    // clears test library
     private void teardown(boolean shutdownNow) {
         if (executor != null) {
             if (shutdownNow) {
@@ -85,10 +87,27 @@ public class TestLibrary {
         }
         executor = null;
 
+        clearTest();
+    }
+
+    // clear for each test
+    private void clearTest() {
         if (waitControlQueue != null) {
             waitControlQueue.clear();
         }
         waitControlQueue = null;
+        if (controlChannel != null) {
+            controlChannel.teardown();
+        }
+        controlChannel = null;
+    }
+
+    // reset for each test
+    private void resetTest() {
+        clearTest();
+
+        waitControlQueue = new LinkedBlockingQueue<String>();
+        controlChannel = new ControlChannel(this);
     }
 
     public void setTests(String testNames) {
@@ -149,10 +168,6 @@ public class TestLibrary {
 
     public void readHeadersI(UtilsNetworking.HttpResponse httpResponse) {
         if (httpResponse.headerFields.containsKey(TEST_SESSION_END_HEADER)) {
-            if (controlChannel != null) {
-                controlChannel.teardown();
-            }
-            controlChannel = null;
             teardown(false);
             debug("TestSessionEnd received");
             if (exitAfterEnd) {
@@ -167,10 +182,7 @@ public class TestLibrary {
 
         if (httpResponse.headerFields.containsKey(TEST_SCRIPT_HEADER)) {
             currentTest = httpResponse.headerFields.get(TEST_SCRIPT_HEADER).get(0);
-            if (controlChannel != null) {
-                controlChannel.teardown();
-            }
-            controlChannel = new ControlChannel(this);
+            resetTest();
 
             List<TestCommand> testCommands = Arrays.asList(gson.fromJson(httpResponse.response, TestCommand[].class));
             try {
