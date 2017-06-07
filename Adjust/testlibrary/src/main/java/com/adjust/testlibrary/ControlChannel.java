@@ -2,8 +2,6 @@ package com.adjust.testlibrary;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.adjust.testlibrary.Constants.TEST_CANCELTEST_HEADER;

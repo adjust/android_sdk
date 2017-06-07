@@ -5,6 +5,7 @@ import android.os.SystemClock;
 import com.google.gson.Gson;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -42,6 +43,7 @@ public class TestLibrary {
     String currentBasePath;
     Gson gson = new Gson();
     BlockingQueue<String> waitControlQueue;
+    Map<String, String> infoToServer;
 
     String testNames = null;
     boolean exitAfterEnd = true;
@@ -100,6 +102,7 @@ public class TestLibrary {
             controlChannel.teardown();
         }
         controlChannel = null;
+        infoToServer = null;
     }
 
     // reset for each test
@@ -129,14 +132,23 @@ public class TestLibrary {
         });
     }
 
-    public void sendInfoToServer(final Map<String, String> infoToServer) {
+    public void addInfoToSend(String key, String value) {
+        if (infoToServer == null) {
+            infoToServer = new HashMap<String, String>();
+        }
+
+        infoToServer.put(key, value);
+    }
+
+    public void sendInfoToServer() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInfoToServerI(infoToServer);
+                sendInfoToServerI();
             }
         });
     }
+
 
     void readHeaders(final UtilsNetworking.HttpResponse httpResponse) {
         executor.submit(new Runnable() {
@@ -156,9 +168,10 @@ public class TestLibrary {
         readHeadersI(httpResponse);
     }
 
-    private void sendInfoToServerI(Map<String, String> infoToServer) {
+    private void sendInfoToServerI() {
         debug("sendInfoToServerI called");
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/test_info"), null, infoToServer);
+        infoToServer = null;
         if (httpResponse == null) {
             return;
         }
