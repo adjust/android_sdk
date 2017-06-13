@@ -722,7 +722,7 @@ String adid = Adjust.getAdid();
 
 ### <a id="user-attribution"></a>User attribution
 
-Like described in [attribution callback scetion](#attribution-callback), this callback get triggered providing you info about new attribution when ever it changes. In case you want to access info about your user's current attribution when ever you need it, you can make a call to following method of the `Adjust` instance:
+Like described in [attribution callback section](#attribution-callback), this callback get triggered providing you info about new attribution when ever it changes. In case you want to access info about your user's current attribution when ever you need it, you can make a call to following method of the `Adjust` instance:
 
 ```java
 AdjustAttribution attribution = Adjust.getAttribution();
