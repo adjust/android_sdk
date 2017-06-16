@@ -35,7 +35,8 @@ public class AdjustCommandExecutor {
     String basePath;
     private static final String DefaultConfigName = "defaultConfig";
     private static final String DefaultEventName = "defaultEvent";
-    private Map<String, Object> savedInstances = new HashMap<String, Object>();
+    private Map<Integer, AdjustEvent> savedEvents = new HashMap<Integer, AdjustEvent>();
+    private Map<Integer, AdjustConfig> savedConfigs = new HashMap<Integer, AdjustConfig>();
     Command command;
 
     public AdjustCommandExecutor(Context context) {
@@ -99,16 +100,16 @@ public class AdjustCommandExecutor {
     }
 
     private void config() {
-        String configName = null;
+        int configNumber = 0;
         if (command.parameters.containsKey("configName")) {
-            configName = command.getFirstParameterValue("configName");
-        } else {
-            configName = DefaultConfigName;
+            String configName = command.getFirstParameterValue("configName");
+            configNumber = Integer.parseInt(configName.substring(configName.length() - 1));
         }
 
         AdjustConfig adjustConfig = null;
-        if (savedInstances.containsKey(configName)) {
-            adjustConfig = (AdjustConfig)savedInstances.get(configName);
+
+        if (savedConfigs.containsKey(configNumber)) {
+            adjustConfig = savedConfigs.get(configNumber);
         } else {
             String environment = command.getFirstParameterValue("environment");
             String appToken = command.getFirstParameterValue("appToken");
@@ -121,7 +122,7 @@ public class AdjustCommandExecutor {
 //            adjustConfig.setLogLevel(LogLevel.valueOf(logLevel));
             adjustConfig.setLogLevel(LogLevel.VERBOSE);
 
-            savedInstances.put(configName, adjustConfig);
+            savedConfigs.put(configNumber, adjustConfig);
         }
 
         if (command.containsParameter("logLevel")) {
@@ -280,34 +281,32 @@ public class AdjustCommandExecutor {
 
     private void start() {
         config();
-        String configName = null;
+        int configNumber = 0;
         if (command.parameters.containsKey("configName")) {
-            configName = command.getFirstParameterValue("configName");
-        } else {
-            configName = DefaultConfigName;
+            String configName = command.getFirstParameterValue("configName");
+            configNumber = Integer.parseInt(configName.substring(configName.length() - 1));
         }
 
-        AdjustConfig adjustConfig = (AdjustConfig)savedInstances.get(configName);
+        AdjustConfig adjustConfig = savedConfigs.get(configNumber);
 
         adjustConfig.setBasePath(basePath);
         Adjust.onCreate(adjustConfig);
     }
 
     private void event() throws NullPointerException {
-        String eventName = null;
+        int eventNumber = 0;
         if (command.parameters.containsKey("eventName")) {
-            eventName = command.getFirstParameterValue("eventName");
-        } else {
-            eventName = DefaultEventName;
+            String eventName = command.getFirstParameterValue("eventName");
+            eventNumber = Integer.parseInt(eventName.substring(eventName.length() - 1));
         }
 
         AdjustEvent adjustEvent = null;
-        if (savedInstances.containsKey(eventName)) {
-            adjustEvent = (AdjustEvent)savedInstances.get(eventName);
+        if (savedEvents.containsKey(eventNumber)) {
+            adjustEvent = savedEvents.get(eventNumber);
         } else {
             String eventToken = command.getFirstParameterValue("eventToken");
             adjustEvent = new AdjustEvent(eventToken);
-            savedInstances.put(eventName, adjustEvent);
+            savedEvents.put(eventNumber, adjustEvent);
         }
 
         if (command.parameters.containsKey("revenue")) {
@@ -343,13 +342,13 @@ public class AdjustCommandExecutor {
 
     private void trackEvent() {
         event();
-        String eventName = null;
+        int eventNumber = 0;
         if (command.parameters.containsKey("eventName")) {
-            eventName = command.getFirstParameterValue("eventName");
-        } else {
-            eventName = DefaultEventName;
+            String eventName = command.getFirstParameterValue("eventName");
+            eventNumber = Integer.parseInt(eventName.substring(eventName.length() - 1));
         }
-        AdjustEvent adjustEvent = (AdjustEvent)savedInstances.get(eventName);
+
+        AdjustEvent adjustEvent = savedEvents.get(eventNumber);
         Adjust.trackEvent(adjustEvent);
     }
 
@@ -466,7 +465,8 @@ public class AdjustCommandExecutor {
         AdjustFactory.setTimerStart(-1);
         AdjustFactory.setSessionInterval(-1);
         AdjustFactory.setSubsessionInterval(-1);
-        savedInstances = new HashMap<>();
+        savedEvents = new HashMap<Integer, AdjustEvent>();
+        savedConfigs = new HashMap<Integer, AdjustConfig>();
     }
 
     private void testEnd() {
