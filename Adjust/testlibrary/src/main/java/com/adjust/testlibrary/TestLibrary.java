@@ -35,6 +35,7 @@ import static com.adjust.testlibrary.UtilsNetworking.sendPostI;
 public class TestLibrary {
     static String baseUrl;
     ExecutorService executor;
+    IOnExitListener onExitListener;
     ICommandListener commandListener;
     ICommandJsonListener commandJsonListener;
     ICommandRawJsonListener commandRawJsonListener;
@@ -130,6 +131,10 @@ public class TestLibrary {
                 sendTestSessionI(clientSdk);
             }
         });
+    }
+
+    public void setOnExitListener(IOnExitListener onExitListener) {
+        this.onExitListener = onExitListener;
     }
 
     public void addInfoToSend(String key, String value) {
@@ -285,6 +290,9 @@ public class TestLibrary {
     }
 
     private void exit() {
+        if(onExitListener != null){
+            onExitListener.onExit();
+        }
         System.exit(0);
     }
 }
