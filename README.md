@@ -582,7 +582,7 @@ The listener function will be called after the SDK receives the final attributio
 - `String clickLabel` the click label of the current install.
 - `String adid` the adjust device identifier.
 
-If any of the values is not available, it's value will default to `null`.
+If any value is unavailable, it will default to `null`.
 
 ### <a id="session-event-callbacks"></a>Session and event callbacks
 
@@ -637,7 +637,7 @@ Both event response data objects contain:
 
 - `String eventToken` the event token, if the package tracked was an event.
 
-If any of these values is not available, it's value will default to `null`.
+If any value is unavailable, it will default to `null`.
 
 And both event and session failed objects also contain:
 
