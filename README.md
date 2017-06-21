@@ -582,6 +582,8 @@ The listener function will be called after the SDK receives the final attributio
 - `String clickLabel` the click label of the current install.
 - `String adid` the adjust device identifier.
 
+If any value is unavailable, it will default to `null`.
+
 ### <a id="session-event-callbacks"></a>Session and event callbacks
 
 You can register a listener to be notified when events or sessions are tracked. There are four listeners: one for tracking successful events, one for tracking failed events, one for tracking successful sessions and one for tracking failed sessions. You can add any number of listeners after creating the `AdjustConfig` object:
@@ -634,6 +636,8 @@ The listener function will be called after the SDK tries to send a package to th
 Both event response data objects contain:
 
 - `String eventToken` the event token, if the package tracked was an event.
+
+If any value is unavailable, it will default to `null`.
 
 And both event and session failed objects also contain:
 
