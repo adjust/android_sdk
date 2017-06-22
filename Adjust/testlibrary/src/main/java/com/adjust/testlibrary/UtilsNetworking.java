@@ -67,9 +67,9 @@ public class UtilsNetworking {
 
             return httpResponse;
         } catch (IOException e) {
-            e.printStackTrace();
+            error(e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            error(e.getMessage());
         }
         return null;
     }
