@@ -33,7 +33,7 @@ public class Utils {
 
     public static void error(String message, Object... parameters) {
         try {
-            Log.d(LOGTAG, String.format(Locale.US, message, parameters));
+            Log.e(LOGTAG, String.format(Locale.US, message, parameters));
         } catch (Exception e) {
             Log.e(LOGTAG, String.format(Locale.US, "Error formating log message: %s, with params: %s"
                     , message, Arrays.toString(parameters)));
