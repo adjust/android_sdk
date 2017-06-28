@@ -385,14 +385,12 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void setAskingAttribution(final boolean askingAttribution) {
-        Runnable saveAskingAttribution = new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                activityState.askingAttribution = askingAttribution;
+                setAskingAttributionI(askingAttribution);
             }
-        };
-
-        writeActivityStateS(saveAskingAttribution);
+        });
     }
 
     @Override
@@ -1125,6 +1123,12 @@ public class ActivityHandler implements IActivityHandler {
         updateHandlersStatusAndSendI();
     }
 
+    private void setAskingAttributionI(boolean askingAttribution) {
+        activityState.askingAttribution = askingAttribution;
+
+        writeActivityStateI();
+    }
+
     private void sendReferrerI(String referrer, long clickTime) {
         if (referrer == null || referrer.length() == 0 ) {
             return;
@@ -1648,16 +1652,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void writeActivityStateI() {
-        writeActivityStateS(null);
-    }
-
-    private void writeActivityStateS(Runnable changeActivityState) {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
-            }
-            if (changeActivityState != null) {
-                changeActivityState.run();
             }
             Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
         }
