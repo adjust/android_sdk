@@ -8,7 +8,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.mock.MockContext;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by pfms on 08/08/2016.
@@ -1921,7 +1919,7 @@ public class TestActivityHandler {
 
         // if it's the first launch
         //if (internalState.isFirstLaunch()) {
-        //    if (!internalState.isSessionResponseProcessed()) {
+        //    if (internalState.hasSessionResponseNotBeenProcessed()) {
         //        return;
         //    }
         //}
@@ -2984,9 +2982,9 @@ public class TestActivityHandler {
             // test default values
             assertUtil.isTrue(internalState.isEnabled());
             assertUtil.isTrue(internalState.isOnline());
-            assertUtil.isTrue(internalState.isBackground());
-            assertUtil.isTrue(internalState.isToStartNow());
-            assertUtil.isFalse(internalState.isToUpdatePackages());
+            assertUtil.isTrue(internalState.isInBackground());
+            assertUtil.isTrue(internalState.isNotInDelayedStart());
+            assertUtil.isFalse(internalState.itHasToUpdatePackages());
         }
 
         return activityHandler;
@@ -3015,7 +3013,7 @@ public class TestActivityHandler {
 
         // check values read from activity state
         assertUtil.isEqual(sInit.internalState.isEnabled(), sInit.startEnabled);
-        //assertUtil.isEqual(sInit.internalState.isToUpdatePackages(), sInit.updatePackages);
+        //assertUtil.isEqual(sInit.internalState.itHasToUpdatePackages(), sInit.updatePackages);
 
         // check event buffering
         if (sInit.eventBufferingIsEnabled) {
@@ -3054,10 +3052,10 @@ public class TestActivityHandler {
 
         if (sInit.delayStartConfigured) {
             assertUtil.info("Delay start configured");
-            assertUtil.isTrue(sInit.internalState.isDelayStart());
+            assertUtil.isTrue(sInit.internalState.isInDelayedStart());
         } else {
             assertUtil.notInInfo("Delay start configured");
-            assertUtil.isFalse(sInit.internalState.isDelayStart());
+            assertUtil.isFalse(sInit.internalState.isInDelayedStart());
         }
 
         if (sInit.startsSending) {
@@ -3104,7 +3102,7 @@ public class TestActivityHandler {
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // comes to the foreground
-        assertUtil.isTrue(internalState.isForeground());
+        assertUtil.isTrue(internalState.isInForeground());
     }
 
     private void checkFirstSession() {
@@ -3353,7 +3351,7 @@ public class TestActivityHandler {
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // goes to the background
-        assertUtil.isTrue(internalState.isBackground());
+        assertUtil.isTrue(internalState.isInBackground());
     }
 
     private void checkEndSession() {
