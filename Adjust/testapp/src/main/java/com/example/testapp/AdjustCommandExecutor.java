@@ -291,6 +291,8 @@ public class AdjustCommandExecutor {
 
         adjustConfig.setBasePath(basePath);
         Adjust.onCreate(adjustConfig);
+
+        this.savedConfigs.remove(0);
     }
 
     private void event() throws NullPointerException {
@@ -350,6 +352,8 @@ public class AdjustCommandExecutor {
 
         AdjustEvent adjustEvent = savedEvents.get(eventNumber);
         Adjust.trackEvent(adjustEvent);
+
+        this.savedEvents.remove(0);
     }
 
     private void setReferrer() {
