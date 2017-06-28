@@ -17,7 +17,6 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 import android.os.Handler;
-import android.util.*;
 
 import java.io.InputStream;
 import java.util.LinkedHashMap;
@@ -139,23 +138,23 @@ public class ActivityHandler implements IActivityHandler {
             return !offline;
         }
 
-        public boolean isBackground() {
+        public boolean isInBackground() {
             return background;
         }
 
-        public boolean isForeground() {
+        public boolean isInForeground() {
             return !background;
         }
 
-        public boolean isDelayStart() {
+        public boolean isInDelayedStart() {
             return delayStart;
         }
 
-        public boolean isToStartNow() {
+        public boolean isNotInDelayedStart() {
             return !delayStart;
         }
 
-        public boolean isToUpdatePackages() {
+        public boolean itHasToUpdatePackages() {
             return updatePackages;
         }
 
@@ -163,8 +162,8 @@ public class ActivityHandler implements IActivityHandler {
             return firstLaunch;
         }
 
-        public boolean isSessionResponseProcessed() {
-            return sessionResponseProcessed;
+        public boolean hasSessionResponseNotBeenProcessed() {
+            return !sessionResponseProcessed;
         }
     }
 
@@ -742,7 +741,7 @@ public class ActivityHandler implements IActivityHandler {
             transferSessionPackageI(now);
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
-            activityState.updatePackages = internalState.isToUpdatePackages();
+            activityState.updatePackages = internalState.itHasToUpdatePackages();
             writeActivityStateI();
             return;
         }
@@ -788,7 +787,7 @@ public class ActivityHandler implements IActivityHandler {
         // if it's the first launch
         if (internalState.isFirstLaunch()) {
             // and it hasn't received the session response
-            if (!internalState.isSessionResponseProcessed()) {
+            if (internalState.hasSessionResponseNotBeenProcessed()) {
                 return;
             }
         }
@@ -824,7 +823,7 @@ public class ActivityHandler implements IActivityHandler {
         updateActivityStateI(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isDelayStart());
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isInDelayedStart());
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -834,7 +833,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         // if it is in the background and it can send, start the background timer
-        if (adjustConfig.sendInBackground && internalState.isBackground()) {
+        if (adjustConfig.sendInBackground && internalState.isInBackground()) {
             startBackgroundTimerI();
         }
 
@@ -1329,7 +1328,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
+        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isInDelayedStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -1397,7 +1396,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void delayStartI() {
         // it's not configured to start delayed or already finished
-        if (internalState.isToStartNow()) {
+        if (internalState.isNotInDelayedStart()) {
             return;
         }
 
@@ -1435,7 +1434,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void sendFirstPackagesI() {
-        if (internalState.isToStartNow()) {
+        if (internalState.isNotInDelayedStart()) {
             logger.info("Start delay expired or never configured");
             return;
         }
@@ -1467,7 +1466,7 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState != null) {
             return activityState.updatePackages;
         } else {
-            return internalState.isToUpdatePackages();
+            return internalState.itHasToUpdatePackages();
         }
     }
 
@@ -1773,7 +1772,7 @@ public class ActivityHandler implements IActivityHandler {
         // other handlers are paused if either:
         return internalState.isOffline()    ||      // it's offline
                 !isEnabledI()               ||      // is disabled
-                internalState.isDelayStart();       // is in delayed start
+                internalState.isInDelayedStart();   // is in delayed start
     }
 
     private boolean toSendI() {
@@ -1792,6 +1791,6 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         // doesn't have the option -> depends on being on the background/foreground
-        return internalState.isForeground();
+        return internalState.isInForeground();
     }
 }
