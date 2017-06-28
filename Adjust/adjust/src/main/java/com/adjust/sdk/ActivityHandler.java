@@ -314,100 +314,22 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void setEnabled(final boolean enabled) {
-        // compare with the saved or internal state
-        if (!hasChangedState(this.isEnabled(), enabled,
-                "Adjust already enabled", "Adjust already disabled")) {
-            return;
-        }
-
-        // save new enabled state in internal state
-        internalState.enabled = enabled;
-
-        if (activityState == null) {
-            updateStatus(!enabled,
-                    "Handlers will start as paused due to the SDK being disabled",
-                    "Handlers will still start as paused",
-                    "Handlers will start as active due to the SDK being enabled");
-            return;
-        }
-
-        // save new enabled state in activity state
-        Runnable saveEnabled = new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                activityState.enabled = enabled;
+                setEnabledI(enabled);
             }
-        };
-        writeActivityStateS(saveEnabled);
-
-        updateStatus(!enabled,
-                "Pausing handlers due to SDK being disabled",
-                "Handlers remain paused",
-                "Resuming handlers due to SDK being enabled");
-    }
-
-    private void updateStatus(boolean pausingState, String pausingMessage,
-                              String remainsPausedMessage, String unPausingMessage)
-    {
-        // it is changing from an active state to a pause state
-        if (pausingState) {
-            logger.info(pausingMessage);
-        }
-        // check if it's remaining in a pause state
-        else if (pausedI(false)) {                      // safe to use internal version of paused (read only), can suffer from phantom read but not an issue
-            // including the sdk click handler
-            if (pausedI(true)) {
-                logger.info(remainsPausedMessage);
-            } else {
-                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
-            }
-        } else {
-            // it is changing from a pause state to an active state
-            logger.info(unPausingMessage);
-        }
-
-        updateHandlersStatusAndSend();
-    }
-
-    private boolean hasChangedState(boolean previousState, boolean newState,
-                                    String trueMessage, String falseMessage)
-    {
-        if (previousState != newState) {
-            return true;
-        }
-
-        if (previousState) {
-            logger.debug(trueMessage);
-        } else {
-            logger.debug(falseMessage);
-        }
-
-        return false;
+        });
     }
 
     @Override
-    public void setOfflineMode(boolean offline) {
-        // compare with the internal state
-        if (!hasChangedState(internalState.isOffline(), offline,
-                "Adjust already in offline mode",
-                "Adjust already in online mode")) {
-            return;
-        }
-
-        internalState.offline = offline;
-
-        if (activityState == null) {
-            updateStatus(offline,
-                    "Handlers will start paused due to SDK being offline",
-                    "Handlers will still start as paused",
-                    "Handlers will start as active due to SDK being online");
-            return;
-        }
-
-        updateStatus(offline,
-                "Pausing handlers to put SDK offline mode",
-                "Handlers remain paused",
-                "Resuming handlers to put SDK in online mode");
+    public void setOfflineMode(final boolean offline) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                setOfflineModeI(offline);
+            }
+        });
     }
 
     @Override
@@ -647,15 +569,6 @@ public class ActivityHandler implements IActivityHandler {
 
     public InternalState getInternalState() {
         return internalState;
-    }
-
-    private void updateHandlersStatusAndSend() {
-        scheduledExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                updateHandlersStatusAndSendI();
-            }
-        });
     }
 
     private void initI() {
@@ -1118,6 +1031,99 @@ public class ActivityHandler implements IActivityHandler {
         // add it to the handler queue
         logger.info("Open deferred deep link (%s)", deeplink);
         adjustConfig.context.startActivity(deeplinkIntent);
+    }
+
+    private void setEnabledI(boolean enabled) {
+        // compare with the saved or internal state
+        if (!hasChangedStateI(this.isEnabledI(), enabled,
+                "Adjust already enabled", "Adjust already disabled")) {
+            return;
+        }
+
+        // save new enabled state in internal state
+        internalState.enabled = enabled;
+
+        if (activityState == null) {
+            updateStatusI(!enabled,
+                    "Handlers will start as paused due to the SDK being disabled",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to the SDK being enabled");
+
+            return;
+        }
+
+        activityState.enabled = enabled;
+        writeActivityStateI();
+
+        updateStatusI(!enabled,
+                "Pausing handlers due to SDK being disabled",
+                "Handlers remain paused",
+                "Resuming handlers due to SDK being enabled");
+
+    }
+
+    private void setOfflineModeI(boolean offline) {
+        // compare with the internal state
+        if (!hasChangedStateI(internalState.isOffline(), offline,
+                "Adjust already in offline mode",
+                "Adjust already in online mode")) {
+            return;
+        }
+
+        internalState.offline = offline;
+
+        if (activityState == null) {
+            updateStatusI(offline,
+                    "Handlers will start paused due to SDK being offline",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to SDK being online");
+            return;
+        }
+
+        updateStatusI(offline,
+                "Pausing handlers to put SDK offline mode",
+                "Handlers remain paused",
+                "Resuming handlers to put SDK in online mode");
+
+    }
+
+    private boolean hasChangedStateI(boolean previousState, boolean newState,
+                                     String trueMessage, String falseMessage)
+    {
+        if (previousState != newState) {
+            return true;
+        }
+
+        if (previousState) {
+            logger.debug(trueMessage);
+        } else {
+            logger.debug(falseMessage);
+        }
+
+        return false;
+    }
+
+    private void updateStatusI(boolean pausingState, String pausingMessage,
+                               String remainsPausedMessage, String unPausingMessage)
+    {
+        // it is changing from an active state to a pause state
+        if (pausingState) {
+            logger.info(pausingMessage);
+        }
+        // check if it's remaining in a pause state
+        else if (pausedI(false)) {
+            // including the sdk click handler
+            if (pausedI(true)) {
+                logger.info(remainsPausedMessage);
+            } else {
+                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
+            }
+        } else {
+            // it is changing from a pause state to an active state
+            logger.info(unPausingMessage);
+        }
+
+        updateHandlersStatusAndSendI();
     }
 
     private void sendReferrerI(String referrer, long clickTime) {
