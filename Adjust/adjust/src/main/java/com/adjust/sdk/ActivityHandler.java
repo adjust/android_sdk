@@ -740,7 +740,11 @@ public class ActivityHandler implements IActivityHandler {
             activityState.sessionCount = 1; // this is the first session
             activityState.pushToken = adjustConfig.pushToken;
 
-            transferSessionPackageI(now);
+            // track the first session package only if it's enabled
+            if (internalState.isEnabled()) {
+                transferSessionPackageI(now);
+            }
+
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.itHasToUpdatePackages();
