@@ -1137,6 +1137,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void sendReferrerI(String referrer, long clickTime) {
+        if (!isEnabledI()) { return; }
+
         if (referrer == null || referrer.length() == 0 ) {
             return;
         }
@@ -1162,6 +1164,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
+        if (!isEnabledI()) { return; }
+
         if (url == null) {
             return;
         }
@@ -1596,13 +1600,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void setPushTokenI(String token) {
-        if (token == null) {
-            return;
-        }
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
 
-        if (token.equals(activityState.pushToken)) {
-            return;
-        }
+        if (token == null) { return; }
+        if (token.equals(activityState.pushToken)) { return; }
 
         // save new push token
         activityState.pushToken = token;
