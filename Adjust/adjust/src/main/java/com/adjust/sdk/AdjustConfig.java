@@ -31,6 +31,8 @@ public class AdjustConfig {
     ILogger logger;
     String userAgent;
     String pushToken;
+    Boolean startEnabled;
+    boolean startOffline;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";

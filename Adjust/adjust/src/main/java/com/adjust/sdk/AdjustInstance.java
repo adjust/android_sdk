@@ -14,6 +14,8 @@ public class AdjustInstance {
     private ActivityHandler activityHandler;
     private List<IRunActivityHandler> sessionParametersActionsArray;
     private String pushToken;
+    private Boolean startEnabled = null;
+    private boolean startOffline = false;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -29,6 +31,8 @@ public class AdjustInstance {
         adjustConfig.referrerClickTime = this.referrerClickTime;
         adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
         adjustConfig.pushToken = pushToken;
+        adjustConfig.startEnabled = startEnabled;
+        adjustConfig.startOffline = startOffline;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
     }
@@ -49,8 +53,11 @@ public class AdjustInstance {
     }
 
     public void setEnabled(boolean enabled) {
-        if (!checkActivityHandler()) { return; }
-        activityHandler.setEnabled(enabled);
+        if (!checkActivityHandler(enabled, "enabled mode", "disabled mode")){
+            this.startEnabled = enabled;
+        } else {
+            activityHandler.setEnabled(enabled);
+        }
     }
 
     public boolean isEnabled() {
@@ -77,8 +84,11 @@ public class AdjustInstance {
     }
 
     public void setOfflineMode(boolean enabled) {
-        if (!checkActivityHandler()) { return; }
-        activityHandler.setOfflineMode(enabled);
+        if (!checkActivityHandler(enabled, "offline mode", "online mode")) {
+            this.startOffline = enabled;
+        } else {
+            activityHandler.setOfflineMode(enabled);
+        }
     }
 
     public void sendFirstPackages() {
