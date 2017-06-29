@@ -181,7 +181,7 @@ public class ActivityHandler implements IActivityHandler {
         // enabled by default
         internalState.enabled = true;
         // online by default
-        internalState.offline = false;
+        internalState.offline = adjustConfig.startOffline;
         // in the background by default
         internalState.background = true;
         // delay start not configured by default
@@ -316,7 +316,7 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                setEnabledI(enabled);
+                setEnabledI(enabled, true);
             }
         });
     }
@@ -583,6 +583,10 @@ public class ActivityHandler implements IActivityHandler {
         sessionParameters = new SessionParameters();
         readSessionCallbackParametersI(adjustConfig.context);
         readSessionPartnerParametersI(adjustConfig.context);
+
+        if (adjustConfig.startEnabled != null) {
+            setEnabledI(adjustConfig.startEnabled, false);
+        }
 
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
@@ -1030,7 +1034,7 @@ public class ActivityHandler implements IActivityHandler {
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
-    private void setEnabledI(boolean enabled) {
+    private void setEnabledI(boolean enabled, boolean updateStatus) {
         // compare with the saved or internal state
         if (!hasChangedStateI(this.isEnabledI(), enabled,
                 "Adjust already enabled", "Adjust already disabled")) {
@@ -1041,21 +1045,24 @@ public class ActivityHandler implements IActivityHandler {
         internalState.enabled = enabled;
 
         if (activityState == null) {
-            updateStatusI(!enabled,
-                    "Handlers will start as paused due to the SDK being disabled",
-                    "Handlers will still start as paused",
-                    "Handlers will start as active due to the SDK being enabled");
-
+            if (updateStatus) {
+                updateStatusI(!enabled,
+                        "Handlers will start as paused due to the SDK being disabled",
+                        "Handlers will still start as paused",
+                        "Handlers will start as active due to the SDK being enabled");
+            }
             return;
         }
 
         activityState.enabled = enabled;
         writeActivityStateI();
 
-        updateStatusI(!enabled,
-                "Pausing handlers due to SDK being disabled",
-                "Handlers remain paused",
-                "Resuming handlers due to SDK being enabled");
+        if (updateStatus) {
+            updateStatusI(!enabled,
+                    "Pausing handlers due to SDK being disabled",
+                    "Handlers remain paused",
+                    "Resuming handlers due to SDK being enabled");
+        }
 
     }
 
