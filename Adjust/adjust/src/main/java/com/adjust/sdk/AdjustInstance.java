@@ -34,32 +34,32 @@ public class AdjustInstance {
     }
 
     public void trackEvent(AdjustEvent event) {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.trackEvent(event);
     }
 
     public void onResume() {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.onResume();
     }
 
     public void onPause() {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.onPause();
     }
 
     public void setEnabled(boolean enabled) {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.setEnabled(enabled);
     }
 
     public boolean isEnabled() {
-        if (!checkActivityHandler()) return false;
+        if (!checkActivityHandler()) { return false; }
         return activityHandler.isEnabled();
     }
 
     public void appWillOpenUrl(Uri url) {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         long clickTime = System.currentTimeMillis();
         activityHandler.readOpenUrl(url, clickTime);
     }
@@ -67,7 +67,7 @@ public class AdjustInstance {
     public void sendReferrer(String referrer) {
         long clickTime = System.currentTimeMillis();
         // sendReferrer might be triggered before Adjust
-        if (activityHandler == null) {
+        if (!checkActivityHandler("referrer")) {
             // save it to inject in the config before launch
             this.referrer = referrer;
             this.referrerClickTime = clickTime;
@@ -77,18 +77,17 @@ public class AdjustInstance {
     }
 
     public void setOfflineMode(boolean enabled) {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.setOfflineMode(enabled);
     }
 
-
     public void sendFirstPackages() {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.sendFirstPackages();
     }
 
     public void addSessionCallbackParameter(final String key, final String value) {
-        if (activityHandler != null) {
+        if (checkActivityHandler("adding session callback parameter")) {
             activityHandler.addSessionCallbackParameter(key, value);
             return;
         }
@@ -106,7 +105,7 @@ public class AdjustInstance {
     }
 
     public void addSessionPartnerParameter(final String key, final String value) {
-        if (activityHandler != null) {
+        if (checkActivityHandler("adding session partner parameter")) {
             activityHandler.addSessionPartnerParameter(key, value);
             return;
         }
@@ -124,7 +123,7 @@ public class AdjustInstance {
     }
 
     public void removeSessionCallbackParameter(final String key) {
-        if (activityHandler != null) {
+        if (checkActivityHandler("removing session callback parameter")) {
             activityHandler.removeSessionCallbackParameter(key);
             return;
         }
@@ -142,7 +141,7 @@ public class AdjustInstance {
     }
 
     public void removeSessionPartnerParameter(final String key) {
-        if (activityHandler != null) {
+        if (checkActivityHandler("removing session partner parameter")) {
             activityHandler.removeSessionPartnerParameter(key);
             return;
         }
@@ -160,7 +159,7 @@ public class AdjustInstance {
     }
 
     public void resetSessionCallbackParameters() {
-        if (activityHandler != null) {
+        if (checkActivityHandler("resetting session callback parameters")) {
             activityHandler.resetSessionCallbackParameters();
             return;
         }
@@ -178,7 +177,7 @@ public class AdjustInstance {
     }
 
     public void resetSessionPartnerParameters() {
-        if (activityHandler != null) {
+        if (checkActivityHandler("resetting session partner parameters")) {
             activityHandler.resetSessionPartnerParameters();
             return;
         }
@@ -196,33 +195,48 @@ public class AdjustInstance {
     }
 
     public void teardown(boolean deleteState) {
-        if (!checkActivityHandler()) return;
+        if (!checkActivityHandler()) { return; }
         activityHandler.teardown(deleteState);
         activityHandler = null;
     }
 
     public void setPushToken(String token) {
-        pushToken = token;
-
-        if (activityHandler != null) {
+        if (!checkActivityHandler("push token")) {
+            this.pushToken = token;
+        } else {
             activityHandler.setPushToken(token);
-            return;
         }
     }
 
     public String getAdid() {
-        if (!checkActivityHandler()) return null;
+        if (!checkActivityHandler()) { return null; }
         return activityHandler.getAdid();
     }
 
     public AdjustAttribution getAttribution() {
-        if (!checkActivityHandler()) return null;
+        if (!checkActivityHandler()) { return null; }
         return activityHandler.getAttribution();
     }
 
     private boolean checkActivityHandler() {
+        return checkActivityHandler(null);
+    }
+
+    private boolean checkActivityHandler(boolean status, String trueMessage, String falseMessage) {
+        if (status) {
+            return checkActivityHandler(trueMessage);
+        } else {
+            return checkActivityHandler(falseMessage);
+        }
+    }
+
+    private boolean checkActivityHandler(String savedForLaunchWarningSuffixMessage) {
         if (activityHandler == null) {
-            getLogger().error("Adjust not initialized correctly");
+            if (savedForLaunchWarningSuffixMessage != null) {
+                getLogger().warn("Adjust not initialized, but %s saved for launch", savedForLaunchWarningSuffixMessage);
+            } else {
+                getLogger().error("Adjust not initialized correctly");
+            }
             return false;
         } else {
             return true;
