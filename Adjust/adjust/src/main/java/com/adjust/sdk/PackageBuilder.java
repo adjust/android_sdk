@@ -233,9 +233,16 @@ class PackageBuilder {
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
-        PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        deviceInfo.reloadDeviceIds(adjustConfig.context);
+
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+
+        if (deviceInfo.playAdId == null) {
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
     }
 
     private void injectConfig(Map<String, String> parameters) {
@@ -244,10 +251,6 @@ class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
 
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        PackageBuilder.addString(parameters, "gps_adid", playAdId);
-        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();

@@ -604,8 +604,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Event buffering is enabled");
         }
 
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        if (playAdId == null) {
+        if (deviceInfo.playAdId == null) {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
             if (deviceInfo.macSha1 == null &&
                     deviceInfo.macShortMd5 == null &&
