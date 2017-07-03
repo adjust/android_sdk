@@ -2287,8 +2287,8 @@ public class TestActivityHandler {
         AdjustConfig config = getConfig();
 
         //  create handler and start the first session
-        config.sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        config.sessionParametersActionsArray.add(new IRunActivityHandler() {
+        config.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+        config.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 //
@@ -2489,8 +2489,8 @@ public class TestActivityHandler {
 
         config.setDelayStart(4);
 
-        config.sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        config.sessionParametersActionsArray.add(new IRunActivityHandler() {
+        config.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+        config.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.addSessionCallbackParameterI("scpKey", "scpValue");

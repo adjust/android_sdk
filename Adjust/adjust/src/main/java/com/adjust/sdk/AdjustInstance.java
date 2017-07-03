@@ -12,7 +12,7 @@ public class AdjustInstance {
     private String referrer;
     private long referrerClickTime;
     private ActivityHandler activityHandler;
-    private List<IRunActivityHandler> sessionParametersActionsArray;
+    private List<IRunActivityHandler> preLaunchActionsArray;
     private String pushToken;
     private Boolean startEnabled = null;
     private boolean startOffline = false;
@@ -29,7 +29,7 @@ public class AdjustInstance {
 
         adjustConfig.referrer = this.referrer;
         adjustConfig.referrerClickTime = this.referrerClickTime;
-        adjustConfig.sessionParametersActionsArray = sessionParametersActionsArray;
+        adjustConfig.preLaunchActionsArray = preLaunchActionsArray;
         adjustConfig.pushToken = pushToken;
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
@@ -102,11 +102,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.addSessionCallbackParameterI(key, value);
@@ -120,11 +120,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.addSessionPartnerParameterI(key, value);
@@ -138,11 +138,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.removeSessionCallbackParameterI(key);
@@ -156,11 +156,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.removeSessionPartnerParameterI(key);
@@ -174,11 +174,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.resetSessionCallbackParametersI();
@@ -192,11 +192,11 @@ public class AdjustInstance {
             return;
         }
 
-        if (sessionParametersActionsArray == null) {
-            sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
+        if (preLaunchActionsArray == null) {
+            preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
 
-        sessionParametersActionsArray.add(new IRunActivityHandler() {
+        preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.resetSessionPartnerParametersI();
