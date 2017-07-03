@@ -19,6 +19,7 @@ import android.net.UrlQuerySanitizer;
 import android.os.Handler;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -316,7 +317,7 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                setEnabledI(enabled, true);
+                setEnabledI(enabled);
             }
         });
     }
@@ -585,7 +586,15 @@ public class ActivityHandler implements IActivityHandler {
         readSessionPartnerParametersI(adjustConfig.context);
 
         if (adjustConfig.startEnabled != null) {
-            setEnabledI(adjustConfig.startEnabled, false);
+            if (adjustConfig.preLaunchActionsArray == null) {
+                adjustConfig.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+            }
+            adjustConfig.preLaunchActionsArray.add(new IRunActivityHandler() {
+                @Override
+                public void run(ActivityHandler activityHandler) {
+                    activityHandler.setEnabledI(adjustConfig.startEnabled);
+                }
+            });
         }
 
         if (activityState != null) {
@@ -682,7 +691,7 @@ public class ActivityHandler implements IActivityHandler {
             sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime);
         }
 
-        sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
+        preLaunchActionsI(adjustConfig.preLaunchActionsArray);
     }
 
     private void readConfigFile(Context context) {
@@ -706,13 +715,13 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
-        if (sessionParametersActionsArray == null) {
+    private void preLaunchActionsI(List<IRunActivityHandler> preLaunchActionsArray) {
+        if (preLaunchActionsArray == null) {
             return;
         }
 
-        for (IRunActivityHandler sessionParametersAction : sessionParametersActionsArray) {
-            sessionParametersAction.run(this);
+        for (IRunActivityHandler preLaunchAction : preLaunchActionsArray) {
+            preLaunchAction.run(this);
         }
     }
 
@@ -1037,7 +1046,7 @@ public class ActivityHandler implements IActivityHandler {
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
-    private void setEnabledI(boolean enabled, boolean updateStatus) {
+    private void setEnabledI(boolean enabled) {
         // compare with the saved or internal state
         if (!hasChangedStateI(this.isEnabledI(), enabled,
                 "Adjust already enabled", "Adjust already disabled")) {
@@ -1048,25 +1057,20 @@ public class ActivityHandler implements IActivityHandler {
         internalState.enabled = enabled;
 
         if (activityState == null) {
-            if (updateStatus) {
-                updateStatusI(!enabled,
-                        "Handlers will start as paused due to the SDK being disabled",
-                        "Handlers will still start as paused",
-                        "Handlers will start as active due to the SDK being enabled");
-            }
+            updateStatusI(!enabled,
+                    "Handlers will start as paused due to the SDK being disabled",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to the SDK being enabled");
             return;
         }
 
         activityState.enabled = enabled;
         writeActivityStateI();
 
-        if (updateStatus) {
-            updateStatusI(!enabled,
-                    "Pausing handlers due to SDK being disabled",
-                    "Handlers remain paused",
-                    "Resuming handlers due to SDK being enabled");
-        }
-
+        updateStatusI(!enabled,
+                "Pausing handlers due to SDK being disabled",
+                "Handlers remain paused",
+                "Resuming handlers due to SDK being enabled");
     }
 
     private void setOfflineModeI(boolean offline) {
