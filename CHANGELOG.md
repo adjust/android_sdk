@@ -1,3 +1,15 @@
+### Version 4.11.5 (Xth July 2017)
+#### Added
+- Don't send `sdk_click` and `sdk_info` packages when disabled
+
+#### Changed
+- Setting enable/disable or offline/online is now queued
+- Guarantee that first package is send even with buffering
+- Disable before starting the sdk does not create and send first session package
+- Reload reading device ids for every package, not just at beginning
+- Save referrer in local storage and send it only after first session
+
+---
 ### Version 4.11.4 (5th May 2017)
 #### Added
 - Added check if `sdk_click` package response contains attribution information.
