@@ -1,5 +1,7 @@
 package com.adjust.sdk;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import java.util.ArrayList;
@@ -9,8 +11,6 @@ import java.util.List;
  * Created by pfms on 04/12/14.
  */
 public class AdjustInstance {
-    private String referrer;
-    private long referrerClickTime;
     private ActivityHandler activityHandler;
     private List<IRunActivityHandler> preLaunchActionsArray;
     private String pushToken;
@@ -27,8 +27,6 @@ public class AdjustInstance {
             return;
         }
 
-        adjustConfig.referrer = this.referrer;
-        adjustConfig.referrerClickTime = this.referrerClickTime;
         adjustConfig.preLaunchActionsArray = preLaunchActionsArray;
         adjustConfig.pushToken = pushToken;
         adjustConfig.startEnabled = startEnabled;
@@ -71,13 +69,15 @@ public class AdjustInstance {
         activityHandler.readOpenUrl(url, clickTime);
     }
 
-    public void sendReferrer(String referrer) {
+    public void sendReferrer(String referrer, Context context) {
         long clickTime = System.currentTimeMillis();
         // sendReferrer might be triggered before Adjust
         if (!checkActivityHandler("referrer")) {
-            // save it to inject in the config before launch
-            this.referrer = referrer;
-            this.referrerClickTime = clickTime;
+            // save referrer to preferences
+            SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(Constants.REFERRER_PREFKEY, referrer);
+            editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, clickTime);
         } else {
             activityHandler.sendReferrer(referrer, clickTime);
         }
