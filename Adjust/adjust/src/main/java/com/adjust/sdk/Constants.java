@@ -59,6 +59,10 @@ public interface Constants {
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";
 
+    String PREFERENCES_NAME = "Adjust";
+    String REFERRER_PREFKEY = "referrer";
+    String REFERRER_CLICKTIME_PREFKEY = "referrerClickTime";
+
     // List of known plugins, possibly not active
     List<String> PLUGINS = Arrays.asList();
 }

@@ -16,8 +16,6 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    String referrer;
-    long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;

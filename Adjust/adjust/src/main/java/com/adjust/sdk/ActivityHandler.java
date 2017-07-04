@@ -12,6 +12,7 @@ package com.adjust.sdk;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -161,6 +162,10 @@ public class ActivityHandler implements IActivityHandler {
 
         public boolean isFirstLaunch() {
             return firstLaunch;
+        }
+
+        public boolean isNotFirstLaunch() {
+            return !firstLaunch;
         }
 
         public boolean hasSessionResponseNotBeenProcessed() {
@@ -687,11 +692,13 @@ public class ActivityHandler implements IActivityHandler {
             updatePackagesI();
         }
 
-        if (adjustConfig.referrer != null) {
-            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime);
-        }
-
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
+
+        // only try to read referrer from init after first launch with success
+        if (internalState.isNotFirstLaunch())
+        {
+            checkReferrerI();
+        }
     }
 
     private void readConfigFile(Context context) {
@@ -739,6 +746,26 @@ public class ActivityHandler implements IActivityHandler {
         checkAttributionStateI();
     }
 
+    private void checkReferrerI() {
+        // read preferences
+        SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String referrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+
+        if (referrer == null) {
+            return;
+        }
+
+        long clickTime = settings.getLong(Constants.REFERRER_CLICKTIME_PREFKEY, -1);
+
+        // send referrer
+        sendReferrerI(referrer, clickTime);
+
+        // delete from preferences
+        SharedPreferences.Editor editor = settings.edit();
+        editor.remove(Constants.REFERRER_PREFKEY);
+        editor.remove(Constants.REFERRER_CLICKTIME_PREFKEY);
+    }
+
     private void processSessionI() {
         long now = System.currentTimeMillis();
 
@@ -757,6 +784,9 @@ public class ActivityHandler implements IActivityHandler {
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.itHasToUpdatePackages();
             writeActivityStateI();
+
+            // check referrer after first launch with success
+            checkReferrerI();
             return;
         }
 
