@@ -101,6 +101,13 @@ public class ActivityHandler implements IActivityHandler {
         teardownAttributionS(deleteState);
         teardownAllSessionParametersS(deleteState);
 
+        if (deleteState) {
+            SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.clear();
+            editor.apply();
+        }
+
         packageHandler = null;
         logger = null;
         foregroundTimer = null;
