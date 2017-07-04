@@ -57,7 +57,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
 
     private DeviceInfo deviceInfo;
-    private AdjustConfig adjustConfig; // always valid after construction
+    AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;

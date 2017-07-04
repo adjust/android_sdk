@@ -1,5 +1,8 @@
 package com.adjust.sdk;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
@@ -139,6 +142,8 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
+            deleteSavedReferrerI((ActivityHandler) activityHandler, sdkClickPackage);
+
             activityHandler.finishedTrackingActivity(responseData);
 
         } catch (UnsupportedEncodingException e) {
@@ -152,6 +157,33 @@ public class SdkClickHandler implements ISdkClickHandler {
         } catch (Throwable e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click runtime exception", e);
         }
+    }
+
+    private void deleteSavedReferrerI(ActivityHandler activityHandler, ActivityPackage sdkClickPackage) {
+        // extract sent referrer
+        String sentReferrer = sdkClickPackage.getParameters().get("referrer");
+        if (sentReferrer == null) {
+            return;
+        }
+
+        // read saved referrer
+        SharedPreferences settings = activityHandler.adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String savedReferrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+
+        if (savedReferrer == null) {
+            return;
+        }
+
+        // check if they are the same
+        if (!sentReferrer.equals(savedReferrer)) {
+            return;
+        }
+
+        // delete referrer from preferences
+        SharedPreferences.Editor editor = settings.edit();
+        editor.remove(Constants.REFERRER_PREFKEY);
+        editor.remove(Constants.REFERRER_CLICKTIME_PREFKEY);
+        editor.apply();
     }
 
     private void retrySendingI(ActivityPackage sdkClickPackage) {
