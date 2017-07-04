@@ -78,6 +78,7 @@ public class AdjustInstance {
             SharedPreferences.Editor editor = settings.edit();
             editor.putString(Constants.REFERRER_PREFKEY, referrer);
             editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, clickTime);
+            editor.apply();
         } else {
             activityHandler.sendReferrer(referrer, clickTime);
         }

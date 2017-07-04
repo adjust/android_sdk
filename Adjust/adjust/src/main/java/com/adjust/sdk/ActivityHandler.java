@@ -764,6 +764,7 @@ public class ActivityHandler implements IActivityHandler {
         SharedPreferences.Editor editor = settings.edit();
         editor.remove(Constants.REFERRER_PREFKEY);
         editor.remove(Constants.REFERRER_CLICKTIME_PREFKEY);
+        editor.apply();
     }
 
     private void processSessionI() {
