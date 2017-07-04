@@ -76,7 +76,10 @@ public class TestActivityHandler {
         AdjustFactory.setSessionInterval(-1);
         AdjustFactory.setSubsessionInterval(-1);
 
-        context.deleteSharedPreferences("Adjust");
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.apply();
 
         activity = null;
         context = null;
