@@ -74,3 +74,6 @@ google-services.json
 
 # generated native code
 .externalNativeBuild/
+
+# Checkstyle config file
+adjust_checks.xml
