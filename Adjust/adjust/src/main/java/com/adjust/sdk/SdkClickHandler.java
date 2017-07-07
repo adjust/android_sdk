@@ -162,13 +162,16 @@ public class SdkClickHandler implements ISdkClickHandler {
     private void deleteSavedReferrerI(ActivityHandler activityHandler, ActivityPackage sdkClickPackage) {
         // extract sent referrer
         String sentReferrer = sdkClickPackage.getParameters().get("referrer");
+
         if (sentReferrer == null) {
             return;
         }
 
         // read saved referrer
-        SharedPreferences settings = activityHandler.adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String savedReferrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+        // SharedPreferences settings = activityHandler.adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        // String savedReferrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(activityHandler.adjustConfig.context, Constants.PREFS_NAME);
+        String savedReferrer = sharedPreferencesManager.getStringFromSharedPreferences(Constants.PREFS_KEY_REFERRER);
 
         if (savedReferrer == null) {
             return;
@@ -180,10 +183,25 @@ public class SdkClickHandler implements ISdkClickHandler {
         }
 
         // delete referrer from preferences
-        SharedPreferences.Editor editor = settings.edit();
-        editor.remove(Constants.REFERRER_PREFKEY);
-        editor.remove(Constants.REFERRER_CLICKTIME_PREFKEY);
-        editor.apply();
+        // SharedPreferences.Editor editor = settings.edit();
+        // editor.remove(Constants.REFERRER_PREFKEY);
+        // editor.remove(Constants.REFERRER_CLICKTIME_PREFKEY);
+        // editor.apply();
+
+        // In theory now, if multiple send actions were triggered, first one will wipe out all the info.
+        // So, before removing the info, let's ask if keys exist and if yes, then try to delete them.
+
+        if (sharedPreferencesManager.isContainedInSharedPreferences(Constants.PREFS_KEY_REFERRER)) {
+            sharedPreferencesManager.removeFromSharedPreferences(Constants.PREFS_KEY_REFERRER);
+        }
+
+        if (sharedPreferencesManager.isContainedInSharedPreferences(Constants.PREFS_KEY_REFERRER_SENDING)) {
+            sharedPreferencesManager.removeFromSharedPreferences(Constants.PREFS_KEY_REFERRER_SENDING);
+        }
+
+        if (sharedPreferencesManager.isContainedInSharedPreferences(Constants.PREFS_KEY_REFERRER_CLICKTIME)) {
+            sharedPreferencesManager.removeFromSharedPreferences(Constants.PREFS_KEY_REFERRER_CLICKTIME);
+        }
     }
 
     private void retrySendingI(ActivityPackage sdkClickPackage) {
