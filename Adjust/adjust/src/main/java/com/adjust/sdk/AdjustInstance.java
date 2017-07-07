@@ -71,12 +71,18 @@ public class AdjustInstance {
 
     public void sendReferrer(String referrer, Context context) {
         long clickTime = System.currentTimeMillis();
+
         // save referrer to preferences
-        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(Constants.REFERRER_PREFKEY, referrer);
-        editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, clickTime);
-        editor.apply();
+        // SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        // SharedPreferences.Editor editor = settings.edit();
+        // editor.putString(Constants.REFERRER_PREFKEY, referrer);
+        // editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, clickTime);
+        // editor.apply();
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context, Constants.PREFS_NAME);
+        sharedPreferencesManager.saveStringToSharedPreferences(Constants.PREFS_KEY_REFERRER, referrer);
+        sharedPreferencesManager.saveLongToSharedPreferences(Constants.PREFS_KEY_REFERRER_CLICKTIME, clickTime);
+        sharedPreferencesManager.saveBooleanToSharedPreferences(Constants.PREFS_KEY_REFERRER_SENDING, false);
 
         if (checkActivityHandler("referrer")) {
             activityHandler.sendReferrer(referrer, clickTime);

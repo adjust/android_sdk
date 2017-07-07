@@ -102,10 +102,13 @@ public class ActivityHandler implements IActivityHandler {
         teardownAllSessionParametersS(deleteState);
 
         if (deleteState) {
-            SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = settings.edit();
-            editor.clear();
-            editor.apply();
+            // SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+            // SharedPreferences.Editor editor = settings.edit();
+            // editor.clear();
+            // editor.apply();
+
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context, Constants.PREFS_NAME);
+            sharedPreferencesManager.clearSharedPreferences();
         }
 
         packageHandler = null;
@@ -755,14 +758,18 @@ public class ActivityHandler implements IActivityHandler {
 
     private void checkReferrerI() {
         // read preferences
-        SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        String referrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+        // SharedPreferences settings = adjustConfig.context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        // String referrer = settings.getString(Constants.REFERRER_PREFKEY, null);
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context, Constants.PREFS_NAME);
+        String referrer = sharedPreferencesManager.getStringFromSharedPreferences(Constants.PREFS_KEY_REFERRER);
 
         if (referrer == null) {
             return;
         }
 
-        long clickTime = settings.getLong(Constants.REFERRER_CLICKTIME_PREFKEY, -1);
+        // long clickTime = settings.getLong(Constants.REFERRER_CLICKTIME_PREFKEY, -1);
+        long clickTime = sharedPreferencesManager.getLongFromSharedPreferences(Constants.PREFS_KEY_REFERRER_CLICKTIME);
 
         // send referrer
         sendReferrerI(referrer, clickTime);
@@ -1176,6 +1183,26 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void sendReferrerI(String referrer, long clickTime) {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context, Constants.PREFS_NAME);
+        boolean isClickBeingSent = sharedPreferencesManager.getBooleanFromSharedPreferences(Constants.PREFS_KEY_REFERRER_SENDING);
+
+        if (false == isClickBeingSent) {
+            // Write down that referrer is actually being sent
+            sharedPreferencesManager.saveBooleanToSharedPreferences(Constants.PREFS_KEY_REFERRER_SENDING, true);
+        } else {
+            // We know some referrer is being sent, but let's see if it's the same like in this request.
+            String referrerCurrentlyBeingSent = sharedPreferencesManager.getStringFromSharedPreferences(Constants.PREFS_KEY_REFERRER);
+
+            // If the same one as requested one is being sent, do nothing (don't duplicate the click).
+            if (referrer.equals(referrerCurrentlyBeingSent)) {
+                return;
+            }
+
+            // If they are not equal...
+            // Some referrer is being sent, but new one was asked to be sent after that.
+            // So proceed with sending the requested one.
+        }
+
         if (!isEnabledI()) { return; }
 
         if (referrer == null || referrer.length() == 0 ) {
