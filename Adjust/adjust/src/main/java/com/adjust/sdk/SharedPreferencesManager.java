@@ -10,7 +10,7 @@ public class SharedPreferencesManager {
     /**
      * Shared preferences of the app.
      */
-    private SharedPreferences sharedPreferences;
+    private final SharedPreferences sharedPreferences;
 
     /**
      * Default constructor.
@@ -59,12 +59,10 @@ public class SharedPreferencesManager {
      * @return String value for given key saved in shared preferences (null if not found)
      */
     public synchronized String getStringFromSharedPreferences(final String key) {
-        String defaultValue = null;
-
         try {
-            return this.sharedPreferences.getString(key, defaultValue);
+            return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
-            return defaultValue;
+            return null;
         }
     }
 
@@ -91,12 +89,10 @@ public class SharedPreferencesManager {
      * @return Boolean value for given key saved in shared preferences (false if not found)
      */
     public synchronized boolean getBooleanFromSharedPreferences(final String key) {
-        boolean defaultValue = false;
-
         try {
-            return this.sharedPreferences.getBoolean(key, defaultValue);
+            return this.sharedPreferences.getBoolean(key, false);
         } catch (ClassCastException e) {
-            return defaultValue;
+            return false;
         }
     }
 
