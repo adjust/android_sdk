@@ -231,6 +231,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
+        PackageBuilder.addString(parameters, "network_type", deviceInfo.networkType);
         fillPluginKeys(parameters);
     }
 
