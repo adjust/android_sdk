@@ -390,6 +390,8 @@ class DeviceInfo {
         private NetworkUtil() {
         }
 
+        // Returns the network type based as one of the NETWORKTYPE_XX const values.
+        // Priority goes to 'wifi' even if mobile data is enabled
         static String getNetworkType(Context context) {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
@@ -413,40 +415,40 @@ class DeviceInfo {
             int networkType = teleMan.getNetworkType();
 
             switch (networkType) {
-                //Most network types were determined using the table at the end of this page:
+                //- Most network types were determined using the table at the end of this page:
                 // https://en.wikipedia.org/wiki/List_of_mobile_phone_generations
 
-                case 11: //iDen
+                case TelephonyManager.NETWORK_TYPE_IDEN:
                     return NETWORKTYPE_2G;
-                case 1: //GPRS
+                case TelephonyManager.NETWORK_TYPE_GPRS:
                     return NETWORKTYPE_2G;
-                case 2: //EDGE
+                case TelephonyManager.NETWORK_TYPE_EDGE:
                     return NETWORKTYPE_2G;
 
-                case 3: //UMTS
+                case TelephonyManager.NETWORK_TYPE_UMTS:
                     return NETWORKTYPE_3G;
-                case 7: //1xRTT
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
                     return NETWORKTYPE_3G;
-                case 4: //CDMA
+                case TelephonyManager.NETWORK_TYPE_CDMA:
                     return NETWORKTYPE_3G;
-                case 14: //eHRPD
+                case TelephonyManager.NETWORK_TYPE_EHRPD:
                     return NETWORKTYPE_3G;
-                case 5: //EVDO rev. 0
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
                     return NETWORKTYPE_3G;
-                case 6: //EVDO rev. A
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
                     return NETWORKTYPE_3G;
-                case 12: //EVDO rev. B
+                case TelephonyManager.NETWORK_TYPE_EVDO_B:
                     return NETWORKTYPE_3G;
-                case 8: //HSDPA
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
                     return NETWORKTYPE_3G;
-                case 10: //HSPA
+                case TelephonyManager.NETWORK_TYPE_HSPA:
                     return NETWORKTYPE_3G;
-                case 9: //HSUPA
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
                     return NETWORKTYPE_3G;
 
-                case 15: //HSPA+
+                case TelephonyManager.NETWORK_TYPE_HSPAP:
                     return NETWORKTYPE_4G;
-                case 13: //LTE
+                case TelephonyManager.NETWORK_TYPE_LTE:
                     return NETWORKTYPE_4G;
             }
 
