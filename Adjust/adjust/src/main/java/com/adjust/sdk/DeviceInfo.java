@@ -413,6 +413,8 @@ class DeviceInfo {
             int networkType = teleMan.getNetworkType();
 
             switch (networkType) {
+                //Most network types were determined using the table at the end of this page:
+                // https://en.wikipedia.org/wiki/List_of_mobile_phone_generations
 
                 case 11: //iDen
                     return NETWORKTYPE_2G;
