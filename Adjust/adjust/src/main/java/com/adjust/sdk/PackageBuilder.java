@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
@@ -90,8 +91,7 @@ class PackageBuilder {
 
     public ActivityPackage buildEventPackage(AdjustEvent event,
                                              SessionParameters sessionParameters,
-                                             boolean isInDelay)
-    {
+                                             boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
@@ -229,6 +229,8 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
+        PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
+        PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         fillPluginKeys(parameters);
     }
 
