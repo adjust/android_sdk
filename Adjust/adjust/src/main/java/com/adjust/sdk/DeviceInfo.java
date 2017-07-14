@@ -7,6 +7,8 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -61,6 +63,7 @@ class DeviceInfo {
     String appUpdateTime;
     String mcc;
     String mnc;
+    String networkType;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -99,6 +102,7 @@ class DeviceInfo {
         appUpdateTime = getAppUpdateTime(context);
         mcc = getMcc(context);
         mnc = getMnc(context);
+        networkType = NetworkUtil.getNetworkType(context);
     }
 
     void reloadDeviceIds(Context context) {
@@ -372,6 +376,79 @@ class DeviceInfo {
         } catch (Exception ex) {
             AdjustFactory.getLogger().warn("Couldn't return mnc");
             return null;
+        }
+    }
+
+    private static class NetworkUtil {
+        private final static String NETWORKTYPE_2G = "2g";
+        private final static String NETWORKTYPE_3G = "3g";
+        private final static String NETWORKTYPE_4G = "4g";
+        private final static String NETWORKTYPE_WIFI = "wifi";
+        private final static String NETWORKTYPE_UNKNOWN = "unknown";
+        private final static String NETWORKTYPE_NOT_CONNECTED = "not_connected";
+
+        private NetworkUtil() {
+        }
+
+        static String getNetworkType(Context context) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null) { // connected to the internet
+                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                    // connected to wifi
+                    return NETWORKTYPE_WIFI;
+                } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    // connected to the mobile provider's data plan
+                    return getMobileNetworkType(context);
+                }
+            }
+
+            // not connected to the internet
+            return NETWORKTYPE_NOT_CONNECTED;
+        }
+
+        private static String getMobileNetworkType(Context context) {
+            TelephonyManager teleMan =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            int networkType = teleMan.getNetworkType();
+
+            switch (networkType) {
+
+                case 11: //iDen
+                    return NETWORKTYPE_2G;
+                case 1: //GPRS
+                    return NETWORKTYPE_2G;
+                case 2: //EDGE
+                    return NETWORKTYPE_2G;
+
+                case 3: //UMTS
+                    return NETWORKTYPE_3G;
+                case 7: //1xRTT
+                    return NETWORKTYPE_3G;
+                case 4: //CDMA
+                    return NETWORKTYPE_3G;
+                case 14: //eHRPD
+                    return NETWORKTYPE_3G;
+                case 5: //EVDO rev. 0
+                    return NETWORKTYPE_3G;
+                case 6: //EVDO rev. A
+                    return NETWORKTYPE_3G;
+                case 12: //EVDO rev. B
+                    return NETWORKTYPE_3G;
+                case 8: //HSDPA
+                    return NETWORKTYPE_3G;
+                case 10: //HSPA
+                    return NETWORKTYPE_3G;
+                case 9: //HSUPA
+                    return NETWORKTYPE_3G;
+
+                case 15: //HSPA+
+                    return NETWORKTYPE_4G;
+                case 13: //LTE
+                    return NETWORKTYPE_4G;
+            }
+
+            return NETWORKTYPE_UNKNOWN;
         }
     }
 }
