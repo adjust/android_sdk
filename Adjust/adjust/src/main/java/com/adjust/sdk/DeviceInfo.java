@@ -380,9 +380,6 @@ class DeviceInfo {
     }
 
     private static class NetworkUtil {
-        private final static String NETWORKTYPE_2G = "2g";
-        private final static String NETWORKTYPE_3G = "3g";
-        private final static String NETWORKTYPE_4G = "4g";
         private final static String NETWORKTYPE_WIFI = "wifi";
         private final static String NETWORKTYPE_UNKNOWN = "unknown";
         private final static String NETWORKTYPE_NOT_CONNECTED = "not_connected";
@@ -419,37 +416,37 @@ class DeviceInfo {
                 // https://en.wikipedia.org/wiki/List_of_mobile_phone_generations
 
                 case TelephonyManager.NETWORK_TYPE_IDEN:
-                    return NETWORKTYPE_2G;
+                    return "2g@iden";
                 case TelephonyManager.NETWORK_TYPE_GPRS:
-                    return NETWORKTYPE_2G;
+                    return "2g@gprs";
                 case TelephonyManager.NETWORK_TYPE_EDGE:
-                    return NETWORKTYPE_2G;
+                    return "2g@edge";
 
                 case TelephonyManager.NETWORK_TYPE_UMTS:
-                    return NETWORKTYPE_3G;
+                    return "3g@umts";
                 case TelephonyManager.NETWORK_TYPE_1xRTT:
-                    return NETWORKTYPE_3G;
+                    return "3g@1xrtt";
                 case TelephonyManager.NETWORK_TYPE_CDMA:
-                    return NETWORKTYPE_3G;
+                    return "3g@cdma";
                 case TelephonyManager.NETWORK_TYPE_EHRPD:
-                    return NETWORKTYPE_3G;
+                    return "3g@ehrpd";
                 case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                    return NETWORKTYPE_3G;
+                    return "3g@evdo0";
                 case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                    return NETWORKTYPE_3G;
+                    return "3g@evdoa";
                 case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                    return NETWORKTYPE_3G;
+                    return "3g@evdob";
                 case TelephonyManager.NETWORK_TYPE_HSDPA:
-                    return NETWORKTYPE_3G;
+                    return "3g@hsdpa";
                 case TelephonyManager.NETWORK_TYPE_HSPA:
-                    return NETWORKTYPE_3G;
+                    return "3g@hspa";
                 case TelephonyManager.NETWORK_TYPE_HSUPA:
-                    return NETWORKTYPE_3G;
+                    return "3g@hsupa";
 
                 case TelephonyManager.NETWORK_TYPE_HSPAP:
-                    return NETWORKTYPE_4G;
+                    return "4g@hspap";
                 case TelephonyManager.NETWORK_TYPE_LTE:
-                    return NETWORKTYPE_4G;
+                    return "4g@lte";
             }
 
             return NETWORKTYPE_UNKNOWN;
