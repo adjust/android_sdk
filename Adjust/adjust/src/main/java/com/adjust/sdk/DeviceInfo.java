@@ -421,6 +421,8 @@ class DeviceInfo {
                     return "2g@gprs";
                 case TelephonyManager.NETWORK_TYPE_EDGE:
                     return "2g@edge";
+                case TelephonyManager.NETWORK_TYPE_GSM:
+                    return "2g@gsm";
 
                 case TelephonyManager.NETWORK_TYPE_UMTS:
                     return "3g@umts";
@@ -442,11 +444,16 @@ class DeviceInfo {
                     return "3g@hspa";
                 case TelephonyManager.NETWORK_TYPE_HSUPA:
                     return "3g@hsupa";
+                case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
+                    return "3g@tdscdma";
 
                 case TelephonyManager.NETWORK_TYPE_HSPAP:
                     return "4g@hspap";
                 case TelephonyManager.NETWORK_TYPE_LTE:
                     return "4g@lte";
+
+                case TelephonyManager.NETWORK_TYPE_IWLAN:
+                    return "unknown@iwlan";
             }
 
             return NETWORKTYPE_UNKNOWN;
