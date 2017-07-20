@@ -8,10 +8,21 @@ import android.content.SharedPreferences;
 
 /**
  * Class used for shared preferences manipulation.
+ *
+ * @author Ugljesa Erceg (uerceg)
+ * @since 7th July 2017
  */
+
 public class SharedPreferencesManager {
-    private final String PREFS_NAME = "adjust_preferences";
-    private final String PREFS_KEY_REFERRERS = "referrers";
+    /**
+     * Name of Adjust preferences.
+     */
+    private static final String PREFS_NAME = "adjust_preferences";
+
+    /**
+     * Key name for referrers.
+     */
+    private static final String PREFS_KEY_REFERRERS = "referrers";
 
     /**
      * Shared preferences of the app.
@@ -30,16 +41,16 @@ public class SharedPreferencesManager {
     /**
      * Save referrer information to shared preferences.
      *
-     * @param referrer  Referrer string.
-     * @param clickTime Referrer click time.
+     * @param referrer  Referrer string
+     * @param clickTime Referrer click time
      */
     public synchronized void saveReferrerToSharedPreferences(final String referrer, final long clickTime) {
-        // Check if referrer is null or empty string already done before calling this mehtod.
+        // Check if referrer is null or empty string already done before calling this method.
         try {
             JSONArray referrerQueue = getReferrersFromSharedPreferences();
 
             // If referrer is already contained in shared preferences, skip adding it.
-            if (isReferrerContainedInArray(referrer, clickTime, referrerQueue) >= 0) {
+            if (getReferrerIndex(referrer, clickTime, referrerQueue) >= 0) {
                 return;
             }
 
@@ -61,8 +72,8 @@ public class SharedPreferencesManager {
     /**
      * Mark referrer entry in referrer queue as currently being sent from sdk_click handler.
      *
-     * @param referrer  Referrer string.
-     * @param clickTime Referrer click time.
+     * @param referrer  Referrer string
+     * @param clickTime Referrer click time
      */
     public synchronized void markReferrerForSendingInSharedPreferences(final String referrer, final long clickTime) {
         // Don't even try to alter null or empty referrers since they shouldn't exist in shared preferences.
@@ -73,7 +84,7 @@ public class SharedPreferencesManager {
         try {
             // Try to locate position in queue of the referrer that should be altered.
             JSONArray referrerQueue = getReferrersFromSharedPreferences();
-            int index = isReferrerContainedInArray(referrer, clickTime, referrerQueue);
+            int index = getReferrerIndex(referrer, clickTime, referrerQueue);
 
             // If referrer is not found in the queue, skip the rest.
             if (index == -1) {
@@ -111,8 +122,8 @@ public class SharedPreferencesManager {
     /**
      * Remove referrer information from shared preferences.
      *
-     * @param referrer  Referrer string.
-     * @param clickTime Referrer click time.
+     * @param referrer  Referrer string
+     * @param clickTime Referrer click time
      */
     public synchronized void removeReferrerFromSharedPreferences(final String referrer, final long clickTime) {
         // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
@@ -123,7 +134,7 @@ public class SharedPreferencesManager {
         try {
             // Try to locate position in queue of the referrer that should be deleted.
             JSONArray referrerQueue = getReferrersFromSharedPreferences();
-            int index = isReferrerContainedInArray(referrer, clickTime, referrerQueue);
+            int index = getReferrerIndex(referrer, clickTime, referrerQueue);
 
             // If referrer is not found in the queue, skip the rest.
             if (index == -1) {
@@ -199,15 +210,17 @@ public class SharedPreferencesManager {
     }
 
     /**
-     * Check if referrer information is contained in referrer queue in shared preferences.
+     * Check if referrer information is contained in referrer queue in shared preferences and get it's index.
      *
-     * @param referrer      Referrer string.
-     * @param clickTime     Referrer click time.
-     * @param referrerQueue Referrer queue from shared preferences.
-     * @return Index of referrer information inside of the referrer queue. -1 if referrer information is not found.
-     * @throws JSONException
+     * @param referrer      Referrer string
+     * @param clickTime     Referrer click time
+     * @param referrerQueue Referrer queue from shared preferences
+     * @return Index of referrer information inside of the referrer queue. -1 if not found.
+     * @throws JSONException JSON exception
      */
-    private int isReferrerContainedInArray(String referrer, long clickTime, JSONArray referrerQueue) throws JSONException {
+    private int getReferrerIndex(final String referrer,
+                                 final long clickTime,
+                                 final JSONArray referrerQueue) throws JSONException {
         for (int i = 0; i < referrerQueue.length(); i += 1) {
             JSONArray referrerPair = referrerQueue.getJSONArray(i);
 
