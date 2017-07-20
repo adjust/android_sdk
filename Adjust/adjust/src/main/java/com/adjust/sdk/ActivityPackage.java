@@ -48,6 +48,7 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> partnerParameters;
 
     private int retries;
+    private long clickTime;
 
     public String getPath() {
         return path;
@@ -99,6 +100,14 @@ public class ActivityPackage implements Serializable {
     public int increaseRetries() {
         retries++;
         return retries;
+    }
+
+    public long getClickTime() {
+        return this.clickTime;
+    }
+
+    public void setClickTime(long clickTime) {
+        this.clickTime = clickTime;
     }
 
     public Map<String, String> getCallbackParameters() {

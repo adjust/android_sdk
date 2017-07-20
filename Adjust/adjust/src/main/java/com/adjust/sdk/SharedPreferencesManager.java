@@ -1,5 +1,8 @@
 package com.adjust.sdk;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -7,6 +10,9 @@ import android.content.SharedPreferences;
  * Class used for shared preferences manipulation.
  */
 public class SharedPreferencesManager {
+    private final String PREFS_NAME = "adjust_preferences";
+    private final String PREFS_KEY_REFERRERS = "referrers";
+
     /**
      * Shared preferences of the app.
      */
@@ -16,10 +22,156 @@ public class SharedPreferencesManager {
      * Default constructor.
      *
      * @param context Application context
-     * @param name    Shared preferences name
      */
-    public SharedPreferencesManager(final Context context, final String name) {
-        this.sharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE);
+    public SharedPreferencesManager(final Context context) {
+        this.sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Save referrer information to shared preferences.
+     *
+     * @param referrer  Referrer string.
+     * @param clickTime Referrer click time.
+     */
+    public synchronized void saveReferrerToSharedPreferences(final String referrer, final long clickTime) {
+        // Check if referrer is null or empty string already done before calling this mehtod.
+        try {
+            JSONArray referrerQueue = getReferrersFromSharedPreferences();
+
+            // If referrer is already contained in shared preferences, skip adding it.
+            if (isReferrerContainedInArray(referrer, clickTime, referrerQueue) >= 0) {
+                return;
+            }
+
+            // Add new referrer JSONArray entry to the queue.
+            JSONArray newReferrerPair = new JSONArray();
+
+            newReferrerPair.put(0, referrer);
+            newReferrerPair.put(1, clickTime);
+
+            referrerQueue.put(newReferrerPair);
+
+            // Save JSON array as string back to shared preferences.
+            saveStringToSharedPreferences(PREFS_KEY_REFERRERS, referrerQueue.toString());
+        } catch (JSONException e) {
+
+        }
+    }
+
+    /**
+     * Mark referrer entry in referrer queue as currently being sent from sdk_click handler.
+     *
+     * @param referrer  Referrer string.
+     * @param clickTime Referrer click time.
+     */
+    public synchronized void markReferrerForSendingInSharedPreferences(final String referrer, final long clickTime) {
+        // Don't even try to alter null or empty referrers since they shouldn't exist in shared preferences.
+        if (referrer == null || referrer.length() == 0) {
+            return;
+        }
+
+        try {
+            // Try to locate position in queue of the referrer that should be altered.
+            JSONArray referrerQueue = getReferrersFromSharedPreferences();
+            int index = isReferrerContainedInArray(referrer, clickTime, referrerQueue);
+
+            // If referrer is not found in the queue, skip the rest.
+            if (index == -1) {
+                return;
+            }
+
+            JSONArray referrerPair = referrerQueue.getJSONArray(index);
+
+            // Rebuild queue and alter the aimed referrer info entry.
+            JSONArray newReferrerQueue = new JSONArray();
+
+            for (int i = 0; i < referrerQueue.length(); i += 1) {
+                if (i == index) {
+                    JSONArray alteredReferrerPair = new JSONArray();
+
+                    alteredReferrerPair.put(0, referrerPair.get(0));
+                    alteredReferrerPair.put(1, referrerPair.get(1));
+                    alteredReferrerPair.put(2, true);
+
+                    newReferrerQueue.put(alteredReferrerPair);
+
+                    continue;
+                }
+
+                newReferrerQueue.put(referrerQueue.getJSONArray(i));
+            }
+
+            // Save new referrer queue JSON array as string back to shared preferences.
+            saveStringToSharedPreferences(PREFS_KEY_REFERRERS, newReferrerQueue.toString());
+        } catch (JSONException e) {
+
+        }
+    }
+
+    /**
+     * Remove referrer information from shared preferences.
+     *
+     * @param referrer  Referrer string.
+     * @param clickTime Referrer click time.
+     */
+    public synchronized void removeReferrerFromSharedPreferences(final String referrer, final long clickTime) {
+        // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
+        if (referrer == null || referrer.length() == 0) {
+            return;
+        }
+
+        try {
+            // Try to locate position in queue of the referrer that should be deleted.
+            JSONArray referrerQueue = getReferrersFromSharedPreferences();
+            int index = isReferrerContainedInArray(referrer, clickTime, referrerQueue);
+
+            // If referrer is not found in the queue, skip the rest.
+            if (index == -1) {
+                return;
+            }
+
+            // Rebuild queue without referrer that should be removed.
+            JSONArray newReferrerQueue = new JSONArray();
+
+            for (int i = 0; i < referrerQueue.length(); i += 1) {
+                if (i == index) {
+                    continue;
+                }
+
+                newReferrerQueue.put(referrerQueue.getJSONArray(i));
+            }
+
+            // Save new referrer queue JSON array as string back to shared preferences.
+            saveStringToSharedPreferences(PREFS_KEY_REFERRERS, newReferrerQueue.toString());
+        } catch (JSONException e) {
+
+        }
+    }
+
+    /**
+     * Get all currently saved referrers from shared preferences.
+     *
+     * @return JSONArray with all the saved referrers from shared preferences. Empty array if none available.
+     */
+    public synchronized JSONArray getReferrersFromSharedPreferences() {
+        try {
+            String referrerQueueString = getStringFromSharedPreferences(PREFS_KEY_REFERRERS);
+
+            if (referrerQueueString == null) {
+                return new JSONArray();
+            } else {
+                return new JSONArray(referrerQueueString);
+            }
+        } catch (JSONException e) {
+            return new JSONArray();
+        }
+    }
+
+    /**
+     * Remove all key-value pairs from shared preferences.
+     */
+    public synchronized void clearSharedPreferences() {
+        this.sharedPreferences.edit().clear().apply();
     }
 
     /**
@@ -28,28 +180,8 @@ public class SharedPreferencesManager {
      * @param key   Key to be written to shared preferences
      * @param value Value to be written to shared preferences
      */
-    public synchronized void saveStringToSharedPreferences(final String key, final String value) {
+    private synchronized void saveStringToSharedPreferences(final String key, final String value) {
         this.sharedPreferences.edit().putString(key, value).apply();
-    }
-
-    /**
-     * Write a long value to shared preferences.
-     *
-     * @param key   Key to be written to shared preferences
-     * @param value Value to be written to shared preferences
-     */
-    public synchronized void saveLongToSharedPreferences(final String key, final long value) {
-        this.sharedPreferences.edit().putLong(key, value).apply();
-    }
-
-    /**
-     * Write a boolean value to shared preferences.
-     *
-     * @param key   Key to be written to shared preferences
-     * @param value Value to be written to shared preferences
-     */
-    public synchronized void saveBooleanToSharedPreferences(final String key, final boolean value) {
-        this.sharedPreferences.edit().putBoolean(key, value).apply();
     }
 
     /**
@@ -58,7 +190,7 @@ public class SharedPreferencesManager {
      * @param key Key for which string value should be retrieved
      * @return String value for given key saved in shared preferences (null if not found)
      */
-    public synchronized String getStringFromSharedPreferences(final String key) {
+    private synchronized String getStringFromSharedPreferences(final String key) {
         try {
             return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
@@ -67,58 +199,26 @@ public class SharedPreferencesManager {
     }
 
     /**
-     * Get a long value from shared preferences.
+     * Check if referrer information is contained in referrer queue in shared preferences.
      *
-     * @param key Key for which long value should be retrieved
-     * @return Long value for given key saved in shared preferences (-1 if not found)
+     * @param referrer      Referrer string.
+     * @param clickTime     Referrer click time.
+     * @param referrerQueue Referrer queue from shared preferences.
+     * @return Index of referrer information inside of the referrer queue. -1 if referrer information is not found.
+     * @throws JSONException
      */
-    public synchronized long getLongFromSharedPreferences(final String key) {
-        long defaultValue = -1;
+    private int isReferrerContainedInArray(String referrer, long clickTime, JSONArray referrerQueue) throws JSONException {
+        for (int i = 0; i < referrerQueue.length(); i += 1) {
+            JSONArray referrerPair = referrerQueue.getJSONArray(i);
 
-        try {
-            return this.sharedPreferences.getLong(key, defaultValue);
-        } catch (ClassCastException e) {
-            return defaultValue;
+            String savedReferrer = referrerPair.getString(0);
+            long savedClickTime = referrerPair.getLong(1);
+
+            if (savedReferrer.equals(referrer) && savedClickTime == clickTime) {
+                return i;
+            }
         }
-    }
 
-    /**
-     * Get a long value from shared preferences.
-     *
-     * @param key Key for which boolean value should be retrieved
-     * @return Boolean value for given key saved in shared preferences (false if not found)
-     */
-    public synchronized boolean getBooleanFromSharedPreferences(final String key) {
-        try {
-            return this.sharedPreferences.getBoolean(key, false);
-        } catch (ClassCastException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if a given key is contained inside of shared preferences.
-     *
-     * @param key Key which is being checked
-     * @return Boolean indicating whether key is present in shared preferences or not
-     */
-    public synchronized boolean isContainedInSharedPreferences(final String key) {
-        return this.sharedPreferences.contains(key);
-    }
-
-    /**
-     * Remove given key from shared preferences.
-     *
-     * @param key Key which might be removed
-     */
-    public synchronized void removeFromSharedPreferences(final String key) {
-        this.sharedPreferences.edit().remove(key).apply();
-    }
-
-    /**
-     * Remove all key-value pairs from shared preferences.
-     */
-    public synchronized void clearSharedPreferences() {
-        this.sharedPreferences.edit().clear().apply();
+        return -1;
     }
 }

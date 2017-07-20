@@ -131,6 +131,7 @@ class PackageBuilder {
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
+        clickPackage.setClickTime(clickTime);
         clickPackage.setParameters(parameters);
 
         return clickPackage;
