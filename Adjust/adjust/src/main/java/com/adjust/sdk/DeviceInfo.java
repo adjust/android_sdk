@@ -7,8 +7,12 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import java.util.Date;
@@ -28,6 +32,9 @@ import static com.adjust.sdk.Constants.XLARGE;
  * Created by pfms on 06/11/14.
  */
 class DeviceInfo {
+    String playAdId;
+    Boolean isTrackingEnabled;
+    private boolean nonGoogleIdsRead = false;
     String macSha1;
     String macShortMd5;
     String androidId;
@@ -54,6 +61,9 @@ class DeviceInfo {
     String vmInstructionSet;
     String appInstallTime;
     String appUpdateTime;
+    String mcc;
+    String mnc;
+    String networkType;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -62,9 +72,9 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
-        boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
-        String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
         ContentResolver contentResolver = context.getContentResolver();
+
+        reloadDeviceIds(context);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -82,17 +92,35 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
-        androidId = getAndroidId(context, isGooglePlayServicesAvailable);
         fbAttributionId = getFacebookAttributionId(context);
         pluginKeys = Util.getPluginKeys(context);
-        macSha1 = getMacSha1(macAddress);
-        macShortMd5 = getMacShortMd5(macAddress);
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
         vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
+        mcc = getMcc(context);
+        mnc = getMnc(context);
+        networkType = NetworkUtil.getNetworkType(context);
+    }
+
+    void reloadDeviceIds(Context context) {
+        isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+        playAdId = Util.getPlayAdId(context);
+
+        if (playAdId == null && !nonGoogleIdsRead) {
+            if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+                AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
+            }
+            String macAddress = Util.getMacAddress(context);
+            macSha1 = getMacSha1(macAddress);
+            macShortMd5 = getMacShortMd5(macAddress);
+
+            androidId = Util.getAndroidId(context);
+
+            nonGoogleIdsRead = true;
+        }
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -171,6 +199,7 @@ class DeviceInfo {
     private String getHardwareName() {
         return Build.DISPLAY;
     }
+
     private String getScreenSize(int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -251,14 +280,6 @@ class DeviceInfo {
         return macShortMd5;
     }
 
-    private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {
-        if (!isGooglePlayServicesAvailable) {
-            return Util.getAndroidId(context);
-        } else {
-            return null;
-        }
-    }
-
     private String getFacebookAttributionId(final Context context) {
         try {
             final ContentResolver contentResolver = context.getContentResolver();
@@ -323,6 +344,119 @@ class DeviceInfo {
             return appInstallTime;
         } catch (Exception ex) {
             return null;
+        }
+    }
+
+    private String getMcc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                return null;
+            }
+            return networkOperator.substring(0, 3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mcc");
+            return null;
+        }
+    }
+
+    private String getMnc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                return null;
+            }
+            return networkOperator.substring(3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mnc");
+            return null;
+        }
+    }
+
+    private static class NetworkUtil {
+        private final static String NETWORKTYPE_WIFI = "wifi";
+        private final static String NETWORKTYPE_UNKNOWN = "unknown";
+        private final static String NETWORKTYPE_NOT_CONNECTED = "not_connected";
+
+        private NetworkUtil() {
+        }
+
+        // Returns the network type based as one of the NETWORKTYPE_XX const values.
+        // Priority goes to 'wifi' even if mobile data is enabled
+        static String getNetworkType(Context context) {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            if (activeNetwork != null) { // connected to the internet
+                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                    // connected to wifi
+                    return NETWORKTYPE_WIFI;
+                } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    // connected to the mobile provider's data plan
+                    return getMobileNetworkType(context);
+                }
+            }
+
+            // not connected to the internet
+            return NETWORKTYPE_NOT_CONNECTED;
+        }
+
+        private static String getMobileNetworkType(Context context) {
+            TelephonyManager teleMan =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            int networkType = teleMan.getNetworkType();
+
+            switch (networkType) {
+                //- Most network types were determined using the table at the end of this page:
+                // https://en.wikipedia.org/wiki/List_of_mobile_phone_generations
+
+                case TelephonyManager.NETWORK_TYPE_IDEN:
+                    return "2g@iden";
+                case TelephonyManager.NETWORK_TYPE_GPRS:
+                    return "2g@gprs";
+                case TelephonyManager.NETWORK_TYPE_EDGE:
+                    return "2g@edge";
+                case TelephonyManager.NETWORK_TYPE_GSM:
+                    return "2g@gsm";
+
+                case TelephonyManager.NETWORK_TYPE_UMTS:
+                    return "3g@umts";
+                case TelephonyManager.NETWORK_TYPE_1xRTT:
+                    return "3g@1xrtt";
+                case TelephonyManager.NETWORK_TYPE_CDMA:
+                    return "3g@cdma";
+                case TelephonyManager.NETWORK_TYPE_EHRPD:
+                    return "3g@ehrpd";
+                case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                    return "3g@evdo0";
+                case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                    return "3g@evdoa";
+                case TelephonyManager.NETWORK_TYPE_EVDO_B:
+                    return "3g@evdob";
+                case TelephonyManager.NETWORK_TYPE_HSDPA:
+                    return "3g@hsdpa";
+                case TelephonyManager.NETWORK_TYPE_HSPA:
+                    return "3g@hspa";
+                case TelephonyManager.NETWORK_TYPE_HSUPA:
+                    return "3g@hsupa";
+                case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
+                    return "3g@tdscdma";
+
+                case TelephonyManager.NETWORK_TYPE_HSPAP:
+                    return "4g@hspap";
+                case TelephonyManager.NETWORK_TYPE_LTE:
+                    return "4g@lte";
+
+                case TelephonyManager.NETWORK_TYPE_IWLAN:
+                    return "unknown@iwlan";
+            }
+
+            return NETWORKTYPE_UNKNOWN;
         }
     }
 }

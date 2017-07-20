@@ -1,6 +1,7 @@
 package com.adjust.sdk;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -8,7 +9,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.mock.MockContext;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +20,6 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by pfms on 08/08/2016.
@@ -76,6 +75,11 @@ public class TestActivityHandler {
         AdjustFactory.setTimerStart(-1);
         AdjustFactory.setSessionInterval(-1);
         AdjustFactory.setSubsessionInterval(-1);
+
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.apply();
 
         activity = null;
         context = null;
@@ -678,22 +682,22 @@ public class TestActivityHandler {
         // disable sdk
         activityHandler.setEnabled(false);
 
+        SystemClock.sleep(1000);
+
         // check that it is disabled
         assertUtil.isFalse(activityHandler.isEnabled());
 
-        SystemClock.sleep(1500);
-
         // not writing activity state because it set enable does not start the sdk
         assertUtil.notInDebug("Wrote Activity state");
-
-        // check if message the disable of the SDK
-        assertUtil.info("Handlers will start as paused due to the SDK being disabled");
 
         StateActivityHandlerInit stateActivityHandlerInit = new StateActivityHandlerInit(activityHandler);
         stateActivityHandlerInit.startsSending = false;
         stateActivityHandlerInit.startEnabled = false;
 
         checkInitTests(stateActivityHandlerInit);
+
+        // check if message the disable of the SDK
+        assertUtil.info("Handlers will start as paused due to the SDK being disabled");
 
         checkHandlerStatus(true);
 
@@ -706,11 +710,11 @@ public class TestActivityHandler {
         SystemClock.sleep(1500);
 
         // check initial created session
-        StateSession sessionStartsPaused = new StateSession(StateSession.SessionType.NEW_SESSION);
-        sessionStartsPaused.toSend = false;
-        sessionStartsPaused.foregroundTimerStarts = false;
+        StateSession initialSessionDisabled = new StateSession(StateSession.SessionType.DISABLED);
+        initialSessionDisabled.toSend = false;
+        initialSessionDisabled.foregroundTimerStarts = false;
 
-        checkStartInternal(sessionStartsPaused);
+        checkStartInternal(initialSessionDisabled);
 
         // and failed event
         StateEvent stateFailedEvent = new StateEvent();
@@ -743,16 +747,16 @@ public class TestActivityHandler {
         checkStartInternal(sessionDisabled);
 
         // only the first session package should be sent
-        assertUtil.isEqual(1, mockPackageHandler.queue.size());
+        assertUtil.isEqual(0, mockPackageHandler.queue.size());
 
         // put in offline mode
         activityHandler.setOfflineMode(true);
 
-        // pausing due to offline mode
-        assertUtil.info("Pausing handlers to put SDK offline mode");
-
         // wait to update status
         SystemClock.sleep(1500);
+
+        // pausing due to offline mode
+        assertUtil.info("Pausing handlers to put SDK offline mode");
 
         // after pausing, even when it's already paused
         // tries to update the status
@@ -760,6 +764,9 @@ public class TestActivityHandler {
 
         // re-enable the SDK
         activityHandler.setEnabled(true);
+
+        // wait to update status
+        SystemClock.sleep(1500);
 
         // check that it is enabled
         assertUtil.isTrue(activityHandler.isEnabled());
@@ -796,9 +803,9 @@ public class TestActivityHandler {
         checkEvent(stateEvent);
 
         // it should have the second session and the event
-        assertUtil.isEqual(3, mockPackageHandler.queue.size());
+        assertUtil.isEqual(2, mockPackageHandler.queue.size());
 
-        ActivityPackage secondSessionPackage = mockPackageHandler.queue.get(1);
+        ActivityPackage secondSessionPackage = mockPackageHandler.queue.get(0);
 
         // create activity package test
         TestActivityPackage testSecondSessionPackage = new TestActivityPackage(secondSessionPackage);
@@ -809,7 +816,7 @@ public class TestActivityHandler {
         // test second session
         testSecondSessionPackage.testSessionPackage(2);
 
-        ActivityPackage eventPackage = mockPackageHandler.queue.get(2);
+        ActivityPackage eventPackage = mockPackageHandler.queue.get(1);
 
         // create activity package test
         TestActivityPackage testEventPackage = new TestActivityPackage(eventPackage);
@@ -828,6 +835,8 @@ public class TestActivityHandler {
 
         // put in online mode
         activityHandler.setOfflineMode(false);
+
+        SystemClock.sleep(1500);
 
         // message that is finally resuming
         assertUtil.info("Resuming handlers to put SDK in online mode");
@@ -1611,6 +1620,8 @@ public class TestActivityHandler {
         // put SDK offline
         activityHandler.setOfflineMode(true);
 
+        SystemClock.sleep(1000);
+
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // check if it's offline before the sdk starts
@@ -1621,11 +1632,11 @@ public class TestActivityHandler {
         // not writing activity state because it set enable does not start the sdk
         assertUtil.notInDebug("Wrote Activity state");
 
-        // check if message the disable of the SDK
-        assertUtil.info("Handlers will start paused due to SDK being offline");
-
         // test init values
         checkInitTests(activityHandler);
+
+        // check if message the disable of the SDK
+        assertUtil.info("Handlers will start paused due to SDK being offline");
 
         // check change from set offline mode
         checkHandlerStatus(true);
@@ -1655,6 +1666,8 @@ public class TestActivityHandler {
 
         // disable the SDK in the background
         activityHandler.setEnabled(false);
+
+        SystemClock.sleep(1000);
 
         // check that it is disabled
         assertUtil.isFalse(activityHandler.isEnabled());
@@ -1687,9 +1700,9 @@ public class TestActivityHandler {
         // put SDK back online
         activityHandler.setOfflineMode(false);
 
-        assertUtil.info("Handlers remain paused");
-
         SystemClock.sleep(1500);
+
+        assertUtil.info("Handlers remain paused");
 
         // test the update status, still paused
         checkHandlerStatus(true);
@@ -1720,6 +1733,8 @@ public class TestActivityHandler {
 
         // enable the SDK again
         activityHandler.setEnabled(true);
+
+        SystemClock.sleep(1000);
 
         // check that is enabled
         assertUtil.isTrue(activityHandler.isEnabled());
@@ -1755,8 +1770,12 @@ public class TestActivityHandler {
 
         String referrerBeforeLaunch = "referrerBeforeLaunch";
 
-        config.referrer = referrerBeforeLaunch;
-        config.referrerClickTime = now;
+        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(Constants.REFERRER_PREFKEY, referrerBeforeLaunch);
+        editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, now);
+        editor.apply();
+
         // start activity handler with config
         ActivityHandler activityHandler = getActivityHandler(config);
 
@@ -1764,7 +1783,7 @@ public class TestActivityHandler {
 
         // test init values
         StateActivityHandlerInit stateActivityHandlerInit = new StateActivityHandlerInit(activityHandler);
-        stateActivityHandlerInit.sendReferrer = referrerBeforeLaunch;
+        //stateActivityHandlerInit.sendReferrer = referrerBeforeLaunch;
         checkInitTests(stateActivityHandlerInit);
 
         resumeActivity(activityHandler);
@@ -1816,9 +1835,6 @@ public class TestActivityHandler {
         assertUtil.verbose("Referrer to parse (%s)", incomplete);
         assertUtil.test("SdkClickHandler sendSdkClick");
 
-        // check that it did not send any other click package
-        assertUtil.notInTest("SdkClickHandler sendSdkClick");
-
         // 7 click
         assertUtil.isEqual(8, mockSdkClickHandler.queue.size());
 
@@ -1828,7 +1844,7 @@ public class TestActivityHandler {
 
         referrerBeforeLaunchTest.referrer = referrerBeforeLaunch;
 
-        referrerBeforeLaunchTest.testClickPackage("reftag", false);
+        referrerBeforeLaunchTest.testClickPackage("reftag", true);
 
         ActivityPackage reftagClickPackage = mockSdkClickHandler.queue.get(1);
 
@@ -1921,7 +1937,7 @@ public class TestActivityHandler {
 
         // if it's the first launch
         //if (internalState.isFirstLaunch()) {
-        //    if (!internalState.isSessionResponseProcessed()) {
+        //    if (internalState.hasSessionResponseNotBeenProcessed()) {
         //        return;
         //    }
         //}
@@ -2224,6 +2240,8 @@ public class TestActivityHandler {
         // disable and enable the sdk while in the background
         activityHandler.setEnabled(false);
 
+        SystemClock.sleep(1000);
+
         // check that it is disabled
         assertUtil.isFalse(activityHandler.isEnabled());
 
@@ -2236,6 +2254,8 @@ public class TestActivityHandler {
         checkHandlerStatus(true);
 
         activityHandler.setEnabled(true);
+
+        SystemClock.sleep(1000);
 
         // check that it is enabled
         assertUtil.isTrue(activityHandler.isEnabled());
@@ -2252,6 +2272,8 @@ public class TestActivityHandler {
         // set offline and online the sdk while in the background
         activityHandler.setOfflineMode(true);
 
+        SystemClock.sleep(1000);
+
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // check that it is offline
@@ -2266,6 +2288,8 @@ public class TestActivityHandler {
         checkHandlerStatus(true);
 
         activityHandler.setOfflineMode(false);
+
+        SystemClock.sleep(1000);
 
         // check that it is online
         assertUtil.isTrue(internalState.isOnline());
@@ -2289,8 +2313,8 @@ public class TestActivityHandler {
         AdjustConfig config = getConfig();
 
         //  create handler and start the first session
-        config.sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        config.sessionParametersActionsArray.add(new IRunActivityHandler() {
+        config.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+        config.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 //
@@ -2491,8 +2515,8 @@ public class TestActivityHandler {
 
         config.setDelayStart(4);
 
-        config.sessionParametersActionsArray = new ArrayList<IRunActivityHandler>();
-        config.sessionParametersActionsArray.add(new IRunActivityHandler() {
+        config.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+        config.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(ActivityHandler activityHandler) {
                 activityHandler.addSessionCallbackParameterI("scpKey", "scpValue");
@@ -2984,9 +3008,9 @@ public class TestActivityHandler {
             // test default values
             assertUtil.isTrue(internalState.isEnabled());
             assertUtil.isTrue(internalState.isOnline());
-            assertUtil.isTrue(internalState.isBackground());
-            assertUtil.isTrue(internalState.isToStartNow());
-            assertUtil.isFalse(internalState.isToUpdatePackages());
+            assertUtil.isTrue(internalState.isInBackground());
+            assertUtil.isTrue(internalState.isNotInDelayedStart());
+            assertUtil.isFalse(internalState.itHasToUpdatePackages());
         }
 
         return activityHandler;
@@ -3015,7 +3039,7 @@ public class TestActivityHandler {
 
         // check values read from activity state
         assertUtil.isEqual(sInit.internalState.isEnabled(), sInit.startEnabled);
-        //assertUtil.isEqual(sInit.internalState.isToUpdatePackages(), sInit.updatePackages);
+        //assertUtil.isEqual(sInit.internalState.itHasToUpdatePackages(), sInit.updatePackages);
 
         // check event buffering
         if (sInit.eventBufferingIsEnabled) {
@@ -3054,10 +3078,10 @@ public class TestActivityHandler {
 
         if (sInit.delayStartConfigured) {
             assertUtil.info("Delay start configured");
-            assertUtil.isTrue(sInit.internalState.isDelayStart());
+            assertUtil.isTrue(sInit.internalState.isInDelayedStart());
         } else {
             assertUtil.notInInfo("Delay start configured");
-            assertUtil.isFalse(sInit.internalState.isDelayStart());
+            assertUtil.isFalse(sInit.internalState.isInDelayedStart());
         }
 
         if (sInit.startsSending) {
@@ -3104,7 +3128,7 @@ public class TestActivityHandler {
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // comes to the foreground
-        assertUtil.isTrue(internalState.isForeground());
+        assertUtil.isTrue(internalState.isInForeground());
     }
 
     private void checkFirstSession() {
@@ -3177,8 +3201,6 @@ public class TestActivityHandler {
                 assertUtil.notInVerbose("Started subsession ");
                 assertUtil.notInVerbose("Time span since last activity too short for a new subsession");
                 assertUtil.notInError("Time travel!");
-                // does not writes activity state
-                assertUtil.notInDebug("Wrote Activity state: ");
                 break;
         }
 
@@ -3295,7 +3317,6 @@ public class TestActivityHandler {
             assertUtil.notInTest("PackageHandler addPackage");
             assertUtil.notInInfo("Buffered event ");
             assertUtil.notInTest("PackageHandler sendFirstPackage");
-            assertUtil.notInDebug("Wrote Activity state");
             return;
         }
         if (stateEvent.duplicatedOrderId) {
@@ -3353,7 +3374,7 @@ public class TestActivityHandler {
         ActivityHandler.InternalState internalState = activityHandler.getInternalState();
 
         // goes to the background
-        assertUtil.isTrue(internalState.isBackground());
+        assertUtil.isTrue(internalState.isInBackground());
     }
 
     private void checkEndSession() {

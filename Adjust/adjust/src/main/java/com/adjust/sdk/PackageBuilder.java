@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
@@ -90,8 +91,7 @@ class PackageBuilder {
 
     public ActivityPackage buildEventPackage(AdjustEvent event,
                                              SessionParameters sessionParameters,
-                                             boolean isInDelay)
-    {
+                                             boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
@@ -131,6 +131,7 @@ class PackageBuilder {
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
+        clickPackage.setClickTime(clickTime);
         clickPackage.setParameters(parameters);
 
         return clickPackage;
@@ -229,13 +230,23 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
+        PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
+        PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
+        PackageBuilder.addString(parameters, "network_type", deviceInfo.networkType);
         fillPluginKeys(parameters);
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
-        PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        deviceInfo.reloadDeviceIds(adjustConfig.context);
+
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+
+        if (deviceInfo.playAdId == null) {
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
     }
 
     private void injectConfig(Map<String, String> parameters) {
@@ -244,10 +255,6 @@ class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
 
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        PackageBuilder.addString(parameters, "gps_adid", playAdId);
-        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();

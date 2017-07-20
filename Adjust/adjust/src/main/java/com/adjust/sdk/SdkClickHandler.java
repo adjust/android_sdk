@@ -1,11 +1,15 @@
 package com.adjust.sdk;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -139,8 +143,11 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
-            activityHandler.finishedTrackingActivity(responseData);
+            // Remove referrer from shared preferences after sdk_click is sent.
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(activityHandler.getContext());
+            sharedPreferencesManager.removeReferrerFromSharedPreferences(sdkClickPackage.getParameters().get("referrer"), sdkClickPackage.getClickTime());
 
+            activityHandler.finishedTrackingActivity(responseData);
         } catch (UnsupportedEncodingException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click failed to encode parameters", e);
         } catch (SocketTimeoutException e) {

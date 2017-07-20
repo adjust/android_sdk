@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import android.content.Context;
 import android.net.Uri;
 
 /**
@@ -55,4 +56,6 @@ public interface IActivityHandler {
     void teardown(boolean deleteState);
 
     void setPushToken(String token);
+
+    Context getContext();
 }

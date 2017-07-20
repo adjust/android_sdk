@@ -16,8 +16,6 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    String referrer;
-    long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
@@ -27,10 +25,12 @@ public class AdjustConfig {
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
     Double delayStart;
-    List<IRunActivityHandler> sessionParametersActionsArray;
+    List<IRunActivityHandler> preLaunchActionsArray;
     ILogger logger;
     String userAgent;
     String pushToken;
+    Boolean startEnabled;
+    boolean startOffline;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
