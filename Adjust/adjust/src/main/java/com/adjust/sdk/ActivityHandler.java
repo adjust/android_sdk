@@ -766,14 +766,16 @@ public class ActivityHandler implements IActivityHandler {
 
         try {
             for (int i = 0; i < referrerQueue.length(); i += 1) {
-                JSONArray referrerPair = referrerQueue.getJSONArray(i);
+                JSONArray referrerEntry = referrerQueue.getJSONArray(i);
 
-                String savedReferrer = referrerPair.getString(0);
-                long savedClickTime = referrerPair.getLong(1);
-
-                if (referrerPair.length() == 2) {
-                    sendReferrerI(savedReferrer, savedClickTime);
+                if (sharedPreferencesManager.isReferrerMarkedForSending(referrerEntry)) {
+                    continue;
                 }
+
+                String savedReferrer = referrerEntry.getString(0);
+                long savedClickTime = referrerEntry.getLong(1);
+
+                sendReferrerI(savedReferrer, savedClickTime);
             }
         } catch (JSONException e) {
 
@@ -1195,6 +1197,13 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
+
+        // Skip sending of the referrer that is already being sent with SdkClickHandler.
+        if (sharedPreferencesManager.isReferrerMarkedForSending(referrer, clickTime)) {
+            return;
+        }
+
+        // If referrer was not being sent, mark it for sending and ask SdkCLickHandler to send it.
         sharedPreferencesManager.markReferrerForSending(referrer, clickTime);
 
         logger.verbose("Referrer to parse (%s)", referrer);
