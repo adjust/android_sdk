@@ -78,7 +78,7 @@ public class AdjustInstance {
         }
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveReferrerToSharedPreferences(referrer, clickTime);
+        sharedPreferencesManager.saveReferrer(referrer, clickTime);
 
         if (checkActivityHandler("referrer")) {
             activityHandler.sendReferrer(referrer, clickTime);

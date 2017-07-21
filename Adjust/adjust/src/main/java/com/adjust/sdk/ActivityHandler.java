@@ -107,7 +107,7 @@ public class ActivityHandler implements IActivityHandler {
 
         if (deleteState) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
-            sharedPreferencesManager.clearSharedPreferences();
+            sharedPreferencesManager.clear();
         }
 
         packageHandler = null;
@@ -762,7 +762,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void checkReferrerI() {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
-        JSONArray referrerQueue = sharedPreferencesManager.getReferrersFromSharedPreferences();
+        JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
 
         try {
             for (int i = 0; i < referrerQueue.length(); i += 1) {
@@ -1195,7 +1195,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
-        sharedPreferencesManager.markReferrerForSendingInSharedPreferences(referrer, clickTime);
+        sharedPreferencesManager.markReferrerForSending(referrer, clickTime);
 
         logger.verbose("Referrer to parse (%s)", referrer);
 
@@ -1213,10 +1213,6 @@ public class ActivityHandler implements IActivityHandler {
         clickPackageBuilder.referrer = referrer;
         clickPackageBuilder.clickTime = clickTime;
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, sessionParameters);
-
-        logger.debug("Referrer sdk_click package created and is about to be sent.");
-        logger.debug("Referrer: " + referrer);
-        logger.debug("Click time: " + clickTime);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }

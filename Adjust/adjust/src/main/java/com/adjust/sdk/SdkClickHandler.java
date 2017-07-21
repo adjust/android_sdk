@@ -224,7 +224,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             // Remove referrer from shared preferences after sdk_click is sent.
             SharedPreferencesManager sharedPreferencesManager
                     = new SharedPreferencesManager(activityHandler.getContext());
-            sharedPreferencesManager.removeReferrerFromSharedPreferences(
+            sharedPreferencesManager.removeReferrer(
                     sdkClickPackage.getParameters().get("referrer"),
                     sdkClickPackage.getClickTime());
 
