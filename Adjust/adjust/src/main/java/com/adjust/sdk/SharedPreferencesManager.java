@@ -149,6 +149,19 @@ public class SharedPreferencesManager {
 
             JSONArray referrerEntry = referrerQueue.getJSONArray(index);
 
+            return isReferrerMarkedForSending(referrerEntry);
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Check if referrer entry in shared preferences is already marked for sending.
+     * @param referrerEntry Referrer entry
+     * @return Boolean indicating whether referrer entry is marked for sending or not
+     */
+    public synchronized boolean isReferrerMarkedForSending(final JSONArray referrerEntry) {
+        try {
             if (referrerEntry.length() != PREFS_REFERRER_ENTRY_MAX_SIZE) {
                 return false;
             }
