@@ -59,8 +59,6 @@ class DeviceInfo {
     String vmInstructionSet;
     String appInstallTime;
     String appUpdateTime;
-    String mcc;
-    String mnc;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -97,8 +95,6 @@ class DeviceInfo {
         vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
-        mcc = getMcc(context);
-        mnc = getMnc(context);
     }
 
     void reloadDeviceIds(Context context) {
@@ -339,38 +335,6 @@ class DeviceInfo {
 
             return appInstallTime;
         } catch (Exception ex) {
-            return null;
-        }
-    }
-
-    private String getMcc(Context context) {
-        try {
-            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String networkOperator = tel.getNetworkOperator();
-
-            if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
-                return null;
-            }
-            return networkOperator.substring(0, 3);
-        } catch (Exception ex) {
-            AdjustFactory.getLogger().warn("Couldn't return mcc");
-            return null;
-        }
-    }
-
-    private String getMnc(Context context) {
-        try {
-            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String networkOperator = tel.getNetworkOperator();
-
-            if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
-                return null;
-            }
-            return networkOperator.substring(3);
-        } catch (Exception ex) {
-            AdjustFactory.getLogger().warn("Couldn't return mnc");
             return null;
         }
     }

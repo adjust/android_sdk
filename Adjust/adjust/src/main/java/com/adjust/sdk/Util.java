@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -476,5 +477,37 @@ public class Util {
         }
 
         return networkType;
+    }
+
+    public static String getMcc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                return null;
+            }
+            return networkOperator.substring(0, 3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mcc");
+            return null;
+        }
+    }
+
+    public static String getMnc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                return null;
+            }
+            return networkOperator.substring(3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mnc");
+            return null;
+        }
     }
 }

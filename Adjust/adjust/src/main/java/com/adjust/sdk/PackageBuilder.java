@@ -230,8 +230,8 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
-        PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
-        PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
+        PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
+        PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addInt(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
         PackageBuilder.addInt(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         fillPluginKeys(parameters);
