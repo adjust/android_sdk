@@ -7,8 +7,6 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.telephony.TelephonyManager;
@@ -63,7 +61,6 @@ class DeviceInfo {
     String appUpdateTime;
     String mcc;
     String mnc;
-    String networkType;
     Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
@@ -102,7 +99,6 @@ class DeviceInfo {
         appUpdateTime = getAppUpdateTime(context);
         mcc = getMcc(context);
         mnc = getMnc(context);
-        networkType = NetworkUtil.getNetworkType(context);
     }
 
     void reloadDeviceIds(Context context) {
@@ -376,87 +372,6 @@ class DeviceInfo {
         } catch (Exception ex) {
             AdjustFactory.getLogger().warn("Couldn't return mnc");
             return null;
-        }
-    }
-
-    private static class NetworkUtil {
-        private final static String NETWORKTYPE_WIFI = "wifi";
-        private final static String NETWORKTYPE_UNKNOWN = "unknown";
-        private final static String NETWORKTYPE_NOT_CONNECTED = "not_connected";
-
-        private NetworkUtil() {
-        }
-
-        // Returns the network type based as one of the NETWORKTYPE_XX const values.
-        // Priority goes to 'wifi' even if mobile data is enabled
-        static String getNetworkType(Context context) {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            if (activeNetwork != null) { // connected to the internet
-                if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                    // connected to wifi
-                    return NETWORKTYPE_WIFI;
-                } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                    // connected to the mobile provider's data plan
-                    return getMobileNetworkType(context);
-                }
-            }
-
-            // not connected to the internet
-            return NETWORKTYPE_NOT_CONNECTED;
-        }
-
-        private static String getMobileNetworkType(Context context) {
-            TelephonyManager teleMan =
-                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            int networkType = teleMan.getNetworkType();
-
-            switch (networkType) {
-                //- Most network types were determined using the table at the end of this page:
-                // https://en.wikipedia.org/wiki/List_of_mobile_phone_generations
-
-                case TelephonyManager.NETWORK_TYPE_IDEN:
-                    return "2g@iden";
-                case TelephonyManager.NETWORK_TYPE_GPRS:
-                    return "2g@gprs";
-                case TelephonyManager.NETWORK_TYPE_EDGE:
-                    return "2g@edge";
-                case TelephonyManager.NETWORK_TYPE_GSM:
-                    return "2g@gsm";
-
-                case TelephonyManager.NETWORK_TYPE_UMTS:
-                    return "3g@umts";
-                case TelephonyManager.NETWORK_TYPE_1xRTT:
-                    return "3g@1xrtt";
-                case TelephonyManager.NETWORK_TYPE_CDMA:
-                    return "3g@cdma";
-                case TelephonyManager.NETWORK_TYPE_EHRPD:
-                    return "3g@ehrpd";
-                case TelephonyManager.NETWORK_TYPE_EVDO_0:
-                    return "3g@evdo0";
-                case TelephonyManager.NETWORK_TYPE_EVDO_A:
-                    return "3g@evdoa";
-                case TelephonyManager.NETWORK_TYPE_EVDO_B:
-                    return "3g@evdob";
-                case TelephonyManager.NETWORK_TYPE_HSDPA:
-                    return "3g@hsdpa";
-                case TelephonyManager.NETWORK_TYPE_HSPA:
-                    return "3g@hspa";
-                case TelephonyManager.NETWORK_TYPE_HSUPA:
-                    return "3g@hsupa";
-                case TelephonyManager.NETWORK_TYPE_TD_SCDMA:
-                    return "3g@tdscdma";
-
-                case TelephonyManager.NETWORK_TYPE_HSPAP:
-                    return "4g@hspap";
-                case TelephonyManager.NETWORK_TYPE_LTE:
-                    return "4g@lte";
-
-                case TelephonyManager.NETWORK_TYPE_IWLAN:
-                    return "unknown@iwlan";
-            }
-
-            return NETWORKTYPE_UNKNOWN;
         }
     }
 }

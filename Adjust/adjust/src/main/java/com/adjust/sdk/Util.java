@@ -13,9 +13,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Looper;
 import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -445,5 +448,33 @@ public class Util {
             // not supported
         }
         return null;
+    }
+
+    public static int getConnectivityType(Context context) {
+        int connectivityType = -1; // default value that will not be send
+
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            connectivityType = activeNetwork.getType();
+        } catch (Exception e) {
+            getLogger().warn("Couldn't read connectivity type (%s)", e.getMessage());
+        }
+
+        return connectivityType;
+    }
+
+    public static int getNetworkType(Context context) {
+        int networkType = -1; // default value that will not be send
+
+        try {
+            TelephonyManager teleMan =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            networkType = teleMan.getNetworkType();
+        } catch (Exception e) {
+            getLogger().warn("Couldn't read network type (%s)", e.getMessage());
+        }
+
+        return networkType;
     }
 }
