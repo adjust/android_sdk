@@ -1,6 +1,7 @@
-### Version 4.11.5 (Xth July 2017)
+### Version 4.12.0 (Xth July 2017)
 #### Added
 - Don't send `sdk_click` and `sdk_info` packages when disabled
+- Set external device id
 
 #### Changed
 - Setting enable/disable or offline/online is now queued
