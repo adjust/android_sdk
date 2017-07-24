@@ -103,6 +103,7 @@ class PackageBuilder {
                     Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
                     Util.mergeParameters(sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
+            PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
         }
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
@@ -112,6 +113,7 @@ class PackageBuilder {
         if (isInDelay) {
             eventPackage.setCallbackParameters(event.callbackParameters);
             eventPackage.setPartnerParameters(event.partnerParameters);
+            eventPackage.setSessionParameters(sessionParameters);
         }
 
         return eventPackage;
@@ -177,6 +179,7 @@ class PackageBuilder {
         if (sessionParameters != null) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+            PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
         }
 
         return parameters;
@@ -188,6 +191,7 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
+        injectSessionParameters(parameters);
         injectCommonParameters(parameters);
 
         // general
@@ -271,6 +275,10 @@ class PackageBuilder {
         PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
+    }
+
+    private void injectSessionParameters(Map<String, String> parameters) {
+        PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
     }
 
     private void injectCommonParameters(Map<String, String> parameters) {

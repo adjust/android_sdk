@@ -245,6 +245,7 @@ public class PackageHandler implements IPackageHandler {
         logger.debug("Updating package handler queue");
         logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
         logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
+        logger.verbose("Session parameters: %s", sessionParameters.toStringSerialized());
 
         for (ActivityPackage activityPackage : packageQueue) {
             Map<String, String> parameters = activityPackage.getParameters();
@@ -260,6 +261,9 @@ public class PackageHandler implements IPackageHandler {
                     "Partner");
 
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
+
+            // remaining session parameters
+            PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
         }
 
         writePackageQueueI();

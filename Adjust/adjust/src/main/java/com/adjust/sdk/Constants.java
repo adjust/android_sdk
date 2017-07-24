@@ -40,6 +40,8 @@ public interface Constants {
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
     String SESSION_CALLBACK_PARAMETERS_FILENAME = "AdjustSessionCallbackParameters";
     String SESSION_PARTNER_PARAMETERS_FILENAME = "AdjustSessionPartnerParameters";
+    String SESSION_PARAMETERS_FILENAME = "AdjustSessionParameters";
+
 
     String MALFORMED = "malformed";
     String SMALL = "small";

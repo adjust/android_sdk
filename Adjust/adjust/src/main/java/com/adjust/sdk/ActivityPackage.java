@@ -30,6 +30,7 @@ public class ActivityPackage implements Serializable {
             new ObjectStreamField("suffix", String.class),
             new ObjectStreamField("callbackParameters", (Class<Map<String,String>>)(Class)Map.class),
             new ObjectStreamField("partnerParameters", (Class<Map<String,String>>)(Class)Map.class),
+            new ObjectStreamField("sessionParameters", SessionParameters.class),
     };
 
     private transient int hashCode;
@@ -46,6 +47,7 @@ public class ActivityPackage implements Serializable {
     // delay
     private Map<String, String> callbackParameters;
     private Map<String, String> partnerParameters;
+    private SessionParameters sessionParameters;
 
     private int retries;
     private long clickTime;
@@ -82,6 +84,10 @@ public class ActivityPackage implements Serializable {
         this.partnerParameters = partnerParameters;
     }
 
+    public void setSessionParameters(SessionParameters sessionParameters) {
+        this.sessionParameters = sessionParameters;
+    }
+
     public ActivityKind getActivityKind() {
         return activityKind;
     }
@@ -116,6 +122,10 @@ public class ActivityPackage implements Serializable {
 
     public Map<String, String> getPartnerParameters() {
         return partnerParameters;
+    }
+
+    public SessionParameters getSessionParameters() {
+        return sessionParameters;
     }
 
     public ActivityPackage(ActivityKind activityKind) {
@@ -159,6 +169,7 @@ public class ActivityPackage implements Serializable {
         suffix = Util.readStringField(fields, "suffix", null);
         callbackParameters = Util.readObjectField(fields, "callbackParameters", null);
         partnerParameters = Util.readObjectField(fields, "partnerParameters", null);
+        sessionParameters = Util.readObjectField(fields, "sessionParameters", null);
     }
 
     @Override
@@ -175,6 +186,7 @@ public class ActivityPackage implements Serializable {
         if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
         if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
         if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
+        if (!Util.equalObject(sessionParameters, otherActivityPackage.sessionParameters))   return false;
         return true;
     }
 
@@ -189,6 +201,7 @@ public class ActivityPackage implements Serializable {
             hashCode = 37 * hashCode + Util.hashString(suffix);
             hashCode = 37 * hashCode + Util.hashObject(callbackParameters);
             hashCode = 37 * hashCode + Util.hashObject(partnerParameters);
+            hashCode = 37 * hashCode + Util.hashObject(sessionParameters);
         }
         return hashCode;
     }

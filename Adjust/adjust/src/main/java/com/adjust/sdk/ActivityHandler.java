@@ -33,6 +33,7 @@ import java.util.Properties;
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.SESSION_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler implements IActivityHandler {
@@ -50,6 +51,7 @@ public class ActivityHandler implements IActivityHandler {
     private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
     private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
     private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
+    private static final String SESSION_PARAMETERS_NAME = "Session parameters";
 
     private CustomScheduledExecutor scheduledExecutor;
     private IPackageHandler packageHandler;
@@ -600,7 +602,7 @@ public class ActivityHandler implements IActivityHandler {
         readAttributionI(adjustConfig.context);
         readActivityStateI(adjustConfig.context);
 
-        sessionParameters = new SessionParameters();
+        readSessionParametersI(adjustConfig.context);
         readSessionCallbackParametersI(adjustConfig.context);
         readSessionPartnerParametersI(adjustConfig.context);
 
@@ -701,6 +703,10 @@ public class ActivityHandler implements IActivityHandler {
                 toSendI(false));
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(this, toSendI(true));
+
+        if (adjustConfig.externalDeviceId != null) {
+            setExternalDeviceIdI(adjustConfig.externalDeviceId);
+        }
 
         if (isToUpdatePackagesI()) {
             updatePackagesI();
@@ -1409,6 +1415,9 @@ public class ActivityHandler implements IActivityHandler {
     public static boolean deleteSessionPartnerParameters(Context context) {
         return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
     }
+    public static boolean deleteSessionParameters(Context context) {
+        return context.deleteFile(SESSION_PARAMETERS_FILENAME);
+    }
 
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
@@ -1662,6 +1671,21 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionPartnerParametersI();
     }
 
+    public void setExternalDeviceIdI(String externalDeviceId) {
+        if (externalDeviceId == null) {
+            return;
+        }
+
+        if (sessionParameters.externalDeviceId != null) {
+            logger.warn("External device id %s will be overwritten", sessionParameters.externalDeviceId);
+        }
+
+        sessionParameters.externalDeviceId = externalDeviceId;
+
+        writeSessionParametersI();
+    }
+
+
     private void setPushTokenI(String token) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
@@ -1696,6 +1720,21 @@ public class ActivityHandler implements IActivityHandler {
         } catch (Exception e) {
             logger.error("Failed to read %s file (%s)", ATTRIBUTION_NAME, e.getMessage());
             attribution = null;
+        }
+    }
+
+    private void readSessionParametersI(Context context) {
+        try {
+            sessionParameters = Util.readObject(context,
+                    SESSION_PARAMETERS_FILENAME,
+                    SESSION_PARAMETERS_NAME,
+                    SessionParameters.class);
+        } catch (Exception e) {
+            logger.error("Failed to read %s file (%s)", SESSION_PARAMETERS_NAME, e.getMessage());
+        }
+
+        if (sessionParameters == null) {
+            sessionParameters = new SessionParameters();
         }
     }
 
@@ -1783,6 +1822,15 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    private void writeSessionParametersI() {
+        synchronized (SessionParameters.class) {
+            if (sessionParameters == null) {
+                return;
+            }
+            Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
+        }
+    }
+
     private void teardownAllSessionParametersS(boolean toDelete) {
         synchronized (SessionParameters.class) {
             if (sessionParameters == null) {
@@ -1791,6 +1839,7 @@ public class ActivityHandler implements IActivityHandler {
             if (toDelete && adjustConfig != null && adjustConfig.context != null) {
                 deleteSessionCallbackParameters(adjustConfig.context);
                 deleteSessionPartnerParameters(adjustConfig.context);
+                deleteSessionParameters(adjustConfig.context);
             }
             sessionParameters = null;
         }
