@@ -25,6 +25,7 @@ class PackageBuilder {
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
     private ActivityStateCopy activityStateCopy;
+    private SessionParameters sessionParameters;
     private long createdAt;
 
     // reattributions
@@ -65,21 +66,18 @@ class PackageBuilder {
     public PackageBuilder(AdjustConfig adjustConfig,
                           DeviceInfo deviceInfo,
                           ActivityState activityState,
+                          SessionParameters sessionParameters,
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
         this.activityStateCopy = new ActivityStateCopy(activityState);
+        this.sessionParameters = sessionParameters;
         this.createdAt = createdAt;
     }
 
-    public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
+    public ActivityPackage buildSessionPackage(boolean isInDelay) {
         Map<String, String> parameters;
-
-        if (!isInDelay) {
-            parameters = getAttributableParameters(sessionParameters);
-        } else {
-            parameters = getAttributableParameters(null);
-        }
+        parameters = getAttributableParameters(isInDelay);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
@@ -90,7 +88,6 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildEventPackage(AdjustEvent event,
-                                             SessionParameters sessionParameters,
                                              boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
@@ -100,10 +97,9 @@ class PackageBuilder {
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
-                    Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
+                    Util.mergeParameters(this.sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
-                    Util.mergeParameters(sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
-            PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
+                    Util.mergeParameters(this.sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
         }
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
@@ -113,14 +109,14 @@ class PackageBuilder {
         if (isInDelay) {
             eventPackage.setCallbackParameters(event.callbackParameters);
             eventPackage.setPartnerParameters(event.partnerParameters);
-            eventPackage.setSessionParameters(sessionParameters);
+            eventPackage.setSessionParameters(this.sessionParameters);
         }
 
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source, SessionParameters sessionParameters) {
-        Map<String, String> parameters = getAttributableParameters(sessionParameters);
+    public ActivityPackage buildClickPackage(String source) {
+        Map<String, String> parameters = getAttributableParameters(false);
 
         PackageBuilder.addString(parameters, "source", source);
         PackageBuilder.addDate(parameters, "click_time", clickTime);
@@ -169,17 +165,16 @@ class PackageBuilder {
         return activityPackage;
     }
 
-    private Map<String, String> getAttributableParameters(SessionParameters sessionParameters) {
+    private Map<String, String> getAttributableParameters(boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
-        if (sessionParameters != null) {
-            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
-            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
-            PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
+        if (!isInDelay) {
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, this.sessionParameters.callbackParameters);
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, this.sessionParameters.partnerParameters);
         }
 
         return parameters;

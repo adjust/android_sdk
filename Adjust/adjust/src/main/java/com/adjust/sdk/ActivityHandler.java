@@ -582,6 +582,7 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
                 deviceInfo,
                 activityState,
+                sessionParameters,
                 now);
         return attributionBuilder.buildAttributionPackage();
     }
@@ -888,8 +889,8 @@ public class ActivityHandler implements IActivityHandler {
         activityState.eventCount++;
         updateActivityStateI(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isInDelayedStart());
+        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, internalState.isInDelayedStart());
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -1227,7 +1228,7 @@ public class ActivityHandler implements IActivityHandler {
 
         clickPackageBuilder.referrer = referrer;
         clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, sessionParameters);
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
@@ -1257,7 +1258,7 @@ public class ActivityHandler implements IActivityHandler {
 
         clickPackageBuilder.deeplink = url.toString();
         clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, sessionParameters);
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
 
         sdkClickHandler.sendSdkClick(clickPackage);
     }
@@ -1287,7 +1288,8 @@ public class ActivityHandler implements IActivityHandler {
             long lastInterval = now - activityState.lastActivity;
             activityState.lastInterval = lastInterval;
         }
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo,
+                activityState, sessionParameters, now);
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
         builder.reftag = reftag;
@@ -1420,8 +1422,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void transferSessionPackageI(long now) {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isInDelayedStart());
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
+                sessionParameters, now);
+        ActivityPackage sessionPackage = builder.buildSessionPackage(internalState.isInDelayedStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -1698,7 +1701,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
