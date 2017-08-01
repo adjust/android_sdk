@@ -358,7 +358,7 @@ public class AdjustCommandExecutor {
 
     private void setReferrer() {
         String referrer = command.getFirstParameterValue("referrer");
-        Adjust.setReferrer(referrer);
+        Adjust.setReferrer(referrer, this.context);
     }
 
     private void pause() {
@@ -456,7 +456,7 @@ public class AdjustCommandExecutor {
     private void  sendReferrer() {
         String referrer = command.getFirstParameterValue("referrer");
 
-        Adjust.setReferrer(referrer);
+        Adjust.setReferrer(referrer, this.context);
     }
 
     private void testBegin() {
