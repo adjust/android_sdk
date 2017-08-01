@@ -77,12 +77,22 @@ public class AdjustInstance {
             return;
         }
 
+        // don't save referrer if it's disabled
+        if (checkActivityHandler("referrer")) {
+            if (activityHandler.isEnabled()) {
+                saveReferrer(referrer, context, clickTime);
+            }
+            activityHandler.sendReferrer(referrer, clickTime);
+        } else {
+            if (this.startEnabled) {
+                saveReferrer(referrer, context, clickTime);
+            }
+        }
+    }
+
+    private void saveReferrer(String referrer, Context context, long clickTime) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.saveReferrer(referrer, clickTime);
-
-        if (checkActivityHandler("referrer")) {
-            activityHandler.sendReferrer(referrer, clickTime);
-        }
     }
 
     public void setOfflineMode(boolean enabled) {
