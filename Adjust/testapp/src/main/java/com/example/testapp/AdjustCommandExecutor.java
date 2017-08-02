@@ -158,6 +158,11 @@ public class AdjustCommandExecutor {
             adjustConfig.setDefaultTracker(defaultTracker);
         }
 
+        if (command.containsParameter("externalDeviceId")) {
+            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
+            adjustConfig.setExternalDeviceId(externalDeviceId);
+        }
+
         if (command.containsParameter("delayStart")) {
             String delayStartS = command.getFirstParameterValue("delayStart");
             double delayStart = Double.parseDouble(delayStartS);
