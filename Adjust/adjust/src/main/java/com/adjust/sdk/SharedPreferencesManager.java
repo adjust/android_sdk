@@ -60,12 +60,12 @@ public class SharedPreferencesManager {
             }
 
             // Add new referrer JSONArray entry to the queue.
-            JSONArray newreferrerEntry = new JSONArray();
+            JSONArray newReferrerEntry = new JSONArray();
 
-            newreferrerEntry.put(0, referrer);
-            newreferrerEntry.put(1, clickTime);
+            newReferrerEntry.put(0, referrer);
+            newReferrerEntry.put(1, clickTime);
 
-            referrerQueue.put(newreferrerEntry);
+            referrerQueue.put(newReferrerEntry);
 
             // Save JSON array as string back to shared preferences.
             saveString(PREFS_KEY_REFERRERS, referrerQueue.toString());
@@ -103,13 +103,13 @@ public class SharedPreferencesManager {
 
             for (int i = 0; i < referrerQueue.length(); i += 1) {
                 if (i == index) {
-                    JSONArray alteredreferrerEntry = new JSONArray();
+                    JSONArray alteredReferrerEntry = new JSONArray();
 
-                    alteredreferrerEntry.put(0, referrerEntry.get(0));
-                    alteredreferrerEntry.put(1, referrerEntry.get(1));
-                    alteredreferrerEntry.put(2, true);
+                    alteredReferrerEntry.put(0, referrerEntry.get(0));
+                    alteredReferrerEntry.put(1, referrerEntry.get(1));
+                    alteredReferrerEntry.put(2, true);
 
-                    newReferrerQueue.put(alteredreferrerEntry);
+                    newReferrerQueue.put(alteredReferrerEntry);
 
                     continue;
                 }
