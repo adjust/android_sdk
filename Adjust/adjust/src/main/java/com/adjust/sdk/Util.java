@@ -485,7 +485,7 @@ public class Util {
             String networkOperator = tel.getNetworkOperator();
 
             if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MCC");
                 return null;
             }
             return networkOperator.substring(0, 3);
@@ -501,7 +501,7 @@ public class Util {
             String networkOperator = tel.getNetworkOperator();
 
             if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string");
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MNC");
                 return null;
             }
             return networkOperator.substring(3);
