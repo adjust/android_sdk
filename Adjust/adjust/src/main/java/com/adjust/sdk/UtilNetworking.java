@@ -40,8 +40,10 @@ public class UtilNetworking {
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
+            String appSecret = extractAppSecret(parameters);
+
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
-            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -72,16 +74,18 @@ public class UtilNetworking {
     public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage) throws Exception {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
+            String appSecret = extractAppSecret(parameters);
+
             Uri uri = buildUri(activityPackage.getPath(), parameters);
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
-            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
-
-            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
+
+            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
 
             connection.setRequestMethod("GET");
 
@@ -237,24 +241,25 @@ public class UtilNetworking {
         return uriBuilder.build();
     }
 
+    private static String extractAppSecret(Map<String, String> parameters) {
+        return parameters.remove("app_secret");
+    }
+
     private static String buildAuthorizationHeader(Map<String, String> parameters,
+                                                   String appSecret,
                                                    String clientSdk,
                                                    String activityKind) {
-        String appSecretName = "app_secret";
-        String appSecret = parameters.get(appSecretName);
-
         // check if the secret exists and it's not empty
         if (appSecret == null || appSecret.length() == 0) {
             return null;
         }
+        String appSecretName = "app_secret";
 
         Map<String, String> signatureDetails = getSignature(parameters, clientSdk, activityKind, appSecret);
 
         String algorithm = "md5";
         String signature = Util.md5(signatureDetails.get("clear_signature"));
         String fields = signatureDetails.get("fields");
-
-        parameters.remove("app_secret");
 
         String signatureHeader = String.format("signature=\"%s\"", signature);
         String algorithmHeader = String.format("algorithm=\"%s\"", algorithm);
