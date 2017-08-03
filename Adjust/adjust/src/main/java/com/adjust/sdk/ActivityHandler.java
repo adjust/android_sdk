@@ -715,11 +715,7 @@ public class ActivityHandler implements IActivityHandler {
 
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
 
-        // only try to read referrer from init after first launch with success
-        if (internalState.isNotFirstLaunch())
-        {
-            checkReferrerI();
-        }
+        checkReferrerI();
     }
 
     private void readConfigFile(Context context) {
