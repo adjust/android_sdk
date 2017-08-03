@@ -41,6 +41,10 @@ public class UtilNetworking {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
+            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            if (authorizationHeader != null) {
+                connection.setRequestProperty("Authorization", authorizationHeader);
+            }
 
             connection.setRequestMethod("POST");
             connection.setUseCaches(false);
@@ -73,6 +77,11 @@ public class UtilNetworking {
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
+
+            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            if (authorizationHeader != null) {
+                connection.setRequestProperty("Authorization", authorizationHeader);
+            }
 
             connection.setRequestMethod("GET");
 
@@ -227,4 +236,110 @@ public class UtilNetworking {
 
         return uriBuilder.build();
     }
+
+    private static String buildAuthorizationHeader(Map<String, String> parameters,
+                                                   String clientSdk,
+                                                   String activityKind) {
+        String appSecretName = "app_secret";
+        String appSecret = parameters.get(appSecretName);
+
+        // check if the secret exists and it's not empty
+        if (appSecret == null || appSecret.length() == 0) {
+            return null;
+        }
+
+        Map<String, String> signatureDetails = getSignature(parameters, clientSdk, activityKind, appSecret);
+
+        String algorithm = "md5";
+        String signature = Util.md5(signatureDetails.get("clear_signature"));
+        String fields = signatureDetails.get("fields");
+
+        parameters.remove("app_secret");
+
+        String signatureHeader = String.format("signature=\"%s\"", signature);
+        String algorithmHeader = String.format("algorithm=\"%s\"", algorithm);
+        String fieldsHeader = String.format("headers=\"%s\"", fields);
+
+        String authorizationHeader = String.format("Signature %s,%s,%s", signatureHeader, algorithmHeader, fieldsHeader);
+        getLogger().verbose("authorizationHeader clear: %s", authorizationHeader);
+
+        return authorizationHeader;
+    }
+
+    private static Map<String, String> getSignature(
+            final Map<String, String> parameters,
+            final String clientSdk,
+            final String activityKind,
+            final String appSecret) {
+        String sdkVersionName = "sdk_version";
+        String sdkVersion = clientSdk;
+
+        String appVersionName = "app_version";
+        String appVersion = parameters.get(appVersionName);
+
+        String activityKindName = "activity_kind";
+        String activityKindValue = activityKind;
+
+        String createdAtName = "created_at";
+        String createdAt = parameters.get(createdAtName);
+
+        String deviceIdentifierName = getValidIdentifier(parameters);
+        String deviceIdentifier = parameters.get(deviceIdentifierName);
+
+        Map<String, String> signatureParams = new HashMap<String, String>();
+
+        signatureParams.put("app_secret", appSecret);
+        signatureParams.put(sdkVersionName, sdkVersion);
+        signatureParams.put(appVersionName, appVersion);
+        signatureParams.put(createdAtName, createdAt);
+        signatureParams.put(activityKindName, activityKindValue);
+        signatureParams.put(deviceIdentifierName, deviceIdentifier);
+
+        String fields = "";
+        String clearSignature = "";
+
+        for (Map.Entry<String, String> entry : signatureParams.entrySet())  {
+            if (entry.getValue() != null) {
+                fields += entry.getKey() + " ";
+                clearSignature += entry.getValue();
+            }
+        }
+
+        // Remove last empty space.
+        fields = fields.substring(0, fields.length() - 1);
+
+        HashMap<String, String> signature = new HashMap<String, String>();
+
+        signature.put("clear_signature", clearSignature);
+        signature.put("fields", fields);
+
+        return signature;
+    }
+
+    private static String getValidIdentifier(final Map<String, String> parameters) {
+        String googleAdIdName = "gps_adid";
+        String fireAdIdName = "fire_adid";
+        String androidIdName = "android_id";
+        String macSha1Name = "mac_sha1";
+        String macMd5Name = "mac_md5";
+
+        if (parameters.get(googleAdIdName) != null) {
+            return googleAdIdName;
+        }
+        if (parameters.get(fireAdIdName) != null) {
+            return fireAdIdName;
+        }
+        if (parameters.get(androidIdName) != null) {
+            return androidIdName;
+        }
+        if (parameters.get(macSha1Name) != null) {
+            return macSha1Name;
+        }
+        if (parameters.get(macMd5Name) != null) {
+            return macMd5Name;
+        }
+
+        return null;
+    }
+
 }

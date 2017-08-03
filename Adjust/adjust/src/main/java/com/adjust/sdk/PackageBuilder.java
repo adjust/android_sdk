@@ -262,6 +262,9 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "fire_adid", fireAdId);
         Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
+
+        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+
     }
 
     private void injectActivityState(Map<String, String> parameters) {
