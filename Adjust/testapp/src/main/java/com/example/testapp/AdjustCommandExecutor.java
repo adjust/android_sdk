@@ -163,6 +163,16 @@ public class AdjustCommandExecutor {
             adjustConfig.setExternalDeviceId(externalDeviceId);
         }
 
+
+        if (command.parameters.containsKey("appSecret")) {
+            List<String> appSecretArray = command.parameters.get("appSecret");
+            long info1 = Long.parseLong(appSecretArray.get(1));
+            long info2 = Long.parseLong(appSecretArray.get(2));
+            long info3 = Long.parseLong(appSecretArray.get(3));
+            long info4 = Long.parseLong(appSecretArray.get(4));
+            adjustConfig.setAppSecret(info1, info2, info3, info4);
+        }
+
         if (command.containsParameter("delayStart")) {
             String delayStartS = command.getFirstParameterValue("delayStart");
             double delayStart = Double.parseDouble(delayStartS);
