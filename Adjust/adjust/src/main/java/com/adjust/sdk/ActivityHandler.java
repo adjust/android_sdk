@@ -415,7 +415,8 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendReferrerI(referrer, clickTime);
+                // sendReferrerI(referrer, clickTime);
+                checkReferrerI();
             }
         });
     }
@@ -771,10 +772,6 @@ public class ActivityHandler implements IActivityHandler {
             for (int i = 0; i < referrerQueue.length(); i += 1) {
                 JSONArray referrerEntry = referrerQueue.getJSONArray(i);
 
-                if (sharedPreferencesManager.isReferrerMarkedForSending(referrerEntry)) {
-                    continue;
-                }
-
                 String savedReferrer = referrerEntry.getString(0);
                 long savedClickTime = referrerEntry.getLong(1);
 
@@ -804,8 +801,6 @@ public class ActivityHandler implements IActivityHandler {
             activityState.updatePackages = internalState.itHasToUpdatePackages();
             writeActivityStateI();
 
-            // check referrer after first launch with success
-            checkReferrerI();
             return;
         }
 
@@ -1201,14 +1196,6 @@ public class ActivityHandler implements IActivityHandler {
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
 
-        // Skip sending of the referrer that is already being sent with SdkClickHandler.
-        if (sharedPreferencesManager.isReferrerMarkedForSending(referrer, clickTime)) {
-            return;
-        }
-
-        // If referrer was not being sent, mark it for sending and ask SdkCLickHandler to send it.
-        sharedPreferencesManager.markReferrerForSending(referrer, clickTime);
-
         logger.verbose("Referrer to parse (%s)", referrer);
 
         UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
@@ -1227,6 +1214,7 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
 
         sdkClickHandler.sendSdkClick(clickPackage);
+        sharedPreferencesManager.removeReferrer(referrer, clickTime);
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {

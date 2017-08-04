@@ -75,104 +75,6 @@ public class SharedPreferencesManager {
     }
 
     /**
-     * Mark referrer entry in referrer queue as currently being sent from sdk_click handler.
-     *
-     * @param referrer  Referrer string
-     * @param clickTime Referrer click time
-     */
-    public synchronized void markReferrerForSending(final String referrer, final long clickTime) {
-        // Don't even try to alter null or empty referrers since they shouldn't exist in shared preferences.
-        if (referrer == null || referrer.length() == 0) {
-            return;
-        }
-
-        try {
-            // Try to locate position in queue of the referrer that should be altered.
-            JSONArray referrerQueue = getReferrers();
-            int index = getReferrerIndex(referrer, clickTime, referrerQueue);
-
-            // If referrer is not found in the queue, skip the rest.
-            if (index == -1) {
-                return;
-            }
-
-            JSONArray referrerEntry = referrerQueue.getJSONArray(index);
-
-            // Rebuild queue and alter the aimed referrer info entry.
-            JSONArray newReferrerQueue = new JSONArray();
-
-            for (int i = 0; i < referrerQueue.length(); i += 1) {
-                if (i == index) {
-                    JSONArray alteredReferrerEntry = new JSONArray();
-
-                    alteredReferrerEntry.put(0, referrerEntry.get(0));
-                    alteredReferrerEntry.put(1, referrerEntry.get(1));
-                    alteredReferrerEntry.put(2, true);
-
-                    newReferrerQueue.put(alteredReferrerEntry);
-
-                    continue;
-                }
-
-                newReferrerQueue.put(referrerQueue.getJSONArray(i));
-            }
-
-            // Save new referrer queue JSON array as string back to shared preferences.
-            saveString(PREFS_KEY_REFERRERS, newReferrerQueue.toString());
-        } catch (JSONException e) {
-
-        }
-    }
-
-    /**
-     * Check if referrer entry in shared preferences is already marked for sending.
-     *
-     * @param referrer  Referrer string
-     * @param clickTime Referrer click time
-     * @return Boolean indicating whether referrer is marked for sending or not. If no entry, default to false.
-     */
-    public synchronized boolean isReferrerMarkedForSending(final String referrer, final long clickTime) {
-        // Don't even try to alter null or empty referrers since they shouldn't exist in shared preferences.
-        if (referrer == null || referrer.length() == 0) {
-            return false;
-        }
-
-        try {
-            // Try to locate position in queue of the referrer that should be altered.
-            JSONArray referrerQueue = getReferrers();
-            int index = getReferrerIndex(referrer, clickTime, referrerQueue);
-
-            // If referrer is not found in the queue, skip the rest.
-            if (index == -1) {
-                return false;
-            }
-
-            JSONArray referrerEntry = referrerQueue.getJSONArray(index);
-
-            return isReferrerMarkedForSending(referrerEntry);
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
-    /**
-     * Check if referrer entry in shared preferences is already marked for sending.
-     * @param referrerEntry Referrer entry
-     * @return Boolean indicating whether referrer entry is marked for sending or not
-     */
-    public synchronized boolean isReferrerMarkedForSending(final JSONArray referrerEntry) {
-        try {
-            if (referrerEntry.length() != PREFS_REFERRER_ENTRY_MAX_SIZE) {
-                return false;
-            }
-
-            return referrerEntry.getBoolean(2);
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
-    /**
      * Remove referrer information from shared preferences.
      *
      * @param referrer  Referrer string
@@ -209,6 +111,38 @@ public class SharedPreferencesManager {
             saveString(PREFS_KEY_REFERRERS, newReferrerQueue.toString());
         } catch (JSONException e) {
 
+        }
+    }
+
+    /**
+     * Check if give referrer is saved in shared preferences.
+     *
+     * @param referrer Referrer string
+     * @param clickTime Referrer click time
+     *
+     * @return boolean indicating whether given referrer exist in shared preferences or not.
+     *         In case of exception, return false.
+     */
+    public synchronized boolean doesReferrerExist(final String referrer, final long clickTime) {
+        try {
+            JSONArray referrerQueue = getReferrers();
+
+            for (int i = 0; i < referrerQueue.length(); i += 1) {
+                JSONArray referrerEntry = referrerQueue.getJSONArray(i);
+
+                String savedReferrer = referrerEntry.getString(0);
+                long savedClickTime = referrerEntry.getLong(1);
+
+                if (savedReferrer.equals(referrer)) {
+                    if (savedClickTime == clickTime) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        } catch (JSONException e) {
+            return false;
         }
     }
 

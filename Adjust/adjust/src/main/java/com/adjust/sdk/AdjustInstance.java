@@ -81,8 +81,8 @@ public class AdjustInstance {
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
                 saveReferrer(referrer, context, clickTime);
+                activityHandler.sendReferrer(referrer, clickTime);
             }
-            activityHandler.sendReferrer(referrer, clickTime);
         } else {
             if (this.startEnabled == null || this.startEnabled) {
                 saveReferrer(referrer, context, clickTime);
