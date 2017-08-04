@@ -43,7 +43,6 @@ public class ActivityHandler implements IActivityHandler {
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
-    private static final String ADJUST_PREFIX = "adjust_";
     private static final String ACTIVITY_STATE_NAME = "Activity state";
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
@@ -63,7 +62,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
 
     private DeviceInfo deviceInfo;
-    AdjustConfig adjustConfig; // always valid after construction
+    private AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
@@ -214,6 +213,22 @@ public class ActivityHandler implements IActivityHandler {
                 initI();
             }
         });
+    }
+
+    public AdjustConfig getAdjustConfig() {
+        return adjustConfig;
+    }
+
+    public DeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    public ActivityState getActivityState() {
+        return activityState;
+    }
+
+    public SessionParameters getSessionParameters() {
+        return sessionParameters;
     }
 
     @Override
@@ -415,8 +430,7 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                // sendReferrerI(referrer, clickTime);
-                checkReferrerI();
+                sendReferrerI();
             }
         });
     }
@@ -716,7 +730,7 @@ public class ActivityHandler implements IActivityHandler {
 
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
 
-        checkReferrerI();
+        sendReferrerI();
     }
 
     private void readConfigFile(Context context) {
@@ -762,24 +776,6 @@ public class ActivityHandler implements IActivityHandler {
         processSessionI();
 
         checkAttributionStateI();
-    }
-
-    private void checkReferrerI() {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
-        JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
-
-        try {
-            for (int i = 0; i < referrerQueue.length(); i += 1) {
-                JSONArray referrerEntry = referrerQueue.getJSONArray(i);
-
-                String savedReferrer = referrerEntry.getString(0);
-                long savedClickTime = referrerEntry.getLong(1);
-
-                sendReferrerI(savedReferrer, savedClickTime);
-            }
-        } catch (JSONException e) {
-
-        }
     }
 
     private void processSessionI() {
@@ -1187,24 +1183,12 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
     }
 
-    private void sendReferrerI(String referrer, long clickTime) {
+    private void sendReferrerI() {
         if (!isEnabledI()) {
             return;
         }
 
-        ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
-                referrer,
-                clickTime,
-                activityState,
-                adjustConfig,
-                deviceInfo,
-                sessionParameters);
-
-        if (sdkClickPackage == null) {
-            return;
-        }
-
-        sdkClickHandler.sendSdkClick(sdkClickPackage);
+        sdkClickHandler.sendSavedReferrers();
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {

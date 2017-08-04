@@ -1,5 +1,8 @@
 package com.adjust.sdk;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -122,6 +125,46 @@ public class SdkClickHandler implements ISdkClickHandler {
      * {@inheritDoc}
      */
     @Override
+    public void sendSavedReferrers() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(
+                        ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig().context);
+                JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
+
+                try {
+                    for (int i = 0; i < referrerQueue.length(); i += 1) {
+                        JSONArray referrerEntry = referrerQueue.getJSONArray(i);
+
+                        String savedReferrer = referrerEntry.getString(0);
+                        long savedClickTime = referrerEntry.getLong(1);
+
+                        ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
+                                savedReferrer,
+                                savedClickTime,
+                                ((ActivityHandler) activityHandlerWeakRef.get()).getActivityState(),
+                                ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig(),
+                                ((ActivityHandler) activityHandlerWeakRef.get()).getDeviceInfo(),
+                                ((ActivityHandler) activityHandlerWeakRef.get()).getSessionParameters());
+
+                        if (sdkClickPackage == null) {
+                            return;
+                        }
+
+                        sendSdkClick(sdkClickPackage);
+                    }
+                } catch (JSONException e) {
+
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
 
@@ -202,6 +245,17 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param sdkClickPackage sdk_click package to be sent.
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
+        // Check before sending if referrer was sent and removed already.
+        ActivityHandler activityHandler = (ActivityHandler) activityHandlerWeakRef.get();
+        SharedPreferencesManager sharedPreferencesManager
+                = new SharedPreferencesManager(activityHandler.getContext());
+
+        if (!sharedPreferencesManager.doesReferrerExist(
+                sdkClickPackage.getParameters().get("referrer"),
+                sdkClickPackage.getClickTime())) {
+            return;
+        }
+
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
 
         try {
@@ -215,15 +269,11 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
-            IActivityHandler activityHandler = activityHandlerWeakRef.get();
-
             if (activityHandler == null) {
                 return;
             }
 
             // Remove referrer from shared preferences after sdk_click is sent.
-            SharedPreferencesManager sharedPreferencesManager
-                    = new SharedPreferencesManager(activityHandler.getContext());
             sharedPreferencesManager.removeReferrer(
                     sdkClickPackage.getParameters().get("referrer"),
                     sdkClickPackage.getClickTime());

@@ -77,7 +77,7 @@ public class AdjustInstance {
             return;
         }
 
-        // don't save referrer if it's disabled
+        // Don't save referrer if SDK is disabled.
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
                 saveReferrer(referrer, context, clickTime);
