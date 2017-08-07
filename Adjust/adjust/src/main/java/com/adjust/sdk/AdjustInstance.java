@@ -1,29 +1,51 @@
 package com.adjust.sdk;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
+import android.content.Context;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Created by pfms on 04/12/14.
+ * Class used to forward instructions to SDK which user gives as part of Adjust class interface.
+ *
+ * @author Pedro Silva (nonelse)
+ * @since 12th April 2014
  */
 public class AdjustInstance {
-    private ActivityHandler activityHandler;
-    private List<IRunActivityHandler> preLaunchActionsArray;
+    /**
+     * Push notifications token.
+     */
     private String pushToken;
+
+    /**
+     * Is SDK enabled or not.
+     */
     private Boolean startEnabled = null;
+
+    /**
+     * Is SDK offline or not.
+     */
     private boolean startOffline = false;
 
-    private static ILogger getLogger() {
-        return AdjustFactory.getLogger();
-    }
+    /**
+     * ActivityHandler instance.
+     */
+    private ActivityHandler activityHandler;
 
-    public void onCreate(AdjustConfig adjustConfig) {
+    /**
+     * Array of actions that were requested before SDK initialisation.
+     */
+    private List<IRunActivityHandler> preLaunchActionsArray;
+
+    /**
+     * Called upon SDK initialisation.
+     *
+     * @param adjustConfig AdjustConfig object used for SDK initialisation
+     */
+    public void onCreate(final AdjustConfig adjustConfig) {
         if (activityHandler != null) {
-            getLogger().error("Adjust already initialized");
+            AdjustFactory.getLogger().error("Adjust already initialized");
             return;
         }
 
@@ -38,41 +60,88 @@ public class AdjustInstance {
         scanForReferrers(adjustConfig.context);
     }
 
-    public void trackEvent(AdjustEvent event) {
-        if (!checkActivityHandler()) { return; }
+    /**
+     * Called to track event.
+     *
+     * @param event AdjustEvent object to be tracked
+     */
+    public void trackEvent(final AdjustEvent event) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+
         activityHandler.trackEvent(event);
     }
 
+    /**
+     * Called upon each Activity's onResume() method call.
+     */
     public void onResume() {
-        if (!checkActivityHandler()) { return; }
+        if (!checkActivityHandler()) {
+            return;
+        }
+
         activityHandler.onResume();
     }
 
+    /**
+     * Called upon each Activity's onPause() method call.
+     */
     public void onPause() {
-        if (!checkActivityHandler()) { return; }
+        if (!checkActivityHandler()) {
+            return;
+        }
+
         activityHandler.onPause();
     }
 
-    public void setEnabled(boolean enabled) {
-        if (!checkActivityHandler(enabled, "enabled mode", "disabled mode")){
+    /**
+     * Called to disable/enable SDK.
+     *
+     * @param enabled boolean indicating whether SDK should be enabled or disabled
+     */
+    public void setEnabled(final boolean enabled) {
+        if (!checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
             this.startEnabled = enabled;
         } else {
             activityHandler.setEnabled(enabled);
         }
     }
 
+    /**
+     * Get information if SDK is enabled or not.
+     *
+     * @return boolean indicating whether SDK is enabled or not
+     */
     public boolean isEnabled() {
-        if (!checkActivityHandler()) { return false; }
+        if (!checkActivityHandler()) {
+            return false;
+        }
+
         return activityHandler.isEnabled();
     }
 
-    public void appWillOpenUrl(Uri url) {
-        if (!checkActivityHandler()) { return; }
+    /**
+     * Called to process deep link.
+     *
+     * @param url Deep link URL to process
+     */
+    public void appWillOpenUrl(final Uri url) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+
         long clickTime = System.currentTimeMillis();
         activityHandler.readOpenUrl(url, clickTime);
     }
 
-    public void sendReferrer(String referrer, Context context) {
+    /**
+     * Called to process referrer information sent with INSTALL_REFERRER intent.
+     *
+     * @param referrer Referrer content
+     * @param context  Application context
+     */
+    public void sendReferrer(final String referrer, final Context context) {
         long clickTime = System.currentTimeMillis();
 
         // Check for referrer validity. If invalid, return.
@@ -93,7 +162,12 @@ public class AdjustInstance {
         }
     }
 
-    public void setOfflineMode(boolean enabled) {
+    /**
+     * Called to set SDK to offline or online mode.
+     *
+     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
+     */
+    public void setOfflineMode(final boolean enabled) {
         if (!checkActivityHandler(enabled, "offline mode", "online mode")) {
             this.startOffline = enabled;
         } else {
@@ -101,11 +175,22 @@ public class AdjustInstance {
         }
     }
 
+    /**
+     * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
+     */
     public void sendFirstPackages() {
-        if (!checkActivityHandler()) { return; }
+        if (!checkActivityHandler()) {
+            return;
+        }
         activityHandler.sendFirstPackages();
     }
 
+    /**
+     * Called to add global callback parameter that will be sent with each session and event.
+     *
+     * @param key   Global callback parameter key
+     * @param value Global callback parameter value
+     */
     public void addSessionCallbackParameter(final String key, final String value) {
         if (checkActivityHandler("adding session callback parameter")) {
             activityHandler.addSessionCallbackParameter(key, value);
@@ -118,12 +203,18 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.addSessionCallbackParameterI(key, value);
             }
         });
     }
 
+    /**
+     * Called to add global partner parameter that will be sent with each session and event.
+     *
+     * @param key   Global partner parameter key
+     * @param value Global partner parameter value
+     */
     public void addSessionPartnerParameter(final String key, final String value) {
         if (checkActivityHandler("adding session partner parameter")) {
             activityHandler.addSessionPartnerParameter(key, value);
@@ -136,12 +227,17 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.addSessionPartnerParameterI(key, value);
             }
         });
     }
 
+    /**
+     * Called to remove global callback parameter from session and event packages.
+     *
+     * @param key Global callback parameter key
+     */
     public void removeSessionCallbackParameter(final String key) {
         if (checkActivityHandler("removing session callback parameter")) {
             activityHandler.removeSessionCallbackParameter(key);
@@ -154,12 +250,17 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.removeSessionCallbackParameterI(key);
             }
         });
     }
 
+    /**
+     * Called to remove global partner parameter from session and event packages.
+     *
+     * @param key Global partner parameter key
+     */
     public void removeSessionPartnerParameter(final String key) {
         if (checkActivityHandler("removing session partner parameter")) {
             activityHandler.removeSessionPartnerParameter(key);
@@ -172,12 +273,15 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.removeSessionPartnerParameterI(key);
             }
         });
     }
 
+    /**
+     * Called to remove all added global callback parameters.
+     */
     public void resetSessionCallbackParameters() {
         if (checkActivityHandler("resetting session callback parameters")) {
             activityHandler.resetSessionCallbackParameters();
@@ -190,12 +294,15 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.resetSessionCallbackParametersI();
             }
         });
     }
 
+    /**
+     * Called to remove all added global partner parameters.
+     */
     public void resetSessionPartnerParameters() {
         if (checkActivityHandler("resetting session partner parameters")) {
             activityHandler.resetSessionPartnerParameters();
@@ -208,19 +315,32 @@ public class AdjustInstance {
 
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
-            public void run(ActivityHandler activityHandler) {
+            public void run(final ActivityHandler activityHandler) {
                 activityHandler.resetSessionPartnerParametersI();
             }
         });
     }
 
-    public void teardown(boolean deleteState) {
-        if (!checkActivityHandler()) { return; }
+    /**
+     * Called to teardown SDK state.
+     * Used only for Adjust tests, shouldn't be used in client apps.
+     *
+     * @param deleteState boolean indicating should internal Adjust files also be removed or not
+     */
+    public void teardown(final boolean deleteState) {
+        if (!checkActivityHandler()) {
+            return;
+        }
         activityHandler.teardown(deleteState);
         activityHandler = null;
     }
 
-    public void setPushToken(String token) {
+    /**
+     * Called to set user's push notifications token.
+     *
+     * @param token Push notifications token
+     */
+    public void setPushToken(final String token) {
         if (!checkActivityHandler("push token")) {
             this.pushToken = token;
         } else {
@@ -228,21 +348,48 @@ public class AdjustInstance {
         }
     }
 
+    /**
+     * Called to get value of unique Adjust device identifier.
+     *
+     * @return Unique Adjust device indetifier
+     */
     public String getAdid() {
-        if (!checkActivityHandler()) { return null; }
+        if (!checkActivityHandler()) {
+            return null;
+        }
         return activityHandler.getAdid();
     }
 
+    /**
+     * Called to get user's current attribution value.
+     *
+     * @return AdjustAttribution object with current attribution value
+     */
     public AdjustAttribution getAttribution() {
-        if (!checkActivityHandler()) { return null; }
+        if (!checkActivityHandler()) {
+            return null;
+        }
         return activityHandler.getAttribution();
     }
 
+    /**
+     * Check if ActivityHandler instance is set or not.
+     *
+     * @return boolean indicating whether ActivityHandler instance is set or not
+     */
     private boolean checkActivityHandler() {
         return checkActivityHandler(null);
     }
 
-    private boolean checkActivityHandler(boolean status, String trueMessage, String falseMessage) {
+    /**
+     * Check if ActivityHandler instance is set or not.
+     *
+     * @param status       Is SDK enabled or not
+     * @param trueMessage  Log message to display in case SDK is enabled
+     * @param falseMessage Log message to display in case SDK is disabled
+     * @return boolean indicating whether ActivityHandler instance is set or not
+     */
+    private boolean checkActivityHandler(final boolean status, final String trueMessage, final String falseMessage) {
         if (status) {
             return checkActivityHandler(trueMessage);
         } else {
@@ -250,24 +397,44 @@ public class AdjustInstance {
         }
     }
 
-    private boolean checkActivityHandler(String savedForLaunchWarningSuffixMessage) {
+    /**
+     * Check if ActivityHandler instance is set or not.
+     *
+     * @param savedForLaunchWarningSuffixMessage Log message to indicate action that was asked when SDK was disabled
+     * @return boolean indicating whether ActivityHandler instance is set or not
+     */
+    private boolean checkActivityHandler(final String savedForLaunchWarningSuffixMessage) {
         if (activityHandler == null) {
             if (savedForLaunchWarningSuffixMessage != null) {
-                getLogger().warn("Adjust not initialized, but %s saved for launch", savedForLaunchWarningSuffixMessage);
+                AdjustFactory.getLogger().warn("Adjust not initialized, but %s saved for launch",
+                        savedForLaunchWarningSuffixMessage);
             } else {
-                getLogger().error("Adjust not initialized correctly");
+                AdjustFactory.getLogger().error("Adjust not initialized correctly");
             }
+
             return false;
         } else {
             return true;
         }
     }
 
+    /**
+     * Save referrer to shared preferences.
+     *
+     * @param clickTime Referrer click time
+     * @param content   Referrer content
+     * @param context   Application context
+     */
     private void saveReferrer(final long clickTime, final String content, final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.saveReferrer(clickTime, content);
     }
 
+    /**
+     * Check saved referrers before app being killed and if any found with isBeingSent set to true, revert it to false.
+     *
+     * @param context Application context
+     */
     private void scanForReferrers(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.scanForSavedReferrers();
