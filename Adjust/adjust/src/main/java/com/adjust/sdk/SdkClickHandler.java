@@ -128,7 +128,6 @@ public class SdkClickHandler implements ISdkClickHandler {
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(
                         ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig().context);
-                // JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
                 ArrayList<Referrer> referrers = sharedPreferencesManager.getReferrers();
 
                 for (int i = 0; i < referrers.size(); i += 1) {
@@ -250,6 +249,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         SharedPreferencesManager sharedPreferencesManager
                 = new SharedPreferencesManager(activityHandler.getContext());
 
+        // Check if referrer meant for sending still exists in shared preferences.
         if (!sharedPreferencesManager.doesReferrerExist(
                 sdkClickPackage.getParameters().get("referrer"),
                 sdkClickPackage.getClickTime())) {
