@@ -1,8 +1,5 @@
 package com.adjust.sdk;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -131,31 +128,34 @@ public class SdkClickHandler implements ISdkClickHandler {
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(
                         ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig().context);
-                JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
+                // JSONArray referrerQueue = sharedPreferencesManager.getReferrers();
+                ArrayList<Referrer> referrers = sharedPreferencesManager.getReferrers();
 
-                try {
-                    for (int i = 0; i < referrerQueue.length(); i += 1) {
-                        JSONArray referrerEntry = referrerQueue.getJSONArray(i);
+                for (int i = 0; i < referrers.size(); i += 1) {
+                    Referrer referrer = referrers.get(i);
 
-                        String savedReferrer = referrerEntry.getString(0);
-                        long savedClickTime = referrerEntry.getLong(1);
-
-                        ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
-                                savedReferrer,
-                                savedClickTime,
-                                ((ActivityHandler) activityHandlerWeakRef.get()).getActivityState(),
-                                ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig(),
-                                ((ActivityHandler) activityHandlerWeakRef.get()).getDeviceInfo(),
-                                ((ActivityHandler) activityHandlerWeakRef.get()).getSessionParameters());
-
-                        if (sdkClickPackage == null) {
-                            return;
-                        }
-
-                        sendSdkClick(sdkClickPackage);
+                    // Don't send the one already flagged for sending.
+                    if (referrer.getIsBeingSent()) {
+                        continue;
                     }
-                } catch (JSONException e) {
 
+                    ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
+                            referrer.getContent(),
+                            referrer.getClickTime(),
+                            ((ActivityHandler) activityHandlerWeakRef.get()).getActivityState(),
+                            ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig(),
+                            ((ActivityHandler) activityHandlerWeakRef.get()).getDeviceInfo(),
+                            ((ActivityHandler) activityHandlerWeakRef.get()).getSessionParameters());
+
+                    if (sdkClickPackage == null) {
+                        return;
+                    }
+
+                    // Mark referrer as being sent.
+                    sharedPreferencesManager.markReferrerForSending(referrer);
+
+                    // Send referrer sdk_click package.
+                    sendSdkClick(sdkClickPackage);
                 }
             }
         });
@@ -275,8 +275,8 @@ public class SdkClickHandler implements ISdkClickHandler {
 
             // Remove referrer from shared preferences after sdk_click is sent.
             sharedPreferencesManager.removeReferrer(
-                    sdkClickPackage.getParameters().get("referrer"),
-                    sdkClickPackage.getClickTime());
+                    sdkClickPackage.getClickTime(),
+                    sdkClickPackage.getParameters().get("referrer"));
 
             activityHandler.finishedTrackingActivity(responseData);
         } catch (UnsupportedEncodingException e) {

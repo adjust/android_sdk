@@ -33,6 +33,9 @@ public class AdjustInstance {
         adjustConfig.startOffline = startOffline;
 
         activityHandler = ActivityHandler.getInstance(adjustConfig);
+
+        // Scan for referrers.
+        scanForReferrers(adjustConfig.context);
     }
 
     public void trackEvent(AdjustEvent event) {
@@ -80,19 +83,14 @@ public class AdjustInstance {
         // Don't save referrer if SDK is disabled.
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
-                saveReferrer(referrer, context, clickTime);
+                saveReferrer(clickTime, referrer, context);
                 activityHandler.sendReferrer(referrer, clickTime);
             }
         } else {
             if (this.startEnabled == null || this.startEnabled) {
-                saveReferrer(referrer, context, clickTime);
+                saveReferrer(clickTime, referrer, context);
             }
         }
-    }
-
-    private void saveReferrer(String referrer, Context context, long clickTime) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveReferrer(referrer, clickTime);
     }
 
     public void setOfflineMode(boolean enabled) {
@@ -263,5 +261,15 @@ public class AdjustInstance {
         } else {
             return true;
         }
+    }
+
+    private void saveReferrer(final long clickTime, final String content, final Context context) {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.saveReferrer(clickTime, content);
+    }
+
+    private void scanForReferrers(final Context context) {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.scanForSavedReferrers();
     }
 }
