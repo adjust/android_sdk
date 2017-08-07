@@ -146,6 +146,11 @@ public class SharedPreferencesManager {
         return false;
     }
 
+    /**
+     * Mark given referrer as the one being sent by SdkClickHandler.
+     *
+     * @param referrer Referrer which is being sent.
+     */
     public synchronized void markReferrerForSending(final Referrer referrer) {
         ArrayList<Referrer> referrers = getReferrers();
 
