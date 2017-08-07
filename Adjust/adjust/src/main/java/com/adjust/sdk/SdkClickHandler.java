@@ -244,16 +244,19 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param sdkClickPackage sdk_click package to be sent.
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
-        // Check before sending if referrer was sent and removed already.
+        boolean isReferrer = sdkClickPackage.getParameters().get("referrer") != null;
         ActivityHandler activityHandler = (ActivityHandler) activityHandlerWeakRef.get();
-        SharedPreferencesManager sharedPreferencesManager
-                = new SharedPreferencesManager(activityHandler.getContext());
 
-        // Check if referrer meant for sending still exists in shared preferences.
-        if (!sharedPreferencesManager.doesReferrerExist(
-                sdkClickPackage.getParameters().get("referrer"),
-                sdkClickPackage.getClickTime())) {
-            return;
+        if (isReferrer) {
+            // Check before sending if referrer was sent and removed already.
+            SharedPreferencesManager sharedPreferencesManager
+                    = new SharedPreferencesManager(activityHandler.getContext());
+
+            if (!sharedPreferencesManager.doesReferrerExist(
+                    sdkClickPackage.getParameters().get("referrer"),
+                    sdkClickPackage.getClickTime())) {
+                return;
+            }
         }
 
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
@@ -273,10 +276,15 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
-            // Remove referrer from shared preferences after sdk_click is sent.
-            sharedPreferencesManager.removeReferrer(
-                    sdkClickPackage.getClickTime(),
-                    sdkClickPackage.getParameters().get("referrer"));
+            if (isReferrer) {
+                // Remove referrer from shared preferences after sdk_click is sent.
+                SharedPreferencesManager sharedPreferencesManager
+                        = new SharedPreferencesManager(activityHandler.getContext());
+
+                sharedPreferencesManager.removeReferrer(
+                        sdkClickPackage.getClickTime(),
+                        sdkClickPackage.getParameters().get("referrer"));
+            }
 
             activityHandler.finishedTrackingActivity(responseData);
         } catch (UnsupportedEncodingException e) {

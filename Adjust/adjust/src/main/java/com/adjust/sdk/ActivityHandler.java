@@ -1208,7 +1208,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        sdkClickHandler.sendSavedReferrers();
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
     private void updateHandlersStatusAndSendI() {
