@@ -226,7 +226,7 @@ public class SharedPreferencesManager {
     /**
      * Initially called upon ActivityHandler initialisation.
      * Used to check if any of the still existing referrers was unsuccessfully being sent before app got killed.
-     * If such found -> switch it's isBeingSent flag back to "false".
+     * If such found - switch it's isBeingSent flag back to "false".
      */
     public synchronized void scanForSavedReferrers() {
         ArrayList<Referrer> referrers = new ArrayList<Referrer>();
