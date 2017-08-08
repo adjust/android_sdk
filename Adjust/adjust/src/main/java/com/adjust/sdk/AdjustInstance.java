@@ -101,9 +101,9 @@ public class AdjustInstance {
      * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
     public void setEnabled(final boolean enabled) {
-        if (!checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
-            this.startEnabled = enabled;
-        } else {
+        this.startEnabled = enabled;
+
+        if (checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
             activityHandler.setEnabled(enabled);
         }
     }
@@ -151,12 +151,12 @@ public class AdjustInstance {
 
         // Don't save referrer if SDK is disabled.
         if (checkActivityHandler("referrer")) {
-            if (activityHandler.isEnabled()) {
+            if (activityHandler.isEnabled() && isInstanceEnabled()) {
                 saveReferrer(clickTime, referrer, context);
                 activityHandler.sendReferrer(referrer, clickTime);
             }
         } else {
-            if (this.startEnabled == null || this.startEnabled) {
+            if (isInstanceEnabled()) {
                 saveReferrer(clickTime, referrer, context);
             }
         }
@@ -438,5 +438,9 @@ public class AdjustInstance {
     private void scanForReferrers(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.scanForSavedReferrers();
+    }
+
+    private boolean isInstanceEnabled() {
+        return this.startEnabled == null || this.startEnabled;
     }
 }
