@@ -1573,7 +1573,12 @@ public class ActivityHandler implements IActivityHandler {
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
-        packageHandler.sendFirstPackage();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", infoPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
     }
 
     private void readActivityStateI(Context context) {
