@@ -182,6 +182,7 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
+
         activityHandler.sendFirstPackages();
     }
 
@@ -331,6 +332,7 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
+
         activityHandler.teardown(deleteState);
         activityHandler = null;
     }
@@ -357,6 +359,7 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return null;
         }
+
         return activityHandler.getAdid();
     }
 
@@ -369,6 +372,7 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return null;
         }
+
         return activityHandler.getAttribution();
     }
 
@@ -440,6 +444,11 @@ public class AdjustInstance {
         sharedPreferencesManager.scanForSavedReferrers();
     }
 
+    /**
+     * Check if AdjustInstance enable flag is set or not.
+     *
+     * @return boolean indicating whether AdjustInstance is enabled or not
+     */
     private boolean isInstanceEnabled() {
         return this.startEnabled == null || this.startEnabled;
     }
