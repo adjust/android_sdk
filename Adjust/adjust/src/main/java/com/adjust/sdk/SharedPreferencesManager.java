@@ -27,6 +27,11 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_REFERRERS = "referrers";
 
     /**
+     * Key name for push token.
+     */
+    private static final String PREFS_KEY_PUSH_TOKEN = "push_token";
+
+    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -275,6 +280,31 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Save push token to shared preferences.
+     *
+     * @param pushToken Push notifications token
+     */
+    public synchronized void savePushToken(final String pushToken) {
+        saveString(PREFS_KEY_PUSH_TOKEN, pushToken);
+    }
+
+    /**
+     * Get push token from shared preferences.
+     *
+     * @return Push token value
+     */
+    public synchronized String getPushToken() {
+        return getString(PREFS_KEY_PUSH_TOKEN);
+    }
+
+    /**
+     * Remove push token from shared preferences.
+     */
+    public synchronized void removePushToken() {
+        remove(PREFS_KEY_PUSH_TOKEN);
+    }
+
+    /**
      * Remove all key-value pairs from shared preferences.
      */
     public synchronized void clear() {
@@ -303,6 +333,15 @@ public class SharedPreferencesManager {
         } catch (ClassCastException e) {
             return null;
         }
+    }
+
+    /**
+     * Remove a value saved with given key from shared preferences.
+     *
+     * @param key Key to be removed
+     */
+    private synchronized void remove(final String key) {
+        this.sharedPreferences.edit().remove(key).commit();
     }
 
     /**

@@ -346,7 +346,27 @@ public class AdjustInstance {
         if (!checkActivityHandler("push token")) {
             this.pushToken = token;
         } else {
-            activityHandler.setPushToken(token);
+            activityHandler.setPushToken(token, false);
+        }
+    }
+
+    /**
+     * Called to set user's push notifications token.
+     *
+     * @param token   Push notifications token
+     * @param context Application context
+     */
+    public void setPushToken(final String token, final Context context) {
+        // Don't save referrer if SDK is disabled.
+        if (checkActivityHandler("push token")) {
+            if (activityHandler.isEnabled() && isInstanceEnabled()) {
+                savePushToken(token, context);
+                activityHandler.setPushToken(pushToken, true);
+            }
+        } else {
+            if (isInstanceEnabled()) {
+                savePushToken(token, context);
+            }
         }
     }
 
@@ -432,6 +452,17 @@ public class AdjustInstance {
     private void saveReferrer(final long clickTime, final String content, final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.saveReferrer(clickTime, content);
+    }
+
+    /**
+     * Save push token to shared preferences.
+     *
+     * @param pushToken Push notifications token
+     * @param context   Application context
+     */
+    private void savePushToken(final String pushToken, final Context context) {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.savePushToken(pushToken);
     }
 
     /**

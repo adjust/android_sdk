@@ -107,7 +107,7 @@ public class ActivityHandler implements IActivityHandler {
         teardownAllSessionParametersS(deleteState);
 
         if (deleteState) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(adjustConfig.context);
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
             sharedPreferencesManager.clear();
         }
 
@@ -546,14 +546,22 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setPushToken(final String token) {
+    public void setPushToken(final String token, final boolean preSaved) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                if (activityState == null) {
-                    startI();
+                if (!preSaved) {
+                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                    sharedPreferencesManager.savePushToken(token);
                 }
-                setPushTokenI(token);
+
+                if (activityState == null) {
+                    // No install has been tracked so far.
+                    // Push token is saved, ready for the session package to pick it up.
+                    return;
+                } else {
+                    setPushTokenI(token);
+                }
             }
         });
     }
@@ -669,7 +677,10 @@ public class ActivityHandler implements IActivityHandler {
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
             if (activityState != null) {
-                setPushToken(adjustConfig.pushToken);
+                setPushToken(adjustConfig.pushToken, false);
+            } else {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
             }
         }
 
@@ -785,7 +796,10 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) {
             activityState = new ActivityState();
             activityState.sessionCount = 1; // this is the first session
-            activityState.pushToken = adjustConfig.pushToken;
+
+            // activityState.pushToken = adjustConfig.pushToken;
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            activityState.pushToken = sharedPreferencesManager.getPushToken();
 
             // track the first session package only if it's enabled
             if (internalState.isEnabled()) {
@@ -795,7 +809,9 @@ public class ActivityHandler implements IActivityHandler {
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
             activityState.updatePackages = internalState.itHasToUpdatePackages();
+
             writeActivityStateI();
+            sharedPreferencesManager.removePushToken();
 
             return;
         }
@@ -1573,6 +1589,10 @@ public class ActivityHandler implements IActivityHandler {
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
+
+        // If push token was cached, remove it.
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        sharedPreferencesManager.removePushToken();
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", infoPackage.getSuffix());

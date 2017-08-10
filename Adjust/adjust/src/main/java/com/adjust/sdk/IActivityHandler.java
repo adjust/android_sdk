@@ -55,7 +55,7 @@ public interface IActivityHandler {
 
     void teardown(boolean deleteState);
 
-    void setPushToken(String token);
+    void setPushToken(String token, boolean preSaved);
 
     Context getContext();
 }
