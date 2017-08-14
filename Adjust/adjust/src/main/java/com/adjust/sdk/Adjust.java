@@ -118,7 +118,7 @@ public class Adjust {
 
     public static void setPushToken(final String token, final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setPushToken(token);
+        adjustInstance.setPushToken(token, context);
     }
 
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
