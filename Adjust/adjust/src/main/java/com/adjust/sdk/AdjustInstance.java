@@ -149,15 +149,11 @@ public class AdjustInstance {
             return;
         }
 
-        // Don't save referrer if SDK is disabled.
+        saveReferrer(clickTime, referrer, context);
+
         if (checkActivityHandler("referrer")) {
-            if (activityHandler.isEnabled() && isInstanceEnabled()) {
-                saveReferrer(clickTime, referrer, context);
+            if (activityHandler.isEnabled()) {
                 activityHandler.sendReferrer(referrer, clickTime);
-            }
-        } else {
-            if (isInstanceEnabled()) {
-                saveReferrer(clickTime, referrer, context);
             }
         }
     }
@@ -357,15 +353,11 @@ public class AdjustInstance {
      * @param context Application context
      */
     public void setPushToken(final String token, final Context context) {
-        // Don't save referrer if SDK is disabled.
+        savePushToken(token, context);
+
         if (checkActivityHandler("push token")) {
-            if (activityHandler.isEnabled() && isInstanceEnabled()) {
-                savePushToken(token, context);
+            if (activityHandler.isEnabled()) {
                 activityHandler.setPushToken(pushToken, true);
-            }
-        } else {
-            if (isInstanceEnabled()) {
-                savePushToken(token, context);
             }
         }
     }
@@ -473,14 +465,5 @@ public class AdjustInstance {
     private void scanForReferrers(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.scanForSavedReferrers();
-    }
-
-    /**
-     * Check if AdjustInstance enable flag is set or not.
-     *
-     * @return boolean indicating whether AdjustInstance is enabled or not
-     */
-    private boolean isInstanceEnabled() {
-        return this.startEnabled == null || this.startEnabled;
     }
 }
