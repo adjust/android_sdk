@@ -795,7 +795,6 @@ public class ActivityHandler implements IActivityHandler {
         // very first session
         if (activityState == null) {
             activityState = new ActivityState();
-            activityState.sessionCount = 1; // this is the first session
 
             // activityState.pushToken = adjustConfig.pushToken;
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
@@ -803,6 +802,7 @@ public class ActivityHandler implements IActivityHandler {
 
             // track the first session package only if it's enabled
             if (internalState.isEnabled()) {
+                activityState.sessionCount = 1; // this is the first session
                 transferSessionPackageI(now);
             }
 
@@ -827,12 +827,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // new session
         if (lastInterval > SESSION_INTERVAL) {
-            activityState.sessionCount++;
-            activityState.lastInterval = lastInterval;
-
-            transferSessionPackageI(now);
-            activityState.resetSessionAttributes(now);
-            writeActivityStateI();
+            trackNewSessionI(now);
             return;
         }
 
@@ -849,6 +844,17 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         logger.verbose("Time span since last activity too short for a new subsession");
+    }
+
+    private void trackNewSessionI(final long now) {
+        long lastInterval = now - activityState.lastActivity;
+
+        activityState.sessionCount++;
+        activityState.lastInterval = lastInterval;
+
+        transferSessionPackageI(now);
+        activityState.resetSessionAttributes(now);
+        writeActivityStateI();
     }
 
     private void checkAttributionStateI() {
@@ -975,6 +981,12 @@ public class ActivityHandler implements IActivityHandler {
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
             launchAttributionListenerI(handler);
+        }
+
+        // mark install as tracked on success
+        if (sessionResponseData.success) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            sharedPreferencesManager.setInstallTracked();
         }
 
         // launch Session tracking listener if available
@@ -1118,6 +1130,15 @@ public class ActivityHandler implements IActivityHandler {
                     "Handlers will still start as paused",
                     "Handlers will start as active due to the SDK being enabled");
             return;
+        }
+
+        if (enabled) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+
+            if (!sharedPreferencesManager.getInstallTracked()) {
+                long now = System.currentTimeMillis();
+                trackNewSessionI(now);
+            }
         }
 
         activityState.enabled = enabled;

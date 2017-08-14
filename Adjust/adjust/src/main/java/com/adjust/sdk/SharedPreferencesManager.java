@@ -32,6 +32,11 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_PUSH_TOKEN = "push_token";
 
     /**
+     * Key name for info about whether install has been tracked or not.
+     */
+    private static final String PREFS_KEY_INSTALL_TRACKED = "install_tracked";
+
+    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -298,6 +303,22 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Save information that install has been tracked to shared preferences.
+     */
+    public synchronized void setInstallTracked() {
+        saveBoolean(PREFS_KEY_INSTALL_TRACKED, true);
+    }
+
+    /**
+     * Get information if install has been tracked from shared preferences. If no info, default to false.
+     *
+     * @return boolean indicating whether install has been tracked or not
+     */
+    public synchronized boolean getInstallTracked() {
+        return getBoolean(PREFS_KEY_INSTALL_TRACKED, false);
+    }
+
+    /**
      * Remove push token from shared preferences.
      */
     public synchronized void removePushToken() {
@@ -322,6 +343,16 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Write a boolean value to shared preferences.
+     *
+     * @param key   Key to be written to shared preferences
+     * @param value Value to be written to shared preferences
+     */
+    private synchronized void saveBoolean(final String key, final boolean value) {
+        this.sharedPreferences.edit().putBoolean(key, value).commit();
+    }
+
+    /**
      * Get a string value from shared preferences.
      *
      * @param key Key for which string value should be retrieved
@@ -332,6 +363,21 @@ public class SharedPreferencesManager {
             return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
             return null;
+        }
+    }
+
+    /**
+     * Get a boolean value from shared preferences.
+     *
+     * @param key          Key for which boolean value should be retrieved
+     * @param defaultValue Default value to be returned if nothing found in shared preferences
+     * @return boolean value for given key saved in shared preferences
+     */
+    private synchronized boolean getBoolean(final String key, final boolean defaultValue) {
+        try {
+            return this.sharedPreferences.getBoolean(key, defaultValue);
+        } catch (ClassCastException e) {
+            return defaultValue;
         }
     }
 
