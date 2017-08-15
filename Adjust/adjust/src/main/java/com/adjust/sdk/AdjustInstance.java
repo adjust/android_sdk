@@ -115,7 +115,7 @@ public class AdjustInstance {
      */
     public boolean isEnabled() {
         if (!checkActivityHandler()) {
-            return false;
+            return isInstanceEnabled();
         }
 
         return activityHandler.isEnabled();
@@ -465,5 +465,14 @@ public class AdjustInstance {
     private void scanForReferrers(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
         sharedPreferencesManager.scanForSavedReferrers();
+    }
+
+    /**
+     * Check if AdjustInstance enable flag is set or not.
+     *
+     * @return boolean indicating whether AdjustInstance is enabled or not
+     */
+    private boolean isInstanceEnabled() {
+        return this.startEnabled == null || this.startEnabled;
     }
 }
