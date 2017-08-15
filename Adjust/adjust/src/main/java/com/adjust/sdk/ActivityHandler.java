@@ -195,7 +195,7 @@ public class ActivityHandler implements IActivityHandler {
         internalState = new InternalState();
 
         // enabled by default
-        internalState.enabled = true;
+        internalState.enabled = adjustConfig.startEnabled != null ? adjustConfig.startEnabled : true;
         // online by default
         internalState.offline = adjustConfig.startOffline;
         // in the background by default
