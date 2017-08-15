@@ -357,7 +357,7 @@ public class AdjustInstance {
 
         if (checkActivityHandler("push token")) {
             if (activityHandler.isEnabled()) {
-                activityHandler.setPushToken(pushToken, true);
+                activityHandler.setPushToken(token, true);
             }
         }
     }
