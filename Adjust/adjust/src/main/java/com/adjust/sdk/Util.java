@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.SHA1;
+import static com.adjust.sdk.Constants.SHA256;
 
 /**
  * Collects utility functions used by Adjust.
@@ -313,6 +314,10 @@ public class Util {
 
     public static String sha1(final String text) {
         return hash(text, SHA1);
+    }
+
+    public static String sha256(final String text) {
+        return hash(text, SHA256);
     }
 
     public static String md5(final String text) {

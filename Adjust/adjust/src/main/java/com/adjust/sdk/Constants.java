@@ -57,6 +57,7 @@ public interface Constants {
     String ENCODING = "UTF-8";
     String MD5 = "MD5";
     String SHA1 = "SHA-1";
+    String SHA256 = "SHA-256";
 
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";

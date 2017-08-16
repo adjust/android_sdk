@@ -257,8 +257,8 @@ public class UtilNetworking {
 
         Map<String, String> signatureDetails = getSignature(parameters, clientSdk, activityKind, appSecret);
 
-        String algorithm = "md5";
-        String signature = Util.md5(signatureDetails.get("clear_signature"));
+        String algorithm = "sha256";
+        String signature = Util.sha256(signatureDetails.get("clear_signature"));
         String fields = signatureDetails.get("fields");
 
         String signatureHeader = String.format("signature=\"%s\"", signature);
