@@ -33,7 +33,7 @@ public class AdjustFactory {
         }
     }
 
-    public static IPackageHandler getPackageHandler(ActivityHandler activityHandler,
+    public static IPackageHandler getPackageHandler(IActivityHandler activityHandler,
                                                     Context context,
                                                     boolean startsSending) {
         if (packageHandler == null) {

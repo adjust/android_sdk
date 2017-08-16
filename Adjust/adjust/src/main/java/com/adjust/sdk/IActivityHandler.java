@@ -58,4 +58,8 @@ public interface IActivityHandler {
     void setPushToken(String token, boolean preSaved);
 
     Context getContext();
+
+    String getAdid();
+
+    AdjustAttribution getAttribution();
 }

@@ -31,7 +31,7 @@ public class AdjustInstance {
     /**
      * ActivityHandler instance.
      */
-    private ActivityHandler activityHandler;
+    private IActivityHandler activityHandler;
 
     /**
      * Array of actions that were requested before SDK initialisation.
@@ -54,7 +54,7 @@ public class AdjustInstance {
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
 
-        activityHandler = ActivityHandler.getInstance(adjustConfig);
+        activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
         // Scan for referrers.
         scanForReferrers(adjustConfig.context);
