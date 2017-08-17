@@ -684,6 +684,12 @@ public class ActivityHandler implements IActivityHandler {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
                 sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
             }
+        } else {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            String savedPushToken = sharedPreferencesManager.getPushToken();
+            if (activityState != null) {
+                setPushToken(savedPushToken, true);
+            }
         }
 
         foregroundTimer = new TimerCycle(
