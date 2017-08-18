@@ -1180,6 +1180,12 @@ public class ActivityHandler implements IActivityHandler {
                 long now = System.currentTimeMillis();
                 trackNewSessionI(now);
             }
+
+            String pushToken = sharedPreferencesManager.getPushToken();
+
+            if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
+                setPushToken(pushToken, true);
+            }
         }
 
         activityState.enabled = enabled;
