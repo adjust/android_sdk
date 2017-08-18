@@ -455,7 +455,7 @@ public class AdjustCommandExecutor {
     private void setPushToken() {
         String token = command.getFirstParameterValue("pushToken");
 
-        Adjust.setPushToken(token);
+        Adjust.setPushToken(token, context);
     }
 
     private void teardown() throws NullPointerException {
