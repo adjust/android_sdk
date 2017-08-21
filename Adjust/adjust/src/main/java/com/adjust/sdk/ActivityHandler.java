@@ -685,9 +685,10 @@ public class ActivityHandler implements IActivityHandler {
                 sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
             }
         } else {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-            String savedPushToken = sharedPreferencesManager.getPushToken();
             if (activityState != null) {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                String savedPushToken = sharedPreferencesManager.getPushToken();
+
                 setPushToken(savedPushToken, true);
             }
         }
