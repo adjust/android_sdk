@@ -125,6 +125,10 @@ public class Adjust {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
 
+    public static String getAmazonAdId(final Context context) {
+        return Util.getFireAdvertisingId(context.getContentResolver());
+    }
+
     public static String getAdid() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         return adjustInstance.getAdid();
