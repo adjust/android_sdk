@@ -255,7 +255,7 @@ public class UtilNetworking {
         }
         String appSecretName = "app_secret";
 
-        Map<String, String> signatureDetails = getSignature(parameters, clientSdk, activityKind, appSecret);
+        Map<String, String> signatureDetails = getSignature(parameters, activityKind, appSecret);
 
         String algorithm = "sha256";
         String signature = Util.sha256(signatureDetails.get("clear_signature"));
@@ -273,15 +273,9 @@ public class UtilNetworking {
 
     private static Map<String, String> getSignature(
             final Map<String, String> parameters,
-            final String clientSdk,
             final String activityKind,
-            final String appSecret) {
-        String sdkVersionName = "sdk_version";
-        String sdkVersion = clientSdk;
-
-        String appVersionName = "app_version";
-        String appVersion = parameters.get(appVersionName);
-
+            final String appSecret)
+    {
         String activityKindName = "activity_kind";
         String activityKindValue = activityKind;
 
@@ -294,8 +288,6 @@ public class UtilNetworking {
         Map<String, String> signatureParams = new HashMap<String, String>();
 
         signatureParams.put("app_secret", appSecret);
-        signatureParams.put(sdkVersionName, sdkVersion);
-        signatureParams.put(appVersionName, appVersion);
         signatureParams.put(createdAtName, createdAt);
         signatureParams.put(activityKindName, activityKindValue);
         signatureParams.put(deviceIdentifierName, deviceIdentifier);
@@ -327,6 +319,7 @@ public class UtilNetworking {
         String androidIdName = "android_id";
         String macSha1Name = "mac_sha1";
         String macMd5Name = "mac_md5";
+        String androidUUIDName= "android_uuid";
 
         if (parameters.get(googleAdIdName) != null) {
             return googleAdIdName;
@@ -342,6 +335,9 @@ public class UtilNetworking {
         }
         if (parameters.get(macMd5Name) != null) {
             return macMd5Name;
+        }
+        if (parameters.get(androidUUIDName) != null) {
+            return androidUUIDName;
         }
 
         return null;
