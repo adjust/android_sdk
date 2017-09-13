@@ -186,7 +186,6 @@ class PackageBuilder {
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
-        injectSessionParameters(parameters);
         injectCommonParameters(parameters);
 
         // general
@@ -273,10 +272,6 @@ class PackageBuilder {
         PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
-    }
-
-    private void injectSessionParameters(Map<String, String> parameters) {
-        PackageBuilder.addString(parameters, "external_device_id", sessionParameters.externalDeviceId);
     }
 
     private void injectCommonParameters(Map<String, String> parameters) {

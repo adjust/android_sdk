@@ -31,7 +31,6 @@ public class AdjustConfig {
     String pushToken;
     Boolean startEnabled;
     boolean startOffline;
-    String externalDeviceId;
     String appSecret;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
@@ -131,10 +130,6 @@ public class AdjustConfig {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
-    }
-
-    public void setExternalDeviceId(String externalDeviceId) {
-        this.externalDeviceId = externalDeviceId;
     }
 
     public void setAppSecret(long info1, long info2, long info3, long info4) {

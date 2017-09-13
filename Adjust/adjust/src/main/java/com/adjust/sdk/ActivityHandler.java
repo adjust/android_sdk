@@ -740,10 +740,6 @@ public class ActivityHandler implements IActivityHandler {
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(this, toSendI(true));
 
-        if (adjustConfig.externalDeviceId != null) {
-            setExternalDeviceIdI(adjustConfig.externalDeviceId);
-        }
-
         if (isToUpdatePackagesI()) {
             updatePackagesI();
         }
@@ -1627,21 +1623,6 @@ public class ActivityHandler implements IActivityHandler {
         writeSessionPartnerParametersI();
     }
 
-    public void setExternalDeviceIdI(String externalDeviceId) {
-        if (externalDeviceId == null) {
-            return;
-        }
-
-        if (sessionParameters.externalDeviceId != null) {
-            logger.warn("External device id %s will be overwritten", sessionParameters.externalDeviceId);
-        }
-
-        sessionParameters.externalDeviceId = externalDeviceId;
-
-        writeSessionParametersI();
-    }
-
-
     private void setPushTokenI(String token) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
@@ -1784,15 +1765,6 @@ public class ActivityHandler implements IActivityHandler {
                 return;
             }
             Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
-        }
-    }
-
-    private void writeSessionParametersI() {
-        synchronized (SessionParameters.class) {
-            if (sessionParameters == null) {
-                return;
-            }
-            Util.writeObject(sessionParameters, adjustConfig.context, SESSION_PARAMETERS_FILENAME, SESSION_PARAMETERS_NAME);
         }
     }
 
