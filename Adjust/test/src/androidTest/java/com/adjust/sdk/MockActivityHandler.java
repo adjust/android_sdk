@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import android.content.Context;
 import android.net.Uri;
 
 
@@ -145,6 +146,30 @@ public class MockActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void setPushToken(String token, boolean preSaved) {
+
+    }
+
+    @Override
+    public Context getContext() {
+        return null;
+    }
+
+    @Override
+    public String getAdid() {
+        return null;
+    }
+
+    @Override
+    public AdjustAttribution getAttribution() {
+        return null;
+    }
+
+    @Override
+    public String getBasePath() {
+        return null;
+    }
+
     public void setPushToken(String token) {
         testLogger.test(prefix + "setPushToken token, " + token);
     }

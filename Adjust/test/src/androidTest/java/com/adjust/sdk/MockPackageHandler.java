@@ -67,6 +67,11 @@ public class MockPackageHandler implements IPackageHandler {
     }
 
     @Override
+    public String getBasePath() {
+        return null;
+    }
+
+    @Override
     public void teardown(boolean deleteState) {
         testLogger.test(prefix + "teardown deleteState, " + deleteState);
     }

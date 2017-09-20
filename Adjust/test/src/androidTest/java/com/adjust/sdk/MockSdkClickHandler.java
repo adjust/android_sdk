@@ -39,6 +39,11 @@ public class MockSdkClickHandler implements ISdkClickHandler {
     }
 
     @Override
+    public void sendSavedReferrers() {
+
+    }
+
+    @Override
     public void teardown() {
         testLogger.test(prefix + "teardown");
     }

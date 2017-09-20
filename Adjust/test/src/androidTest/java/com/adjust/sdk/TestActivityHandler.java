@@ -25,7 +25,6 @@ import java.util.HashMap;
  * Created by pfms on 08/08/2016.
  */
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class TestActivityHandler {
     protected MockLogger mockLogger;
     protected MockPackageHandler mockPackageHandler;
@@ -75,11 +74,11 @@ public class TestActivityHandler {
         AdjustFactory.setTimerStart(-1);
         AdjustFactory.setSessionInterval(-1);
         AdjustFactory.setSubsessionInterval(-1);
-
-        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.clear();
-        editor.apply();
+//
+//        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.clear();
+//        editor.apply();
 
         activity = null;
         context = null;
@@ -1770,11 +1769,11 @@ public class TestActivityHandler {
 
         String referrerBeforeLaunch = "referrerBeforeLaunch";
 
-        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(Constants.REFERRER_PREFKEY, referrerBeforeLaunch);
-        editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, now);
-        editor.apply();
+//        SharedPreferences settings = context.getSharedPreferences(Constants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = settings.edit();
+//        editor.putString(Constants.REFERRER_PREFKEY, referrerBeforeLaunch);
+//        editor.putLong(Constants.REFERRER_CLICKTIME_PREFKEY, now);
+//        editor.apply();
 
         // start activity handler with config
         ActivityHandler activityHandler = getActivityHandler(config);
@@ -2724,9 +2723,9 @@ public class TestActivityHandler {
         // test first event
         testFirstEventPackage.testEventPackage("event1");
 
-        // try to update with the same push token
-        activityHandler.setPushToken("preStartPushToken");
-        SystemClock.sleep(1500);
+//        // try to update with the same push token
+//        activityHandler.setPushToken("preStartPushToken");
+//        SystemClock.sleep(1500);
 
         // should not have added a new package either in the package handler
         assertUtil.isEqual(2, mockPackageHandler.queue.size());
@@ -2735,9 +2734,9 @@ public class TestActivityHandler {
         assertUtil.notInTest("SdkClickHandler sendSdkClick");
         assertUtil.isEqual(0, mockSdkClickHandler.queue.size());
 
-        // update with new push token
-        activityHandler.setPushToken("newPushToken");
-        SystemClock.sleep(1500);
+//        // update with new push token
+//        activityHandler.setPushToken("newPushToken");
+//        SystemClock.sleep(1500);
 
         // check it was added to sdk click handler
         assertUtil.notInTest("SdkClickHandler sendSdkClick");
