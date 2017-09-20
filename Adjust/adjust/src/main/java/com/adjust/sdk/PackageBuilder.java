@@ -337,6 +337,14 @@ class PackageBuilder {
         parameters.put(key, value);
     }
 
+    public static void addLongObject(Map<String, String> parameters, String key, Long value) {
+        if (value == null) {
+            return;
+        }
+
+        PackageBuilder.addLong(parameters, key, value.longValue());
+    }
+
     public static void addLong(Map<String, String> parameters, String key, long value) {
         if (value < 0) {
             return;
