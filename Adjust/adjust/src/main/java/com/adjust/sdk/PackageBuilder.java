@@ -90,7 +90,7 @@ class PackageBuilder {
     public ActivityPackage buildEventPackage(AdjustEvent event,
                                              boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
+        PackageBuilder.addLong(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
@@ -230,8 +230,8 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
-        PackageBuilder.addInt(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
-        PackageBuilder.addInt(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
+        PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
+        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         fillPluginKeys(parameters);
     }
 
@@ -268,8 +268,8 @@ class PackageBuilder {
 
     private void injectActivityState(Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addInt(parameters, "session_count", activityStateCopy.sessionCount);
-        PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
+        PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
+        PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
     }
@@ -324,7 +324,7 @@ class PackageBuilder {
         parameters.put(key, value);
     }
 
-    public static void addInt(Map<String, String> parameters, String key, long value) {
+    public static void addLong(Map<String, String> parameters, String key, long value) {
         if (value < 0) {
             return;
         }
@@ -348,7 +348,7 @@ class PackageBuilder {
         }
 
         long durationInSeconds = (durationInMilliSeconds + 500) / 1000;
-        PackageBuilder.addInt(parameters, key, durationInSeconds);
+        PackageBuilder.addLong(parameters, key, durationInSeconds);
     }
 
     public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
@@ -373,7 +373,7 @@ class PackageBuilder {
 
         int intValue = value ? 1 : 0;
 
-        PackageBuilder.addInt(parameters, key, intValue);
+        PackageBuilder.addLong(parameters, key, intValue);
     }
 
     public static void addDouble(Map<String, String> parameters, String key, Double value) {
