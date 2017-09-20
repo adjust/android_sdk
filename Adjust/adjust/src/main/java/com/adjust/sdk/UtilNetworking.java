@@ -41,9 +41,10 @@ public class UtilNetworking {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             String appSecret = extractAppSecret(parameters);
+            String secretId = extractSecretId(parameters);
 
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -75,12 +76,13 @@ public class UtilNetworking {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
             String appSecret = extractAppSecret(parameters);
+            String secretId = extractSecretId(parameters);
 
             Uri uri = buildUri(activityPackage.getPath(), parameters);
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -245,8 +247,13 @@ public class UtilNetworking {
         return parameters.remove("app_secret");
     }
 
+    private static String extractSecretId(Map<String, String> parameters) {
+        return parameters.remove("secret_id");
+    }
+
     private static String buildAuthorizationHeader(Map<String, String> parameters,
                                                    String appSecret,
+                                                   String secretId,
                                                    String clientSdk,
                                                    String activityKind) {
         // check if the secret exists and it's not empty
@@ -261,11 +268,12 @@ public class UtilNetworking {
         String signature = Util.sha256(signatureDetails.get("clear_signature"));
         String fields = signatureDetails.get("fields");
 
+        String secretIdHeader = String.format("secret_id=\"%s\"", secretId);
         String signatureHeader = String.format("signature=\"%s\"", signature);
         String algorithmHeader = String.format("algorithm=\"%s\"", algorithm);
         String fieldsHeader = String.format("headers=\"%s\"", fields);
 
-        String authorizationHeader = String.format("Signature %s,%s,%s", signatureHeader, algorithmHeader, fieldsHeader);
+        String authorizationHeader = String.format("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
         getLogger().verbose("authorizationHeader clear: %s", authorizationHeader);
 
         return authorizationHeader;
