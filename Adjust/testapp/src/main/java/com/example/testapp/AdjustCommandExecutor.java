@@ -158,20 +158,21 @@ public class AdjustCommandExecutor {
             adjustConfig.setDefaultTracker(defaultTracker);
         }
 
-        if (command.containsParameter("externalDeviceId")) {
-            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
-            adjustConfig.setExternalDeviceId(externalDeviceId);
-        }
+//        if (command.containsParameter("externalDeviceId")) {
+//            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
+//            adjustConfig.setExternalDeviceId(externalDeviceId);
+//        }
 
 
         if (command.parameters.containsKey("appSecret")) {
             List<String> appSecretArray = command.parameters.get("appSecret");
             try {
-                long info1 = Long.parseLong(appSecretArray.get(0));
-                long info2 = Long.parseLong(appSecretArray.get(1));
-                long info3 = Long.parseLong(appSecretArray.get(2));
-                long info4 = Long.parseLong(appSecretArray.get(3));
-                adjustConfig.setAppSecret(info1, info2, info3, info4);
+                long secretId = Long.parseLong(appSecretArray.get(0));
+                long info1 = Long.parseLong(appSecretArray.get(1));
+                long info2 = Long.parseLong(appSecretArray.get(2));
+                long info3 = Long.parseLong(appSecretArray.get(3));
+                long info4 = Long.parseLong(appSecretArray.get(4));
+                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
             } catch (Exception e) {
 
             }
