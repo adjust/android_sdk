@@ -125,6 +125,9 @@ public class ActivityHandler implements IActivityHandler {
         deleteAttribution(context);
         deleteSessionCallbackParameters(context);
         deleteSessionPartnerParameters(context);
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.clear();
     }
 
     public class InternalState {
