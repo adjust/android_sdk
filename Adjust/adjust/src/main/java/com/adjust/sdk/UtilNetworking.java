@@ -44,7 +44,7 @@ public class UtilNetworking {
             String secretId = extractSecretId(parameters);
 
             setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -82,7 +82,7 @@ public class UtilNetworking {
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getClientSdk(), activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -254,7 +254,6 @@ public class UtilNetworking {
     private static String buildAuthorizationHeader(Map<String, String> parameters,
                                                    String appSecret,
                                                    String secretId,
-                                                   String clientSdk,
                                                    String activityKind) {
         // check if the secret exists and it's not empty
         if (appSecret == null || appSecret.length() == 0) {
