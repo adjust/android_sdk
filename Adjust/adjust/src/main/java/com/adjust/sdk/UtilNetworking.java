@@ -274,7 +274,7 @@ public class UtilNetworking {
         String fieldsHeader = String.format("headers=\"%s\"", fields);
 
         String authorizationHeader = String.format("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
-        getLogger().verbose("authorizationHeader clear: %s", authorizationHeader);
+        getLogger().verbose("authorizationHeader: %s", authorizationHeader);
 
         return authorizationHeader;
     }

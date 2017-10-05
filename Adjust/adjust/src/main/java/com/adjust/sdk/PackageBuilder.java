@@ -262,8 +262,8 @@ class PackageBuilder {
         Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
 
+        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
-        PackageBuilder.addLongObject(parameters, "secret_id", adjustConfig.secretId);
     }
 
     private void injectActivityState(Map<String, String> parameters) {
@@ -322,14 +322,6 @@ class PackageBuilder {
         }
 
         parameters.put(key, value);
-    }
-
-    public static void addLongObject(Map<String, String> parameters, String key, Long value) {
-        if (value == null) {
-            return;
-        }
-
-        PackageBuilder.addLong(parameters, key, value.longValue());
     }
 
     public static void addLong(Map<String, String> parameters, String key, long value) {
