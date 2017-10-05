@@ -252,7 +252,6 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
-        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
 
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
@@ -277,6 +276,7 @@ class PackageBuilder {
     private void injectCommonParameters(Map<String, String> parameters) {
         PackageBuilder.addDate(parameters, "created_at", createdAt);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
     }
 
     private void injectAttribution(Map<String, String> parameters) {
