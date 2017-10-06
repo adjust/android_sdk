@@ -42,6 +42,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
       * [Google Play Services advertising identifier](#di-gps-adid)
+      * [Amazon Fire advertising identifier](#di-amz-adid)
       * [Adjust device identifier](#di-adid)
    * [User attribution](#user-attribution)
    * [Push token](#push-token)
@@ -711,6 +712,14 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 ```
 
 Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as the variable `googleAdId`.
+
+### <a id="di-amz-adid"></a>Amazon Fire advertising identifier
+
+If you need to obtain the Amazon Advertising ID, you can make a call to following method on `Adjust` instance:
+
+```java
+String amazonAdId = Adjust.getAmazonAdId(context);
+```
 
 ### <a id="di-adid"></a>Adjust device identifier
 
