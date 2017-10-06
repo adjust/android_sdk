@@ -750,6 +750,13 @@ AdjustAttribution attribution = Adjust.getAttribution();
 To send us the push notification token, add the following call to Adjust once you have obtained your token or when ever it's value is changed:
 
 ```java
+Adjust.setPushToken(pushNotificationsToken, context);
+```
+
+This updated signature with the context, allows the sdk to cover more scenarios to make sure the token is send. 
+We still support the previous signature of the same method:
+
+```java
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
