@@ -329,7 +329,7 @@ public class SharedPreferencesManager {
      * Remove all key-value pairs from shared preferences.
      */
     public synchronized void clear() {
-        this.sharedPreferences.edit().clear().commit();
+        this.sharedPreferences.edit().clear().apply();
     }
 
     /**
@@ -339,7 +339,7 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveString(final String key, final String value) {
-        this.sharedPreferences.edit().putString(key, value).commit();
+        this.sharedPreferences.edit().putString(key, value).apply();
     }
 
     /**
@@ -349,7 +349,7 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveBoolean(final String key, final boolean value) {
-        this.sharedPreferences.edit().putBoolean(key, value).commit();
+        this.sharedPreferences.edit().putBoolean(key, value).apply();
     }
 
     /**
@@ -387,7 +387,7 @@ public class SharedPreferencesManager {
      * @param key Key to be removed
      */
     private synchronized void remove(final String key) {
-        this.sharedPreferences.edit().remove(key).commit();
+        this.sharedPreferences.edit().remove(key).apply();
     }
 
     /**
