@@ -100,6 +100,18 @@ If you are using Maven, add this line instead:
 ```
 compile 'com.adjust.sdk:adjust-android:4.12.0'
 ```
+**
+Note: If you are using Gradle 3.0.x, make sure to use the `implementation` keyword instead of `compile` as follows:
+
+```
+implementation project(":adjust")
+
+// OR
+
+implementation 'com.adjust.sdk:adjust-android:4.12.0'
+```
+
+The same goes for the step below when adding Google Play Services.
 
 ### <a id="sdk-gps"></a>Add Google Play Services
 
