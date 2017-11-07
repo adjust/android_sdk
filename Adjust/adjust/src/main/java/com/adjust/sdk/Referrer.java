@@ -114,6 +114,7 @@ public class Referrer {
         array.put(clickTime);
         array.put(content);
         array.put(isBeingSent);
+        array.put(rawContent);
 
         return array;
     }
