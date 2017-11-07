@@ -18,11 +18,13 @@ public class AdjustReferrerReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String rawReferrer = intent.getStringExtra(REFERRER);
+
         if (null == rawReferrer) {
             return;
         }
 
         String referrer;
+
         try {
             referrer = URLDecoder.decode(rawReferrer, ENCODING);
         } catch (UnsupportedEncodingException e) {
@@ -30,6 +32,6 @@ public class AdjustReferrerReceiver extends BroadcastReceiver {
         }
 
         AdjustInstance adjust = Adjust.getDefaultInstance();
-        adjust.sendReferrer(referrer, context);
+        adjust.sendReferrer(referrer, rawReferrer, context);
     }
 }

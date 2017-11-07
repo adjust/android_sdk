@@ -426,7 +426,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendReferrer(final String referrer, final long clickTime) {
+    public void sendReferrer(final String referrer, final String rawReferrer, final long clickTime) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {

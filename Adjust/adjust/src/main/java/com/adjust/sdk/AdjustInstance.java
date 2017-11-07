@@ -138,10 +138,11 @@ public class AdjustInstance {
     /**
      * Called to process referrer information sent with INSTALL_REFERRER intent.
      *
-     * @param referrer Referrer content
-     * @param context  Application context
+     * @param referrer    Referrer content
+     * @param rawReferrer Raw referrer content
+     * @param context     Application context
      */
-    public void sendReferrer(final String referrer, final Context context) {
+    public void sendReferrer(final String referrer, final String rawReferrer, final Context context) {
         long clickTime = System.currentTimeMillis();
 
         // Check for referrer validity. If invalid, return.
@@ -149,11 +150,11 @@ public class AdjustInstance {
             return;
         }
 
-        saveReferrer(clickTime, referrer, context);
+        saveReferrer(clickTime, referrer, rawReferrer, context);
 
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
-                activityHandler.sendReferrer(referrer, clickTime);
+                activityHandler.sendReferrer(referrer, rawReferrer, clickTime);
             }
         }
     }
@@ -437,13 +438,14 @@ public class AdjustInstance {
     /**
      * Save referrer to shared preferences.
      *
-     * @param clickTime Referrer click time
-     * @param content   Referrer content
-     * @param context   Application context
+     * @param clickTime  Referrer click time
+     * @param content    Referrer content
+     * @param rawContent Raw referrer content
+     * @param context    Application context
      */
-    private void saveReferrer(final long clickTime, final String content, final Context context) {
+    private void saveReferrer(final long clickTime, final String content, final String rawContent, final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveReferrer(clickTime, content);
+        sharedPreferencesManager.saveReferrer(clickTime, content, rawContent);
     }
 
     /**

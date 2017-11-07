@@ -15,6 +15,7 @@ public class PackageFactory {
     private static final String ADJUST_PREFIX = "adjust_";
 
     public static ActivityPackage getSdkClickPackage(final String referrer,
+                                                     final String rawReferrer,
                                                      final long clickTime,
                                                      final ActivityState activityState,
                                                      final AdjustConfig adjustConfig,
@@ -44,6 +45,7 @@ public class PackageFactory {
 
         clickPackageBuilder.referrer = referrer;
         clickPackageBuilder.clickTime = clickTime;
+        clickPackageBuilder.rawReferrer = rawReferrer;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
 

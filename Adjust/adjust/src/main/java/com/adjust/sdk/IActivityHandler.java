@@ -33,7 +33,7 @@ public interface IActivityHandler {
 
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
-    void sendReferrer(String referrer, long clickTime);
+    void sendReferrer(String referrer, String rawReferrer, long clickTime);
 
     void setOfflineMode(boolean enabled);
 

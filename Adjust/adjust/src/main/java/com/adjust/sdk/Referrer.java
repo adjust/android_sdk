@@ -11,7 +11,7 @@ public class Referrer {
     /**
      * Number of referrer fields.
      */
-    public static final int REFERRER_FIELDS_NUMBER = 3;
+    public static final int REFERRER_FIELDS_NUMBER = 4;
 
     /**
      * Referrer click time stamp.
@@ -22,6 +22,11 @@ public class Referrer {
      * Referrer content.
      */
     private String content;
+
+    /**
+     * Raw referrer content.
+     */
+    private String rawContent;
 
     /**
      * Flag that indicates whether referrer is currently being sent by SdkClickHandler or not.
@@ -60,12 +65,30 @@ public class Referrer {
     }
 
     /**
+     * Raw referrer content getter.
+     *
+     * @return Raw referrer content
+     */
+    public String getRawContent() {
+        return rawContent;
+    }
+
+    /**
      * Is referrer being sent flag getter.
      *
      * @return Is referrer being sent flag's value
      */
     public boolean getIsBeingSent() {
         return isBeingSent;
+    }
+
+    /**
+     * Set raw referrer content.
+     *
+     * @param rawContent Original referrer string passed into SDK from outside world.
+     */
+    public void setRawContent(final String rawContent) {
+        this.rawContent = rawContent;
     }
 
     /**

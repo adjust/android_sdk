@@ -53,14 +53,16 @@ public class SharedPreferencesManager {
     /**
      * Save referrer information to shared preferences.
      *
-     * @param clickTime Referrer click time
-     * @param content   Referrer string
+     * @param clickTime  Referrer click time
+     * @param content    Referrer string
+     * @param rawContent Raw referrer string
      */
-    public synchronized void saveReferrer(final long clickTime, final String content) {
+    public synchronized void saveReferrer(final long clickTime, final String content, final String rawContent) {
         // Check if referrer is null or empty string already done before calling this method.
         try {
             ArrayList<Referrer> referrers = getReferrers();
             Referrer referrerToSave = new Referrer(clickTime, content);
+            referrerToSave.setRawContent(rawContent);
 
             // If referrer is already contained in shared preferences, skip adding it.
             if (getReferrerIndex(referrerToSave, referrers) >= 0) {
@@ -82,6 +84,7 @@ public class SharedPreferencesManager {
             newReferrerEntry.put(0, referrerToSave.getClickTime());
             newReferrerEntry.put(1, referrerToSave.getContent());
             newReferrerEntry.put(2, referrerToSave.getIsBeingSent());
+            newReferrerEntry.put(3, referrerToSave.getRawContent());
 
             updatedReferrers.put(newReferrerEntry);
 
@@ -221,9 +224,11 @@ public class SharedPreferencesManager {
                 long clickTime = referrerEntry.getLong(0);
                 String content = referrerEntry.getString(1);
                 boolean isBeingSent = referrerEntry.getBoolean(2);
+                String rawContent = referrerEntry.getString(3);
 
                 Referrer referrer = new Referrer(clickTime, content);
                 referrer.setIsBeingSent(isBeingSent);
+                referrer.setRawContent(rawContent);
 
                 referrersArray.add(referrer);
             }
@@ -264,9 +269,11 @@ public class SharedPreferencesManager {
 
                 long clickTime = referrerEntry.getLong(0);
                 String content = referrerEntry.getString(1);
+                String rawContent = referrerEntry.getString(3);
 
                 Referrer referrer = new Referrer(clickTime, content);
                 referrer.setIsBeingSent(false);
+                referrer.setRawContent(rawContent);
 
                 referrers.add(referrer);
             }

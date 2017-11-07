@@ -33,6 +33,7 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
     String referrer;
+    String rawReferrer;
     String deeplink;
     long clickTime;
 
@@ -123,6 +124,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "reftag", reftag);
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
+        PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
         injectAttribution(parameters);
 
