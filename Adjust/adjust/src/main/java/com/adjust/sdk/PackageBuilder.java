@@ -263,6 +263,10 @@ class PackageBuilder {
 
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+        if (adjustConfig.readMobileEquipmentIdentity) {
+            String mobileEquipmentId = Util.getMobileEquipmentIdentity(adjustConfig.context);
+            PackageBuilder.addString(parameters, "mobile_equipment_id", mobileEquipmentId);
+        }
     }
 
     private void injectActivityState(Map<String, String> parameters) {

@@ -127,6 +127,9 @@ public class Util {
     public static String getAndroidId(Context context) {
         return Reflection.getAndroidId(context);
     }
+    public static String getMobileEquipmentIdentity(Context context) {
+        return Reflection.getMobileEquipmentIdentity(context);
+    }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
         Closeable closable = null;

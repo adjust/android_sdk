@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.telephony.TelephonyManager;
 
 import com.adjust.sdk.plugin.Plugin;
 
@@ -84,6 +85,44 @@ public class Reflection {
 
             return androidId;
         } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    public static String getMobileEquipmentIdentity(Context context) {
+        try {
+            String mobileEquipmentIdentity = (String) invokeStaticMethod("com.adjust.sdk.plugin.MobileEquipmentIdentityUtil", "getMobileEquipmentIdentity"
+                    , new Class[]{Context.class}, context);
+
+            return mobileEquipmentIdentity;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    public static String getLinkIMEI(TelephonyManager telephonyManager) {
+        // return telephonyManager.getImei();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getImei", null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getLinkMEID(TelephonyManager telephonyManager) {
+        // return telephonyManager.getMeid();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getMeid", null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getTelephonyId(TelephonyManager telephonyManager) {
+        // return telephonyManager.getDeviceId();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", null);
+        } catch (Exception e) {
             return null;
         }
     }
