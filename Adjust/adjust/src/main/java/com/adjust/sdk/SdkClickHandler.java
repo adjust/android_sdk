@@ -139,8 +139,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                     }
 
                     ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
-                            referrer.getContent(),
-                            referrer.getRawContent(),
+                            referrer.getRawReferrer(),
                             referrer.getClickTime(),
                             ((ActivityHandler) activityHandlerWeakRef.get()).getActivityState(),
                             ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig(),

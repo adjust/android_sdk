@@ -176,12 +176,12 @@ public class MockHttpsURLConnection extends HttpsURLConnection {
     }
 
     public Object getContent() throws IOException {
-        testLogger.test(prefix + "getContent");
+        testLogger.test(prefix + "getReferrer");
         return null;
     }
 
     public Object getContent(Class[] types) throws IOException {
-        testLogger.test(prefix + "getContent, types " + types);
+        testLogger.test(prefix + "getReferrer, types " + types);
         return null;
     }
 

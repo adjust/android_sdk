@@ -3,9 +3,14 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.net.UrlQuerySanitizer;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.adjust.sdk.Constants.ENCODING;
+import static com.adjust.sdk.Constants.MALFORMED;
 
 /**
  * Created by uerceg on 04.08.17.
@@ -14,15 +19,22 @@ import java.util.Map;
 public class PackageFactory {
     private static final String ADJUST_PREFIX = "adjust_";
 
-    public static ActivityPackage getSdkClickPackage(final String referrer,
-                                                     final String rawReferrer,
+    public static ActivityPackage getSdkClickPackage(final String rawReferrer,
                                                      final long clickTime,
                                                      final ActivityState activityState,
                                                      final AdjustConfig adjustConfig,
                                                      final DeviceInfo deviceInfo,
                                                      final SessionParameters sessionParameters) {
-        if (referrer == null || referrer.length() == 0) {
+        if (rawReferrer == null || rawReferrer.length() == 0) {
             return null;
+        }
+
+        String referrer;
+
+        try {
+            referrer = URLDecoder.decode(rawReferrer, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            referrer = MALFORMED;
         }
 
         AdjustFactory.getLogger().verbose("Referrer to parse (%s)", referrer);

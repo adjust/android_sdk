@@ -68,7 +68,7 @@ public class Adjust {
 
     public static void setReferrer(String referrer, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendReferrer(referrer, "", context);
+        adjustInstance.sendReferrer(referrer, context);
     }
 
     public static void setOfflineMode(boolean enabled) {

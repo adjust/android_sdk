@@ -53,16 +53,14 @@ public class SharedPreferencesManager {
     /**
      * Save referrer information to shared preferences.
      *
-     * @param clickTime  Referrer click time
-     * @param content    Referrer string
-     * @param rawContent Raw referrer string
+     * @param clickTime   Referrer click time
+     * @param rawReferrer Raw referrer string
      */
-    public synchronized void saveReferrer(final long clickTime, final String content, final String rawContent) {
+    public synchronized void saveReferrer(final long clickTime, final String rawReferrer) {
         // Check if referrer is null or empty string already done before calling this method.
         try {
             ArrayList<Referrer> referrers = getReferrers();
-            Referrer referrerToSave = new Referrer(clickTime, content);
-            referrerToSave.setRawContent(rawContent);
+            Referrer referrerToSave = new Referrer(clickTime, rawReferrer);
 
             // If referrer is already contained in shared preferences, skip adding it.
             if (getReferrerIndex(referrerToSave, referrers) >= 0) {
@@ -82,9 +80,8 @@ public class SharedPreferencesManager {
             JSONArray newReferrerEntry = new JSONArray();
 
             newReferrerEntry.put(0, referrerToSave.getClickTime());
-            newReferrerEntry.put(1, referrerToSave.getContent());
+            newReferrerEntry.put(1, referrerToSave.getRawReferrer());
             newReferrerEntry.put(2, referrerToSave.getIsBeingSent());
-            newReferrerEntry.put(3, referrerToSave.getRawContent());
 
             updatedReferrers.put(newReferrerEntry);
 
@@ -97,16 +94,16 @@ public class SharedPreferencesManager {
     /**
      * Remove referrer information from shared preferences.
      *
-     * @param clickTime Referrer click time
-     * @param content   Referrer string
+     * @param clickTime   Referrer click time
+     * @param rawReferrer Referrer string
      */
-    public synchronized void removeReferrer(final long clickTime, final String content) {
+    public synchronized void removeReferrer(final long clickTime, final String rawReferrer) {
         // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
-        if (content == null || content.length() == 0) {
+        if (rawReferrer == null || rawReferrer.length() == 0) {
             return;
         }
 
-        Referrer referrerToCheck = new Referrer(clickTime, content);
+        Referrer referrerToCheck = new Referrer(clickTime, rawReferrer);
 
         // Try to locate position in queue of the referrer that should be deleted.
         ArrayList<Referrer> referrers = getReferrers();
@@ -135,14 +132,14 @@ public class SharedPreferencesManager {
     /**
      * Check if give referrer is saved in shared preferences.
      *
-     * @param clickTime Referrer click time
-     * @param content   Referrer string
+     * @param clickTime   Referrer click time
+     * @param rawReferrer Referrer string
      * @return boolean indicating whether given referrer exist in shared preferences or not.
      * In case of exception, return false.
      */
-    public synchronized boolean doesReferrerExist(final String content, final long clickTime) {
+    public synchronized boolean doesReferrerExist(final String rawReferrer, final long clickTime) {
         ArrayList<Referrer> referrers = getReferrers();
-        Referrer referrerToCheck = new Referrer(clickTime, content);
+        Referrer referrerToCheck = new Referrer(clickTime, rawReferrer);
 
         if (referrers == null) {
             return false;
@@ -222,13 +219,11 @@ public class SharedPreferencesManager {
                 }
 
                 long clickTime = referrerEntry.getLong(0);
-                String content = referrerEntry.getString(1);
+                String rawContent = referrerEntry.getString(1);
                 boolean isBeingSent = referrerEntry.getBoolean(2);
-                String rawContent = referrerEntry.getString(3);
 
-                Referrer referrer = new Referrer(clickTime, content);
+                Referrer referrer = new Referrer(clickTime, rawContent);
                 referrer.setIsBeingSent(isBeingSent);
-                referrer.setRawContent(rawContent);
 
                 referrersArray.add(referrer);
             }
@@ -268,12 +263,10 @@ public class SharedPreferencesManager {
                 }
 
                 long clickTime = referrerEntry.getLong(0);
-                String content = referrerEntry.getString(1);
-                String rawContent = referrerEntry.getString(3);
+                String rawContent = referrerEntry.getString(1);
 
-                Referrer referrer = new Referrer(clickTime, content);
+                Referrer referrer = new Referrer(clickTime, rawContent);
                 referrer.setIsBeingSent(false);
-                referrer.setRawContent(rawContent);
 
                 referrers.add(referrer);
             }

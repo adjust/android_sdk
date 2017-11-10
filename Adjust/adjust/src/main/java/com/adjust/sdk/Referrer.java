@@ -11,7 +11,7 @@ public class Referrer {
     /**
      * Number of referrer fields.
      */
-    public static final int REFERRER_FIELDS_NUMBER = 4;
+    public static final int REFERRER_FIELDS_NUMBER = 3;
 
     /**
      * Referrer click time stamp.
@@ -19,14 +19,9 @@ public class Referrer {
     private long clickTime;
 
     /**
-     * Referrer content.
-     */
-    private String content;
-
-    /**
      * Raw referrer content.
      */
-    private String rawContent;
+    private String rawReferrer;
 
     /**
      * Flag that indicates whether referrer is currently being sent by SdkClickHandler or not.
@@ -36,11 +31,11 @@ public class Referrer {
     /**
      * Referrer object constructor.
      *
-     * @param clickTime Referrer click time
-     * @param content   Referrer content
+     * @param clickTime   Referrer click time
+     * @param rawReferrer Raw referrer content
      */
-    public Referrer(final long clickTime, final String content) {
-        this.content = content;
+    public Referrer(final long clickTime, final String rawReferrer) {
+        this.rawReferrer = rawReferrer;
         this.clickTime = clickTime;
 
         this.isBeingSent = false;
@@ -56,21 +51,12 @@ public class Referrer {
     }
 
     /**
-     * Referrer content getter.
+     * Raw referrer getter.
      *
-     * @return Referrer content
+     * @return Raw referrer
      */
-    public String getContent() {
-        return content;
-    }
-
-    /**
-     * Raw referrer content getter.
-     *
-     * @return Raw referrer content
-     */
-    public String getRawContent() {
-        return rawContent;
+    public String getRawReferrer() {
+        return rawReferrer;
     }
 
     /**
@@ -80,15 +66,6 @@ public class Referrer {
      */
     public boolean getIsBeingSent() {
         return isBeingSent;
-    }
-
-    /**
-     * Set raw referrer content.
-     *
-     * @param rawContent Original referrer string passed into SDK from outside world.
-     */
-    public void setRawContent(final String rawContent) {
-        this.rawContent = rawContent;
     }
 
     /**
@@ -103,7 +80,7 @@ public class Referrer {
     /**
      * Convert Referrer object to JSON array.
      * [0] - clickTime
-     * [1] - content
+     * [1] - rawReferrer
      * [2] - isBeingSent
      *
      * @return JSONArray object with referrer inside
@@ -112,9 +89,8 @@ public class Referrer {
         JSONArray array = new JSONArray();
 
         array.put(clickTime);
-        array.put(content);
+        array.put(rawReferrer);
         array.put(isBeingSent);
-        array.put(rawContent);
 
         return array;
     }
@@ -130,7 +106,7 @@ public class Referrer {
 
     /**
      * Check if current referrer is equal with given one.
-     * Equality criteria is equality of: clickTime and content members.
+     * Equality criteria is equality of: clickTime and referrer members.
      *
      * @param referrer Referrer to check equality with
      * @return boolean indicating whether two referrers are equal
@@ -144,68 +120,68 @@ public class Referrer {
             return false;
         }
 
-        if (!referrer.getContent().equals(content)) {
+        if (!referrer.getRawReferrer().equals(this.rawReferrer)) {
             return false;
         }
 
         return true;
     }
 
-    /**
-     * Get Referrer object from given JSONArray object.
-     *
-     * @param array JSONArray to convert to Referrer object
-     * @return Referrer object made from given JSONArray object
-     */
-    public static Referrer getReferrerFromJSONArray(final JSONArray array) {
-        if (array != null && array.length() != REFERRER_FIELDS_NUMBER) {
-            return null;
-        }
-
-        try {
-            long clickTime = array.getLong(0);
-            String content = array.getString(1);
-            boolean isBeingSent = array.getBoolean(2);
-
-            Referrer referrer = new Referrer(clickTime, content);
-            referrer.setIsBeingSent(isBeingSent);
-
-            return referrer;
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Get Referrer object from given JSONArray object string.
-     *
-     * @param arrayString JSONArray string to convert to Referrer object
-     * @return Referrer object made from given JSONArray object string
-     */
-    public static Referrer getReferrerFromJSONArrayString(final String arrayString) {
-        JSONArray array;
-
-        try {
-            if (arrayString == null) {
-                return null;
-            } else {
-                array = new JSONArray(arrayString);
-            }
-
-            if (array != null && array.length() != REFERRER_FIELDS_NUMBER) {
-                return null;
-            }
-
-            long clickTime = array.getLong(0);
-            String content = array.getString(1);
-            boolean isBeingSent = array.getBoolean(2);
-
-            Referrer referrer = new Referrer(clickTime, content);
-            referrer.setIsBeingSent(isBeingSent);
-
-            return referrer;
-        } catch (JSONException e) {
-            return null;
-        }
-    }
+//    /**
+//     * Get Referrer object from given JSONArray object.
+//     *
+//     * @param array JSONArray to convert to Referrer object
+//     * @return Referrer object made from given JSONArray object
+//     */
+//    public static Referrer getReferrerFromJSONArray(final JSONArray array) {
+//        if (array != null && array.length() != REFERRER_FIELDS_NUMBER) {
+//            return null;
+//        }
+//
+//        try {
+//            long clickTime = array.getLong(0);
+//            String content = array.getString(1);
+//            boolean isBeingSent = array.getBoolean(2);
+//
+//            Referrer referrer = new Referrer(clickTime, content);
+//            referrer.setIsBeingSent(isBeingSent);
+//
+//            return referrer;
+//        } catch (JSONException e) {
+//            return null;
+//        }
+//    }
+//
+//    /**
+//     * Get Referrer object from given JSONArray object string.
+//     *
+//     * @param arrayString JSONArray string to convert to Referrer object
+//     * @return Referrer object made from given JSONArray object string
+//     */
+//    public static Referrer getReferrerFromJSONArrayString(final String arrayString) {
+//        JSONArray array;
+//
+//        try {
+//            if (arrayString == null) {
+//                return null;
+//            } else {
+//                array = new JSONArray(arrayString);
+//            }
+//
+//            if (array != null && array.length() != REFERRER_FIELDS_NUMBER) {
+//                return null;
+//            }
+//
+//            long clickTime = array.getLong(0);
+//            String content = array.getString(1);
+//            boolean isBeingSent = array.getBoolean(2);
+//
+//            Referrer referrer = new Referrer(clickTime, content);
+//            referrer.setIsBeingSent(isBeingSent);
+//
+//            return referrer;
+//        } catch (JSONException e) {
+//            return null;
+//        }
+//    }
 }

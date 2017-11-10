@@ -23,15 +23,6 @@ public class AdjustReferrerReceiver extends BroadcastReceiver {
             return;
         }
 
-        String referrer;
-
-        try {
-            referrer = URLDecoder.decode(rawReferrer, ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            referrer = MALFORMED;
-        }
-
-        AdjustInstance adjust = Adjust.getDefaultInstance();
-        adjust.sendReferrer(referrer, rawReferrer, context);
+        Adjust.getDefaultInstance().sendReferrer(rawReferrer, context);
     }
 }
