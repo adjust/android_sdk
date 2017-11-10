@@ -8,7 +8,7 @@ import android.content.Intent;
 import static com.adjust.sdk.Constants.REFERRER;
 
 // support multiple BroadcastReceivers for the INSTALL_REFERRER:
-// http://blog.appington.com/2012/08/01/giving-credit-for-android-app-installs
+// https://appington.wordpress.com/2012/08/01/giving-credit-for-android-app-installs/
 
 public class AdjustReferrerReceiver extends BroadcastReceiver {
     @Override
