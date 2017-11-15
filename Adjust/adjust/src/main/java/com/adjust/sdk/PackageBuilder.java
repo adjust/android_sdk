@@ -110,7 +110,6 @@ class PackageBuilder {
         if (isInDelay) {
             eventPackage.setCallbackParameters(event.callbackParameters);
             eventPackage.setPartnerParameters(event.partnerParameters);
-            eventPackage.setSessionParameters(this.sessionParameters);
         }
 
         return eventPackage;

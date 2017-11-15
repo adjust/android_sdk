@@ -33,7 +33,6 @@ import java.util.Properties;
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
-import static com.adjust.sdk.Constants.SESSION_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler implements IActivityHandler {
@@ -628,7 +627,7 @@ public class ActivityHandler implements IActivityHandler {
         readAttributionI(adjustConfig.context);
         readActivityStateI(adjustConfig.context);
 
-        readSessionParametersI(adjustConfig.context);
+        sessionParameters = new SessionParameters();
         readSessionCallbackParametersI(adjustConfig.context);
         readSessionPartnerParametersI(adjustConfig.context);
 
@@ -1366,9 +1365,6 @@ public class ActivityHandler implements IActivityHandler {
     public static boolean deleteSessionPartnerParameters(Context context) {
         return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
     }
-    public static boolean deleteSessionParameters(Context context) {
-        return context.deleteFile(SESSION_PARAMETERS_FILENAME);
-    }
 
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
@@ -1669,21 +1665,6 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void readSessionParametersI(Context context) {
-        try {
-            sessionParameters = Util.readObject(context,
-                    SESSION_PARAMETERS_FILENAME,
-                    SESSION_PARAMETERS_NAME,
-                    SessionParameters.class);
-        } catch (Exception e) {
-            logger.error("Failed to read %s file (%s)", SESSION_PARAMETERS_NAME, e.getMessage());
-        }
-
-        if (sessionParameters == null) {
-            sessionParameters = new SessionParameters();
-        }
-    }
-
     private void readSessionCallbackParametersI(Context context) {
         try {
             sessionParameters.callbackParameters = Util.readObject(context,
@@ -1776,7 +1757,6 @@ public class ActivityHandler implements IActivityHandler {
             if (toDelete && adjustConfig != null && adjustConfig.context != null) {
                 deleteSessionCallbackParameters(adjustConfig.context);
                 deleteSessionPartnerParameters(adjustConfig.context);
-                deleteSessionParameters(adjustConfig.context);
             }
             sessionParameters = null;
         }
