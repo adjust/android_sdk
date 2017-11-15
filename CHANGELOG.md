@@ -1,7 +1,12 @@
-### Version 4.12.0 (Xth July 2017)
+### Version 4.12.0 (Xth November 2017)
 #### Added
 - Don't send `sdk_click` and `sdk_info` packages when disabled
 - Set external device id
+- Get amazon ad id
+- Allow to read mobile equipment identity for non-google play store apps
+- Use of secret in authorization header
+- Sending referrer without previously decoded
+- Send mcc, mnc, network and connectivity type
 
 #### Changed
 - Setting enable/disable or offline/online is now queued
@@ -9,6 +14,8 @@
 - Disable before starting the sdk does not create and send first session package
 - Reload reading device ids for every package, not just at beginning
 - Save referrer in local storage and send it only after first session
+- Save push token in local storage and send it only after first session
+- Log message for saved actions to be done when the sdk starts
 
 ---
 ### Version 4.11.4 (5th May 2017)
