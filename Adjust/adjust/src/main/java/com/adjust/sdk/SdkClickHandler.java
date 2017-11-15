@@ -244,7 +244,8 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param sdkClickPackage sdk_click package to be sent.
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
-        boolean isReferrer = sdkClickPackage.getParameters().get("referrer") != null;
+        String rawReferrer = sdkClickPackage.getParameters().get("raw_referrer");
+        boolean isReferrer = rawReferrer != null;
         ActivityHandler activityHandler = (ActivityHandler) activityHandlerWeakRef.get();
 
         if (isReferrer) {
@@ -253,7 +254,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                     = new SharedPreferencesManager(activityHandler.getContext());
 
             if (!sharedPreferencesManager.doesReferrerExist(
-                    sdkClickPackage.getParameters().get("referrer"),
+                    rawReferrer,
                     sdkClickPackage.getClickTime())) {
                 return;
             }
@@ -283,7 +284,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
                 sharedPreferencesManager.removeReferrer(
                         sdkClickPackage.getClickTime(),
-                        sdkClickPackage.getParameters().get("referrer"));
+                        rawReferrer);
             }
 
             activityHandler.finishedTrackingActivity(responseData);
