@@ -1,10 +1,13 @@
 package com.example.testapp;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.UtilNetworking;
@@ -35,6 +38,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // check if deferred deeplink was received
+        Intent intent = getIntent();
+        Uri deeplinkData = intent.getData();
+        if(deeplinkData != null) {
+            Adjust.appWillOpenUrl(deeplinkData);
+            return;
+        }
+
         commandListener = new CommandListener(this.getApplicationContext());
         String baseUrl = "https://10.0.2.2:8443";
         AdjustFactory.setTestingMode(baseUrl);
@@ -44,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTestSession() {
         //testLibrary.setTests("Test_Event;Test_Install_Attribution");
-        //testLibrary.doNotExitAfterEnd();
+        //testLibrary.setTests("current/Test_DeferredDeeplink");
+        testLibrary.doNotExitAfterEnd();
         testLibrary.initTestSession("android4.12.0");
         //testLibrary.initTest("android4.11.4", "Test_Event");
     }

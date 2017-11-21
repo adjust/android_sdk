@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -205,6 +206,26 @@ public class AdjustCommandExecutor {
         if (command.containsParameter("userAgent")) {
             String userAgent = command.getFirstParameterValue("userAgent");
             adjustConfig.setUserAgent(userAgent);
+        }
+
+        if(command.containsParameter("deferredDeeplinkCallback")) {
+            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri deeplink) {
+                    if (deeplink == null) {
+                        Log.d("TestApp", "Deeplink Response, uri = null");
+                        return false;
+                    }
+
+                    Log.d("TestApp", "Deeplink Response, uri = " + deeplink.toString());
+
+                    if (!deeplink.toString().startsWith("adjusttest")) {
+                        return false;
+                    }
+
+                    return true;
+                }
+            });
         }
 
         if (command.containsParameter("attributionCallbackSendAll")) {
