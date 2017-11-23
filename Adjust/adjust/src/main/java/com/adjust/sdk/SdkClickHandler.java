@@ -126,8 +126,9 @@ public class SdkClickHandler implements ISdkClickHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(
-                        ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig().context);
+                        activityHandler.getContext());
                 ArrayList<Referrer> referrers = sharedPreferencesManager.getReferrers();
 
                 for (int i = 0; i < referrers.size(); i += 1) {
@@ -141,10 +142,10 @@ public class SdkClickHandler implements ISdkClickHandler {
                     ActivityPackage sdkClickPackage = PackageFactory.buildReftagSdkClickPackage(
                             referrer.getRawReferrer(),
                             referrer.getClickTime(),
-                            ((ActivityHandler) activityHandlerWeakRef.get()).getActivityState(),
-                            ((ActivityHandler) activityHandlerWeakRef.get()).getAdjustConfig(),
-                            ((ActivityHandler) activityHandlerWeakRef.get()).getDeviceInfo(),
-                            ((ActivityHandler) activityHandlerWeakRef.get()).getSessionParameters());
+                            activityHandler.getActivityState(),
+                            activityHandler.getAdjustConfig(),
+                            activityHandler.getDeviceInfo(),
+                            activityHandler.getSessionParameters());
 
                     if (sdkClickPackage == null) {
                         return;

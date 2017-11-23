@@ -214,18 +214,22 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
     public AdjustConfig getAdjustConfig() {
         return adjustConfig;
     }
 
+    @Override
     public DeviceInfo getDeviceInfo() {
         return deviceInfo;
     }
 
+    @Override
     public ActivityState getActivityState() {
         return activityState;
     }
 
+    @Override
     public SessionParameters getSessionParameters() {
         return sessionParameters;
     }

@@ -62,4 +62,13 @@ public interface IActivityHandler {
     String getAdid();
 
     AdjustAttribution getAttribution();
+
+    AdjustConfig getAdjustConfig();
+
+    DeviceInfo getDeviceInfo();
+
+    ActivityState getActivityState();
+
+    SessionParameters getSessionParameters();
+
 }
