@@ -19,12 +19,12 @@ import static com.adjust.sdk.Constants.MALFORMED;
 public class PackageFactory {
     private static final String ADJUST_PREFIX = "adjust_";
 
-    public static ActivityPackage getSdkClickPackage(final String rawReferrer,
-                                                     final long clickTime,
-                                                     final ActivityState activityState,
-                                                     final AdjustConfig adjustConfig,
-                                                     final DeviceInfo deviceInfo,
-                                                     final SessionParameters sessionParameters) {
+    public static ActivityPackage buildReftagSdkClickPackage(final String rawReferrer,
+                                                              final long clickTime,
+                                                              final ActivityState activityState,
+                                                              final AdjustConfig adjustConfig,
+                                                              final DeviceInfo deviceInfo,
+                                                              final SessionParameters sessionParameters) {
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return null;
         }
@@ -64,12 +64,12 @@ public class PackageFactory {
         return clickPackage;
     }
 
-    public static ActivityPackage getSdkClickPackage(final Uri url,
-                                                     final long clickTime,
-                                                     final ActivityState activityState,
-                                                     final AdjustConfig adjustConfig,
-                                                     final DeviceInfo deviceInfo,
-                                                     final SessionParameters sessionParameters) {
+    public static ActivityPackage buildDeeplinkSdkClickPackage(final Uri url,
+                                                              final long clickTime,
+                                                              final ActivityState activityState,
+                                                              final AdjustConfig adjustConfig,
+                                                              final DeviceInfo deviceInfo,
+                                                              final SessionParameters sessionParameters) {
         if (url == null) {
             return null;
         }

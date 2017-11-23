@@ -1276,7 +1276,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        ActivityPackage sdkClickPackage = PackageFactory.getSdkClickPackage(
+        ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
                 url,
                 clickTime,
                 activityState,
