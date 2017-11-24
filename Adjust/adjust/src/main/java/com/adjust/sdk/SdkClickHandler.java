@@ -1,5 +1,8 @@
 package com.adjust.sdk;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -157,6 +160,49 @@ public class SdkClickHandler implements ISdkClickHandler {
                     // Send referrer sdk_click package.
                     sendSdkClick(sdkClickPackage);
                 }
+
+                try {
+                    JSONArray installReferrers = sharedPreferencesManager.getInstallReferrerArray();
+                    boolean hasInstallReferrersBeenChanged = false;
+
+                    for(int i = 0; i < installReferrers.length(); i++) {
+                        JSONArray savedInstallReferrer = installReferrers.getJSONArray(i);
+
+                        int savedInstallReferrerState = savedInstallReferrer.optInt(3, -1);
+
+                        // Don't send the one already sending or sent.
+                        if (savedInstallReferrerState != 0) {
+                            continue;
+                        }
+
+                        String savedInstallReferrerString = savedInstallReferrer.optString(0, null);
+                        long savedClickTime = savedInstallReferrer.optLong(1, -1);
+                        long savedInstalBeginTime = savedInstallReferrer.optLong(2, -1);
+
+                        // Mark install referrer as being sent.
+                        savedInstallReferrer.put(3, 1);
+                        hasInstallReferrersBeenChanged = true;
+
+                        // Create sdk click
+                        ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
+                                savedInstallReferrerString,
+                                savedClickTime,
+                                savedInstalBeginTime,
+                                activityHandler.getActivityState(),
+                                activityHandler.getAdjustConfig(),
+                                activityHandler.getDeviceInfo(),
+                                activityHandler.getSessionParameters());
+
+                        // Send referrer sdk_click package.
+                        sendSdkClick(sdkClickPackage);
+                    }
+
+                    if (hasInstallReferrersBeenChanged) {
+                        sharedPreferencesManager.saveInstallReferrerArray(installReferrers);
+                    }
+                } catch (JSONException e) {
+                    logger.error("sendSavedReferrers error (%s)", e.getMessage());
+                }
             }
         });
     }
@@ -245,18 +291,38 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param sdkClickPackage sdk_click package to be sent.
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
+        String source = sdkClickPackage.getParameters().get("source");
+
+        boolean isReftag = source != null && source.equals("reftag");
         String rawReferrer = sdkClickPackage.getParameters().get("raw_referrer");
-        boolean isReferrer = rawReferrer != null;
+
         ActivityHandler activityHandler = (ActivityHandler) activityHandlerWeakRef.get();
 
-        if (isReferrer) {
+        if (isReftag) {
             // Check before sending if referrer was sent and removed already.
             SharedPreferencesManager sharedPreferencesManager
                     = new SharedPreferencesManager(activityHandler.getContext());
 
             if (!sharedPreferencesManager.doesReferrerExist(
                     rawReferrer,
-                    sdkClickPackage.getClickTime())) {
+                    sdkClickPackage.getClickTimeInMilliseconds())) {
+                return;
+            }
+        }
+
+        boolean isInstallReferrer = source != null && source.equals("install_referrer");
+        String installReferrerString = sdkClickPackage.getParameters().get("install_referrer");
+
+        if (isInstallReferrer) {
+            // Check before sending if install referrer was sent and removed already.
+            SharedPreferencesManager sharedPreferencesManager
+                    = new SharedPreferencesManager(activityHandler.getContext());
+
+            JSONArray installReferrer = sharedPreferencesManager.getInstallReferrer(
+                    installReferrerString,
+                    sdkClickPackage.getClickTimeInSeconds(),
+                    sdkClickPackage.getInstallBeginTimeInSeconds());
+            if (installReferrer != null) {
                 return;
             }
         }
@@ -278,14 +344,30 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
-            if (isReferrer) {
+            if (isReftag) {
                 // Remove referrer from shared preferences after sdk_click is sent.
                 SharedPreferencesManager sharedPreferencesManager
                         = new SharedPreferencesManager(activityHandler.getContext());
 
                 sharedPreferencesManager.removeReferrer(
-                        sdkClickPackage.getClickTime(),
+                        sdkClickPackage.getClickTimeInMilliseconds(),
                         rawReferrer);
+            }
+
+            if (isInstallReferrer) {
+                SharedPreferencesManager sharedPreferencesManager
+                        = new SharedPreferencesManager(activityHandler.getContext());
+
+                JSONArray installReferrers = sharedPreferencesManager.getInstallReferrerArray();
+
+                JSONArray installReferrer = sharedPreferencesManager.getInstallReferrer(
+                        installReferrerString,
+                        sdkClickPackage.getClickTimeInSeconds(),
+                        sdkClickPackage.getInstallBeginTimeInSeconds());
+
+                installReferrer.put(3, 2);
+
+                sharedPreferencesManager.saveInstallReferrerArray(installReferrers);
             }
 
             activityHandler.finishedTrackingActivity(responseData);

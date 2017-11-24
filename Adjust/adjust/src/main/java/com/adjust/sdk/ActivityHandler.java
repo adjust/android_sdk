@@ -12,19 +12,13 @@ package com.adjust.sdk;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
 import android.os.Handler;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +60,7 @@ public class ActivityHandler implements IActivityHandler {
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
     private SessionParameters sessionParameters;
+    private InstallReferrer installReferrer;
 
     @Override
     public void teardown(boolean deleteState) {
@@ -748,6 +743,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
+
+        installReferrer = new InstallReferrer(adjustConfig.context, this);
 
         sendReferrerI();
     }

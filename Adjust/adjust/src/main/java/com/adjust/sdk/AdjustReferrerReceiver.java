@@ -4,11 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
-import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.MALFORMED;
 import static com.adjust.sdk.Constants.REFERRER;
 
 // support multiple BroadcastReceivers for the INSTALL_REFERRER:

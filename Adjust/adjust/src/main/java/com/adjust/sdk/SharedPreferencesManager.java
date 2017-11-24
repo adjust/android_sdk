@@ -26,6 +26,7 @@ public class SharedPreferencesManager {
      */
     private static final String PREFS_KEY_REFERRERS = "referrers";
 
+    private static final String PREFS_KEY_INSTALL_REFERRERS = "install_referrers";
     /**
      * Key name for push token.
      */
@@ -91,6 +92,33 @@ public class SharedPreferencesManager {
         }
     }
 
+    public synchronized void saveInstallReferrer(String installReferrer, long clickTime, long installBeginTime) {
+        try {
+            JSONArray installReferrerArray = getInstallReferrerArray();
+
+            if (getInstallReferrer(installReferrer, clickTime, installBeginTime) != null) {
+                return;
+            }
+
+            JSONArray newInstallReferrer = new JSONArray();
+
+            newInstallReferrer.put(0, installReferrer);
+            newInstallReferrer.put(1, clickTime);
+            newInstallReferrer.put(2, installBeginTime);
+            newInstallReferrer.put(3, 0);
+
+            installReferrerArray.put(newInstallReferrer);
+
+            saveInstallReferrerArray(installReferrerArray);
+
+        } catch (JSONException e) {
+        }
+    }
+
+    public synchronized void saveInstallReferrerArray(JSONArray installReferrerArray) {
+        saveString(PREFS_KEY_INSTALL_REFERRERS, installReferrerArray.toString());
+    }
+
     /**
      * Remove referrer information from shared preferences.
      *
@@ -154,6 +182,36 @@ public class SharedPreferencesManager {
         }
 
         return false;
+    }
+
+    public synchronized JSONArray getInstallReferrer(String installReferrer,
+                                                     long clickTime,
+                                                     long installBeginTime) {
+        try {
+            JSONArray installReferrers = getInstallReferrerArray();
+
+            for (int i = 0; i < installReferrers.length(); i++) {
+                JSONArray savedInstallReferrer = installReferrers.getJSONArray(i);
+                // check if install referrer is already saved
+                String savedInstallReferrerString = savedInstallReferrer.optString(0, null);
+                if (savedInstallReferrerString == null || !savedInstallReferrerString.equals(installReferrer)) {
+                    continue;
+                }
+                long savedClickTime = savedInstallReferrer.optLong(1, -1);
+                if (savedClickTime != clickTime) {
+                    continue;
+                }
+                long savedInstalBeginTime = savedInstallReferrer.optLong(2, -1);
+                if (savedInstalBeginTime != installBeginTime) {
+                    continue;
+                }
+                // install referrer found, skip adding it
+                return savedInstallReferrer;
+            }
+        } catch (JSONException e) {
+        }
+
+        return null;
     }
 
     /**
@@ -231,6 +289,19 @@ public class SharedPreferencesManager {
         }
 
         return referrersArray;
+    }
+
+    public synchronized JSONArray getInstallReferrerArray() {
+        try {
+            String referrerQueueString = getString(PREFS_KEY_INSTALL_REFERRERS);
+
+            if (referrerQueueString != null) {
+                return new JSONArray(referrerQueueString);
+            }
+        } catch (JSONException e) {
+        }
+
+        return new JSONArray();
     }
 
     /**

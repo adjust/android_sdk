@@ -50,7 +50,9 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> partnerParameters;
 
     private int retries;
-    private long clickTime;
+    private long clickTimeInMilliseconds;
+    private long clickTimeInSeconds;
+    private long installBeginTimeInSeconds;
 
     public String getPath() {
         return path;
@@ -104,12 +106,28 @@ public class ActivityPackage implements Serializable {
         return retries;
     }
 
-    public long getClickTime() {
-        return this.clickTime;
+    public long getClickTimeInMilliseconds() {
+        return this.clickTimeInMilliseconds;
     }
 
-    public void setClickTime(long clickTime) {
-        this.clickTime = clickTime;
+    public void setClickTimeInMilliseconds(long clickTimeInMilliseconds) {
+        this.clickTimeInMilliseconds = clickTimeInMilliseconds;
+    }
+
+    public long getClickTimeInSeconds() {
+        return this.clickTimeInSeconds;
+    }
+
+    public void setClickTimeInSeconds(long clickTimeInSeconds) {
+        this.clickTimeInSeconds = clickTimeInSeconds;
+    }
+
+    public long getInstallBeginTimeInSeconds() {
+        return this.installBeginTimeInSeconds;
+    }
+
+    public void setInstallBeginTimeInSeconds(long installBeginTimeInSeconds) {
+        this.installBeginTimeInSeconds = installBeginTimeInSeconds;
     }
 
     public Map<String, String> getCallbackParameters() {

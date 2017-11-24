@@ -14,6 +14,7 @@ import android.text.TextUtils;
 
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -35,7 +36,10 @@ class PackageBuilder {
     String referrer;
     String rawReferrer;
     String deeplink;
-    long clickTime;
+    long clickTimeInMilliseconds = -1;
+
+    long clicktTimeInSeconds = -1;
+    long installBeginTimeInSeconds = -1;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -119,18 +123,22 @@ class PackageBuilder {
         Map<String, String> parameters = getAttributableParameters(false);
 
         PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addDate(parameters, "click_time", clickTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
         PackageBuilder.addString(parameters, "reftag", reftag);
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
         PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
+        PackageBuilder.addDateInSeconds(parameters, "click_time", clicktTimeInSeconds);
+        PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
-        clickPackage.setClickTime(clickTime);
+        clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
+        clickPackage.setClickTimeInSeconds(clicktTimeInSeconds);
+        clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
         clickPackage.setParameters(parameters);
 
         return clickPackage;
@@ -279,7 +287,7 @@ class PackageBuilder {
     }
 
     private void injectCommonParameters(Map<String, String> parameters) {
-        PackageBuilder.addDate(parameters, "created_at", createdAt);
+        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
     }
@@ -338,8 +346,26 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, key, valueString);
     }
 
-    public static void addDate(Map<String, String> parameters, String key, long value) {
+    public static void addDateInMilliseconds(Map<String, String> parameters, String key, long value) {
         if (value < 0) {
+            return;
+        }
+
+        Date date = new Date(value);
+        PackageBuilder.addDate(parameters, key, date);
+    }
+
+    public static void addDateInSeconds(Map<String, String> parameters, String key, long value) {
+        if (value < 0) {
+            return;
+        }
+
+        Date date = new Date(value * 1000);
+        PackageBuilder.addDate(parameters, key, date);
+    }
+
+    public static void addDate(Map<String, String> parameters, String key, Date value) {
+        if (value == null) {
             return;
         }
 

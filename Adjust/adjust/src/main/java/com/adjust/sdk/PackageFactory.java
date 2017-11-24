@@ -56,7 +56,7 @@ public class PackageFactory {
         }
 
         clickPackageBuilder.referrer = referrer;
-        clickPackageBuilder.clickTime = clickTime;
+        clickPackageBuilder.clickTimeInMilliseconds = clickTime;
         clickPackageBuilder.rawReferrer = rawReferrer;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG);
@@ -99,9 +99,42 @@ public class PackageFactory {
         }
 
         clickPackageBuilder.deeplink = url.toString();
-        clickPackageBuilder.clickTime = clickTime;
+        clickPackageBuilder.clickTimeInMilliseconds = clickTime;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
+
+        return clickPackage;
+    }
+
+    public static ActivityPackage buildInstallReferrerSdkClickPackage(final String installReferrer,
+                                                                      final long clickTimeInSeconds,
+                                                                      final long installBeginInSeconds,
+                                                                      final ActivityState activityState,
+                                                                      final AdjustConfig adjustConfig,
+                                                                      final DeviceInfo deviceInfo,
+                                                                      final SessionParameters sessionParameters) {
+        if (installReferrer == null || installReferrer.length() == 0) {
+            return null;
+        }
+
+        long now = System.currentTimeMillis();
+
+        PackageBuilder clickPackageBuilder = new PackageBuilder(
+                adjustConfig,
+                deviceInfo,
+                activityState,
+                sessionParameters,
+                now);
+
+        if (clickPackageBuilder == null) {
+            return null;
+        }
+
+        clickPackageBuilder.referrer = installReferrer;
+        clickPackageBuilder.clicktTimeInSeconds = clickTimeInSeconds;
+        clickPackageBuilder.installBeginTimeInSeconds = installBeginInSeconds;
+
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.INSTALL_REFERRER);
 
         return clickPackage;
     }

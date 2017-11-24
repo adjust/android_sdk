@@ -56,7 +56,6 @@ public class Util {
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
-
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
     }
