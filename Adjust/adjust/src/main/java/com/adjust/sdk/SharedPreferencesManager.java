@@ -59,13 +59,13 @@ public class SharedPreferencesManager {
                 return;
             }
 
-            JSONArray newInstallReferrer = new JSONArray();
+            JSONArray newRawReferrer = new JSONArray();
 
-            newInstallReferrer.put(0, rawReferrer);
-            newInstallReferrer.put(1, clickTime);
-            newInstallReferrer.put(2, 0);
+            newRawReferrer.put(0, rawReferrer);
+            newRawReferrer.put(1, clickTime);
+            newRawReferrer.put(2, 0);
 
-            rawReferrerArray.put(newInstallReferrer);
+            rawReferrerArray.put(newRawReferrer);
 
             saveRawReferrerArray(rawReferrerArray);
 

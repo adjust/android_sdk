@@ -163,6 +163,9 @@ public class InstallReferrer implements InvocationHandler {
                     if (activityHandler != null) {
                         activityHandler.sendReferrer();
                     }
+                    synchronized (flagLock) {
+                        hasInstallReferrerBeenRead = true;
+                    }
                 } catch (Exception e) {
                     logger.debug("Couldn't get install referrer from client (%s). Retrying", e.getMessage());
                     retry();
@@ -246,11 +249,6 @@ public class InstallReferrer implements InvocationHandler {
             logger.error("getInstallBeginTimestampSeconds error (%s)", e.getMessage());
         }
         return -1;
-    }
-
-    private void saveInstallReferrer(String installReferrer, long clickTime, long installBeginTime, Context context) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveInstallReferrer(installReferrer, clickTime, installBeginTime);
     }
 
     public void onInstallReferrerServiceDisconnected() {
