@@ -56,8 +56,7 @@ public class AdjustInstance {
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
-        // Scan for referrers.
-        scanForReferrers(adjustConfig.context);
+        setSendingReferrersAsUnsend(adjustConfig.context);
     }
 
     /**
@@ -149,7 +148,7 @@ public class AdjustInstance {
             return;
         }
 
-        saveReferrer(clickTime, rawReferrer, context);
+        saveRawReferrer(rawReferrer, clickTime, context);
 
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
@@ -441,9 +440,9 @@ public class AdjustInstance {
      * @param rawReferrer Raw referrer content
      * @param context     Application context
      */
-    private void saveReferrer(final long clickTime, final String rawReferrer, final Context context) {
+    private void saveRawReferrer(final String rawReferrer, final long clickTime, final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveReferrer(clickTime, rawReferrer);
+        sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
     }
 
     /**
@@ -457,14 +456,9 @@ public class AdjustInstance {
         sharedPreferencesManager.savePushToken(pushToken);
     }
 
-    /**
-     * Check saved referrers before app being killed and if any found with isBeingSent set to true, revert it to false.
-     *
-     * @param context Application context
-     */
-    private void scanForReferrers(final Context context) {
+    private void setSendingReferrersAsUnsend(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.scanForSavedReferrers();
+        sharedPreferencesManager.setSendingReferrersAsUnsend();
     }
 
     /**

@@ -24,7 +24,7 @@ public class SharedPreferencesManager {
     /**
      * Key name for referrers.
      */
-    private static final String PREFS_KEY_REFERRERS = "referrers";
+    private static final String PREFS_KEY_RAW_REFERRERS = "raw_referrers";
 
     private static final String PREFS_KEY_INSTALL_REFERRERS = "install_referrers";
     /**
@@ -51,43 +51,24 @@ public class SharedPreferencesManager {
         this.sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Save referrer information to shared preferences.
-     *
-     * @param clickTime   Referrer click time
-     * @param rawReferrer Raw referrer string
-     */
-    public synchronized void saveReferrer(final long clickTime, final String rawReferrer) {
-        // Check if referrer is null or empty string already done before calling this method.
+    public synchronized void saveRawReferrer(String rawReferrer, long clickTime) {
         try {
-            ArrayList<Referrer> referrers = getReferrers();
-            Referrer referrerToSave = new Referrer(clickTime, rawReferrer);
+            JSONArray rawReferrerArray = getRawReferrerArray();
 
-            // If referrer is already contained in shared preferences, skip adding it.
-            if (getReferrerIndex(referrerToSave, referrers) >= 0) {
+            if (getRawReferrer(rawReferrer, clickTime) != null) {
                 return;
             }
 
-            // Recreate new referrers (updated) array.
-            JSONArray updatedReferrers = new JSONArray();
+            JSONArray newInstallReferrer = new JSONArray();
 
-            if (referrers != null) {
-                for (int i = 0; i < referrers.size(); i++) {
-                    updatedReferrers.put(referrers.get(i).asJSONArray());
-                }
-            }
+            newInstallReferrer.put(0, rawReferrer);
+            newInstallReferrer.put(1, clickTime);
+            newInstallReferrer.put(2, 0);
 
-            // Add new referrer JSONArray entry to the queue.
-            JSONArray newReferrerEntry = new JSONArray();
+            rawReferrerArray.put(newInstallReferrer);
 
-            newReferrerEntry.put(0, referrerToSave.getClickTime());
-            newReferrerEntry.put(1, referrerToSave.getRawReferrer());
-            newReferrerEntry.put(2, referrerToSave.getIsBeingSent());
+            saveRawReferrerArray(rawReferrerArray);
 
-            updatedReferrers.put(newReferrerEntry);
-
-            // Save JSON array as string back to shared preferences.
-            saveString(PREFS_KEY_REFERRERS, updatedReferrers.toString());
         } catch (JSONException e) {
         }
     }
@@ -115,6 +96,10 @@ public class SharedPreferencesManager {
         }
     }
 
+    public synchronized void saveRawReferrerArray(JSONArray rawReferrerArray) {
+        saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
+    }
+
     public synchronized void saveInstallReferrerArray(JSONArray installReferrerArray) {
         saveString(PREFS_KEY_INSTALL_REFERRERS, installReferrerArray.toString());
     }
@@ -125,63 +110,73 @@ public class SharedPreferencesManager {
      * @param clickTime   Referrer click time
      * @param rawReferrer Referrer string
      */
-    public synchronized void removeReferrer(final long clickTime, final String rawReferrer) {
+    public synchronized void removeRawReferrer(String rawReferrer, long clickTime) {
         // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return;
         }
 
-        Referrer referrerToCheck = new Referrer(clickTime, rawReferrer);
+        int rawReferrerIndex = getRawReferrerIndex(rawReferrer, clickTime);
 
-        // Try to locate position in queue of the referrer that should be deleted.
-        ArrayList<Referrer> referrers = getReferrers();
-        int index = getReferrerIndex(referrerToCheck, referrers);
-
-        // If referrer is not found in the queue, skip the rest.
-        if (index == -1) {
+        if (rawReferrerIndex < 0) {
             return;
         }
+
+        JSONArray rawReferrerArray = getRawReferrerArray();
 
         // Rebuild queue without referrer that should be removed.
         JSONArray updatedReferrers = new JSONArray();
 
-        for (int i = 0; i < referrers.size(); i += 1) {
-            if (i == index) {
+        for (int i = 0; i < rawReferrerArray.length(); i += 1) {
+            if (i == rawReferrerIndex) {
                 continue;
             }
 
-            updatedReferrers.put(referrers.get(i).asJSONArray());
-        }
-
-        // Save new referrer queue JSON array as string back to shared preferences.
-        saveString(PREFS_KEY_REFERRERS, updatedReferrers.toString());
-    }
-
-    /**
-     * Check if give referrer is saved in shared preferences.
-     *
-     * @param clickTime   Referrer click time
-     * @param rawReferrer Referrer string
-     * @return boolean indicating whether given referrer exist in shared preferences or not.
-     * In case of exception, return false.
-     */
-    public synchronized boolean doesReferrerExist(final String rawReferrer, final long clickTime) {
-        ArrayList<Referrer> referrers = getReferrers();
-        Referrer referrerToCheck = new Referrer(clickTime, rawReferrer);
-
-        if (referrers == null) {
-            return false;
-        }
-
-        for (int i = 0; i < referrers.size(); i += 1) {
-            Referrer referrerEntry = referrers.get(i);
-
-            if (referrerEntry.isEqual(referrerToCheck)) {
-                return true;
+            try {
+                updatedReferrers.put(rawReferrerArray.getJSONArray(i));
+            } catch (JSONException e) {
             }
         }
 
-        return false;
+        // Save new referrer queue JSON array as string back to shared preferences.
+        saveString(PREFS_KEY_RAW_REFERRERS, updatedReferrers.toString());
+    }
+
+    public synchronized int getRawReferrerIndex(String rawReferrer,
+                                                long clickTime) {
+        try {
+            JSONArray rawReferrers = getRawReferrerArray();
+
+            for (int i = 0; i < rawReferrers.length(); i++) {
+                JSONArray savedRawReferrer = rawReferrers.getJSONArray(i);
+                // check if raw referrer is already saved
+                String savedRawReferrerString = savedRawReferrer.optString(0, null);
+                if (savedRawReferrerString == null || !savedRawReferrerString.equals(rawReferrer)) {
+                    continue;
+                }
+                long savedClickTime = savedRawReferrer.optLong(1, -1);
+                if (savedClickTime != clickTime) {
+                    continue;
+                }
+                // install referrer found, skip adding it
+                return i;
+            }
+        } catch (JSONException e) {
+        }
+
+        return -1;
+    }
+
+    public synchronized JSONArray getRawReferrer(String rawReferrer,
+                                                 long clickTime) {
+        int rawReferrerIndex = getRawReferrerIndex(rawReferrer, clickTime);
+        if (rawReferrerIndex >= 0) {
+            try {
+                getRawReferrerArray().getJSONArray(rawReferrerIndex);
+            } catch (JSONException e) {
+            }
+        }
+        return null;
     }
 
     public synchronized JSONArray getInstallReferrer(String installReferrer,
@@ -214,81 +209,17 @@ public class SharedPreferencesManager {
         return null;
     }
 
-    /**
-     * Mark given referrer as the one being sent by SdkClickHandler.
-     *
-     * @param referrer Referrer which is being sent.
-     */
-    public synchronized void markReferrerForSending(final Referrer referrer) {
-        ArrayList<Referrer> referrers = getReferrers();
-
-        if (referrers == null) {
-            return;
-        }
-
-        // If referrer doesn't exist in shared preferences, do nothing.
-        int index = getReferrerIndex(referrer, referrers);
-
-        if (index < 0) {
-            return;
-        }
-
-        // Mark referrer for sending.
-        referrers.get(index).setIsBeingSent(true);
-
-        // Recreate new referrers (updated) array.
-        JSONArray updatedReferrers = new JSONArray();
-
-        for (int i = 0; i < referrers.size(); i++) {
-            updatedReferrers.put(referrers.get(i).asJSONArray());
-        }
-
-        // Save JSON array as string back to shared preferences.
-        saveString(PREFS_KEY_REFERRERS, updatedReferrers.toString());
-    }
-
-    /**
-     * Get all currently saved referrers from shared preferences.
-     *
-     * @return JSONArray with all the saved referrers from shared preferences. Empty array if none available.
-     */
-    public synchronized ArrayList<Referrer> getReferrers() {
-        ArrayList<Referrer> referrersArray = new ArrayList<Referrer>();
-
+    public synchronized JSONArray getRawReferrerArray() {
         try {
-            JSONArray arrayFromPrefs;
-            String referrerQueueString = getString(PREFS_KEY_REFERRERS);
+            String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
 
-            if (referrerQueueString == null) {
-                arrayFromPrefs = new JSONArray();
-            } else {
-                arrayFromPrefs = new JSONArray(referrerQueueString);
-            }
-
-            if (arrayFromPrefs.length() == 0) {
-                return null;
-            }
-
-            for (int i = 0; i < arrayFromPrefs.length(); i += 1) {
-                JSONArray referrerEntry = arrayFromPrefs.getJSONArray(i);
-
-                if (referrerEntry.length() != Referrer.REFERRER_FIELDS_NUMBER) {
-                    continue;
-                }
-
-                long clickTime = referrerEntry.getLong(0);
-                String rawContent = referrerEntry.getString(1);
-                boolean isBeingSent = referrerEntry.getBoolean(2);
-
-                Referrer referrer = new Referrer(clickTime, rawContent);
-                referrer.setIsBeingSent(isBeingSent);
-
-                referrersArray.add(referrer);
+            if (referrerQueueString != null) {
+                return new JSONArray(referrerQueueString);
             }
         } catch (JSONException e) {
         }
 
-        return referrersArray;
+        return new JSONArray();
     }
 
     public synchronized JSONArray getInstallReferrerArray() {
@@ -309,48 +240,38 @@ public class SharedPreferencesManager {
      * Used to check if any of the still existing referrers was unsuccessfully being sent before app got killed.
      * If such found - switch it's isBeingSent flag back to "false".
      */
-    public synchronized void scanForSavedReferrers() {
-        ArrayList<Referrer> referrers = new ArrayList<Referrer>();
+    public synchronized void setSendingReferrersAsUnsend() {
+        try {
+            JSONArray rawReferrerArray = getRawReferrerArray();
+            boolean hasRawReferrersBeenChanged = false;
+            for (int i = 0; i < rawReferrerArray.length(); i++) {
+                    JSONArray rawReferrer = rawReferrerArray.getJSONArray(i);
+                    int sendingStatus = rawReferrer.optInt(2, -1);
+                    if (sendingStatus == 1) {
+                        rawReferrer.put(2, 0);
+                        hasRawReferrersBeenChanged = true;
+                    }
+            }
+            if (hasRawReferrersBeenChanged) {
+                saveRawReferrerArray(rawReferrerArray);
+            }
+        } catch (JSONException e) {
+        }
 
         try {
-            JSONArray arrayFromPrefs;
-            String referrerQueueString = getString(PREFS_KEY_REFERRERS);
-
-            if (referrerQueueString == null) {
-                arrayFromPrefs = new JSONArray();
-            } else {
-                arrayFromPrefs = new JSONArray(referrerQueueString);
-            }
-
-            if (arrayFromPrefs.length() == 0) {
-                return;
-            }
-
-            for (int i = 0; i < arrayFromPrefs.length(); i += 1) {
-                JSONArray referrerEntry = arrayFromPrefs.getJSONArray(i);
-
-                if (referrerEntry.length() != Referrer.REFERRER_FIELDS_NUMBER) {
-                    continue;
+            JSONArray installReferrerArray = getInstallReferrerArray();
+            boolean hasInstallReferrersBeenChanged = false;
+            for (int i = 0; i < installReferrerArray.length(); i++) {
+                JSONArray installReferrer = installReferrerArray.getJSONArray(i);
+                int sendingStatus = installReferrer.optInt(3, -1);
+                if (sendingStatus == 1) {
+                    installReferrer.put(3, 0);
+                    hasInstallReferrersBeenChanged = true;
                 }
-
-                long clickTime = referrerEntry.getLong(0);
-                String rawContent = referrerEntry.getString(1);
-
-                Referrer referrer = new Referrer(clickTime, rawContent);
-                referrer.setIsBeingSent(false);
-
-                referrers.add(referrer);
             }
-
-            // Rebuild queue without referrer that should be removed.
-            JSONArray updatedReferrers = new JSONArray();
-
-            for (int i = 0; i < referrers.size(); i += 1) {
-                updatedReferrers.put(referrers.get(i).asJSONArray());
+            if (hasInstallReferrersBeenChanged) {
+                saveInstallReferrerArray(installReferrerArray);
             }
-
-            // Save new referrer queue JSON array as string back to shared preferences.
-            saveString(PREFS_KEY_REFERRERS, updatedReferrers.toString());
         } catch (JSONException e) {
         }
     }
@@ -459,32 +380,5 @@ public class SharedPreferencesManager {
      */
     private synchronized void remove(final String key) {
         this.sharedPreferences.edit().remove(key).apply();
-    }
-
-    /**
-     * Check if referrer information is contained in referrer queue in shared preferences and get it's index.
-     *
-     * @param referrerToCheck Referrer to be checked
-     * @param referrers       Referrer queue from shared preferences
-     * @return Index of referrer information inside of the referrer queue. -1 if not found.
-     */
-    private int getReferrerIndex(final Referrer referrerToCheck, final ArrayList<Referrer> referrers) {
-        if (referrerToCheck == null) {
-            return -1;
-        }
-
-        if (referrers == null) {
-            return -1;
-        }
-
-        for (int i = 0; i < referrers.size(); i += 1) {
-            Referrer referrer = referrers.get(i);
-
-            if (referrer.isEqual(referrerToCheck)) {
-                return i;
-            }
-        }
-
-        return -1;
     }
 }

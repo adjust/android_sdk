@@ -347,7 +347,7 @@ class PackageBuilder {
     }
 
     public static void addDateInMilliseconds(Map<String, String> parameters, String key, long value) {
-        if (value < 0) {
+        if (value <= 0) {
             return;
         }
 
@@ -356,7 +356,7 @@ class PackageBuilder {
     }
 
     public static void addDateInSeconds(Map<String, String> parameters, String key, long value) {
-        if (value < 0) {
+        if (value <= 0) {
             return;
         }
 
