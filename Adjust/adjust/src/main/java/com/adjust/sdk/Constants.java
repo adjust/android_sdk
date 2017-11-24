@@ -33,7 +33,6 @@ public interface Constants {
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String DEEPLINK = "deeplink";
-    String INSTALL_REFERRER = "install_referrer";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";
 
