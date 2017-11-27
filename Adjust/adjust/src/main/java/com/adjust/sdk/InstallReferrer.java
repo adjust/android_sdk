@@ -70,15 +70,13 @@ public class InstallReferrer implements InvocationHandler {
 
         Object listenerProxy = createProxyInstallReferrerStateListener(listenerClass);
 
-        try {
-            Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
-                    new Class[] {listenerClass}, listenerProxy);
-        } catch (Exception e) {
-            logger.error("startConnection error (%s)", e.getMessage());
-        }
+        startConnection(listenerClass, listenerProxy);
     }
 
     public Object createInstallReferrerClient(Context context) {
+        if (context == null) {
+            return null;
+        }
         try {
             Object builder = Reflection.invokeStaticMethod(packageBaseName + "api.InstallReferrerClient",
                     "newBuilder",
@@ -86,6 +84,15 @@ public class InstallReferrer implements InvocationHandler {
             return Reflection.invokeInstanceMethod(builder, "build", null);
         } catch (Exception e) {
             logger.warn("Couldn't create instance of referrer client (%s)", e.getMessage());
+        }
+        return null;
+    }
+
+    public Class getInstallReferrerStateListenerClass() {
+        try{
+            return Class.forName(packageBaseName + "api.InstallReferrerStateListener");
+        } catch (Exception e) {
+            logger.error("getInstallReferrerStateListenerClass error (%s)", e.getMessage());
         }
         return null;
     }
@@ -101,13 +108,19 @@ public class InstallReferrer implements InvocationHandler {
         );
     }
 
-    public Class getInstallReferrerStateListenerClass() {
-        try{
-            return Class.forName(packageBaseName + "api.InstallReferrerStateListener");
-        } catch (Exception e) {
-            logger.error("getInstallReferrerStateListenerClass error (%s)", e.getMessage());
+    public void startConnection (Class listenerClass, Object listenerProxy) {
+        if (referrerClient == null) {
+            return;
         }
-        return null;
+        if (listenerClass == null || listenerProxy == null) {
+            return;
+        }
+        try {
+            Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
+                    new Class[] {listenerClass}, listenerProxy);
+        } catch (Exception e) {
+            logger.error("startConnection error (%s)", e.getMessage());
+        }
     }
 
     @Override
