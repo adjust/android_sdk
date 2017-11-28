@@ -331,6 +331,7 @@ public class ActivityHandler implements IActivityHandler {
         }
         // redirect sdk click responses to attribution handler to check for attribution information
         if (responseData instanceof SdkClickResponseData) {
+            checkForInstallReferrerInfo((SdkClickResponseData) responseData);
             attributionHandler.checkSdkClickResponse((SdkClickResponseData)responseData);
             return;
         }
@@ -424,11 +425,21 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendReferrer() {
+    public void sendReftagReferrer() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendReferrerI();
+                sendReftagReferrerI();
+            }
+        });
+    }
+
+    @Override
+    public void sendInstallReferrer(final long clickTime, final long installBegin, final String installReferrer) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendInstallReferrerI(clickTime, installBegin, installReferrer);
             }
         });
     }
@@ -746,7 +757,7 @@ public class ActivityHandler implements IActivityHandler {
 
         installReferrer = new InstallReferrer(adjustConfig.context, this);
 
-        sendReferrerI();
+        sendReftagReferrerI();
     }
 
     private void readConfigFile(Context context) {
@@ -1264,12 +1275,37 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
     }
 
-    private void sendReferrerI() {
+    private void sendReftagReferrerI() {
         if (!isEnabledI()) {
             return;
         }
 
-        sdkClickHandler.sendSavedReferrers();
+        sdkClickHandler.sendReftagReferrers();
+    }
+
+    private void sendInstallReferrerI(final long clickTime, final long installBegin, final String installReferrer) {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        if (activityState.clickTime == clickTime
+                && activityState.installBegin == installBegin
+                && activityState.installReferrer.equals(installReferrer)) {
+            // Same click already sent before, nothing to be done.
+            return;
+        }
+
+        // Create sdk click
+        ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
+                installReferrer,
+                clickTime,
+                installBegin,
+                activityState,
+                adjustConfig,
+                deviceInfo,
+                sessionParameters);
+
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
@@ -1834,5 +1870,17 @@ public class ActivityHandler implements IActivityHandler {
 
         // doesn't have the option -> depends on being on the background/foreground
         return internalState.isInForeground();
+    }
+
+    private void checkForInstallReferrerInfo(final SdkClickResponseData responseData) {
+        if (!responseData.isInstallReferrer) {
+            return;
+        }
+
+        activityState.clickTime = responseData.clickTime;
+        activityState.installBegin = responseData.installBegin;
+        activityState.installReferrer = responseData.installReferrer;
+
+        writeActivityStateI();
     }
 }

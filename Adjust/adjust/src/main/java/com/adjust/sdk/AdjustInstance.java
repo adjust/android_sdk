@@ -56,7 +56,7 @@ public class AdjustInstance {
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
-        setSendingReferrersAsUnsend(adjustConfig.context);
+        setSendingReferrersAsNotSent(adjustConfig.context);
     }
 
     /**
@@ -152,7 +152,7 @@ public class AdjustInstance {
 
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
-                activityHandler.sendReferrer();
+                activityHandler.sendReftagReferrer();
             }
         }
     }
@@ -456,9 +456,9 @@ public class AdjustInstance {
         sharedPreferencesManager.savePushToken(pushToken);
     }
 
-    private void setSendingReferrersAsUnsend(final Context context) {
+    private void setSendingReferrersAsNotSent(final Context context) {
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.setSendingReferrersAsUnsend();
+        sharedPreferencesManager.setSendingReferrersAsNotSent();
     }
 
     /**

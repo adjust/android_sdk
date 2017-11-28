@@ -6,8 +6,6 @@ import org.json.JSONException;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import java.util.ArrayList;
-
 /**
  * Class used for shared preferences manipulation.
  *
@@ -26,7 +24,6 @@ public class SharedPreferencesManager {
      */
     private static final String PREFS_KEY_RAW_REFERRERS = "raw_referrers";
 
-    private static final String PREFS_KEY_INSTALL_REFERRERS = "install_referrers";
     /**
      * Key name for push token.
      */
@@ -36,6 +33,21 @@ public class SharedPreferencesManager {
      * Key name for info about whether install has been tracked or not.
      */
     private static final String PREFS_KEY_INSTALL_TRACKED = "install_tracked";
+
+    /**
+     * Index for raw referrer string content in saved JSONArray object.
+     */
+    private static final int INDEX_RAW_REFERRER = 0;
+
+    /**
+     * Index for click time in saved JSONArray object.
+     */
+    private static final int INDEX_CLICK_TIME = 1;
+
+    /**
+     * Index for information whether referrer is being sent in saved JSONArray object.
+     */
+    private static final int INDEX_IS_SENDING = 2;
 
     /**
      * Shared preferences of the app.
@@ -51,7 +63,13 @@ public class SharedPreferencesManager {
         this.sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public synchronized void saveRawReferrer(String rawReferrer, long clickTime) {
+    /**
+     * Save raw referrer string into shared preferences.
+     *
+     * @param rawReferrer Raw referrer string
+     * @param clickTime   Click time
+     */
+    public synchronized void saveRawReferrer(final String rawReferrer, final long clickTime) {
         try {
             JSONArray rawReferrerArray = getRawReferrerArray();
 
@@ -61,56 +79,32 @@ public class SharedPreferencesManager {
 
             JSONArray newRawReferrer = new JSONArray();
 
-            newRawReferrer.put(0, rawReferrer);
-            newRawReferrer.put(1, clickTime);
-            newRawReferrer.put(2, 0);
+            newRawReferrer.put(INDEX_RAW_REFERRER, rawReferrer);
+            newRawReferrer.put(INDEX_CLICK_TIME, clickTime);
+            newRawReferrer.put(INDEX_IS_SENDING, 0);
 
             rawReferrerArray.put(newRawReferrer);
-
             saveRawReferrerArray(rawReferrerArray);
-
         } catch (JSONException e) {
         }
     }
 
-    public synchronized void saveInstallReferrer(String installReferrer, long clickTime, long installBeginTime) {
-        try {
-            JSONArray installReferrerArray = getInstallReferrerArray();
-
-            if (getInstallReferrer(installReferrer, clickTime, installBeginTime) != null) {
-                return;
-            }
-
-            JSONArray newInstallReferrer = new JSONArray();
-
-            newInstallReferrer.put(0, installReferrer);
-            newInstallReferrer.put(1, clickTime);
-            newInstallReferrer.put(2, installBeginTime);
-            newInstallReferrer.put(3, 0);
-
-            installReferrerArray.put(newInstallReferrer);
-
-            saveInstallReferrerArray(installReferrerArray);
-
-        } catch (JSONException e) {
-        }
-    }
-
-    public synchronized void saveRawReferrerArray(JSONArray rawReferrerArray) {
+    /**
+     * Save referrer array to shared preferences.
+     *
+     * @param rawReferrerArray Array of referrers to be saved
+     */
+    public synchronized void saveRawReferrerArray(final JSONArray rawReferrerArray) {
         saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
-    }
-
-    public synchronized void saveInstallReferrerArray(JSONArray installReferrerArray) {
-        saveString(PREFS_KEY_INSTALL_REFERRERS, installReferrerArray.toString());
     }
 
     /**
      * Remove referrer information from shared preferences.
      *
-     * @param clickTime   Referrer click time
-     * @param rawReferrer Referrer string
+     * @param clickTime   Click time
+     * @param rawReferrer Raw referrer string
      */
-    public synchronized void removeRawReferrer(String rawReferrer, long clickTime) {
+    public synchronized void removeRawReferrer(final String rawReferrer, final long clickTime) {
         // Don't even try to remove null or empty referrers since they shouldn't exist in shared preferences.
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return;
@@ -142,89 +136,32 @@ public class SharedPreferencesManager {
         saveString(PREFS_KEY_RAW_REFERRERS, updatedReferrers.toString());
     }
 
-    public synchronized int getRawReferrerIndex(String rawReferrer,
-                                                long clickTime) {
-        try {
-            JSONArray rawReferrers = getRawReferrerArray();
-
-            for (int i = 0; i < rawReferrers.length(); i++) {
-                JSONArray savedRawReferrer = rawReferrers.getJSONArray(i);
-                // check if raw referrer is already saved
-                String savedRawReferrerString = savedRawReferrer.optString(0, null);
-                if (savedRawReferrerString == null || !savedRawReferrerString.equals(rawReferrer)) {
-                    continue;
-                }
-                long savedClickTime = savedRawReferrer.optLong(1, -1);
-                if (savedClickTime != clickTime) {
-                    continue;
-                }
-                // install referrer found, skip adding it
-                return i;
-            }
-        } catch (JSONException e) {
-        }
-
-        return -1;
-    }
-
-    public synchronized JSONArray getRawReferrer(String rawReferrer,
-                                                 long clickTime) {
+    /**
+     * Get saved referrer JSONArray object.
+     *
+     * @param rawReferrer Raw referrer string
+     * @param clickTime   Click time
+     * @return JSONArray object containing referrer information. Defaults to null if not found.
+     */
+    public synchronized JSONArray getRawReferrer(final String rawReferrer, final long clickTime) {
         int rawReferrerIndex = getRawReferrerIndex(rawReferrer, clickTime);
         if (rawReferrerIndex >= 0) {
             try {
-                getRawReferrerArray().getJSONArray(rawReferrerIndex);
+                return getRawReferrerArray().getJSONArray(rawReferrerIndex);
             } catch (JSONException e) {
             }
         }
         return null;
     }
 
-    public synchronized JSONArray getInstallReferrer(String installReferrer,
-                                                     long clickTime,
-                                                     long installBeginTime) {
-        try {
-            JSONArray installReferrers = getInstallReferrerArray();
-
-            for (int i = 0; i < installReferrers.length(); i++) {
-                JSONArray savedInstallReferrer = installReferrers.getJSONArray(i);
-                // check if install referrer is already saved
-                String savedInstallReferrerString = savedInstallReferrer.optString(0, null);
-                if (savedInstallReferrerString == null || !savedInstallReferrerString.equals(installReferrer)) {
-                    continue;
-                }
-                long savedClickTime = savedInstallReferrer.optLong(1, -1);
-                if (savedClickTime != clickTime) {
-                    continue;
-                }
-                long savedInstalBeginTime = savedInstallReferrer.optLong(2, -1);
-                if (savedInstalBeginTime != installBeginTime) {
-                    continue;
-                }
-                // install referrer found, skip adding it
-                return savedInstallReferrer;
-            }
-        } catch (JSONException e) {
-        }
-
-        return null;
-    }
-
+    /**
+     * Get array of saved referrer JSONArray objects.
+     *
+     * @return JSONArray of saved referrers. Defaults to empty JSONArray if none found.
+     */
     public synchronized JSONArray getRawReferrerArray() {
         try {
             String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
-
-            if (referrerQueueString != null) {
-                return new JSONArray(referrerQueueString);
-            }
-        } catch (JSONException e) {
-        }
-
-        return new JSONArray();
-    }
-
-    public synchronized JSONArray getInstallReferrerArray() {
-        try {
-            String referrerQueueString = getString(PREFS_KEY_INSTALL_REFERRERS);
 
             if (referrerQueueString != null) {
                 return new JSONArray(referrerQueueString);
@@ -240,40 +177,54 @@ public class SharedPreferencesManager {
      * Used to check if any of the still existing referrers was unsuccessfully being sent before app got killed.
      * If such found - switch it's isBeingSent flag back to "false".
      */
-    public synchronized void setSendingReferrersAsUnsend() {
+    public synchronized void setSendingReferrersAsNotSent() {
         try {
             JSONArray rawReferrerArray = getRawReferrerArray();
             boolean hasRawReferrersBeenChanged = false;
             for (int i = 0; i < rawReferrerArray.length(); i++) {
-                    JSONArray rawReferrer = rawReferrerArray.getJSONArray(i);
-                    int sendingStatus = rawReferrer.optInt(2, -1);
-                    if (sendingStatus == 1) {
-                        rawReferrer.put(2, 0);
-                        hasRawReferrersBeenChanged = true;
-                    }
+                JSONArray rawReferrer = rawReferrerArray.getJSONArray(i);
+                int sendingStatus = rawReferrer.optInt(INDEX_IS_SENDING, -1);
+                if (sendingStatus == 1) {
+                    rawReferrer.put(INDEX_IS_SENDING, 0);
+                    hasRawReferrersBeenChanged = true;
+                }
             }
             if (hasRawReferrersBeenChanged) {
                 saveRawReferrerArray(rawReferrerArray);
             }
         } catch (JSONException e) {
         }
+    }
 
+    /**
+     * Get index of saved raw referrer.
+     *
+     * @param rawReferrer Raw referrer string
+     * @param clickTime   Click time
+     * @return Index of saved referrer. Defaults to -1 if referrer not found.
+     */
+    private synchronized int getRawReferrerIndex(final String rawReferrer, final long clickTime) {
         try {
-            JSONArray installReferrerArray = getInstallReferrerArray();
-            boolean hasInstallReferrersBeenChanged = false;
-            for (int i = 0; i < installReferrerArray.length(); i++) {
-                JSONArray installReferrer = installReferrerArray.getJSONArray(i);
-                int sendingStatus = installReferrer.optInt(3, -1);
-                if (sendingStatus == 1) {
-                    installReferrer.put(3, 0);
-                    hasInstallReferrersBeenChanged = true;
+            JSONArray rawReferrers = getRawReferrerArray();
+
+            for (int i = 0; i < rawReferrers.length(); i++) {
+                JSONArray savedRawReferrer = rawReferrers.getJSONArray(i);
+                // Check if raw referrer is already saved.
+                String savedRawReferrerString = savedRawReferrer.optString(INDEX_RAW_REFERRER, null);
+                if (savedRawReferrerString == null || !savedRawReferrerString.equals(rawReferrer)) {
+                    continue;
                 }
-            }
-            if (hasInstallReferrersBeenChanged) {
-                saveInstallReferrerArray(installReferrerArray);
+                long savedClickTime = savedRawReferrer.optLong(INDEX_CLICK_TIME, -1);
+                if (savedClickTime != clickTime) {
+                    continue;
+                }
+                // Install referrer found, skip adding it.
+                return i;
             }
         } catch (JSONException e) {
         }
+
+        return -1;
     }
 
     /**
@@ -295,6 +246,13 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Remove push token from shared preferences.
+     */
+    public synchronized void removePushToken() {
+        remove(PREFS_KEY_PUSH_TOKEN);
+    }
+
+    /**
      * Save information that install has been tracked to shared preferences.
      */
     public synchronized void setInstallTracked() {
@@ -308,13 +266,6 @@ public class SharedPreferencesManager {
      */
     public synchronized boolean getInstallTracked() {
         return getBoolean(PREFS_KEY_INSTALL_TRACKED, false);
-    }
-
-    /**
-     * Remove push token from shared preferences.
-     */
-    public synchronized void removePushToken() {
-        remove(PREFS_KEY_PUSH_TOKEN);
     }
 
     /**
@@ -363,7 +314,7 @@ public class SharedPreferencesManager {
      *
      * @param key          Key for which boolean value should be retrieved
      * @param defaultValue Default value to be returned if nothing found in shared preferences
-     * @return boolean value for given key saved in shared preferences
+     * @return Boolean value for given key saved in shared preferences
      */
     private synchronized boolean getBoolean(final String key, final boolean defaultValue) {
         try {

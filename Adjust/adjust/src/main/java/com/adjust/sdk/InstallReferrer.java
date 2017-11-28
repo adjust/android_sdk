@@ -10,34 +10,94 @@ import java.lang.reflect.Proxy;
 import static com.adjust.sdk.Constants.ONE_SECOND;
 
 /**
- * Created by nonelse on 21.11.17.
+ * Class used for Android install referrer logic.
+ *
+ * @author Pedro Silva (nonelse)
+ * @since 21st November 2017
  */
 
 public class InstallReferrer implements InvocationHandler {
-    public static final String packageBaseName = "com.android.installreferrer.";
-    /** Play Store service is not connected now - potentially transient state */
-    private static final int SERVICE_DISCONNECTED = -1;
-    /** Success. */
-    private static final int OK = 0;
-    /** Could not initiate connection to the Install Referrer service. */
-    private static final int SERVICE_UNAVAILABLE = 1;
-    /** Install Referrer API not supported by the installed Play Store app. */
-    private static final int FEATURE_NOT_SUPPORTED = 2;
-    /** General errors caused by incorrect usage */
-    private static final int DEVELOPER_ERROR = 3;
+    /**
+     * Android install referrer library package name.
+     */
+    public static final String PACKAGE_BASE_NAME = "com.android.installreferrer.";
 
-    private ILogger logger;
-    private Object referrerClient;
+    /**
+     * Play Store service is not connected now - potentially transient state.
+     */
+    private static final int STATUS_SERVICE_DISCONNECTED = -1;
+    /**
+     * Play Store service connection success.
+     */
+    private static final int STATUS_OK = 0;
+
+    /**
+     * Could not initiate connection to the install referrer service.
+     */
+    private static final int STATUS_SERVICE_UNAVAILABLE = 1;
+
+    /**
+     * Install Referrer API not supported by the installed Play Store app.
+     */
+    private static final int STATUS_FEATURE_NOT_SUPPORTED = 2;
+
+    /**
+     * General errors caused by incorrect usage.
+     */
+    private static final int STATUS_DEVELOPER_ERROR = 3;
+
+    /**
+     * Retry time interval.
+     */
+    private int retryWaitTime = ONE_SECOND * 3;
+
+    /**
+     * Number of retries attempted to connect to service.
+     */
     private int retries;
-    private Context context;
-    private Object flagLock;
+
+    /**
+     * Boolean indicating whether service responded with install referrer information.
+     */
     private boolean hasInstallReferrerBeenRead;
+
+    /**
+     * Adjust logger instance.
+     */
+    private ILogger logger;
+
+    /**
+     * InstallReferrer class instance.
+     */
+    private Object referrerClient;
+
+    /**
+     * Application context.
+     */
+    private Context context;
+
+    /**
+     * Lock.
+     */
+    private Object flagLock;
+
+    /**
+     * Timer which fires retry attempts.
+     */
     private TimerOnce retryTimer;
+
+    /**
+     * Weak reference to ActivityHandler instance.
+     */
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
 
-    private int RETRY_WAIT_TIME = ONE_SECOND * 3;
-
-    public InstallReferrer(Context context, IActivityHandler activityHandler) {
+    /**
+     * Default constructor.
+     *
+     * @param context         Application context
+     * @param activityHandler ActivityHandler reference
+     */
+    public InstallReferrer(final Context context, final IActivityHandler activityHandler) {
         this.logger = AdjustFactory.getLogger();
         this.context = context;
         this.flagLock = new Object();
@@ -54,7 +114,10 @@ public class InstallReferrer implements InvocationHandler {
         startConnection();
     }
 
-    public void startConnection () {
+    /**
+     * Start connection with install referrer service.
+     */
+    public void startConnection() {
         closeReferrerClient();
 
         synchronized (flagLock) {
@@ -67,18 +130,23 @@ public class InstallReferrer implements InvocationHandler {
         this.referrerClient = createInstallReferrerClient(context);
 
         Class listenerClass = getInstallReferrerStateListenerClass();
-
         Object listenerProxy = createProxyInstallReferrerStateListener(listenerClass);
 
         startConnection(listenerClass, listenerProxy);
     }
 
-    public Object createInstallReferrerClient(Context context) {
+    /**
+     * Create InstallReferrerClient object instance.
+     *
+     * @param context App context
+     * @return Instance of InstallReferrerClient. Defaults to null if failed to create one.
+     */
+    public Object createInstallReferrerClient(final Context context) {
         if (context == null) {
             return null;
         }
         try {
-            Object builder = Reflection.invokeStaticMethod(packageBaseName + "api.InstallReferrerClient",
+            Object builder = Reflection.invokeStaticMethod(PACKAGE_BASE_NAME + "api.InstallReferrerClient",
                     "newBuilder",
                     new Class[]{Context.class}, context);
             return Reflection.invokeInstanceMethod(builder, "build", null);
@@ -88,27 +156,44 @@ public class InstallReferrer implements InvocationHandler {
         return null;
     }
 
+    /**
+     * Get InstallReferrerStateListener class object.
+     *
+     * @return Class object for InstallReferrerStateListener class.
+     */
     public Class getInstallReferrerStateListenerClass() {
-        try{
-            return Class.forName(packageBaseName + "api.InstallReferrerStateListener");
+        try {
+            return Class.forName(PACKAGE_BASE_NAME + "api.InstallReferrerStateListener");
         } catch (Exception e) {
             logger.error("getInstallReferrerStateListenerClass error (%s)", e.getMessage());
         }
         return null;
     }
 
-    public Object createProxyInstallReferrerStateListener(Class installReferrerStateListenerClass) {
+    /**
+     * Get object instance for given class (InstallReferrerStateListener in this case).
+     *
+     * @param installReferrerStateListenerClass Class object
+     * @return Instance of Class type object.
+     */
+    public Object createProxyInstallReferrerStateListener(final Class installReferrerStateListenerClass) {
         if (installReferrerStateListenerClass == null) {
             return null;
         }
         return Proxy.newProxyInstance(
                 installReferrerStateListenerClass.getClassLoader(),
-                new Class[]{ installReferrerStateListenerClass },
+                new Class[]{installReferrerStateListenerClass},
                 this
         );
     }
 
-    public void startConnection (Class listenerClass, Object listenerProxy) {
+    /**
+     * Initialise connection with install referrer service.
+     *
+     * @param listenerClass Callback listener class type
+     * @param listenerProxy Callback listener object instance
+     */
+    public void startConnection(final Class listenerClass, final Object listenerProxy) {
         if (referrerClient == null) {
             return;
         }
@@ -117,14 +202,17 @@ public class InstallReferrer implements InvocationHandler {
         }
         try {
             Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
-                    new Class[] {listenerClass}, listenerProxy);
+                    new Class[]{listenerClass}, listenerProxy);
         } catch (Exception e) {
             logger.error("startConnection error (%s)", e.getMessage());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         try {
             String methodName = method.getName();
             // Prints the method being invoked
@@ -135,71 +223,63 @@ public class InstallReferrer implements InvocationHandler {
 
             // if the method name equals some method's name then call your method
             if (methodName.equals("onInstallReferrerSetupFinished")) {
-                onInstallReferrerSetupFinishedObject(args[0]);
+                onInstallReferrerSetupFinishedInt((Integer) args[0]);
             } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
-                onInstallReferrerServiceDisconnected();
+                logger.debug("InstallReferrer onInstallReferrerServiceDisconnected");
             }
         } catch (Exception e) {
             logger.error("InstallReferrer invoke error (%s)", e.getMessage());
         }
-       return null;
+        return null;
     }
 
-    public void onInstallReferrerSetupFinishedObject(Object responseCodeObj) {
-        logger.debug("InstallReferrer onInstallReferrerSetupFinished");
-        try {
-            logger.debug("onInstallReferrerSetupFinishedObject arg class name: %s", responseCodeObj.getClass().getName());
-            logger.debug("onInstallReferrerSetupFinishedObject arg toString: %s", responseCodeObj.toString());
-            onInstallReferrerSetupFinishedInt((Integer)responseCodeObj);
-        } catch (Exception e) {
-            logger.error("onInstallReferrerSetupFinished  error (%s)", e.getMessage());
-        }
-    }
-
+    /**
+     * Check and process response from install referrer service.
+     *
+     * @param responseCode Response code from install referrer service
+     */
     public void onInstallReferrerSetupFinishedInt(final int responseCode) {
         switch (responseCode) {
-            case OK:
+            case STATUS_OK:
                 // Connection established
                 try {
-                    // extract referrer
+                    // Extract referrer
                     Object referrerDetails = getInstallReferrer();
-                    String stringInstallReferrer = getStringInstallReferrer(referrerDetails);
+                    String installReferrer = getStringInstallReferrer(referrerDetails);
                     long clickTime = getReferrerClickTimestampSeconds(referrerDetails);
-                    long installBeginTime = getInstallBeginTimestampSeconds(referrerDetails);
+                    long installBegin = getInstallBeginTimestampSeconds(referrerDetails);
                     logger.debug("installReferrer: %s, clickTime: %d, installBeginTime: %d",
-                            stringInstallReferrer, clickTime, installBeginTime);
-                    // save referrer
-                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                    sharedPreferencesManager.saveInstallReferrer(stringInstallReferrer, clickTime, installBeginTime);
-                    // send referrer
+                            installReferrer, clickTime, installBegin);
+
+                    // Stuff successfully read, try to send it.
                     IActivityHandler activityHandler = activityHandlerWeakRef.get();
                     if (activityHandler != null) {
-                        activityHandler.sendReferrer();
+                        activityHandler.sendInstallReferrer(clickTime, installBegin, installReferrer);
                     }
                     synchronized (flagLock) {
                         hasInstallReferrerBeenRead = true;
                     }
                 } catch (Exception e) {
-                    logger.debug("Couldn't get install referrer from client (%s). Retrying", e.getMessage());
+                    logger.debug("Couldn't get install referrer from client (%s). Retrying ...", e.getMessage());
                     retry();
                 }
                 break;
-            case FEATURE_NOT_SUPPORTED:
+            case STATUS_FEATURE_NOT_SUPPORTED:
                 // API not available on the current Play Store app
-                logger.debug("Install referrer not available on the current Play Store app");
+                logger.debug("Install referrer not available on the current Play Store app.");
                 break;
-            case SERVICE_UNAVAILABLE:
+            case STATUS_SERVICE_UNAVAILABLE:
                 // Connection could not be established
-                logger.debug("Could not initiate connection to the Install Referrer service. Retrying");
+                logger.debug("Could not initiate connection to the Install Referrer service. Retrying ...");
                 retry();
                 break;
-            case DEVELOPER_ERROR:
-                logger.debug("Install referrer general errors caused by incorrect usage. Retrying");
+            case STATUS_DEVELOPER_ERROR:
+                logger.debug("Install referrer general errors caused by incorrect usage. Retrying ...");
                 retry();
                 break;
-            case SERVICE_DISCONNECTED:
+            case STATUS_SERVICE_DISCONNECTED:
                 // Play Store service is not connected now - potentially transient state
-                logger.debug("Play Store service is not connected now. Retrying");
+                logger.debug("Play Store service is not connected now. Retrying ...");
                 retry();
                 break;
             default:
@@ -209,6 +289,11 @@ public class InstallReferrer implements InvocationHandler {
         closeReferrerClient();
     }
 
+    /**
+     * Get ReferrerDetails object (response).
+     *
+     * @return ReferrerDetails object
+     */
     private Object getInstallReferrer() {
         if (this.referrerClient == null) {
             return null;
@@ -222,12 +307,18 @@ public class InstallReferrer implements InvocationHandler {
         return null;
     }
 
-    private String getStringInstallReferrer(Object referrerDetails) {
+    /**
+     * Get install referrer string value.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Install referrer string value.
+     */
+    private String getStringInstallReferrer(final Object referrerDetails) {
         if (referrerDetails == null) {
             return null;
         }
         try {
-            String stringInstallReferrer = (String)Reflection.invokeInstanceMethod(
+            String stringInstallReferrer = (String) Reflection.invokeInstanceMethod(
                     referrerDetails, "getInstallReferrer", null);
             return stringInstallReferrer;
         } catch (Exception e) {
@@ -236,12 +327,18 @@ public class InstallReferrer implements InvocationHandler {
         return null;
     }
 
-    private long getReferrerClickTimestampSeconds(Object referrerDetails) {
+    /**
+     * Get redirect URL click timestamp.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Redirect URL click timestamp.
+     */
+    private long getReferrerClickTimestampSeconds(final Object referrerDetails) {
         if (referrerDetails == null) {
             return -1;
         }
         try {
-            Long clickTime = (Long)Reflection.invokeInstanceMethod(
+            Long clickTime = (Long) Reflection.invokeInstanceMethod(
                     referrerDetails, "getReferrerClickTimestampSeconds", null);
             return clickTime;
         } catch (Exception e) {
@@ -250,12 +347,18 @@ public class InstallReferrer implements InvocationHandler {
         return -1;
     }
 
-    private long getInstallBeginTimestampSeconds(Object referrerDetails) {
+    /**
+     * Get Play Store app INSTALL button click timestamp.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Play Store app INSTALL button click timestamp.
+     */
+    private long getInstallBeginTimestampSeconds(final Object referrerDetails) {
         if (referrerDetails == null) {
             return -1;
         }
         try {
-            Long installBeginTime = (Long)Reflection.invokeInstanceMethod(
+            Long installBeginTime = (Long) Reflection.invokeInstanceMethod(
                     referrerDetails, "getInstallBeginTimestampSeconds", null);
             return installBeginTime;
         } catch (Exception e) {
@@ -264,10 +367,9 @@ public class InstallReferrer implements InvocationHandler {
         return -1;
     }
 
-    public void onInstallReferrerServiceDisconnected() {
-        logger.debug("InstallReferrer onInstallReferrerServiceDisconnected");
-    }
-
+    /**
+     * Retry connection to install referrer service.
+     */
     private void retry() {
         synchronized (flagLock) {
             if (hasInstallReferrerBeenRead) {
@@ -275,7 +377,7 @@ public class InstallReferrer implements InvocationHandler {
                 return;
             }
         }
-        // increase retry counter
+        // Increase retry counter
         retries++;
         if (retries > Constants.MAX_INSTALL_REFERRER_RETRIES) {
             logger.debug("Limit number of retry for install referrer surpassed");
@@ -287,14 +389,16 @@ public class InstallReferrer implements InvocationHandler {
             logger.debug("Already waiting to retry to read install referrer in %d milliseconds", firingIn);
             return;
         }
-        retryTimer.startIn(RETRY_WAIT_TIME);
+        retryTimer.startIn(retryWaitTime);
     }
 
+    /**
+     * Terminate connection to install referrer service.
+     */
     private void closeReferrerClient() {
         if (referrerClient == null) {
             return;
         }
-
         try {
             Reflection.invokeInstanceMethod(referrerClient, "endConnection", null);
         } catch (Exception e) {

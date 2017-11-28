@@ -32,6 +32,7 @@ public interface Constants {
     String CLIENT_SDK = "android4.12.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
+    String INSTALL_REFERRER = "install_referrer";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";

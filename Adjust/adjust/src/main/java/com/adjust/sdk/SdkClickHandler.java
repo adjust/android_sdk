@@ -32,6 +32,16 @@ public class SdkClickHandler implements ISdkClickHandler {
     private static final String SCHEDULED_EXECUTOR_SOURCE = "SdkClickHandler";
 
     /**
+     * Intent based referrer source name inside of sdk_click package.
+     */
+    private static final String SOURCE_REFTAG = "reftag";
+
+    /**
+     * Install referrer service referrer source name inside of sdk_click package.
+     */
+    private static final String SOURCE_INSTALL_REFERRER = "install_referrer";
+
+    /**
      * Indicates whether SdkClickHandler is paused or not.
      */
     private boolean paused;
@@ -125,7 +135,7 @@ public class SdkClickHandler implements ISdkClickHandler {
      * {@inheritDoc}
      */
     @Override
-    public void sendSavedReferrers() {
+    public void sendReftagReferrers() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -136,7 +146,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                     JSONArray rawReferrerArray = sharedPreferencesManager.getRawReferrerArray();
                     boolean hasRawReferrersBeenChanged = false;
 
-                    for(int i = 0; i < rawReferrerArray.length(); i++) {
+                    for (int i = 0; i < rawReferrerArray.length(); i++) {
                         JSONArray savedRawReferrer = rawReferrerArray.getJSONArray(i);
 
                         int savedRawReferrerState = savedRawReferrer.optInt(2, -1);
@@ -170,50 +180,6 @@ public class SdkClickHandler implements ISdkClickHandler {
                     }
                 } catch (JSONException e) {
                     logger.error("Send saved raw referrers error (%s)", e.getMessage());
-                }
-
-
-                try {
-                    JSONArray installReferrerArray = sharedPreferencesManager.getInstallReferrerArray();
-                    boolean hasInstallReferrersBeenChanged = false;
-
-                    for(int i = 0; i < installReferrerArray.length(); i++) {
-                        JSONArray savedInstallReferrer = installReferrerArray.getJSONArray(i);
-
-                        int savedInstallReferrerState = savedInstallReferrer.optInt(3, -1);
-
-                        // Don't send the one already sending or sent.
-                        if (savedInstallReferrerState != 0) {
-                            continue;
-                        }
-
-                        String savedInstallReferrerString = savedInstallReferrer.optString(0, null);
-                        long savedClickTime = savedInstallReferrer.optLong(1, -1);
-                        long savedInstalBeginTime = savedInstallReferrer.optLong(2, -1);
-
-                        // Mark install referrer as being sent.
-                        savedInstallReferrer.put(3, 1);
-                        hasInstallReferrersBeenChanged = true;
-
-                        // Create sdk click
-                        ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
-                                savedInstallReferrerString,
-                                savedClickTime,
-                                savedInstalBeginTime,
-                                activityHandler.getActivityState(),
-                                activityHandler.getAdjustConfig(),
-                                activityHandler.getDeviceInfo(),
-                                activityHandler.getSessionParameters());
-
-                        // Send referrer sdk_click package.
-                        sendSdkClick(sdkClickPackage);
-                    }
-
-                    if (hasInstallReferrersBeenChanged) {
-                        sharedPreferencesManager.saveInstallReferrerArray(installReferrerArray);
-                    }
-                } catch (JSONException e) {
-                    logger.error("Send saved install referrers error (%s)", e.getMessage());
                 }
             }
         });
@@ -303,12 +269,11 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param sdkClickPackage sdk_click package to be sent.
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
         String source = sdkClickPackage.getParameters().get("source");
 
-        boolean isReftag = source != null && source.equals("reftag");
+        boolean isReftag = source != null && source.equals(SOURCE_REFTAG);
         String rawReferrerString = sdkClickPackage.getParameters().get("raw_referrer");
-
-        ActivityHandler activityHandler = (ActivityHandler) activityHandlerWeakRef.get();
 
         if (isReftag) {
             // Check before sending if referrer was removed already.
@@ -324,35 +289,24 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
         }
 
-        boolean isInstallReferrer = source != null && source.equals("install_referrer");
-        String referrerString = sdkClickPackage.getParameters().get("referrer");
+        boolean isInstallReferrer = source != null && source.equals(SOURCE_INSTALL_REFERRER);
+        long clickTime = -1;
+        long installBegin = -1;
+        String installReferrer = null;
 
         if (isInstallReferrer) {
-            // Check before sending if install referrer was sent and removed already.
-            SharedPreferencesManager sharedPreferencesManager
-                    = new SharedPreferencesManager(activityHandler.getContext());
-
-            JSONArray installReferrer = sharedPreferencesManager.getInstallReferrer(
-                    referrerString,
-                    sdkClickPackage.getClickTimeInSeconds(),
-                    sdkClickPackage.getInstallBeginTimeInSeconds());
-
-            // Check before sending if referrer was removed already.
-            if (installReferrer == null) {
-                return;
-            }
-
-            // Check before sending if referrer was sent already.
-            int installReferrerState = installReferrer.optInt(3, -1);
-            if (installReferrerState == 2) {
-                return;
-            }
+            // Check if install referrer information is saved to activity state.
+            // If yes, we have successfully sent it at earlier point and no need to do it again.
+            // If not, proceed with sending of sdk_click package for install referrer.
+            clickTime = sdkClickPackage.getClickTimeInSeconds();
+            installBegin = sdkClickPackage.getInstallBeginTimeInSeconds();
+            installReferrer = sdkClickPackage.getParameters().get("referrer");
         }
 
         String targetURL = Constants.BASE_URL + sdkClickPackage.getPath();
 
         try {
-            ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(
+            SdkClickResponseData responseData = (SdkClickResponseData) UtilNetworking.createPOSTHttpsURLConnection(
                     targetURL,
                     sdkClickPackage,
                     packageQueue.size() - 1);
@@ -377,19 +331,11 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
 
             if (isInstallReferrer) {
-                SharedPreferencesManager sharedPreferencesManager
-                        = new SharedPreferencesManager(activityHandler.getContext());
-
-                JSONArray installReferrers = sharedPreferencesManager.getInstallReferrerArray();
-
-                JSONArray installReferrer = sharedPreferencesManager.getInstallReferrer(
-                        referrerString,
-                        sdkClickPackage.getClickTimeInSeconds(),
-                        sdkClickPackage.getInstallBeginTimeInSeconds());
-
-                installReferrer.put(3, 2);
-
-                sharedPreferencesManager.saveInstallReferrerArray(installReferrers);
+                // After successfully sending install referrer, store sent values in activity state.
+                responseData.clickTime = clickTime;
+                responseData.installBegin = installBegin;
+                responseData.installReferrer = installReferrer;
+                responseData.isInstallReferrer = true;
             }
 
             activityHandler.finishedTrackingActivity(responseData);

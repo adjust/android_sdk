@@ -33,7 +33,9 @@ public interface IActivityHandler {
 
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
-    void sendReferrer();
+    void sendReftagReferrer();
+
+    void sendInstallReferrer(long clickTime, long installBegin, String installReferrer);
 
     void setOfflineMode(boolean enabled);
 

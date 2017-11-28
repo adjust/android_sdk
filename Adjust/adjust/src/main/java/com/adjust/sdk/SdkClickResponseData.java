@@ -5,4 +5,8 @@ package com.adjust.sdk;
  */
 
 public class SdkClickResponseData extends ResponseData {
+    boolean isInstallReferrer;
+    long clickTime;
+    long installBegin;
+    String installReferrer;
 }

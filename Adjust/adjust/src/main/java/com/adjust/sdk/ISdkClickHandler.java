@@ -34,9 +34,9 @@ public interface ISdkClickHandler {
     void sendSdkClick(ActivityPackage sdkClick);
 
     /**
-     * Send sdk_click packages made from all the persisted referrers.
+     * Send sdk_click packages made from all the persisted intent type referrers.
      */
-    void sendSavedReferrers();
+    void sendReftagReferrers();
 
     /**
      * Teardown SdkClickHandler instance.

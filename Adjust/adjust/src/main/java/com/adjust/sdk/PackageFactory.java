@@ -134,7 +134,7 @@ public class PackageFactory {
         clickPackageBuilder.clicktTimeInSeconds = clickTimeInSeconds;
         clickPackageBuilder.installBeginTimeInSeconds = installBeginInSeconds;
 
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFERRER);
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.INSTALL_REFERRER);
 
         return clickPackage;
     }
