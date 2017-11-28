@@ -20,18 +20,23 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task clearJar(type: Delete) {
-    delete "build/outputs/adjust-${getVersionName()}.jar"
+task makeReleaseJar(type: Copy) {
+    dependsOn 'build'
+
+    from('build/intermediates/bundles/release/')
+    into('build/outputs/')
+    include('classes.jar')
+    rename ('classes.jar', "adjust-${getVersionName()}-release.jar")
 }
 
-task makeJar(type: Copy) {
+task makeDebugJar(type: Copy) {
+    dependsOn 'build'
+
     from('build/intermediates/bundles/debug/')
     into('build/outputs/')
     include('classes.jar')
-    rename ('classes.jar', "adjust-${getVersionName()}.jar")
+    rename ('classes.jar', "adjust-${getVersionName()}-debug.jar")
 }
-
-makeJar.dependsOn(clearJar, build)
 
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
