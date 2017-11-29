@@ -586,13 +586,13 @@ Adjust.onCreate(config);
 
 The listener function will be called after the SDK receives the final attribution data. Within the listener function you have access to the `attribution` parameter. Here is a quick summary of its properties:
 
-- `String trackerToken` the tracker token of the current install.
-- `String trackerName` the tracker name of the current install.
-- `String network` the network grouping level of the current install.
-- `String campaign` the campaign grouping level of the current install.
-- `String adgroup` the ad group grouping level of the current install.
-- `String creative` the creative grouping level of the current install.
-- `String clickLabel` the click label of the current install.
+- `String trackerToken` the tracker token of the current attribution.
+- `String trackerName` the tracker name of the current attribution.
+- `String network` the network grouping level of the current attribution.
+- `String campaign` the campaign grouping level of the current attribution.
+- `String adgroup` the ad group grouping level of the current attribution.
+- `String creative` the creative grouping level of the current attribution.
+- `String clickLabel` the click label of the current attribution.
 - `String adid` the adjust device identifier.
 
 If any value is unavailable, it will default to `null`.
