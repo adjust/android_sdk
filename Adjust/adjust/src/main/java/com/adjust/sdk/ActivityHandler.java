@@ -1184,15 +1184,23 @@ public class ActivityHandler implements IActivityHandler {
         if (enabled) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
 
+            // check if install was tracked
             if (!sharedPreferencesManager.getInstallTracked()) {
                 long now = System.currentTimeMillis();
                 trackNewSessionI(now);
             }
 
+            // check if there is a saved push token to send
             String pushToken = sharedPreferencesManager.getPushToken();
 
             if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
                 setPushToken(pushToken, true);
+            }
+
+            // check if there are token to send
+            Object referrers = sharedPreferencesManager.getRawReferrerArray();
+            if (referrers != null) {
+                sendReftagReferrer();
             }
         }
 
