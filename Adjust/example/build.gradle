@@ -33,4 +33,5 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 
+    compile 'com.android.installreferrer:installreferrer:1.0'
 }
