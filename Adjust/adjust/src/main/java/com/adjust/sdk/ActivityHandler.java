@@ -1320,7 +1320,7 @@ public class ActivityHandler implements IActivityHandler {
 
         if (clickTime == activityState.clickTime
                 && installBegin == activityState.installBegin
-                && installReferrer == activityState.installReferrer) {
+                && installReferrer.equals(activityState.installReferrer)) {
             // Same click already sent before, nothing to be done.
             return;
         }
