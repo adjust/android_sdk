@@ -126,8 +126,17 @@ public class Util {
     public static String getAndroidId(Context context) {
         return Reflection.getAndroidId(context);
     }
-    public static String getMobileEquipmentIdentity(Context context) {
-        return Reflection.getMobileEquipmentIdentity(context);
+
+    public static String getTelephonyId(TelephonyManager telephonyManager) {
+        return Reflection.getTelephonyId(telephonyManager);
+    }
+
+    public static String getIMEI(TelephonyManager telephonyManager) {
+        return Reflection.getLinkIMEI(telephonyManager);
+    }
+
+    public static String getMEID(TelephonyManager telephonyManager) {
+        return Reflection.getLinkMEID(telephonyManager);
     }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
