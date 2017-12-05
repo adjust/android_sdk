@@ -89,17 +89,6 @@ public class Reflection {
         }
     }
 
-    public static String getMobileEquipmentIdentity(Context context) {
-        try {
-            String mobileEquipmentIdentity = (String) invokeStaticMethod("com.adjust.sdk.plugin.MobileEquipmentIdentityUtil", "getMobileEquipmentIdentity"
-                    , new Class[]{Context.class}, context);
-
-            return mobileEquipmentIdentity;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
     public static String getLinkIMEI(TelephonyManager telephonyManager) {
         // return telephonyManager.getImei();
         try {

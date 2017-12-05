@@ -10,6 +10,8 @@
 package com.adjust.sdk;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
@@ -273,8 +275,11 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         if (adjustConfig.readMobileEquipmentIdentity) {
-            String mobileEquipmentId = Util.getMobileEquipmentIdentity(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mobile_equipment_id", mobileEquipmentId);
+            TelephonyManager telephonyManager = (TelephonyManager)adjustConfig.context.getSystemService(Context.TELEPHONY_SERVICE);
+
+            PackageBuilder.addString(parameters, "device_id", Util.getTelephonyId(telephonyManager));
+            PackageBuilder.addString(parameters, "IMEI", Util.getIMEI(telephonyManager));
+            PackageBuilder.addString(parameters, "MEID", Util.getMEID(telephonyManager));
         }
     }
 
