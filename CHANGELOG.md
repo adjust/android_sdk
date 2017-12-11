@@ -1,5 +1,6 @@
 ### Version 4.12.0 (12th December 2017)
 #### Added
+- Added support for new Google referrer API (https://developer.android.com/google/play/installreferrer/library.html).
 - Added `Adjust.getAmazonAdId()` method to obtain value of Amazon Advertising Identifier.
 - Added possibility to read Mobile Equipment Identity for non Google Play store apps.
 - Added usage of app secret in authorization header.
