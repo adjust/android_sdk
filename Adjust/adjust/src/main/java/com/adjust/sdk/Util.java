@@ -132,12 +132,21 @@ public class Util {
     }
 
     public static String getIMEI(TelephonyManager telephonyManager) {
-        return Reflection.getLinkIMEI(telephonyManager);
+        return Reflection.getImei(telephonyManager);
     }
 
     public static String getMEID(TelephonyManager telephonyManager) {
-        return Reflection.getLinkMEID(telephonyManager);
+        return Reflection.getMeid(telephonyManager);
     }
+
+    public static String getIMEI(TelephonyManager telephonyManager, int index) {
+        return Reflection.getImei(telephonyManager, index);
+    }
+
+    public static String getMEID(TelephonyManager telephonyManager, int index) {
+        return Reflection.getMeid(telephonyManager, index);
+    }
+
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
         Closeable closable = null;

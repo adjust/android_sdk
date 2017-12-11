@@ -278,8 +278,8 @@ class PackageBuilder {
             TelephonyManager telephonyManager = (TelephonyManager)adjustConfig.context.getSystemService(Context.TELEPHONY_SERVICE);
 
             PackageBuilder.addString(parameters, "device_id", Util.getTelephonyId(telephonyManager));
-            PackageBuilder.addString(parameters, "imei", Util.getIMEI(telephonyManager));
-            PackageBuilder.addString(parameters, "meid", Util.getMEID(telephonyManager));
+            PackageBuilder.addString(parameters, "imei", Util.getIMEI(telephonyManager, 0));
+            PackageBuilder.addString(parameters, "meid", Util.getMEID(telephonyManager, 0));
         }
     }
 
