@@ -1,22 +1,25 @@
-### Version 4.12.0 (Xth November 2017)
+### Version 4.12.0 (12th December 2017)
 #### Added
-- Get amazon/fire ad id
-- Allow to read mobile equipment identity for non-google play store apps
-- Use of secret in authorization header
-- Sending referrer without previously being decoded
-- Send mcc, mnc, network and connectivity type
+- Added `Adjust.getAmazonAdId()` method to obtain value of Amazon Advertising Identifier.
+- Added possibility to read Mobile Equipment Identity for non Google Play store apps.
+- Added usage of app secret in authorization header.
+- Added sending of `raw_referrer` parameter in `sdk_click` package.
+- Added reading of MCC.
+- Added reading of MNC.
+- Added reading of network type.
+- Added reading of connectivity type.
+- Added log messages for saved actions to be done when the SDK starts.
 
 #### Changed
-- Don't send `sdk_click` and `sdk_info` packages when disabled
-- Setting enable/disable or offline/online is now queued
-- Guarantee that first package is send even with buffering
-- Disable before starting the sdk does not create and send first session package
-- Reload reading device ids for every package, not just at beginning
-- Save referrer in local storage and send it only after first session
-- Save push token in local storage and send it only after first session
-- Log message for saved actions to be done when the sdk starts
+- Not sending `sdk_click` and `sdk_info` packages when SDK is disabled.
+- Setting enable/disable or offline/online is now queued.
+- Guaranteeing that first package is sent even with event buffering turned ON.
+- Not creating first session package if SDK is disabled before first launch.
+- Saving referrer in local storage and send it only after first session.
+- Saving push token in local storage and send it only after first session.
 
 ---
+
 ### Version 4.11.4 (5th May 2017)
 #### Added
 - Added check if `sdk_click` package response contains attribution information.
