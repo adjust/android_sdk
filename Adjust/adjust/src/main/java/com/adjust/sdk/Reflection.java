@@ -89,7 +89,7 @@ public class Reflection {
         }
     }
 
-    public static String getLinkIMEI(TelephonyManager telephonyManager) {
+    public static String getImei(TelephonyManager telephonyManager) {
         // return telephonyManager.getImei();
         try {
             return (String) invokeInstanceMethod(telephonyManager, "getImei", null);
@@ -98,7 +98,17 @@ public class Reflection {
         }
     }
 
-    public static String getLinkMEID(TelephonyManager telephonyManager) {
+    public static String getImei(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getImei();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getImei", new Class[]{int.class}, index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    public static String getMeid(TelephonyManager telephonyManager) {
         // return telephonyManager.getMeid();
         try {
             return (String) invokeInstanceMethod(telephonyManager, "getMeid", null);
@@ -106,6 +116,16 @@ public class Reflection {
             return null;
         }
     }
+
+    public static String getMeid(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getMeid();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getMeid", new Class[]{int.class}, index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public static String getTelephonyId(TelephonyManager telephonyManager) {
         // return telephonyManager.getDeviceId();
