@@ -63,8 +63,6 @@ There is an example app inside the [`example` directory][example]. You can open 
 
 These are the minimal steps required to integrate the Adjust SDK into your Android project. We are going to assume that you use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
 
-If you're using the [Maven Repository][maven] you can start with [this step](#sdk-add).
-
 ### <a id="sdk-add"></a>Add the SDK to your project
 
 If you are using Maven, add following to yout `build.gradle` file:
