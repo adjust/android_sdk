@@ -1,16 +1,14 @@
 ## Summary
 
-This is the Android SDK of adjust™. You can read more about adjust™ at [adjust.com].
+This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-If your app is an app which uses web views and you would like to use adjust tracking from Javascript code, please consult
+If your app is an app which uses web views and you would like to use Adjust tracking from Javascript code, please consult
 our [Android web views SDK guide](doc/english/web_views.md).
 
 ## Table of contents
 
 * [Example app](#example-app)
 * [Basic integration](#basic-integration)
-   * [Get the SDK](#sdk-get)
-   * [Import the Adjust module](#sdk-import)
    * [Add the SDK to your project](#sdk-add)
    * [Add Google Play Services](#sdk-gps)
    * [Add permissions](#sdk-permissions)
@@ -20,7 +18,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Basic setup](#basic-setup)
    * [Session tracking](#session-tracking)
       * [API level 14 and higher](#session-tracking-api14)
-      * [API level 9 until 13](#session-tracking-api9)
+      * [API level between 9 and 13](#session-tracking-api9)
    * [Adjust logging](#adjust-logging)
    * [Build your app](#build-the-app)
 * [Additional features](#additional-features)
@@ -42,7 +40,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
       * [Google Play Services advertising identifier](#di-gps-adid)
-      * [Amazon Fire advertising identifier](#di-amz-adid)
+      * [Amazon advertising identifier](#di-amz-adid)
       * [Adjust device identifier](#di-adid)
    * [User attribution](#user-attribution)
    * [Push token](#push-token)
@@ -59,63 +57,39 @@ our [Android web views SDK guide](doc/english/web_views.md).
 
 ## <a id="example-app"></a>Example app
 
-There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on how the adjust SDK can be integrated.
+There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
-These are the minimal steps required to integrate the adjust SDK into your Android project. We are going to assume that you use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
+These are the minimal steps required to integrate the Adjust SDK into your Android project. We are going to assume that you use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
 
 If you're using the [Maven Repository][maven] you can start with [this step](#sdk-add).
 
-### <a id="sdk-get"></a>Get the SDK
-
-Download the latest version from our [releases page][releases]. Extract the archive in a folder of your choice.
-
-### <a id="sdk-import"></a>Import the Adjust module
-
-In the Android Studio menu select `File → Import Module...`.
-
-![][import_module]
-
-In the `Source directory` field, locate the folder you extracted in step 1. Select and choose the folder `./android_sdk/Adjust/adjust`. Make sure the module name `:adjust` appears before finishing.
-
-![][select_module]
-
-The `adjust` module should be imported into your Android Studio project afterwards.
-
-![][imported_module]
-
 ### <a id="sdk-add"></a>Add the SDK to your project
 
-Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
-
-```
-compile project(":adjust")
-```
-
-![][gradle_adjust]
-
-If you are using Maven, add this line instead:
+If you are using Maven, add following to yout `build.gradle` file:
 
 ```
 compile 'com.adjust.sdk:adjust-android:4.12.0'
+compile 'com.android.installreferrer:installreferrer:1.0'
 ```
-**
-Note: If you are using Gradle 3.0.x, make sure to use the `implementation` keyword instead of `compile` as follows:
+
+**Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation project(":adjust")
-
-// OR
-
 implementation 'com.adjust.sdk:adjust-android:4.12.0'
+implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
-The same goes for the step below when adding Google Play Services.
+The applies for adding Google Play Services dependency to your `build.gradle` file.
+
+---
+
+You can as well add Adjust SDK to your project as JAR library. Latest SDK version JAR library can be found in our [releases page][releases].
 
 ### <a id="sdk-gps"></a>Add Google Play Services
 
-Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services]. If you haven't done this yet, follow these steps:
+Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the Adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services]. If you haven't done this yet, follow these steps:
 
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
@@ -124,6 +98,9 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
     ```
 
     ![][gradle_gps]
+    
+    **Note**: Adjust SDK is not tied to any specific version of `play-services-analytics` part of Google Play Services 
+    library, so feel free to always use latest version of it (or the one you might specially need for some reason).
 
 2. **Skip this step if you are using version 7 or later of Google Play Services**:
    In the Package Explorer open the `AndroidManifest.xml` of your Android
@@ -135,24 +112,20 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
                android:value="@integer/google_play_services_version" />
     ```
 
-    ![][manifest_gps]
-
 ### <a id="sdk-permissions"></a>Add permissions
 
-In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the `uses-permission` tag for `INTERNET` if it's not present already.
+Please add following permissions which Adjust SDK needs if they are not already present in your `AndroidManifest.xml` file:
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.INTERNET"/>
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-If you are **not targeting the Google Play Store**, add both of these permissions instead:
+If you are **not targeting the Google Play Store**, please add following permission as well:
 
 ```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
-
-![][manifest_permissions]
 
 ### <a id="sdk-proguard"></a>Proguard settings
 
@@ -208,6 +181,12 @@ We use this broadcast receiver to retrieve the install referrer, in order to imp
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
 
+**Note**: Receiving referrer information via `INSTALL_REFERRER` intent is part of old Google referrer mechanism which got replaced with [new Google referrer API][new-referrer-api]. It is strongly advised to add support for new API which significantly improves security of the referrer information being delivered into the app and also helps attribution providers to fight click injection in more efficient way. In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project][#sdk-add] chapter properly and that you have following line added to your `build.gradle` file:
+
+```
+compile 'com.android.installreferrer:installreferrer:1.0'
+```
+
 ### <a id="sdk-integrate"></a>Integrate the SDK into your app
 
 To start with, we'll set up basic session tracking.
@@ -233,7 +212,7 @@ We recommend using a global android [Application][android_application] class to 
 
     ![][manifest_application]
 
-4. In your `Application` class find or create the `onCreate` method and add the following code to initialize the adjust SDK:
+4. In your `Application` class find or create the `onCreate` method and add the following code to initialize the Adjust SDK:
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -254,30 +233,26 @@ We recommend using a global android [Application][android_application] class to 
 
     ![][application_config]
 
-    Replace `{YourAppToken}` with your app token. You can find this in your
-    [dashboard].
+    Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
 
-    Depending on whether you build your app for testing or for production, you must
-    set `environment` with one of these values:
+    Depending on whether you build your app for testing or for production, you must set `environment` with one of these 
+    values:
 
     ```java
     String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
     String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
     ```
 
-    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX`
-    if and only if you or someone else is testing your app. Make sure to set the
-    environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish
-    the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start
-    developing and testing it again.
+    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX` if and only if you or someone else is 
+    testing your app. Make sure to set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish the 
+    app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start developing and testing it again.
 
-    We use this environment to distinguish between real traffic and test traffic
-    from test devices. It is very important that you keep this value meaningful at
-    all times! This is especially important if you are tracking revenue.
+    We use this environment to distinguish between real traffic and test traffic from test devices. It is very important that 
+    you keep this value meaningful at all times! This is especially important if you are tracking revenue.
 
 ### <a id="session-tracking"></a>Session tracking
 
-**Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By implementing it, you will enable proper session tracking by the adjust SDK in your app.
+**Note**: This step is **really important** and please **make sure that you implement it properly in your app**. By implementing it, you will enable proper session tracking by the Adjust SDK in your app.
 
 ### <a id="session-tracking-api14"></a>API level 14 and higher
 
@@ -290,7 +265,7 @@ We recommend using a global android [Application][android_application] class to 
 
     ![][activity_lifecycle_methods]
 
-3. Add on the `onCreate()` method where the adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
+3. Add on the `onCreate()` method where the Adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -329,16 +304,16 @@ We recommend using a global android [Application][android_application] class to 
 
     ![][activity_lifecycle_register]
 
-### <a id="session-tracking-api9"></a>API level 9 until 13
+### <a id="session-tracking-api9"></a>API level between 9 and 13
 
 If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it to at least `14` to simplify the integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market share of the major versions.
 
-To provide proper session tracking it is required to call certain adjust SDK methods every time any Activity resumes or pauses. Otherwise the SDK might miss a session start or session end. In order to do so you should **follow these steps for each Activity of your app**:
+To provide proper session tracking it is required to call certain Adjust SDK methods every time any Activity resumes or pauses. Otherwise the SDK might miss a session start or session end. In order to do so you should **follow these steps for each Activity of your app**:
 
 1. Open the source file of your Activity.
 2. Add the `import` statement at the top of the file.
-3. In your Activity's `onResume` method call `Adjust.onResume`. Create the method if needed.
-4. In your Activity's `onPause` method call `Adjust.onPause`. Create the method if needed.
+3. In your Activity's `onResume` method call `Adjust.onResume()`. Create the method if needed.
+4. In your Activity's `onPause` method call `Adjust.onPause()`. Create the method if needed.
 
 After these steps your activity should look like this:
 
@@ -396,9 +371,9 @@ Build and run your Android app. In your `LogCat` viewer you can set the filter `
 
 ## Additional Features
 
-Once you have integrated the adjust SDK into your project, you can take advantage of the following features.
+Once you have integrated the Adjust SDK into your project, you can take advantage of the following features.
 
-### <a id="event-tracking">Event tracking
+### <a id="event-tracking"></a>Event tracking
 
 You can use adjust to track any event in your app. Suppose you want to track every tap on a button. You would have to create a new event token in your [dashboard]. Let's say that event token is `abc123`. In your button's `onClick` method you could then add the following lines to track the click:
 
@@ -407,7 +382,7 @@ AdjustEvent event = new AdjustEvent("abc123");
 Adjust.trackEvent(event);
 ```
 
-### <a id="revenue-tracking">Revenue tracking
+### <a id="revenue-tracking"></a>Revenue tracking
 
 If your users can generate revenue by tapping on advertisements or making In-App Purchases you can track those revenues with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
 
@@ -419,17 +394,15 @@ Adjust.trackEvent(event);
 
 This can be combined with callback parameters of course.
 
-When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here.][currency-conversion]
+When you set a currency token, Adjust will automatically convert the incoming revenues into a reporting revenue of your choice. Read more about [currency conversion here][currency-conversion].
 
-You can read more about revenue and event tracking in the [event tracking guide.][event-tracking]
+You can read more about revenue and event tracking in the [event tracking guide][event-tracking].
 
-The event instance can be used to configure the event further before tracking it:
-
-### <a id="revenue-deduplication">Revenue deduplication
+### <a id="revenue-deduplication"></a>Revenue deduplication
 
 You can also add an optional order ID to avoid tracking duplicate revenues. The last ten order IDs are remembered, and  revenue events with duplicate order IDs are skipped. This is especially useful for In-App Purchase tracking. You can see an  example below.
 
-If you want to track in-app purchases, please make sure to call the `trackEvent` only if the purchase is finished and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
+If you want to track In-App purchases, please make sure to call the `trackEvent` only if the purchase is finished and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -440,11 +413,11 @@ event.setOrderId("{OrderId}");
 Adjust.trackEvent(event);
 ```
 
-### <a id="iap-verification">In-App Purchase verification
+### <a id="iap-verification"></a>In-App Purchase verification
 
-If you want to check the validity of In-App Purchases made in your app using Purchase Verification, adjust's server side receipt verification tool, then check out our Android purchase SDK to read more about it [here][android-purchase-verification].
+If you want to check the validity of In-App Purchases made in your app using Purchase Verification, Adjust's server side receipt verification tool, then check out our Android purchase SDK to read more about it [here][android-purchase-verification].
 
-### <a id="callback-parameters">Callback parameters
+### <a id="callback-parameters"></a>Callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance before tracking it. We will then append these parameters to your callback URL.
 
@@ -465,13 +438,13 @@ In that case we would track the event and send a request to:
 http://www.adjust.com/callback?key=value&foo=bar
 ```
 
-It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the resulting callback this placeholder would be replaced with the Google Play Services ID  of the current device. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
+It should be mentioned that we support a variety of placeholders like `{gps_adid}` that can be used as parameter values. In the resulting callback this placeholder would be replaced with the Google Play Services ID of the current device. Also note that we don't store any of your custom parameters, but only append them to your callbacks. If you haven't registered a callback for an event, these parameters won't even be read.
 
 You can read more about using URL callbacks, including a full list of available values, in our [callbacks guide][callbacks-guide].
 
-### <a id="partner-parameters">Partner parameters
+### <a id="partner-parameters"></a>Partner parameters
 
-You can also add parameters to be transmitted to network partners, which have been activated in your adjust dashboard.
+You can also add parameters to be transmitted to network partners, which have been activated in your Adjust dashboard.
 
 This works similarly to the callback parameters mentioned above, but can be added by calling the `addPartnerParameter` method on your `AdjustEvent` instance.
 
@@ -486,15 +459,15 @@ Adjust.trackEvent(event);
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
-### <a id="session-parameters">Set up session parameters
+### <a id="session-parameters"></a>Set up session parameters
 
-Some parameters are saved to be sent in every event and session of the adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
+Some parameters are saved to be sent in every **event** and **session** of the Adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
 
-These session parameters can be called before the adjust SDK is launched to make sure they are sent even on install. If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the adjust SDK to allow this behaviour.
+These session parameters can be called before the Adjust SDK is launched to make sure they are sent even on install. If you need to send them with an install, but can only obtain the needed values after launch, it's possible to [delay](#delay-start) the first launch of the Adjust SDK to allow this behaviour.
 
-### <a id="session-callback-parameters">Session callback parameters
+### <a id="session-callback-parameters"></a>Session callback parameters
 
-The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every  event or session of the adjust SDK.
+The same callback parameters that are registered for [events](#callback-parameters) can be also saved to be sent in every  event or session of the Adjust SDK.
 
 The session callback parameters have a similar interface to the event callback parameters. Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionCallbackParameter(String key, String value)`:
 
@@ -516,11 +489,11 @@ If you wish to remove all keys and their corresponding values from the session c
 Adjust.resetSessionCallbackParameters();
 ```
 
-### <a id="session-partner-parameters">Session partner parameters
+### <a id="session-partner-parameters"></a>Session partner parameters
 
-In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session of the adjust SDK, there is also session partner parameters.
+In the same way that there are [session callback parameters](#session-callback-parameters) sent in every event or session of the Adjust SDK, there is also session partner parameters.
 
-These will be transmitted to network partners, for the integrations that have been activated in your adjust [dashboard].
+These will be transmitted to network partners, for the integrations that have been activated in your Adjust [dashboard].
 
 The session partner parameters have a similar interface to the event partner parameters. Instead of adding the key and it's value to an event, it's added through a call to `Adjust.addSessionPartnerParameter(String key, String value)`:
 
@@ -542,9 +515,9 @@ If you wish to remove all keys and their corresponding values from the session p
 Adjust.resetSessionPartnerParameters();
 ```
 
-### <a id="delay-start">Delay start
+### <a id="delay-start"></a>Delay start
 
-Delaying the start of the adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
+Delaying the start of the Adjust SDK allows your app some time to obtain session parameters, such as unique identifiers, to be sent on install.
 
 Set the initial delay time in seconds with the method `setDelayStart` in the `AdjustConfig` instance:
 
@@ -552,9 +525,9 @@ Set the initial delay time in seconds with the method `setDelayStart` in the `Ad
 adjustConfig.setDelayStart(5.5);
 ```
 
-In this case, this will make the adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the adjust SDK will resume as usual.
+In this case, this will make the Adjust SDK not send the initial install session and any event created for 5.5 seconds. After this time is expired or if you call `Adjust.sendFirstPackages()` in the meanwhile, every session parameter will be added to the delayed install session and events and the Adjust SDK will resume as usual.
 
-The maximum delay start time of the adjust SDK is 10 seconds.
+**The maximum delay start time of the adjust SDK is 10 seconds**.
 
 ### <a id="attribution-callback"></a>Attribution callback
 
@@ -593,7 +566,7 @@ The listener function will be called after the SDK receives the final attributio
 - `String adgroup` the ad group grouping level of the current attribution.
 - `String creative` the creative grouping level of the current attribution.
 - `String clickLabel` the click label of the current attribution.
-- `String adid` the adjust device identifier.
+- `String adid` the Adjust device identifier.
 
 If any value is unavailable, it will default to `null`.
 
@@ -643,7 +616,7 @@ The listener function will be called after the SDK tries to send a package to th
 
 - `String message` the message from the server or the error logged by the SDK.
 - `String timestamp` timestamp from the server.
-- `String adid` a unique device identifier provided by adjust.
+- `String adid` a unique device identifier provided by Adjust.
 - `JSONObject jsonResponse` the JSON object with the reponse from the server.
 
 Both event response data objects contain:
@@ -658,17 +631,17 @@ And both event and session failed objects also contain:
 
 ### <a id="disable-tracking"></a>Disable tracking
 
-You can disable the adjust SDK from tracking any activities of the current device by calling `setEnabled` with parameter `false`. **This setting is remembered between sessions**.
+You can disable the Adjust SDK from tracking any activities of the current device by calling `setEnabled` with parameter `false`. **This setting is remembered between sessions**.
 
 ```java
 Adjust.setEnabled(false);
 ```
 
-You can check if the adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activatе the adjust SDK by invoking `setEnabled` with the enabled parameter as `true`.
+You can check if the Adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activatе the Adjust SDK by invoking `setEnabled` with the enabled parameter as `true`.
 
 ### <a id="offline-mode"></a>Offline mode
 
-You can put the adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
+You can put the Adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
 
 You can activate offline mode by calling `setOfflineMode` with the parameter `true`.
 
@@ -676,7 +649,7 @@ You can activate offline mode by calling `setOfflineMode` with the parameter `tr
 Adjust.setOfflineMode(true);
 ```
 
-Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`. When the adjust SDK is put back in online mode, all saved information is sent to our servers with the correct time information.
+Conversely, you can deactivate offline mode by calling `setOfflineMode` with `false`. When the Adjust SDK is put back in online mode, all saved information is sent to our servers with the correct time information.
 
 Unlike disabling tracking, this setting is **not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
 
@@ -694,7 +667,7 @@ Adjust.onCreate(config);
 
 ### <a id="background-tracking"></a>Background tracking
 
-The default behaviour of the adjust SDK is to pause sending HTTP requests while the app is in the background. You can change this in your `AdjustConfig` instance:
+The default behaviour of the Adjust SDK is to pause sending HTTP requests while the app is in the background. You can change this in your `AdjustConfig` instance:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -706,7 +679,7 @@ Adjust.onCreate(config);
 
 ### <a id="device-ids"></a>Device IDs
 
-The adjust SDK offers you possibility to obtain some of the device identifiers.
+The Adjust SDK offers you possibility to obtain some of the device identifiers.
 
 ### <a id="di-gps-adid"></a>Google Play Services advertising identifier
 
@@ -725,7 +698,7 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 
 Inside the method `onGoogleAdIdRead` of the `OnDeviceIdsRead` instance, you will have access to Google Advertising ID as the variable `googleAdId`.
 
-### <a id="di-amz-adid"></a>Amazon Fire advertising identifier
+### <a id="di-amz-adid"></a>Amazon advertising identifier
 
 If you need to obtain the Amazon Advertising ID, you can make a call to following method on `Adjust` instance:
 
@@ -735,7 +708,7 @@ String amazonAdId = Adjust.getAmazonAdId(context);
 
 ### <a id="di-adid"></a>Adjust device identifier
 
-For each device with your app installed on it, adjust backend generates unique **adjust device identifier** (**adid**). In order to obtain this identifier, you can make a call to following method on `Adjust` instance:
+For each device with your app installed on it, Adjust backend generates unique **Adjust device identifier** (**adid**). In order to obtain this identifier, you can make a call to following method on `Adjust` instance:
 
 ```java
 String adid = Adjust.getAdid();
@@ -743,7 +716,7 @@ String adid = Adjust.getAdid();
 
 **Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
-**Note**: Information about **adid** is available after app installation has been tracked by the adjust backend. From that moment on, adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
+**Note**: Information about **adid** is available after app installation has been tracked by the Adjust backend. From that moment on, Adjust SDK has information about your device **adid** and you can access it with this method. So, **it is not possible** to access **adid** value before the SDK has been initialised and installation of your app was tracked successfully.
 
 ### <a id="user-attribution"></a>User attribution
 
@@ -755,7 +728,7 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 **Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
-**Note**: Information about current attribution is available after app installation has been tracked by the adjust backend and attribution callback has been initially triggered. From that moment on, adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialised and attribution callback has been initially triggered.
+**Note**: Information about current attribution is available after app installation has been tracked by the Adjust backend and attribution callback has been initially triggered. From that moment on, Adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialised and attribution callback has been initially triggered.
 
 ### <a id="push-token"></a>Push token
 
@@ -765,14 +738,16 @@ To send us the push notification token, add the following call to Adjust once yo
 Adjust.setPushToken(pushNotificationsToken, context);
 ```
 
-This updated signature with the context, allows the sdk to cover more scenarios to make sure the token is send. 
+This updated signature with the context, allows the SDK to cover more scenarios to make sure the token is send. 
 We still support the previous signature of the same method:
 
 ```java
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
-### <a id="pre-installed-trackers">Pre-installed trackers
+Push token is needed for uninstall tracking feature.
+
+### <a id="pre-installed-trackers"></a>Pre-installed trackers
 
 If you want to use the Adjust SDK to recognize users that found your app pre-installed on their device, follow these steps.
 
@@ -785,10 +760,9 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
   Adjust.onCreate(config);
   ```
 
-  Replace `{TrackerToken}` with the tracker token you created in step 2.
-  Please note that the dashboard displays a tracker URL (including
-  `http://app.adjust.com/`). In your source code, you should specify only the
-  six-character token and not the entire URL.
+  Replace `{TrackerToken}` with the tracker token you created in step 2. Please note that the dashboard displays a tracker 
+  URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the 
+  entire URL.
 
 3. Build and run your app. You should see a line like the following in LogCat:
 
@@ -798,11 +772,11 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
 
 ### <a id="deeplinking"></a>Deep linking
 
-If you are using the adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario). In the standard deep linking scenario, Android platform natively offers the possibility for you to get the info about the deep link content. Deferred deep linking scenario is something which Android platform doesn't support out of box and for this case, the adjust SDK will offer you the mechanism to get the info about the deep link content.
+If you are using the Adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario). In the standard deep linking scenario, Android platform natively offers the possibility for you to get the info about the deep link content. Deferred deep linking scenario is something which Android platform doesn't support out of box and for this case, the Adjust SDK will offer you the mechanism to get the info about the deep link content.
 
-### <a id="deeplinking-standard">Standard deep linking scenario
+### <a id="deeplinking-standard"></a>Standard deep linking scenario
 
-If a user has your app installed and you want it to launch after hitting an adjust tracker URL with the `deep_link` parameter in it, you need enable deep linking in your app. This is being done by choosing a desired **unique scheme name** and assigning it to the Activity which you want to launch once the app opens after the user clicked on the link. This is set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in the manifest file and assign `android:scheme` property value with the desired scheme name:
+If a user has your app installed and you want it to launch after hitting an Adjust tracker URL with the `deep_link` parameter in it, you need enable deep linking in your app. This is being done by choosing a desired **unique scheme name** and assigning it to the Activity which you want to launch once the app opens after the user clicked on the link. This is set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in the manifest file and assign `android:scheme` property value with the desired scheme name:
 
 ```xml
 <activity
@@ -825,7 +799,7 @@ If a user has your app installed and you want it to launch after hitting an adju
 </activity>
 ```
 
-With this being set, you need to use the assigned scheme name in the adjust tracker URL's `deep_link` parameter if you want your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link can be built to look something like this:
+With this being set, you need to use the assigned scheme name in the Adjust tracker URL's `deep_link` parameter if you want your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link can be built to look something like this:
 
 ```
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
@@ -865,11 +839,11 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-### <a id="deeplinking-deferred">Deferred deep linking scenario
+### <a id="deeplinking-deferred"></a>Deferred deep linking scenario
 
-Deferred deep linking scenario happens when a user clicks on the adjust tracker URL with the `deep_link` parameter in it, but does not have the app installed on the device at the moment of click. After that, the user will get redirected to the Play Store to download and install your app. After opening it for the first time, the content of the `deep_link` parameter will be delivered to the app.
+Deferred deep linking scenario happens when a user clicks on the Adjust tracker URL with the `deep_link` parameter in it, but does not have the app installed on the device at the moment of click. After that, the user will get redirected to the Play Store to download and install your app. After opening it for the first time, the content of the `deep_link` parameter will be delivered to the app.
 
-In order to get info about the `deep_link` parameter content in a deferred deep linking scenario, you should set a listener method on the `AdjustConfig` object. This will get triggered once the adjust SDK gets the info about the deep link content from the backend.
+In order to get info about the `deep_link` parameter content in a deferred deep linking scenario, you should set a listener method on the `AdjustConfig` object. This will get triggered once the Adjust SDK gets the info about the deep link content from the backend.
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -890,17 +864,17 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 Adjust.onCreate(config);
 ```
 
-Once the adjust SDK receives the info about the deep link content from the backend, it will deliver you the info about its content in this listener and expect the `boolean` return value from you. This return value represents your decision on whether the adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in the standard deep linking scenario) or not.
+Once the Adjust SDK receives the info about the deep link content from the backend, it will deliver you the info about its content in this listener and expect the `boolean` return value from you. This return value represents your decision on whether the Adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in the standard deep linking scenario) or not.
 
 If you return `true`, we will launch it and the exact same scenario which is described in the [Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return `false` from this listener and based on the deep link content decide on your own what to do next in your app.
 
-### <a id="deeplinking-reattribution">Reattribution via deep links
+### <a id="deeplinking-reattribution"></a>Reattribution via deep links
 
 Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please check our [official docs][reattribution-with-deeplinks].
 
-If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the adjust SDK in your app.
+If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
 
-Once you have received deep link content information in your app, add a call to `Adjust.appWillOpenUrl` method. By making this call, the adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will be sent to the adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
+Once you have received deep link content information in your app, add a call to `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
 
 The call to `Adjust.appWillOpenUrl` should be done like this:
 
@@ -928,9 +902,9 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-## <a id="troubleshooting">Troubleshooting
+## <a id="troubleshooting"></a>Troubleshooting
 
-### <a id="ts-session-failed">I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
+### <a id="ts-session-failed"></a>I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
 
 This error typically occurs when testing installs. Uninstalling and reinstalling the app is not enough to trigger a new install. The servers will determine that the SDK has lost its locally aggregated session data and ignore the erroneous message, given the information available on the servers about the device.
 
@@ -960,7 +934,7 @@ http://app.adjust.com/forget_device?app_token={yourAppToken}&android_id={android
 
 When the device is forgotten, the link just returns `Forgot device`. If the device was already forgotten or the values were incorrect, the link returns `Device not found`.
 
-### <a id="ts-broadcast-receiver">Is my broadcast receiver capturing the install referrer?
+### <a id="ts-broadcast-receiver"></a>Is my broadcast receiver capturing the install referrer?
 
 If you followed the instructions in the [guide](#broadcast_receiver), the broadcast receiver should be configured to send the install referrer to our SDK and to our servers.
 
@@ -1000,13 +974,13 @@ V/Adjust: Path:      /sdk_click
 
 If you perform this test before launching the app, you won't see the package being sent. The package will be sent once the app is launched.
 
-### <a id="ts-event-at-launch">Can I trigger an event at application launch?
+### <a id="ts-event-at-launch"></a>Can I trigger an event at application launch?
 
 Not how you might intuitively think. The `onCreate` method on the global `Application` class is called not only at application launch, but also when a system or application event is captured by the app.
 
 Our SDK is prepared for initialization at this time, but not actually started. This will only happen when an activity is started, i.e., when a user actually launches the app.
 
-That's why triggering an event at this time will not do what you would expect. Such calls will start the adjust SDK and send the events, even when the app was not launched by the user - at a time that depends on external factors of the app.
+That's why triggering an event at this time will not do what you would expect. Such calls will start the Adjust SDK and send the events, even when the app was not launched by the user - at a time that depends on external factors of the app.
 
 Triggering events at application launch will thus result in inaccuracies in the number of installs and sessions tracked.
 
@@ -1024,6 +998,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/en/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
 [application_name]:               http://developer.android.com/guide/topics/manifest/application-element.html#nm
 [special-partners]:               https://docs.adjust.com/en/special-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
@@ -1056,10 +1031,9 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 ## <a id="license"></a>License
 
-The adjust SDK is licensed under the MIT License.
+The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2017 adjust GmbH,
-http://www.adjust.com
+Copyright (c) 2012-2017 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
