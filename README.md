@@ -179,7 +179,7 @@ We use this broadcast receiver to retrieve the install referrer, in order to imp
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
 
-**Note**: Receiving referrer information via `INSTALL_REFERRER` intent is part of old Google referrer mechanism which got replaced with [new Google referrer API][new-referrer-api]. It is strongly advised to add support for new API which significantly improves security of the referrer information being delivered into the app and also helps attribution providers to fight click injection in more efficient way. In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project][#sdk-add] chapter properly and that you have following line added to your `build.gradle` file:
+**Note**: Receiving referrer information via `INSTALL_REFERRER` intent is part of old Google referrer mechanism which got replaced with [new Google referrer API][new-referrer-api]. It is strongly advised to add support for new API which significantly improves security of the referrer information being delivered into the app and also helps attribution providers to fight click injection in more efficient way. In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
 
 ```
 compile 'com.android.installreferrer:installreferrer:1.0'
@@ -736,7 +736,8 @@ To send us the push notification token, add the following call to Adjust once yo
 Adjust.setPushToken(pushNotificationsToken, context);
 ```
 
-This updated signature with the context, allows the SDK to cover more scenarios to make sure the token is send. 
+This updated signature with the context allows the SDK to cover more scenarios to make sure that the push token is sent and it is advised to use this method signature from above.
+
 We still support the previous signature of the same method:
 
 ```java
