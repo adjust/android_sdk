@@ -153,61 +153,72 @@ public class Util {
         return Reflection.getTelephonyId(telephonyManager, index);
     }
 
+    public static boolean tryAddToStringList(List<String> list, String value) {
+        if (value == null) {
+            return false;
+        }
+        if (list.contains(value)) {
+            return false;
+        }
+
+        return list.add(value);
+    }
+
     public static String getTelephonyIds(TelephonyManager telephonyManager) {
-        List<String> telephonyIds = new ArrayList<String>();
+        List<String> telephonyIdList = new ArrayList<String>();
 
         String telephonyId0 = getTelephonyId(telephonyManager, 0);
-        if (telephonyId0 != null) {
-            telephonyIds.add(telephonyId0);
-        }
+        tryAddToStringList(telephonyIdList, telephonyId0);
 
         for (int i = 1; i < 10; i++) {
             String telephonyId = getTelephonyId(telephonyManager, i);
-            if (telephonyId == null) {
+            if (!tryAddToStringList(telephonyIdList, telephonyId)) {
                 break;
             }
-            telephonyIds.add(telephonyId);
         }
 
-        return TextUtils.join(",", telephonyIds);
+        String telephonyIdMax = getTelephonyId(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(telephonyIdList, telephonyIdMax);
+
+        return TextUtils.join(",", telephonyIdList);
     }
 
     public static String getIMEIs(TelephonyManager telephonyManager) {
-        List<String> imeis = new ArrayList<String>();
+        List<String> imeiList = new ArrayList<String>();
 
         String imei0 = getIMEI(telephonyManager, 0);
-        if (imei0!= null) {
-            imeis.add(imei0);
-        }
+        tryAddToStringList(imeiList, imei0);
 
         for (int i = 1; i < 10; i++) {
             String imei = getIMEI(telephonyManager, i);
-            if (imei == null) {
+            if (!tryAddToStringList(imeiList, imei)) {
                 break;
             }
-            imeis.add(imei);
         }
 
-        return TextUtils.join(",", imeis);
+        String imeiMax = getIMEI(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(imeiList, imeiMax);
+
+        return TextUtils.join(",", imeiList);
     }
 
     public static String getMEIDs(TelephonyManager telephonyManager) {
-        List<String> meids = new ArrayList<String>();
+        List<String> meidList = new ArrayList<String>();
 
         String meid0 = getMEID(telephonyManager, 0);
-        if (meid0 != null) {
-            meids.add(meid0);
-        }
+        tryAddToStringList(meidList, meid0);
 
         for (int i = 1; i < 10; i++) {
             String meid = getMEID(telephonyManager, i);
-            if (meid == null) {
+            if (!tryAddToStringList(meidList, meid)) {
                 break;
             }
-            meids.add(meid);
         }
 
-        return TextUtils.join(",", meids);
+        String meidMax = getMEID(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(meidList, meidMax);
+
+        return TextUtils.join(",", meidList);
     }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
