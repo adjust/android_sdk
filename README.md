@@ -13,7 +13,9 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Add Google Play Services](#sdk-gps)
    * [Add permissions](#sdk-permissions)
    * [Proguard settings](#sdk-proguard)
-   * [Adjust broadcast receiver](#sdk-broadcast-receiver)
+   * [Install referrer](#install-referrer)
+      * [Google Play Referrer API](#gpr-api)
+      * [Google Play Store intent](#gps-intent)
    * [Integrate the SDK into your app](#sdk-integrate)
    * [Basic setup](#basic-setup)
    * [Session tracking](#session-tracking)
@@ -160,9 +162,25 @@ If you are using Proguard, add these lines to your Proguard file:
 
 If you are **not targeting the Google Play Store**, you can remove the `com.google.android.gms` rules.
 
-### <a id="sdk-broadcast-receiver"></a>Adjust broadcast receiver
+### <a id="install-referrer"></a>Install referrer
 
-If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
+In order to properly attribute install of your app with it's source, we need to get information about **install referrer**. This can be obtained with usage of **Google Play Referrer API** or with catching **Google Play Store intent** with broadcast receiver.
+
+**Important**: Google Play Referrer API is newly introduced by Google in order to provide more reliable and secure way of obtaining install referrer information and also to aid attribution providers to fight click injection in more efficient way. It is **strongly recommended** that you have this supported in your application. Google Play Store intent is less secure way of obtaining install referrer information which will exist in parallel with new Google Play Referrer API for a while, but is intended to be deprecated at some point in future.
+
+#### <a id="gpr-api"></a>Google Play Referrer API
+
+In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
+
+```
+compile 'com.android.installreferrer:installreferrer:1.0'
+```
+
+In addition to that, this feature is supported if you use **Adjust SDK v4.12.0 or above**.
+
+#### <a id="gps-intent"></a>Google Play Store intent
+
+Google Play Store `INSTALL_REFERRER` intent should be captured with broadcast receiver. If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
 
 ```xml
 <receiver
@@ -176,15 +194,9 @@ If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRE
 
 ![][receiver]
 
-We use this broadcast receiver to retrieve the install referrer, in order to improve conversion tracking.
+We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
-
-**Note**: Receiving referrer information via `INSTALL_REFERRER` intent is part of old Google referrer mechanism which got replaced with [new Google referrer API][new-referrer-api]. It is strongly advised to add support for new API which significantly improves security of the referrer information being delivered into the app and also helps attribution providers to fight click injection in more efficient way. In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
-
-```
-compile 'com.android.installreferrer:installreferrer:1.0'
-```
 
 ### <a id="sdk-integrate"></a>Integrate the SDK into your app
 
