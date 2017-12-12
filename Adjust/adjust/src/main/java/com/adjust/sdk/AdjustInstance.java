@@ -441,8 +441,14 @@ public class AdjustInstance {
      * @param context     Application context
      */
     private void saveRawReferrer(final String rawReferrer, final long clickTime, final Context context) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
+            }
+        };
+        Util.runInBackground(command);
     }
 
     /**
@@ -452,13 +458,26 @@ public class AdjustInstance {
      * @param context   Application context
      */
     private void savePushToken(final String pushToken, final Context context) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.savePushToken(pushToken);
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.savePushToken(pushToken);
+            }
+        };
+        Util.runInBackground(command);
     }
 
     private void setSendingReferrersAsNotSent(final Context context) {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.setSendingReferrersAsNotSent();
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.setSendingReferrersAsNotSent();
+
+            }
+        };
+        Util.runInBackground(command);
     }
 
     /**

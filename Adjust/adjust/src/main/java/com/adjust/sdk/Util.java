@@ -84,6 +84,21 @@ public class Util {
         return Reflection.getPlayAdId(context);
     }
 
+    public static void runInBackground(Runnable command) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            command.run();
+            return;
+        }
+        new AsyncTask<Object,Void,Void>() {
+            @Override
+            protected Void doInBackground(Object... params) {
+                Runnable command = (Runnable)params[0];
+                command.run();
+                return null;
+            }
+        }.execute((Object)command);
+    }
+
     public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
         ILogger logger = AdjustFactory.getLogger();
         if (Looper.myLooper() != Looper.getMainLooper()) {
