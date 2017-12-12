@@ -34,7 +34,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -147,6 +149,66 @@ public class Util {
         return Reflection.getMeid(telephonyManager, index);
     }
 
+    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
+        return Reflection.getTelephonyId(telephonyManager, index);
+    }
+
+    public static String getTelephonyIds(TelephonyManager telephonyManager) {
+        List<String> telephonyIds = new ArrayList<String>();
+
+        String telephonyId0 = getTelephonyId(telephonyManager, 0);
+        if (telephonyId0 != null) {
+            telephonyIds.add(telephonyId0);
+        }
+
+        for (int i = 1; i < 10; i++) {
+            String telephonyId = getTelephonyId(telephonyManager, i);
+            if (telephonyId == null) {
+                break;
+            }
+            telephonyIds.add(telephonyId);
+        }
+
+        return TextUtils.join(",", telephonyIds);
+    }
+
+    public static String getIMEIs(TelephonyManager telephonyManager) {
+        List<String> imeis = new ArrayList<String>();
+
+        String imei0 = getIMEI(telephonyManager, 0);
+        if (imei0!= null) {
+            imeis.add(imei0);
+        }
+
+        for (int i = 1; i < 10; i++) {
+            String imei = getIMEI(telephonyManager, i);
+            if (imei == null) {
+                break;
+            }
+            imeis.add(imei);
+        }
+
+        return TextUtils.join(",", imeis);
+    }
+
+    public static String getMEIDs(TelephonyManager telephonyManager) {
+        List<String> meids = new ArrayList<String>();
+
+        String meid0 = getMEID(telephonyManager, 0);
+        if (meid0 != null) {
+            meids.add(meid0);
+        }
+
+        for (int i = 1; i < 10; i++) {
+            String meid = getMEID(telephonyManager, i);
+            if (meid == null) {
+                break;
+            }
+            meids.add(meid);
+        }
+
+        return TextUtils.join(",", meids);
+    }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
         Closeable closable = null;

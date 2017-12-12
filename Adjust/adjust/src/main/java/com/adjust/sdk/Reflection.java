@@ -136,6 +136,15 @@ public class Reflection {
         }
     }
 
+    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getDeviceId();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", new Class[]{int.class}, index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     private static Object getAdvertisingInfoObject(Context context)
             throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
