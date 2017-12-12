@@ -158,6 +158,7 @@ If you are using Proguard, add these lines to your Proguard file:
 -keep class android.os.LocaledList {
     java.util.Locale get(int);
 }
+-keep public class com.android.installreferrer.** { *; }
 ```
 
 If you are **not targeting the Google Play Store**, you can remove the `com.google.android.gms` rules.
@@ -176,7 +177,13 @@ In order to have this supported in your app, please make sure that you have foll
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
-In addition to that, this feature is supported if you use **Adjust SDK v4.12.0 or above**.
+Also, make sure that you have paid attention to [Proguard settings](#sdk-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
+
+```
+-keep public class com.android.installreferrer.** { *; }
+```
+
+This feature is supported if you use **Adjust SDK v4.12.0 or above**.
 
 #### <a id="gps-intent"></a>Google Play Store intent
 
