@@ -68,7 +68,7 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 
 ### <a id="sdk-add"></a>Add the SDK to your project
 
-If you are using Maven, add following to yout `build.gradle` file:
+If you are using Maven, add the following to your `build.gradle` file:
 
 ```
 compile 'com.adjust.sdk:adjust-android:4.12.0'
@@ -82,11 +82,11 @@ implementation 'com.adjust.sdk:adjust-android:4.12.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
-The applies for adding Google Play Services dependency to your `build.gradle` file.
+This applies when adding the Google Play Services dependency to your `build.gradle` file.
 
 ---
 
-You can as well add Adjust SDK to your project as JAR library. Latest SDK version JAR library can be found in our [releases page][releases].
+You can also add the Adjust SDK to your project as a JAR library. The latest SDK version's JAR library can be found on our [releases page][releases].
 
 ### <a id="sdk-gps"></a>Add Google Play Services
 
@@ -100,8 +100,8 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 
     ![][gradle_gps]
     
-    **Note**: Adjust SDK is not tied to any specific version of `play-services-analytics` part of Google Play Services 
-    library, so feel free to always use latest version of it (or the one you might specially need for some reason).
+    **Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services 
+    library, so feel free to always use the latest version of it (or whichever you might need)
 
 2. **Skip this step if you are using version 7 or later of Google Play Services**:
    In the Package Explorer open the `AndroidManifest.xml` of your Android
@@ -115,14 +115,14 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 
 ### <a id="sdk-permissions"></a>Add permissions
 
-Please add following permissions which Adjust SDK needs if they are not already present in your `AndroidManifest.xml` file:
+Please add the following permissions, which the Adjust SDK needs, if they are not already present in your `AndroidManifest.xml` file:
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-If you are **not targeting the Google Play Store**, please add following permission as well:
+If you are **not targeting the Google Play Store**, please also add the following permission:
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -165,29 +165,29 @@ If you are **not targeting the Google Play Store**, you can remove the `com.goog
 
 ### <a id="install-referrer"></a>Install referrer
 
-In order to properly attribute install of your app with it's source, we need to get information about **install referrer**. This can be obtained with usage of **Google Play Referrer API** or with catching **Google Play Store intent** with broadcast receiver.
+In order to correctly attribute an install of your app to its source, Adjust needs information about the **install referrer**. This can be obtained by using the **Google Play Referrer API** or by catching the **Google Play Store intent** with a broadcast receiver.
 
-**Important**: Google Play Referrer API is newly introduced by Google in order to provide more reliable and secure way of obtaining install referrer information and also to aid attribution providers to fight click injection in more efficient way. It is **strongly recommended** that you have this supported in your application. Google Play Store intent is less secure way of obtaining install referrer information which will exist in parallel with new Google Play Referrer API for a while, but is intended to be deprecated at some point in future.
+**Important**: The Google Play Referrer API is newly introduced by Google with the express purpose of providing a more reliable and secure way of obtaining install referrer information and to aid attribution providers in the fight against click injection. It is **strongly advised** that you support this in your application. The Google Play Store intent is a less secure way of obtaining install referrer information. It will continue to exist in parallel with the new Google Play Referrer API temporarily, but it is set to be deprecated in future.
 
 #### <a id="gpr-api"></a>Google Play Referrer API
 
-In order to have this supported in your app, please make sure that you have followed [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
+In order to support this in your app, please make sure that you have followed the [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
 
 ```
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
-Also, make sure that you have paid attention to [Proguard settings](#sdk-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
+Also, make sure that you have paid attention to the [Proguard settings](#sdk-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
 
 ```
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-This feature is supported if you use **Adjust SDK v4.12.0 or above**.
+This feature is supported if you are using **Adjust SDK v4.12.0 or above**.
 
 #### <a id="gps-intent"></a>Google Play Store intent
 
-Google Play Store `INSTALL_REFERRER` intent should be captured with broadcast receiver. If you are **not using your own broadcast receiver** to receive `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
+The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadcast receiver. If you are **not using your own broadcast receiver** to receive the `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
 
 ```xml
 <receiver
@@ -253,20 +253,16 @@ We recommend using a global android [Application][android_application] class to 
 
     Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
 
-    Depending on whether you build your app for testing or for production, you must set `environment` with one of these 
-    values:
+    Depending on whether you are building your app for testing or for production, you must set `environment` with one of these values:
 
     ```java
     String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
     String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
     ```
 
-    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX` if and only if you or someone else is 
-    testing your app. Make sure to set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` just before you publish the 
-    app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start developing and testing it again.
+    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` before you publish the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start developing and testing it again.
 
-    We use this environment to distinguish between real traffic and test traffic from test devices. It is very important that 
-    you keep this value meaningful at all times! This is especially important if you are tracking revenue.
+    We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times, especially if you are tracking revenue.
 
 ### <a id="session-tracking"></a>Session tracking
 
@@ -402,7 +398,7 @@ Adjust.trackEvent(event);
 
 ### <a id="revenue-tracking"></a>Revenue tracking
 
-If your users can generate revenue by tapping on advertisements or making In-App Purchases you can track those revenues with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
+If your users can generate revenue by tapping on advertisements or making in-app purchases you can track those revenues with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -418,9 +414,9 @@ You can read more about revenue and event tracking in the [event tracking guide]
 
 ### <a id="revenue-deduplication"></a>Revenue deduplication
 
-You can also add an optional order ID to avoid tracking duplicate revenues. The last ten order IDs are remembered, and  revenue events with duplicate order IDs are skipped. This is especially useful for In-App Purchase tracking. You can see an  example below.
+You can also add an optional order ID to avoid tracking duplicate revenues. The last ten order IDs are remembered, and revenue events with duplicate order IDs are skipped. This is especially useful for in-app purchase tracking. You can see an  example below.
 
-If you want to track In-App purchases, please make sure to call the `trackEvent` only if the purchase is finished and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
+If you want to track in-app purchases, please make sure to call `trackEvent` only if the purchase is finished and item is purchased. That way you can avoid tracking revenue that is not actually being generated.
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -746,7 +742,7 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 **Note**: You can only make this call in the Adjust SDK v4.11.0 and above.
 
-**Note**: Information about current attribution is available after app installation has been tracked by the Adjust backend and attribution callback has been initially triggered. From that moment on, Adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialised and attribution callback has been initially triggered.
+**Note**: Information about current attribution is available after app installation has been tracked by the Adjust backend and attribution callback has been initially triggered. From that moment on, Adjust SDK has information about your user's attribution and you can access it with this method. So, **it is not possible** to access user's attribution value before the SDK has been initialized and attribution callback has been initially triggered.
 
 ### <a id="push-token"></a>Push token
 
@@ -756,7 +752,7 @@ To send us the push notification token, add the following call to Adjust once yo
 Adjust.setPushToken(pushNotificationsToken, context);
 ```
 
-This updated signature with the context allows the SDK to cover more scenarios to make sure that the push token is sent and it is advised to use this method signature from above.
+This updated signature with `context` added allows the SDK to cover more scenarios to make sure that the push token is sent, and it is advised that you use the signature method above.
 
 We still support the previous signature of the same method:
 
@@ -764,11 +760,11 @@ We still support the previous signature of the same method:
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
-Push token is used for Audience Builder and client callbacks and needed for the upcoming uninstall tracking feature.
+Push tokens are used for Audience Builder and client callbacks, and they are required for the upcoming uninstall tracking feature.
 
 ### <a id="track-additional-ids"></a>Track additional device identifiers
 
-If you are distributing your app **outside of Google Play Store** and would like to track additional device identifiers (IMEI and MEID), you need to explicitly instruct Adjust SDK to do so. You can do that by calling `setReadMobileEquipmentIdentity` method of `AdjustConfig` instance and passing `true` parameter to it. **Adjust SDK doesn't collect these identifiers by default**.
+If you are distributing your app **outside of the Google Play Store** and would like to track additional device identifiers (IMEI and MEID), you need to explicitly instruct the Adjust SDK to do so. You can do that by calling the `setReadMobileEquipmentIdentity` method of the `AdjustConfig` instance and passing a `true` parameter to it. **The Adjust SDK does not collect these identifiers by default**.
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -778,17 +774,17 @@ config.setReadMobileEquipmentIdentity(true);
 Adjust.onCreate(config);
 ```
 
-You will also need to add `READ_PHONE_STATE` permission to your `AndroidManifest.xml` file:
+You will also need to add the `READ_PHONE_STATE` permission to your `AndroidManifest.xml` file:
 
 ```xml
 <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 ```
 
-In order to use this feature, additional steps in your Adjust dashboard will be required. For more information, please contact your dedicated Account Manager or write an E-Mail to support@adjust.com.
+In order to use this feature, additional steps are required within your Adjust Dashboard. For more information, please contact your dedicated account manager or write an email to support@adjust.com.
 
 ### <a id="pre-installed-trackers"></a>Pre-installed trackers
 
-If you want to use the Adjust SDK to recognize users that found your app pre-installed on their device, follow these steps.
+If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
 
 1. Create a new tracker in your [dashboard].
 2. Open your app delegate and add set the default tracker of your `AdjustConfig`:
@@ -799,11 +795,10 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
   Adjust.onCreate(config);
   ```
 
-  Replace `{TrackerToken}` with the tracker token you created in step 2. Please note that the dashboard displays a tracker 
-  URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the 
+  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the 
   entire URL.
 
-3. Build and run your app. You should see a line like the following in LogCat:
+3. Build and run your app. You should see a line like the following in your LogCat:
 
     ```
     Default tracker: 'abc123'
@@ -811,11 +806,11 @@ If you want to use the Adjust SDK to recognize users that found your app pre-ins
 
 ### <a id="deeplinking"></a>Deep linking
 
-If you are using the Adjust tracker URL with an option to deep link into your app from the URL, there is the possibility to get info about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario). In the standard deep linking scenario, Android platform natively offers the possibility for you to get the info about the deep link content. Deferred deep linking scenario is something which Android platform doesn't support out of box and for this case, the Adjust SDK will offer you the mechanism to get the info about the deep link content.
+If you are using an Adjust tracker URL with the option to deep link into your app, there is the possibility to get information about the deep link URL and its content. Hitting the URL can happen when the user has your app already installed (standard deep linking scenario) or if they don't have the app on their device (deferred deep linking scenario). In the standard deep linking scenario, the Android platform natively offers the possibility for you to get the information about the deep link content. The deferred deep linking scenario is something which the Android platform doesn't support out of the box, and, in this case, the Adjust SDK will offer you the mechanism you need to get the information about the deep link content.
 
 ### <a id="deeplinking-standard"></a>Standard deep linking scenario
 
-If a user has your app installed and you want it to launch after hitting an Adjust tracker URL with the `deep_link` parameter in it, you need enable deep linking in your app. This is being done by choosing a desired **unique scheme name** and assigning it to the Activity which you want to launch once the app opens after the user clicked on the link. This is set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in the manifest file and assign `android:scheme` property value with the desired scheme name:
+If a user has your app installed and you want it to launch after hitting an Adjust tracker URL with the `deep_link` parameter in it, you need to enable deep linking in your app. This is done by choosing a desired **unique scheme name** and assigning it to the Activity you want to launch once your app opens following a user clicking on the tracker URL. This is set in the `AndroidManifest.xml`. You need to add the `intent-filter` section to your desired Activity definition in the manifest file and assign an `android:scheme` property value with the desired scheme name:
 
 ```xml
 <activity
@@ -838,7 +833,7 @@ If a user has your app installed and you want it to launch after hitting an Adju
 </activity>
 ```
 
-With this being set, you need to use the assigned scheme name in the Adjust tracker URL's `deep_link` parameter if you want your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link can be built to look something like this:
+With this now set, you need to use the assigned scheme name in the Adjust tracker URL's `deep_link` parameter if you want your app to launch once the tracker URL is clicked. A tracker URL without any information added to the deep link can be built to look something like this:
 
 ```
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
@@ -850,7 +845,7 @@ After clicking this tracker URL, and with the app set as described above, your a
 
 Depending on the `android:launchMode` setting of your Activity in the `AndroidManifest.xml` file, information about the `deep_link` parameter content will be delivered to the appropriate place in the Activity file. For more information about the possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
 
-There are two possible places in which information about the deep link content will be delivered to your desired Activity via `Intent` object - either in the Activity's `onCreate` or `onNewIntent` method. After the app has launched and one of these methods is triggered, you will be able to get the actual deeplink passed in the `deep_link` parameter in the click URL. You can then use this information to do some additional logic in your app.
+There are two places within your desired Activity where information about the deep link content will be delivered via the `Intent` object--either in the Activity's `onCreate` or `onNewIntent` methods. Once your app has launched and one of these methods has been triggered, you will be able to get the actual deep link passed in the `deep_link` parameter in the click URL. You can then use this information to conduct some additional logic in your app.
 
 You can extract the deep link content from these two methods like this:
 
@@ -880,9 +875,9 @@ protected void onNewIntent(Intent intent) {
 
 ### <a id="deeplinking-deferred"></a>Deferred deep linking scenario
 
-Deferred deep linking scenario happens when a user clicks on the Adjust tracker URL with the `deep_link` parameter in it, but does not have the app installed on the device at the moment of click. After that, the user will get redirected to the Play Store to download and install your app. After opening it for the first time, the content of the `deep_link` parameter will be delivered to the app.
+The deferred deep linking scenario occurs when a user clicks on an Adjust tracker URL with a `deep_link` parameter in it, but does not have the app installed on the device at click time. After that, the user will be redirected to the Play Store to download and install your app. After opening it for the first time, the `deep_link` parameter content will be delivered to your app.
 
-In order to get info about the `deep_link` parameter content in a deferred deep linking scenario, you should set a listener method on the `AdjustConfig` object. This will get triggered once the Adjust SDK gets the info about the deep link content from the backend.
+In order to get information about the `deep_link` parameter content in a deferred deep linking scenario, you should set a listener method on the `AdjustConfig` object. This will be triggered once the Adjust SDK gets the information about the deep link content from the Adjust backend.
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -903,17 +898,17 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 Adjust.onCreate(config);
 ```
 
-Once the Adjust SDK receives the info about the deep link content from the backend, it will deliver you the info about its content in this listener and expect the `boolean` return value from you. This return value represents your decision on whether the Adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in the standard deep linking scenario) or not.
+Once the Adjust SDK receives the information about the deep link content from the Adjust backend, it will deliver you the information about its content in this listener and expect the `boolean` return value from you. This return value represents your decision on whether the Adjust SDK should launch the Activity to which you have assigned the scheme name from the deep link (like in the standard deep linking scenario) or not.
 
-If you return `true`, we will launch it and the exact same scenario which is described in the [Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return `false` from this listener and based on the deep link content decide on your own what to do next in your app.
+If you return `true`, we will launch it and the exact same scenario which is described in the [Standard deep linking scenario chapter](#deeplinking-standard) will happen. If you do not want the SDK to launch the Activity, you can return `false` from this listener, and, based on the deep link content, decide on your own what to do next in your app.
 
 ### <a id="deeplinking-reattribution"></a>Reattribution via deep links
 
-Adjust enables you to run re-engagement campaigns with usage of deep links. For more information on how to do that, please check our [official docs][reattribution-with-deeplinks].
+Adjust enables you to run re-engagement campaigns through deep links. For more information on how to do that, please check our [official docs][reattribution-with-deeplinks].
 
 If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
 
-Once you have received deep link content information in your app, add a call to `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution info inside of the deep link and if any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content in it, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
+Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
 
 The call to `Adjust.appWillOpenUrl` should be done like this:
 
