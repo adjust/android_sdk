@@ -1,3 +1,26 @@
+### Version 4.12.0 (13th December 2017)
+#### Added
+- Added support for new Google referrer API (https://developer.android.com/google/play/installreferrer/library.html).
+- Added `Adjust.getAmazonAdId()` method to obtain value of Amazon Advertising Identifier.
+- Added possibility to read Mobile Equipment Identity for non Google Play store apps.
+- Added usage of app secret in authorization header.
+- Added sending of `raw_referrer` parameter in `sdk_click` package.
+- Added reading of MCC.
+- Added reading of MNC.
+- Added reading of network type.
+- Added reading of connectivity type.
+- Added log messages for saved actions to be done when the SDK starts.
+
+#### Changed
+- Not sending `sdk_click` and `sdk_info` packages when SDK is disabled.
+- Setting enable/disable or offline/online is now queued.
+- Guaranteeing that first package is sent even with event buffering turned ON.
+- Not creating first session package if SDK is disabled before first launch.
+- Saving referrer in local storage and send it only after first session.
+- Saving push token in local storage and send it only after first session.
+
+---
+
 ### Version 4.11.4 (5th May 2017)
 #### Added
 - Added check if `sdk_click` package response contains attribution information.

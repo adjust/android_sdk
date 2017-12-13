@@ -10,13 +10,17 @@
 package com.adjust.sdk;
 
 import android.content.ContentResolver;
+import android.content.Context;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
@@ -24,6 +28,7 @@ class PackageBuilder {
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
     private ActivityStateCopy activityStateCopy;
+    private SessionParameters sessionParameters;
     private long createdAt;
 
     // reattributions
@@ -31,8 +36,12 @@ class PackageBuilder {
     AdjustAttribution attribution;
     String reftag;
     String referrer;
+    String rawReferrer;
     String deeplink;
-    long clickTime;
+    long clickTimeInMilliseconds = -1;
+
+    long clicktTimeInSeconds = -1;
+    long installBeginTimeInSeconds = -1;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -64,21 +73,18 @@ class PackageBuilder {
     public PackageBuilder(AdjustConfig adjustConfig,
                           DeviceInfo deviceInfo,
                           ActivityState activityState,
+                          SessionParameters sessionParameters,
                           long createdAt) {
         this.adjustConfig = adjustConfig;
         this.deviceInfo = deviceInfo;
         this.activityStateCopy = new ActivityStateCopy(activityState);
+        this.sessionParameters = sessionParameters;
         this.createdAt = createdAt;
     }
 
-    public ActivityPackage buildSessionPackage(SessionParameters sessionParameters, boolean isInDelay) {
+    public ActivityPackage buildSessionPackage(boolean isInDelay) {
         Map<String, String> parameters;
-
-        if (!isInDelay) {
-            parameters = getAttributableParameters(sessionParameters);
-        } else {
-            parameters = getAttributableParameters(null);
-        }
+        parameters = getAttributableParameters(isInDelay);
 
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
@@ -89,20 +95,18 @@ class PackageBuilder {
     }
 
     public ActivityPackage buildEventPackage(AdjustEvent event,
-                                             SessionParameters sessionParameters,
-                                             boolean isInDelay)
-    {
+                                             boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addInt(parameters, "event_count", activityStateCopy.eventCount);
+        PackageBuilder.addLong(parameters, "event_count", activityStateCopy.eventCount);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
-                    Util.mergeParameters(sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
+                    Util.mergeParameters(this.sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
-                    Util.mergeParameters(sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
+                    Util.mergeParameters(this.sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
         }
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
@@ -117,20 +121,26 @@ class PackageBuilder {
         return eventPackage;
     }
 
-    public ActivityPackage buildClickPackage(String source, SessionParameters sessionParameters) {
-        Map<String, String> parameters = getAttributableParameters(sessionParameters);
+    public ActivityPackage buildClickPackage(String source) {
+        Map<String, String> parameters = getAttributableParameters(false);
 
         PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addDate(parameters, "click_time", clickTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
         PackageBuilder.addString(parameters, "reftag", reftag);
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
         PackageBuilder.addString(parameters, "referrer", referrer);
+        PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
+        PackageBuilder.addDateInSeconds(parameters, "click_time", clicktTimeInSeconds);
+        PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         injectAttribution(parameters);
 
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
+        clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
+        clickPackage.setClickTimeInSeconds(clicktTimeInSeconds);
+        clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
         clickPackage.setParameters(parameters);
 
         return clickPackage;
@@ -166,16 +176,16 @@ class PackageBuilder {
         return activityPackage;
     }
 
-    private Map<String, String> getAttributableParameters(SessionParameters sessionParameters) {
+    private Map<String, String> getAttributableParameters(boolean isInDelay) {
         Map<String, String> parameters = getDefaultParameters();
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
-        if (sessionParameters != null) {
-            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, sessionParameters.callbackParameters);
-            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, sessionParameters.partnerParameters);
+        if (!isInDelay) {
+            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, this.sessionParameters.callbackParameters);
+            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, this.sessionParameters.partnerParameters);
         }
 
         return parameters;
@@ -229,25 +239,31 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
+        PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
+        PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
+        PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
+        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         fillPluginKeys(parameters);
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
-        PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-        PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-        PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        deviceInfo.reloadDeviceIds(adjustConfig.context);
+
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+
+        if (deviceInfo.playAdId == null) {
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
     }
 
     private void injectConfig(Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
-        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
 
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        PackageBuilder.addString(parameters, "gps_adid", playAdId);
-        Boolean isTrackingEnabled = Util.isPlayTrackingEnabled(adjustConfig.context);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", isTrackingEnabled);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
@@ -255,19 +271,30 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "fire_adid", fireAdId);
         Boolean fireTrackingEnabled = Util.getFireTrackingEnabled(contentResolver);
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", fireTrackingEnabled);
+
+        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+        if (adjustConfig.readMobileEquipmentIdentity) {
+            TelephonyManager telephonyManager = (TelephonyManager)adjustConfig.context.getSystemService(Context.TELEPHONY_SERVICE);
+
+            PackageBuilder.addString(parameters, "device_ids", Util.getTelephonyIds(telephonyManager));
+            PackageBuilder.addString(parameters, "imeis", Util.getIMEIs(telephonyManager));
+            PackageBuilder.addString(parameters, "meids", Util.getMEIDs(telephonyManager));
+        }
     }
 
     private void injectActivityState(Map<String, String> parameters) {
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addInt(parameters, "session_count", activityStateCopy.sessionCount);
-        PackageBuilder.addInt(parameters, "subsession_count", activityStateCopy.subsessionCount);
+        PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
+        PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
     }
 
     private void injectCommonParameters(Map<String, String> parameters) {
-        PackageBuilder.addDate(parameters, "created_at", createdAt);
+        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
     }
 
     private void injectAttribution(Map<String, String> parameters) {
@@ -315,7 +342,7 @@ class PackageBuilder {
         parameters.put(key, value);
     }
 
-    public static void addInt(Map<String, String> parameters, String key, long value) {
+    public static void addLong(Map<String, String> parameters, String key, long value) {
         if (value < 0) {
             return;
         }
@@ -324,8 +351,26 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, key, valueString);
     }
 
-    public static void addDate(Map<String, String> parameters, String key, long value) {
-        if (value < 0) {
+    public static void addDateInMilliseconds(Map<String, String> parameters, String key, long value) {
+        if (value <= 0) {
+            return;
+        }
+
+        Date date = new Date(value);
+        PackageBuilder.addDate(parameters, key, date);
+    }
+
+    public static void addDateInSeconds(Map<String, String> parameters, String key, long value) {
+        if (value <= 0) {
+            return;
+        }
+
+        Date date = new Date(value * 1000);
+        PackageBuilder.addDate(parameters, key, date);
+    }
+
+    public static void addDate(Map<String, String> parameters, String key, Date value) {
+        if (value == null) {
             return;
         }
 
@@ -339,7 +384,7 @@ class PackageBuilder {
         }
 
         long durationInSeconds = (durationInMilliSeconds + 500) / 1000;
-        PackageBuilder.addInt(parameters, key, durationInSeconds);
+        PackageBuilder.addLong(parameters, key, durationInSeconds);
     }
 
     public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
@@ -364,7 +409,7 @@ class PackageBuilder {
 
         int intValue = value ? 1 : 0;
 
-        PackageBuilder.addInt(parameters, key, intValue);
+        PackageBuilder.addLong(parameters, key, intValue);
     }
 
     public static void addDouble(Map<String, String> parameters, String key, Double value) {

@@ -9,6 +9,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import java.util.Date;
@@ -28,6 +30,9 @@ import static com.adjust.sdk.Constants.XLARGE;
  * Created by pfms on 06/11/14.
  */
 class DeviceInfo {
+    String playAdId;
+    Boolean isTrackingEnabled;
+    private boolean nonGoogleIdsRead = false;
     String macSha1;
     String macShortMd5;
     String androidId;
@@ -62,9 +67,9 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
-        boolean isGooglePlayServicesAvailable = Util.getPlayAdId(context) != null;
-        String macAddress = getMacAddress(context, isGooglePlayServicesAvailable);
         ContentResolver contentResolver = context.getContentResolver();
+
+        reloadDeviceIds(context);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -82,17 +87,32 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
-        androidId = getAndroidId(context, isGooglePlayServicesAvailable);
         fbAttributionId = getFacebookAttributionId(context);
         pluginKeys = Util.getPluginKeys(context);
-        macSha1 = getMacSha1(macAddress);
-        macShortMd5 = getMacShortMd5(macAddress);
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
         vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
+    }
+
+    void reloadDeviceIds(Context context) {
+        isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+        playAdId = Util.getPlayAdId(context);
+
+        if (playAdId == null && !nonGoogleIdsRead) {
+            if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+                AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
+            }
+            String macAddress = Util.getMacAddress(context);
+            macSha1 = getMacSha1(macAddress);
+            macShortMd5 = getMacShortMd5(macAddress);
+
+            androidId = Util.getAndroidId(context);
+
+            nonGoogleIdsRead = true;
+        }
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
@@ -171,6 +191,7 @@ class DeviceInfo {
     private String getHardwareName() {
         return Build.DISPLAY;
     }
+
     private String getScreenSize(int screenLayout) {
         int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -249,14 +270,6 @@ class DeviceInfo {
         String macShortMd5 = Util.md5(macShort);
 
         return macShortMd5;
-    }
-
-    private String getAndroidId(Context context, boolean isGooglePlayServicesAvailable) {
-        if (!isGooglePlayServicesAvailable) {
-            return Util.getAndroidId(context);
-        } else {
-            return null;
-        }
     }
 
     private String getFacebookAttributionId(final Context context) {

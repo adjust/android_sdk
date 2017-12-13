@@ -66,9 +66,9 @@ public class Adjust {
         adjustInstance.appWillOpenUrl(url);
     }
 
-    public static void setReferrer(String referrer) {
+    public static void setReferrer(String referrer, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendReferrer(referrer);
+        adjustInstance.sendReferrer(referrer, context);
     }
 
     public static void setOfflineMode(boolean enabled) {
@@ -116,8 +116,17 @@ public class Adjust {
         adjustInstance.setPushToken(token);
     }
 
+    public static void setPushToken(final String token, final Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.setPushToken(token, context);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
+    }
+
+    public static String getAmazonAdId(final Context context) {
+        return Util.getFireAdvertisingId(context.getContentResolver());
     }
 
     public static String getAdid() {

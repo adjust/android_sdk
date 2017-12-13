@@ -16,8 +16,6 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    String referrer;
-    long referrerClickTime;
     Boolean deviceKnown;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
@@ -27,10 +25,15 @@ public class AdjustConfig {
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
     Double delayStart;
-    List<IRunActivityHandler> sessionParametersActionsArray;
+    List<IRunActivityHandler> preLaunchActionsArray;
     ILogger logger;
     String userAgent;
     String pushToken;
+    Boolean startEnabled;
+    boolean startOffline;
+    String secretId;
+    String appSecret;
+    boolean readMobileEquipmentIdentity;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -129,6 +132,15 @@ public class AdjustConfig {
 
     public void setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+    }
+
+    public void setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
+        this.secretId = String.format("%d", secretId);
+        this.appSecret = String.format("%d%d%d%d", info1, info2, info3, info4);
+    }
+
+    public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {
+        this.readMobileEquipmentIdentity = readMobileEquipmentIdentity;
     }
 
     public boolean isValid() {

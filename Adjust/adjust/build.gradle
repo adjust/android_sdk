@@ -1,18 +1,19 @@
 apply plugin: 'com.android.library'
 
 def getVersionName() {
-    return "4.11.4"
+    return "4.12.0"
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName getVersionName()
+        consumerProguardFiles 'adjust-proguard-rules.txt'
     }
 }
 
@@ -20,18 +21,23 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task clearJar(type: Delete) {
-    delete "build/outputs/adjust-${getVersionName()}.jar"
-}
+task makeReleaseJar(type: Copy) {
+    dependsOn 'build'
 
-task makeJar(type: Copy) {
-    from('build/intermediates/bundles/default/')
+    from('build/intermediates/bundles/release/')
     into('build/outputs/')
     include('classes.jar')
-    rename ('classes.jar', "adjust-${getVersionName()}.jar")
+    rename ('classes.jar', "adjust-${getVersionName()}-release.jar")
 }
 
-makeJar.dependsOn(clearJar, build)
+task makeDebugJar(type: Copy) {
+    dependsOn 'build'
+
+    from('build/intermediates/bundles/debug/')
+    into('build/outputs/')
+    include('classes.jar')
+    rename ('classes.jar', "adjust-${getVersionName()}-debug.jar")
+}
 
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs

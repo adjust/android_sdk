@@ -15,11 +15,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.net.UrlQuerySanitizer;
 import android.os.Handler;
-import android.util.*;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,6 @@ public class ActivityHandler implements IActivityHandler {
     private static long SESSION_INTERVAL;
     private static long SUBSESSION_INTERVAL;
     private static final String TIME_TRAVEL = "Time travel!";
-    private static final String ADJUST_PREFIX = "adjust_";
     private static final String ACTIVITY_STATE_NAME = "Activity state";
     private static final String ATTRIBUTION_NAME = "Attribution";
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
@@ -45,6 +43,7 @@ public class ActivityHandler implements IActivityHandler {
     private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
     private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
     private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
+    private static final String SESSION_PARAMETERS_NAME = "Session parameters";
 
     private CustomScheduledExecutor scheduledExecutor;
     private IPackageHandler packageHandler;
@@ -61,6 +60,7 @@ public class ActivityHandler implements IActivityHandler {
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
     private SessionParameters sessionParameters;
+    private InstallReferrer installReferrer;
 
     @Override
     public void teardown(boolean deleteState) {
@@ -99,6 +99,11 @@ public class ActivityHandler implements IActivityHandler {
         teardownActivityStateS(deleteState);
         teardownAttributionS(deleteState);
         teardownAllSessionParametersS(deleteState);
+
+        if (deleteState) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            sharedPreferencesManager.clear();
+        }
 
         packageHandler = null;
         logger = null;
@@ -139,23 +144,23 @@ public class ActivityHandler implements IActivityHandler {
             return !offline;
         }
 
-        public boolean isBackground() {
+        public boolean isInBackground() {
             return background;
         }
 
-        public boolean isForeground() {
+        public boolean isInForeground() {
             return !background;
         }
 
-        public boolean isDelayStart() {
+        public boolean isInDelayedStart() {
             return delayStart;
         }
 
-        public boolean isToStartNow() {
+        public boolean isNotInDelayedStart() {
             return !delayStart;
         }
 
-        public boolean isToUpdatePackages() {
+        public boolean itHasToUpdatePackages() {
             return updatePackages;
         }
 
@@ -163,8 +168,12 @@ public class ActivityHandler implements IActivityHandler {
             return firstLaunch;
         }
 
-        public boolean isSessionResponseProcessed() {
-            return sessionResponseProcessed;
+        public boolean isNotFirstLaunch() {
+            return !firstLaunch;
+        }
+
+        public boolean hasSessionResponseNotBeenProcessed() {
+            return !sessionResponseProcessed;
         }
     }
 
@@ -180,9 +189,9 @@ public class ActivityHandler implements IActivityHandler {
         internalState = new InternalState();
 
         // enabled by default
-        internalState.enabled = true;
+        internalState.enabled = adjustConfig.startEnabled != null ? adjustConfig.startEnabled : true;
         // online by default
-        internalState.offline = false;
+        internalState.offline = adjustConfig.startOffline;
         // in the background by default
         internalState.background = true;
         // delay start not configured by default
@@ -198,6 +207,26 @@ public class ActivityHandler implements IActivityHandler {
                 initI();
             }
         });
+    }
+
+    @Override
+    public AdjustConfig getAdjustConfig() {
+        return adjustConfig;
+    }
+
+    @Override
+    public DeviceInfo getDeviceInfo() {
+        return deviceInfo;
+    }
+
+    @Override
+    public ActivityState getActivityState() {
+        return activityState;
+    }
+
+    @Override
+    public SessionParameters getSessionParameters() {
+        return sessionParameters;
     }
 
     @Override
@@ -302,6 +331,7 @@ public class ActivityHandler implements IActivityHandler {
         }
         // redirect sdk click responses to attribution handler to check for attribution information
         if (responseData instanceof SdkClickResponseData) {
+            checkForInstallReferrerInfo((SdkClickResponseData) responseData);
             attributionHandler.checkSdkClickResponse((SdkClickResponseData)responseData);
             return;
         }
@@ -314,100 +344,22 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void setEnabled(final boolean enabled) {
-        // compare with the saved or internal state
-        if (!hasChangedState(this.isEnabled(), enabled,
-                "Adjust already enabled", "Adjust already disabled")) {
-            return;
-        }
-
-        // save new enabled state in internal state
-        internalState.enabled = enabled;
-
-        if (activityState == null) {
-            updateStatus(!enabled,
-                    "Handlers will start as paused due to the SDK being disabled",
-                    "Handlers will still start as paused",
-                    "Handlers will start as active due to the SDK being enabled");
-            return;
-        }
-
-        // save new enabled state in activity state
-        Runnable saveEnabled = new Runnable() {
+        scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                activityState.enabled = enabled;
+                setEnabledI(enabled);
             }
-        };
-        writeActivityStateS(saveEnabled);
-
-        updateStatus(!enabled,
-                "Pausing handlers due to SDK being disabled",
-                "Handlers remain paused",
-                "Resuming handlers due to SDK being enabled");
-    }
-
-    private void updateStatus(boolean pausingState, String pausingMessage,
-                              String remainsPausedMessage, String unPausingMessage)
-    {
-        // it is changing from an active state to a pause state
-        if (pausingState) {
-            logger.info(pausingMessage);
-        }
-        // check if it's remaining in a pause state
-        else if (pausedI(false)) {                      // safe to use internal version of paused (read only), can suffer from phantom read but not an issue
-            // including the sdk click handler
-            if (pausedI(true)) {
-                logger.info(remainsPausedMessage);
-            } else {
-                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
-            }
-        } else {
-            // it is changing from a pause state to an active state
-            logger.info(unPausingMessage);
-        }
-
-        updateHandlersStatusAndSend();
-    }
-
-    private boolean hasChangedState(boolean previousState, boolean newState,
-                                    String trueMessage, String falseMessage)
-    {
-        if (previousState != newState) {
-            return true;
-        }
-
-        if (previousState) {
-            logger.debug(trueMessage);
-        } else {
-            logger.debug(falseMessage);
-        }
-
-        return false;
+        });
     }
 
     @Override
-    public void setOfflineMode(boolean offline) {
-        // compare with the internal state
-        if (!hasChangedState(internalState.isOffline(), offline,
-                "Adjust already in offline mode",
-                "Adjust already in online mode")) {
-            return;
-        }
-
-        internalState.offline = offline;
-
-        if (activityState == null) {
-            updateStatus(offline,
-                    "Handlers will start paused due to SDK being offline",
-                    "Handlers will still start as paused",
-                    "Handlers will start as active due to SDK being online");
-            return;
-        }
-
-        updateStatus(offline,
-                "Pausing handlers to put SDK offline mode",
-                "Handlers remain paused",
-                "Resuming handlers to put SDK in online mode");
+    public void setOfflineMode(final boolean offline) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                setOfflineModeI(offline);
+            }
+        });
     }
 
     @Override
@@ -464,22 +416,30 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void setAskingAttribution(final boolean askingAttribution) {
-        Runnable saveAskingAttribution = new Runnable() {
-            @Override
-            public void run() {
-                activityState.askingAttribution = askingAttribution;
-            }
-        };
-
-        writeActivityStateS(saveAskingAttribution);
-    }
-
-    @Override
-    public void sendReferrer(final String referrer, final long clickTime) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendReferrerI(referrer, clickTime);
+                setAskingAttributionI(askingAttribution);
+            }
+        });
+    }
+
+    @Override
+    public void sendReftagReferrer() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendReftagReferrerI();
+            }
+        });
+    }
+
+    @Override
+    public void sendInstallReferrer(final long clickTime, final long installBegin, final String installReferrer) {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendInstallReferrerI(clickTime, installBegin, installReferrer);
             }
         });
     }
@@ -595,16 +555,29 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void setPushToken(final String token) {
+    public void setPushToken(final String token, final boolean preSaved) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                if (activityState == null) {
-                    startI();
+                if (!preSaved) {
+                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                    sharedPreferencesManager.savePushToken(token);
                 }
-                setPushTokenI(token);
+
+                if (activityState == null) {
+                    // No install has been tracked so far.
+                    // Push token is saved, ready for the session package to pick it up.
+                    return;
+                } else {
+                    setPushTokenI(token);
+                }
             }
         });
+    }
+
+    @Override
+    public Context getContext() {
+        return adjustConfig.context;
     }
 
     public void foregroundTimerFired() {
@@ -625,6 +598,7 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
     public String getAdid() {
         if (activityState == null) {
             return null;
@@ -632,6 +606,7 @@ public class ActivityHandler implements IActivityHandler {
         return activityState.adid;
     }
 
+    @Override
     public AdjustAttribution getAttribution() {
         return attribution;
     }
@@ -641,21 +616,13 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
                 deviceInfo,
                 activityState,
+                sessionParameters,
                 now);
         return attributionBuilder.buildAttributionPackage();
     }
 
     public InternalState getInternalState() {
         return internalState;
-    }
-
-    private void updateHandlersStatusAndSend() {
-        scheduledExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                updateHandlersStatusAndSendI();
-            }
-        });
     }
 
     private void initI() {
@@ -674,6 +641,18 @@ public class ActivityHandler implements IActivityHandler {
         readSessionCallbackParametersI(adjustConfig.context);
         readSessionPartnerParametersI(adjustConfig.context);
 
+        if (adjustConfig.startEnabled != null) {
+            if (adjustConfig.preLaunchActionsArray == null) {
+                adjustConfig.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
+            }
+            adjustConfig.preLaunchActionsArray.add(new IRunActivityHandler() {
+                @Override
+                public void run(ActivityHandler activityHandler) {
+                    activityHandler.setEnabledI(adjustConfig.startEnabled);
+                }
+            });
+        }
+
         if (activityState != null) {
             internalState.enabled = activityState.enabled;
             internalState.updatePackages = activityState.updatePackages;
@@ -690,8 +669,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Event buffering is enabled");
         }
 
-        String playAdId = Util.getPlayAdId(adjustConfig.context);
-        if (playAdId == null) {
+        if (deviceInfo.playAdId == null) {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
             if (deviceInfo.macSha1 == null &&
                     deviceInfo.macShortMd5 == null &&
@@ -710,7 +688,17 @@ public class ActivityHandler implements IActivityHandler {
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
             if (activityState != null) {
-                setPushToken(adjustConfig.pushToken);
+                setPushToken(adjustConfig.pushToken, false);
+            } else {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
+            }
+        } else {
+            if (activityState != null) {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                String savedPushToken = sharedPreferencesManager.getPushToken();
+
+                setPushToken(savedPushToken, true);
             }
         }
 
@@ -765,11 +753,11 @@ public class ActivityHandler implements IActivityHandler {
             updatePackagesI();
         }
 
-        if (adjustConfig.referrer != null) {
-            sendReferrerI(adjustConfig.referrer, adjustConfig.referrerClickTime);
-        }
+        preLaunchActionsI(adjustConfig.preLaunchActionsArray);
 
-        sessionParametersActionsI(adjustConfig.sessionParametersActionsArray);
+        installReferrer = new InstallReferrer(adjustConfig.context, this);
+
+        sendReftagReferrerI();
     }
 
     private void readConfigFile(Context context) {
@@ -793,13 +781,13 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void sessionParametersActionsI(List<IRunActivityHandler> sessionParametersActionsArray) {
-        if (sessionParametersActionsArray == null) {
+    private void preLaunchActionsI(List<IRunActivityHandler> preLaunchActionsArray) {
+        if (preLaunchActionsArray == null) {
             return;
         }
 
-        for (IRunActivityHandler sessionParametersAction : sessionParametersActionsArray) {
-            sessionParametersAction.run(this);
+        for (IRunActivityHandler preLaunchAction : preLaunchActionsArray) {
+            preLaunchAction.run(this);
         }
     }
 
@@ -823,14 +811,24 @@ public class ActivityHandler implements IActivityHandler {
         // very first session
         if (activityState == null) {
             activityState = new ActivityState();
-            activityState.sessionCount = 1; // this is the first session
-            activityState.pushToken = adjustConfig.pushToken;
 
-            transferSessionPackageI(now);
+            // activityState.pushToken = adjustConfig.pushToken;
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            activityState.pushToken = sharedPreferencesManager.getPushToken();
+
+            // track the first session package only if it's enabled
+            if (internalState.isEnabled()) {
+                activityState.sessionCount = 1; // this is the first session
+                transferSessionPackageI(now);
+            }
+
             activityState.resetSessionAttributes(now);
             activityState.enabled = internalState.isEnabled();
-            activityState.updatePackages = internalState.isToUpdatePackages();
+            activityState.updatePackages = internalState.itHasToUpdatePackages();
+
             writeActivityStateI();
+            sharedPreferencesManager.removePushToken();
+
             return;
         }
 
@@ -845,12 +843,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // new session
         if (lastInterval > SESSION_INTERVAL) {
-            activityState.sessionCount++;
-            activityState.lastInterval = lastInterval;
-
-            transferSessionPackageI(now);
-            activityState.resetSessionAttributes(now);
-            writeActivityStateI();
+            trackNewSessionI(now);
             return;
         }
 
@@ -869,13 +862,24 @@ public class ActivityHandler implements IActivityHandler {
         logger.verbose("Time span since last activity too short for a new subsession");
     }
 
+    private void trackNewSessionI(final long now) {
+        long lastInterval = now - activityState.lastActivity;
+
+        activityState.sessionCount++;
+        activityState.lastInterval = lastInterval;
+
+        transferSessionPackageI(now);
+        activityState.resetSessionAttributes(now);
+        writeActivityStateI();
+    }
+
     private void checkAttributionStateI() {
         if (!checkActivityStateI(activityState)) { return; }
 
         // if it's the first launch
         if (internalState.isFirstLaunch()) {
             // and it hasn't received the session response
-            if (!internalState.isSessionResponseProcessed()) {
+            if (internalState.hasSessionResponseNotBeenProcessed()) {
                 return;
             }
         }
@@ -910,8 +914,8 @@ public class ActivityHandler implements IActivityHandler {
         activityState.eventCount++;
         updateActivityStateI(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, sessionParameters, internalState.isDelayStart());
+        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, internalState.isInDelayedStart());
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -921,7 +925,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         // if it is in the background and it can send, start the background timer
-        if (adjustConfig.sendInBackground && internalState.isBackground()) {
+        if (adjustConfig.sendInBackground && internalState.isInBackground()) {
             startBackgroundTimerI();
         }
 
@@ -941,6 +945,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onEventTrackingSucceededListener == null) {
+                        return;
+                    }
                     adjustConfig.onEventTrackingSucceededListener.onFinishedEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
                 }
             };
@@ -955,6 +965,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onEventTrackingFailedListener == null) {
+                        return;
+                    }
                     adjustConfig.onEventTrackingFailedListener.onFinishedEventTrackingFailed(eventResponseData.getFailureResponseData());
                 }
             };
@@ -995,6 +1011,12 @@ public class ActivityHandler implements IActivityHandler {
             launchAttributionListenerI(handler);
         }
 
+        // mark install as tracked on success
+        if (sessionResponseData.success) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            sharedPreferencesManager.setInstallTracked();
+        }
+
         // launch Session tracking listener if available
         launchSessionResponseListenerI(sessionResponseData, handler);
 
@@ -1010,6 +1032,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onSessionTrackingSucceededListener == null) {
+                        return;
+                    }
                     adjustConfig.onSessionTrackingSucceededListener.onFinishedSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
                 }
             };
@@ -1024,6 +1052,12 @@ public class ActivityHandler implements IActivityHandler {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (adjustConfig == null) {
+                        return;
+                    }
+                    if (adjustConfig.onSessionTrackingFailedListener == null) {
+                        return;
+                    }
                     adjustConfig.onSessionTrackingFailedListener.onFinishedSessionTrackingFailed(sessionResponseData.getFailureResponseData());
                 }
             };
@@ -1059,6 +1093,12 @@ public class ActivityHandler implements IActivityHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (adjustConfig == null) {
+                    return;
+                }
+                if (adjustConfig.onAttributionChangedListener == null) {
+                    return;
+                }
                 adjustConfig.onAttributionChangedListener.onAttributionChanged(attribution);
             }
         };
@@ -1077,6 +1117,9 @@ public class ActivityHandler implements IActivityHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
+                if (adjustConfig == null) {
+                    return;
+                }
                 boolean toLaunchDeeplink = true;
                 if (adjustConfig.onDeeplinkResponseListener != null) {
                     toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
@@ -1120,136 +1163,181 @@ public class ActivityHandler implements IActivityHandler {
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
-    private void sendReferrerI(String referrer, long clickTime) {
-        if (referrer == null || referrer.length() == 0 ) {
+    private void setEnabledI(boolean enabled) {
+        // compare with the saved or internal state
+        if (!hasChangedStateI(this.isEnabledI(), enabled,
+                "Adjust already enabled", "Adjust already disabled")) {
             return;
         }
 
-        logger.verbose("Referrer to parse (%s)", referrer);
+        // save new enabled state in internal state
+        internalState.enabled = enabled;
 
-        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
-        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
-        querySanitizer.setAllowUnregisteredParamaters(true);
-        querySanitizer.parseQuery(referrer);
-
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
-
-        if (clickPackageBuilder == null) {
+        if (activityState == null) {
+            updateStatusI(!enabled,
+                    "Handlers will start as paused due to the SDK being disabled",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to the SDK being enabled");
             return;
         }
 
-        clickPackageBuilder.referrer = referrer;
-        clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.REFTAG, sessionParameters);
+        if (enabled) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
 
-        sdkClickHandler.sendSdkClick(clickPackage);
+            // check if install was tracked
+            if (!sharedPreferencesManager.getInstallTracked()) {
+                long now = System.currentTimeMillis();
+                trackNewSessionI(now);
+            }
+
+            // check if there is a saved push token to send
+            String pushToken = sharedPreferencesManager.getPushToken();
+
+            if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
+                setPushToken(pushToken, true);
+            }
+
+            // check if there are token to send
+            Object referrers = sharedPreferencesManager.getRawReferrerArray();
+            if (referrers != null) {
+                sendReftagReferrer();
+            }
+        }
+
+        activityState.enabled = enabled;
+        writeActivityStateI();
+
+        updateStatusI(!enabled,
+                "Pausing handlers due to SDK being disabled",
+                "Handlers remain paused",
+                "Resuming handlers due to SDK being enabled");
     }
 
-    private void readOpenUrlI(Uri url, long clickTime) {
-        if (url == null) {
+    private void setOfflineModeI(boolean offline) {
+        // compare with the internal state
+        if (!hasChangedStateI(internalState.isOffline(), offline,
+                "Adjust already in offline mode",
+                "Adjust already in online mode")) {
             return;
         }
 
-        String urlString = url.toString();
-        if (urlString == null || urlString.length() == 0) {
-            return;
-        }
-        logger.verbose("Url to parse (%s)", url);
+        internalState.offline = offline;
 
-        UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
-        querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
-        querySanitizer.setAllowUnregisteredParamaters(true);
-        querySanitizer.parseUrl(urlString);
-
-        PackageBuilder clickPackageBuilder = queryStringClickPackageBuilderI(querySanitizer.getParameterList());
-        if (clickPackageBuilder == null) {
+        if (activityState == null) {
+            updateStatusI(offline,
+                    "Handlers will start paused due to SDK being offline",
+                    "Handlers will still start as paused",
+                    "Handlers will start as active due to SDK being online");
             return;
         }
 
-        clickPackageBuilder.deeplink = url.toString();
-        clickPackageBuilder.clickTime = clickTime;
-        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK, sessionParameters);
+        updateStatusI(offline,
+                "Pausing handlers to put SDK offline mode",
+                "Handlers remain paused",
+                "Resuming handlers to put SDK in online mode");
 
-        sdkClickHandler.sendSdkClick(clickPackage);
     }
 
-    private PackageBuilder queryStringClickPackageBuilderI(
-            List<UrlQuerySanitizer.ParameterValuePair> queryList)
+    private boolean hasChangedStateI(boolean previousState, boolean newState,
+                                     String trueMessage, String falseMessage)
     {
-        if (queryList == null) {
-            return null;
-        }
-
-        Map<String, String> queryStringParameters = new LinkedHashMap<String, String>();
-        AdjustAttribution queryStringAttribution = new AdjustAttribution();
-
-        for (UrlQuerySanitizer.ParameterValuePair parameterValuePair : queryList) {
-            readQueryStringI(parameterValuePair.mParameter,
-                    parameterValuePair.mValue,
-                    queryStringParameters, queryStringAttribution);
-        }
-
-        String reftag = queryStringParameters.remove(Constants.REFTAG);
-
-        long now = System.currentTimeMillis();
-        // check of activity state != null
-        //  because referrer can be called before onResume
-        if (activityState != null) {
-            long lastInterval = now - activityState.lastActivity;
-            activityState.lastInterval = lastInterval;
-        }
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        builder.extraParameters = queryStringParameters;
-        builder.attribution = queryStringAttribution;
-        builder.reftag = reftag;
-
-        return builder;
-    }
-
-    private boolean readQueryStringI(String key, String value,
-                                     Map<String, String> extraParameters,
-                                     AdjustAttribution queryStringAttribution) {
-        if (key == null || value == null) { return false; }
-
-        // parameter key does not start with "adjust_"
-        if (!key.startsWith(ADJUST_PREFIX)) { return false; }
-
-        String keyWOutPrefix = key.substring(ADJUST_PREFIX.length());
-        if (keyWOutPrefix.length() == 0) { return false; }
-
-        if (value.length() == 0) { return false;}
-
-        if (!trySetAttributionI(queryStringAttribution, keyWOutPrefix, value)) {
-            extraParameters.put(keyWOutPrefix, value);
-        }
-
-        return true;
-    }
-
-    private boolean trySetAttributionI(AdjustAttribution queryStringAttribution,
-                                       String key,
-                                       String value) {
-        if (key.equals("tracker")) {
-            queryStringAttribution.trackerName = value;
+        if (previousState != newState) {
             return true;
         }
 
-        if (key.equals("campaign")) {
-            queryStringAttribution.campaign = value;
-            return true;
-        }
-
-        if (key.equals("adgroup")) {
-            queryStringAttribution.adgroup = value;
-            return true;
-        }
-
-        if (key.equals("creative")) {
-            queryStringAttribution.creative = value;
-            return true;
+        if (previousState) {
+            logger.debug(trueMessage);
+        } else {
+            logger.debug(falseMessage);
         }
 
         return false;
+    }
+
+    private void updateStatusI(boolean pausingState, String pausingMessage,
+                               String remainsPausedMessage, String unPausingMessage)
+    {
+        // it is changing from an active state to a pause state
+        if (pausingState) {
+            logger.info(pausingMessage);
+        }
+        // check if it's remaining in a pause state
+        else if (pausedI(false)) {
+            // including the sdk click handler
+            if (pausedI(true)) {
+                logger.info(remainsPausedMessage);
+            } else {
+                logger.info(remainsPausedMessage + ", except the Sdk Click Handler");
+            }
+        } else {
+            // it is changing from a pause state to an active state
+            logger.info(unPausingMessage);
+        }
+
+        updateHandlersStatusAndSendI();
+    }
+
+    private void setAskingAttributionI(boolean askingAttribution) {
+        activityState.askingAttribution = askingAttribution;
+
+        writeActivityStateI();
+    }
+
+    private void sendReftagReferrerI() {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        sdkClickHandler.sendReftagReferrers();
+    }
+
+    private void sendInstallReferrerI(final long clickTime, final long installBegin, final String installReferrer) {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        if (installReferrer == null) {
+            return;
+        }
+
+        if (clickTime == activityState.clickTime
+                && installBegin == activityState.installBegin
+                && installReferrer.equals(activityState.installReferrer)) {
+            // Same click already sent before, nothing to be done.
+            return;
+        }
+
+        // Create sdk click
+        ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
+                installReferrer,
+                clickTime,
+                installBegin,
+                activityState,
+                adjustConfig,
+                deviceInfo,
+                sessionParameters);
+
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
+    }
+
+    private void readOpenUrlI(Uri url, long clickTime) {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
+                url,
+                clickTime,
+                activityState,
+                adjustConfig,
+                deviceInfo,
+                sessionParameters);
+
+        if (sdkClickPackage == null) {
+            return;
+        }
+
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
     private void updateHandlersStatusAndSendI() {
@@ -1260,6 +1348,12 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         resumeSendingI();
+
+        // try to send if it's the first launch and it hasn't received the session response
+        //  even if event buffering is enabled
+        if (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()) {
+            packageHandler.sendFirstPackage();
+        }
 
         // try to send
         if (!adjustConfig.eventBufferingEnabled) {
@@ -1322,8 +1416,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void transferSessionPackageI(long now) {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
-        ActivityPackage sessionPackage = builder.buildSessionPackage(sessionParameters, internalState.isDelayStart());
+        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
+                sessionParameters, now);
+        ActivityPackage sessionPackage = builder.buildSessionPackage(internalState.isInDelayedStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -1391,7 +1486,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void delayStartI() {
         // it's not configured to start delayed or already finished
-        if (internalState.isToStartNow()) {
+        if (internalState.isNotInDelayedStart()) {
             return;
         }
 
@@ -1429,7 +1524,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void sendFirstPackagesI() {
-        if (internalState.isToStartNow()) {
+        if (internalState.isNotInDelayedStart()) {
             logger.info("Start delay expired or never configured");
             return;
         }
@@ -1461,7 +1556,7 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState != null) {
             return activityState.updatePackages;
         } else {
-            return internalState.isToUpdatePackages();
+            return internalState.itHasToUpdatePackages();
         }
     }
 
@@ -1574,24 +1669,31 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void setPushTokenI(String token) {
-        if (token == null) {
-            return;
-        }
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
 
-        if (token.equals(activityState.pushToken)) {
-            return;
-        }
+        if (token == null) { return; }
+        if (token.equals(activityState.pushToken)) { return; }
 
         // save new push token
         activityState.pushToken = token;
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, now);
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
-        packageHandler.sendFirstPackage();
+
+        // If push token was cached, remove it.
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        sharedPreferencesManager.removePushToken();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", infoPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
     }
 
     private void readActivityStateI(Context context) {
@@ -1637,16 +1739,9 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void writeActivityStateI() {
-        writeActivityStateS(null);
-    }
-
-    private void writeActivityStateS(Runnable changeActivityState) {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
-            }
-            if (changeActivityState != null) {
-                changeActivityState.run();
             }
             Util.writeObject(activityState, adjustConfig.context, ACTIVITY_STATE_FILENAME, ACTIVITY_STATE_NAME);
         }
@@ -1767,7 +1862,7 @@ public class ActivityHandler implements IActivityHandler {
         // other handlers are paused if either:
         return internalState.isOffline()    ||      // it's offline
                 !isEnabledI()               ||      // is disabled
-                internalState.isDelayStart();       // is in delayed start
+                internalState.isInDelayedStart();   // is in delayed start
     }
 
     private boolean toSendI() {
@@ -1786,6 +1881,18 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         // doesn't have the option -> depends on being on the background/foreground
-        return internalState.isForeground();
+        return internalState.isInForeground();
+    }
+
+    private void checkForInstallReferrerInfo(final SdkClickResponseData responseData) {
+        if (!responseData.isInstallReferrer) {
+            return;
+        }
+
+        activityState.clickTime = responseData.clickTime;
+        activityState.installBegin = responseData.installBegin;
+        activityState.installReferrer = responseData.installReferrer;
+
+        writeActivityStateI();
     }
 }

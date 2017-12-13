@@ -17,12 +17,11 @@ import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private static int ORDER_ID_MAXCOUNT = 10;
+    private static final int ORDER_ID_MAXCOUNT = 10;
     private transient ILogger logger;
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
@@ -39,6 +38,9 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class),
             new ObjectStreamField("adid", String.class),
+            new ObjectStreamField("clickTime", long.class),
+            new ObjectStreamField("installBegin", long.class),
+            new ObjectStreamField("installReferrer", String.class),
     };
 
     // persistent data
@@ -65,13 +67,16 @@ public class ActivityState implements Serializable, Cloneable {
     protected String pushToken;
     protected String adid;
 
+    protected long clickTime;
+    protected long installBegin;
+    protected String installReferrer;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
         uuid = Util.createUuid();
         enabled = true;
         askingAttribution = false;
-
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
         subsessionCount = -1; // we don't know how many subsessions this first  session will have
@@ -83,6 +88,9 @@ public class ActivityState implements Serializable, Cloneable {
         orderIds = null;
         pushToken = null;
         adid = null;
+        clickTime = 0;
+        installBegin = 0;
+        installReferrer = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -127,19 +135,22 @@ public class ActivityState implements Serializable, Cloneable {
         if (getClass() != other.getClass()) return false;
         ActivityState otherActivityState = (ActivityState) other;
 
-        if (!Util.equalString(uuid, otherActivityState.uuid))               return false;
-        if (!Util.equalBoolean(enabled, otherActivityState.enabled))            return false;
-        if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution))  return false;
-        if (!Util.equalInt(eventCount, otherActivityState.eventCount))         return false;
-        if (!Util.equalInt(sessionCount, otherActivityState.sessionCount))       return false;
-        if (!Util.equalInt(subsessionCount, otherActivityState.subsessionCount))    return false;
-        if (!Util.equalLong(sessionLength, otherActivityState.sessionLength))      return false;
-        if (!Util.equalLong(timeSpent, otherActivityState.timeSpent))          return false;
-        if (!Util.equalLong(lastInterval, otherActivityState.lastInterval))       return false;
-        if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages))            return false;
+        if (!Util.equalString(uuid, otherActivityState.uuid)) return false;
+        if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
+        if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
+        if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
+        if (!Util.equalInt(sessionCount, otherActivityState.sessionCount)) return false;
+        if (!Util.equalInt(subsessionCount, otherActivityState.subsessionCount)) return false;
+        if (!Util.equalLong(sessionLength, otherActivityState.sessionLength)) return false;
+        if (!Util.equalLong(timeSpent, otherActivityState.timeSpent)) return false;
+        if (!Util.equalLong(lastInterval, otherActivityState.lastInterval)) return false;
+        if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages)) return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
         if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
         if (!Util.equalString(adid, otherActivityState.adid)) return false;
+        if (!Util.equalLong(clickTime, otherActivityState.clickTime)) return false;
+        if (!Util.equalLong(installBegin, otherActivityState.installBegin)) return false;
+        if (!Util.equalString(installReferrer, otherActivityState.installReferrer)) return false;
         return true;
     }
 
@@ -159,6 +170,9 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashObject(orderIds);
         hashCode = 37 * hashCode + Util.hashString(pushToken);
         hashCode = 37 * hashCode + Util.hashString(adid);
+        hashCode = 37 * hashCode + Util.hashLong(clickTime);
+        hashCode = 37 * hashCode + Util.hashLong(installBegin);
+        hashCode = 37 * hashCode + Util.hashString(installReferrer);
         return hashCode;
     }
 
@@ -179,12 +193,13 @@ public class ActivityState implements Serializable, Cloneable {
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);
-
         orderIds = Util.readObjectField(fields, "orderIds", null);
-
         pushToken = Util.readStringField(fields, "pushToken", null);
-
         adid = Util.readStringField(fields, "adid", null);
+
+        clickTime = Util.readLongField(fields, "clickTime", -1l);
+        installBegin = Util.readLongField(fields, "installBegin", -1l);
+        installReferrer = Util.readStringField(fields, "installReferrer", null);
 
         // create UUID for migrating devices
         if (uuid == null) {

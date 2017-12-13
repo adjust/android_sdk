@@ -1,5 +1,6 @@
 package com.adjust.sdk;
 
+import android.content.Context;
 import android.net.Uri;
 
 /**
@@ -32,7 +33,9 @@ public interface IActivityHandler {
 
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
-    void sendReferrer(String referrer, long clickTime);
+    void sendReftagReferrer();
+
+    void sendInstallReferrer(long clickTime, long installBegin, String installReferrer);
 
     void setOfflineMode(boolean enabled);
 
@@ -54,5 +57,20 @@ public interface IActivityHandler {
 
     void teardown(boolean deleteState);
 
-    void setPushToken(String token);
+    void setPushToken(String token, boolean preSaved);
+
+    Context getContext();
+
+    String getAdid();
+
+    AdjustAttribution getAttribution();
+
+    AdjustConfig getAdjustConfig();
+
+    DeviceInfo getDeviceInfo();
+
+    ActivityState getActivityState();
+
+    SessionParameters getSessionParameters();
+
 }

@@ -14,6 +14,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
@@ -48,6 +50,9 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> partnerParameters;
 
     private int retries;
+    private long clickTimeInMilliseconds;
+    private long clickTimeInSeconds;
+    private long installBeginTimeInSeconds;
 
     public String getPath() {
         return path;
@@ -101,6 +106,30 @@ public class ActivityPackage implements Serializable {
         return retries;
     }
 
+    public long getClickTimeInMilliseconds() {
+        return this.clickTimeInMilliseconds;
+    }
+
+    public void setClickTimeInMilliseconds(long clickTimeInMilliseconds) {
+        this.clickTimeInMilliseconds = clickTimeInMilliseconds;
+    }
+
+    public long getClickTimeInSeconds() {
+        return this.clickTimeInSeconds;
+    }
+
+    public void setClickTimeInSeconds(long clickTimeInSeconds) {
+        this.clickTimeInSeconds = clickTimeInSeconds;
+    }
+
+    public long getInstallBeginTimeInSeconds() {
+        return this.installBeginTimeInSeconds;
+    }
+
+    public void setInstallBeginTimeInSeconds(long installBeginTimeInSeconds) {
+        this.installBeginTimeInSeconds = installBeginTimeInSeconds;
+    }
+
     public Map<String, String> getCallbackParameters() {
         return callbackParameters;
     }
@@ -125,8 +154,13 @@ public class ActivityPackage implements Serializable {
         if (parameters != null) {
             builder.append("Parameters:");
             SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
+            List<String> stringsToExclude = Arrays.asList("app_secret", "secret_id");
             for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
-                builder.append(String.format(Locale.US, "\n\t%-16s %s", entry.getKey(),  entry.getValue()));
+                String key = entry.getKey();
+                if (stringsToExclude.contains(key)) {
+                    continue;
+                }
+                builder.append(String.format(Locale.US, "\n\t%-16s %s", key,  entry.getValue()));
             }
         }
         return builder.toString();

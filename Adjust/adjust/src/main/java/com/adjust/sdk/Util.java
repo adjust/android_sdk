@@ -13,9 +13,13 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Looper;
 import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -30,7 +34,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -41,6 +47,7 @@ import java.util.regex.Pattern;
 import static com.adjust.sdk.Constants.ENCODING;
 import static com.adjust.sdk.Constants.MD5;
 import static com.adjust.sdk.Constants.SHA1;
+import static com.adjust.sdk.Constants.SHA256;
 
 /**
  * Collects utility functions used by Adjust.
@@ -50,7 +57,6 @@ public class Util {
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
-
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -76,6 +82,21 @@ public class Util {
 
     public static String getPlayAdId(Context context) {
         return Reflection.getPlayAdId(context);
+    }
+
+    public static void runInBackground(Runnable command) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            command.run();
+            return;
+        }
+        new AsyncTask<Object,Void,Void>() {
+            @Override
+            protected Void doInBackground(Object... params) {
+                Runnable command = (Runnable)params[0];
+                command.run();
+                return null;
+            }
+        }.execute((Object)command);
     }
 
     public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
@@ -121,6 +142,98 @@ public class Util {
     }
     public static String getAndroidId(Context context) {
         return Reflection.getAndroidId(context);
+    }
+
+    public static String getTelephonyId(TelephonyManager telephonyManager) {
+        return Reflection.getTelephonyId(telephonyManager);
+    }
+
+    public static String getIMEI(TelephonyManager telephonyManager) {
+        return Reflection.getImei(telephonyManager);
+    }
+
+    public static String getMEID(TelephonyManager telephonyManager) {
+        return Reflection.getMeid(telephonyManager);
+    }
+
+    public static String getIMEI(TelephonyManager telephonyManager, int index) {
+        return Reflection.getImei(telephonyManager, index);
+    }
+
+    public static String getMEID(TelephonyManager telephonyManager, int index) {
+        return Reflection.getMeid(telephonyManager, index);
+    }
+
+    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
+        return Reflection.getTelephonyId(telephonyManager, index);
+    }
+
+    public static boolean tryAddToStringList(List<String> list, String value) {
+        if (value == null) {
+            return false;
+        }
+        if (list.contains(value)) {
+            return false;
+        }
+
+        return list.add(value);
+    }
+
+    public static String getTelephonyIds(TelephonyManager telephonyManager) {
+        List<String> telephonyIdList = new ArrayList<String>();
+
+        String telephonyId0 = getTelephonyId(telephonyManager, 0);
+        tryAddToStringList(telephonyIdList, telephonyId0);
+
+        for (int i = 1; i < 10; i++) {
+            String telephonyId = getTelephonyId(telephonyManager, i);
+            if (!tryAddToStringList(telephonyIdList, telephonyId)) {
+                break;
+            }
+        }
+
+        String telephonyIdMax = getTelephonyId(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(telephonyIdList, telephonyIdMax);
+
+        return TextUtils.join(",", telephonyIdList);
+    }
+
+    public static String getIMEIs(TelephonyManager telephonyManager) {
+        List<String> imeiList = new ArrayList<String>();
+
+        String imei0 = getIMEI(telephonyManager, 0);
+        tryAddToStringList(imeiList, imei0);
+
+        for (int i = 1; i < 10; i++) {
+            String imei = getIMEI(telephonyManager, i);
+            if (!tryAddToStringList(imeiList, imei)) {
+                break;
+            }
+        }
+
+        String imeiMax = getIMEI(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(imeiList, imeiMax);
+
+        return TextUtils.join(",", imeiList);
+    }
+
+    public static String getMEIDs(TelephonyManager telephonyManager) {
+        List<String> meidList = new ArrayList<String>();
+
+        String meid0 = getMEID(telephonyManager, 0);
+        tryAddToStringList(meidList, meid0);
+
+        for (int i = 1; i < 10; i++) {
+            String meid = getMEID(telephonyManager, i);
+            if (!tryAddToStringList(meidList, meid)) {
+                break;
+            }
+        }
+
+        String meidMax = getMEID(telephonyManager, Integer.MAX_VALUE);
+        tryAddToStringList(meidList, meidMax);
+
+        return TextUtils.join(",", meidList);
     }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
@@ -311,6 +424,10 @@ public class Util {
         return hash(text, SHA1);
     }
 
+    public static String sha256(final String text) {
+        return hash(text, SHA256);
+    }
+
     public static String md5(final String text) {
         return hash(text, MD5);
     }
@@ -445,5 +562,65 @@ public class Util {
             // not supported
         }
         return null;
+    }
+
+    public static int getConnectivityType(Context context) {
+        int connectivityType = -1; // default value that will not be send
+
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            connectivityType = activeNetwork.getType();
+        } catch (Exception e) {
+            getLogger().warn("Couldn't read connectivity type (%s)", e.getMessage());
+        }
+
+        return connectivityType;
+    }
+
+    public static int getNetworkType(Context context) {
+        int networkType = -1; // default value that will not be send
+
+        try {
+            TelephonyManager teleMan =
+                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            networkType = teleMan.getNetworkType();
+        } catch (Exception e) {
+            getLogger().warn("Couldn't read network type (%s)", e.getMessage());
+        }
+
+        return networkType;
+    }
+
+    public static String getMcc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MCC");
+                return null;
+            }
+            return networkOperator.substring(0, 3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mcc");
+            return null;
+        }
+    }
+
+    public static String getMnc(Context context) {
+        try {
+            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            String networkOperator = tel.getNetworkOperator();
+
+            if (TextUtils.isEmpty(networkOperator)) {
+                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MNC");
+                return null;
+            }
+            return networkOperator.substring(3);
+        } catch (Exception ex) {
+            AdjustFactory.getLogger().warn("Couldn't return mnc");
+            return null;
+        }
     }
 }

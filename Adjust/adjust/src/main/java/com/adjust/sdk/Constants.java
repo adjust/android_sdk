@@ -29,9 +29,10 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.11.4";
+    String CLIENT_SDK = "android4.12.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
+    String INSTALL_REFERRER = "install_referrer";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";
@@ -55,9 +56,12 @@ public interface Constants {
     String ENCODING = "UTF-8";
     String MD5 = "MD5";
     String SHA1 = "SHA-1";
+    String SHA256 = "SHA-256";
 
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";
+
+    int MAX_INSTALL_REFERRER_RETRIES = 2;
 
     // List of known plugins, possibly not active
     List<String> PLUGINS = Arrays.asList();

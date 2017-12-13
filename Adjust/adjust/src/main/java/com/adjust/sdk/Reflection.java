@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.telephony.TelephonyManager;
 
 import com.adjust.sdk.plugin.Plugin;
 
@@ -84,6 +85,62 @@ public class Reflection {
 
             return androidId;
         } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    public static String getImei(TelephonyManager telephonyManager) {
+        // return telephonyManager.getImei();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getImei", null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getImei(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getImei();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getImei", new Class[]{int.class}, index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    public static String getMeid(TelephonyManager telephonyManager) {
+        // return telephonyManager.getMeid();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getMeid", null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getMeid(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getMeid();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getMeid", new Class[]{int.class}, index);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+    public static String getTelephonyId(TelephonyManager telephonyManager) {
+        // return telephonyManager.getDeviceId();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", null);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
+        // return telephonyManager.getDeviceId();
+        try {
+            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", new Class[]{int.class}, index);
+        } catch (Exception e) {
             return null;
         }
     }
