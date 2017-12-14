@@ -46,7 +46,6 @@ our [Android web views SDK guide](doc/english/web_views.md).
       * [Adjust device identifier](#di-adid)
    * [User attribution](#user-attribution)
    * [Push token](#push-token)
-   * [Track additional device identifiers](#track-additional-ids)
    * [Pre-installed trackers](#pre-installed-trackers)
    * [Deep linking](#deeplinking)
       * [Standard deep linking scenario](#deeplinking-standard)
@@ -761,26 +760,6 @@ Adjust.setPushToken(pushNotificationsToken);
 ```
 
 Push tokens are used for Audience Builder and client callbacks, and they are required for the upcoming uninstall tracking feature.
-
-### <a id="track-additional-ids"></a>Track additional device identifiers
-
-If you are distributing your app **outside of the Google Play Store** and would like to track additional device identifiers (IMEI and MEID), you need to explicitly instruct the Adjust SDK to do so. You can do that by calling the `setReadMobileEquipmentIdentity` method of the `AdjustConfig` instance and passing a `true` parameter to it. **The Adjust SDK does not collect these identifiers by default**.
-
-```java
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
-config.setReadMobileEquipmentIdentity(true);
-
-Adjust.onCreate(config);
-```
-
-You will also need to add the `READ_PHONE_STATE` permission to your `AndroidManifest.xml` file:
-
-```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
-
-In order to use this feature, additional steps are required within your Adjust Dashboard. For more information, please contact your dedicated account manager or write an email to support@adjust.com.
 
 ### <a id="pre-installed-trackers"></a>Pre-installed trackers
 
