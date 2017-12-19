@@ -39,7 +39,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Disable tracking](#disable-tracking)
    * [Offline mode](#offline-mode)
    * [Event buffering](#event-buffering)
-   * [SDK Signature](#sdk-signature)
+   * [SDK signature](#sdk-signature)
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
       * [Google Play Services advertising identifier](#di-gps-adid)
@@ -680,7 +680,7 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
-### <a id="sdk-signature"></a>SDK Signature
+### <a id="sdk-signature"></a>SDK signature
 
 An account manager must activate the Adjust SDK Signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
 
@@ -689,7 +689,11 @@ If the SDK Signature has already been enabled on your account and you have acces
 An App Secret is set by calling `setAppSecret` on your `AdjustConfig` instance:
 
 ```java
-[adjustConfig setAppSecret:secretId info1:info1 info2:info2 info3:info3 info4:info4];
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+
+config.setAppSecret(secretId, info1, info2, info3, info4);
+
+Adjust.onCreate(config);
 ```
 
 ### <a id="background-tracking"></a>Background tracking
