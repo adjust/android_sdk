@@ -682,7 +682,7 @@ Adjust.onCreate(config);
 
 ### <a id="sdk-signature"></a>SDK Signature
 
-The Adjust SDK Signature is enabled on a client-by-client basis. If you are interested in using this feature, please contact your account manager.
+An account manager must activate the Adjust SDK Signature. Contact Adjust support (support@adjust.com) if you are interested in using this feature.
 
 If the SDK Signature has already been enabled on your account and you have access to App Secrets in your Adjust Dashboard, please use the method below to integrate the SDK Signature into your app.
 
