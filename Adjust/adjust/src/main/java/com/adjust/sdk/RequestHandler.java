@@ -20,11 +20,13 @@ public class RequestHandler implements IRequestHandler {
     private CustomScheduledExecutor scheduledExecutor;
     private WeakReference<IPackageHandler> packageHandlerWeakRef;
     private ILogger logger;
+    private String basePath;
 
     public RequestHandler(IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
         this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler", false);
         init(packageHandler);
+        this.basePath = packageHandler.getBasePath();
     }
 
     @Override
@@ -59,7 +61,11 @@ public class RequestHandler implements IRequestHandler {
     }
 
     private void sendI(ActivityPackage activityPackage, int queueSize) {
-        String targetURL = Constants.BASE_URL + activityPackage.getPath();
+        String url = AdjustFactory.getBaseUrl();
+        if (basePath != null) {
+            url += basePath;
+        }
+        String targetURL = url + activityPackage.getPath();
 
         try {
             ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, activityPackage, queueSize);

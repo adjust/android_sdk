@@ -8,6 +8,7 @@ import java.util.List;
  * Created by pfms on 06/11/14.
  */
 public class AdjustConfig {
+    String basePath;
     Context context;
     String appToken;
     String environment;

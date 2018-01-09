@@ -138,4 +138,9 @@ public class Adjust {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         return adjustInstance.getAttribution();
     }
+
+    public static void setTestOptions(AdjustTestOptions testOptions) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.setTestOptions(testOptions);
+    }
 }

@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -40,10 +41,12 @@ public class UtilNetworking {
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
+            IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
+            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
+
             String appSecret = extractAppSecret(parameters);
             String secretId = extractSecretId(parameters);
 
-            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
             String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
@@ -72,22 +75,24 @@ public class UtilNetworking {
         }
     }
 
-    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage) throws Exception {
+    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath) throws Exception {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
+
             String appSecret = extractAppSecret(parameters);
             String secretId = extractSecretId(parameters);
 
-            Uri uri = buildUri(activityPackage.getPath(), parameters);
+            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
+
+            IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
+            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
             String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
-
-            setDefaultHttpsUrlConnectionProperties(connection, activityPackage.getClientSdk());
 
             connection.setRequestMethod("GET");
 
@@ -214,21 +219,29 @@ public class UtilNetworking {
         return result.toString();
     }
 
-    private static void setDefaultHttpsUrlConnectionProperties(HttpsURLConnection connection, String clientSdk) {
-        connection.setRequestProperty("Client-SDK", clientSdk);
-        connection.setConnectTimeout(Constants.ONE_MINUTE);
-        connection.setReadTimeout(Constants.ONE_MINUTE);
-
-        if (userAgent != null) {
-            connection.setRequestProperty("User-Agent", userAgent);
-        }
-    }
-
-    private static Uri buildUri(String path, Map<String, String> parameters) {
+    private static Uri buildUri(String path, Map<String, String> parameters, String basePath) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
-        uriBuilder.scheme(Constants.SCHEME);
-        uriBuilder.authority(Constants.AUTHORITY);
+        String scheme = Constants.SCHEME;
+        String authority = Constants.AUTHORITY;
+        String initialPath = "";
+
+        try {
+            String url = AdjustFactory.getBaseUrl();
+            if (basePath != null) {
+                url += basePath;
+            }
+            URL baseUrl = new URL(url);
+            scheme = baseUrl.getProtocol();
+            authority = baseUrl.getAuthority();
+            initialPath = baseUrl.getPath();
+        } catch (MalformedURLException e) {
+            getLogger().error("Unable to parse endpoint (%s)", e.getMessage());
+        }
+
+        uriBuilder.scheme(scheme);
+        uriBuilder.encodedAuthority(authority);
+        uriBuilder.path(initialPath);
         uriBuilder.appendPath(path);
 
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
@@ -350,4 +363,20 @@ public class UtilNetworking {
         return null;
     }
 
+    public interface IConnectionOptions {
+        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
+    }
+
+    static class ConnectionOptions implements IConnectionOptions {
+        @Override
+        public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk) {
+            connection.setRequestProperty("Client-SDK", clientSdk);
+            connection.setConnectTimeout(Constants.ONE_MINUTE);
+            connection.setReadTimeout(Constants.ONE_MINUTE);
+
+            if (userAgent != null) {
+                connection.setRequestProperty("User-Agent", userAgent);
+            }
+        }
+    }
 }

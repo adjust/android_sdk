@@ -37,6 +37,7 @@ public class AdjustInstance {
      * Array of actions that were requested before SDK initialisation.
      */
     private List<IRunActivityHandler> preLaunchActionsArray;
+    private String basePath;
 
     /**
      * Called upon SDK initialisation.
@@ -53,6 +54,7 @@ public class AdjustInstance {
         adjustConfig.pushToken = pushToken;
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
+        adjustConfig.basePath = this.basePath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
@@ -487,5 +489,30 @@ public class AdjustInstance {
      */
     private boolean isInstanceEnabled() {
         return this.startEnabled == null || this.startEnabled;
+    }
+
+    public void setTestOptions(AdjustTestOptions testOptions) {
+        if (testOptions.basePath != null) {
+            this.basePath = testOptions.basePath;
+        }
+        if (testOptions.baseUrl != null) {
+            AdjustFactory.setBaseUrl(testOptions.baseUrl);
+        }
+        if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
+            AdjustFactory.useTestConnectionOptions();
+        }
+        if (testOptions.timerIntervalInMilliseconds != null) {
+            AdjustFactory.setTimerInterval(testOptions.timerIntervalInMilliseconds);
+        }
+        if (testOptions.timerStartInMilliseconds != null) {
+            AdjustFactory.setTimerStart(testOptions.timerIntervalInMilliseconds);
+        }
+        if (testOptions.sessionIntervalInMilliseconds != null) {
+            AdjustFactory.setSessionInterval(testOptions.sessionIntervalInMilliseconds);
+        }
+        if (testOptions.subsessionIntervalInMilliseconds != null) {
+            AdjustFactory.setSubsessionInterval(testOptions.subsessionIntervalInMilliseconds);
+        }
+
     }
 }
