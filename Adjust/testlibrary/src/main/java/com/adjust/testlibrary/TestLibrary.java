@@ -107,7 +107,7 @@ public class TestLibrary {
     }
 
     // reset for each test
-    private void resetTest() {
+    private void resetForNextTest() {
         clearTest();
 
         waitControlQueue = new LinkedBlockingQueue<String>();
@@ -154,60 +154,36 @@ public class TestLibrary {
         });
     }
 
-
-    void readHeaders(final UtilsNetworking.HttpResponse httpResponse) {
+    void readResponse(final UtilsNetworking.HttpResponse httpResponse) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                readHeadersI(httpResponse);
+                readResponseI(httpResponse);
             }
         });
     }
 
     private void sendTestSessionI(String clientSdk) {
         UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testNames);
-        if (httpResponse == null) {
-            return;
-        }
-
-        readHeadersI(httpResponse);
+        readResponseI(httpResponse);
     }
 
     private void sendInfoToServerI() {
-        debug("sendInfoToServerI called");
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/test_info"), null, infoToServer);
         infoToServer = null;
-        if (httpResponse == null) {
-            return;
-        }
-
-        readHeadersI(httpResponse);
+        readResponseI(httpResponse);
     }
 
-    public void readHeadersI(UtilsNetworking.HttpResponse httpResponse) {
-        if (httpResponse.headerFields.containsKey(TEST_SESSION_END_HEADER)) {
-            teardown(false);
-            debug("TestSessionEnd received");
-            if (exitAfterEnd) {
-                exit();
-            }
+    public void readResponseI(UtilsNetworking.HttpResponse httpResponse) {
+        if (httpResponse == null) {
+            debug("httpResponse is null");
             return;
         }
-
-        if (httpResponse.headerFields.containsKey(BASE_PATH_HEADER)) {
-            currentBasePath = httpResponse.headerFields.get(BASE_PATH_HEADER).get(0);
-        }
-
-        if (httpResponse.headerFields.containsKey(TEST_SCRIPT_HEADER)) {
-            currentTest = httpResponse.headerFields.get(TEST_SCRIPT_HEADER).get(0);
-            resetTest();
-
-            List<TestCommand> testCommands = Arrays.asList(gson.fromJson(httpResponse.response, TestCommand[].class));
-            try {
-                execTestCommandsI(testCommands);
-            } catch (InterruptedException e) {
-                debug("InterruptedException thrown %s", e.getMessage());
-            }
+        List<TestCommand> testCommands = Arrays.asList(gson.fromJson(httpResponse.response, TestCommand[].class));
+        try {
+            execTestCommandsI(testCommands);
+        } catch (InterruptedException e) {
+            debug("InterruptedException thrown %s", e.getMessage());
         }
     }
 
@@ -255,22 +231,39 @@ public class TestLibrary {
 
     private void executeTestLibraryCommandI(TestCommand testCommand) throws InterruptedException {
         switch (testCommand.functionName) {
-            case "end_test": endTestI(); break;
+            case "resetTest": resetTestI(testCommand.params); break;
+            case "endTestReadNext": endTestReadNext(); break;
+            case "endTestSession": endTestSessionI(); break;
             case "wait": waitI(testCommand.params); break;
             case "exit": exit(); break;
         }
     }
 
-    private void endTestI() {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test"));
-        if (httpResponse == null) {
-            if (exitAfterEnd) {
-                exit();
-            }
-            return;
+    private void resetTestI(Map<String, List<String>> params) {
+        if (params.containsKey("basePath")) {
+            currentBasePath = params.get("basePath").get(0);
+            debug("current base path %s", currentBasePath);
         }
 
-        readHeadersI(httpResponse);
+        if (params.containsKey("testName")) {
+            currentTest = params.get("testName").get(0);
+            debug("current test name %s", currentTest);
+        }
+        resetForNextTest();
+    }
+
+    private void endTestSessionI() {
+        teardown(false);
+        if (exitAfterEnd) {
+            exit();
+        }
+    }
+
+    private void endTestReadNext() {
+        // send end test request
+        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
+        // and process the next in the response
+        readResponseI(httpResponse);
     }
 
     private void waitI(Map<String, List<String>> params) throws InterruptedException {
