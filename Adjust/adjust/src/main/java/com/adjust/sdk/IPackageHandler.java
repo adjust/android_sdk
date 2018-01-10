@@ -21,5 +21,5 @@ public interface IPackageHandler {
 
     String getBasePath();
 
-    void teardown(boolean deleteState);
+    void teardown();
 }

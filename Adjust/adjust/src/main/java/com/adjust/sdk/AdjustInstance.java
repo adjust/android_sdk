@@ -322,15 +322,13 @@ public class AdjustInstance {
     /**
      * Called to teardown SDK state.
      * Used only for Adjust tests, shouldn't be used in client apps.
-     *
-     * @param deleteState boolean indicating should internal Adjust files also be removed or not
      */
-    public void teardown(final boolean deleteState) {
+    public void teardown() {
         if (!checkActivityHandler()) {
             return;
         }
 
-        activityHandler.teardown(deleteState);
+        activityHandler.teardown();
         activityHandler = null;
     }
 

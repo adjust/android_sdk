@@ -305,4 +305,18 @@ public class AdjustFactory {
         }
         return str.toString();
     }
+
+    public static void teardown(Context context) {
+        if(context != null) {
+            ActivityHandler.deleteState(context);
+            PackageHandler.deleteState(context);
+        }
+        packageHandler = null;
+        requestHandler = null;
+        attributionHandler = null;
+        activityHandler = null;
+        logger = null;
+        httpsURLConnection = null;
+        sdkClickHandler = null;
+    }
 }

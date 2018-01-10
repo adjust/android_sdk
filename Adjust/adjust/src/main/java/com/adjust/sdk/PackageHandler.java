@@ -38,7 +38,7 @@ public class PackageHandler implements IPackageHandler {
     private String basePath;
 
     @Override
-    public void teardown(boolean deleteState) {
+    public void teardown() {
         logger.verbose("PackageHandler teardown");
         if (scheduledExecutor != null) {
             try {
@@ -54,9 +54,6 @@ public class PackageHandler implements IPackageHandler {
         if (packageQueue != null) {
             packageQueue.clear();
         }
-        if (deleteState && context != null) {
-            deletePackageQueue(context);
-        }
         scheduledExecutor = null;
         requestHandler = null;
         activityHandlerWeakRef = null;
@@ -65,6 +62,10 @@ public class PackageHandler implements IPackageHandler {
         context = null;
         logger = null;
         backoffStrategy = null;
+    }
+
+    static void deleteState(Context context) {
+        deletePackageQueue(context);
     }
 
     public PackageHandler(IActivityHandler activityHandler,

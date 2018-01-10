@@ -55,7 +55,7 @@ public interface IActivityHandler {
 
     void resetSessionPartnerParameters();
 
-    void teardown(boolean deleteState);
+    void teardown();
 
     void setPushToken(String token, boolean preSaved);
 

@@ -64,7 +64,7 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
 
     @Override
-    public void teardown(boolean deleteState) {
+    public void teardown() {
         if (backgroundTimer != null) {
             backgroundTimer.teardown();
         }
@@ -80,7 +80,7 @@ public class ActivityHandler implements IActivityHandler {
             } catch(SecurityException se) {}
         }
         if (packageHandler != null) {
-            packageHandler.teardown(deleteState);
+            packageHandler.teardown();
         }
         if (attributionHandler != null) {
             attributionHandler.teardown();
@@ -97,14 +97,9 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
-        teardownActivityStateS(deleteState);
-        teardownAttributionS(deleteState);
-        teardownAllSessionParametersS(deleteState);
-
-        if (deleteState) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-            sharedPreferencesManager.clear();
-        }
+        teardownActivityStateS();
+        teardownAttributionS();
+        teardownAllSessionParametersS();
 
         packageHandler = null;
         logger = null;
@@ -118,6 +113,16 @@ public class ActivityHandler implements IActivityHandler {
         attributionHandler = null;
         sdkClickHandler = null;
         sessionParameters = null;
+    }
+
+    static void deleteState(Context context) {
+        deleteActivityState(context);
+        deleteAttribution(context);
+        deleteSessionCallbackParameters(context);
+        deleteSessionPartnerParameters(context);
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.clear();
     }
 
     public class InternalState {
@@ -1755,13 +1760,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownActivityStateS(boolean toDelete) {
+    private void teardownActivityStateS() {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteActivityState(adjustConfig.context);
             }
             activityState = null;
         }
@@ -1776,13 +1778,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAttributionS(boolean toDelete) {
+    private void teardownAttributionS() {
         synchronized (AdjustAttribution.class) {
             if (attribution == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteAttribution(adjustConfig.context);
             }
             attribution = null;
         }
@@ -1806,14 +1805,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAllSessionParametersS(boolean toDelete) {
+    private void teardownAllSessionParametersS() {
         synchronized (SessionParameters.class) {
             if (sessionParameters == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteSessionCallbackParameters(adjustConfig.context);
-                deleteSessionPartnerParameters(adjustConfig.context);
             }
             sessionParameters = null;
         }
