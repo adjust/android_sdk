@@ -107,11 +107,7 @@ public class AdjustCommandExecutor {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         testOptions.baseUrl = baseUrl;
         if (command.containsParameter("basePath")) {
-            testOptions.basePath = command.getFirstParameterValue("basePath");
-        }
-        if (command.containsParameter("useTestConnectionOptions")) {
-            boolean useTestConnectionOptions = Boolean.valueOf(command.getFirstParameterValue("useTestConnectionOptions"));
-            testOptions.useTestConnectionOptions = useTestConnectionOptions;
+            basePath = command.getFirstParameterValue("basePath");
         }
         if (command.containsParameter("timerInterval")) {
             long timerInterval = Long.parseLong(command.getFirstParameterValue("timerInterval"));
@@ -129,25 +125,38 @@ public class AdjustCommandExecutor {
             long subsessionInterval = Long.parseLong(command.getFirstParameterValue("subsessionInterval"));
             testOptions.subsessionIntervalInMilliseconds = subsessionInterval;
         }
-        if (command.containsParameter("teardownSdk")) {
-            boolean teardown = Boolean.valueOf(command.getFirstParameterValue("teardownSdk"));
-            testOptions.teardown = teardown;
-        }
-        if (command.containsParameter("deleteState")) {
-            boolean deleteState = Boolean.valueOf(command.getFirstParameterValue("deleteState"));
-            if (deleteState) {
-                testOptions.context = this.context;
-            }
-        }
-        if (command.containsParameter("teardownTest")) {
-            boolean teardownTest = Boolean.valueOf(command.getFirstParameterValue("teardownTest"));
-            if (teardownTest) {
-                savedEvents = new HashMap<Integer, AdjustEvent>();
-                savedConfigs = new HashMap<Integer, AdjustConfig>();
-                testOptions.timerIntervalInMilliseconds = (long) -1;
-                testOptions.timerStartInMilliseconds = (long) -1;
-                testOptions.sessionIntervalInMilliseconds = (long) -1;
-                testOptions.subsessionIntervalInMilliseconds = (long) -1;
+        if (command.containsParameter("teardown")) {
+            List<String> teardownOptions = command.parameters.get("teardown");
+            for (String teardownOption : teardownOptions) {
+                if (teardownOption.equals("resetSdk")) {
+                    testOptions.teardown = true;
+                    testOptions.basePath = basePath;
+                    testOptions.useTestConnectionOptions = true;
+                }
+                if (teardownOption.equals("deleteState")) {
+                    testOptions.context = this.context;
+                }
+                if (teardownOption.equals("resetTest")) {
+                    savedEvents = new HashMap<Integer, AdjustEvent>();
+                    savedConfigs = new HashMap<Integer, AdjustConfig>();
+                    testOptions.timerIntervalInMilliseconds = (long) -1;
+                    testOptions.timerStartInMilliseconds = (long) -1;
+                    testOptions.sessionIntervalInMilliseconds = (long) -1;
+                    testOptions.subsessionIntervalInMilliseconds = (long) -1;
+                }
+                if (teardownOption.equals("sdk")) {
+                    testOptions.teardown = true;
+                    testOptions.basePath = null;
+                    testOptions.useTestConnectionOptions = false;
+                }
+                if (teardownOption.equals("test")) {
+                    savedEvents = null;
+                    savedConfigs = null;
+                    testOptions.timerIntervalInMilliseconds = (long) -1;
+                    testOptions.timerStartInMilliseconds = (long) -1;
+                    testOptions.sessionIntervalInMilliseconds = (long) -1;
+                    testOptions.subsessionIntervalInMilliseconds = (long) -1;
+                }
             }
         }
         Adjust.setTestOptions(testOptions);
