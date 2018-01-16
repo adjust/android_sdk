@@ -25,6 +25,7 @@ also need to update your `AndroidManifest.xml` to use your own
 ```xml
 <receiver
     android:name="com.your.app.InstallReceiver"
+    android:permission="android.permission.INSTALL_PACKAGES"
     android:exported="true" >
     <intent-filter>
         <action android:name="com.android.vending.INSTALL_REFERRER" />
