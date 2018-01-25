@@ -8,20 +8,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import static com.adjust.testlibrary.Constants.BASE_PATH_HEADER;
 import static com.adjust.testlibrary.Constants.TEST_LIBRARY_CLASSNAME;
-import static com.adjust.testlibrary.Constants.TEST_SCRIPT_HEADER;
-import static com.adjust.testlibrary.Constants.TEST_SESSION_END_HEADER;
 import static com.adjust.testlibrary.Constants.WAIT_FOR_CONTROL;
 import static com.adjust.testlibrary.Constants.WAIT_FOR_SLEEP;
 import static com.adjust.testlibrary.Utils.debug;
@@ -40,7 +33,7 @@ public class TestLibrary {
     ICommandJsonListener commandJsonListener;
     ICommandRawJsonListener commandRawJsonListener;
     ControlChannel controlChannel;
-    String currentTest;
+    String currentTestName;
     String currentBasePath;
     Gson gson = new Gson();
     BlockingQueue<String> waitControlQueue;
@@ -122,7 +115,7 @@ public class TestLibrary {
         this.exitAfterEnd = false;
     }
 
-    public void initTestSession(final String clientSdk) {
+    public void startTestSession(final String clientSdk) {
         resetTestLibrary();
 
         executor.submit(new Runnable() {
@@ -246,17 +239,10 @@ public class TestLibrary {
         }
 
         if (params.containsKey("testName")) {
-            currentTest = params.get("testName").get(0);
-            debug("current test name %s", currentTest);
+            currentTestName = params.get("testName").get(0);
+            debug("current test name %s", currentTestName);
         }
         resetForNextTest();
-    }
-
-    private void endTestSessionI() {
-        teardown(false);
-        if (exitAfterEnd) {
-            exit();
-        }
     }
 
     private void endTestReadNext() {
@@ -264,6 +250,13 @@ public class TestLibrary {
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
         // and process the next in the response
         readResponseI(httpResponse);
+    }
+
+    private void endTestSessionI() {
+        teardown(false);
+        if (exitAfterEnd) {
+            exit();
+        }
     }
 
     private void waitI(Map<String, List<String>> params) throws InterruptedException {
