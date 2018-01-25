@@ -318,5 +318,15 @@ public class AdjustFactory {
         logger = null;
         httpsURLConnection = null;
         sdkClickHandler = null;
+
+        timerInterval = -1;
+        timerStart = -1;
+        sessionInterval = -1;
+        subsessionInterval = -1;
+        sdkClickBackoffStrategy = null;
+        packageHandlerBackoffStrategy = null;
+        maxDelayStart = -1;
+        baseUrl = Constants.BASE_URL;
+        connectionOptions = null;
     }
 }
