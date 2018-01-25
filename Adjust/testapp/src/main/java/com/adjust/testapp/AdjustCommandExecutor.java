@@ -291,6 +291,7 @@ public class AdjustCommandExecutor {
         }
 
         if (command.containsParameter("attributionCallbackSendAll")) {
+            final String localBasePath = basePath;
             adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
                 @Override
                 public void onAttributionChanged(AdjustAttribution attribution) {
@@ -304,12 +305,13 @@ public class AdjustCommandExecutor {
                     MainActivity.testLibrary.addInfoToSend("creative", attribution.creative);
                     MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
                     MainActivity.testLibrary.addInfoToSend("adid", attribution.adid);
-                    MainActivity.testLibrary.sendInfoToServer();
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
         }
 
         if (command.containsParameter("sessionCallbackSendSuccess")) {
+            final String localBasePath = basePath;
             adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                 @Override
                 public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
@@ -321,12 +323,13 @@ public class AdjustCommandExecutor {
                     if (sessionSuccessResponseData.jsonResponse != null) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", sessionSuccessResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer();
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
         }
 
         if (command.containsParameter("sessionCallbackSendFailure")) {
+            final String localBasePath = basePath;
             adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                 @Override
                 public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
@@ -339,12 +342,13 @@ public class AdjustCommandExecutor {
                     if (sessionFailureResponseData.jsonResponse != null) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", sessionFailureResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer();
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
         }
 
         if (command.containsParameter("eventCallbackSendSuccess")) {
+            final String localBasePath = basePath;
             adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
                 @Override
                 public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
@@ -357,12 +361,13 @@ public class AdjustCommandExecutor {
                     if (eventSuccessResponseData.jsonResponse != null ) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer();
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
         }
 
         if (command.containsParameter("eventCallbackSendFailure")) {
+            final String localBasePath = basePath;
             adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
                 @Override
                 public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
@@ -376,7 +381,7 @@ public class AdjustCommandExecutor {
                     if (eventFailureResponseData.jsonResponse != null) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", eventFailureResponseData.jsonResponse.toString());
                     }
-                    MainActivity.testLibrary.sendInfoToServer();
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
         }

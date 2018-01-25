@@ -145,11 +145,11 @@ public class TestLibrary {
         infoToServer.put(key, value);
     }
 
-    public void sendInfoToServer() {
+    public void sendInfoToServer(final String basePath) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInfoToServerI();
+                sendInfoToServerI(basePath);
             }
         });
     }
@@ -168,8 +168,8 @@ public class TestLibrary {
         readResponseI(httpResponse);
     }
 
-    private void sendInfoToServerI() {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/test_info"), null, infoToServer);
+    private void sendInfoToServerI(String basePath) {
+        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(basePath, "/test_info"), null, infoToServer);
         infoToServer = null;
         readResponseI(httpResponse);
     }
