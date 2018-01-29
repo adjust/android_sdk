@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
         //testLibrary.setTests("current/Test_Nothing");
         //testLibrary.setTests("current/attributionCallback/Test_AttributionCallback_no_ask_in");
         testLibrary.doNotExitAfterEnd();
-        testLibrary.initTestSession("android4.12.0");
+        testLibrary.startTestSession("android4.12.0");
     }
 
     public void onStartTestSession(View v) {
