@@ -28,18 +28,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        commandListener = new CommandListener(this.getApplicationContext());
-        testLibrary = new TestLibrary(baseUrl, commandListener);
+        testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
         startTestSession();
     }
 
     private void startTestSession() {
-        //testLibrary.setTests("current/appSecret/Test_AppSecret_no_secret");
-        //testLibrary.setTests("current/Test_Nothing");
-        //testLibrary.setTests("current/attributionCallback/Test_AttributionCallback_no_ask_in");
-        testLibrary.doNotExitAfterEnd();
-        testLibrary.startTestSession("android4.12.0");
-    }
+        //testLibrary.addTest("current/appSecret/Test_AppSecret_no_secret");
+//        testLibrary.addTestDirectory("current/sdkInfo/");
 
     public void onStartTestSession(View v) {
         startTestSession();

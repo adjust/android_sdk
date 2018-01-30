@@ -39,7 +39,7 @@ public class TestLibrary {
     BlockingQueue<String> waitControlQueue;
     Map<String, String> infoToServer;
 
-    String testNames = null;
+    StringBuilder testNames = new StringBuilder();
     boolean exitAfterEnd = true;
 
     public TestLibrary(String baseUrl, ICommandRawJsonListener commandRawJsonListener) {
@@ -107,8 +107,20 @@ public class TestLibrary {
         controlChannel = new ControlChannel(this);
     }
 
-    public void setTests(String testNames) {
-        this.testNames = testNames;
+    public void addTestDirectory(String testDir) {
+        this.testNames.append(testDir);
+
+        if(!testDir.endsWith("/")) {
+            this.testNames.append("/");
+        }
+    }
+
+    public void addTest(String testName) {
+        this.testNames.append(testName);
+
+        if(!testName.endsWith(";")) {
+            this.testNames.append(";");
+        }
     }
 
     public void doNotExitAfterEnd() {
@@ -157,7 +169,7 @@ public class TestLibrary {
     }
 
     private void sendTestSessionI(String clientSdk) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testNames);
+        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testNames.toString());
         readResponseI(httpResponse);
     }
 
