@@ -4,15 +4,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.testlibrary.TestLibrary;
 
 public class MainActivity extends AppCompatActivity {
     public static TestLibrary testLibrary;
-    private CommandListener commandListener;
-    public static final String TAG = "TestApp";
     public static final String baseUrl = "https://10.0.2.2:8443";
 
     @Override
