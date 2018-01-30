@@ -3,6 +3,7 @@ package com.adjust.testapp;
 import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.util.SparseArray;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAttribution;
@@ -37,9 +38,9 @@ public class AdjustCommandExecutor {
     String basePath;
     private static final String DefaultConfigName = "defaultConfig";
     private static final String DefaultEventName = "defaultEvent";
-    private Map<Integer, AdjustEvent> savedEvents = new HashMap<Integer, AdjustEvent>();
-    private Map<Integer, AdjustConfig> savedConfigs = new HashMap<Integer, AdjustConfig>();
     Command command;
+    private SparseArray<AdjustEvent> savedEvents = new SparseArray<>();
+    private SparseArray<AdjustConfig> savedConfigs = new SparseArray<>();
 
     public AdjustCommandExecutor(Context context) {
         this.context = context;
@@ -137,8 +138,8 @@ public class AdjustCommandExecutor {
                     testOptions.context = this.context;
                 }
                 if (teardownOption.equals("resetTest")) {
-                    savedEvents = new HashMap<Integer, AdjustEvent>();
-                    savedConfigs = new HashMap<Integer, AdjustConfig>();
+                    savedEvents.clear();
+                    savedConfigs.clear();
                     testOptions.timerIntervalInMilliseconds = (long) -1;
                     testOptions.timerStartInMilliseconds = (long) -1;
                     testOptions.sessionIntervalInMilliseconds = (long) -1;
@@ -169,9 +170,9 @@ public class AdjustCommandExecutor {
             configNumber = Integer.parseInt(configName.substring(configName.length() - 1));
         }
 
-        AdjustConfig adjustConfig = null;
+        AdjustConfig adjustConfig;
 
-        if (savedConfigs.containsKey(configNumber)) {
+        if (savedConfigs.indexOfKey(configNumber) >= 0) {
             adjustConfig = savedConfigs.get(configNumber);
         } else {
             String environment = command.getFirstParameterValue("environment");
@@ -410,8 +411,8 @@ public class AdjustCommandExecutor {
             eventNumber = Integer.parseInt(eventName.substring(eventName.length() - 1));
         }
 
-        AdjustEvent adjustEvent = null;
-        if (savedEvents.containsKey(eventNumber)) {
+        AdjustEvent adjustEvent;
+        if (savedEvents.indexOfKey(eventNumber) >= 0) {
             adjustEvent = savedEvents.get(eventNumber);
         } else {
             String eventToken = command.getFirstParameterValue("eventToken");
