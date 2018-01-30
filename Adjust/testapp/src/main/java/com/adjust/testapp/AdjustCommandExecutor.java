@@ -22,11 +22,8 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static com.adjust.testapp.MainActivity.TAG;
 import static com.adjust.testapp.MainActivity.baseUrl;
 
 /**
@@ -34,13 +31,12 @@ import static com.adjust.testapp.MainActivity.baseUrl;
  */
 
 public class AdjustCommandExecutor {
-    Context context;
-    String basePath;
-    private static final String DefaultConfigName = "defaultConfig";
-    private static final String DefaultEventName = "defaultEvent";
-    Command command;
+    private static final String TAG = "AdjustCommandExecutor";
+    private Context context;
+    private String basePath;
     private SparseArray<AdjustEvent> savedEvents = new SparseArray<>();
     private SparseArray<AdjustConfig> savedConfigs = new SparseArray<>();
+    private Command command;
 
     public AdjustCommandExecutor(Context context) {
         this.context = context;
@@ -182,7 +178,7 @@ public class AdjustCommandExecutor {
                 context = null;
             }
             adjustConfig = new AdjustConfig(context, appToken, environment);
-            String logLevel = command.getFirstParameterValue("logLevel");
+//            String logLevel = command.getFirstParameterValue("logLevel");
 //            adjustConfig.setLogLevel(LogLevel.valueOf(logLevel));
             adjustConfig.setLogLevel(LogLevel.VERBOSE);
 
@@ -237,7 +233,7 @@ public class AdjustCommandExecutor {
                 long info3 = Long.parseLong(appSecretArray.get(3));
                 long info4 = Long.parseLong(appSecretArray.get(4));
                 adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
 
             }
         }
@@ -282,11 +278,7 @@ public class AdjustCommandExecutor {
 
                     Log.d("TestApp", "Deeplink Response, uri = " + deeplink.toString());
 
-                    if (!deeplink.toString().startsWith("adjusttest")) {
-                        return false;
-                    }
-
-                    return true;
+                    return deeplink.toString().startsWith("adjusttest");
                 }
             });
         }
