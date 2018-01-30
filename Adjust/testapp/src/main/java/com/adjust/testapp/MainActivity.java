@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         //testLibrary.addTest("current/appSecret/Test_AppSecret_no_secret");
 //        testLibrary.addTestDirectory("current/sdkInfo/");
 
-    public void onStartTestSession(View v) {
-        startTestSession();
+        testLibrary.startTestSession("android4.12.0");
     }
 }
