@@ -180,7 +180,7 @@ public class AdjustCriteo {
         }
         for (int i = 0; i < productIdsSize; ) {
             String productID = productIds.get(i);
-            String productString = Util.formatString("\"%s\"", productID);
+            String productString = String.format(Locale.US, "\"%s\"", productID);
             criteoVLValue.append(productString);
 
             i++;
@@ -210,7 +210,7 @@ public class AdjustCriteo {
         int productsSize = products.size();
         for (int i = 0; i < productsSize; ) {
             CriteoProduct criteoProduct = products.get(i);
-            String productString = Util.formatString("{\"i\":\"%s\",\"pr\":%f,\"q\":%d}",
+            String productString = String.format(Locale.US, "{\"i\":\"%s\",\"pr\":%f,\"q\":%d}",
                     criteoProduct.productID,
                     criteoProduct.price,
                     criteoProduct.quantity);
