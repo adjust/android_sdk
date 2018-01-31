@@ -56,9 +56,9 @@ public class Logger implements ILogger {
         }
         if (logLevel.androidLogLevel <= Log.VERBOSE) {
             try {
-                Log.v(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.v(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -70,9 +70,9 @@ public class Logger implements ILogger {
         }
         if (logLevel.androidLogLevel <= Log.DEBUG) {
             try {
-                Log.d(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.d(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -84,9 +84,9 @@ public class Logger implements ILogger {
         }
         if (logLevel.androidLogLevel <= Log.INFO) {
             try {
-                Log.i(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.i(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -98,9 +98,9 @@ public class Logger implements ILogger {
         }
         if (logLevel.androidLogLevel <= Log.WARN) {
             try {
-                Log.w(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.w(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -109,9 +109,9 @@ public class Logger implements ILogger {
     public void warnInProduction(String message, Object... parameters) {
         if (logLevel.androidLogLevel <= Log.WARN) {
             try {
-                Log.w(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.w(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -124,9 +124,9 @@ public class Logger implements ILogger {
         }
         if (logLevel.androidLogLevel <= Log.ERROR) {
             try {
-                Log.e(LOGTAG, String.format(Locale.US, message, parameters));
+                Log.e(LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }
@@ -138,9 +138,9 @@ public class Logger implements ILogger {
         }
         if(logLevel.androidLogLevel <= Log.ASSERT) {
             try {
-                Log.println(Log.ASSERT, LOGTAG, String.format(Locale.US, message, parameters));
+                Log.println(Log.ASSERT, LOGTAG, Util.formatString(message, parameters));
             } catch (Exception e) {
-                Log.e(LOGTAG, String.format(Locale.US, formatErrorMessage, message, Arrays.toString(parameters)));
+                Log.e(LOGTAG, Util.formatString(formatErrorMessage, message, Arrays.toString(parameters)));
             }
         }
     }

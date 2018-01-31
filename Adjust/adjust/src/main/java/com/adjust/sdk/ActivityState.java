@@ -121,8 +121,7 @@ public class ActivityState implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return String.format(Locale.US,
-                "ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
+        return Util.formatString("ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",
                 eventCount, sessionCount, subsessionCount,
                 sessionLength / 1000.0, timeSpent / 1000.0,
                 stamp(lastActivity), uuid);
@@ -214,8 +213,7 @@ public class ActivityState implements Serializable, Cloneable {
     private static String stamp(long dateMillis) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(dateMillis);
-        return String.format(Locale.US,
-                "%02d:%02d:%02d",
+        return Util.formatString("%02d:%02d:%02d",
                 calendar.HOUR_OF_DAY,
                 calendar.MINUTE,
                 calendar.SECOND);

@@ -15,7 +15,7 @@ public class AdjustSessionSuccess {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Session Success msg:%s time:%s adid:%s json:%s",
+        return Util.formatString("Session Success msg:%s time:%s adid:%s json:%s",
                 message, timestamp, adid, jsonResponse);
     }
 }

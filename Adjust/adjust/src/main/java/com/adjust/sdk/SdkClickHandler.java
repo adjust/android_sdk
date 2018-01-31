@@ -377,7 +377,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                                   final Throwable throwable) {
         final String packageMessage = sdkClickPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
-        final String finalMessage = String.format("%s. (%s)", packageMessage, reasonString);
+        final String finalMessage = Util.formatString("%s. (%s)", packageMessage, reasonString);
 
         logger.error(finalMessage);
     }

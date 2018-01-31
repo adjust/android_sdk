@@ -148,7 +148,7 @@ public class UtilNetworking {
         try {
             jsonResponse = new JSONObject(stringResponse);
         } catch (JSONException e) {
-            String message = String.format("Failed to parse json response. (%s)", e.getMessage());
+            String message = Util.formatString("Failed to parse json response. (%s)", e.getMessage());
             logger.error(message);
             responseData.message = message;
         }
@@ -267,12 +267,12 @@ public class UtilNetworking {
         String signature = Util.sha256(signatureDetails.get("clear_signature"));
         String fields = signatureDetails.get("fields");
 
-        String secretIdHeader = String.format("secret_id=\"%s\"", secretId);
-        String signatureHeader = String.format("signature=\"%s\"", signature);
-        String algorithmHeader = String.format("algorithm=\"%s\"", algorithm);
-        String fieldsHeader = String.format("headers=\"%s\"", fields);
+        String secretIdHeader = Util.formatString("secret_id=\"%s\"", secretId);
+        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
+        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm);
+        String fieldsHeader = Util.formatString("headers=\"%s\"", fields);
 
-        String authorizationHeader = String.format("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
         getLogger().verbose("authorizationHeader: %s", authorizationHeader);
 
         return authorizationHeader;

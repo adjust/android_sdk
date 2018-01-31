@@ -135,8 +135,8 @@ public class AdjustConfig {
     }
 
     public void setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
-        this.secretId = String.format("%d", secretId);
-        this.appSecret = String.format("%d%d%d%d", info1, info2, info3, info4);
+        this.secretId = Util.formatString("%d", secretId);
+        this.appSecret = Util.formatString("%d%d%d%d", info1, info2, info3, info4);
     }
 
     public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {

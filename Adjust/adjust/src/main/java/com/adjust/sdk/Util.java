@@ -77,7 +77,7 @@ public class Util {
             return string;
         }
 
-        return String.format(Locale.US, "'%s'", string);
+        return Util.formatString("'%s'", string);
     }
 
     public static String getPlayAdId(Context context) {
@@ -448,7 +448,7 @@ public class Util {
     public static String convertToHex(final byte[] bytes) {
         final BigInteger bigInt = new BigInteger(1, bytes);
         final String formatString = "%0" + (bytes.length << 1) + "x";
-        return String.format(Locale.US, formatString, bigInt);
+        return Util.formatString(formatString, bigInt);
     }
 
     public static String[] getSupportedAbis() {
@@ -461,9 +461,9 @@ public class Util {
 
     public static String getReasonString(String message, Throwable throwable) {
         if (throwable != null) {
-            return String.format(Locale.US, "%s: %s", message, throwable);
+            return Util.formatString("%s: %s", message, throwable);
         } else {
-            return String.format(Locale.US, "%s", message);
+            return Util.formatString("%s", message);
         }
     }
 
@@ -622,5 +622,9 @@ public class Util {
             AdjustFactory.getLogger().warn("Couldn't return mnc");
             return null;
         }
+    }
+
+    public static String formatString(String format, Object... args) {
+        return String.format(Locale.US, format, args);
     }
 }
