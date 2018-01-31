@@ -1,6 +1,6 @@
 ### Version 4.12.1 (31st January 2018)
 #### Fixed
-- Correctly format strings with US locale
+- Formatting all strings with US locale.
 
 ---
 
