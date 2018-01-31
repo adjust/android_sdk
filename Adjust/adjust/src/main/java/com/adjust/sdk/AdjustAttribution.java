@@ -87,7 +87,7 @@ public class AdjustAttribution implements Serializable {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s adid:%s",
+        return Util.formatString("tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s adid:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel, adid);
     }
 

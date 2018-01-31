@@ -90,7 +90,7 @@ public class RequestHandler implements IRequestHandler {
     private void closePackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String packageMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
-        String finalMessage = String.format("%s. (%s) Will retry later", packageMessage, reasonString);
+        String finalMessage = Util.formatString("%s. (%s) Will retry later", packageMessage, reasonString);
         logger.error(finalMessage);
 
         ResponseData responseData = ResponseData.buildResponseData(activityPackage);
@@ -108,7 +108,7 @@ public class RequestHandler implements IRequestHandler {
     private void sendNextPackageI(ActivityPackage activityPackage, String message, Throwable throwable) {
         final String failureMessage = activityPackage.getFailureMessage();
         final String reasonString = Util.getReasonString(message, throwable);
-        String finalMessage = String.format("%s. (%s)", failureMessage, reasonString);
+        String finalMessage = Util.formatString("%s. (%s)", failureMessage, reasonString);
         logger.error(finalMessage);
 
         ResponseData responseData = ResponseData.buildResponseData(activityPackage);

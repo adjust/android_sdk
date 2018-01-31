@@ -47,7 +47,7 @@ public class ResponseData {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "message:%s timestamp:%s json:%s",
+        return Util.formatString("message:%s timestamp:%s json:%s",
                 message, timestamp, jsonResponse);
     }
 }

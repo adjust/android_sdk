@@ -56,7 +56,7 @@ public class AdjustTrademob {
 
         while (i < itemsSize) {
             String itemId = itemIds.get(i);
-            String itemString = String.format(Locale.US, "\"%s\"", itemId);
+            String itemString = Util.formatString("\"%s\"", itemId);
             tmViewList.append(itemString);
 
             i++;
@@ -84,7 +84,7 @@ public class AdjustTrademob {
 
         for (int i = 0; i < itemsSize; ) {
             TrademobItem item = items.get(i);
-            String itemString = String.format(Locale.US, "{\"id\":\"%s\",\"price\":%f,\"quantity\":%d}",
+            String itemString = Util.formatString("{\"id\":\"%s\",\"price\":%f,\"quantity\":%d}",
                     item.itemId,
                     item.price,
                     item.quantity);

@@ -249,7 +249,7 @@ class DeviceInfo {
         if (sdkPrefix == null) {
             return Constants.CLIENT_SDK;
         } else {
-            return String.format(Locale.US, "%s@%s", sdkPrefix, Constants.CLIENT_SDK);
+            return Util.formatString("%s@%s", sdkPrefix, Constants.CLIENT_SDK);
         }
     }
 

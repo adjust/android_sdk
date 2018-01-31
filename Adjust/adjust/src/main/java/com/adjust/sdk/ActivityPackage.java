@@ -143,13 +143,13 @@ public class ActivityPackage implements Serializable {
     }
 
     public String toString() {
-        return String.format(Locale.US, "%s%s", activityKind.toString(), suffix);
+        return Util.formatString("%s%s", activityKind.toString(), suffix);
     }
 
     public String getExtendedString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format(Locale.US, "Path:      %s\n", path));
-        builder.append(String.format(Locale.US, "ClientSdk: %s\n", clientSdk));
+        builder.append(Util.formatString("Path:      %s\n", path));
+        builder.append(Util.formatString("ClientSdk: %s\n", clientSdk));
 
         if (parameters != null) {
             builder.append("Parameters:");
@@ -160,14 +160,14 @@ public class ActivityPackage implements Serializable {
                 if (stringsToExclude.contains(key)) {
                     continue;
                 }
-                builder.append(String.format(Locale.US, "\n\t%-16s %s", key,  entry.getValue()));
+                builder.append(Util.formatString("\n\t%-16s %s", key,  entry.getValue()));
             }
         }
         return builder.toString();
     }
 
     protected String getFailureMessage() {
-        return String.format(Locale.US, "Failed to track %s%s", activityKind.toString(), suffix);
+        return Util.formatString("Failed to track %s%s", activityKind.toString(), suffix);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {

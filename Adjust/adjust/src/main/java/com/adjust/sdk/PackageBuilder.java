@@ -328,9 +328,9 @@ class PackageBuilder {
 
     private String getEventSuffix(AdjustEvent event) {
         if (event.revenue == null) {
-            return String.format(Locale.US, "'%s'", event.eventToken);
+            return Util.formatString("'%s'", event.eventToken);
         } else {
-            return String.format(Locale.US, "(%.5f %s, '%s')", event.revenue, event.currency, event.eventToken);
+            return Util.formatString("(%.5f %s, '%s')", event.revenue, event.currency, event.eventToken);
         }
     }
 
@@ -415,7 +415,7 @@ class PackageBuilder {
     public static void addDouble(Map<String, String> parameters, String key, Double value) {
         if (value == null) return;
 
-        String doubleString = String.format(Locale.US, "%.5f", value);
+        String doubleString = Util.formatString("%.5f", value);
 
         PackageBuilder.addString(parameters, key, doubleString);
     }

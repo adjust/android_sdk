@@ -17,7 +17,7 @@ public class AdjustEventFailure {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Event Failure msg:%s time:%s adid:%s event:%s retry:%b json:%s",
+        return Util.formatString("Event Failure msg:%s time:%s adid:%s event:%s retry:%b json:%s",
             message, timestamp, adid, eventToken, willRetry, jsonResponse);
     }
 }

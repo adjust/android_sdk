@@ -16,7 +16,7 @@ public class AdjustSessionFailure {
 
     @Override
     public String toString() {
-        return String.format(Locale.US, "Session Failure msg:%s time:%s adid:%s retry:%b json:%s",
+        return Util.formatString("Session Failure msg:%s time:%s adid:%s retry:%b json:%s",
             message, timestamp, adid, willRetry, jsonResponse);
     }
 }
