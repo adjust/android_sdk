@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -151,7 +153,12 @@ public class InstallReferrer implements InvocationHandler {
                     new Class[]{Context.class}, context);
             return Reflection.invokeInstanceMethod(builder, "build", null);
         } catch (Exception e) {
-            logger.warn("Couldn't create instance of referrer client (%s)", e.getMessage());
+            switch (e.getClass().getCanonicalName()) {
+                case "java.lang.ClassNotFoundException":
+                    logger.warn("InstallReferrer not integrated in project (%s)", e.getMessage());
+                    break;
+            }
+
         }
         return null;
     }
@@ -165,7 +172,9 @@ public class InstallReferrer implements InvocationHandler {
         try {
             return Class.forName(PACKAGE_BASE_NAME + "api.InstallReferrerStateListener");
         } catch (Exception e) {
-            logger.error("getInstallReferrerStateListenerClass error (%s)", e.getMessage());
+            logger.error("getInstallReferrerStateListenerClass error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         return null;
     }
@@ -180,11 +189,24 @@ public class InstallReferrer implements InvocationHandler {
         if (installReferrerStateListenerClass == null) {
             return null;
         }
-        return Proxy.newProxyInstance(
-                installReferrerStateListenerClass.getClassLoader(),
-                new Class[]{installReferrerStateListenerClass},
-                this
-        );
+
+        Object proxyInstance;
+
+        try {
+            proxyInstance = Proxy.newProxyInstance(
+                    installReferrerStateListenerClass.getClassLoader(),
+                    new Class[]{installReferrerStateListenerClass},
+                    this
+            );
+        } catch (IllegalArgumentException ex) {
+            logger.error("InstallReferrer proxy violating parameter restrictions");
+            return null;
+        } catch (NullPointerException ex) {
+            logger.error("Null argument passed to InstallReferrer proxy");
+            return null;
+        }
+
+        return proxyInstance;
     }
 
     /**
@@ -204,7 +226,25 @@ public class InstallReferrer implements InvocationHandler {
             Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
                     new Class[]{listenerClass}, listenerProxy);
         } catch (Exception e) {
-            logger.error("startConnection error (%s)", e.getMessage());
+            switch (e.getClass().getCanonicalName()) {
+                case "java.lang.ClassNotFoundException":
+                    logger.debug("InstallReferrer not integrated in project");
+                    break;
+                case "java.lang.InvocationTargetException":
+                    StringWriter sw = new StringWriter();
+                    PrintWriter pw = new PrintWriter(sw);
+                    e.printStackTrace(pw);
+                    String sStackTrace = sw.toString(); // stack trace as a string
+                    if (sStackTrace.contains("SecurityException")) {
+                        e.printStackTrace();
+                        logger.warn("InstallReferrer is missing BIND_GET_INSTALL_REFERRER_SERVICE permission");
+                    }
+                    break;
+                default:
+                    logger.error("startConnection error (%s) from (%s)",
+                            e.getMessage(),
+                            e.getClass().getCanonicalName());
+            }
         }
     }
 
@@ -212,23 +252,19 @@ public class InstallReferrer implements InvocationHandler {
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
-        try {
-            String methodName = method.getName();
-            // Prints the method being invoked
-            logger.debug("InstallReferrer invoke method name: %s", methodName);
-            for (Object arg : args) {
-                logger.debug("InstallReferrer invoke arg: %s", arg);
-            }
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable{
+        String methodName = method.getName();
+        // Prints the method being invoked
+        logger.debug("InstallReferrer invoke method name: %s", methodName);
+        for (Object arg : args) {
+            logger.debug("InstallReferrer invoke arg: %s", arg);
+        }
 
-            // if the method name equals some method's name then call your method
-            if (methodName.equals("onInstallReferrerSetupFinished")) {
-                onInstallReferrerSetupFinishedInt((Integer) args[0]);
-            } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
-                logger.debug("InstallReferrer onInstallReferrerServiceDisconnected");
-            }
-        } catch (Exception e) {
-            logger.error("InstallReferrer invoke error (%s)", e.getMessage());
+        // if the method name equals some method's name then call your method
+        if (methodName.equals("onInstallReferrerSetupFinished")) {
+            onInstallReferrerSetupFinishedInt((Integer) args[0]);
+        } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
+            logger.debug("InstallReferrer onInstallReferrerServiceDisconnected");
         }
         return null;
     }
@@ -302,7 +338,9 @@ public class InstallReferrer implements InvocationHandler {
             return Reflection.invokeInstanceMethod(
                     this.referrerClient, "getInstallReferrer", null);
         } catch (Exception e) {
-            logger.error("getInstallReferrer error (%s)", e.getMessage());
+            logger.error("getInstallReferrer error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         return null;
     }
@@ -322,7 +360,9 @@ public class InstallReferrer implements InvocationHandler {
                     referrerDetails, "getInstallReferrer", null);
             return stringInstallReferrer;
         } catch (Exception e) {
-            logger.error("getStringInstallReferrer error (%s)", e.getMessage());
+            logger.error("getStringInstallReferrer error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         return null;
     }
@@ -342,7 +382,9 @@ public class InstallReferrer implements InvocationHandler {
                     referrerDetails, "getReferrerClickTimestampSeconds", null);
             return clickTime;
         } catch (Exception e) {
-            logger.error("getReferrerClickTimestampSeconds error (%s)", e.getMessage());
+            logger.error("getReferrerClickTimestampSeconds error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         return -1;
     }
@@ -362,7 +404,9 @@ public class InstallReferrer implements InvocationHandler {
                     referrerDetails, "getInstallBeginTimestampSeconds", null);
             return installBeginTime;
         } catch (Exception e) {
-            logger.error("getInstallBeginTimestampSeconds error (%s)", e.getMessage());
+            logger.error("getInstallBeginTimestampSeconds error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         return -1;
     }
@@ -402,7 +446,9 @@ public class InstallReferrer implements InvocationHandler {
         try {
             Reflection.invokeInstanceMethod(referrerClient, "endConnection", null);
         } catch (Exception e) {
-            logger.error("closeReferrerClient error (%s)", e.getMessage());
+            logger.error("closeReferrerClient error (%s) from (%s)",
+                    e.getMessage(),
+                    e.getClass().getCanonicalName());
         }
         referrerClient = null;
     }
