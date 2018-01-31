@@ -624,7 +624,7 @@ public class Util {
         }
     }
 
-    public static String formatString(String string, Object... args) {
-        return String.format(Locale.US, string, args);
+    public static String formatString(String format, Object... args) {
+        return String.format(Locale.US, format, args);
     }
 }
