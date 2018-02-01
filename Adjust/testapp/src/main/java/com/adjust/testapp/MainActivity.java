@@ -26,12 +26,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
+        testLibrary.doNotExitAfterEnd();
         startTestSession();
     }
 
     private void startTestSession() {
+        //testLibrary.addTestDirectory("current/sdkInfo");
         //testLibrary.addTest("current/appSecret/Test_AppSecret_no_secret");
-//        testLibrary.addTestDirectory("current/sdkInfo/");
 
         testLibrary.startTestSession("android4.12.0");
     }

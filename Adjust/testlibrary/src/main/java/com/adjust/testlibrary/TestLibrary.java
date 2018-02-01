@@ -110,8 +110,12 @@ public class TestLibrary {
     public void addTestDirectory(String testDir) {
         this.testNames.append(testDir);
 
-        if(!testDir.endsWith("/")) {
+        if(!testDir.endsWith("/") || !testDir.endsWith("/;")) {
             this.testNames.append("/");
+        }
+
+        if(!testDir.endsWith(";")) {
+            this.testNames.append(";");
         }
     }
 
