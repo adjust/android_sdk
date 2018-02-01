@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
@@ -22,7 +23,7 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Android install referrer library package name.
      */
-    public static final String PACKAGE_BASE_NAME = "com.android.installreferrer.";
+    private static final String PACKAGE_BASE_NAME = "com.android.installreferrer.";
 
     /**
      * Play Store service is not connected now - potentially transient state.
@@ -81,7 +82,7 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Lock.
      */
-    private Object flagLock;
+    private final Object flagLock;
 
     /**
      * Timer which fires retry attempts.
@@ -119,7 +120,7 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Start connection with install referrer service.
      */
-    public void startConnection() {
+    private void startConnection() {
         closeReferrerClient();
 
         synchronized (flagLock) {
@@ -252,7 +253,7 @@ public class InstallReferrer implements InvocationHandler {
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable{
+    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
         String methodName = method.getName();
         // Prints the method being invoked
         logger.debug("InstallReferrer invoke method name: %s", methodName);
@@ -274,7 +275,7 @@ public class InstallReferrer implements InvocationHandler {
      *
      * @param responseCode Response code from install referrer service
      */
-    public void onInstallReferrerSetupFinishedInt(final int responseCode) {
+    private void onInstallReferrerSetupFinishedInt(final int responseCode) {
         switch (responseCode) {
             case STATUS_OK:
                 // Connection established
