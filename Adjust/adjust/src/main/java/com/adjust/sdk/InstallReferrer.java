@@ -223,36 +223,20 @@ public class InstallReferrer implements InvocationHandler {
      * @param listenerClass Callback listener class type
      * @param listenerProxy Callback listener object instance
      */
-    public void startConnection(final Class listenerClass, final Object listenerProxy) {
-        if (referrerClient == null) {
-            return;
-        }
-        if (listenerClass == null || listenerProxy == null) {
-            return;
-        }
+    private void startConnection(final Class listenerClass, final Object listenerProxy) {
         try {
             Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
                     new Class[]{listenerClass}, listenerProxy);
-        } catch (Exception e) {
-            switch (e.getClass().getCanonicalName()) {
-                case "java.lang.ClassNotFoundException":
-                    logger.debug("InstallReferrer not integrated in project");
-                    break;
-                case "java.lang.InvocationTargetException":
-                    StringWriter sw = new StringWriter();
-                    PrintWriter pw = new PrintWriter(sw);
-                    e.printStackTrace(pw);
-                    String sStackTrace = sw.toString(); // stack trace as a string
-                    if (sStackTrace.contains("SecurityException")) {
-                        e.printStackTrace();
-                        logger.warn("InstallReferrer is missing BIND_GET_INSTALL_REFERRER_SERVICE permission");
-                    }
-                    break;
-                default:
-                    logger.error("startConnection error (%s) from (%s)",
-                            e.getMessage(),
-                            e.getClass().getCanonicalName());
+        } catch (InvocationTargetException ex) {
+            // Check for an underlying root cause in the stack trace
+            if (Util.hasRootCause(ex)) {
+                logger.error("InstallReferrer encountered an InvocationTargetException %s",
+                        Util.getRootCause(ex));
             }
+        } catch (Exception ex) {
+            logger.error("startConnection error (%s) thrown by (%s)",
+                    ex.getMessage(),
+                    ex.getClass().getCanonicalName());
         }
     }
 

@@ -30,6 +30,9 @@ import java.io.FileOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
@@ -632,5 +635,29 @@ public class Util {
 
     public static String formatString(String format, Object... args) {
         return String.format(Locale.US, format, args);
+    }
+
+    public static boolean hasRootCause(Exception ex) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+
+        return sStackTrace.contains("Caused by:");
+    }
+
+    public static String getRootCause(Exception ex) {
+        if (!hasRootCause(ex)) {
+            return null;
+        }
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+
+        int startOccuranceOfRootCause = sStackTrace.indexOf("Caused by:");
+        int endOccuranceOfRootCause = sStackTrace.indexOf("\n", startOccuranceOfRootCause);
+        return sStackTrace.substring(startOccuranceOfRootCause, endOccuranceOfRootCause);
     }
 }
