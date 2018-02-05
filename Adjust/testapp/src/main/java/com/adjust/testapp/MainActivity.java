@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
-        testLibrary.doNotExitAfterEnd();
+//        testLibrary.doNotExitAfterEnd();
         startTestSession();
     }
 
