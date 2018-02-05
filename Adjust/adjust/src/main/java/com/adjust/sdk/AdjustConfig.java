@@ -47,6 +47,7 @@ public class AdjustConfig {
         init(context, appToken, environment, allowSuppressLogLevel);
     }
 
+    // Beware that some of these values might be null. isValid() would check their validity later.
     private void init(Context context, String appToken, String environment, boolean allowSuppressLogLevel) {
         logger = AdjustFactory.getLogger();
         // default values
@@ -56,11 +57,12 @@ public class AdjustConfig {
             setLogLevel(LogLevel.INFO, environment);
         }
 
-        if (!isValid(context, appToken, environment)) {
-            return;
+        // Always use application context
+        if (context != null) {
+            context = context.getApplicationContext();
         }
 
-        this.context = context.getApplicationContext();
+        this.context = context;
         this.appToken = appToken;
         this.environment = environment;
 
