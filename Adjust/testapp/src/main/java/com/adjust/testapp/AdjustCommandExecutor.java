@@ -44,36 +44,31 @@ public class AdjustCommandExecutor {
 
     public void executeCommand(Command command) {
         this.command = command;
-        try {
-            switch (command.methodName) {
-                // case "factory": factory(); break;
-                case "testOptions": testOptions(); break;
-                case "config": config(); break;
-                case "start": start(); break;
-                case "event": event(); break;
-                case "trackEvent": trackEvent(); break;
-                case "resume": resume(); break;
-                case "pause": pause(); break;
-                case "setEnabled": setEnabled(); break;
-                case "setReferrer": setReferrer(); break;
-                case "setOfflineMode": setOfflineMode(); break;
-                case "sendFirstPackages": sendFirstPackages(); break;
-                case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
-                case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
-                case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
-                case "removeSessionPartnerParameter": removeSessionPartnerParameter(); break;
-                case "resetSessionCallbackParameters": resetSessionCallbackParameters(); break;
-                case "resetSessionPartnerParameters": resetSessionPartnerParameters(); break;
-                case "setPushToken": setPushToken(); break;
-                // case "teardown": teardown(); break;
-                case "openDeeplink": openDeeplink(); break;
-                case "sendReferrer": sendReferrer(); break;
-                //case "testBegin": testBegin(); break;
-                // case "testEnd": testEnd(); break;
-            }
-        } catch (NullPointerException ex) {
-            ex.printStackTrace();
-            Log.e(TAG, "executeCommand: failed to parse command. Check commands' syntax");
+        switch (command.methodName) {
+            // case "factory": factory(); break;
+            case "testOptions": testOptions(); break;
+            case "config": config(); break;
+            case "start": start(); break;
+            case "event": event(); break;
+            case "trackEvent": trackEvent(); break;
+            case "resume": resume(); break;
+            case "pause": pause(); break;
+            case "setEnabled": setEnabled(); break;
+            case "setReferrer": setReferrer(); break;
+            case "setOfflineMode": setOfflineMode(); break;
+            case "sendFirstPackages": sendFirstPackages(); break;
+            case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
+            case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
+            case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
+            case "removeSessionPartnerParameter": removeSessionPartnerParameter(); break;
+            case "resetSessionCallbackParameters": resetSessionCallbackParameters(); break;
+            case "resetSessionPartnerParameters": resetSessionPartnerParameters(); break;
+            case "setPushToken": setPushToken(); break;
+            // case "teardown": teardown(); break;
+            case "openDeeplink": openDeeplink(); break;
+            case "sendReferrer": sendReferrer(); break;
+            //case "testBegin": testBegin(); break;
+            // case "testEnd": testEnd(); break;
         }
     }
 /*
