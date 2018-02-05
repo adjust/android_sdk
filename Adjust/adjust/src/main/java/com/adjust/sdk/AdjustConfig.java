@@ -147,10 +147,6 @@ public class AdjustConfig {
     }
 
     public boolean isValid() {
-        return appToken != null;
-    }
-
-    private boolean isValid(Context context, String appToken, String environment) {
         if (!checkAppToken(appToken)) return false;
         if (!checkEnvironment(environment)) return false;
         if (!checkContext(context)) return false;
