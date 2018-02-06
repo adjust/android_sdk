@@ -33,6 +33,7 @@ import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ import static com.adjust.sdk.Constants.SHA256;
 public class Util {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
-    public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
+    public static final DecimalFormat SecondsDisplayFormat = newLocalDecimalFormat();
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
     private static ILogger getLogger() {
@@ -64,6 +65,11 @@ public class Util {
 
     protected static String createUuid() {
         return UUID.randomUUID().toString();
+    }
+
+    private static DecimalFormat newLocalDecimalFormat() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        return new DecimalFormat("0.0", symbols);
     }
 
     public static String quote(String string) {
