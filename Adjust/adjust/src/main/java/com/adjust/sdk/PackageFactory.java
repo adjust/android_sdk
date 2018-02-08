@@ -33,7 +33,7 @@ public class PackageFactory {
 
         try {
             referrer = URLDecoder.decode(rawReferrer, ENCODING);
-        } catch (UnsupportedEncodingException e) {
+        } catch (Exception e) {
             referrer = MALFORMED;
         }
 
