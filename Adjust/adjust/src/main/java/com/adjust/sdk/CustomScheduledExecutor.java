@@ -26,7 +26,7 @@ public final class CustomScheduledExecutor {
                 new ThreadFactory() {                   // Creator of daemon threads
                     @Override
                     public Thread newThread(Runnable runnable) {
-                        Thread thread = Executors.defaultThreadFactory().newThread(new RunnableWrapper(runnable));
+                        Thread thread = Executors.defaultThreadFactory().newThread(runnable);
 
                         thread.setPriority(Thread.MIN_PRIORITY);
                         thread.setName(Constants.THREAD_PREFIX + thread.getName() + "-" + source);
@@ -57,7 +57,7 @@ public final class CustomScheduledExecutor {
     }
 
     public Future<?> submit(Runnable task) {
-        return executor.submit(task);
+        return executor.submit(new RunnableWrapper(task));
     }
 
     public void shutdownNow() {
@@ -67,12 +67,12 @@ public final class CustomScheduledExecutor {
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
 //        AdjustFactory.getLogger().verbose("CustomScheduledExecutor scheduleWithFixedDelay from %s source, with %d delay and %d initial delay",
 //                source, delay, initialDelay);
-        return executor.scheduleWithFixedDelay(command, initialDelay, delay, unit);
+        return executor.scheduleWithFixedDelay(new RunnableWrapper(command), initialDelay, delay, unit);
     }
 
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
 //        AdjustFactory.getLogger().verbose("CustomScheduledExecutor schedule from %s source, with %d delay", source, delay);
-        return executor.schedule(command, delay, unit);
+        return executor.schedule(new RunnableWrapper(command), delay, unit);
     }
 
     private class RunnableWrapper implements Runnable {
