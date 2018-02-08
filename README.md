@@ -1003,7 +1003,7 @@ You can also remove the `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver
 If you set the log level to `verbose`, you should be able to see the log from reading the referrer:
 
 ```
-V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
+V/Adjust: Referrer to parse (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
 ```
 
 And a click package added to the SDK's package handler:
