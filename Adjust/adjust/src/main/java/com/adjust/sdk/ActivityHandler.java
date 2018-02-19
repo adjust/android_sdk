@@ -1218,26 +1218,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (enabled) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-
-            // check if install was tracked
-            if (!sharedPreferencesManager.getInstallTracked()) {
-                long now = System.currentTimeMillis();
-                trackNewSessionI(now);
-            }
-
-            // check if there is a saved push token to send
-            String pushToken = sharedPreferencesManager.getPushToken();
-
-            if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
-                setPushToken(pushToken, true);
-            }
-
-            // check if there are token to send
-            Object referrers = sharedPreferencesManager.getRawReferrerArray();
-            if (referrers != null) {
-                sendReftagReferrer();
-            }
+            sdkEnabledI();
         }
 
         activityState.enabled = enabled;
@@ -1247,6 +1228,32 @@ public class ActivityHandler implements IActivityHandler {
                 "Pausing handlers due to SDK being disabled",
                 "Handlers remain paused",
                 "Resuming handlers due to SDK being enabled");
+    }
+
+    private void sdkEnabledI() {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+
+        // check if install was tracked
+        if (!sharedPreferencesManager.getInstallTracked()) {
+            long now = System.currentTimeMillis();
+            trackNewSessionI(now);
+        }
+
+        // check if there is a saved push token to send
+        String pushToken = sharedPreferencesManager.getPushToken();
+
+        if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
+            setPushToken(pushToken, true);
+        }
+
+        // check if there are token to send
+        Object referrers = sharedPreferencesManager.getRawReferrerArray();
+        if (referrers != null) {
+            sendReftagReferrer();
+        }
+
+        // try to read and send the install referrer
+        installReferrer.startConnection();
     }
 
     private void setOfflineModeI(boolean offline) {
