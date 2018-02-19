@@ -35,6 +35,7 @@ public class AdjustFactory {
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
+    private static boolean tryInstallReferrer = true;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -169,6 +170,10 @@ public class AdjustFactory {
         return connectionOptions;
     }
 
+    public static boolean getTryInstallReferrer() {
+        return tryInstallReferrer;
+    }
+
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
@@ -284,6 +289,10 @@ public class AdjustFactory {
 
     }
 
+    public static void setTryInstallReferrer(boolean tryInstallReferrer) {
+        AdjustFactory.tryInstallReferrer = tryInstallReferrer;
+    }
+
     private static String byte2HexFormatted(byte[] arr) {
         StringBuilder str = new StringBuilder(arr.length * 2);
 
@@ -328,5 +337,6 @@ public class AdjustFactory {
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         connectionOptions = null;
+        tryInstallReferrer = true;
     }
 }

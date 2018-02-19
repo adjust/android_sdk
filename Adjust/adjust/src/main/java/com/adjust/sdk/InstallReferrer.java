@@ -119,6 +119,9 @@ public class InstallReferrer implements InvocationHandler {
      * Start connection with install referrer service.
      */
     public void startConnection() {
+        if (!AdjustFactory.getTryInstallReferrer()) {
+            return;
+        }
         closeReferrerClient();
 
         synchronized (flagLock) {

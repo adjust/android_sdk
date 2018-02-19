@@ -117,6 +117,15 @@ public class AdjustCommandExecutor {
             long subsessionInterval = Long.parseLong(command.getFirstParameterValue("subsessionInterval"));
             testOptions.subsessionIntervalInMilliseconds = subsessionInterval;
         }
+        if (command.containsParameter("tryInstallReferrer")) {
+            String tryInstallReferrerString = command.getFirstParameterValue("tryInstallReferrer");
+            if ("true".compareTo(tryInstallReferrerString) == 0) {
+                testOptions.tryInstallReferrer = true;
+            }
+            if ("false".compareTo(tryInstallReferrerString) == 0) {
+                testOptions.tryInstallReferrer = false;
+            }
+        }
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
             for (String teardownOption : teardownOptions) {
@@ -124,6 +133,7 @@ public class AdjustCommandExecutor {
                     testOptions.teardown = true;
                     testOptions.basePath = basePath;
                     testOptions.useTestConnectionOptions = true;
+                    testOptions.tryInstallReferrer = false;
                 }
                 if (teardownOption.equals("deleteState")) {
                     testOptions.context = this.context;

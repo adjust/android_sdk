@@ -521,6 +521,8 @@ public class AdjustInstance {
         if (testOptions.subsessionIntervalInMilliseconds != null) {
             AdjustFactory.setSubsessionInterval(testOptions.subsessionIntervalInMilliseconds);
         }
-
+        if (testOptions.tryInstallReferrer != null) {
+            AdjustFactory.setTryInstallReferrer(testOptions.tryInstallReferrer);
+        }
     }
 }
