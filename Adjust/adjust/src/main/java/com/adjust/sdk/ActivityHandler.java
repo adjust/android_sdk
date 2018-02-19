@@ -783,6 +783,7 @@ public class ActivityHandler implements IActivityHandler {
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
 
         installReferrer = new InstallReferrer(adjustConfig.context, this);
+        installReferrer.startConnection();
 
         sendReftagReferrerI();
     }
