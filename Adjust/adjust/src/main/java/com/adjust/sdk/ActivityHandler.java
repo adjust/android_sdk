@@ -783,7 +783,6 @@ public class ActivityHandler implements IActivityHandler {
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
 
         installReferrer = new InstallReferrer(adjustConfig.context, this);
-        installReferrer.startConnection();
 
         sendReftagReferrerI();
     }
@@ -853,6 +852,9 @@ public class ActivityHandler implements IActivityHandler {
         if (internalState.isEnabled()) {
             activityState.sessionCount = 1; // this is the first session
             transferSessionPackageI(now);
+
+            // and try to read and send install referrer
+            installReferrer.startConnection();
         }
 
         activityState.resetSessionAttributes(now);
