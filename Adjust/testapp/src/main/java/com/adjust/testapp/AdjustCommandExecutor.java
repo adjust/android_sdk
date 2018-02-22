@@ -119,11 +119,9 @@ public class AdjustCommandExecutor {
         }
         if (command.containsParameter("tryInstallReferrer")) {
             String tryInstallReferrerString = command.getFirstParameterValue("tryInstallReferrer");
-            if ("true".compareTo(tryInstallReferrerString) == 0) {
-                testOptions.tryInstallReferrer = true;
-            }
-            if ("false".compareTo(tryInstallReferrerString) == 0) {
-                testOptions.tryInstallReferrer = false;
+            Boolean tryInstallReferrerBoolean = Util.strictParseStringToBoolean(tryInstallReferrerString);
+            if (tryInstallReferrerBoolean != null) {
+                testOptions.tryInstallReferrer = tryInstallReferrerBoolean;
             }
         }
         if (command.containsParameter("teardown")) {
