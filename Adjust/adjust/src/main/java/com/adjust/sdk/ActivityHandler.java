@@ -853,8 +853,7 @@ public class ActivityHandler implements IActivityHandler {
             activityState.sessionCount = 1; // this is the first session
             transferSessionPackageI(now);
 
-            // and try to read and send install referrer
-            installReferrer.startConnection();
+            checkAfterEnabledStart(sharedPreferencesManager);
         }
 
         activityState.resetSessionAttributes(now);
@@ -1220,7 +1219,15 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (enabled) {
-            sdkEnabledI();
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+
+            // check if install was tracked
+            if (!sharedPreferencesManager.getInstallTracked()) {
+                long now = System.currentTimeMillis();
+                trackNewSessionI(now);
+            }
+
+            checkAfterEnabledStart(sharedPreferencesManager);
         }
 
         activityState.enabled = enabled;
@@ -1232,15 +1239,7 @@ public class ActivityHandler implements IActivityHandler {
                 "Resuming handlers due to SDK being enabled");
     }
 
-    private void sdkEnabledI() {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-
-        // check if install was tracked
-        if (!sharedPreferencesManager.getInstallTracked()) {
-            long now = System.currentTimeMillis();
-            trackNewSessionI(now);
-        }
-
+    private void checkAfterEnabledStart(SharedPreferencesManager sharedPreferencesManager) {
         // check if there is a saved push token to send
         String pushToken = sharedPreferencesManager.getPushToken();
 
@@ -1330,6 +1329,9 @@ public class ActivityHandler implements IActivityHandler {
 
     private void sendReftagReferrerI() {
         if (!isEnabledI()) {
+            return;
+        }
+        if (internalState.hasFirstSdkStartNotOcurred()) {
             return;
         }
 
