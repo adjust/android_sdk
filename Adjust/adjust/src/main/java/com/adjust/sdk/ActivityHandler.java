@@ -1396,15 +1396,12 @@ public class ActivityHandler implements IActivityHandler {
 
         resumeSendingI();
 
-        // try to send if it's the first launch and it hasn't received the session response
-        //  even if event buffering is enabled
-        if (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()) {
-            packageHandler.sendFirstPackage();
-            return;
-        }
-
         // try to send if event buffering is not enabled
         if (!adjustConfig.eventBufferingEnabled) {
+            packageHandler.sendFirstPackage();
+        } else if (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()) {
+            // try to send if it's the first launch and it hasn't received the session response
+            //  even if event buffering is enabled
             packageHandler.sendFirstPackage();
         }
     }
