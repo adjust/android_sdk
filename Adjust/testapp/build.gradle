@@ -14,8 +14,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     implementation project(":testlibrary")
     implementation project(":adjust")
 
