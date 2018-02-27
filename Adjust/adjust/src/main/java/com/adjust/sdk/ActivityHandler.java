@@ -1399,7 +1399,7 @@ public class ActivityHandler implements IActivityHandler {
         // if event buffering is not enabled
         if (!adjustConfig.eventBufferingEnabled ||
                 // or if it's the first launch and it hasn't received the session response
-                internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed())
+                (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()))
         {
             // try to send
             packageHandler.sendFirstPackage();
