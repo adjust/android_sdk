@@ -821,9 +821,10 @@ public class ActivityHandler implements IActivityHandler {
     private void startI() {
         // check if it's the first sdk start
         if (internalState.hasFirstSdkStartNotOcurred()) {
-            startFirstSession();
+            startFirstSessionI();
             return;
         }
+
         // it shouldn't start if it was disabled after a first session
         if (!activityState.enabled) {
             return;
@@ -836,7 +837,7 @@ public class ActivityHandler implements IActivityHandler {
         checkAttributionStateI();
     }
 
-    private void startFirstSession() {
+    private void startFirstSessionI() {
         // still update handlers status
         updateHandlersStatusAndSendI();
 
@@ -853,7 +854,7 @@ public class ActivityHandler implements IActivityHandler {
             activityState.sessionCount = 1; // this is the first session
             transferSessionPackageI(now);
 
-            checkAfterEnabledStart(sharedPreferencesManager);
+            checkAfterNewStartI(sharedPreferencesManager);
         }
 
         activityState.resetSessionAttributes(now);
@@ -1226,8 +1227,7 @@ public class ActivityHandler implements IActivityHandler {
                 long now = System.currentTimeMillis();
                 trackNewSessionI(now);
             }
-
-            checkAfterEnabledStart(sharedPreferencesManager);
+            checkAfterNewStartI(sharedPreferencesManager);
         }
 
         activityState.enabled = enabled;
@@ -1239,17 +1239,19 @@ public class ActivityHandler implements IActivityHandler {
                 "Resuming handlers due to SDK being enabled");
     }
 
-    private void checkAfterEnabledStart(SharedPreferencesManager sharedPreferencesManager) {
+    private void checkAfterNewStartI(SharedPreferencesManager sharedPreferencesManager) {
         // check if there is a saved push token to send
         String pushToken = sharedPreferencesManager.getPushToken();
 
         if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
+            // queue set push token
             setPushToken(pushToken, true);
         }
 
         // check if there are token to send
         Object referrers = sharedPreferencesManager.getRawReferrerArray();
         if (referrers != null) {
+            // queue send referrer tag
             sendReftagReferrer();
         }
 
