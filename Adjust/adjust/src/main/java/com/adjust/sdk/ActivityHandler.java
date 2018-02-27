@@ -882,6 +882,7 @@ public class ActivityHandler implements IActivityHandler {
         // new session
         if (lastInterval > SESSION_INTERVAL) {
             trackNewSessionI(now);
+            checkAfterNewStartI();
             return;
         }
 
@@ -1237,6 +1238,12 @@ public class ActivityHandler implements IActivityHandler {
                 "Pausing handlers due to SDK being disabled",
                 "Handlers remain paused",
                 "Resuming handlers due to SDK being enabled");
+    }
+
+
+    private void checkAfterNewStartI() {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        checkAfterNewStartI(sharedPreferencesManager);
     }
 
     private void checkAfterNewStartI(SharedPreferencesManager sharedPreferencesManager) {
