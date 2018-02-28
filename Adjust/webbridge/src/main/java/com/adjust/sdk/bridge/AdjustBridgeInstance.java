@@ -1,13 +1,32 @@
 package com.adjust.sdk.bridge;
 
+import android.annotation.TargetApi;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.app.Application;
 
-import com.adjust.sdk.*;
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAttribution;
+import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.AdjustEventFailure;
+import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.ILogger;
+import com.adjust.sdk.LogLevel;
+import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeviceIdsRead;
+import com.adjust.sdk.OnEventTrackingFailedListener;
+import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnSessionTrackingFailedListener;
+import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,6 +77,7 @@ public class AdjustBridgeInstance {
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
     // This requires user to have minimal supported API level set to 14.
+    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private static final class AdjustLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
         @Override
         public void onActivityResumed(Activity activity) {
@@ -257,7 +277,9 @@ public class AdjustBridgeInstance {
             Adjust.onResume();
 
             isInitialized = true;
-            application.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                application.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+            }
 
             // Check if any deeplink got queued before SDK initialised and process them if any.
             dequeueDeeplinks();

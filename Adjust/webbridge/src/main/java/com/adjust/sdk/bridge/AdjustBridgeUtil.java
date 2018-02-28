@@ -59,6 +59,7 @@ public class AdjustBridgeUtil {
                     jsonAttribution.put("creative", attribution.creative == null ? JSONObject.NULL : attribution.creative);
                     jsonAttribution.put("adgroup", attribution.adgroup == null ? JSONObject.NULL : attribution.adgroup);
                     jsonAttribution.put("clickLabel", attribution.clickLabel == null ? JSONObject.NULL : attribution.clickLabel);
+                    jsonAttribution.put("adid", attribution.adid == null ? JSONObject.NULL : attribution.adid);
 
                     String command = "javascript:" + commandName + "(" + jsonAttribution.toString() + ");";
 
