@@ -895,6 +895,10 @@ public class ActivityHandler implements IActivityHandler {
                     activityState.subsessionCount,
                     activityState.sessionCount);
             writeActivityStateI();
+
+            // Try to check if there's new referrer information.
+            installReferrer.startConnection();
+
             return;
         }
 
