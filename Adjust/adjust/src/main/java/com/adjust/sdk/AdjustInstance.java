@@ -37,6 +37,7 @@ public class AdjustInstance {
      * Array of actions that were requested before SDK initialisation.
      */
     private List<IRunActivityHandler> preLaunchActionsArray;
+    private String basePath;
 
     /**
      * Called upon SDK initialisation.
@@ -44,6 +45,16 @@ public class AdjustInstance {
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
     public void onCreate(final AdjustConfig adjustConfig) {
+        if (adjustConfig == null) {
+            AdjustFactory.getLogger().error("AdjustConfig missing");
+            return;
+        }
+
+        if (!adjustConfig.isValid()) {
+            AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
+            return;
+        }
+
         if (activityHandler != null) {
             AdjustFactory.getLogger().error("Adjust already initialized");
             return;
@@ -53,6 +64,7 @@ public class AdjustInstance {
         adjustConfig.pushToken = pushToken;
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
+        adjustConfig.basePath = this.basePath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
@@ -320,15 +332,13 @@ public class AdjustInstance {
     /**
      * Called to teardown SDK state.
      * Used only for Adjust tests, shouldn't be used in client apps.
-     *
-     * @param deleteState boolean indicating should internal Adjust files also be removed or not
      */
-    public void teardown(final boolean deleteState) {
+    public void teardown() {
         if (!checkActivityHandler()) {
             return;
         }
 
-        activityHandler.teardown(deleteState);
+        activityHandler.teardown();
         activityHandler = null;
     }
 
@@ -487,5 +497,32 @@ public class AdjustInstance {
      */
     private boolean isInstanceEnabled() {
         return this.startEnabled == null || this.startEnabled;
+    }
+
+    public void setTestOptions(AdjustTestOptions testOptions) {
+        if (testOptions.basePath != null) {
+            this.basePath = testOptions.basePath;
+        }
+        if (testOptions.baseUrl != null) {
+            AdjustFactory.setBaseUrl(testOptions.baseUrl);
+        }
+        if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
+            AdjustFactory.useTestConnectionOptions();
+        }
+        if (testOptions.timerIntervalInMilliseconds != null) {
+            AdjustFactory.setTimerInterval(testOptions.timerIntervalInMilliseconds);
+        }
+        if (testOptions.timerStartInMilliseconds != null) {
+            AdjustFactory.setTimerStart(testOptions.timerIntervalInMilliseconds);
+        }
+        if (testOptions.sessionIntervalInMilliseconds != null) {
+            AdjustFactory.setSessionInterval(testOptions.sessionIntervalInMilliseconds);
+        }
+        if (testOptions.subsessionIntervalInMilliseconds != null) {
+            AdjustFactory.setSubsessionInterval(testOptions.subsessionIntervalInMilliseconds);
+        }
+        if (testOptions.tryInstallReferrer != null) {
+            AdjustFactory.setTryInstallReferrer(testOptions.tryInstallReferrer);
+        }
     }
 }

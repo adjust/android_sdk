@@ -19,5 +19,7 @@ public interface IPackageHandler {
 
     void updatePackages(SessionParameters sessionParameters);
 
-    void teardown(boolean deleteState);
+    String getBasePath();
+
+    void teardown();
 }

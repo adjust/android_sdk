@@ -30,9 +30,13 @@ import java.io.FileOutputStream;
 import java.io.NotSerializableException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +59,7 @@ import static com.adjust.sdk.Constants.SHA256;
 public class Util {
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'Z";
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
-    public static final DecimalFormat SecondsDisplayFormat = new DecimalFormat("0.0");
+    public static final DecimalFormat SecondsDisplayFormat = newLocalDecimalFormat();
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
     private static ILogger getLogger() {
@@ -64,6 +68,11 @@ public class Util {
 
     protected static String createUuid() {
         return UUID.randomUUID().toString();
+    }
+
+    private static DecimalFormat newLocalDecimalFormat() {
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+        return new DecimalFormat("0.0", symbols);
     }
 
     public static String quote(String string) {
@@ -626,5 +635,29 @@ public class Util {
 
     public static String formatString(String format, Object... args) {
         return String.format(Locale.US, format, args);
+    }
+
+    public static boolean hasRootCause(Exception ex) {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+
+        return sStackTrace.contains("Caused by:");
+    }
+
+    public static String getRootCause(Exception ex) {
+        if (!hasRootCause(ex)) {
+            return null;
+        }
+
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String sStackTrace = sw.toString(); // stack trace as a string
+
+        int startOccuranceOfRootCause = sStackTrace.indexOf("Caused by:");
+        int endOccuranceOfRootCause = sStackTrace.indexOf("\n", startOccuranceOfRootCause);
+        return sStackTrace.substring(startOccuranceOfRootCause, endOccuranceOfRootCause);
     }
 }

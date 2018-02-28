@@ -53,6 +53,7 @@ public class ActivityHandler implements IActivityHandler {
     private TimerOnce backgroundTimer;
     private TimerOnce delayStartTimer;
     private InternalState internalState;
+    private String basePath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -63,7 +64,7 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
 
     @Override
-    public void teardown(boolean deleteState) {
+    public void teardown() {
         if (backgroundTimer != null) {
             backgroundTimer.teardown();
         }
@@ -79,7 +80,7 @@ public class ActivityHandler implements IActivityHandler {
             } catch(SecurityException se) {}
         }
         if (packageHandler != null) {
-            packageHandler.teardown(deleteState);
+            packageHandler.teardown();
         }
         if (attributionHandler != null) {
             attributionHandler.teardown();
@@ -96,14 +97,9 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
-        teardownActivityStateS(deleteState);
-        teardownAttributionS(deleteState);
-        teardownAllSessionParametersS(deleteState);
-
-        if (deleteState) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-            sharedPreferencesManager.clear();
-        }
+        teardownActivityStateS();
+        teardownAttributionS();
+        teardownAllSessionParametersS();
 
         packageHandler = null;
         logger = null;
@@ -119,6 +115,16 @@ public class ActivityHandler implements IActivityHandler {
         sessionParameters = null;
     }
 
+    static void deleteState(Context context) {
+        deleteActivityState(context);
+        deleteAttribution(context);
+        deleteSessionCallbackParameters(context);
+        deleteSessionPartnerParameters(context);
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        sharedPreferencesManager.clear();
+    }
+
     public class InternalState {
         boolean enabled;
         boolean offline;
@@ -127,6 +133,7 @@ public class ActivityHandler implements IActivityHandler {
         boolean updatePackages;
         boolean firstLaunch;
         boolean sessionResponseProcessed;
+        boolean firstSdkStart;
 
         public boolean isEnabled() {
             return enabled;
@@ -175,6 +182,14 @@ public class ActivityHandler implements IActivityHandler {
         public boolean hasSessionResponseNotBeenProcessed() {
             return !sessionResponseProcessed;
         }
+
+        public boolean hasFirstSdkStartOcurred() {
+            return firstSdkStart;
+        }
+
+        public boolean hasFirstSdkStartNotOcurred() {
+            return !firstSdkStart;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -200,6 +215,8 @@ public class ActivityHandler implements IActivityHandler {
         internalState.updatePackages = false;
         // does not have the session response by default
         internalState.sessionResponseProcessed = false;
+        // does not have first start by default
+        internalState.firstSdkStart = false;
 
         scheduledExecutor.submit(new Runnable() {
             @Override
@@ -311,7 +328,7 @@ public class ActivityHandler implements IActivityHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                if (activityState == null) {
+                if (internalState.hasFirstSdkStartNotOcurred()) {
                     logger.warn("Event tracked before first activity resumed.\n" +
                             "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
                             "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
@@ -564,7 +581,7 @@ public class ActivityHandler implements IActivityHandler {
                     sharedPreferencesManager.savePushToken(token);
                 }
 
-                if (activityState == null) {
+                if (internalState.hasFirstSdkStartNotOcurred()) {
                     // No install has been tracked so far.
                     // Push token is saved, ready for the session package to pick it up.
                     return;
@@ -611,6 +628,11 @@ public class ActivityHandler implements IActivityHandler {
         return attribution;
     }
 
+    @Override
+    public String getBasePath() {
+        return this.basePath;
+    }
+
     public ActivityPackage getAttributionPackageI() {
         long now = System.currentTimeMillis();
         PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
@@ -653,7 +675,7 @@ public class ActivityHandler implements IActivityHandler {
             });
         }
 
-        if (activityState != null) {
+        if (internalState.hasFirstSdkStartOcurred()) {
             internalState.enabled = activityState.enabled;
             internalState.updatePackages = activityState.updatePackages;
             internalState.firstLaunch = false;
@@ -687,14 +709,17 @@ public class ActivityHandler implements IActivityHandler {
 
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
-            if (activityState != null) {
+            if (internalState.hasFirstSdkStartOcurred()) {
+                // since sdk has already started, try to send current push token
                 setPushToken(adjustConfig.pushToken, false);
             } else {
+                // since sdk has not yet started, save current push token for when it does
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
                 sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
             }
         } else {
-            if (activityState != null) {
+            // since sdk has already started, check if there is a saved push from previous runs
+            if (internalState.hasFirstSdkStartOcurred()) {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
                 String savedPushToken = sharedPreferencesManager.getPushToken();
 
@@ -723,7 +748,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         // configure delay start timer
-        if (activityState == null &&
+        if (internalState.hasFirstSdkStartNotOcurred() &&
                 adjustConfig.delayStart != null &&
                 adjustConfig.delayStart > 0.0)
         {
@@ -738,6 +763,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         UtilNetworking.setUserAgent(adjustConfig.userAgent);
+
+        this.basePath = adjustConfig.basePath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
@@ -792,9 +819,14 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void startI() {
+        // check if it's the first sdk start
+        if (internalState.hasFirstSdkStartNotOcurred()) {
+            startFirstSessionI();
+            return;
+        }
+
         // it shouldn't start if it was disabled after a first session
-        if (activityState != null
-                && !activityState.enabled) {
+        if (!activityState.enabled) {
             return;
         }
 
@@ -805,32 +837,38 @@ public class ActivityHandler implements IActivityHandler {
         checkAttributionStateI();
     }
 
-    private void processSessionI() {
+    private void startFirstSessionI() {
+        // still update handlers status
+        updateHandlersStatusAndSendI();
+
+        activityState = new ActivityState();
+        internalState.firstSdkStart = true;
+
         long now = System.currentTimeMillis();
 
-        // very first session
-        if (activityState == null) {
-            activityState = new ActivityState();
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        activityState.pushToken = sharedPreferencesManager.getPushToken();
 
-            // activityState.pushToken = adjustConfig.pushToken;
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-            activityState.pushToken = sharedPreferencesManager.getPushToken();
+        // track the first session package only if it's enabled
+        if (internalState.isEnabled()) {
+            activityState.sessionCount = 1; // this is the first session
+            transferSessionPackageI(now);
 
-            // track the first session package only if it's enabled
-            if (internalState.isEnabled()) {
-                activityState.sessionCount = 1; // this is the first session
-                transferSessionPackageI(now);
-            }
-
-            activityState.resetSessionAttributes(now);
-            activityState.enabled = internalState.isEnabled();
-            activityState.updatePackages = internalState.itHasToUpdatePackages();
-
-            writeActivityStateI();
-            sharedPreferencesManager.removePushToken();
-
-            return;
+            checkAfterNewStartI(sharedPreferencesManager);
         }
+
+        activityState.resetSessionAttributes(now);
+        activityState.enabled = internalState.isEnabled();
+        activityState.updatePackages = internalState.itHasToUpdatePackages();
+
+        writeActivityStateI();
+        sharedPreferencesManager.removePushToken();
+
+        // don't check attribution right after first sdk start
+    }
+
+    private void processSessionI() {
+        long now = System.currentTimeMillis();
 
         long lastInterval = now - activityState.lastActivity;
 
@@ -844,6 +882,7 @@ public class ActivityHandler implements IActivityHandler {
         // new session
         if (lastInterval > SESSION_INTERVAL) {
             trackNewSessionI(now);
+            checkAfterNewStartI();
             return;
         }
 
@@ -856,6 +895,10 @@ public class ActivityHandler implements IActivityHandler {
                     activityState.subsessionCount,
                     activityState.sessionCount);
             writeActivityStateI();
+
+            // Try to check if there's new referrer information.
+            installReferrer.startConnection();
+
             return;
         }
 
@@ -1173,7 +1216,7 @@ public class ActivityHandler implements IActivityHandler {
         // save new enabled state in internal state
         internalState.enabled = enabled;
 
-        if (activityState == null) {
+        if (internalState.hasFirstSdkStartNotOcurred()) {
             updateStatusI(!enabled,
                     "Handlers will start as paused due to the SDK being disabled",
                     "Handlers will still start as paused",
@@ -1189,19 +1232,7 @@ public class ActivityHandler implements IActivityHandler {
                 long now = System.currentTimeMillis();
                 trackNewSessionI(now);
             }
-
-            // check if there is a saved push token to send
-            String pushToken = sharedPreferencesManager.getPushToken();
-
-            if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
-                setPushToken(pushToken, true);
-            }
-
-            // check if there are token to send
-            Object referrers = sharedPreferencesManager.getRawReferrerArray();
-            if (referrers != null) {
-                sendReftagReferrer();
-            }
+            checkAfterNewStartI(sharedPreferencesManager);
         }
 
         activityState.enabled = enabled;
@@ -1211,6 +1242,32 @@ public class ActivityHandler implements IActivityHandler {
                 "Pausing handlers due to SDK being disabled",
                 "Handlers remain paused",
                 "Resuming handlers due to SDK being enabled");
+    }
+
+
+    private void checkAfterNewStartI() {
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        checkAfterNewStartI(sharedPreferencesManager);
+    }
+
+    private void checkAfterNewStartI(SharedPreferencesManager sharedPreferencesManager) {
+        // check if there is a saved push token to send
+        String pushToken = sharedPreferencesManager.getPushToken();
+
+        if (pushToken != null && !pushToken.equals(activityState.pushToken)) {
+            // queue set push token
+            setPushToken(pushToken, true);
+        }
+
+        // check if there are token to send
+        Object referrers = sharedPreferencesManager.getRawReferrerArray();
+        if (referrers != null) {
+            // queue send referrer tag
+            sendReftagReferrer();
+        }
+
+        // try to read and send the install referrer
+        installReferrer.startConnection();
     }
 
     private void setOfflineModeI(boolean offline) {
@@ -1223,7 +1280,7 @@ public class ActivityHandler implements IActivityHandler {
 
         internalState.offline = offline;
 
-        if (activityState == null) {
+        if (internalState.hasFirstSdkStartNotOcurred()) {
             updateStatusI(offline,
                     "Handlers will start paused due to SDK being offline",
                     "Handlers will still start as paused",
@@ -1285,6 +1342,9 @@ public class ActivityHandler implements IActivityHandler {
 
     private void sendReftagReferrerI() {
         if (!isEnabledI()) {
+            return;
+        }
+        if (internalState.hasFirstSdkStartNotOcurred()) {
             return;
         }
 
@@ -1349,14 +1409,12 @@ public class ActivityHandler implements IActivityHandler {
 
         resumeSendingI();
 
-        // try to send if it's the first launch and it hasn't received the session response
-        //  even if event buffering is enabled
-        if (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()) {
-            packageHandler.sendFirstPackage();
-        }
-
-        // try to send
-        if (!adjustConfig.eventBufferingEnabled) {
+        // if event buffering is not enabled
+        if (!adjustConfig.eventBufferingEnabled ||
+                // or if it's the first launch and it hasn't received the session response
+                (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()))
+        {
+            // try to send
             packageHandler.sendFirstPackage();
         }
     }
@@ -1703,6 +1761,9 @@ public class ActivityHandler implements IActivityHandler {
             logger.error("Failed to read %s file (%s)", ACTIVITY_STATE_NAME, e.getMessage());
             activityState = null;
         }
+        if (activityState != null) {
+            internalState.firstSdkStart = true;
+        }
     }
 
     private void readAttributionI(Context context) {
@@ -1747,13 +1808,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownActivityStateS(boolean toDelete) {
+    private void teardownActivityStateS() {
         synchronized (ActivityState.class) {
             if (activityState == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteActivityState(adjustConfig.context);
             }
             activityState = null;
         }
@@ -1768,13 +1826,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAttributionS(boolean toDelete) {
+    private void teardownAttributionS() {
         synchronized (AdjustAttribution.class) {
             if (attribution == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteAttribution(adjustConfig.context);
             }
             attribution = null;
         }
@@ -1798,14 +1853,10 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void teardownAllSessionParametersS(boolean toDelete) {
+    private void teardownAllSessionParametersS() {
         synchronized (SessionParameters.class) {
             if (sessionParameters == null) {
                 return;
-            }
-            if (toDelete && adjustConfig != null && adjustConfig.context != null) {
-                deleteSessionCallbackParameters(adjustConfig.context);
-                deleteSessionPartnerParameters(adjustConfig.context);
             }
             sessionParameters = null;
         }
@@ -1842,8 +1893,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private boolean checkActivityStateI(ActivityState activityState) {
-        if (activityState == null) {
-            logger.error("Missing activity state");
+        if (internalState.hasFirstSdkStartNotOcurred()) {
+            logger.error("Sdk did not yet start");
             return false;
         }
         return true;

@@ -1,16 +1,16 @@
 apply plugin: 'com.android.library'
 
 def getVersionName() {
-    return "4.12.1"
+    return "4.12.2"
 }
 
 android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName getVersionName()
         consumerProguardFiles 'adjust-proguard-rules.txt'

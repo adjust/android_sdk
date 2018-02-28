@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion '27.0.3'
 
     defaultConfig {
         applicationId "com.adjust.examples"
@@ -21,13 +21,13 @@ android {
 
 dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.google.android.gms:play-services-analytics:11.4.2'
+    implementation 'com.google.android.gms:play-services-analytics:11.8.0'
     // imported module
     implementation project(":adjust")
     // running mvn package
     //compile fileTree(dir: '../target', include: ['*.jar'])
     // using maven repository
-    //compile 'com.adjust.sdk:adjust-android:4.12.1'
+    //compile 'com.adjust.sdk:adjust-android:4.12.2'
 
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'

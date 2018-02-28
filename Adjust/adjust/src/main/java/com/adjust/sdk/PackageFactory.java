@@ -35,6 +35,13 @@ public class PackageFactory {
             referrer = URLDecoder.decode(rawReferrer, ENCODING);
         } catch (UnsupportedEncodingException e) {
             referrer = MALFORMED;
+            AdjustFactory.getLogger().error("Referrer decoding failed due to UnsupportedEncodingException. Message: (%s)", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            referrer = MALFORMED;
+            AdjustFactory.getLogger().error("Referrer decoding failed due to IllegalArgumentException. Message: (%s)", e.getMessage());
+        } catch (Exception e) {
+            referrer = MALFORMED;
+            AdjustFactory.getLogger().error("Referrer decoding failed. Message: (%s)", e.getMessage());
         }
 
         AdjustFactory.getLogger().verbose("Referrer to parse (%s)", referrer);

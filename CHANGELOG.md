@@ -1,3 +1,13 @@
+### Version 4.12.2 (28th February 2018)
+#### Changed
+- Capturing information about silently ignored runtime exceptions by scheduled executor.
+- Send referrer information upon enabling SDK if it was launched as disabled. 
+
+#### Fixed
+- Fixed handling of malformed referrer string values.
+
+---
+
 ### Version 4.12.1 (31st January 2018)
 #### Fixed
 - Formatting all strings with US locale.
