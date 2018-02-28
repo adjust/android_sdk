@@ -72,14 +72,14 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.12.1'
+compile 'com.adjust.sdk:adjust-android:4.12.2'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.12.1'
+implementation 'com.adjust.sdk:adjust-android:4.12.2'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -184,7 +184,7 @@ Also, make sure that you have paid attention to the [Proguard settings](#sdk-pro
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-This feature is supported if you are using **Adjust SDK v4.12.1 or above**.
+This feature is supported if you are using **Adjust SDK v4.12.0 or above**.
 
 #### <a id="gps-intent"></a>Google Play Store intent
 
