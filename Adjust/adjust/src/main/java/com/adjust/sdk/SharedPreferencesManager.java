@@ -5,6 +5,7 @@ import org.json.JSONException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 /**
  * Class used for shared preferences manipulation.
@@ -50,6 +51,11 @@ public class SharedPreferencesManager {
     private static final int INDEX_IS_SENDING = 2;
 
     /**
+     * Number of persisted referrers.
+     */
+    private static final int REFERRERS_COUNT = 10;
+
+    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -71,14 +77,27 @@ public class SharedPreferencesManager {
      */
     public synchronized void saveRawReferrer(final String rawReferrer, final long clickTime) {
         try {
-            JSONArray rawReferrerArray = getRawReferrerArray();
-
             if (getRawReferrer(rawReferrer, clickTime) != null) {
                 return;
             }
 
-            JSONArray newRawReferrer = new JSONArray();
+            JSONArray rawReferrerArray = getRawReferrerArray();
+            if (rawReferrerArray.length() > REFERRERS_COUNT - 1) {
+                // Initial move for those who have more than REFERRERS_COUNT stored already.
+                // Cut the array and leave it with only REFERRERS_COUNT elements.
+                if (rawReferrerArray.length() > REFERRERS_COUNT) {
+                    JSONArray tempReferrerArray = new JSONArray();
+                    for (int i = 0; i < REFERRERS_COUNT; i += 1) {
+                        tempReferrerArray.put(rawReferrerArray.get(i));
+                    }
+                    saveRawReferrerArray(tempReferrerArray);
+                    return;
+                }
+                // There are exactly REFERRERS_COUNT saved referrers, do nothing.
+                return;
+            }
 
+            JSONArray newRawReferrer = new JSONArray();
             newRawReferrer.put(INDEX_RAW_REFERRER, rawReferrer);
             newRawReferrer.put(INDEX_CLICK_TIME, clickTime);
             newRawReferrer.put(INDEX_IS_SENDING, 0);
@@ -95,7 +114,11 @@ public class SharedPreferencesManager {
      * @param rawReferrerArray Array of referrers to be saved
      */
     public synchronized void saveRawReferrerArray(final JSONArray rawReferrerArray) {
-        saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
+        try {
+            saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
+        } catch (OutOfMemoryError e) {
+            remove(PREFS_KEY_RAW_REFERRERS);
+        }
     }
 
     /**
@@ -305,6 +328,11 @@ public class SharedPreferencesManager {
         try {
             return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
+            if (key.equals(PREFS_KEY_RAW_REFERRERS)) {
+                remove(PREFS_KEY_RAW_REFERRERS);
+            }
             return null;
         }
     }
