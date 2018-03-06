@@ -184,13 +184,14 @@ public class SharedPreferencesManager {
      * @return JSONArray of saved referrers. Defaults to empty JSONArray if none found.
      */
     public synchronized JSONArray getRawReferrerArray() {
-        try {
-            String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
+        String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
 
-            if (referrerQueueString != null) {
+        if (referrerQueueString != null) {
+            try {
                 return new JSONArray(referrerQueueString);
+            } catch (JSONException e) {
+            } catch (Throwable t) {
             }
-        } catch (JSONException e) {
         }
 
         return new JSONArray();
