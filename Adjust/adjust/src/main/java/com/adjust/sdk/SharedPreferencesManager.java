@@ -117,7 +117,7 @@ public class SharedPreferencesManager {
     public synchronized void saveRawReferrerArray(final JSONArray rawReferrerArray) {
         try {
             saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
-        } catch (OutOfMemoryError e) {
+        } catch (Throwable t) {
             remove(PREFS_KEY_RAW_REFERRERS);
         }
     }
@@ -330,7 +330,7 @@ public class SharedPreferencesManager {
             return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
             return null;
-        } catch (OutOfMemoryError e) {
+        } catch (Throwable t) {
             if (key.equals(PREFS_KEY_RAW_REFERRERS)) {
                 remove(PREFS_KEY_RAW_REFERRERS);
             }
