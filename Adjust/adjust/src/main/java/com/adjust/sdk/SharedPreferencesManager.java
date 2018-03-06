@@ -5,7 +5,6 @@ import org.json.JSONException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 /**
  * Class used for shared preferences manipulation.
