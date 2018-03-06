@@ -81,18 +81,20 @@ public class SharedPreferencesManager {
             }
 
             JSONArray rawReferrerArray = getRawReferrerArray();
-            if (rawReferrerArray.length() > REFERRERS_COUNT - 1) {
-                // Initial move for those who have more than REFERRERS_COUNT stored already.
-                // Cut the array and leave it with only REFERRERS_COUNT elements.
-                if (rawReferrerArray.length() > REFERRERS_COUNT) {
-                    JSONArray tempReferrerArray = new JSONArray();
-                    for (int i = 0; i < REFERRERS_COUNT; i += 1) {
-                        tempReferrerArray.put(rawReferrerArray.get(i));
-                    }
-                    saveRawReferrerArray(tempReferrerArray);
-                    return;
+
+            // Initial move for those who have more than REFERRERS_COUNT stored already.
+            // Cut the array and leave it with only REFERRERS_COUNT elements.
+            if (rawReferrerArray.length() > REFERRERS_COUNT) {
+                JSONArray tempReferrerArray = new JSONArray();
+                for (int i = 0; i < REFERRERS_COUNT; i += 1) {
+                    tempReferrerArray.put(rawReferrerArray.get(i));
                 }
-                // There are exactly REFERRERS_COUNT saved referrers, do nothing.
+                saveRawReferrerArray(tempReferrerArray);
+                return;
+            }
+
+            // There are exactly REFERRERS_COUNT saved referrers, do nothing.
+            if (rawReferrerArray.length() == REFERRERS_COUNT) {
                 return;
             }
 
