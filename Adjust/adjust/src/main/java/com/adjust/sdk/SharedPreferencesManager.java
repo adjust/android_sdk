@@ -50,6 +50,11 @@ public class SharedPreferencesManager {
     private static final int INDEX_IS_SENDING = 2;
 
     /**
+     * Number of persisted referrers.
+     */
+    private static final int REFERRERS_COUNT = 10;
+
+    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -71,14 +76,18 @@ public class SharedPreferencesManager {
      */
     public synchronized void saveRawReferrer(final String rawReferrer, final long clickTime) {
         try {
-            JSONArray rawReferrerArray = getRawReferrerArray();
-
             if (getRawReferrer(rawReferrer, clickTime) != null) {
                 return;
             }
 
-            JSONArray newRawReferrer = new JSONArray();
+            JSONArray rawReferrerArray = getRawReferrerArray();
 
+            // There are exactly REFERRERS_COUNT saved referrers, do nothing.
+            if (rawReferrerArray.length() == REFERRERS_COUNT) {
+                return;
+            }
+
+            JSONArray newRawReferrer = new JSONArray();
             newRawReferrer.put(INDEX_RAW_REFERRER, rawReferrer);
             newRawReferrer.put(INDEX_CLICK_TIME, clickTime);
             newRawReferrer.put(INDEX_IS_SENDING, 0);
@@ -95,7 +104,11 @@ public class SharedPreferencesManager {
      * @param rawReferrerArray Array of referrers to be saved
      */
     public synchronized void saveRawReferrerArray(final JSONArray rawReferrerArray) {
-        saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
+        try {
+            saveString(PREFS_KEY_RAW_REFERRERS, rawReferrerArray.toString());
+        } catch (Throwable t) {
+            remove(PREFS_KEY_RAW_REFERRERS);
+        }
     }
 
     /**
@@ -160,13 +173,27 @@ public class SharedPreferencesManager {
      * @return JSONArray of saved referrers. Defaults to empty JSONArray if none found.
      */
     public synchronized JSONArray getRawReferrerArray() {
-        try {
-            String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
+        String referrerQueueString = getString(PREFS_KEY_RAW_REFERRERS);
 
-            if (referrerQueueString != null) {
+        if (referrerQueueString != null) {
+            try {
+                JSONArray rawReferrerArray = new JSONArray(referrerQueueString);
+
+                // Initial move for those who have more than REFERRERS_COUNT stored already.
+                // Cut the array and leave it with only REFERRERS_COUNT elements.
+                if (rawReferrerArray.length() > REFERRERS_COUNT) {
+                    JSONArray tempReferrerArray = new JSONArray();
+                    for (int i = 0; i < REFERRERS_COUNT; i += 1) {
+                        tempReferrerArray.put(rawReferrerArray.get(i));
+                    }
+                    saveRawReferrerArray(tempReferrerArray);
+                    return tempReferrerArray;
+                }
+
                 return new JSONArray(referrerQueueString);
+            } catch (JSONException e) {
+            } catch (Throwable t) {
             }
-        } catch (JSONException e) {
         }
 
         return new JSONArray();
@@ -305,6 +332,11 @@ public class SharedPreferencesManager {
         try {
             return this.sharedPreferences.getString(key, null);
         } catch (ClassCastException e) {
+            return null;
+        } catch (Throwable t) {
+            if (key.equals(PREFS_KEY_RAW_REFERRERS)) {
+                remove(PREFS_KEY_RAW_REFERRERS);
+            }
             return null;
         }
     }
