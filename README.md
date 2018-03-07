@@ -72,14 +72,14 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.12.2'
+compile 'com.adjust.sdk:adjust-android:4.12.3'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.12.2'
+implementation 'com.adjust.sdk:adjust-android:4.12.3'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
