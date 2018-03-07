@@ -1,3 +1,9 @@
+### Version 4.12.3 (7th March 2018)
+#### Fixed
+- Fixed random `OutOfMemoryError` occurrences when reading/writing referrers array.
+
+---
+
 ### Version 4.12.2 (28th February 2018)
 #### Changed
 - Capturing information about silently ignored runtime exceptions by scheduled executor.
