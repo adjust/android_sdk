@@ -245,17 +245,47 @@ public class InstallReferrer implements InvocationHandler {
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, final Object[] args) throws Throwable {
+    public Object invoke(final Object proxy, final Method method, Object[] args)
+            throws Throwable {
+        if (method == null) {
+            logger.error("InstallReferrer invoke method null");
+            return null;
+        }
         String methodName = method.getName();
+        if (methodName == null) {
+            logger.error("InstallReferrer invoke method name null");
+            return null;
+        }
         // Prints the method being invoked
         logger.debug("InstallReferrer invoke method name: %s", methodName);
+        if (args == null) {
+            logger.warn("InstallReferrer invoke args null");
+            args = new Object[0];
+        }
         for (Object arg : args) {
             logger.debug("InstallReferrer invoke arg: %s", arg);
         }
 
         // if the method name equals some method's name then call your method
         if (methodName.equals("onInstallReferrerSetupFinished")) {
-            onInstallReferrerSetupFinishedInt((Integer) args[0]);
+            if (args.length != 1) {
+                logger.error("InstallReferrer invoke onInstallReferrerSetupFinished args lenght not 1: %d", args.length);
+                return null;
+            }
+
+            Object arg = args[0];
+            if (!(arg instanceof Integer)) {
+                logger.error("InstallReferrer invoke onInstallReferrerSetupFinished arg not int");
+                return null;
+            }
+
+            Integer responseCode = (Integer) arg;
+            if (responseCode == null) {
+                logger.error("InstallReferrer invoke onInstallReferrerSetupFinished responseCode arg is null");
+                return null;
+            }
+
+            onInstallReferrerSetupFinishedInt(responseCode);
         } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
             logger.debug("InstallReferrer onInstallReferrerServiceDisconnected");
         }
