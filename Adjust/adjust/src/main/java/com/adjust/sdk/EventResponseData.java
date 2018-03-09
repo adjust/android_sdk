@@ -1,5 +1,7 @@
 package com.adjust.sdk;
 
+import org.json.JSONObject;
+
 /**
  * Created by pfms on 09/02/16.
  */
@@ -19,7 +21,11 @@ public class EventResponseData extends ResponseData {
         successResponseData.message = message;
         successResponseData.timestamp = timestamp;
         successResponseData.adid = adid;
-        successResponseData.jsonResponse = jsonResponse;
+        if (jsonResponse != null) {
+            successResponseData.jsonResponse = jsonResponse;
+        } else {
+            successResponseData.jsonResponse = new JSONObject();
+        }
         successResponseData.eventToken = eventToken;
 
         return successResponseData;
@@ -35,7 +41,11 @@ public class EventResponseData extends ResponseData {
         failureResponseData.timestamp = timestamp;
         failureResponseData.adid = adid;
         failureResponseData.willRetry = willRetry;
-        failureResponseData.jsonResponse = jsonResponse;
+        if (jsonResponse != null) {
+            failureResponseData.jsonResponse = jsonResponse;
+        } else {
+            failureResponseData.jsonResponse = new JSONObject();
+        }
         failureResponseData.eventToken = eventToken;
 
         return failureResponseData;
