@@ -1,3 +1,9 @@
+### Version 4.12.4 (9th March 2018)
+#### Changed
+- Added additional null checks into `InstallReferrer` `invoke` method.
+
+---
+
 ### Version 4.12.3 (7th March 2018)
 #### Fixed
 - Fixed random `OutOfMemoryError` occurrences when reading/writing referrers array.
