@@ -18,6 +18,7 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -37,22 +38,6 @@ import java.util.ArrayList;
  * Created by uerceg on 22/07/16.
  */
 public class AdjustBridgeInstance {
-    private static final String KEY_APP_TOKEN                   = "appToken";
-    private static final String KEY_ENVIRONMENT                 = "environment";
-    private static final String KEY_LOG_LEVEL                   = "logLevel";
-    private static final String KEY_SDK_PREFIX                  = "sdkPrefix";
-    private static final String KEY_PROCESS_NAME                = "processName";
-    private static final String KEY_DEFAULT_TRACKER             = "defaultTracker";
-    private static final String KEY_SEND_IN_BACKGROUND          = "sendInBackground";
-    private static final String KEY_OPEN_DEFERRED_DEEPLINK      = "openDeferredDeeplink";
-    private static final String KEY_EVENT_BUFFERING_ENABLED     = "eventBufferingEnabled";
-
-    private static final String KEY_EVENT_TOKEN                 = "eventToken";
-    private static final String KEY_REVENUE                     = "revenue";
-    private static final String KEY_CURRENCY                    = "currency";
-    private static final String KEY_CALLBACK_PARAMETERS         = "callbackParameters";
-    private static final String KEY_PARTNER_PARAMETERS          = "partnerParameters";
-
     private static final String LOG_LEVEL_VERBOSE               = "VERBOSE";
     private static final String LOG_LEVEL_DEBUG                 = "DEBUG";
     private static final String LOG_LEVEL_INFO                  = "INFO";
@@ -65,15 +50,6 @@ public class AdjustBridgeInstance {
 
     private boolean isInitialized = false;
     private boolean shouldDeferredDeeplinkBeLaunched = true;
-
-    private String attributionCallbackName;
-    private String sessionSuccessCallbackName;
-    private String sessionFailureCallbackName;
-    private String eventSuccessCallbackName;
-    private String eventFailureCallbackName;
-    private String deferredDeeplinkCallbackName;
-
-    private ArrayList<Uri> deeplinkQueue;
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
     // This requires user to have minimal supported API level set to 14.
@@ -105,170 +81,229 @@ public class AdjustBridgeInstance {
         public void onActivityStarted(Activity activity) {}
     }
 
-    public void setWebView(WebView webView) {
-        this.webView = webView;
-    }
+    private boolean checkInit() {
+        if (webView == null) {
+            AdjustBridgeUtil.getLogger().error("Webview missing. Call AdjustBridge.setWebView before");
+            return false;
+        }
 
-    public void setApplicationContext(Application application) {
-        this.application = application;
+        if (application == null) {
+            AdjustBridgeUtil.getLogger().error("Application context missing. Call AdjustBridge.setApplicationContext before");
+            return false;
+        }
+
+        return true;
     }
 
     @JavascriptInterface
     public void onCreate(String adjustConfigString) {
         // Initialise SDK only if it's not already initialised.
         if (isInitialized) {
+            AdjustBridgeUtil.getLogger().warn("Adjust bridge is already initialized. Ignoring further attempts");
             return;
         }
 
-        // Without application reference, initialisation is not possible.
-        if (application == null) {
+        if (!checkInit()) {
             return;
         }
-
-        // TODO: Do we need to check for web view in this moment?
-        /*
-        if (webView == null) {
-            return;
-        }
-        */
 
         try {
+            AdjustBridgeUtil.getLogger().verbose("Parsing adjust config object from JSON: %d", adjustConfigString);
+
             JSONObject jsonAdjustConfig = new JSONObject(adjustConfigString);
 
-            Object appToken = jsonAdjustConfig.get(KEY_APP_TOKEN);
-            Object environment = jsonAdjustConfig.get(KEY_ENVIRONMENT);
-            Object logLevel = jsonAdjustConfig.get(KEY_LOG_LEVEL);
-            Object sdkPrefix = jsonAdjustConfig.get(KEY_SDK_PREFIX);
-            Object defaultTracker = jsonAdjustConfig.get(KEY_DEFAULT_TRACKER);
-            Object processName = jsonAdjustConfig.get(KEY_PROCESS_NAME);
-            Object sendInBackground = jsonAdjustConfig.get(KEY_SEND_IN_BACKGROUND);
-            Object eventBufferingEnabled = jsonAdjustConfig.get(KEY_EVENT_BUFFERING_ENABLED);
-            Object shouldOpenDeferredDeeplink = jsonAdjustConfig.get(KEY_OPEN_DEFERRED_DEEPLINK);
+            Object appTokenField = jsonAdjustConfig.get("appToken");
+            Object environmentField = jsonAdjustConfig.get("environment");
+            Object eventBufferingEnabledField = jsonAdjustConfig.get("eventBufferingEnabled");
+            Object sendInBackgroundField = jsonAdjustConfig.get("sendInBackground");
+            Object logLevelField = jsonAdjustConfig.get("logLevel");
+            Object sdkPrefixField = jsonAdjustConfig.get("sdkPrefix");
+            Object processNameField = jsonAdjustConfig.get("processName");
+            Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
+            Object attributionCallbackField = jsonAdjustConfig.get("attributionCallback");
+            Object deviceKnownField = jsonAdjustConfig.get("deviceKnown");
+            Object eventSuccessCallbackField = jsonAdjustConfig.get("eventSuccessCallback");
+            Object eventFailureCallbackField = jsonAdjustConfig.get("eventFailureCallback");
+            Object sessionSuccessCallbackField = jsonAdjustConfig.get("sessionSuccessCallback");
+            Object sessionFailureCallbackField = jsonAdjustConfig.get("sessionFailureCallback");
+            Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
+            Object deferredDeeplinkCallbackField = jsonAdjustConfig.get("deferredDeeplinkCallback");
+            Object delayStartField = jsonAdjustConfig.get("delayStart");
+            Object userAgentField = jsonAdjustConfig.get("userAgent");
+            Object secretIdField = jsonAdjustConfig.get("secretId");
+            Object info1Field = jsonAdjustConfig.get("info1");
+            Object info2Field = jsonAdjustConfig.get("info2");
+            Object info3Field = jsonAdjustConfig.get("info3");
+            Object info4Field = jsonAdjustConfig.get("info4");
+            Object readMobileEquipmentIdentityField = jsonAdjustConfig.get("readMobileEquipmentIdentity");
 
-            if (!AdjustBridgeUtil.isFieldValid(appToken) || !AdjustBridgeUtil.isFieldValid(environment)) {
-                return;
-            }
+            String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
+            String environment = AdjustBridgeUtil.fieldToString(environmentField);
 
-            AdjustConfig adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken.toString(), environment.toString());
+            AdjustConfig adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken, environment);
 
             if (!adjustConfig.isValid()) {
                 return;
             }
 
+            // Event buffering
+            Boolean eventBufferingEnabled = AdjustBridgeUtil.fieldToBoolean(eventBufferingEnabledField);
+            if (eventBufferingEnabled != null) {
+                adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
+            }
+
+            // Send in the background
+            Boolean sendInBackground = AdjustBridgeUtil.fieldToBoolean(sendInBackgroundField);
+            if (sendInBackground != null) {
+                adjustConfig.setSendInBackground(sendInBackground);
+            }
+
             // Log level
-            if (AdjustBridgeUtil.isFieldValid(logLevel)) {
-                if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_VERBOSE)) {
+            String logLevelString = AdjustBridgeUtil.fieldToString(logLevelField);
+            if (logLevelString != null) {
+                if (logLevelString.equalsIgnoreCase(LOG_LEVEL_VERBOSE)) {
                     adjustConfig.setLogLevel(LogLevel.VERBOSE);
-                } else if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_DEBUG)) {
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_DEBUG)) {
                     adjustConfig.setLogLevel(LogLevel.DEBUG);
-                } else if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_INFO)) {
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_INFO)) {
                     adjustConfig.setLogLevel(LogLevel.INFO);
-                } else if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_WARN)) {
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_WARN)) {
                     adjustConfig.setLogLevel(LogLevel.WARN);
-                } else if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_ERROR)) {
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_ERROR)) {
                     adjustConfig.setLogLevel(LogLevel.ERROR);
-                } else if (logLevel.toString().equalsIgnoreCase(LOG_LEVEL_ASSERT)) {
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_ASSERT)) {
                     adjustConfig.setLogLevel(LogLevel.ASSERT);
                 } else {
                     adjustConfig.setLogLevel(LogLevel.INFO);
                 }
             }
 
-            // SDK prefix
-            if (AdjustBridgeUtil.isFieldValid(sdkPrefix)) {
-                adjustConfig.setSdkPrefix(sdkPrefix.toString());
-            }
-
-            // Event buffering
-            if (AdjustBridgeUtil.isFieldValid(eventBufferingEnabled)) {
-                if (eventBufferingEnabled.toString().equalsIgnoreCase("true") || eventBufferingEnabled.toString().equalsIgnoreCase("false")) {
-                    adjustConfig.setEventBufferingEnabled(Boolean.valueOf(eventBufferingEnabled.toString()));
-                }
-            }
-
-            // Tracking in background
-            if (AdjustBridgeUtil.isFieldValid(sendInBackground)) {
-                if (sendInBackground.toString().equalsIgnoreCase("true") || sendInBackground.toString().equalsIgnoreCase("false")) {
-                    adjustConfig.setSendInBackground(Boolean.valueOf(sendInBackground.toString()));
-                }
+            // Sdk prefix
+            String sdkPrefix = AdjustBridgeUtil.fieldToString(sdkPrefixField);
+            if (sdkPrefix != null) {
+                adjustConfig.setSdkPrefix(sdkPrefix);
             }
 
             // Main process name
-            if (AdjustBridgeUtil.isFieldValid(processName)) {
-                adjustConfig.setProcessName(processName.toString());
+            String processName = AdjustBridgeUtil.fieldToString(processNameField);
+            if (processName != null) {
+                adjustConfig.setProcessName(processName);
             }
 
             // Default tracker
-            if (AdjustBridgeUtil.isFieldValid(defaultTracker)) {
-                adjustConfig.setDefaultTracker(defaultTracker.toString());
-            }
-
-            // Should deferred deep link be opened?
-            if (AdjustBridgeUtil.isFieldValid(shouldOpenDeferredDeeplink)) {
-                if (shouldOpenDeferredDeeplink.toString().equalsIgnoreCase("true") || shouldOpenDeferredDeeplink.toString().equalsIgnoreCase("false")) {
-                    shouldDeferredDeeplinkBeLaunched = Boolean.valueOf(shouldOpenDeferredDeeplink.toString());
-                }
+            String defaultTracker = AdjustBridgeUtil.fieldToString(defaultTrackerField);
+            if (defaultTracker != null) {
+                adjustConfig.setDefaultTracker(defaultTracker);
             }
 
             // Attribution callback
-            if (attributionCallbackName != null && !attributionCallbackName.isEmpty()) {
+            final String attributionCallback = AdjustBridgeUtil.fieldToString(attributionCallbackField);
+            if (attributionCallback != null) {
                 adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
                     @Override
                     public void onAttributionChanged(AdjustAttribution attribution) {
-                        AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallbackName, attribution);
+                        AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallback, attribution);
                     }
                 });
+
             }
 
-            // Session success callback
-            if (sessionSuccessCallbackName != null && !sessionSuccessCallbackName.isEmpty()) {
-                adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
-                    @Override
-                    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
-                        AdjustBridgeUtil.execSessionSuccessCallbackCommand(webView, sessionSuccessCallbackName, sessionSuccessResponseData);
-                    }
-                });
-            }
-
-            // Session failure callback
-            if (sessionFailureCallbackName != null && !sessionFailureCallbackName.isEmpty()) {
-                adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
-                    @Override
-                    public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
-                        AdjustBridgeUtil.execSessionFailureCallbackCommand(webView, sessionFailureCallbackName, failureResponseData);
-                    }
-                });
+            // Is device known
+            Boolean deviceKnown = AdjustBridgeUtil.fieldToBoolean(deviceKnownField);
+            if (deviceKnown != null) {
+                adjustConfig.setDeviceKnown(deviceKnown);
             }
 
             // Event success callback
-            if (eventSuccessCallbackName != null && !eventSuccessCallbackName.isEmpty()) {
+            final String eventSuccessCallback = AdjustBridgeUtil.fieldToString(eventSuccessCallbackField);
+            if (eventSuccessCallback != null) {
                 adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
                     @Override
                     public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
-                        AdjustBridgeUtil.execEventSuccessCallbackCommand(webView, eventSuccessCallbackName, eventSuccessResponseData);
+                        AdjustBridgeUtil.execEventSuccessCallbackCommand(webView, eventSuccessCallback, eventSuccessResponseData);
                     }
                 });
             }
 
             // Event failure callback
-            if (eventFailureCallbackName != null && !eventFailureCallbackName.isEmpty()) {
+            final String eventFailureCallback = AdjustBridgeUtil.fieldToString(eventFailureCallbackField);
+            if (eventFailureCallback != null) {
                 adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
                     @Override
                     public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
-                        AdjustBridgeUtil.execEventFailureCallbackCommand(webView, eventFailureCallbackName, eventFailureResponseData);
+                        AdjustBridgeUtil.execEventFailureCallbackCommand(webView, eventFailureCallback, eventFailureResponseData);
                     }
                 });
             }
 
+            // Session success callback
+            final String sessionSuccessCallback = AdjustBridgeUtil.fieldToString(sessionSuccessCallbackField);
+            if (sessionSuccessCallback != null) {
+                adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+                    @Override
+                    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+                        AdjustBridgeUtil.execSessionSuccessCallbackCommand(webView, sessionSuccessCallback, sessionSuccessResponseData);
+                    }
+                });
+            }
+
+            // Session failure callback
+            final String sessionFailureCallback = AdjustBridgeUtil.fieldToString(sessionFailureCallbackField);
+            if (sessionFailureCallback != null) {
+                adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+                    @Override
+                    public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
+                        AdjustBridgeUtil.execSessionFailureCallbackCommand(webView, sessionFailureCallback, failureResponseData);
+                    }
+                });
+            }
+
+            // Should deferred deep link be opened?
+            Boolean openDeferredDeeplink = AdjustBridgeUtil.fieldToBoolean(openDeferredDeeplinkField);
+            if (openDeferredDeeplink != null) {
+                shouldDeferredDeeplinkBeLaunched = openDeferredDeeplink;
+            }
+
             // Deferred deeplink callback
-            if (deferredDeeplinkCallbackName != null && !deferredDeeplinkCallbackName.isEmpty()) {
+            final String deferredDeeplinkCallback = AdjustBridgeUtil.fieldToString(deferredDeeplinkCallbackField);
+            if (deferredDeeplinkCallback != null) {
                 adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                     @Override
                     public boolean launchReceivedDeeplink(Uri deeplink) {
-                        AdjustBridgeUtil.execDeferredDeeplinkCallbackCommand(webView, deferredDeeplinkCallbackName, deeplink.toString());
+                        AdjustBridgeUtil.execSingleValueCallback(webView, deferredDeeplinkCallback, deeplink.toString());
                         return shouldDeferredDeeplinkBeLaunched;
                     }
                 });
+            }
+
+            // Delay start
+            Double delayStart = AdjustBridgeUtil.fieldToDouble(delayStartField);
+            if (delayStart != null) {
+                adjustConfig.setDelayStart(delayStart);
+            }
+
+            // User agent
+            String userAgent = AdjustBridgeUtil.fieldToString(userAgentField);
+            if (userAgent != null) {
+                adjustConfig.setUserAgent(userAgent);
+            }
+
+            // App secret
+            Long secretId = AdjustBridgeUtil.fieldToLong(secretIdField);
+            Long info1 = AdjustBridgeUtil.fieldToLong(info1Field);
+            Long info2 = AdjustBridgeUtil.fieldToLong(info2Field);
+            Long info3 = AdjustBridgeUtil.fieldToLong(info3Field);
+            Long info4 = AdjustBridgeUtil.fieldToLong(info4Field);
+
+            if (secretId != null && info1 != null && info2 != null
+                    && info3 != null && info4 != null) {
+                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+            }
+
+            // User agent
+            Boolean readMobileEquipmentIdentity = AdjustBridgeUtil.fieldToBoolean(readMobileEquipmentIdentityField);
+            if (userAgent != null) {
+                adjustConfig.setReadMobileEquipmentIdentity(readMobileEquipmentIdentity);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
@@ -280,9 +315,6 @@ public class AdjustBridgeInstance {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 application.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
             }
-
-            // Check if any deeplink got queued before SDK initialised and process them if any.
-            dequeueDeeplinks();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -290,61 +322,56 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void trackEvent(String adjustEventString) {
-        if (!isInitialized) {
+        if (!checkInit()) {
             return;
         }
-
-        // TODO: Do we need to check for web view in this moment?
-        /*
-        if (webView == null) {
-            return;
-        }
-        */
 
         try {
             JSONObject jsonAdjustEvent = new JSONObject(adjustEventString);
 
-            Object eventToken = jsonAdjustEvent.get(KEY_EVENT_TOKEN);
-            Object revenue = jsonAdjustEvent.get(KEY_REVENUE);
-            Object currency = jsonAdjustEvent.get(KEY_CURRENCY);
+            Object eventTokenField = jsonAdjustEvent.get("eventToken");
+            Object revenueField = jsonAdjustEvent.get("revenue");
+            Object currencyField = jsonAdjustEvent.get("currency");
+            Object callbackParametersField = jsonAdjustEvent.get("callbackParameters");
+            Object partnerParametersField = jsonAdjustEvent.get("partnerParameters");
+            Object orderIdField = jsonAdjustEvent.get("orderId");
 
-            JSONArray partnerParametersJson = (JSONArray)jsonAdjustEvent.get(KEY_PARTNER_PARAMETERS);
-            JSONArray callbackParametersJson = (JSONArray)jsonAdjustEvent.get(KEY_CALLBACK_PARAMETERS);
-            String[] partnerParameters = AdjustBridgeUtil.jsonArrayToArray(partnerParametersJson);
-            String[] callbackParameters = AdjustBridgeUtil.jsonArrayToArray(callbackParametersJson);
-
-            if (!AdjustBridgeUtil.isFieldValid(eventToken)) {
-                return;
-            }
-
-            AdjustEvent adjustEvent = new AdjustEvent(eventToken.toString());
+            String eventToken = AdjustBridgeUtil.fieldToString(eventTokenField);
+            AdjustEvent adjustEvent = new AdjustEvent(eventToken);
 
             if (!adjustEvent.isValid()) {
                 return;
             }
 
-            if (AdjustBridgeUtil.isFieldValid(revenue) && AdjustBridgeUtil.isFieldValid(currency)) {
-                try {
-                    double revenueValue = Double.parseDouble(revenue.toString());
-                    adjustEvent.setRevenue(revenueValue, currency.toString());
-                } catch (Exception e) {
-                    ILogger logger = AdjustFactory.getLogger();
-                    logger.error("Unable to parse given revenue value");
+            Double revenue = AdjustBridgeUtil.fieldToDouble(revenueField);
+            String currency = AdjustBridgeUtil.fieldToString(currencyField);
+            if (revenue != null && currency != null) {
+                adjustEvent.setRevenue(revenue, currency);
+            }
+
+            String[] callbackParameters = AdjustBridgeUtil.jsonArrayToArray((JSONArray)callbackParametersField);
+            if (callbackParameters != null) {
+                for (int i = 0; i < callbackParameters.length; i +=2) {
+                    String key = callbackParameters[i];
+                    String value = callbackParameters[i+1];
+
+                    adjustEvent.addCallbackParameter(key, value);
                 }
             }
 
-            for (int i = 0; i < callbackParameters.length; i +=2) {
-                String key = callbackParameters[i];
-                String value = callbackParameters[i+1];
+            String[] partnerParameters = AdjustBridgeUtil.jsonArrayToArray((JSONArray)partnerParametersField);
+            if (partnerParameters != null) {
+                for (int i = 0; i < partnerParameters.length; i +=2) {
+                    String key = partnerParameters[i];
+                    String value = partnerParameters[i+1];
 
-                adjustEvent.addCallbackParameter(key, value);
+                    adjustEvent.addPartnerParameter(key, value);
+                }
             }
 
-            for (int i = 0; i < partnerParameters.length; i += 2) {
-                String key = partnerParameters[i];
-                String value = partnerParameters[i+1];
-
-                adjustEvent.addPartnerParameter(key, value);
+            String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
+            if (orderId != null) {
+                adjustEvent.setOrderId(orderId);
             }
 
             Adjust.trackEvent(adjustEvent);
@@ -354,196 +381,270 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void setOfflineMode(String isOffline) {
-        // TODO: Do we need to check if SDK is initialised in this moment?
-        if (!isInitialized) {
+    public void onResume() {
+        if (!checkInit()) {
             return;
         }
-
-        if (isOffline == null) {
-            return;
-        }
-
-        if (isOffline.isEmpty()) {
-            return;
-        }
-
-        Adjust.setOfflineMode(Boolean.valueOf(isOffline));
+        Adjust.onResume();
     }
 
     @JavascriptInterface
-    public void setEnabled(String isEnabled) {
-        // TODO: Do we need to check if SDK is initialised in this moment?
-        if (!isInitialized) {
+    public void onPause() {
+        if (!checkInit()) {
+            return;
+        }
+        Adjust.onPause();
+    }
+
+    @JavascriptInterface
+    public void setEnabled(String isEnabledString) {
+        if (!checkInit()) {
             return;
         }
 
-        if (isEnabled == null) {
-            return;
+        Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledString);
+        if (isEnabled != null) {
+            Adjust.setEnabled(isEnabled);
         }
-
-        if (isEnabled.isEmpty()) {
-            return;
-        }
-
-        Adjust.setEnabled(Boolean.valueOf(isEnabled));
     }
 
     @JavascriptInterface
     public void isEnabled(String callback) {
-        // TODO: Do we need to check if SDK is initialised in this moment?
-        if (!isInitialized) {
-            return;
-        }
-
-        if (webView == null) {
+        if (!checkInit()) {
             return;
         }
 
         boolean isEnabled = Adjust.isEnabled();
-        AdjustBridgeUtil.execIsEnabledCallbackCommand(webView, callback, String.valueOf(isEnabled));
+        AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
+    }
+
+    @JavascriptInterface
+    public void appWillOpenUrl(String deeplinkString) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Uri deeplink = null;
+        if (deeplinkString != null) {
+            deeplink = Uri.parse(deeplinkString);
+        }
+        Adjust.appWillOpenUrl(deeplink);
+    }
+
+    @JavascriptInterface
+    public void setReferrer(String referrer) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.setReferrer(referrer, application.getApplicationContext());
+    }
+
+    @JavascriptInterface
+    public void setOfflineMode(String isOfflineString) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Boolean isOffline = AdjustBridgeUtil.fieldToBoolean(isOfflineString);
+
+        if (isOffline != null) {
+            Adjust.setOfflineMode(isOffline);
+        }
+    }
+
+    @JavascriptInterface
+    public void sendFirstPackages() {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.sendFirstPackages();
+    }
+
+    @JavascriptInterface
+    public void addSessionCallbackParameter(String key, String value) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.addSessionCallbackParameter(key, value);
+    }
+
+    @JavascriptInterface
+    public void addSessionPartnerParameter(String key, String value) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.addSessionPartnerParameter(key, value);
+    }
+
+    @JavascriptInterface
+    public void removeSessionCallbackParameter(String key) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.removeSessionCallbackParameter(key);
+    }
+
+    @JavascriptInterface
+    public void removeSessionPartnerParameter(String key) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.removeSessionPartnerParameter(key);
+    }
+
+    @JavascriptInterface
+    public void resetSessionCallbackParameters() {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.resetSessionCallbackParameters();
+    }
+
+    @JavascriptInterface
+    public void resetSessionPartnerParameters() {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.resetSessionPartnerParameters();
+    }
+
+    @JavascriptInterface
+    public void setPushToken(String pushToken) {
+        if (!checkInit()) {
+            return;
+        }
+
+        Adjust.setPushToken(pushToken, application.getApplicationContext());
     }
 
     @JavascriptInterface
     public void getGoogleAdId(final String callback) {
-        // TODO: Do we need to check if SDK is initialised in this moment?
-        if (!isInitialized) {
-            return;
-        }
-
-        if (webView == null) {
+        if (!checkInit()) {
             return;
         }
 
         Adjust.getGoogleAdId(application.getApplicationContext(), new OnDeviceIdsRead() {
             @Override
             public void onGoogleAdIdRead(String googleAdId) {
-                AdjustBridgeUtil.execGetGoogleAdIdCallbackCommand(webView, callback, googleAdId);
+                AdjustBridgeUtil.execSingleValueCallback(webView, callback, googleAdId);
             }
         });
     }
 
     @JavascriptInterface
-    public void setAttributionCallback(String callback) {
-        if (callback == null) {
+    public void getAmazonAdId(final String callback) {
+        if (!checkInit()) {
             return;
         }
 
-        if (callback.isEmpty()) {
-            return;
-        }
-
-        attributionCallbackName = callback;
+        String amazonAdId = Adjust.getAmazonAdId(application.getApplicationContext());
+        AdjustBridgeUtil.execSingleValueCallback(webView, callback, amazonAdId);
     }
 
     @JavascriptInterface
-    public void setSessionSuccessCallback(String callback) {
-        if (callback == null) {
+    public void getAdid(final String callback) {
+        if (!checkInit()) {
             return;
         }
 
-        if (callback.isEmpty()) {
-            return;
-        }
-
-        sessionSuccessCallbackName = callback;
+        String adid = Adjust.getAdid();
+        AdjustBridgeUtil.execSingleValueCallback(webView, callback, adid);
     }
 
     @JavascriptInterface
-    public void setSessionFailureCallback(String callback) {
-        if (callback == null) {
+    public void getAttribution(final String callback) {
+        if (!checkInit()) {
             return;
         }
 
-        if (callback.isEmpty()) {
-            return;
-        }
-
-        sessionFailureCallbackName = callback;
+        AdjustAttribution attribution = Adjust.getAttribution();
+        AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
     }
 
     @JavascriptInterface
-    public void setEventSuccessCallback(String callback) {
-        if (callback == null) {
+    public void setTestOptions(final String testOptionsString) {
+        if (!checkInit()) {
             return;
         }
 
-        if (callback.isEmpty()) {
-            return;
-        }
+        try {
+            AdjustTestOptions adjustTestOptions = new AdjustTestOptions();
+            JSONObject jsonAdjustEvent = new JSONObject(testOptionsString);
 
-        eventSuccessCallbackName = callback;
+            Object baseUrlField = jsonAdjustEvent.get("baseUrl");
+            Object basePathField = jsonAdjustEvent.get("basePath");
+            Object useTestConnectionOptionsField = jsonAdjustEvent.get("useTestConnectionOptions");
+            Object timerIntervalInMillisecondsField = jsonAdjustEvent.get("timerIntervalInMilliseconds");
+            Object timerStartInMillisecondsField = jsonAdjustEvent.get("timerStartInMilliseconds");
+            Object sessionIntervalInMillisecondsField = jsonAdjustEvent.get("sessionIntervalInMilliseconds");
+            Object subsessionIntervalInMillisecondsField = jsonAdjustEvent.get("subsessionIntervalInMilliseconds");
+            Object teardownField = jsonAdjustEvent.get("teardown");
+            Object tryInstallReferrerField = jsonAdjustEvent.get("tryInstallReferrer");
+
+            String baseUrl = AdjustBridgeUtil.fieldToString(baseUrlField);
+            if (baseUrl != null) {
+                adjustTestOptions.baseUrl = baseUrl;
+            }
+
+            String basePath = AdjustBridgeUtil.fieldToString(basePathField);
+            if (baseUrl != null) {
+                adjustTestOptions.basePath = basePath;
+            }
+
+            Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
+            if (baseUrl != null) {
+                adjustTestOptions.useTestConnectionOptions = useTestConnectionOptions;
+            }
+
+            Long timerIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(timerIntervalInMillisecondsField);
+            if (baseUrl != null) {
+                adjustTestOptions.timerIntervalInMilliseconds = timerIntervalInMilliseconds;
+            }
+
+            Long timerStartInMilliseconds = AdjustBridgeUtil.fieldToLong(timerStartInMillisecondsField);
+            if (baseUrl != null) {
+                adjustTestOptions.timerStartInMilliseconds = timerStartInMilliseconds;
+            }
+
+            Long sessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(sessionIntervalInMillisecondsField);
+            if (baseUrl != null) {
+                adjustTestOptions.sessionIntervalInMilliseconds = sessionIntervalInMilliseconds;
+            }
+
+            Long subsessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(subsessionIntervalInMillisecondsField);
+            if (baseUrl != null) {
+                adjustTestOptions.subsessionIntervalInMilliseconds = subsessionIntervalInMilliseconds;
+            }
+
+            Boolean teardown = AdjustBridgeUtil.fieldToBoolean(teardownField);
+            if (baseUrl != null) {
+                adjustTestOptions.teardown = teardown;
+            }
+
+            Boolean tryInstallReferrer = AdjustBridgeUtil.fieldToBoolean(tryInstallReferrerField);
+            if (baseUrl != null) {
+                adjustTestOptions.tryInstallReferrer = tryInstallReferrer;
+            }
+
+            Adjust.setTestOptions(adjustTestOptions);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    @JavascriptInterface
-    public void setEventFailureCallback(String callback) {
-        if (callback == null) {
-            return;
-        }
-
-        if (callback.isEmpty()) {
-            return;
-        }
-
-        eventFailureCallbackName = callback;
+    public void setWebView(WebView webView) {
+        this.webView = webView;
     }
 
-    @JavascriptInterface
-    public void setDeferredDeeplinkCallback(String callback) {
-        if (callback == null) {
-            return;
-        }
-
-        if (callback.isEmpty()) {
-            return;
-        }
-
-        deferredDeeplinkCallbackName = callback;
-    }
-
-    public void deeplinkReceived(final Uri deeplink) {
-        if (deeplink == null) {
-            return;
-        }
-
-        if (!isInitialized) {
-            // Deeplink was passed to the bridge, but SDK was still not initialised.
-            // Queue it and wait for SDK to initialise and process it.
-            queueDeeplink(deeplink);
-
-            return;
-        }
-
-        checkForDeeplinkReattributions(deeplink);
-        AdjustBridgeUtil.sendDeeplinkToWebView(webView, deeplink);
-    }
-
-    private void queueDeeplink(Uri deeplink) {
-        if (deeplinkQueue == null) {
-            deeplinkQueue = new ArrayList<Uri>();
-        }
-
-        deeplinkQueue.add(deeplink);
-    }
-
-    private void dequeueDeeplinks() {
-        if (deeplinkQueue == null) {
-            return;
-        }
-
-        for (final Uri deeplink : deeplinkQueue) {
-            checkForDeeplinkReattributions(deeplink);
-            AdjustBridgeUtil.sendDeeplinkToWebView(webView, deeplink);
-        }
-
-        deeplinkQueue.clear();
-    }
-
-    private void checkForDeeplinkReattributions(Uri deeplink) {
-        // If the SDK is initialised, check for deeplink reattributions automatically.
-        // No need to bother the user to do this in Javascript.
-        if (isInitialized) {
-            Adjust.appWillOpenUrl(deeplink);
-        }
+    public void setApplicationContext(Application application) {
+        this.application = application;
     }
 }

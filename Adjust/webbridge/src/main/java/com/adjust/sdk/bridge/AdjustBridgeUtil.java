@@ -6,8 +6,10 @@ import android.webkit.WebView;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.ILogger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,15 +33,66 @@ public class AdjustBridgeUtil {
         }
     }
 
-    public static boolean isFieldValid(Object field) {
-        if (field != null) {
-            if (!field.toString().equals("") && !field.toString().equals("null")) {
-                return true;
-            }
+    public static String fieldToString(Object field) {
+        if (field == null) {
+            return null;
         }
 
-        return false;
+        String fieldString = field.toString();
+
+        if (fieldString == "null") {
+            return null;
+        }
+
+        return fieldString;
     }
+
+    public static Boolean fieldToBoolean(Object field) {
+        if (field == null) {
+            return null;
+        }
+
+        String fieldString = field.toString();
+
+        if (fieldString.equalsIgnoreCase("true")) {
+            return true;
+        }
+
+        if (fieldString.equalsIgnoreCase("false")) {
+            return false;
+        }
+
+        return null;
+    }
+
+    public static Double fieldToDouble(Object field) {
+        if (field == null) {
+            return null;
+        }
+
+        String fieldString = field.toString();
+
+        try {
+            return Double.parseDouble(fieldString);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Long fieldToLong(Object field) {
+        if (field == null) {
+            return null;
+        }
+
+        String fieldString = field.toString();
+
+        try {
+            return Long.parseLong(fieldString);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public static void execAttributionCallbackCommand(final WebView webView, final String commandName, final AdjustAttribution attribution) {
         if (webView == null) {
@@ -179,7 +232,7 @@ public class AdjustBridgeUtil {
         });
     }
 
-    public static void execDeferredDeeplinkCallbackCommand(final WebView webView, final String commandName, final String deeplink) {
+    public static void execSingleValueCallback(final WebView webView, final String commandName, final String value) {
         if (webView == null) {
             return;
         }
@@ -187,35 +240,7 @@ public class AdjustBridgeUtil {
         webView.post(new Runnable() {
             @Override
             public void run() {
-                String command = "javascript:" + commandName + "('" + deeplink + "');";
-                webView.loadUrl(command);
-            }
-        });
-    }
-
-    public static void execIsEnabledCallbackCommand(final WebView webView, final String commandName, final String isEnabled) {
-        if (webView == null) {
-            return;
-        }
-
-        webView.post(new Runnable() {
-            @Override
-            public void run() {
-                String command = "javascript:" + commandName + "(" + isEnabled + ");";
-                webView.loadUrl(command);
-            }
-        });
-    }
-
-    public static void execGetGoogleAdIdCallbackCommand(final WebView webView, final String commandName, final String gpsAdid) {
-        if (webView == null) {
-            return;
-        }
-
-        webView.post(new Runnable() {
-            @Override
-            public void run() {
-                String command = "javascript:" + commandName + "(" + gpsAdid + ");";
+                String command = "javascript:" + commandName + "('" + value + "');";
                 webView.loadUrl(command);
             }
         });
@@ -233,5 +258,9 @@ public class AdjustBridgeUtil {
         }
 
         return null;
+    }
+
+    public static ILogger getLogger() {
+        return AdjustFactory.getLogger();
     }
 }

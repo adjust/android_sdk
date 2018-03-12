@@ -1,6 +1,5 @@
 package com.adjust.sdk.bridge;
 
-import android.net.Uri;
 import android.webkit.WebView;
 import android.app.Application;
 import android.webkit.JavascriptInterface;
@@ -30,8 +29,13 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
-    public static void setOfflineMode(String isOffline) {
-        AdjustBridge.getDefaultInstance().setOfflineMode(isOffline);
+    public static void onResume() {
+        AdjustBridge.getDefaultInstance().onResume();
+    }
+
+    @JavascriptInterface
+    public static void onPause() {
+        AdjustBridge.getDefaultInstance().onPause();
     }
 
     @JavascriptInterface
@@ -45,38 +49,83 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
+    public static void appWillOpenUrl(String url) {
+        AdjustBridge.getDefaultInstance().appWillOpenUrl(url);
+    }
+
+    @JavascriptInterface
+    public static void setReferrer(String referrer) {
+        AdjustBridge.getDefaultInstance().setReferrer(referrer);
+    }
+
+    @JavascriptInterface
+    public static void setOfflineMode(String isOffline) {
+        AdjustBridge.getDefaultInstance().setOfflineMode(isOffline);
+    }
+
+    @JavascriptInterface
+    public static void sendFirstPackages() {
+        AdjustBridge.getDefaultInstance().sendFirstPackages();
+    }
+
+    @JavascriptInterface
+    public static void addSessionCallbackParameter(String key, String value) {
+        AdjustBridge.getDefaultInstance().addSessionCallbackParameter(key, value);
+    }
+
+    @JavascriptInterface
+    public static void addSessionPartnerParameter(String key, String value) {
+        AdjustBridge.getDefaultInstance().addSessionPartnerParameter(key, value);
+    }
+
+    @JavascriptInterface
+    public static void removeSessionCallbackParameter(String key) {
+        AdjustBridge.getDefaultInstance().removeSessionCallbackParameter(key);
+    }
+
+    @JavascriptInterface
+    public static void removeSessionPartnerParameter(String key) {
+        AdjustBridge.getDefaultInstance().removeSessionPartnerParameter(key);
+    }
+
+    @JavascriptInterface
+    public static void resetSessionCallbackParameters() {
+        AdjustBridge.getDefaultInstance().resetSessionCallbackParameters();
+    }
+
+    @JavascriptInterface
+    public static void resetSessionPartnerParameters() {
+        AdjustBridge.getDefaultInstance().resetSessionPartnerParameters();
+    }
+
+    @JavascriptInterface
+    public static void setPushToken(String pushToken) {
+        AdjustBridge.getDefaultInstance().setPushToken(pushToken);
+    }
+
+    @JavascriptInterface
     public static void getGoogleAdId(String callback) {
         AdjustBridge.getDefaultInstance().getGoogleAdId(callback);
     }
 
     @JavascriptInterface
-    public static void setAttributionCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setAttributionCallback(callback);
+    public static void getAmazonAdId(String callback) {
+        AdjustBridge.getDefaultInstance().getAmazonAdId(callback);
     }
 
     @JavascriptInterface
-    public static void setSessionSuccessCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setSessionSuccessCallback(callback);
+    public static void getAdid(String callback) {
+        AdjustBridge.getDefaultInstance().getAdid(callback);
     }
 
     @JavascriptInterface
-    public static void setSessionFailureCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setSessionFailureCallback(callback);
+    public static void getAttribution(String callback) {
+        AdjustBridge.getDefaultInstance().getAttribution(callback);
     }
 
     @JavascriptInterface
-    public static void setEventSuccessCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setEventSuccessCallback(callback);
-    }
-
-    @JavascriptInterface
-    public static void setEventFailureCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setEventFailureCallback(callback);
-    }
-
-    @JavascriptInterface
-    public static void setDeferredDeeplinkCallback(String callback) {
-        AdjustBridge.getDefaultInstance().setDeferredDeeplinkCallback(callback);
+    public static void setTestOptions(String testOptions) {
+        AdjustBridge.getDefaultInstance().setTestOptions(testOptions);
     }
 
     public static void setWebView(WebView webView) {
@@ -85,9 +134,5 @@ public class AdjustBridge {
 
     public static void setApplicationContext(Application application) {
         AdjustBridge.getDefaultInstance().setApplicationContext(application);
-    }
-
-    public static void deeplinkReceived(Uri deeplink) {
-        AdjustBridge.getDefaultInstance().deeplinkReceived(deeplink);
     }
 }

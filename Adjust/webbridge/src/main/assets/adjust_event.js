@@ -3,10 +3,9 @@ function AdjustEvent(eventToken) {
 
     this.revenue = null;
     this.currency = null;
-    this.transactionId = null;
-
     this.callbackParameters = [];
     this.partnerParameters = [];
+    this.orderId = null;
 }
 
 AdjustEvent.prototype.setRevenue = function(revenue, currency) {
@@ -22,6 +21,10 @@ AdjustEvent.prototype.addCallbackParameter = function(key, value) {
 AdjustEvent.prototype.addPartnerParameter = function(key, value) {
     this.partnerParameters.push(key);
     this.partnerParameters.push(value);
+};
+
+AdjustEvent.prototype.setOrderId = function(orderId) {
+    this.orderId = orderId;
 };
 
 // module.exports = AdjustEvent;
