@@ -1,152 +1,140 @@
 var Adjust = {
-    saveBridge: function(bridge) {
-        console.log("saveBridge");
-        this.bridge = bridge;
-    },
-
     onCreate: function (adjustConfig) {
         console.log("onCreate: " + JSON.stringify(adjustConfig));
-
-        if (!this.bridge) {
-            this.bridge = adjustConfig.getBridge();
+        if (AdjustBridge) {
+            AdjustBridge.onCreate(JSON.stringify(adjustConfig));
         }
-
-        if (!this.bridge) {
-            return;
-        }
-
-        this.bridge.onCreate(JSON.stringify(adjustConfig))
     },
 
     trackEvent: function (adjustEvent) {
-        if (this.bridge) {
-            this.bridge.trackEvent(JSON.stringify(adjustEvent));
+        if (AdjustBridge) {
+            AdjustBridge.trackEvent(JSON.stringify(adjustEvent));
         }
     },
 
     onResume: function () {
-        if (this.bridge) {
-            this.bridge.onResume();
+        if (AdjustBridge) {
+            AdjustBridge.onResume();
         }
     },
 
     onPause: function () {
-        if (this.bridge) {
-            this.bridge.onPause();
+        if (AdjustBridge) {
+            AdjustBridge.onPause();
         }
     },
 
     setEnabled: function (enabled) {
-        if (this.bridge) {
-            this.bridge.setEnabled(enabled);
+        if (AdjustBridge) {
+            AdjustBridge.setEnabled(enabled);
         }
     },
 
     isEnabled: function (callback) {
-        if (this.bridge) {
-            this.bridge.isEnabled(callback);
+        if (AdjustBridge) {
+            AdjustBridge.isEnabled(callback);
         }
     },
 
     appWillOpenUrl: function (url) {
-        if (this.bridge) {
-            this.bridge.appWillOpenUrl(url);
+        if (AdjustBridge) {
+            AdjustBridge.appWillOpenUrl(url);
         }
     },
 
     setReferrer: function (referrer) {
-        if (this.bridge) {
-            this.bridge.setReferrer(referrer);
+        if (AdjustBridge) {
+            AdjustBridge.setReferrer(referrer);
         }
     },
 
     setOfflineMode: function(isOffline) {
-        if (this.bridge) {
-            this.bridge.setOfflineMode(isOffline);
+        if (AdjustBridge) {
+            AdjustBridge.setOfflineMode(isOffline);
         }
     },
 
     sendFirstPackages: function() {
-        if (this.bridge) {
-            this.bridge.sendFirstPackages();
+        if (AdjustBridge) {
+            AdjustBridge.sendFirstPackages();
         }
     },
 
     addSessionCallbackParameter: function(key, value) {
-        if (this.bridge) {
-            this.bridge.addSessionCallbackParameter(key, value);
+        if (AdjustBridge) {
+            AdjustBridge.addSessionCallbackParameter(key, value);
         }
     },
 
     addSessionPartnerParameter: function(key, value) {
-        if (this.bridge) {
-            this.bridge.addSessionPartnerParameter(key, value);
+        if (AdjustBridge) {
+            AdjustBridge.addSessionPartnerParameter(key, value);
         }
     },
 
     removeSessionCallbackParameter: function(key) {
-        if (this.bridge) {
-            this.bridge.removeSessionCallbackParameter(key);
+        if (AdjustBridge) {
+            AdjustBridge.removeSessionCallbackParameter(key);
         }
     },
 
     removeSessionPartnerParameter: function(key) {
-        if (this.bridge) {
-            this.bridge.addSessionPartnerParameter(key);
+        if (AdjustBridge) {
+            AdjustBridge.addSessionPartnerParameter(key);
         }
     },
 
     resetSessionCallbackParameters: function() {
-        if (this.bridge) {
-            this.bridge.resetSessionCallbackParameters();
+        if (AdjustBridge) {
+            AdjustBridge.resetSessionCallbackParameters();
         }
     },
 
     resetSessionPartnerParameters: function() {
-        if (this.bridge) {
-            this.bridge.resetSessionPartnerParameters();
+        if (AdjustBridge) {
+            AdjustBridge.resetSessionPartnerParameters();
         }
     },
 
     setPushToken: function(token) {
-        if (this.bridge) {
-            this.bridge.setPushToken(token);
+        if (AdjustBridge) {
+            AdjustBridge.setPushToken(token);
         }
     },
 
     getGoogleAdId: function (callback) {
-        if (this.bridge) {
-            this.bridge.getGoogleAdId(callback);
+        if (AdjustBridge) {
+            AdjustBridge.getGoogleAdId(callback);
         }
     },
 
     getAmazonAdId: function (callback) {
-        if (this.bridge) {
-            this.bridge.getAmazonAdId(callback);
+        if (AdjustBridge) {
+            AdjustBridge.getAmazonAdId(callback);
         }
     },
 
     getAmazonAdId: function (callback) {
-        if (this.bridge) {
-            this.bridge.getAmazonAdId(callback);
+        if (AdjustBridge) {
+            AdjustBridge.getAmazonAdId(callback);
         }
     },
 
     getAdid: function (callback) {
-        if (this.bridge) {
-            this.bridge.getAdid(callback);
+        if (AdjustBridge) {
+            AdjustBridge.getAdid(callback);
         }
     },
 
     getAttribution: function (callback) {
-        if (this.bridge) {
-            this.bridge.getAttribution(callback);
+        if (AdjustBridge) {
+            AdjustBridge.getAttribution(callback);
         }
     },
 
     setTestOptions: function (testOptions) {
-        if (this.bridge) {
-            this.bridge.setTestOptions(testOptions);
+        if (AdjustBridge) {
+            AdjustBridge.setTestOptions(testOptions);
         }
     },
 };
