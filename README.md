@@ -97,7 +97,7 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:10.2.1'
+    compile 'com.google.android.gms:play-services-analytics:11.8.0'
     ```
 
     ![][gradle_gps]
@@ -818,7 +818,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
 1. Create a new tracker in your [dashboard].
 2. Open your app delegate and add set the default tracker of your `AdjustConfig`:
 
-  ```objc
+  ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
   config.setDefaultTracker("{TrackerToken}");
   Adjust.onCreate(config);
