@@ -1,11 +1,22 @@
 function AdjustConfig(appToken, environment, legacy) {
+    this.allowSuppressLogLevel = null;
+
     if (arguments.length === 2) {
+        // new format does not require bridge as first parameter
         this.appToken = appToken;
         this.environment = environment;
     } else if (arguments.length === 3) {
-        this.bridge = appToken;
-        this.appToken = environment;
-        this.environment = legacy;
+        // new format with allowSuppressLogLevel
+        if (typeof(legacy) == typeof(true)) {
+            this.appToken = appToken;
+            this.environment = environment;
+            this.allowSuppressLogLevel = legacy;
+        } else {
+        // old format with first argument being the bridge instance
+            this.bridge = appToken;
+            this.appToken = environment;
+            this.environment = legacy;
+        }
     }
 
     this.eventBufferingEnabled = null;
@@ -41,6 +52,7 @@ AdjustConfig.LogLevelInfo           = 'INFO',
 AdjustConfig.LogLevelWarn           = 'WARN',
 AdjustConfig.LogLevelError          = 'ERROR',
 AdjustConfig.LogLevelAssert         = 'ASSERT',
+AdjustConfig.LogLevelSuppress       = 'SUPPRESS',
 
 AdjustConfig.prototype.getBridge = function() {
     return this.bridge;

@@ -44,6 +44,7 @@ public class AdjustBridgeInstance {
     private static final String LOG_LEVEL_WARN                  = "WARN";
     private static final String LOG_LEVEL_ERROR                 = "ERROR";
     private static final String LOG_LEVEL_ASSERT                = "ASSERT";
+    private static final String LOG_LEVEL_SUPPRESS              = "SUPPRESS";
 
     private WebView webView;
     private Application application;
@@ -108,12 +109,11 @@ public class AdjustBridgeInstance {
         }
 
         try {
-            AdjustBridgeUtil.getLogger().verbose("Parsing adjust config object from JSON: %d", adjustConfigString);
-
             JSONObject jsonAdjustConfig = new JSONObject(adjustConfigString);
 
             Object appTokenField = jsonAdjustConfig.get("appToken");
             Object environmentField = jsonAdjustConfig.get("environment");
+            Object allowSuppressLogLevelField = jsonAdjustConfig.get("allowSuppressLogLevel");
             Object eventBufferingEnabledField = jsonAdjustConfig.get("eventBufferingEnabled");
             Object sendInBackgroundField = jsonAdjustConfig.get("sendInBackground");
             Object logLevelField = jsonAdjustConfig.get("logLevel");
@@ -139,9 +139,14 @@ public class AdjustBridgeInstance {
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
+            Boolean allowSuppressLogLevel = AdjustBridgeUtil.fieldToBoolean(allowSuppressLogLevelField);
 
-            AdjustConfig adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken, environment);
-
+            AdjustConfig adjustConfig;
+            if (allowSuppressLogLevel == null) {
+                adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken, environment);
+            } else {
+                adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken, environment, allowSuppressLogLevel.booleanValue());
+            }
             if (!adjustConfig.isValid()) {
                 return;
             }
@@ -173,8 +178,8 @@ public class AdjustBridgeInstance {
                     adjustConfig.setLogLevel(LogLevel.ERROR);
                 } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_ASSERT)) {
                     adjustConfig.setLogLevel(LogLevel.ASSERT);
-                } else {
-                    adjustConfig.setLogLevel(LogLevel.INFO);
+                } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_SUPPRESS)) {
+                    adjustConfig.setLogLevel(LogLevel.SUPRESS);
                 }
             }
 
