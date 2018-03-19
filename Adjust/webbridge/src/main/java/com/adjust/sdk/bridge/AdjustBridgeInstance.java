@@ -120,14 +120,14 @@ public class AdjustBridgeInstance {
             Object sdkPrefixField = jsonAdjustConfig.get("sdkPrefix");
             Object processNameField = jsonAdjustConfig.get("processName");
             Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
-            Object attributionCallbackField = jsonAdjustConfig.get("attributionCallback");
+            Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
             Object deviceKnownField = jsonAdjustConfig.get("deviceKnown");
-            Object eventSuccessCallbackField = jsonAdjustConfig.get("eventSuccessCallback");
-            Object eventFailureCallbackField = jsonAdjustConfig.get("eventFailureCallback");
-            Object sessionSuccessCallbackField = jsonAdjustConfig.get("sessionSuccessCallback");
-            Object sessionFailureCallbackField = jsonAdjustConfig.get("sessionFailureCallback");
+            Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
+            Object eventFailureCallbackNameField = jsonAdjustConfig.get("eventFailureCallbackName");
+            Object sessionSuccessCallbackNameField = jsonAdjustConfig.get("sessionSuccessCallbackName");
+            Object sessionFailureCallbackNameField = jsonAdjustConfig.get("sessionFailureCallbackName");
             Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
-            Object deferredDeeplinkCallbackField = jsonAdjustConfig.get("deferredDeeplinkCallback");
+            Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object delayStartField = jsonAdjustConfig.get("delayStart");
             Object userAgentField = jsonAdjustConfig.get("userAgent");
             Object secretIdField = jsonAdjustConfig.get("secretId");
@@ -201,16 +201,15 @@ public class AdjustBridgeInstance {
                 adjustConfig.setDefaultTracker(defaultTracker);
             }
 
-            // Attribution callback
-            final String attributionCallback = AdjustBridgeUtil.fieldToString(attributionCallbackField);
-            if (attributionCallback != null) {
+            // Attribution callback name
+            final String attributionCallbackName = AdjustBridgeUtil.fieldToString(attributionCallbackNameField);
+            if (attributionCallbackName != null) {
                 adjustConfig.setOnAttributionChangedListener(new OnAttributionChangedListener() {
                     @Override
                     public void onAttributionChanged(AdjustAttribution attribution) {
-                        AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallback, attribution);
+                        AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallbackName, attribution);
                     }
                 });
-
             }
 
             // Is device known
@@ -220,45 +219,43 @@ public class AdjustBridgeInstance {
             }
 
             // Event success callback
-            final String eventSuccessCallback = AdjustBridgeUtil.fieldToString(eventSuccessCallbackField);
-            if (eventSuccessCallback != null) {
+            final String eventSuccessCallbackName = AdjustBridgeUtil.fieldToString(eventSuccessCallbackNameField);
+            if (eventSuccessCallbackName != null) {
                 adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-                    @Override
                     public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
-                        AdjustBridgeUtil.execEventSuccessCallbackCommand(webView, eventSuccessCallback, eventSuccessResponseData);
+                        AdjustBridgeUtil.execEventSuccessCallbackCommand(webView, eventSuccessCallbackName, eventSuccessResponseData);
                     }
                 });
             }
 
             // Event failure callback
-            final String eventFailureCallback = AdjustBridgeUtil.fieldToString(eventFailureCallbackField);
-            if (eventFailureCallback != null) {
+            final String eventFailureCallbackName = AdjustBridgeUtil.fieldToString(eventFailureCallbackNameField);
+            if (eventFailureCallbackName != null) {
                 adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-                    @Override
                     public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
-                        AdjustBridgeUtil.execEventFailureCallbackCommand(webView, eventFailureCallback, eventFailureResponseData);
+                        AdjustBridgeUtil.execEventFailureCallbackCommand(webView, eventFailureCallbackName, eventFailureResponseData);
                     }
                 });
             }
 
             // Session success callback
-            final String sessionSuccessCallback = AdjustBridgeUtil.fieldToString(sessionSuccessCallbackField);
-            if (sessionSuccessCallback != null) {
+            final String sessionSuccessCallbackName = AdjustBridgeUtil.fieldToString(sessionSuccessCallbackNameField);
+            if (sessionSuccessCallbackName != null) {
                 adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                     @Override
                     public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
-                        AdjustBridgeUtil.execSessionSuccessCallbackCommand(webView, sessionSuccessCallback, sessionSuccessResponseData);
+                        AdjustBridgeUtil.execSessionSuccessCallbackCommand(webView, sessionSuccessCallbackName, sessionSuccessResponseData);
                     }
                 });
             }
 
             // Session failure callback
-            final String sessionFailureCallback = AdjustBridgeUtil.fieldToString(sessionFailureCallbackField);
-            if (sessionFailureCallback != null) {
+            final String sessionFailureCallbackName = AdjustBridgeUtil.fieldToString(sessionFailureCallbackNameField);
+            if (sessionFailureCallbackName != null) {
                 adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                     @Override
                     public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
-                        AdjustBridgeUtil.execSessionFailureCallbackCommand(webView, sessionFailureCallback, failureResponseData);
+                        AdjustBridgeUtil.execSessionFailureCallbackCommand(webView, sessionFailureCallbackName, failureResponseData);
                     }
                 });
             }
@@ -270,12 +267,12 @@ public class AdjustBridgeInstance {
             }
 
             // Deferred deeplink callback
-            final String deferredDeeplinkCallback = AdjustBridgeUtil.fieldToString(deferredDeeplinkCallbackField);
-            if (deferredDeeplinkCallback != null) {
+            final String deferredDeeplinkCallbackName = AdjustBridgeUtil.fieldToString(deferredDeeplinkCallbackNameField);
+            if (deferredDeeplinkCallbackName != null) {
                 adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                     @Override
                     public boolean launchReceivedDeeplink(Uri deeplink) {
-                        AdjustBridgeUtil.execSingleValueCallback(webView, deferredDeeplinkCallback, deeplink.toString());
+                        AdjustBridgeUtil.execSingleValueCallback(webView, deferredDeeplinkCallbackName, deeplink.toString());
                         return shouldDeferredDeeplinkBeLaunched;
                     }
                 });

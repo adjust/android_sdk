@@ -1,9 +1,13 @@
 var Adjust = {
     onCreate: function (adjustConfig) {
-        console.log("onCreate: " + JSON.stringify(adjustConfig));
+        this.adjustConfig = adjustConfig;
         if (AdjustBridge) {
             AdjustBridge.onCreate(JSON.stringify(adjustConfig));
         }
+    },
+
+    getConfig: function () {
+        return this.adjustConfig;
     },
 
     trackEvent: function (adjustEvent) {

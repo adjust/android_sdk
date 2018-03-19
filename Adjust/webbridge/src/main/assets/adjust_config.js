@@ -25,14 +25,20 @@ function AdjustConfig(appToken, environment, legacy) {
     this.sdkPrefix = 'web-bridge4.12.0';
     this.processName = null;
     this.defaultTracker = null;
-    this.attributionCallback = null;
+    this.attributionCallbackName = null;
+    this.attributionCallbackFunction = null;
     this.deviceKnown = null;
-    this.eventSuccessCallback = null;
-    this.eventFailureCallback = null;
-    this.sessionSuccessCallback = null;
-    this.sessionFailureCallback = null;
+    this.eventSuccessCallbackName = null;
+    this.eventSuccessCallbackFunction = null;
+    this.eventFailureCallbackName = null;
+    this.eventFailureCallbackFunction = null;
+    this.sessionSuccessCallbackName = null;
+    this.sessionSuccessCallbackFunction = null;
+    this.sessionFailureCallbackName = null;
+    this.sessionFailureCallbackFunction = null;
     this.openDeferredDeeplink = null;
-    this.deferredDeeplinkCallback = null;
+    this.deferredDeeplinkCallbackName = null;
+    this.deferredDeeplinkCallbackFunction = null;
     this.delayStart = null;
     this.userAgent = null;
     this.secretId = null;
@@ -83,11 +89,18 @@ AdjustConfig.prototype.setDefaultTracker = function(defaultTracker) {
 };
 
 AdjustConfig.prototype.setAttributionCallback = function(callback) {
-    this.attributionCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.attributionCallbackName = callback;
+    } else {
+        this.attributionCallbackName = 'Adjust.getConfig().adjust_attributionCallback';
+        this.attributionCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getAttributionCallback = function() {
-    return this.attributionCallback;
+AdjustConfig.prototype.adjust_attributionCallback = function(attribution) {
+    if (this.attributionCallbackFunction) {
+        this.attributionCallbackFunction(attribution);
+    }
 };
 
 AdjustConfig.prototype.setDeviceKnown = function(deviceKnown) {
@@ -95,35 +108,63 @@ AdjustConfig.prototype.setDeviceKnown = function(deviceKnown) {
 };
 
 AdjustConfig.prototype.setEventSuccessCallback = function(callback) {
-    this.eventSuccessCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.eventSuccessCallbackName = callback;
+    } else {
+        this.eventSuccessCallbackName = 'Adjust.getConfig().adjust_eventSuccessCallback';
+        this.eventSuccessCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getEventSuccessCallback = function() {
-    return this.eventSuccessCallback;
+AdjustConfig.prototype.adjust_eventSuccessCallback = function(eventSuccess) {
+    if (this.eventSuccessCallbackFunction) {
+        this.eventSuccessCallbackFunction(eventSuccess);
+    }
 };
 
 AdjustConfig.prototype.setEventFailureCallback = function(callback) {
-    this.eventFailureCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.eventFailureCallbackName = callback;
+    } else {
+        this.eventFailureCallbackName = 'Adjust.getConfig().adjust_eventFailureCallback';
+        this.eventFailureCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getEventFailureCallback = function() {
-    return this.eventFailureCallback;
+AdjustConfig.prototype.adjust_eventFailureCallback = function(eventFailure) {
+    if (this.eventFailureCallbackFunction) {
+        this.eventFailureCallbackFunction(eventFailure);
+    }
 };
 
 AdjustConfig.prototype.setSessionSuccessCallback = function(callback) {
-    this.sessionSuccessCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.sessionSuccessCallbackName = callback;
+    } else {
+        this.sessionSuccessCallbackName = 'Adjust.getConfig().adjust_sessionSuccessCallback';
+        this.sessionSuccessCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getSessionSuccessCallback = function() {
-    return this.sessionSuccessCallback;
+AdjustConfig.prototype.adjust_sessionSuccessCallback = function(sessionSuccess) {
+    if (this.sessionSuccessCallbackFunction) {
+        this.sessionSuccessCallbackFunction(sessionSuccess);
+    }
 };
 
 AdjustConfig.prototype.setSessionFailureCallback = function(callback) {
-    this.sessionFailureCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.sessionFailureCallbackName = callback;
+    } else {
+        this.sessionFailureCallbackName = 'Adjust.getConfig().adjust_sessionFailureCallback';
+        this.sessionFailureCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getSessionFailureCallback = function() {
-    return this.sessionFailureCallback;
+AdjustConfig.prototype.adjust_sessionFailureCallback = function(sessionFailure) {
+    if (this.sessionFailureCallbackFunction) {
+        this.sessionFailureCallbackFunction(sessionFailure);
+    }
 };
 
 AdjustConfig.prototype.setOpenDeferredDeeplink = function(shouldOpen) {
@@ -131,11 +172,18 @@ AdjustConfig.prototype.setOpenDeferredDeeplink = function(shouldOpen) {
 };
 
 AdjustConfig.prototype.setDeferredDeeplinkCallback = function(callback) {
-    this.deferredDeeplinkCallback = callback;
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.deferredDeeplinkCallbackName = callback;
+    } else {
+        this.deferredDeeplinkCallbackName = 'Adjust.getConfig().adjust_deferredDeeplinkCallback';
+        this.deferredDeeplinkCallbackFunction = callback;
+    }
 };
 
-AdjustConfig.prototype.getDeferredDeeplinkCallback = function() {
-    return this.deferredDeeplinkCallback;
+AdjustConfig.prototype.adjust_deferredDeeplinkCallback = function(deeplink) {
+    if (this.deferredDeeplinkCallbackFunction) {
+        this.deferredDeeplinkCallbackFunction(deeplink);
+    }
 };
 
 AdjustConfig.prototype.setDelayStart = function(delayStart) {
