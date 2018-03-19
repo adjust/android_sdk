@@ -35,8 +35,28 @@ var Adjust = {
     },
 
     isEnabled: function (callback) {
-        if (AdjustBridge) {
-            AdjustBridge.isEnabled(callback);
+        if (!AdjustBridge) {
+            return undefined;
+        }
+        // supports legacy return with callback
+        if (arguments.length === 1) {
+            // with manual string call
+            if (typeof callback === 'string' || callback instanceof String) {
+                this.isEnabledCallbackName = callback;
+            } else {
+            // or save callback and call later
+                this.isEnabledCallbackName = 'Adjust.adjust_isEnabledCallback';
+                this.isEnabledCallbackFunction = callback;
+            }
+            AdjustBridge.isEnabled(this.isEnabledCallbackName);
+        } else {
+            return AdjustBridge.isEnabled();
+        }
+    },
+
+    adjust_isEnabledCallback: function (isEnabled) {
+        if (AdjustBridge && this.isEnabledCallbackFunction) {
+            this.isEnabledCallbackFunction(isEnabled);
         }
     },
 
@@ -108,28 +128,37 @@ var Adjust = {
 
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
-            AdjustBridge.getGoogleAdId(callback);
+            if (typeof callback === 'string' || callback instanceof String) {
+                this.getGoogleAdIdCallbackName = callback;
+            } else {
+                this.getGoogleAdIdCallbackName = 'Adjust.adjust_getGoogleAdIdCallback';
+                this.getGoogleAdIdCallbackFunction = callback;
+            }
+            AdjustBridge.getGoogleAdId(this.getGoogleAdIdCallbackName);
+        }
+    },
+
+    adjust_getGoogleAdIdCallback: function (googleAdId) {
+        if (AdjustBridge && this.getGoogleAdIdCallbackFunction) {
+            this.getGoogleAdIdCallbackFunction(googleAdId);
         }
     },
 
     getAmazonAdId: function (callback) {
         if (AdjustBridge) {
-            AdjustBridge.getAmazonAdId(callback);
+            return AdjustBridge.getAmazonAdId();
+        } else {
+            return undefined;
         }
     },
 
-    getAmazonAdId: function (callback) {
+    getAdid: function () {
         if (AdjustBridge) {
-            AdjustBridge.getAmazonAdId(callback);
+            return AdjustBridge.getAdid();
+        } else {
+            return undefined;
         }
     },
-
-    getAdid: function (callback) {
-        if (AdjustBridge) {
-            AdjustBridge.getAdid(callback);
-        }
-    },
-
     getAttribution: function (callback) {
         if (AdjustBridge) {
             AdjustBridge.getAttribution(callback);

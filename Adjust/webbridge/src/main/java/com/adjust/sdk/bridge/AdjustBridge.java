@@ -49,6 +49,11 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
+    public static boolean isEnabled() {
+        return AdjustBridge.getDefaultInstance().isEnabled();
+    }
+
+    @JavascriptInterface
     public static void appWillOpenUrl(String url) {
         AdjustBridge.getDefaultInstance().appWillOpenUrl(url);
     }
@@ -109,13 +114,13 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
-    public static void getAmazonAdId(String callback) {
-        AdjustBridge.getDefaultInstance().getAmazonAdId(callback);
+    public static String getAmazonAdId() {
+        return AdjustBridge.getDefaultInstance().getAmazonAdId();
     }
 
     @JavascriptInterface
-    public static void getAdid(String callback) {
-        AdjustBridge.getDefaultInstance().getAdid(callback);
+    public static String getAdid() {
+        return AdjustBridge.getDefaultInstance().getAdid();
     }
 
     @JavascriptInterface

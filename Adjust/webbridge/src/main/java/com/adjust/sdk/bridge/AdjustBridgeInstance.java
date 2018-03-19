@@ -421,6 +421,15 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public boolean isEnabled() {
+        if (!checkInit()) {
+            return false;
+        }
+
+        return Adjust.isEnabled();
+    }
+
+    @JavascriptInterface
     public void appWillOpenUrl(String deeplinkString) {
         if (!checkInit()) {
             return;
@@ -542,23 +551,21 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void getAmazonAdId(final String callback) {
+    public String getAmazonAdId() {
         if (!checkInit()) {
-            return;
+            return null;
         }
 
-        String amazonAdId = Adjust.getAmazonAdId(application.getApplicationContext());
-        AdjustBridgeUtil.execSingleValueCallback(webView, callback, amazonAdId);
+        return Adjust.getAmazonAdId(application.getApplicationContext());
     }
 
     @JavascriptInterface
-    public void getAdid(final String callback) {
+    public String getAdid() {
         if (!checkInit()) {
-            return;
+            return null;
         }
 
-        String adid = Adjust.getAdid();
-        AdjustBridgeUtil.execSingleValueCallback(webView, callback, adid);
+        return Adjust.getAdid();
     }
 
     @JavascriptInterface
