@@ -17,10 +17,6 @@
         <script language="javascript">
             window.onerror = function(err) { }
 
-            function adjust_deeplink(deeplink) {
-			    alert('Direct deeplink content:\n' + deeplink)
-		    }
-
 		    function attributionCallback(attribution) {
                 alert('Tracker token = ' + attribution.trackerToken + '\n' +
                       'Tracker name = ' + attribution.trackerName + '\n' +
@@ -28,14 +24,14 @@
                       'Campaign = ' + attribution.campaign + '\n' +
                       'Adgroup = ' + attribution.adgroup + '\n' +
                       'Creative = ' + attribution.creative + '\n' +
-                      'Click label = ' + attribution.clickLabel)
+                      'Click label = ' + attribution.clickLabel);
             }
 
             function eventSuccessCallback(eventSuccess) {
                 alert('Message = ' + eventSuccess.message + '\n' +
                       'Timestamp = ' + eventSuccess.timestamp + '\n' +
                       'Adid = ' + eventSuccess.adid + '\n' +
-                      'Event token = ' + eventSuccess.eventToken)
+                      'Event token = ' + eventSuccess.eventToken);
             }
 
             function eventFailureCallback(eventFailure) {
@@ -43,103 +39,105 @@
                       'Timestamp = ' + eventFailure.timestamp + '\n' +
                       'Adid = ' + eventFailure.adid + '\n' +
                       'Event token = ' + eventFailure.eventToken + '\n' +
-                      'Will retry = ' + eventFailure.willRetry)
+                      'Will retry = ' + eventFailure.willRetry);
             }
 
             function sessionSuccessCallback(sessionSuccess) {
                 alert('Message = ' + sessionSuccess.message + '\n' +
                       'Timestamp = ' + sessionSuccess.timestamp + '\n' +
-                      'Adid = ' + sessionSuccess.adid)
+                      'Adid = ' + sessionSuccess.adid);
             }
 
             function sessionFailureCallback(sessionFailure) {
                 alert('Message = ' + sessionFailure.message + '\n' +
                       'Timestamp = ' + sessionFailure.timestamp + '\n' +
                       'Adid = ' + sessionFailure.adid + '\n' +
-                      'Will retry = ' + sessionFailure.willRetry)
+                      'Will retry = ' + sessionFailure.willRetry);
             }
 
             function deferredDeeplinkCallback(deferredDeeplink) {
-                alert('Deferred deeplink content:\n' + deferredDeeplink)
+                alert('Deferred deeplink content:\n' + deferredDeeplink);
             }
 
-            function isSdkEnabled(isEnabled) {
-                alert('Is SDK enabled? ' + isEnabled)
-            }
+            var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
 
-            function getGoogleAdId(gpsAdid) {
-                alert('Google Play Ad Id:\n' + gpsAdid)
-            }
+            //adjustConfig.setOpenDeferredDeeplink(true);
+            //adjustConfig.setSendInBackground(true);
+            //adjustConfig.setEventBufferingEnabled(false);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 
-            var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox)
+            adjustConfig.setAttributionCallback(function attributionCallback(attribution) {
+                alert('Tracker token = ' + attribution.trackerToken + '\n' +
+                      'Tracker name = ' + attribution.trackerName + '\n' +
+                      'Network = ' + attribution.network + '\n' +
+                      'Campaign = ' + attribution.campaign + '\n' +
+                      'Adgroup = ' + attribution.adgroup + '\n' +
+                      'Creative = ' + attribution.creative + '\n' +
+                      'Click label = ' + attribution.clickLabel + '\n' +
+                      'Adid = ' + attribution.adid);
+            });
 
-            //adjustConfig.setOpenDeferredDeeplink(true)
-            //adjustConfig.setSendInBackground(true)
-            //adjustConfig.setEventBufferingEnabled(false)
-            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose)
+            adjustConfig.setEventSuccessCallback(eventSuccessCallback);
+            adjustConfig.setEventFailureCallback(eventFailureCallback);
+            adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+            adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+            adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
 
-            adjustConfig.setAttributionCallback('attributionCallback')
-            //adjustConfig.setEventSuccessCallback('eventSuccessCallback')
-            //adjustConfig.setEventFailureCallback('eventFailureCallback')
-            //adjustConfig.setSessionSuccessCallback('sessionSuccessCallback')
-            //adjustConfig.setSessionFailureCallback('sessionFailureCallback')
-            //adjustConfig.setDeferredDeeplinkCallback('deferredDeeplinkCallback')
-
-            Adjust.onCreate(adjustConfig)
+            Adjust.onCreate(adjustConfig);
 
             window.onload = function() {
                 var btnTrackSimpleEvent = document.getElementById('btnTrackSimpleEvent')
                 btnTrackSimpleEvent.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    var adjustEvent = new AdjustEvent('abc123')
-                    Adjust.trackEvent(adjustEvent)
+                    var adjustEvent = new AdjustEvent('abc123');
+                    Adjust.trackEvent(adjustEvent);
                 }
 
                 var btnTrackRevenueEvent = document.getElementById('btnTrackRevenueEvent')
                 btnTrackRevenueEvent.onclick = function(e) {
                     e.preventDefault()
 
-                    var adjustEvent = new AdjustEvent('abc123')
-                    adjustEvent.setRevenue(0.01, 'EUR')
-                    Adjust.trackEvent(adjustEvent)
+                    var adjustEvent = new AdjustEvent('abc123');
+                    adjustEvent.setRevenue(0.01, 'EUR');
+                    Adjust.trackEvent(adjustEvent);
                 }
 
                 var btnTrackCallbackEvent = document.getElementById('btnTrackCallbackEvent')
                 btnTrackCallbackEvent.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    var adjustEvent = new AdjustEvent('abc123')
-                    adjustEvent.addCallbackParameter('key', 'value')
-                    adjustEvent.addCallbackParameter('x', 'y')
-                    adjustEvent.addCallbackParameter('key', 'lock')
-                    Adjust.trackEvent(adjustEvent)
+                    var adjustEvent = new AdjustEvent('abc123');
+                    adjustEvent.addCallbackParameter('key', 'value');
+                    adjustEvent.addCallbackParameter('x', 'y');
+                    adjustEvent.addCallbackParameter('key', 'lock');
+                    Adjust.trackEvent(adjustEvent);
                 }
 
                 var btnTrackPartnerEvent = document.getElementById('btnTrackPartnerEvent')
                 btnTrackPartnerEvent.onclick = function(e) {
                     e.preventDefault()
 
-                    var adjustEvent = new AdjustEvent('abc123')
-                    adjustEvent.addPartnerParameter('foo', 'bar')
-                    adjustEvent.addPartnerParameter('x', 'y')
-                    adjustEvent.addPartnerParameter('foo', 'foot')
-                    adjustEvent.addPartnerParameter('x', 'z')
+                    var adjustEvent = new AdjustEvent('abc123');
+                    adjustEvent.addPartnerParameter('foo', 'bar');
+                    adjustEvent.addPartnerParameter('x', 'y');
+                    adjustEvent.addPartnerParameter('foo', 'foot');
+                    adjustEvent.addPartnerParameter('x', 'z');
                     Adjust.trackEvent(adjustEvent);
                 }
 
                 var btnEnableOfflineMode = document.getElementById('btnEnableOfflineMode')
                 btnEnableOfflineMode.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    Adjust.setOfflineMode(true)
+                    Adjust.setOfflineMode(true);
                 }
 
                 var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
                 btnDisableOfflineMode.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    Adjust.setOfflineMode(false)
+                    Adjust.setOfflineMode(false);
                 }
 
                 var btnEnableSdk = document.getElementById('btnEnableSdk')
@@ -151,27 +149,28 @@
 
                 var btnDisableSdk = document.getElementById('btnDisableSdk')
                 btnDisableSdk.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    Adjust.setEnabled(false)
+                    Adjust.setEnabled(false);
                 }
 
                 var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')
                 btnIsSdkEnabled.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    Adjust.isEnabled('isSdkEnabled')
+                    alert('Is SDK enabled? ' + Adjust.isEnabled());
                 }
 
                 var btnGetGoogleAdId = document.getElementById('btnGetGoogleAdId')
                 btnGetGoogleAdId.onclick = function(e) {
-                    e.preventDefault()
+                    e.preventDefault();
 
-                    Adjust.getGoogleAdId('getGoogleAdId')
+                    Adjust.getGoogleAdId(function (gpsAdid) {
+                        alert('Google Play Ad Id:\n' + gpsAdid);
+                    });
                 }
             }
         </script>
-        <div id='buttons'></div>
             <button id='btnTrackSimpleEvent'>Track Simple event</button>
             <button id='btnTrackRevenueEvent'>Track Revenue event</button>
             <button id='btnTrackCallbackEvent'>Track Callback event</button>
