@@ -18,7 +18,8 @@ import android.net.Uri;
  * See the README for details.
  */
 public class Adjust {
-
+    @SuppressWarnings("unused")
+    final String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.12.4";
     private static AdjustInstance defaultInstance;
 
     private Adjust() {
