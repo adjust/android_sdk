@@ -40,7 +40,7 @@ public class AdjustBridgeUtil {
 
         String fieldString = field.toString();
 
-        if (fieldString == "null") {
+        if (fieldString.equals("null")) {
             return null;
         }
 

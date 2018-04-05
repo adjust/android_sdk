@@ -3,17 +3,18 @@
     <head>
         <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
 	    <style type='text/css'>
-		html { font-family:Helvetica; color:#222; }
-		h1 { color:steelblue; font-size:24px; margin-top:24px; }
-		button { margin:0 3px 10px; font-size:12px; }
-		.logLine { border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; }
+            html { font-family:Helvetica; color:#222; }
+            h1 { color:steelblue; font-size:24px; margin-top:24px; }
+            button { margin:0 3px 10px; font-size:12px; }
+            .logLine { border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; }
 	    </style>
-        <script type="text/javascript" src="adjust.js"></script>
         <script type="text/javascript" src="adjust_event.js"></script>
         <script type="text/javascript" src="adjust_config.js"></script>
+        <script type="text/javascript" src="adjust.js"></script>
     </head>
     <body>
         <h1>Adjust Web View Demo</h1>
+
         <script language="javascript">
             window.onerror = function(err) { }
 
@@ -66,17 +67,7 @@
             //adjustConfig.setEventBufferingEnabled(false);
             adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 
-            adjustConfig.setAttributionCallback(function attributionCallback(attribution) {
-                alert('Tracker token = ' + attribution.trackerToken + '\n' +
-                      'Tracker name = ' + attribution.trackerName + '\n' +
-                      'Network = ' + attribution.network + '\n' +
-                      'Campaign = ' + attribution.campaign + '\n' +
-                      'Adgroup = ' + attribution.adgroup + '\n' +
-                      'Creative = ' + attribution.creative + '\n' +
-                      'Click label = ' + attribution.clickLabel + '\n' +
-                      'Adid = ' + attribution.adid);
-            });
-
+            adjustConfig.setAttributionCallback(attributionCallback);
             adjustConfig.setEventSuccessCallback(eventSuccessCallback);
             adjustConfig.setEventFailureCallback(eventFailureCallback);
             adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
@@ -171,16 +162,18 @@
                 }
             }
         </script>
-            <button id='btnTrackSimpleEvent'>Track Simple event</button>
-            <button id='btnTrackRevenueEvent'>Track Revenue event</button>
-            <button id='btnTrackCallbackEvent'>Track Callback event</button>
-            <button id='btnTrackPartnerEvent'>Track Partner event</button>
-            <button id='btnEnableOfflineMode'>Enable Offline mode</button>
-            <button id='btnDisableOfflineMode'>Disable Offline mode</button>
-            <button id='btnEnableSdk'>Enable SDK</button>
-            <button id='btnDisableSdk'>Disable SDK</button>
-            <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
-            <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+
+        <button id='btnTrackSimpleEvent'>Track Simple event</button>
+        <button id='btnTrackRevenueEvent'>Track Revenue event</button>
+        <button id='btnTrackCallbackEvent'>Track Callback event</button>
+        <button id='btnTrackPartnerEvent'>Track Partner event</button>
+        <button id='btnEnableOfflineMode'>Enable Offline mode</button>
+        <button id='btnDisableOfflineMode'>Disable Offline mode</button>
+        <button id='btnEnableSdk'>Enable SDK</button>
+        <button id='btnDisableSdk'>Disable SDK</button>
+        <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
+        <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+
         <div id='log'></div>
     </body>
 </html>

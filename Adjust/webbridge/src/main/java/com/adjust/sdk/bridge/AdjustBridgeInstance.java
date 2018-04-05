@@ -15,11 +15,9 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
-import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustTestOptions;
-import com.adjust.sdk.ILogger;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -31,8 +29,6 @@ import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 /**
  * Created by uerceg on 22/07/16.
@@ -82,7 +78,7 @@ public class AdjustBridgeInstance {
         public void onActivityStarted(Activity activity) {}
     }
 
-    private boolean checkInit() {
+    private boolean isInitialized() {
         if (webView == null) {
             AdjustBridgeUtil.getLogger().error("Webview missing. Call AdjustBridge.setWebView before");
             return false;
@@ -104,7 +100,7 @@ public class AdjustBridgeInstance {
             return;
         }
 
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -324,7 +320,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void trackEvent(String adjustEventString) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -384,7 +380,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void onResume() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
         Adjust.onResume();
@@ -392,7 +388,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void onPause() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
         Adjust.onPause();
@@ -400,7 +396,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setEnabled(String isEnabledString) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -412,7 +408,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void isEnabled(String callback) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -422,7 +418,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public boolean isEnabled() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return false;
         }
 
@@ -431,7 +427,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void appWillOpenUrl(String deeplinkString) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -444,7 +440,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setReferrer(String referrer) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -453,7 +449,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setOfflineMode(String isOfflineString) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -466,7 +462,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void sendFirstPackages() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -475,7 +471,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void addSessionCallbackParameter(String key, String value) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -484,7 +480,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void addSessionPartnerParameter(String key, String value) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -493,7 +489,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void removeSessionCallbackParameter(String key) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -502,7 +498,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void removeSessionPartnerParameter(String key) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -511,7 +507,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void resetSessionCallbackParameters() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -520,7 +516,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void resetSessionPartnerParameters() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -529,7 +525,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setPushToken(String pushToken) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -538,7 +534,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void getGoogleAdId(final String callback) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -552,7 +548,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public String getAmazonAdId() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return null;
         }
 
@@ -561,7 +557,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public String getAdid() {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return null;
         }
 
@@ -570,7 +566,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void getAttribution(final String callback) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 
@@ -580,7 +576,7 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setTestOptions(final String testOptionsString) {
-        if (!checkInit()) {
+        if (!isInitialized()) {
             return;
         }
 

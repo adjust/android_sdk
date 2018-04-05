@@ -171,5 +171,3 @@ var Adjust = {
         }
     },
 };
-
-// module.exports = Adjust;
