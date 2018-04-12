@@ -1222,6 +1222,9 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        activityState.enabled = enabled;
+        writeActivityStateI();
+
         if (enabled) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
 
@@ -1232,9 +1235,6 @@ public class ActivityHandler implements IActivityHandler {
             }
             checkAfterNewStartI(sharedPreferencesManager);
         }
-
-        activityState.enabled = enabled;
-        writeActivityStateI();
 
         updateStatusI(!enabled,
                 "Pausing handlers due to SDK being disabled",
