@@ -6,23 +6,23 @@ function AdjustEvent(eventToken) {
     this.callbackParameters = [];
     this.partnerParameters = [];
     this.orderId = null;
-
-    this.setRevenue = function(revenue, currency) {
-        this.revenue = revenue;
-        this.currency = currency;
-    }
-
-    this.addCallbackParameter = function(key, value) {
-        this.callbackParameters.push(key);
-        this.callbackParameters.push(value);
-    }
-
-    this.addPartnerParameter = function(key, value) {
-        this.partnerParameters.push(key);
-        this.partnerParameters.push(value);
-    }
-
-    this.setOrderId = function(orderId) {
-        this.orderId = orderId;
-    }
 }
+
+AdjustEvent.prototype.setRevenue = function(revenue, currency) {
+    this.revenue = revenue;
+    this.currency = currency;
+};
+
+AdjustEvent.prototype.addCallbackParameter = function(key, value) {
+    this.callbackParameters.push(key);
+    this.callbackParameters.push(value);
+};
+
+AdjustEvent.prototype.addPartnerParameter = function(key, value) {
+    this.partnerParameters.push(key);
+    this.partnerParameters.push(value);
+};
+
+AdjustEvent.prototype.setOrderId = function(orderId) {
+    this.orderId = orderId;
+};
