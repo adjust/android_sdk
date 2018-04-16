@@ -764,6 +764,8 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 ### <a id="push-token"></a>Push token
 
+Push tokens are used for Audience Builder and client callbacks, and they are required for uninstall and reinstall tracking.
+
 To send us the push notification token, add the following call to Adjust once you have obtained your token or when ever it's value is changed:
 
 ```java
@@ -777,8 +779,6 @@ We still support the previous signature of the same method:
 ```java
 Adjust.setPushToken(pushNotificationsToken);
 ```
-
-Push tokens are used for Audience Builder and client callbacks, and they are required for the upcoming uninstall tracking feature.
 
 ### <a id="track-additional-ids"></a>Track additional device identifiers
 
