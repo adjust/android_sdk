@@ -156,7 +156,7 @@ If you are using Proguard, add these lines to your Proguard file:
     android.os.LocaleList getLocales();
     java.util.Locale locale;
 }
--keep class android.os.LocaledList {
+-keep class android.os.LocaleList {
     java.util.Locale get(int);
 }
 -keep public class com.android.installreferrer.** { *; }

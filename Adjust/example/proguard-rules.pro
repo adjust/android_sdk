@@ -32,9 +32,9 @@
     java.lang.String CPU_ABI;
 }
 -keep class android.content.res.Configuration {
-    android.os.LocaledList getLocales();
+    android.os.LocaleList getLocales();
     java.util.Locale locale;
 }
--keep class android.os.LocaledList {
+-keep class android.os.LocaleList {
     java.util.Locale get(int);
 }
