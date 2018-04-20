@@ -34,6 +34,8 @@ public class SharedPreferencesManager {
      */
     private static final String PREFS_KEY_INSTALL_TRACKED = "install_tracked";
 
+    private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
+
     /**
      * Index for raw referrer string content in saved JSONArray object.
      */
@@ -293,6 +295,18 @@ public class SharedPreferencesManager {
      */
     public synchronized boolean getInstallTracked() {
         return getBoolean(PREFS_KEY_INSTALL_TRACKED, false);
+    }
+
+    public synchronized void setGdprForgetMe() {
+        saveBoolean(PREFS_KEY_GDPR_FORGET_ME, true);
+    }
+
+    public synchronized boolean getGdprForgetMe() {
+        return getBoolean(PREFS_KEY_GDPR_FORGET_ME, false);
+    }
+
+    public synchronized void removeGdprForgetMe() {
+        remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
     /**
