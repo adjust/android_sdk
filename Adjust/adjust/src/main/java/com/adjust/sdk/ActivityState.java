@@ -26,6 +26,7 @@ public class ActivityState implements Serializable, Cloneable {
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
+            new ObjectStreamField("isGdprForgotten", boolean.class),
             new ObjectStreamField("askingAttribution", boolean.class),
             new ObjectStreamField("eventCount", int.class),
             new ObjectStreamField("sessionCount", int.class),
@@ -46,6 +47,7 @@ public class ActivityState implements Serializable, Cloneable {
     // persistent data
     protected String uuid;
     protected boolean enabled;
+    protected boolean isGdprForgotten;
     protected boolean askingAttribution;
 
     // global counters
@@ -76,6 +78,7 @@ public class ActivityState implements Serializable, Cloneable {
         // create UUID for new devices
         uuid = Util.createUuid();
         enabled = true;
+        isGdprForgotten = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -136,6 +139,7 @@ public class ActivityState implements Serializable, Cloneable {
 
         if (!Util.equalString(uuid, otherActivityState.uuid)) return false;
         if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
+        if (!Util.equalBoolean(isGdprForgotten, otherActivityState.isGdprForgotten)) return false;
         if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
         if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
         if (!Util.equalInt(sessionCount, otherActivityState.sessionCount)) return false;
@@ -158,6 +162,7 @@ public class ActivityState implements Serializable, Cloneable {
         int hashCode = 17;
         hashCode = 37 * hashCode + Util.hashString(uuid);
         hashCode = 37 * hashCode + Util.hashBoolean(enabled);
+        hashCode = 37 * hashCode + Util.hashBoolean(isGdprForgotten);
         hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution);
         hashCode = 37 * hashCode + eventCount;
         hashCode = 37 * hashCode + sessionCount;
@@ -189,6 +194,7 @@ public class ActivityState implements Serializable, Cloneable {
         // new fields
         uuid = Util.readStringField(fields, "uuid", null);
         enabled = Util.readBooleanField(fields, "enabled", true);
+        isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);
