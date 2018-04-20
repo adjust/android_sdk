@@ -27,6 +27,7 @@ public interface Constants {
     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
 
     String BASE_URL = "https://app.adjust.com";
+    String GDPR_URL = "https://gdpr.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.12.4";
