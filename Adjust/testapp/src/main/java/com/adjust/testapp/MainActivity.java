@@ -11,6 +11,7 @@ import com.adjust.testlibrary.TestLibrary;
 public class MainActivity extends AppCompatActivity {
     public static TestLibrary testLibrary;
     public static final String baseUrl = "https://10.0.2.2:8443";
+    public static final String gdprUrl = "https://10.0.2.2:8443";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTestSession() {
-        //testLibrary.addTestDirectory("current/sdkInfo");
-        //testLibrary.addTest("current/appSecret/Test_AppSecret_no_secret");
+        // testLibrary.addTestDirectory("current/gdpr");
+        // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_web_attribution");
 
         testLibrary.startTestSession("android4.12.4");
     }
