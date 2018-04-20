@@ -38,6 +38,7 @@ public class AdjustInstance {
      */
     private List<IRunActivityHandler> preLaunchActionsArray;
     private String basePath;
+    private String gdprPath;
 
     /**
      * Called upon SDK initialisation.
@@ -65,6 +66,7 @@ public class AdjustInstance {
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
+        adjustConfig.gdprPath = this.gdprPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
 
@@ -371,6 +373,16 @@ public class AdjustInstance {
         }
     }
 
+    public void gdprForgetMe(final Context context) {
+        saveGdprForgetMe(context);
+
+        if (checkActivityHandler("gdpr")) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.gdprForgetMe();
+            }
+        }
+    }
+
     /**
      * Called to get value of unique Adjust device identifier.
      *
@@ -478,6 +490,17 @@ public class AdjustInstance {
         Util.runInBackground(command);
     }
 
+    private void saveGdprForgetMe(final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.setGdprForgetMe();
+            }
+        };
+        Util.runInBackground(command);
+    }
+
     private void setSendingReferrersAsNotSent(final Context context) {
         Runnable command = new Runnable() {
             @Override
@@ -503,8 +526,14 @@ public class AdjustInstance {
         if (testOptions.basePath != null) {
             this.basePath = testOptions.basePath;
         }
+        if (testOptions.gdprPath != null) {
+            this.gdprPath = testOptions.gdprPath;
+        }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
+        }
+        if (testOptions.gdprUrl != null) {
+            AdjustFactory.setGdprUrl(testOptions.gdprUrl);
         }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();

@@ -34,6 +34,7 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
+    private static String gdprUrl = Constants.GDPR_URL;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -56,11 +57,12 @@ public class AdjustFactory {
         return packageHandler;
     }
 
-    public static IRequestHandler getRequestHandler(IPackageHandler packageHandler) {
+    public static IRequestHandler getRequestHandler(IActivityHandler activityHandler,
+                                                    IPackageHandler packageHandler) {
         if (requestHandler == null) {
-            return new RequestHandler(packageHandler);
+            return new RequestHandler(activityHandler, packageHandler);
         }
-        requestHandler.init(packageHandler);
+        requestHandler.init(activityHandler, packageHandler);
         return requestHandler;
     }
 
@@ -163,6 +165,13 @@ public class AdjustFactory {
         return AdjustFactory.baseUrl;
     }
 
+    public static String getGdprUrl() {
+        if (AdjustFactory.gdprUrl == null) {
+            return Constants.GDPR_URL;
+        }
+        return AdjustFactory.gdprUrl;
+    }
+
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
             return new UtilNetworking.ConnectionOptions();
@@ -228,6 +237,10 @@ public class AdjustFactory {
 
     public static void setBaseUrl(String baseUrl) {
         AdjustFactory.baseUrl = baseUrl;
+    }
+
+    public static void setGdprUrl(String gdprUrl) {
+        AdjustFactory.gdprUrl = gdprUrl;
     }
 
     public static void useTestConnectionOptions() {
@@ -336,6 +349,7 @@ public class AdjustFactory {
         packageHandlerBackoffStrategy = null;
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
+        gdprUrl = Constants.GDPR_URL;
         connectionOptions = null;
         tryInstallReferrer = true;
     }

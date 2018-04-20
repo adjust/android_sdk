@@ -170,6 +170,17 @@ class PackageBuilder {
         return attributionPackage;
     }
 
+    public ActivityPackage buildGdprPackage() {
+        Map<String, String> parameters = getIdsParameters();
+
+        ActivityPackage gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR);
+        gdprPackage.setPath("/gdpr_forget_device");
+        gdprPackage.setSuffix("");
+        gdprPackage.setParameters(parameters);
+
+        return gdprPackage;
+    }
+
     private ActivityPackage getDefaultActivityPackage(ActivityKind activityKind) {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);

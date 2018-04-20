@@ -123,6 +123,11 @@ public class Adjust {
         adjustInstance.setPushToken(token, context);
     }
 
+    public static void gdprForgetMe(final Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.gdprForgetMe(context);
+    }
+
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
     }
