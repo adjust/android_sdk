@@ -19,19 +19,23 @@ import javax.net.ssl.HttpsURLConnection;
 public class RequestHandler implements IRequestHandler {
     private CustomScheduledExecutor scheduledExecutor;
     private WeakReference<IPackageHandler> packageHandlerWeakRef;
+    private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private ILogger logger;
     private String basePath;
+    private String gdprPath;
 
-    public RequestHandler(IPackageHandler packageHandler) {
+    public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
         this.scheduledExecutor = new CustomScheduledExecutor("RequestHandler", false);
-        init(packageHandler);
+        init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
+        this.gdprPath = packageHandler.getGdprPath();
     }
 
     @Override
-    public void init(IPackageHandler packageHandler) {
+    public void init(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.packageHandlerWeakRef = new WeakReference<IPackageHandler>(packageHandler);
+        this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
     }
 
     @Override
@@ -55,16 +59,30 @@ public class RequestHandler implements IRequestHandler {
         if (packageHandlerWeakRef != null) {
             packageHandlerWeakRef.clear();
         }
+        if (activityHandlerWeakRef != null) {
+            activityHandlerWeakRef.clear();
+        }
         scheduledExecutor = null;
         packageHandlerWeakRef = null;
+        activityHandlerWeakRef = null;
         logger = null;
     }
 
     private void sendI(ActivityPackage activityPackage, int queueSize) {
-        String url = AdjustFactory.getBaseUrl();
-        if (basePath != null) {
-            url += basePath;
+        String url;
+
+        if (activityPackage.getActivityKind() != ActivityKind.GDPR) {
+            url = AdjustFactory.getBaseUrl();
+            if (basePath != null) {
+                url += basePath;
+            }
+        } else {
+            url = AdjustFactory.getGdprUrl();
+            if (gdprPath != null) {
+                url += gdprPath;
+            }
         }
+
         String targetURL = url + activityPackage.getPath();
 
         try {
@@ -74,10 +92,17 @@ public class RequestHandler implements IRequestHandler {
             if (packageHandler == null) {
                 return;
             }
+            IActivityHandler activityHandler = activityHandlerWeakRef.get();
+            if (activityHandler == null) {
+                return;
+            }
 
             if (responseData.jsonResponse == null) {
                 packageHandler.closeFirstPackage(responseData, activityPackage);
-                return;
+            }
+
+            if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandler.gotOptOutResponse();
             }
 
             packageHandler.sendNextPackage(responseData);

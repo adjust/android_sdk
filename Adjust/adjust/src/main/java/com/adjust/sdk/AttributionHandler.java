@@ -220,6 +220,9 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void sendAttributionRequestI() {
+        if (activityHandlerWeakRef.get().getActivityState().isGdprForgotten) {
+            return;
+        }
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;
@@ -232,6 +235,10 @@ public class AttributionHandler implements IAttributionHandler {
 
             if (!(responseData instanceof AttributionResponseData)) {
                 return;
+            }
+
+            if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandlerWeakRef.get().gotOptOutResponse();
             }
 
             checkAttributionResponse((AttributionResponseData)responseData);

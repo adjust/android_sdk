@@ -165,10 +165,13 @@ public class UtilNetworking {
         responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
-
         responseData.message = message;
         responseData.timestamp = jsonResponse.optString("timestamp", null);
         responseData.adid = jsonResponse.optString("adid", null);
+        String trackingState = jsonResponse.optString("tracking_state", null);
+        if (trackingState != null && trackingState.equals("opted_out")) {
+            responseData.trackingState = TrackingState.OPTED_OUT;
+        }
 
         if (message == null) {
             message = "No message found";
