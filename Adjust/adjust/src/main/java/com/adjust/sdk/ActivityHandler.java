@@ -1835,10 +1835,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void gotOptOutResponseI() {
-        packageHandler.flush();
-        setEnabledI(false);
         activityState.isGdprForgotten = true;
         writeActivityStateI();
+
+        packageHandler.flush();
+        setEnabledI(false);
     }
 
     private void readActivityStateI(Context context) {
