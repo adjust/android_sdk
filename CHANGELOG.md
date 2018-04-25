@@ -1,3 +1,9 @@
+### Version 4.13.0 (27th April 2018)
+#### Added
+- Added `gdprForgetMe` method to `Adjust` interface to enable possibility for user to be forgotten in accordance to GDPR law.
+
+---
+
 ### Version 4.12.4 (9th March 2018)
 #### Changed
 - Added additional null checks into `InstallReferrer` `invoke` method.
