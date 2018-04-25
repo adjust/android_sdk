@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // check if deferred deeplink was received
+        // Check if deferred deep link was received
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
@@ -27,13 +27,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
-//        testLibrary.doNotExitAfterEnd();
+        // testLibrary.doNotExitAfterEnd();
+
         startTestSession();
     }
 
     private void startTestSession() {
         // testLibrary.addTestDirectory("current/gdpr");
-        // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_web_attribution");
+        // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_after_install_kill_before_install");
 
         testLibrary.startTestSession("android4.12.4");
     }
