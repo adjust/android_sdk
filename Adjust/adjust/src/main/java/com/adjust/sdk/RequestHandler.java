@@ -99,10 +99,12 @@ public class RequestHandler implements IRequestHandler {
 
             if (responseData.jsonResponse == null) {
                 packageHandler.closeFirstPackage(responseData, activityPackage);
+                return;
             }
 
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandler.gotOptOutResponse();
+                return;
             }
 
             packageHandler.sendNextPackage(responseData);

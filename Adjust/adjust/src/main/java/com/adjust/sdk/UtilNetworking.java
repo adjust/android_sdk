@@ -117,6 +117,10 @@ public class UtilNetworking {
             responseCode = connection.getResponseCode();
             InputStream inputStream;
 
+            if (responseCode == 429) {
+                return responseData;
+            }
+
             if (responseCode >= 400) {
                 inputStream = connection.getErrorStream();
             } else {
