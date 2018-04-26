@@ -1,6 +1,6 @@
 ### Version 4.13.0 (27th April 2018)
 #### Added
-- Added `Adjust.gdprForgetMe()` method to enable possibility for user to be forgotten in accordance with GDPR law.
+- Added `Adjust.gdprForgetMe(context)` method to enable possibility for user to be forgotten in accordance with GDPR law.
 
 ---
 
