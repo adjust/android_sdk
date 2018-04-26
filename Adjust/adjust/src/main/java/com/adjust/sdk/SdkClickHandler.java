@@ -337,6 +337,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandler.gotOptOutResponse();
+                return;
             }
 
             if (isReftag) {

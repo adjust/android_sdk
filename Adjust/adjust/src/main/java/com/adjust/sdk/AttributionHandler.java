@@ -239,6 +239,7 @@ public class AttributionHandler implements IAttributionHandler {
 
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandlerWeakRef.get().gotOptOutResponse();
+                return;
             }
 
             checkAttributionResponse((AttributionResponseData)responseData);
