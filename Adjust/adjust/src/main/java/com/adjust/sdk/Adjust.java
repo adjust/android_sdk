@@ -226,7 +226,8 @@ public class Adjust {
     /**
      * Called to get value of Google Play Advertising Identifier.
      *
-     * @return Google Play Advertising Identifier
+     * @param context        Application context
+     * @param onDeviceIdRead Callback to get triggered once identifier is obtained
      */
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
         Util.getGoogleAdId(context, onDeviceIdRead);
@@ -235,6 +236,7 @@ public class Adjust {
     /**
      * Called to get value of Amazon Advertising Identifier.
      *
+     * @param context Application context
      * @return Amazon Advertising Identifier
      */
     public static String getAmazonAdId(final Context context) {
