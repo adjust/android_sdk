@@ -9,7 +9,9 @@ import android.content.Context;
 public class AdjustTestOptions {
     public Context context;
     public String baseUrl;
+    public String gdprUrl;
     public String basePath;
+    public String gdprPath;
     public Boolean useTestConnectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;

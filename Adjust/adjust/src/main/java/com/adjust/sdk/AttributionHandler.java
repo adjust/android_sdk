@@ -74,7 +74,7 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                getAttributionI(0);
+                getAttributionI(0, true);
             }
         });
     }
@@ -141,7 +141,7 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
-    private void getAttributionI(long delayInMilliseconds) {
+    private void getAttributionI(long delayInMilliseconds, boolean isInitiatedBySdk) {
         // don't reset if new time is shorter than last one
         if (timer.getFireIn() > delayInMilliseconds) {
             return;
@@ -153,6 +153,9 @@ public class AttributionHandler implements IAttributionHandler {
 
             logger.debug("Waiting to query attribution in %s seconds", secondsString);
         }
+
+        String initiatedBy = isInitiatedBySdk ? "sdk" : "backend";
+        attributionPackage.getParameters().put("initiated_by", initiatedBy);
 
         // set the new time the timer will fire in
         timer.startIn(delayInMilliseconds);
@@ -168,7 +171,7 @@ public class AttributionHandler implements IAttributionHandler {
         if (timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
 
-            getAttributionI(timerMilliseconds);
+            getAttributionI(timerMilliseconds, false);
 
             return;
         }
@@ -217,6 +220,9 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void sendAttributionRequestI() {
+        if (activityHandlerWeakRef.get().getActivityState().isGdprForgotten) {
+            return;
+        }
         if (paused) {
             logger.debug("Attribution handler is paused");
             return;
@@ -228,6 +234,11 @@ public class AttributionHandler implements IAttributionHandler {
             ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath);
 
             if (!(responseData instanceof AttributionResponseData)) {
+                return;
+            }
+
+            if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandlerWeakRef.get().gotOptOutResponse();
                 return;
             }
 

@@ -11,13 +11,14 @@ import com.adjust.testlibrary.TestLibrary;
 public class MainActivity extends AppCompatActivity {
     public static TestLibrary testLibrary;
     public static final String baseUrl = "https://10.0.2.2:8443";
+    public static final String gdprUrl = "https://10.0.2.2:8443";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // check if deferred deeplink was received
+        // Check if deferred deep link was received
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
@@ -26,14 +27,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
-//        testLibrary.doNotExitAfterEnd();
+        // testLibrary.doNotExitAfterEnd();
+
         startTestSession();
     }
 
     private void startTestSession() {
-        //testLibrary.addTestDirectory("current/sdkInfo");
-        //testLibrary.addTest("current/appSecret/Test_AppSecret_no_secret");
+        // testLibrary.addTestDirectory("current/gdpr");
+        // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_after_install_kill_before_install");
 
-        testLibrary.startTestSession("android4.12.4");
+        testLibrary.startTestSession("android4.13.0");
     }
 }

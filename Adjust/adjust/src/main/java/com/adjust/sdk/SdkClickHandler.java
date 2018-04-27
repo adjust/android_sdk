@@ -276,8 +276,11 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
-        String source = sdkClickPackage.getParameters().get("source");
+        if (activityHandler.getActivityState().isGdprForgotten) {
+            return;
+        }
 
+        String source = sdkClickPackage.getParameters().get("source");
         boolean isReftag = source != null && source.equals(SOURCE_REFTAG);
         String rawReferrerString = sdkClickPackage.getParameters().get("raw_referrer");
 
@@ -329,6 +332,11 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
 
             if (activityHandler == null) {
+                return;
+            }
+
+            if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandler.gotOptOutResponse();
                 return;
             }
 

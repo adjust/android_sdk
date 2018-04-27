@@ -15,6 +15,7 @@ public class ResponseData {
     public boolean success;
     public boolean willRetry;
     public JSONObject jsonResponse;
+    public TrackingState trackingState;
     public AdjustAttribution attribution;
 
     protected ResponseData() {}

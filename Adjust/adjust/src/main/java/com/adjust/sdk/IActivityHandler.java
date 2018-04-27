@@ -59,6 +59,10 @@ public interface IActivityHandler {
 
     void setPushToken(String token, boolean preSaved);
 
+    void gdprForgetMe();
+
+    void gotOptOutResponse();
+
     Context getContext();
 
     String getAdid();
@@ -74,4 +78,6 @@ public interface IActivityHandler {
     SessionParameters getSessionParameters();
 
     String getBasePath();
+
+    String getGdprPath();
 }

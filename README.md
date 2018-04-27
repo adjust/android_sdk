@@ -39,6 +39,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Disable tracking](#disable-tracking)
    * [Offline mode](#offline-mode)
    * [Event buffering](#event-buffering)
+   * [GDPR right to be forgotten](#gdpr-forget-me)
    * [SDK signature](#sdk-signature)
    * [Background tracking](#background-tracking)
    * [Device IDs](#device-ids)
@@ -72,14 +73,14 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.12.4'
+compile 'com.adjust.sdk:adjust-android:4.13.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.12.4'
+implementation 'com.adjust.sdk:adjust-android:4.13.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -156,7 +157,7 @@ If you are using Proguard, add these lines to your Proguard file:
     android.os.LocaleList getLocales();
     java.util.Locale locale;
 }
--keep class android.os.LocaledList {
+-keep class android.os.LocaleList {
     java.util.Locale get(int);
 }
 -keep public class com.android.installreferrer.** { *; }
@@ -680,6 +681,16 @@ config.setEventBufferingEnabled(true);
 
 Adjust.onCreate(config);
 ```
+
+### <a id="gdpr-forget-me"></a>GDPR right to be forgotten
+
+In accordance with article 17 of the EU's General Data Protection Regulation (GDPR), you can notify Adjust when a user has exercised their right to be forgotten. Calling the following method will instruct the Adjust SDK to communicate the user's choice to be forgotten to the Adjust backend:
+
+```java
+Adjust.gdprForgetMe(context);
+```
+
+Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
 
 ### <a id="sdk-signature"></a>SDK signature
 

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  * Class used to forward instructions to SDK which user gives as part of Adjust class interface.
  *
- * @author Pedro Silva (nonelse)
+ * @author Pedro Silva (@nonelse)
  * @since 12th April 2014
  */
 public class AdjustInstance {
@@ -37,7 +37,16 @@ public class AdjustInstance {
      * Array of actions that were requested before SDK initialisation.
      */
     private List<IRunActivityHandler> preLaunchActionsArray;
+
+    /**
+     * Base path for Adjust packages.
+     */
     private String basePath;
+
+    /**
+     * Path for GDPR package.
+     */
+    private String gdprPath;
 
     /**
      * Called upon SDK initialisation.
@@ -49,12 +58,10 @@ public class AdjustInstance {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return;
         }
-
         if (!adjustConfig.isValid()) {
             AdjustFactory.getLogger().error("AdjustConfig not initialized correctly");
             return;
         }
-
         if (activityHandler != null) {
             AdjustFactory.getLogger().error("Adjust already initialized");
             return;
@@ -65,9 +72,9 @@ public class AdjustInstance {
         adjustConfig.startEnabled = startEnabled;
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
+        adjustConfig.gdprPath = this.gdprPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
-
         setSendingReferrersAsNotSent(adjustConfig.context);
     }
 
@@ -80,7 +87,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         activityHandler.trackEvent(event);
     }
 
@@ -91,7 +97,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         activityHandler.onResume();
     }
 
@@ -102,7 +107,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         activityHandler.onPause();
     }
 
@@ -113,7 +117,6 @@ public class AdjustInstance {
      */
     public void setEnabled(final boolean enabled) {
         this.startEnabled = enabled;
-
         if (checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
             activityHandler.setEnabled(enabled);
         }
@@ -128,7 +131,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return isInstanceEnabled();
         }
-
         return activityHandler.isEnabled();
     }
 
@@ -141,7 +143,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         long clickTime = System.currentTimeMillis();
         activityHandler.readOpenUrl(url, clickTime);
     }
@@ -161,7 +162,6 @@ public class AdjustInstance {
         }
 
         saveRawReferrer(rawReferrer, clickTime, context);
-
         if (checkActivityHandler("referrer")) {
             if (activityHandler.isEnabled()) {
                 activityHandler.sendReftagReferrer();
@@ -189,7 +189,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         activityHandler.sendFirstPackages();
     }
 
@@ -204,11 +203,9 @@ public class AdjustInstance {
             activityHandler.addSessionCallbackParameter(key, value);
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -228,11 +225,9 @@ public class AdjustInstance {
             activityHandler.addSessionPartnerParameter(key, value);
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -251,11 +246,9 @@ public class AdjustInstance {
             activityHandler.removeSessionCallbackParameter(key);
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -274,11 +267,9 @@ public class AdjustInstance {
             activityHandler.removeSessionPartnerParameter(key);
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -295,11 +286,9 @@ public class AdjustInstance {
             activityHandler.resetSessionCallbackParameters();
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -316,11 +305,9 @@ public class AdjustInstance {
             activityHandler.resetSessionPartnerParameters();
             return;
         }
-
         if (preLaunchActionsArray == null) {
             preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
         }
-
         preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
@@ -337,7 +324,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return;
         }
-
         activityHandler.teardown();
         activityHandler = null;
     }
@@ -363,10 +349,23 @@ public class AdjustInstance {
      */
     public void setPushToken(final String token, final Context context) {
         savePushToken(token, context);
-
         if (checkActivityHandler("push token")) {
             if (activityHandler.isEnabled()) {
                 activityHandler.setPushToken(token, true);
+            }
+        }
+    }
+
+    /**
+     * Called to forget the user in accordance with GDPR law.
+     *
+     * @param context Application context
+     */
+    public void gdprForgetMe(final Context context) {
+        saveGdprForgetMe(context);
+        if (checkActivityHandler("gdpr")) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.gdprForgetMe();
             }
         }
     }
@@ -380,7 +379,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return null;
         }
-
         return activityHandler.getAdid();
     }
 
@@ -393,7 +391,6 @@ public class AdjustInstance {
         if (!checkActivityHandler()) {
             return null;
         }
-
         return activityHandler.getAttribution();
     }
 
@@ -431,12 +428,12 @@ public class AdjustInstance {
     private boolean checkActivityHandler(final String savedForLaunchWarningSuffixMessage) {
         if (activityHandler == null) {
             if (savedForLaunchWarningSuffixMessage != null) {
-                AdjustFactory.getLogger().warn("Adjust not initialized, but %s saved for launch",
+                AdjustFactory.getLogger().warn(
+                        "Adjust not initialized, but %s saved for launch",
                         savedForLaunchWarningSuffixMessage);
             } else {
                 AdjustFactory.getLogger().error("Adjust not initialized correctly");
             }
-
             return false;
         } else {
             return true;
@@ -478,6 +475,27 @@ public class AdjustInstance {
         Util.runInBackground(command);
     }
 
+    /**
+     * Save GDPR forget me choice to shared preferences.
+     *
+     * @param context Application context
+     */
+    private void saveGdprForgetMe(final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.setGdprForgetMe();
+            }
+        };
+        Util.runInBackground(command);
+    }
+
+    /**
+     * Flag stored referrers as still not sent.
+     *
+     * @param context Application context
+     */
     private void setSendingReferrersAsNotSent(final Context context) {
         Runnable command = new Runnable() {
             @Override
@@ -499,12 +517,23 @@ public class AdjustInstance {
         return this.startEnabled == null || this.startEnabled;
     }
 
+    /**
+     * Used for testing purposes only. Do NOT use this method.
+     *
+     * @param testOptions Adjust integration tests options
+     */
     public void setTestOptions(AdjustTestOptions testOptions) {
         if (testOptions.basePath != null) {
             this.basePath = testOptions.basePath;
         }
+        if (testOptions.gdprPath != null) {
+            this.gdprPath = testOptions.gdprPath;
+        }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
+        }
+        if (testOptions.gdprUrl != null) {
+            AdjustFactory.setGdprUrl(testOptions.gdprUrl);
         }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();

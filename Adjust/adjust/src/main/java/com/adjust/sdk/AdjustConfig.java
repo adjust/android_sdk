@@ -9,6 +9,7 @@ import java.util.List;
  */
 public class AdjustConfig {
     String basePath;
+    String gdprPath;
     Context context;
     String appToken;
     String environment;

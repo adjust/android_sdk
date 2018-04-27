@@ -19,7 +19,11 @@ public interface IPackageHandler {
 
     void updatePackages(SessionParameters sessionParameters);
 
+    void flush();
+
     String getBasePath();
+
+    String getGdprPath();
 
     void teardown();
 }

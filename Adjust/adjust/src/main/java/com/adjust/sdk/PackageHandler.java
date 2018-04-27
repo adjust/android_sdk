@@ -36,6 +36,7 @@ public class PackageHandler implements IPackageHandler {
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
     private String basePath;
+    private String gdprPath;
 
     @Override
     public void teardown() {
@@ -91,6 +92,7 @@ public class PackageHandler implements IPackageHandler {
         this.context = context;
         this.paused = !startsSending;
         this.basePath = activityHandler.getBasePath();
+        this.gdprPath = activityHandler.getGdprPath();
     }
 
     // add a package to the queue
@@ -198,14 +200,29 @@ public class PackageHandler implements IPackageHandler {
     }
 
     @Override
+    public void flush() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                flushI();
+            }
+        });
+    }
+
+    @Override
     public String getBasePath() {
         return this.basePath;
+    }
+
+    @Override
+    public String getGdprPath() {
+        return this.gdprPath;
     }
 
     // internal methods run in dedicated queue thread
 
     private void initI() {
-        requestHandler = AdjustFactory.getRequestHandler(this);
+        requestHandler = AdjustFactory.getRequestHandler(activityHandlerWeakRef.get(), this);
 
         isSending = new AtomicBoolean();
 
@@ -239,6 +256,10 @@ public class PackageHandler implements IPackageHandler {
     }
 
     private void sendNextI() {
+        if (packageQueue.isEmpty()) {
+            return;
+        }
+
         packageQueue.remove(0);
         writePackageQueueI();
         isSending.set(false);
@@ -271,6 +292,11 @@ public class PackageHandler implements IPackageHandler {
             PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
         }
 
+        writePackageQueueI();
+    }
+
+    private void flushI() {
+        packageQueue.clear();
         writePackageQueueI();
     }
 

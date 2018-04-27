@@ -54,6 +54,7 @@ public class ActivityHandler implements IActivityHandler {
     private TimerOnce delayStartTimer;
     private InternalState internalState;
     private String basePath;
+    private String gdprPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -593,6 +594,26 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void gdprForgetMe() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                gdprForgetMeI();
+            }
+        });
+    }
+
+    @Override
+    public void gotOptOutResponse() {
+        scheduledExecutor.submit(new Runnable() {
+            @Override
+            public void run() {
+                gotOptOutResponseI();
+            }
+        });
+    }
+
+    @Override
     public Context getContext() {
         return adjustConfig.context;
     }
@@ -631,6 +652,11 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public String getBasePath() {
         return this.basePath;
+    }
+
+    @Override
+    public String getGdprPath() {
+        return this.gdprPath;
     }
 
     public ActivityPackage getAttributionPackageI() {
@@ -727,6 +753,14 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
+        // GDPR
+        if (internalState.hasFirstSdkStartOcurred()) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            if (sharedPreferencesManager.getGdprForgetMe()) {
+                gdprForgetMe();
+            }
+        }
+
         foregroundTimer = new TimerCycle(
                 new Runnable() {
                     @Override
@@ -765,6 +799,7 @@ public class ActivityHandler implements IActivityHandler {
         UtilNetworking.setUserAgent(adjustConfig.userAgent);
 
         this.basePath = adjustConfig.basePath;
+        this.gdprPath = adjustConfig.gdprPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
@@ -780,10 +815,8 @@ public class ActivityHandler implements IActivityHandler {
             updatePackagesI();
         }
 
-        preLaunchActionsI(adjustConfig.preLaunchActionsArray);
-
         installReferrer = new InstallReferrer(adjustConfig.context, this);
-
+        preLaunchActionsI(adjustConfig.preLaunchActionsArray);
         sendReftagReferrerI();
     }
 
@@ -848,13 +881,17 @@ public class ActivityHandler implements IActivityHandler {
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
         activityState.pushToken = sharedPreferencesManager.getPushToken();
+        // activityState.isGdprForgotten = sharedPreferencesManager.getGdprForgetMe();
 
         // track the first session package only if it's enabled
         if (internalState.isEnabled()) {
-            activityState.sessionCount = 1; // this is the first session
-            transferSessionPackageI(now);
-
-            checkAfterNewStartI(sharedPreferencesManager);
+            if (!sharedPreferencesManager.getGdprForgetMe()) {
+                activityState.sessionCount = 1; // this is the first session
+                transferSessionPackageI(now);
+                checkAfterNewStartI(sharedPreferencesManager);
+            } else {
+                gdprForgetMeI();
+            }
         }
 
         activityState.resetSessionAttributes(now);
@@ -863,11 +900,16 @@ public class ActivityHandler implements IActivityHandler {
 
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
+        sharedPreferencesManager.removeGdprForgetMe();
 
         // don't check attribution right after first sdk start
     }
 
     private void processSessionI() {
+        if (activityState.isGdprForgotten) {
+            return;
+        }
+
         long now = System.currentTimeMillis();
 
         long lastInterval = now - activityState.lastActivity;
@@ -951,6 +993,7 @@ public class ActivityHandler implements IActivityHandler {
         if (!isEnabledI()) return;
         if (!checkEventI(event)) return;
         if (!checkOrderIdI(event.orderId)) return;
+        if (activityState.isGdprForgotten) return;
 
         long now = System.currentTimeMillis();
 
@@ -1213,6 +1256,13 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        if (enabled) {
+            if (activityState.isGdprForgotten) {
+                logger.error("Re-enabling SDK not possible for forgotten user");
+                return;
+            }
+        }
+
         // save new enabled state in internal state
         internalState.enabled = enabled;
 
@@ -1224,8 +1274,15 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        activityState.enabled = enabled;
+        writeActivityStateI();
+
         if (enabled) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+
+            if (sharedPreferencesManager.getGdprForgetMe()) {
+                gdprForgetMeI();
+            }
 
             // check if install was tracked
             if (!sharedPreferencesManager.getInstallTracked()) {
@@ -1234,9 +1291,6 @@ public class ActivityHandler implements IActivityHandler {
             }
             checkAfterNewStartI(sharedPreferencesManager);
         }
-
-        activityState.enabled = enabled;
-        writeActivityStateI();
 
         updateStatusI(!enabled,
                 "Pausing handlers due to SDK being disabled",
@@ -1729,6 +1783,7 @@ public class ActivityHandler implements IActivityHandler {
     private void setPushTokenI(String token) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
 
         if (token == null) { return; }
         if (token.equals(activityState.pushToken)) { return; }
@@ -1752,6 +1807,39 @@ public class ActivityHandler implements IActivityHandler {
         } else {
             packageHandler.sendFirstPackage();
         }
+    }
+
+    private void gdprForgetMeI() {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        activityState.isGdprForgotten = true;
+        writeActivityStateI();
+
+        long now = System.currentTimeMillis();
+        PackageBuilder gdprPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage gdprPackage = gdprPackageBuilder.buildGdprPackage();
+        packageHandler.addPackage(gdprPackage);
+
+        // If GDPR choice was cached, remove it.
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        sharedPreferencesManager.removeGdprForgetMe();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", gdprPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+    }
+
+    private void gotOptOutResponseI() {
+        activityState.isGdprForgotten = true;
+        writeActivityStateI();
+
+        packageHandler.flush();
+        setEnabledI(false);
     }
 
     private void readActivityStateI(Context context) {

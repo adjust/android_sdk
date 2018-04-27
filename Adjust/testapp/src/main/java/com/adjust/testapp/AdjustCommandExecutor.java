@@ -25,6 +25,7 @@ import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import java.util.List;
 
 import static com.adjust.testapp.MainActivity.baseUrl;
+import static com.adjust.testapp.MainActivity.gdprUrl;
 
 /**
  * Created by nonelse on 10.03.17.
@@ -34,6 +35,7 @@ public class AdjustCommandExecutor {
     private static final String TAG = "AdjustCommandExecutor";
     private Context context;
     private String basePath;
+    private String gdprPath;
     private SparseArray<AdjustEvent> savedEvents = new SparseArray<>();
     private SparseArray<AdjustConfig> savedConfigs = new SparseArray<>();
     private Command command;
@@ -67,6 +69,7 @@ public class AdjustCommandExecutor {
             // case "teardown": teardown(); break;
             case "openDeeplink": openDeeplink(); break;
             case "sendReferrer": sendReferrer(); break;
+            case "gdprForgetMe": gdprForgetMe(); break;
             //case "testBegin": testBegin(); break;
             // case "testEnd": testEnd(); break;
         }
@@ -98,8 +101,10 @@ public class AdjustCommandExecutor {
     private void testOptions() {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         testOptions.baseUrl = baseUrl;
+        testOptions.gdprUrl = gdprUrl;
         if (command.containsParameter("basePath")) {
             basePath = command.getFirstParameterValue("basePath");
+            gdprPath = command.getFirstParameterValue("basePath");
         }
         if (command.containsParameter("timerInterval")) {
             long timerInterval = Long.parseLong(command.getFirstParameterValue("timerInterval"));
@@ -130,6 +135,7 @@ public class AdjustCommandExecutor {
                 if (teardownOption.equals("resetSdk")) {
                     testOptions.teardown = true;
                     testOptions.basePath = basePath;
+                    testOptions.gdprPath = gdprPath;
                     testOptions.useTestConnectionOptions = true;
                     testOptions.tryInstallReferrer = false;
                 }
@@ -147,6 +153,7 @@ public class AdjustCommandExecutor {
                 if (teardownOption.equals("sdk")) {
                     testOptions.teardown = true;
                     testOptions.basePath = null;
+                    testOptions.gdprPath = null;
                     testOptions.useTestConnectionOptions = false;
                 }
                 if (teardownOption.equals("test")) {
@@ -561,6 +568,10 @@ public class AdjustCommandExecutor {
         String referrer = command.getFirstParameterValue("referrer");
 
         Adjust.setReferrer(referrer, this.context);
+    }
+
+    private void gdprForgetMe() {
+        Adjust.gdprForgetMe(this.context);
     }
 
 /*

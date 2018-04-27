@@ -144,6 +144,10 @@ public class UtilNetworking {
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
+        if (responseCode == 429) {
+            logger.error("Too frequent requests to the endpoint (429)");
+            return responseData;
+        }
         if (stringResponse == null || stringResponse.length() == 0) {
             return responseData;
         }
@@ -165,10 +169,13 @@ public class UtilNetworking {
         responseData.jsonResponse = jsonResponse;
 
         String message = jsonResponse.optString("message", null);
-
         responseData.message = message;
         responseData.timestamp = jsonResponse.optString("timestamp", null);
         responseData.adid = jsonResponse.optString("adid", null);
+        String trackingState = jsonResponse.optString("tracking_state", null);
+        if (trackingState != null && trackingState.equals("opted_out")) {
+            responseData.trackingState = TrackingState.OPTED_OUT;
+        }
 
         if (message == null) {
             message = "No message found";
