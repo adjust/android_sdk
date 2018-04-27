@@ -97,13 +97,13 @@ public class RequestHandler implements IRequestHandler {
                 return;
             }
 
-            if (responseData.jsonResponse == null) {
-                packageHandler.closeFirstPackage(responseData, activityPackage);
+            if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandler.gotOptOutResponse();
                 return;
             }
 
-            if (responseData.trackingState == TrackingState.OPTED_OUT) {
-                activityHandler.gotOptOutResponse();
+            if (responseData.jsonResponse == null) {
+                packageHandler.closeFirstPackage(responseData, activityPackage);
                 return;
             }
 

@@ -117,10 +117,6 @@ public class UtilNetworking {
             responseCode = connection.getResponseCode();
             InputStream inputStream;
 
-            if (responseCode == 429) {
-                return responseData;
-            }
-
             if (responseCode >= 400) {
                 inputStream = connection.getErrorStream();
             } else {
@@ -148,6 +144,10 @@ public class UtilNetworking {
         String stringResponse = sb.toString();
         logger.verbose("Response: %s", stringResponse);
 
+        if (responseCode == 429) {
+            logger.error("Too frequent requests to the endpoint (429)");
+            return responseData;
+        }
         if (stringResponse == null || stringResponse.length() == 0) {
             return responseData;
         }
