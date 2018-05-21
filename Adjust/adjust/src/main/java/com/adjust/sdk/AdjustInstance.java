@@ -553,5 +553,9 @@ public class AdjustInstance {
         if (testOptions.tryInstallReferrer != null) {
             AdjustFactory.setTryInstallReferrer(testOptions.tryInstallReferrer);
         }
+        if (testOptions.noBackoffWait != null) {
+            AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
+            AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
+        }
     }
 }

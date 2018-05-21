@@ -129,6 +129,13 @@ public class AdjustCommandExecutor {
                 testOptions.tryInstallReferrer = tryInstallReferrerBoolean;
             }
         }
+        if (command.containsParameter("noBackoffWait")) {
+            String noBackoffWaitString = command.getFirstParameterValue("noBackoffWait");
+            Boolean noBackoffWaitBoolean = Util.strictParseStringToBoolean(noBackoffWaitString);
+            if (noBackoffWaitBoolean != null) {
+                testOptions.noBackoffWait = noBackoffWaitBoolean;
+            }
+        }
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
             for (String teardownOption : teardownOptions) {
