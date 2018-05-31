@@ -109,6 +109,11 @@ public class AdjustBridge {
     }
 
     @JavascriptInterface
+    public static void gdprForgetMe() {
+        AdjustBridge.getDefaultInstance().gdprForgetMe();
+    }
+
+    @JavascriptInterface
     public static void getGoogleAdId(String callback) {
         AdjustBridge.getDefaultInstance().getGoogleAdId(callback);
     }

@@ -126,6 +126,13 @@ var Adjust = {
         }
     },
 
+    gdprForgetMe: function() {
+        if (AdjustBridge) {
+            AdjustBridge.gdprForgetMe();
+        }
+    },
+
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {

@@ -533,6 +533,14 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public void gdprForgetMe() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        Adjust.gdprForgetMe(application.getApplicationContext());
+    }
+    @JavascriptInterface
     public void getGoogleAdId(final String callback) {
         if (!isInitialized()) {
             return;
