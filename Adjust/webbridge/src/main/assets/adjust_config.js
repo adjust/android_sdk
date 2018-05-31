@@ -22,7 +22,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.eventBufferingEnabled = null;
     this.sendInBackground = null;
     this.logLevel = null;
-    this.sdkPrefix = 'web-bridge4.12.0';
+    this.sdkPrefix = 'web-bridge4.13.0';
     this.processName = null;
     this.defaultTracker = null;
     this.attributionCallbackName = null;
