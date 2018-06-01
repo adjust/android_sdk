@@ -7,8 +7,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
 
 ## Table of contents
 
-* [Example app](#example-app)
-* [Example Android TV app](#example-app-tv)
+* [Example apps](#example-apps)
 * [Basic integration](#basic-integration)
    * [Add the SDK to your project](#sdk-add)
    * [Add Google Play Services](#sdk-gps)
@@ -61,13 +60,9 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Can I trigger an event at application launch?](#ts-event-at-launch)
 * [License](#license)
 
-## <a id="example-app"></a>Example app
+## <a id="example-apps"></a>Example apps
 
-There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on how the Adjust SDK can be integrated.
-
-## <a id="example-app-tv"></a>Example Android TV app
-
-There is an example Android TV app inside the [`example-tv` directory][example-tv]. You can open the Android project to see an example on how the Adjust SDK can be integrated into an Android TV app.
+There are example apps for Android inside the [`example` directory][example] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
