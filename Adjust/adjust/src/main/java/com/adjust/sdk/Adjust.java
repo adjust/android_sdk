@@ -105,6 +105,17 @@ public class Adjust {
     }
 
     /**
+     * Called to process deep link.
+     *
+     * @param url Deep link URL to process
+     * @param context Application context
+     */
+    public static void appWillOpenUrl(Uri url, Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.appWillOpenUrl(url, context);
+    }
+
+    /**
      * Called to process referrer information sent with INSTALL_REFERRER intent.
      *
      * @param referrer Referrer content

@@ -5,6 +5,7 @@ import org.json.JSONException;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 
 /**
  * Class used for shared preferences manipulation.
@@ -35,6 +36,10 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_INSTALL_TRACKED = "install_tracked";
 
     private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
+
+    private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
+
+    private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
 
     /**
      * Index for raw referrer string content in saved JSONArray object.
@@ -309,6 +314,28 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
+    public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {
+        if (deeplink == null) {
+            return;
+        }
+
+        saveString(PREFS_KEY_DEEPLINK_URL, deeplink.toString());
+        saveLong(PREFS_KEY_DEEPLINK_CLICK_TIME, clickTime);
+    }
+
+    public synchronized String getDeeplinkUrl() {
+        return getString(PREFS_KEY_DEEPLINK_URL);
+    }
+
+    public synchronized long getDeeplinkClickTime() {
+        return getLong(PREFS_KEY_DEEPLINK_CLICK_TIME, -1);
+    }
+
+    public synchronized void removeDeeplink() {
+        remove(PREFS_KEY_DEEPLINK_URL);
+        remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
+    }
+
     /**
      * Remove all key-value pairs from shared preferences.
      */
@@ -334,6 +361,16 @@ public class SharedPreferencesManager {
      */
     private synchronized void saveBoolean(final String key, final boolean value) {
         this.sharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
+    /**
+     * Write a long value to shared preferences.
+     *
+     * @param key   Key to be written to shared preferences
+     * @param value Value to be written to shared preferences
+     */
+    private synchronized void saveLong(final String key, final long value) {
+        this.sharedPreferences.edit().putLong(key, value).apply();
     }
 
     /**
@@ -365,6 +402,21 @@ public class SharedPreferencesManager {
     private synchronized boolean getBoolean(final String key, final boolean defaultValue) {
         try {
             return this.sharedPreferences.getBoolean(key, defaultValue);
+        } catch (ClassCastException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get a long value from shared preferences.
+     *
+     * @param key          Key for which long value should be retrieved
+     * @param defaultValue Default value to be returned if nothing found in shared preferences
+     * @return Long value for given key saved in shared preferences
+     */
+    private synchronized long getLong(final String key, final long defaultValue) {
+        try {
+            return this.sharedPreferences.getLong(key, defaultValue);
         } catch (ClassCastException e) {
             return defaultValue;
         }

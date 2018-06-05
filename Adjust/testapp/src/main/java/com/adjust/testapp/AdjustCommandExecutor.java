@@ -568,7 +568,7 @@ public class AdjustCommandExecutor {
     private void openDeeplink() {
         String deeplink = command.getFirstParameterValue("deeplink");
 
-        Adjust.appWillOpenUrl(Uri.parse(deeplink));
+        Adjust.appWillOpenUrl(Uri.parse(deeplink), this.context);
     }
 
     private void  sendReferrer() {
