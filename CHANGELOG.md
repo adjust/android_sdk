@@ -1,6 +1,15 @@
+### Version 4.14.0 (6th June 2018)
+#### Added
+- Added `Adjust.appWillOpenUrl(Uri, Context)` method to enable deep link caching.
+
+#### Changed
+- Marked `Adjust.appWillOpenUrl(Uri)` method as **deprecated**. Please, use `Adjust.appWillOpenUrl(Uri, Context)` method instead.
+
+---
+
 ### Version 4.13.0 (27th April 2018)
 #### Added
-- Added `Adjust.gdprForgetMe(context)` method to enable possibility for user to be forgotten in accordance with GDPR law.
+- Added `Adjust.gdprForgetMe(Context)` method to enable possibility for user to be forgotten in accordance with GDPR law.
 
 ---
 
