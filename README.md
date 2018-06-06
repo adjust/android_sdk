@@ -937,9 +937,9 @@ Adjust enables you to run re-engagement campaigns through deep links. For more i
 
 If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
 
-Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
+Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl(Uri, Context)` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
 
-The call to `Adjust.appWillOpenUrl` should be done like this:
+The call to `Adjust.appWillOpenUrl(Uri, Context)` should be done like this:
 
 ```java
 @Override
@@ -950,7 +950,7 @@ protected void onCreate(Bundle savedInstanceState) {
     Intent intent = getIntent();
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
 
@@ -961,9 +961,11 @@ protected void onNewIntent(Intent intent) {
 
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
+
+**Note**: `Adjust.appWillOpenUrl(Uri)` method is marked as **deprecated** as of Android SDK v4.14.0. Please, use `Adjust.appWillOpenUrl(Uri, Context)` method instead.
 
 ## <a id="troubleshooting"></a>Troubleshooting
 
