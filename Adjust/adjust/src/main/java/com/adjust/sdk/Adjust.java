@@ -98,7 +98,10 @@ public class Adjust {
      * Called to process deep link.
      *
      * @param url Deep link URL to process
+     *
+     * @deprecated Use {@link #appWillOpenUrl(Uri, Context)}} instead.
      */
+    @Deprecated
     public static void appWillOpenUrl(Uri url) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.appWillOpenUrl(url);
