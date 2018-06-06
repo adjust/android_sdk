@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.appWillOpenUrl(data);
+        Adjust.appWillOpenUrl(data, getApplicationContext());
 
         // Adjust UI according to SDK state.
         btnEnableDisableSDK = (Button)findViewById(R.id.btnEnableDisableSDK);

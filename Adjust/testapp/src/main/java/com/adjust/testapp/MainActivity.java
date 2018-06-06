@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
-            Adjust.appWillOpenUrl(deeplinkData);
+            Adjust.appWillOpenUrl(deeplinkData, getApplicationContext());
             return;
         }
 
