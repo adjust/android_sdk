@@ -1,4 +1,4 @@
-### Version 4.14.0 (6th June 2018)
+### Version 4.14.0 (8th June 2018)
 #### Added
 - Added `Adjust.appWillOpenUrl(Uri, Context)` method to enable deep link caching.
 
