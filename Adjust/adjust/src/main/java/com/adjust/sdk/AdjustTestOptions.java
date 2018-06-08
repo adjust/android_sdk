@@ -19,4 +19,5 @@ public class AdjustTestOptions {
     public Long subsessionIntervalInMilliseconds;
     public Boolean teardown;
     public Boolean tryInstallReferrer;
+    public Boolean noBackoffWait;
 }

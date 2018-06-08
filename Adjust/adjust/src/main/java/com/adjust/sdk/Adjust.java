@@ -30,7 +30,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.13.0";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.14.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -98,10 +98,24 @@ public class Adjust {
      * Called to process deep link.
      *
      * @param url Deep link URL to process
+     *
+     * @deprecated Use {@link #appWillOpenUrl(Uri, Context)}} instead.
      */
+    @Deprecated
     public static void appWillOpenUrl(Uri url) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.appWillOpenUrl(url);
+    }
+
+    /**
+     * Called to process deep link.
+     *
+     * @param url Deep link URL to process
+     * @param context Application context
+     */
+    public static void appWillOpenUrl(Uri url, Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.appWillOpenUrl(url, context);
     }
 
     /**

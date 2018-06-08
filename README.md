@@ -7,7 +7,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
 
 ## Table of contents
 
-* [Example app](#example-app)
+* [Example apps](#example-apps)
 * [Basic integration](#basic-integration)
    * [Add the SDK to your project](#sdk-add)
    * [Add Google Play Services](#sdk-gps)
@@ -60,9 +60,9 @@ our [Android web views SDK guide](doc/english/web_views.md).
    * [Can I trigger an event at application launch?](#ts-event-at-launch)
 * [License](#license)
 
-## <a id="example-app"></a>Example app
+## <a id="example-apps"></a>Example apps
 
-There is an example app inside the [`example` directory][example]. You can open the Android project to see an example on how the Adjust SDK can be integrated.
+There are example apps for Android inside the [`example` directory][example] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
@@ -73,14 +73,14 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.13.0'
+compile 'com.adjust.sdk:adjust-android:4.14.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.13.0'
+implementation 'com.adjust.sdk:adjust-android:4.14.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -937,9 +937,9 @@ Adjust enables you to run re-engagement campaigns through deep links. For more i
 
 If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the Adjust SDK in your app.
 
-Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
+Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl(Uri, Context)` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
 
-The call to `Adjust.appWillOpenUrl` should be done like this:
+The call to `Adjust.appWillOpenUrl(Uri, Context)` should be done like this:
 
 ```java
 @Override
@@ -950,7 +950,7 @@ protected void onCreate(Bundle savedInstanceState) {
     Intent intent = getIntent();
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
 
@@ -961,9 +961,11 @@ protected void onNewIntent(Intent intent) {
 
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
+
+**Note**: `Adjust.appWillOpenUrl(Uri)` method is marked as **deprecated** as of Android SDK v4.14.0. Please, use `Adjust.appWillOpenUrl(Uri, Context)` method instead.
 
 ## <a id="troubleshooting"></a>Troubleshooting
 
@@ -1056,6 +1058,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en

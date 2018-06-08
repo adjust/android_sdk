@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
-            Adjust.appWillOpenUrl(deeplinkData);
+            Adjust.appWillOpenUrl(deeplinkData, getApplicationContext());
             return;
         }
 
@@ -36,6 +36,6 @@ public class MainActivity extends AppCompatActivity {
         // testLibrary.addTestDirectory("current/gdpr");
         // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_after_install_kill_before_install");
 
-        testLibrary.startTestSession("android4.13.0");
+        testLibrary.startTestSession("android4.14.0");
     }
 }

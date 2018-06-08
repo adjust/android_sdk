@@ -868,6 +868,8 @@ public class ActivityHandler implements IActivityHandler {
         processSessionI();
 
         checkAttributionStateI();
+
+        processCachedDeeplinkI();
     }
 
     private void startFirstSessionI() {
@@ -901,6 +903,9 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
         sharedPreferencesManager.removeGdprForgetMe();
+
+        // check for cached deep links
+        processCachedDeeplinkI();
 
         // don't check attribution right after first sdk start
     }
@@ -975,6 +980,27 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         attributionHandler.getAttribution();
+    }
+
+    private void processCachedDeeplinkI() {
+        if (!checkActivityStateI(activityState)) {
+            return;
+        }
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
+        long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
+
+        if (cachedDeeplinkUrl == null) {
+            return;
+        }
+        if (cachedDeeplinkClickTime == -1) {
+            return;
+        }
+
+        readOpenUrl(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
+
+        sharedPreferencesManager.removeDeeplink();
     }
 
     private void endI() {

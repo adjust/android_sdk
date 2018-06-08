@@ -148,6 +148,23 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to process deep link.
+     *
+     * @param url     Deep link URL to process
+     * @param context Application context
+     */
+    public void appWillOpenUrl(final Uri url, final Context context) {
+        long clickTime = System.currentTimeMillis();
+        if (!checkActivityHandler()) {
+            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+            sharedPreferencesManager.saveDeeplink(url, clickTime);
+            return;
+        }
+
+        activityHandler.readOpenUrl(url, clickTime);
+    }
+
+    /**
      * Called to process referrer information sent with INSTALL_REFERRER intent.
      *
      * @param rawReferrer Raw referrer content
@@ -552,6 +569,10 @@ public class AdjustInstance {
         }
         if (testOptions.tryInstallReferrer != null) {
             AdjustFactory.setTryInstallReferrer(testOptions.tryInstallReferrer);
+        }
+        if (testOptions.noBackoffWait != null) {
+            AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
+            AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
         }
     }
 }
