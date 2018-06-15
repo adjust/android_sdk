@@ -34,17 +34,16 @@ import org.json.JSONObject;
  * Created by uerceg on 22/07/16.
  */
 public class AdjustBridgeInstance {
-    private static final String LOG_LEVEL_VERBOSE               = "VERBOSE";
-    private static final String LOG_LEVEL_DEBUG                 = "DEBUG";
-    private static final String LOG_LEVEL_INFO                  = "INFO";
-    private static final String LOG_LEVEL_WARN                  = "WARN";
-    private static final String LOG_LEVEL_ERROR                 = "ERROR";
-    private static final String LOG_LEVEL_ASSERT                = "ASSERT";
-    private static final String LOG_LEVEL_SUPPRESS              = "SUPPRESS";
+    private static final String LOG_LEVEL_VERBOSE = "VERBOSE";
+    private static final String LOG_LEVEL_DEBUG = "DEBUG";
+    private static final String LOG_LEVEL_INFO = "INFO";
+    private static final String LOG_LEVEL_WARN = "WARN";
+    private static final String LOG_LEVEL_ERROR = "ERROR";
+    private static final String LOG_LEVEL_ASSERT = "ASSERT";
+    private static final String LOG_LEVEL_SUPPRESS = "SUPPRESS";
 
     private WebView webView;
     private Application application;
-
     private boolean isInitialized = false;
     private boolean shouldDeferredDeeplinkBeLaunched = true;
 
@@ -83,12 +82,10 @@ public class AdjustBridgeInstance {
             AdjustBridgeUtil.getLogger().error("Webview missing. Call AdjustBridge.setWebView before");
             return false;
         }
-
         if (application == null) {
             AdjustBridgeUtil.getLogger().error("Application context missing. Call AdjustBridge.setApplicationContext before");
             return false;
         }
-
         return true;
     }
 
@@ -99,14 +96,12 @@ public class AdjustBridgeInstance {
             AdjustBridgeUtil.getLogger().warn("Adjust bridge is already initialized. Ignoring further attempts");
             return;
         }
-
         if (!isInitialized()) {
             return;
         }
 
         try {
             JSONObject jsonAdjustConfig = new JSONObject(adjustConfigString);
-
             Object appTokenField = jsonAdjustConfig.get("appToken");
             Object environmentField = jsonAdjustConfig.get("environment");
             Object allowSuppressLogLevelField = jsonAdjustConfig.get("allowSuppressLogLevel");
@@ -143,6 +138,7 @@ public class AdjustBridgeInstance {
             } else {
                 adjustConfig = new AdjustConfig(application.getApplicationContext(), appToken, environment, allowSuppressLogLevel.booleanValue());
             }
+
             if (!adjustConfig.isValid()) {
                 return;
             }
@@ -292,9 +288,7 @@ public class AdjustBridgeInstance {
             Long info2 = AdjustBridgeUtil.fieldToLong(info2Field);
             Long info3 = AdjustBridgeUtil.fieldToLong(info3Field);
             Long info4 = AdjustBridgeUtil.fieldToLong(info4Field);
-
-            if (secretId != null && info1 != null && info2 != null
-                    && info3 != null && info4 != null) {
+            if (secretId != null && info1 != null && info2 != null && info3 != null && info4 != null) {
                 adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
             }
 
@@ -341,37 +335,40 @@ public class AdjustBridgeInstance {
                 return;
             }
 
+            // Revenue
             Double revenue = AdjustBridgeUtil.fieldToDouble(revenueField);
             String currency = AdjustBridgeUtil.fieldToString(currencyField);
             if (revenue != null && currency != null) {
                 adjustEvent.setRevenue(revenue, currency);
             }
 
+            // Callback parameters
             String[] callbackParameters = AdjustBridgeUtil.jsonArrayToArray((JSONArray)callbackParametersField);
             if (callbackParameters != null) {
-                for (int i = 0; i < callbackParameters.length; i +=2) {
+                for (int i = 0; i < callbackParameters.length; i += 2) {
                     String key = callbackParameters[i];
                     String value = callbackParameters[i+1];
-
                     adjustEvent.addCallbackParameter(key, value);
                 }
             }
 
+            // Partner parameters
             String[] partnerParameters = AdjustBridgeUtil.jsonArrayToArray((JSONArray)partnerParametersField);
             if (partnerParameters != null) {
-                for (int i = 0; i < partnerParameters.length; i +=2) {
+                for (int i = 0; i < partnerParameters.length; i += 2) {
                     String key = partnerParameters[i];
                     String value = partnerParameters[i+1];
-
                     adjustEvent.addPartnerParameter(key, value);
                 }
             }
 
+            // Revenue deduplication
             String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
             if (orderId != null) {
                 adjustEvent.setOrderId(orderId);
             }
 
+            // Track event
             Adjust.trackEvent(adjustEvent);
         } catch (Exception e) {
             e.printStackTrace();
@@ -399,7 +396,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledString);
         if (isEnabled != null) {
             Adjust.setEnabled(isEnabled);
@@ -411,7 +407,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         boolean isEnabled = Adjust.isEnabled();
         AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
     }
@@ -421,7 +416,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return false;
         }
-
         return Adjust.isEnabled();
     }
 
@@ -430,7 +424,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Uri deeplink = null;
         if (deeplinkString != null) {
             deeplink = Uri.parse(deeplinkString);
@@ -443,7 +436,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.setReferrer(referrer, application.getApplicationContext());
     }
 
@@ -452,9 +444,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Boolean isOffline = AdjustBridgeUtil.fieldToBoolean(isOfflineString);
-
         if (isOffline != null) {
             Adjust.setOfflineMode(isOffline);
         }
@@ -465,7 +455,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.sendFirstPackages();
     }
 
@@ -474,7 +463,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.addSessionCallbackParameter(key, value);
     }
 
@@ -483,7 +471,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.addSessionPartnerParameter(key, value);
     }
 
@@ -492,7 +479,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.removeSessionCallbackParameter(key);
     }
 
@@ -501,7 +487,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.removeSessionPartnerParameter(key);
     }
 
@@ -510,7 +495,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.resetSessionCallbackParameters();
     }
 
@@ -519,7 +503,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.resetSessionPartnerParameters();
     }
 
@@ -537,7 +520,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.gdprForgetMe(application.getApplicationContext());
     }
     @JavascriptInterface
@@ -545,7 +527,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.getGoogleAdId(application.getApplicationContext(), new OnDeviceIdsRead() {
             @Override
             public void onGoogleAdIdRead(String googleAdId) {
@@ -559,7 +540,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return null;
         }
-
         return Adjust.getAmazonAdId(application.getApplicationContext());
     }
 
@@ -568,7 +548,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return null;
         }
-
         return Adjust.getAdid();
     }
 
@@ -577,7 +556,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         AdjustAttribution attribution = Adjust.getAttribution();
         AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
     }

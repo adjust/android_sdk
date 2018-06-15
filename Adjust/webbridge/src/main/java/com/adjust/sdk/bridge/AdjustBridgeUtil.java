@@ -39,7 +39,6 @@ public class AdjustBridgeUtil {
         }
 
         String fieldString = field.toString();
-
         if (fieldString.equals("null")) {
             return null;
         }
@@ -53,11 +52,9 @@ public class AdjustBridgeUtil {
         }
 
         String fieldString = field.toString();
-
         if (fieldString.equalsIgnoreCase("true")) {
             return true;
         }
-
         if (fieldString.equalsIgnoreCase("false")) {
             return false;
         }
@@ -71,7 +68,6 @@ public class AdjustBridgeUtil {
         }
 
         String fieldString = field.toString();
-
         try {
             return Double.parseDouble(fieldString);
         } catch (Exception e) {
@@ -85,7 +81,6 @@ public class AdjustBridgeUtil {
         }
 
         String fieldString = field.toString();
-
         try {
             return Long.parseLong(fieldString);
         } catch (Exception e) {
@@ -103,7 +98,6 @@ public class AdjustBridgeUtil {
             @Override
             public void run() {
                 JSONObject jsonAttribution = new JSONObject();
-
                 try {
                     jsonAttribution.put("trackerName", attribution.trackerName == null ? JSONObject.NULL : attribution.trackerName);
                     jsonAttribution.put("trackerToken", attribution.trackerToken == null ? JSONObject.NULL : attribution.trackerToken);
@@ -115,7 +109,6 @@ public class AdjustBridgeUtil {
                     jsonAttribution.put("adid", attribution.adid == null ? JSONObject.NULL : attribution.adid);
 
                     String command = "javascript:" + commandName + "(" + jsonAttribution.toString() + ");";
-
                     webView.loadUrl(command);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -133,7 +126,6 @@ public class AdjustBridgeUtil {
             @Override
             public void run() {
                 JSONObject jsonSessionSuccess = new JSONObject();
-
                 try {
                     jsonSessionSuccess.put("message", sessionSuccess.message == null ? JSONObject.NULL : sessionSuccess.message);
                     jsonSessionSuccess.put("adid", sessionSuccess.adid == null ? JSONObject.NULL : sessionSuccess.adid);
@@ -141,7 +133,6 @@ public class AdjustBridgeUtil {
                     jsonSessionSuccess.put("jsonResponse", sessionSuccess.jsonResponse == null ? JSONObject.NULL : sessionSuccess.jsonResponse);
 
                     String command = "javascript:" + commandName + "(" + jsonSessionSuccess.toString() + ");";
-
                     webView.loadUrl(command);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -159,7 +150,6 @@ public class AdjustBridgeUtil {
             @Override
             public void run() {
                 JSONObject jsonSessionFailure = new JSONObject();
-
                 try {
                     jsonSessionFailure.put("message", sessionFailure.message == null ? JSONObject.NULL : sessionFailure.message);
                     jsonSessionFailure.put("adid", sessionFailure.adid == null ? JSONObject.NULL : sessionFailure.adid);
@@ -168,7 +158,6 @@ public class AdjustBridgeUtil {
                     jsonSessionFailure.put("jsonResponse", sessionFailure.jsonResponse == null ? JSONObject.NULL : sessionFailure.jsonResponse);
 
                     String command = "javascript:" + commandName + "(" + jsonSessionFailure.toString() + ");";
-
                     webView.loadUrl(command);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -186,7 +175,6 @@ public class AdjustBridgeUtil {
             @Override
             public void run() {
                 JSONObject jsonEventSuccess = new JSONObject();
-
                 try {
                     jsonEventSuccess.put("eventToken", eventSuccess.eventToken == null ? JSONObject.NULL : eventSuccess.eventToken);
                     jsonEventSuccess.put("message", eventSuccess.message == null ? JSONObject.NULL : eventSuccess.message);
@@ -195,7 +183,6 @@ public class AdjustBridgeUtil {
                     jsonEventSuccess.put("jsonResponse", eventSuccess.jsonResponse == null ? JSONObject.NULL : eventSuccess.jsonResponse);
 
                     String command = "javascript:" + commandName + "(" + jsonEventSuccess.toString() + ");";
-
                     webView.loadUrl(command);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -213,7 +200,6 @@ public class AdjustBridgeUtil {
             @Override
             public void run() {
                 JSONObject jsonEventFailure = new JSONObject();
-
                 try {
                     jsonEventFailure.put("eventToken", eventFailure.eventToken == null ? JSONObject.NULL : eventFailure.eventToken);
                     jsonEventFailure.put("message", eventFailure.message == null ? JSONObject.NULL : eventFailure.message);
@@ -223,7 +209,6 @@ public class AdjustBridgeUtil {
                     jsonEventFailure.put("jsonResponse", eventFailure.jsonResponse == null ? JSONObject.NULL : eventFailure.jsonResponse);
 
                     String command = "javascript:" + commandName + "(" + jsonEventFailure.toString() + ");";
-
                     webView.loadUrl(command);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -249,11 +234,9 @@ public class AdjustBridgeUtil {
     public static String[] jsonArrayToArray(JSONArray jsonArray) throws JSONException {
         if (jsonArray != null) {
             String[] array = new String[jsonArray.length()];
-
             for (int i = 0; i < jsonArray.length(); i++) {
                 array[i] = jsonArray.get(i).toString();
             }
-
             return array;
         }
 
