@@ -579,6 +579,7 @@ public class AdjustBridgeInstance {
             Object subsessionIntervalInMillisecondsField = jsonAdjustEvent.get("subsessionIntervalInMilliseconds");
             Object teardownField = jsonAdjustEvent.get("teardown");
             Object tryInstallReferrerField = jsonAdjustEvent.get("tryInstallReferrer");
+            Object noBackoffWaitField = jsonAdjustEvent.get("noBackoffWait");
 
             String baseUrl = AdjustBridgeUtil.fieldToString(baseUrlField);
             if (baseUrl != null) {
@@ -623,6 +624,11 @@ public class AdjustBridgeInstance {
             Boolean tryInstallReferrer = AdjustBridgeUtil.fieldToBoolean(tryInstallReferrerField);
             if (baseUrl != null) {
                 adjustTestOptions.tryInstallReferrer = tryInstallReferrer;
+            }
+
+            Boolean noBackoffWait = AdjustBridgeUtil.fieldToBoolean(noBackoffWaitField);
+            if (noBackoffWait != null) {
+                adjustTestOptions.noBackoffWait = noBackoffWait;
             }
 
             Adjust.setTestOptions(adjustTestOptions);
