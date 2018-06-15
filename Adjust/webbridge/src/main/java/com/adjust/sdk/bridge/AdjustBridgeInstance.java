@@ -435,7 +435,7 @@ public class AdjustBridgeInstance {
         if (deeplinkString != null) {
             deeplink = Uri.parse(deeplinkString);
         }
-        Adjust.appWillOpenUrl(deeplink);
+        Adjust.appWillOpenUrl(deeplink, application.getApplicationContext());
     }
 
     @JavascriptInterface
