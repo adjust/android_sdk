@@ -12,7 +12,7 @@ function AdjustConfig(appToken, environment, legacy) {
             this.environment = environment;
             this.allowSuppressLogLevel = legacy;
         } else {
-        // old format with first argument being the bridge instance
+            // old format with first argument being the bridge instance
             this.bridge = appToken;
             this.appToken = environment;
             this.environment = legacy;
@@ -49,16 +49,16 @@ function AdjustConfig(appToken, environment, legacy) {
     this.readMobileEquipmentIdentity = null;
 }
 
-AdjustConfig.EnvironmentSandbox     = 'sandbox';
-AdjustConfig.EnvironmentProduction  = 'production';
+AdjustConfig.EnvironmentSandbox = 'sandbox';
+AdjustConfig.EnvironmentProduction = 'production';
 
-AdjustConfig.LogLevelVerbose        = 'VERBOSE',
-AdjustConfig.LogLevelDebug          = 'DEBUG',
-AdjustConfig.LogLevelInfo           = 'INFO',
-AdjustConfig.LogLevelWarn           = 'WARN',
-AdjustConfig.LogLevelError          = 'ERROR',
-AdjustConfig.LogLevelAssert         = 'ASSERT',
-AdjustConfig.LogLevelSuppress       = 'SUPPRESS',
+AdjustConfig.LogLevelVerbose = 'VERBOSE',
+AdjustConfig.LogLevelDebug = 'DEBUG',
+AdjustConfig.LogLevelInfo = 'INFO',
+AdjustConfig.LogLevelWarn = 'WARN',
+AdjustConfig.LogLevelError = 'ERROR',
+AdjustConfig.LogLevelAssert = 'ASSERT',
+AdjustConfig.LogLevelSuppress = 'SUPPRESS',
 
 AdjustConfig.prototype.getBridge = function() {
     return this.bridge;

@@ -44,7 +44,7 @@ var Adjust = {
             if (typeof callback === 'string' || callback instanceof String) {
                 this.isEnabledCallbackName = callback;
             } else {
-            // or save callback and call later
+                // or save callback and call later
                 this.isEnabledCallbackName = 'Adjust.adjust_isEnabledCallback';
                 this.isEnabledCallbackFunction = callback;
             }
@@ -132,7 +132,6 @@ var Adjust = {
         }
     },
 
-
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
@@ -166,6 +165,7 @@ var Adjust = {
             return undefined;
         }
     },
+
     getAttribution: function (callback) {
         if (AdjustBridge) {
             AdjustBridge.getAttribution(callback);

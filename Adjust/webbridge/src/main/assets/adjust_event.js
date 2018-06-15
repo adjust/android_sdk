@@ -1,6 +1,5 @@
 function AdjustEvent(eventToken) {
     this.eventToken = eventToken;
-
     this.revenue = null;
     this.currency = null;
     this.callbackParameters = [];
