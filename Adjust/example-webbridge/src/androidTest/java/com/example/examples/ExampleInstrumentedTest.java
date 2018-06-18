@@ -1,4 +1,4 @@
-package com.example.webbridgeexample;
+package com.example.examples;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.webbridgeexample", appContext.getPackageName());
+        assertEquals("com.example.examples", appContext.getPackageName());
     }
 }

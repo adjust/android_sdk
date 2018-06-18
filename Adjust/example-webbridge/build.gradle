@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.example.webbridgeexample"
+        applicationId "com.example.examples"
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 1

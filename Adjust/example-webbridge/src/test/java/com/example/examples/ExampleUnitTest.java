@@ -1,4 +1,4 @@
-package com.example.webbridgeexample;
+package com.example.examples;
 
 import org.junit.Test;
 

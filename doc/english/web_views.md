@@ -55,7 +55,7 @@ This is the guide to the Android SDK of adjust.com™ for Android apps which are
 
 ## <a id="example-app"></a>Example app
 
-There is an example app inside the [`webbridgeexample` directory][webbridgeexample]. You can open the Android project to see an example on how the Adjust SDK can be integrated.
+There is an example app inside the [`example-webbridge` directory][example-webbridge]. You can open the Android project to see an example on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
@@ -935,7 +935,7 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 [dashboard]:   http://adjust.com
 [adjust.com]:  http://adjust.com
 
-[webbridgeexample]:              Adjust/webbridgeexample
+[example-webbridge]:             Adjust/example-webbridge
 [releases]:                      https://github.com/adjust/android_sdk/releases
 [google_ad_id]:                  https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [google_play_services]:          http://developer.android.com/google/play-services/setup.html
