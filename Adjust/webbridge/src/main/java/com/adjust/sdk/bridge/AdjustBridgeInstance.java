@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustTestOptions;
@@ -101,6 +102,8 @@ public class AdjustBridgeInstance {
         }
 
         try {
+            AdjustBridgeUtil.getLogger().verbose("Web bridge onCreate adjustConfigString: " + adjustConfigString);
+
             JSONObject jsonAdjustConfig = new JSONObject(adjustConfigString);
             Object appTokenField = jsonAdjustConfig.get("appToken");
             Object environmentField = jsonAdjustConfig.get("environment");
@@ -308,7 +311,7 @@ public class AdjustBridgeInstance {
                 application.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            AdjustFactory.getLogger().error("AdjustBridgeInstance onCreate: %s", e.getMessage());
         }
     }
 
@@ -371,7 +374,7 @@ public class AdjustBridgeInstance {
             // Track event
             Adjust.trackEvent(adjustEvent);
         } catch (Exception e) {
-            e.printStackTrace();
+            AdjustFactory.getLogger().error("AdjustBridgeInstance trackEvent: %s", e.getMessage());
         }
     }
 
@@ -436,6 +439,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
+
         Adjust.setReferrer(referrer, application.getApplicationContext());
     }
 
@@ -562,6 +566,8 @@ public class AdjustBridgeInstance {
 
     @JavascriptInterface
     public void setTestOptions(final String testOptionsString) {
+        AdjustFactory.getLogger().verbose("AdjustBridgeInstance setTestOptions: %s", testOptionsString);
+
         if (!isInitialized()) {
             return;
         }
@@ -633,7 +639,7 @@ public class AdjustBridgeInstance {
 
             Adjust.setTestOptions(adjustTestOptions);
         } catch (Exception e) {
-            e.printStackTrace();
+            AdjustFactory.getLogger().error("AdjustBridgeInstance setTestOptions: %s", e.getMessage());
         }
     }
 
