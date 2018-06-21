@@ -637,6 +637,12 @@ public class AdjustBridgeInstance {
         }
     }
 
+    @JavascriptInterface
+    public void teardown() {
+        isInitialized = false;
+        shouldDeferredDeeplinkBeLaunched = true;
+    }
+
     public void setWebView(WebView webView) {
         this.webView = webView;
     }

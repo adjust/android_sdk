@@ -173,8 +173,20 @@ var Adjust = {
     },
 
     setTestOptions: function (testOptions) {
+        var testOptionsString = JSON.stringify(testOptions);
         if (AdjustBridge) {
-            AdjustBridge.setTestOptions(testOptions);
+            AdjustBridge.setTestOptions(testOptionsString);
         }
+    },
+
+    teardown: function() {
+        if (AdjustBridge) {
+            AdjustBridge.teardown();
+        }
+        this.adjustConfig = undefined;
+        this.isEnabledCallbackName = undefined;
+        this.isEnabledCallbackFunction = undefined;
+        this.getGoogleAdIdCallbackName = undefined;
+        this.getGoogleAdIdCallbackFunction = undefined;
     },
 };
