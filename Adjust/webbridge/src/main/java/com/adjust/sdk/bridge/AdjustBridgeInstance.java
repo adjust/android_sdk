@@ -294,7 +294,7 @@ public class AdjustBridgeInstance {
 
             // User agent
             Boolean readMobileEquipmentIdentity = AdjustBridgeUtil.fieldToBoolean(readMobileEquipmentIdentityField);
-            if (userAgent != null) {
+            if (readMobileEquipmentIdentity != null) {
                 adjustConfig.setReadMobileEquipmentIdentity(readMobileEquipmentIdentity);
             }
 
