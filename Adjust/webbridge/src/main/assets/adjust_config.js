@@ -187,7 +187,7 @@ AdjustConfig.prototype.adjust_deferredDeeplinkCallback = function(deeplink) {
 };
 
 AdjustConfig.prototype.setDelayStart = function(delayStart) {
-    this.setDelayStart = delayStart;
+    this.delayStart = delayStart;
 };
 
 AdjustConfig.prototype.setUserAgent = function(userAgent) {
