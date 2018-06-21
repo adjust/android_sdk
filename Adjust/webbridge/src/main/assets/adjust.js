@@ -104,7 +104,7 @@ var Adjust = {
 
     removeSessionPartnerParameter: function(key) {
         if (AdjustBridge) {
-            AdjustBridge.addSessionPartnerParameter(key);
+            AdjustBridge.removeSessionPartnerParameter(key);
         }
     },
 
