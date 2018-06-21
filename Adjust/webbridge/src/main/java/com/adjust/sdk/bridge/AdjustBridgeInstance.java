@@ -574,18 +574,26 @@ public class AdjustBridgeInstance {
 
         try {
             AdjustTestOptions adjustTestOptions = new AdjustTestOptions();
-            JSONObject jsonAdjustEvent = new JSONObject(testOptionsString);
+            JSONObject jsonAdjustTestOptions = new JSONObject(testOptionsString);
 
-            Object baseUrlField = jsonAdjustEvent.get("baseUrl");
-            Object basePathField = jsonAdjustEvent.get("basePath");
-            Object useTestConnectionOptionsField = jsonAdjustEvent.get("useTestConnectionOptions");
-            Object timerIntervalInMillisecondsField = jsonAdjustEvent.get("timerIntervalInMilliseconds");
-            Object timerStartInMillisecondsField = jsonAdjustEvent.get("timerStartInMilliseconds");
-            Object sessionIntervalInMillisecondsField = jsonAdjustEvent.get("sessionIntervalInMilliseconds");
-            Object subsessionIntervalInMillisecondsField = jsonAdjustEvent.get("subsessionIntervalInMilliseconds");
-            Object teardownField = jsonAdjustEvent.get("teardown");
-            Object tryInstallReferrerField = jsonAdjustEvent.get("tryInstallReferrer");
-            Object noBackoffWaitField = jsonAdjustEvent.get("noBackoffWait");
+            Object baseUrlField = jsonAdjustTestOptions.get("baseUrl");
+            Object gdprUrlField = jsonAdjustTestOptions.get("gdprUrl");
+            Object basePathField = jsonAdjustTestOptions.get("basePath");
+            Object gdprPathField = jsonAdjustTestOptions.get("gdprPath");
+            Object useTestConnectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
+            Object timerIntervalInMillisecondsField = jsonAdjustTestOptions.get("timerIntervalInMilliseconds");
+            Object timerStartInMillisecondsField = jsonAdjustTestOptions.get("timerStartInMilliseconds");
+            Object sessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("sessionIntervalInMilliseconds");
+            Object subsessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("subsessionIntervalInMilliseconds");
+            Object teardownField = jsonAdjustTestOptions.get("teardown");
+            Object tryInstallReferrerField = jsonAdjustTestOptions.get("tryInstallReferrer");
+            Object noBackoffWaitField = jsonAdjustTestOptions.get("noBackoffWait");
+            Object hasContextField = jsonAdjustTestOptions.get("hasContext");
+
+            String gdprUrl = AdjustBridgeUtil.fieldToString(gdprUrlField);
+            if (gdprUrl != null) {
+                adjustTestOptions.gdprUrl = gdprUrl;
+            }
 
             String baseUrl = AdjustBridgeUtil.fieldToString(baseUrlField);
             if (baseUrl != null) {
@@ -593,48 +601,58 @@ public class AdjustBridgeInstance {
             }
 
             String basePath = AdjustBridgeUtil.fieldToString(basePathField);
-            if (baseUrl != null) {
+            if (basePath != null) {
                 adjustTestOptions.basePath = basePath;
             }
 
+            String gdprPath = AdjustBridgeUtil.fieldToString(gdprPathField);
+            if (gdprPath != null) {
+                adjustTestOptions.gdprPath = gdprPath;
+            }
+
             Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
-            if (baseUrl != null) {
+            if (useTestConnectionOptions != null) {
                 adjustTestOptions.useTestConnectionOptions = useTestConnectionOptions;
             }
 
             Long timerIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(timerIntervalInMillisecondsField);
-            if (baseUrl != null) {
+            if (timerIntervalInMilliseconds != null) {
                 adjustTestOptions.timerIntervalInMilliseconds = timerIntervalInMilliseconds;
             }
 
             Long timerStartInMilliseconds = AdjustBridgeUtil.fieldToLong(timerStartInMillisecondsField);
-            if (baseUrl != null) {
+            if (timerStartInMilliseconds != null) {
                 adjustTestOptions.timerStartInMilliseconds = timerStartInMilliseconds;
             }
 
             Long sessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(sessionIntervalInMillisecondsField);
-            if (baseUrl != null) {
+            if (sessionIntervalInMilliseconds != null) {
                 adjustTestOptions.sessionIntervalInMilliseconds = sessionIntervalInMilliseconds;
             }
 
             Long subsessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(subsessionIntervalInMillisecondsField);
-            if (baseUrl != null) {
+            if (subsessionIntervalInMilliseconds != null) {
                 adjustTestOptions.subsessionIntervalInMilliseconds = subsessionIntervalInMilliseconds;
             }
 
             Boolean teardown = AdjustBridgeUtil.fieldToBoolean(teardownField);
-            if (baseUrl != null) {
+            if (teardown != null) {
                 adjustTestOptions.teardown = teardown;
             }
 
             Boolean tryInstallReferrer = AdjustBridgeUtil.fieldToBoolean(tryInstallReferrerField);
-            if (baseUrl != null) {
+            if (tryInstallReferrer != null) {
                 adjustTestOptions.tryInstallReferrer = tryInstallReferrer;
             }
 
             Boolean noBackoffWait = AdjustBridgeUtil.fieldToBoolean(noBackoffWaitField);
             if (noBackoffWait != null) {
                 adjustTestOptions.noBackoffWait = noBackoffWait;
+            }
+
+            Boolean hasContext = AdjustBridgeUtil.fieldToBoolean(hasContextField);
+            if (hasContext != null && hasContext.booleanValue()) {
+                adjustTestOptions.context = application.getApplicationContext();
             }
 
             Adjust.setTestOptions(adjustTestOptions);
