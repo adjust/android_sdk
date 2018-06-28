@@ -1,19 +1,12 @@
 package com.example.testappwebbridge;
 
-import android.os.Debug;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
-
-import com.adjust.sdk.bridge.AdjustBridgeUtil;
-import com.adjust.testlibrary.ICommandJsonListener;
 import com.adjust.testlibrary.ICommandRawJsonListener;
 import com.adjust.testlibrary.TestLibrary;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-
 
 public class TestLibraryBridge {
     public static WebView webView;

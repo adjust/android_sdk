@@ -1,8 +1,5 @@
 package com.example.testappwebbridge;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.os.Debug;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,17 +9,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.adjust.sdk.bridge.AdjustBridge;
-import com.adjust.sdk.bridge.AdjustBridgeUtil;
-import com.adjust.testlibrary.ICommandJsonListener;
-import com.adjust.testlibrary.ICommandListener;
-import com.adjust.testlibrary.ICommandRawJsonListener;
-import com.adjust.testlibrary.TestLibrary;
-
-import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String baseUrl = "https://10.0.2.2:8443";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +39,6 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             webView.loadUrl("file:///android_asset/AdjustTestApp-WebView.html");
-
-            Intent intent = getIntent();
-            Uri data = intent.getData();
         } catch (Exception e) {
             Log.d("testappwebbridge", "loadUrl, exception: " + e.getMessage());
             e.printStackTrace();
