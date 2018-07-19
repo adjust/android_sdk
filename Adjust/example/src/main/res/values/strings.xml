@@ -8,6 +8,7 @@
     <string name="btn_callback_event">Track callback event</string>
     <string name="btn_partner_event">Track partner event</string>
     <string name="btn_is_sdk_enabled">Is SDK enabled?</string>
+    <string name="btn_fire_intent">Fire INSTALL_REFERRER intent</string>
     <string name="btn_service_activity">Service Activity</string>
     <string name="btn_return">Return</string>
     <string name="btn_service">Service</string>

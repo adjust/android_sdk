@@ -130,6 +130,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onFireIntentClick(View v) {
+        Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+        intent.setPackage("com.adjust.examples");
+        intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+        sendBroadcast(intent);
+    }
+
     public void onServiceActivityClick(View v) {
         Intent intent = new Intent(this, ServiceActivity.class);
         startActivity(intent);
