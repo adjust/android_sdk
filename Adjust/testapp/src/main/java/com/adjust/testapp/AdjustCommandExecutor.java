@@ -395,6 +395,21 @@ public class AdjustCommandExecutor {
                 }
             });
         }
+
+        if (command.containsParameter("deferredDeeplinkCallback")) {
+            String launchDeferredDeeplinkS = command.getFirstParameterValue("deferredDeeplinkCallback");
+            final boolean launchDeferredDeeplink = "true".equals(launchDeferredDeeplinkS);
+            final String localBasePath = basePath;
+            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri deeplink) {
+                    Log.d("TestApp", "deferred_deep_link = " + deeplink.toString());
+                    MainActivity.testLibrary.addInfoToSend("deeplink", deeplink.toString());
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
+                    return launchDeferredDeeplink;
+                }
+            });
+        }
     }
 
     private void start() {
