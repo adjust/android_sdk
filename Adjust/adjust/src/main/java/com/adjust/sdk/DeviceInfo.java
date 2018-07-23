@@ -9,10 +9,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import java.util.Date;
 import java.util.Locale;
