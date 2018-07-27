@@ -17,9 +17,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class GooglePlayServicesClient {
     public static final class GooglePlayServicesInfo {
         private final String gpsAdid;
-        private final boolean trackingEnabled;
+        private final Boolean trackingEnabled;
 
-        GooglePlayServicesInfo(String gpdAdid, boolean trackingEnabled) {
+        GooglePlayServicesInfo(String gpdAdid, Boolean trackingEnabled) {
             this.gpsAdid = gpdAdid;
             this.trackingEnabled = trackingEnabled;
         }
@@ -28,7 +28,7 @@ public class GooglePlayServicesClient {
             return this.gpsAdid;
         }
 
-        public boolean isTrackingEnabled() {
+        public Boolean isTrackingEnabled() {
             return this.trackingEnabled;
         }
     }
@@ -111,10 +111,10 @@ public class GooglePlayServicesClient {
             return id;
         }
 
-        public boolean getTrackingEnabled(boolean paramBoolean) throws RemoteException {
+        public Boolean getTrackingEnabled(boolean paramBoolean) throws RemoteException {
             Parcel data = Parcel.obtain();
             Parcel reply = Parcel.obtain();
-            boolean limitAdTracking;
+            Boolean limitAdTracking;
             try {
                 data.writeInterfaceToken("com.google.android.gms.ads.identifier.internal.IAdvertisingIdService");
                 data.writeInt(paramBoolean ? 1 : 0);
@@ -125,7 +125,7 @@ public class GooglePlayServicesClient {
                 reply.recycle();
                 data.recycle();
             }
-            return !limitAdTracking;
+            return limitAdTracking != null ? !limitAdTracking : null;
         }
     }
 }
