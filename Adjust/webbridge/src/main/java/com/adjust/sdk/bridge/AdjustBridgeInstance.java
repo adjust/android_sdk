@@ -47,6 +47,7 @@ public class AdjustBridgeInstance {
     private Application application;
     private boolean isInitialized = false;
     private boolean shouldDeferredDeeplinkBeLaunched = true;
+    private FacebookSDKJSInterface facebookSDKJSInterface = null;
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
     // This requires user to have minimal supported API level set to 14.
@@ -130,6 +131,9 @@ public class AdjustBridgeInstance {
             Object info3Field = jsonAdjustConfig.get("info3");
             Object info4Field = jsonAdjustConfig.get("info4");
             Object readMobileEquipmentIdentityField = jsonAdjustConfig.get("readMobileEquipmentIdentity");
+            Object fbPixelConfiguredField = jsonAdjustConfig.get("fbPixelConfigured");
+            Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
+            Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -301,6 +305,9 @@ public class AdjustBridgeInstance {
                 adjustConfig.setReadMobileEquipmentIdentity(readMobileEquipmentIdentity);
             }
 
+            // Fb pixel
+            configureFbPixel(fbPixelConfiguredField, fbPixelDefaultEventTokenField, fbPixelMappingField);
+
             // Manually call onResume() because web view initialisation will happen a bit delayed.
             // With this delay, it will miss lifecycle callback onResume() initial firing.
             Adjust.onCreate(adjustConfig);
@@ -312,6 +319,50 @@ public class AdjustBridgeInstance {
             }
         } catch (Exception e) {
             AdjustFactory.getLogger().error("AdjustBridgeInstance onCreate: %s", e.getMessage());
+        }
+    }
+
+    private void configureFbPixel(Object fbPixelConfiguredField,
+                                  Object fbPixelDefaultEventTokenField,
+                                  Object fbPixelMappingField)
+    {
+        // Check if fb pixel should be configured
+        Boolean fbPixelConfigured = AdjustBridgeUtil.fieldToBoolean(fbPixelConfiguredField);
+        if (fbPixelConfigured == null) {
+            return;
+        }
+
+        // Configure the web view to add fb pixel interface
+        String fbApplicationId = FacebookSDKJSInterface.getApplicationId(application.getApplicationContext());
+
+        if (fbApplicationId == null) {
+            return;
+        }
+
+        // add fb pixel to js interface
+        facebookSDKJSInterface = new FacebookSDKJSInterface();
+        webView.addJavascriptInterface(facebookSDKJSInterface, "fbmq_" + fbApplicationId);
+
+        // Check fbPixelDefaultEventToken
+        String fbPixelDefaultEventToken = AdjustBridgeUtil.fieldToString(fbPixelDefaultEventTokenField);
+
+        if (fbPixelDefaultEventToken != null) {
+            facebookSDKJSInterface.setDefaultEventToken(fbPixelDefaultEventToken);
+        }
+
+        // Add mappings
+        String[] fbPixelMapping = new String[0];
+        try {
+            fbPixelMapping = AdjustBridgeUtil.jsonArrayToArray((JSONArray)fbPixelMappingField);
+            if (fbPixelMapping != null) {
+                for (int i = 0; i < fbPixelMapping.length; i += 2) {
+                    String key = fbPixelMapping[i];
+                    String value = fbPixelMapping[i+1];
+                    facebookSDKJSInterface.addFbPixelEventTokenMapping(key, value);
+                }
+            }
+        } catch (Exception e) {
+            AdjustFactory.getLogger().error("AdjustBridgeInstance.configureFbPixel: %s", e.getMessage());
         }
     }
 
