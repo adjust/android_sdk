@@ -1,6 +1,7 @@
 package com.adjust.sdk.bridge;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +49,14 @@ public class AdjustBridgeInstance {
     private boolean isInitialized = false;
     private boolean shouldDeferredDeeplinkBeLaunched = true;
     private FacebookSDKJSInterface facebookSDKJSInterface = null;
+
+    AdjustBridgeInstance() {
+    }
+
+    AdjustBridgeInstance(Application application, WebView webView) {
+        this.application = application;
+        this.webView = webView;
+    }
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
     // This requires user to have minimal supported API level set to 14.

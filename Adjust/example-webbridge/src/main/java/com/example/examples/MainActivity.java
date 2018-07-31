@@ -9,6 +9,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.adjust.sdk.bridge.AdjustBridge;
+import com.adjust.sdk.bridge.AdjustBridgeInstance;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,13 +19,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WebView webView = (WebView) findViewById(R.id.webView1);
-        AdjustBridge.setApplicationContext(getApplication());
-        AdjustBridge.setWebView(webView);
+        AdjustBridgeInstance defaultInstance = AdjustBridge.getDefaultInstance(getApplication(), webView);
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
-        webView.addJavascriptInterface(AdjustBridge.getDefaultInstance(), "AdjustBridge");
+        webView.addJavascriptInterface(defaultInstance, "AdjustBridge");
 
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
