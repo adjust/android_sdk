@@ -25,14 +25,11 @@ package com.adjust.sdk.bridge;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustFactory;
-import com.adjust.sdk.Util;
 
 import org.json.JSONException;
 import org.json.JSONObject;
