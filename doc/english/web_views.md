@@ -221,26 +221,11 @@ If you are already using a different broadcast receiver for the `INSTALL_REFERRE
 
 ### <a id="bridge-integrate-app"></a> Integrate adjust web bridge SDK into your app
 
-In order to properly initialise the AdjustBridge instance, you need to pass the `Application` reference to it and the `WebView` object in which you are loading your HTML page.
-
-We advise you to define your custom `Application` class and pass the reference in its `onCreate` method:
-
-```java
-public class GlobalApplication extends Application {
-    @Override
-    public void onCreate() {
-        super.onCreate();
-
-        AdjustBridge.setApplicationContext(this);
-    }
-}
-```
-
 After you have obtained the reference to your `WebView` object, you need to:
 
-- call `AdjustBridge.setWebView(webview);`, so that the adjust bridge has access to the web view.
 - call `webView.getSettings().setJavaScriptEnabled(true);`, to enable javascript in the web view.
-- call `webView.addJavascriptInterface(AdjustBridge.getDefaultInstance(), "AdjustBridge");`, to add the adjust bridge as an javascript interface of your web view.
+- start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.getDefaultInstance(getApplication(), webview)`
+- This will also register the adjust bridge as an Javascript Interface to the web view.
 
 After this steps, your Activity should look like this:
 
