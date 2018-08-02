@@ -68,13 +68,13 @@ fbq('set', 'mobileBridge', <YOUR_PIXEL_ID>, <YOUR_FB_APP_ID>);
 #### Register the Facebook SDK Javascript interface
 
 First, you still need to follow the integration guide for [Android web view](web_views.md) apps. 
-Then in the section where you need to add the `AdjustBridgeInstance` as an Javascript Interface into the web view, like so:
+Then in the section where you can get the adjust bridge default instance, like so:
 
 ```java
-webView.addJavascriptInterface(adjustBridgeInstance, "AdjustBridge");
+AdjustBridge.getDefaultInstance(getApplication(), webview);
 ```
 
-add the following line to:
+save the return instance, as `adjustBridgeInstance` for example, and add the following line next:
 
 ```java
 adjustBridgeInstance.registerFacebookSDKJSInterface();
