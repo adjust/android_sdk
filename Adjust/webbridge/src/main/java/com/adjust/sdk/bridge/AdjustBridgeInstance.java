@@ -56,6 +56,7 @@ public class AdjustBridgeInstance {
     AdjustBridgeInstance(Application application, WebView webView) {
         this.application = application;
         this.webView = webView;
+        webView.addJavascriptInterface(this, "AdjustBridge");
     }
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.

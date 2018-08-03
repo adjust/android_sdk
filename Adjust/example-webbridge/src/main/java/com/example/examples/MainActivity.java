@@ -19,12 +19,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WebView webView = (WebView) findViewById(R.id.webView1);
-        AdjustBridgeInstance defaultInstance = AdjustBridge.getDefaultInstance(getApplication(), webView);
 
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
-        webView.addJavascriptInterface(defaultInstance, "AdjustBridge");
+
+        AdjustBridgeInstance defaultInstance = AdjustBridge.registerAndGetInstance(getApplication(), webView);
 
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");

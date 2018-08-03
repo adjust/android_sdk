@@ -10,7 +10,7 @@ public class AdjustBridge {
     private static AdjustBridgeInstance defaultInstance;
 
     // New builder gets dependencies
-    public static synchronized AdjustBridgeInstance getDefaultInstance(Application application, WebView webView) {
+    public static synchronized AdjustBridgeInstance registerAndGetInstance(Application application, WebView webView) {
         if (defaultInstance == null) {
             defaultInstance = new AdjustBridgeInstance(application, webView);
         }
