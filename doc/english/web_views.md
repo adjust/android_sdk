@@ -224,7 +224,7 @@ If you are already using a different broadcast receiver for the `INSTALL_REFERRE
 After you have obtained the reference to your `WebView` object, you need to:
 
 - call `webView.getSettings().setJavaScriptEnabled(true);`, to enable javascript in the web view.
-- start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.getDefaultInstance(getApplication(), webview)`
+- start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.registerAndGetInstance(getApplication(), webview)`
 - This will also register the adjust bridge as an Javascript Interface to the web view.
 
 After this steps, your Activity should look like this:
@@ -238,14 +238,12 @@ public class MainActivity extends Activity {
 
         WebView webView = (WebView) findViewById(R.id.webView);
 
-        AdjustBridge.setApplicationContext(getApplication());
-        AdjustBridge.setWebView(webView);
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
-        webView.addJavascriptInterface(AdjustBridge.getDefaultInstance(), "AdjustBridge");
 
+	AdjustBridge.registerAndGetInstance(getApplication(), webview);
+	
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
         } catch (Exception e) {
