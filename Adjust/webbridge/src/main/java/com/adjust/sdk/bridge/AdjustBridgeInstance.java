@@ -711,6 +711,11 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public void fbPixelEvent(String pixelId, String event_name, String jsonString) {
+        this.facebookSDKJSInterface.sendEvent(pixelId, event_name, jsonString);
+    }
+
+    @JavascriptInterface
     public void teardown() {
         isInitialized = false;
         shouldDeferredDeeplinkBeLaunched = true;

@@ -119,17 +119,21 @@ public class FacebookSDKJSInterface {
         }
 
         if (eventToken == null) {
-            AdjustFactory.getLogger().warn("No mapping found for the fb pixel event %s, nor there is a default event token configured", event_name);
+            AdjustFactory.getLogger().warn("There is not a default event token configured or a mapping found for event named: '%s'. It won't be tracked as an adjust event", event_name);
+            return;
+        }
+        AdjustEvent fbPixelEvent = new AdjustEvent(eventToken);
+        if (!fbPixelEvent.isValid()) {
             return;
         }
 
         Map<String, String> stringMap = jsonStringToMap(jsonString);
         stringMap.put(PARAMETER_FBSDK_PIXEL_REFERRAL, pixelId);
+        //stringMap.put("_eventName", event_name);
 
         AdjustFactory.getLogger().debug("FB pixel event received, eventName: %s, payload: %s", event_name, stringMap);
 
         SortedMap<String,String> sortedParameters = new TreeMap<String,String>(stringMap);
-        AdjustEvent fbPixelEvent = new AdjustEvent(eventToken);
         for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
             String key = entry.getKey();
             fbPixelEvent.addPartnerParameter(key, entry.getValue());
