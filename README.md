@@ -146,9 +146,6 @@ If you are using Proguard, add these lines to your Proguard file:
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
 }
--keep class dalvik.system.VMRuntime {
-    java.lang.String getRuntime();
-}
 -keep class android.os.Build {
     java.lang.String[] SUPPORTED_ABIS;
     java.lang.String CPU_ABI;
