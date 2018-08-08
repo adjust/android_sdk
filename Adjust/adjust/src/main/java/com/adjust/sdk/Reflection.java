@@ -18,26 +18,6 @@ import java.util.Map;
 import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
-
-    public static Object getVMRuntimeObject() {
-        try {
-            return invokeStaticMethod("dalvik.system.VMRuntime", "getRuntime", null);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    public static String getVmInstructionSet() {
-        try {
-            Object VMRuntimeObject = getVMRuntimeObject();
-
-            String vmInstructionSet = (String)invokeInstanceMethod(VMRuntimeObject, "vmInstructionSet", null);
-            return vmInstructionSet;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
     public static String getPlayAdId(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);

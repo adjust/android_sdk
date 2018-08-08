@@ -54,7 +54,6 @@ class DeviceInfo {
     String hardwareName;
     String abi;
     String buildName;
-    String vmInstructionSet;
     String appInstallTime;
     String appUpdateTime;
     Map<String, String> pluginKeys;
@@ -90,7 +89,6 @@ class DeviceInfo {
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
-        vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
     }
@@ -326,11 +324,6 @@ class DeviceInfo {
         }
 
         return SupportedABIS[0];
-    }
-
-    private String getVmInstructionSet() {
-        String instructionSet = Util.getVmInstructionSet();
-        return instructionSet;
     }
 
     private String getAppInstallTime(Context context) {

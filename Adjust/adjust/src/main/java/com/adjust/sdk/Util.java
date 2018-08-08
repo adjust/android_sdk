@@ -538,10 +538,6 @@ public class Util {
         return mergedParameters;
     }
 
-    public static String getVmInstructionSet() {
-        return Reflection.getVmInstructionSet();
-    }
-
     public static Locale getLocale(Configuration configuration) {
         Locale locale = Reflection.getLocaleFromLocaleList(configuration);
         if (locale != null) {
