@@ -2,8 +2,12 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
+import android.os.LocaleList;
 import android.telephony.TelephonyManager;
 
+import com.adjust.sdk.plugin.AndroidIdUtil;
+import com.adjust.sdk.plugin.MacAddressUtil;
 import com.adjust.sdk.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
@@ -18,12 +22,14 @@ import java.util.Map;
 import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
+    private static Object getAdvertisingInfoObject(Context context) throws Exception {
+        return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
+    }
+
     public static String getPlayAdId(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
-
             String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
-
             return playAdid;
         } catch (Throwable t) {
             return null;
@@ -33,11 +39,8 @@ public class Reflection {
     public static Boolean isPlayTrackingEnabled(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
-
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
-
             Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
-
             return isPlayTrackingEnabled;
         } catch (Throwable t) {
             return null;
@@ -46,13 +49,10 @@ public class Reflection {
 
     public static String getMacAddress(Context context) {
         try {
-            String macSha1 = (String) invokeStaticMethod(
-                    "com.adjust.sdk.plugin.MacAddressUtil",
-                    "getMacAddress",
-                    new Class[]{Context.class}, context
-            );
+            // String macSha1 = (String) invokeStaticMethod("com.adjust.sdk.plugin.MacAddressUtil", "getMacAddress", new Class[]{Context.class}, context);
+            // return macSha1;
 
-            return macSha1;
+            return MacAddressUtil.getMacAddress(context);
         } catch (Throwable t) {
             return null;
         }
@@ -60,13 +60,73 @@ public class Reflection {
 
     public static String getAndroidId(Context context) {
         try {
-            String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
-                    , new Class[]{Context.class}, context);
+            // String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId", new Class[]{Context.class}, context);
+            // return androidId;
 
-            return androidId;
+            return AndroidIdUtil.getAndroidId(context);
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    public static String[] getSupportedAbis() {
+        String[] supportedAbis = null;
+        try {
+            // supportedAbis = (String[])readField("android.os.Build", "SUPPORTED_ABIS");
+
+            // Build.SUPPORTED_ABIS added as of API 21.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                supportedAbis = Build.SUPPORTED_ABIS;
+            }
+        } catch (Throwable t) {}
+        return supportedAbis;
+    }
+
+    public static String getCpuAbi() {
+        String cpuAbi = null;
+        try {
+            // cpuAbi = (String) readField("android.os.Build", "CPU_ABI");
+
+            // Build.CPU_ABI deprecated as of API 21.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                cpuAbi = Build.CPU_ABI;
+            }
+        } catch (Throwable t) {}
+        return cpuAbi;
+    }
+
+    public static Locale getLocaleFromLocaleList(Configuration configuration) {
+        Locale locale = null;
+        try {
+            // Object localesList = invokeInstanceMethod(configuration, "getLocales", null);
+            // if (localesList ==  null) {
+            //    return null;
+            // }
+            // locale = (Locale)invokeInstanceMethod(localesList, "get", new Class[]{int.class}, 0);
+
+            // Configuration.getLocales() added as of API 24.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                LocaleList localesList = configuration.getLocales();
+                if (localesList == null) {
+                    return null;
+                }
+                return localesList.get(0);
+            }
+        } catch (Throwable t) {}
+        return locale;
+    }
+
+    public static Locale getLocaleFromField(Configuration configuration) {
+        Locale locale = null;
+        try {
+            // locale = (Locale)readField("android.content.res.Configuration", "locale", configuration);
+
+            // Configuration.locale deprecated as of API 24
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                return configuration.locale;
+            }
+        } catch (Throwable t) {}
+        return locale;
     }
 
     public static String getImei(TelephonyManager telephonyManager) {
@@ -87,7 +147,6 @@ public class Reflection {
         }
     }
 
-
     public static String getMeid(TelephonyManager telephonyManager) {
         // return telephonyManager.getMeid();
         try {
@@ -106,7 +165,6 @@ public class Reflection {
         }
     }
 
-
     public static String getTelephonyId(TelephonyManager telephonyManager) {
         // return telephonyManager.getDeviceId();
         try {
@@ -123,51 +181,6 @@ public class Reflection {
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private static Object getAdvertisingInfoObject(Context context)
-            throws Exception {
-        return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
-                "getAdvertisingIdInfo",
-                new Class[]{Context.class}, context
-        );
-    }
-
-    public static String[] getSupportedAbis() {
-        String[] supportedAbis = null;
-        try {
-            supportedAbis = (String[])readField("android.os.Build", "SUPPORTED_ABIS");
-        } catch (Throwable t) {}
-        return supportedAbis;
-    }
-
-    public static String getCpuAbi() {
-        String cpuAbi = null;
-        try {
-            cpuAbi = (String) readField("android.os.Build", "CPU_ABI");
-        }catch (Throwable t) {}
-        return cpuAbi;
-    }
-
-    public static Locale getLocaleFromLocaleList(Configuration configuration) {
-        Locale locale = null;
-        try {
-            Object localesList = invokeInstanceMethod(configuration, "getLocales", null);
-            if (localesList ==  null) {
-                return null;
-            }
-            locale = (Locale)invokeInstanceMethod(localesList, "get", new Class[]{int.class}, 0);
-
-        }catch (Throwable t) {}
-        return locale;
-    }
-
-    public static Locale getLocaleFromField(Configuration configuration) {
-        Locale locale = null;
-        try {
-            locale = (Locale)readField("android.content.res.Configuration", "locale", configuration);
-        }catch (Throwable t) {}
-        return locale;
     }
 
     public static Class forName(String className) {
