@@ -1,4 +1,4 @@
-package com.adjust.sdk.plugin;
+package com.adjust.sdk;
 
 import android.content.Context;
 import android.provider.Settings.Secure;

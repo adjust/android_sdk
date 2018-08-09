@@ -146,9 +146,6 @@ public class Util {
         return Reflection.getMacAddress(context);
     }
 
-    public static Map<String, String> getPluginKeys(Context context) {
-        return Reflection.getPluginKeys(context);
-    }
     public static String getAndroidId(Context context) {
         return Reflection.getAndroidId(context);
     }

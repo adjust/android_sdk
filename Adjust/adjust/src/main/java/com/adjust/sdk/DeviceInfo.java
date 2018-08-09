@@ -56,7 +56,6 @@ class DeviceInfo {
     String buildName;
     String appInstallTime;
     String appUpdateTime;
-    Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
@@ -85,7 +84,6 @@ class DeviceInfo {
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
         fbAttributionId = getFacebookAttributionId(context);
-        pluginKeys = Util.getPluginKeys(context);
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();

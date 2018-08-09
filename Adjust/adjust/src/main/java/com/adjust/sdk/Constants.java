@@ -63,7 +63,4 @@ public interface Constants {
     String PARTNER_PARAMETERS = "partner_params";
 
     int MAX_INSTALL_REFERRER_RETRIES = 2;
-
-    // List of known plugins, possibly not active
-    List<String> PLUGINS = Arrays.asList();
 }

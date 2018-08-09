@@ -6,20 +6,10 @@ import android.os.Build;
 import android.os.LocaleList;
 import android.telephony.TelephonyManager;
 
-import com.adjust.sdk.plugin.AndroidIdUtil;
-import com.adjust.sdk.plugin.MacAddressUtil;
-import com.adjust.sdk.plugin.Plugin;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
     private static Object getAdvertisingInfoObject(Context context) throws Exception {
@@ -49,7 +39,7 @@ public class Reflection {
 
     public static String getMacAddress(Context context) {
         try {
-            // String macSha1 = (String) invokeStaticMethod("com.adjust.sdk.plugin.MacAddressUtil", "getMacAddress", new Class[]{Context.class}, context);
+            // String macSha1 = (String) invokeStaticMethod("com.adjust.sdk.MacAddressUtil", "getMacAddress", new Class[]{Context.class}, context);
             // return macSha1;
 
             return MacAddressUtil.getMacAddress(context);
@@ -60,7 +50,7 @@ public class Reflection {
 
     public static String getAndroidId(Context context) {
         try {
-            // String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId", new Class[]{Context.class}, context);
+            // String androidId = (String) invokeStaticMethod("com.adjust.sdk.AndroidIdUtil", "getAndroidId", new Class[]{Context.class}, context);
             // return androidId;
 
             return AndroidIdUtil.getAndroidId(context);
@@ -261,35 +251,5 @@ public class Reflection {
             return null;
         }
         return fieldObject.get(instance);
-    }
-
-    public static Map<String, String> getPluginKeys(Context context) {
-        Map<String, String> pluginKeys = new HashMap<String, String>();
-
-        for (Plugin plugin : getPlugins()) {
-            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
-            if (pluginEntry != null) {
-                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
-            }
-        }
-
-        if (pluginKeys.size() == 0) {
-            return null;
-        } else {
-            return pluginKeys;
-        }
-    }
-
-    private static List<Plugin> getPlugins() {
-        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
-
-        for (String pluginName : PLUGINS) {
-            Object pluginObject = Reflection.createDefaultInstance(pluginName);
-            if (pluginObject != null && pluginObject instanceof Plugin) {
-                plugins.add((Plugin) pluginObject);
-            }
-        }
-
-        return plugins;
     }
 }

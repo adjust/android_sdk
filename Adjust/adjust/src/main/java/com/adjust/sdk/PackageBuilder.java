@@ -253,7 +253,6 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
         PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
-        fillPluginKeys(parameters);
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
@@ -323,16 +322,6 @@ class PackageBuilder {
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")) {
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
-        }
-    }
-
-    private void fillPluginKeys(Map<String, String> parameters) {
-        if (deviceInfo.pluginKeys == null) {
-            return;
-        }
-
-        for (Map.Entry<String, String> entry : deviceInfo.pluginKeys.entrySet()) {
-            PackageBuilder.addString(parameters, entry.getKey(), entry.getValue());
         }
     }
 
