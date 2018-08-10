@@ -1123,6 +1123,12 @@ public class ActivityHandler implements IActivityHandler {
             launchAttributionListenerI(handler);
         }
 
+        // if attribution didn't update and it's still null
+        // ask for attribution
+        if (this.attribution == null && activityState.askingAttribution == false) {
+            this.attributionHandler.getAttribution();
+        }
+
         // mark install as tracked on success
         if (sessionResponseData.success) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
