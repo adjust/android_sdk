@@ -16,6 +16,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.LocaleList;
 import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
@@ -143,11 +145,11 @@ public class Util {
     }
 
     public static String getMacAddress(Context context) {
-        return Reflection.getMacAddress(context);
+        return MacAddressUtil.getMacAddress(context);
     }
 
     public static String getAndroidId(Context context) {
-        return Reflection.getAndroidId(context);
+        return AndroidIdUtil.getAndroidId(context);
     }
 
     public static String getTelephonyId(TelephonyManager telephonyManager) {
@@ -458,11 +460,17 @@ public class Util {
     }
 
     public static String[] getSupportedAbis() {
-        return Reflection.getSupportedAbis();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return Build.SUPPORTED_ABIS;
+        }
+        return null;
     }
 
     public static String getCpuAbi() {
-        return Reflection.getCpuAbi();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return Build.CPU_ABI;
+        }
+        return null;
     }
 
     public static String getReasonString(String message, Throwable throwable) {
@@ -536,11 +544,18 @@ public class Util {
     }
 
     public static Locale getLocale(Configuration configuration) {
-        Locale locale = Reflection.getLocaleFromLocaleList(configuration);
-        if (locale != null) {
-            return locale;
+        // Configuration.getLocales() added as of API 24.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LocaleList localesList = configuration.getLocales();
+            if (localesList != null && !localesList.isEmpty()) {
+                return localesList.get(0);
+            }
         }
-        return Reflection.getLocaleFromField(configuration);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return configuration.locale;
+        }
+        return null;
     }
 
     public static String getFireAdvertisingId(ContentResolver contentResolver) {
