@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	    <style type='text/css'>
+            html { font-family:Helvetica; color:#222; }
+            h1 { color:steelblue; font-size:24px; margin-top:24px; }
+            button { margin:0 3px 10px; font-size:12px; }
+            .logLine { border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; }
+	    </style>
+        <script type="text/javascript" src="adjust_event.js"></script>
+        <script type="text/javascript" src="adjust_config.js"></script>
+        <script type="text/javascript" src="adjust.js"></script>
+    </head>
+    <body>
+        <h1>Adjust Web View Demo</h1>
+
+        <script language="javascript">
+            window.onerror = function(err) { }
+
+            // Set up Facebook Pixel stuff.
+            let config = {};
+            config = {
+                fbid: '891530151031248',
+                appid: '308873563017393',
+                domain: null,
+                fbqq: null
+            };
+
+            let fbqu = 'https://'
+                + (config.domain || 'connect.facebook.net')
+                + '/en_US/fbevents.js?'
+                + (config.fbqq || '');
+
+            !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+            document,'script',fbqu);
+
+            config.fbid && fbq('init', config.fbid.toString());
+            fbq('set', 'mobileBridge', config.fbid.toString(), config.appid.toString());
+
+            var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            // Set up Facebook Pixel mappings.
+            adjustConfig.addFbPixelMapping('fb_mobile_search', 'g3mfiw');
+            adjustConfig.addFbPixelMapping('fb_mobile_purchase', 'a4fd35');
+            adjustConfig.setFbPixelDefaultEventToken('34vgg9');
+
+            Adjust.onCreate(adjustConfig);
+
+            window.onload = function() {
+                var btnTrackSearchEvent = document.getElementById('btnTrackSearchEvent')
+                btnTrackSearchEvent.onclick = function(e) {
+                    e.preventDefault();
+                    // Track FB 'Search' event.
+                    config.fbid && fbq('track', 'Search', config.fbid.toString());
+                }
+
+                var btnTrackPurchaseEvent = document.getElementById('btnTrackPurchaseEvent')
+                btnTrackPurchaseEvent.onclick = function(e) {
+                    e.preventDefault()
+                    // Track FB 'Purchase' event.
+                    config.fbid && fbq('track', 'Purchase', config.fbid.toString());
+                }
+
+                var btnTrackNonExistingEventOne = document.getElementById('btnTrackNonExistingEventOne')
+                btnTrackNonExistingEventOne.onclick = function(e) {
+                    e.preventDefault();
+                    // Track non existing FB event with no mapping (should default to predefined Adjust event token).
+                    config.fbid && fbq('track', 'fb_no_mapping', config.fbid.toString());
+                }
+
+                var btnTrackNonExistingEventTwo = document.getElementById('btnTrackNonExistingEventTwo')
+                btnTrackNonExistingEventTwo.onclick = function(e) {
+                    e.preventDefault()
+                    // Track non existing FB event with no mapping (should default to predefined Adjust event token).
+                    config.fbid && fbq('track', 'fb_no_mapping_again', config.fbid.toString());
+                }
+
+                var btnEnableOfflineMode = document.getElementById('btnEnableOfflineMode')
+                btnEnableOfflineMode.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.setOfflineMode(true);
+                }
+
+                var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
+                btnDisableOfflineMode.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.setOfflineMode(false);
+                }
+
+                var btnEnableSdk = document.getElementById('btnEnableSdk')
+                btnEnableSdk.onclick = function(e) {
+                    e.preventDefault()
+                    Adjust.setEnabled(true)
+                }
+
+                var btnDisableSdk = document.getElementById('btnDisableSdk')
+                btnDisableSdk.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.setEnabled(false);
+                }
+
+                var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')
+                btnIsSdkEnabled.onclick = function(e) {
+                    e.preventDefault();
+                    alert('Is SDK enabled? ' + Adjust.isEnabled());
+                }
+
+                var btnGetGoogleAdId = document.getElementById('btnGetGoogleAdId')
+                btnGetGoogleAdId.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getGoogleAdId(function (gpsAdid) {
+                        alert('Google Play Ad Id:\n' + gpsAdid);
+                    });
+                }
+            }
+        </script>
+
+        <button id='btnTrackSearchEvent'>Track 'Search' event</button>
+        <button id='btnTrackPurchaseEvent'>Track 'Purchase' event</button>
+        <button id='btnTrackNonExistingEventOne'>Track non-existing event</button>
+        <button id='btnTrackNonExistingEventTwo'>Track non-existing event</button>
+        <button id='btnEnableOfflineMode'>Enable offline mode</button>
+        <button id='btnDisableOfflineMode'>Disable offline mode</button>
+        <button id='btnEnableSdk'>Enable SDK</button>
+        <button id='btnDisableSdk'>Disable SDK</button>
+        <button id='btnIsSdkEnabled'>Is SDK enabled?</button>
+        <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+
+        <div id='log'></div>
+    </body>
+</html>

@@ -1,1 +1,1 @@
-include ':adjust', ':test', ':example', ':example-tv', ':testlibrary', ':testapp', ':example-webbridge', ':webbridge', ':testapp-webbridge'
+include ':adjust', ':test', ':example', ':example-tv', ':testlibrary', ':testapp', ':example-webbridge', ':webbridge', ':testapp-webbridge', ':example-fbpixel'
