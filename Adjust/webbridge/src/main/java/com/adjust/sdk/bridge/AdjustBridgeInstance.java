@@ -105,6 +105,7 @@ public class AdjustBridgeInstance {
         // Configure the web view to add fb pixel interface
         String fbApplicationId = FacebookSDKJSInterface.getApplicationId(application.getApplicationContext());
 
+        // TODO: Make this log message INFO or remove it completely.
         AdjustFactory.getLogger().error("AdjustBridgeInstance fbApplicationId: %s", fbApplicationId);
 
         if (fbApplicationId == null) {

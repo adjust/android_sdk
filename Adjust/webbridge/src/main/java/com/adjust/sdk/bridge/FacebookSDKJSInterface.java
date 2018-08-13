@@ -127,6 +127,7 @@ public class FacebookSDKJSInterface {
             return;
         }
 
+        // TODO: No need for sortedParameters, stringMap can be iterated directly.
         Map<String, String> stringMap = jsonStringToMap(jsonString);
         stringMap.put(PARAMETER_FBSDK_PIXEL_REFERRAL, pixelId);
         //stringMap.put("_eventName", event_name);
