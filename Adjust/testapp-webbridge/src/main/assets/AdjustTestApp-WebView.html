@@ -11,36 +11,22 @@
         <script type="text/javascript" src="adjust_event.js"></script>
         <script type="text/javascript" src="adjust_config.js"></script>
         <script type="text/javascript" src="adjust.js"></script>
-        <script type="text/javascript" src="testlibrary.js"></script>
+        <script type="text/javascript" src="test_library.js"></script>
         <script type="text/javascript" src="command_executor.js"></script>
     </head>
     <body>
-        <h1>Adjust Web View Demo</h1>
+        <h1>Adjust Web View SDK Test</h1>
 
         <script language="javascript">
             var baseUrl = "https://10.0.2.2:8443";
             var gdprUrl = "https://10.0.2.2:8443";
 
-            function startSession() {
-                //alert('startSession');
+            window.onload = function() {
+                // TestLibrary.addTestDirectory('current/user-agent');
+                // TestLibrary.addTest('current/deeplink-deferred/Test_DeferredDeeplink_callback_false');
                 TestLibrary.startTestSession("web-bridge4.14.0@android4.14.0");
             }
-
-            window.onload = function() {
-                //TestLibrary.addTestDirectory('current/userAgent');
-                //TestLibrary.addTest('current/userAgent/Test_UserAgent_empty');
-
-                var btnTrackSimpleEvent = document.getElementById('btnStartTestSession')
-                btnStartTestSession.onclick = function(e) {
-                    e.preventDefault();
-
-                    startSession();
-                }
-            }
         </script>
-
-        <button id='btnStartTestSession'>Start Test Session</button>
-
         <div id='log'></div>
     </body>
 </html>

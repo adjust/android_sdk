@@ -1,5 +1,7 @@
 package com.example.testappwebbridge;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,16 +10,18 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.adjust.sdk.Adjust;
 import com.adjust.sdk.bridge.AdjustBridge;
 
 public class MainActivity extends AppCompatActivity {
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final WebView webView = (WebView) findViewById(R.id.webView1);
+        webView = (WebView) findViewById(R.id.webView1);
         AdjustBridge.setApplicationContext(getApplication());
         AdjustBridge.setWebView(webView);
 
@@ -42,6 +46,23 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.d("testappwebbridge", "loadUrl, exception: " + e.getMessage());
             e.printStackTrace();
+        }
+
+        // Check if deferred deep link was received
+        Intent intent = getIntent();
+        Uri deeplinkData = intent.getData();
+        if (deeplinkData != null) {
+            Adjust.appWillOpenUrl(deeplinkData, getApplicationContext());
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+        Uri deeplink = intent.getData();
+        if (deeplink != null) {
+            Adjust.appWillOpenUrl(deeplink, getApplicationContext());
         }
     }
 }
