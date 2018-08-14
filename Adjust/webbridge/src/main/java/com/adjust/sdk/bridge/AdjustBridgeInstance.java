@@ -50,8 +50,7 @@ public class AdjustBridgeInstance {
     private boolean shouldDeferredDeeplinkBeLaunched = true;
     private FacebookSDKJSInterface facebookSDKJSInterface = null;
 
-    AdjustBridgeInstance() {
-    }
+    AdjustBridgeInstance() {}
 
     AdjustBridgeInstance(Application application, WebView webView) {
         this.application = application;
@@ -104,9 +103,7 @@ public class AdjustBridgeInstance {
     public void registerFacebookSDKJSInterface() {
         // Configure the web view to add fb pixel interface
         String fbApplicationId = FacebookSDKJSInterface.getApplicationId(application.getApplicationContext());
-
-        // TODO: Make this log message INFO or remove it completely.
-        AdjustFactory.getLogger().error("AdjustBridgeInstance fbApplicationId: %s", fbApplicationId);
+        AdjustFactory.getLogger().info("AdjustBridgeInstance fbApplicationId: %s", fbApplicationId);
 
         if (fbApplicationId == null) {
             return;
@@ -114,7 +111,7 @@ public class AdjustBridgeInstance {
 
         this.facebookSDKJSInterface = new FacebookSDKJSInterface();
 
-        // add fb pixel to js interface
+        // Add FB pixel to JS interface.
         this.webView.addJavascriptInterface(facebookSDKJSInterface, "fbmq_" + fbApplicationId);
     }
 
@@ -489,7 +486,6 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-
         Adjust.setReferrer(referrer, application.getApplicationContext());
     }
 

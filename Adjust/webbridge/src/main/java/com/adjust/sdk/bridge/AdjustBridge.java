@@ -14,7 +14,6 @@ public class AdjustBridge {
         if (defaultInstance == null) {
             defaultInstance = new AdjustBridgeInstance(application, webView);
         }
-
         return defaultInstance;
     }
 
@@ -22,7 +21,6 @@ public class AdjustBridge {
         if (defaultInstance == null) {
             defaultInstance = new AdjustBridgeInstance();
         }
-
         return defaultInstance;
     }
 

@@ -19,23 +19,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         WebView webView = (WebView) findViewById(R.id.webView1);
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
 
         AdjustBridgeInstance defaultInstance = AdjustBridge.registerAndGetInstance(getApplication(), webView);
-
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
-
-            Intent intent = getIntent();
-            Uri data = intent.getData();
-
-            //AdjustBridge.deeplinkReceived(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }

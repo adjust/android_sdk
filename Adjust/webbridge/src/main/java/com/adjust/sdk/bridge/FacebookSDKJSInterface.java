@@ -72,8 +72,7 @@ public class FacebookSDKJSInterface {
         String applicationId = null;
         ApplicationInfo ai = null;
         try {
-            ai = context.getPackageManager().getApplicationInfo(
-                    context.getPackageName(), PackageManager.GET_META_DATA);
+            ai = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
         } catch (PackageManager.NameNotFoundException e) {
             AdjustFactory.getLogger().error("Error loading fb ApplicationInfo: %s", e.getMessage());
             return null;
@@ -127,15 +126,13 @@ public class FacebookSDKJSInterface {
             return;
         }
 
-        // TODO: No need for sortedParameters, stringMap can be iterated directly.
         Map<String, String> stringMap = jsonStringToMap(jsonString);
         stringMap.put(PARAMETER_FBSDK_PIXEL_REFERRAL, pixelId);
-        //stringMap.put("_eventName", event_name);
+        // stringMap.put("_eventName", event_name);
 
         AdjustFactory.getLogger().debug("FB pixel event received, eventName: %s, payload: %s", event_name, stringMap);
 
-        SortedMap<String,String> sortedParameters = new TreeMap<String,String>(stringMap);
-        for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
+        for (Map.Entry<String,String> entry : stringMap.entrySet() ) {
             String key = entry.getKey();
             fbPixelEvent.addPartnerParameter(key, entry.getValue());
         }

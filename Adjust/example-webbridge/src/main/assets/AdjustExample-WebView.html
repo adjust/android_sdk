@@ -13,8 +13,7 @@
         <script type="text/javascript" src="adjust.js"></script>
     </head>
     <body>
-        <h1>Adjust Web View Demo</h1>
-
+        <h1 style="width:400px;height:35px;text-align:center;">Adjust Web View SDK Demo App</h1>
         <script language="javascript">
             window.onerror = function(err) { }
 
@@ -61,11 +60,10 @@
             }
 
             var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
-
-            //adjustConfig.setOpenDeferredDeeplink(true);
-            //adjustConfig.setSendInBackground(true);
-            //adjustConfig.setEventBufferingEnabled(false);
             adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+            // adjustConfig.setOpenDeferredDeeplink(true);
+            // adjustConfig.setSendInBackground(true);
+            // adjustConfig.setEventBufferingEnabled(false);
 
             adjustConfig.setAttributionCallback(attributionCallback);
             adjustConfig.setEventSuccessCallback(eventSuccessCallback);
@@ -80,7 +78,6 @@
                 var btnTrackSimpleEvent = document.getElementById('btnTrackSimpleEvent')
                 btnTrackSimpleEvent.onclick = function(e) {
                     e.preventDefault();
-
                     var adjustEvent = new AdjustEvent('g3mfiw');
                     Adjust.trackEvent(adjustEvent);
                 }
@@ -88,7 +85,6 @@
                 var btnTrackRevenueEvent = document.getElementById('btnTrackRevenueEvent')
                 btnTrackRevenueEvent.onclick = function(e) {
                     e.preventDefault()
-
                     var adjustEvent = new AdjustEvent('a4fd35');
                     adjustEvent.setRevenue(0.01, 'EUR');
                     Adjust.trackEvent(adjustEvent);
@@ -97,7 +93,6 @@
                 var btnTrackCallbackEvent = document.getElementById('btnTrackCallbackEvent')
                 btnTrackCallbackEvent.onclick = function(e) {
                     e.preventDefault();
-
                     var adjustEvent = new AdjustEvent('34vgg9');
                     adjustEvent.addCallbackParameter('key', 'value');
                     adjustEvent.addCallbackParameter('x', 'y');
@@ -108,7 +103,6 @@
                 var btnTrackPartnerEvent = document.getElementById('btnTrackPartnerEvent')
                 btnTrackPartnerEvent.onclick = function(e) {
                     e.preventDefault()
-
                     var adjustEvent = new AdjustEvent('w788qs');
                     adjustEvent.addPartnerParameter('foo', 'bar');
                     adjustEvent.addPartnerParameter('x', 'y');
@@ -120,60 +114,73 @@
                 var btnEnableOfflineMode = document.getElementById('btnEnableOfflineMode')
                 btnEnableOfflineMode.onclick = function(e) {
                     e.preventDefault();
-
                     Adjust.setOfflineMode(true);
                 }
 
                 var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
                 btnDisableOfflineMode.onclick = function(e) {
                     e.preventDefault();
-
                     Adjust.setOfflineMode(false);
                 }
 
                 var btnEnableSdk = document.getElementById('btnEnableSdk')
                 btnEnableSdk.onclick = function(e) {
                     e.preventDefault()
-
                     Adjust.setEnabled(true)
                 }
 
                 var btnDisableSdk = document.getElementById('btnDisableSdk')
                 btnDisableSdk.onclick = function(e) {
                     e.preventDefault();
-
                     Adjust.setEnabled(false);
                 }
 
                 var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')
                 btnIsSdkEnabled.onclick = function(e) {
                     e.preventDefault();
-
                     alert('Is SDK enabled? ' + Adjust.isEnabled());
                 }
 
                 var btnGetGoogleAdId = document.getElementById('btnGetGoogleAdId')
                 btnGetGoogleAdId.onclick = function(e) {
                     e.preventDefault();
-
                     Adjust.getGoogleAdId(function (gpsAdid) {
                         alert('Google Play Ad Id:\n' + gpsAdid);
                     });
                 }
             }
         </script>
-
-        <button id='btnTrackSimpleEvent'>Track Simple event</button>
-        <button id='btnTrackRevenueEvent'>Track Revenue event</button>
-        <button id='btnTrackCallbackEvent'>Track Callback event</button>
-        <button id='btnTrackPartnerEvent'>Track Partner event</button>
-        <button id='btnEnableOfflineMode'>Enable Offline mode</button>
-        <button id='btnDisableOfflineMode'>Disable Offline mode</button>
-        <button id='btnEnableSdk'>Enable SDK</button>
-        <button id='btnDisableSdk'>Disable SDK</button>
-        <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
-        <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
-
-        <div id='log'></div>
+        <div id='buttons'>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackSimpleEvent'>Track Simple event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackRevenueEvent'>Track Revenue event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackCallbackEvent'>Track Callback event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackPartnerEvent'>Track Partner event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableOfflineMode'>Enable Offline mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableOfflineMode'>Disable Offline mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableSdk'>Enable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableSdk'>Disable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+            </div>
+        </div>
     </body>
 </html>

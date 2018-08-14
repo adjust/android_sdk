@@ -13,8 +13,7 @@
         <script type="text/javascript" src="adjust.js"></script>
     </head>
     <body>
-        <h1>Adjust Web View Demo</h1>
-
+        <h1 style="width:400px;height:35px;text-align:center;">Adjust Facebook Pixel Demo App</h1>
         <script language="javascript">
             window.onerror = function(err) { }
 
@@ -38,9 +37,12 @@
             t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
             document,'script',fbqu);
 
+            // Please make sure to call 'init' method first.
             config.fbid && fbq('init', config.fbid.toString());
-            fbq('set', 'mobileBridge', config.fbid.toString(), config.appid.toString());
+            // And right after 'init', make a call to 'set' method BEFORE performing any tracking!
+            config.fbid && fbq('set', 'mobileBridge', config.fbid.toString(), config.appid.toString());
 
+            // Initialise Adjust SDK
             var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
             adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
 
@@ -49,6 +51,7 @@
             adjustConfig.addFbPixelMapping('fb_mobile_purchase', 'a4fd35');
             adjustConfig.setFbPixelDefaultEventToken('34vgg9');
 
+            // Start Adjust SDK.
             Adjust.onCreate(adjustConfig);
 
             window.onload = function() {
@@ -119,18 +122,37 @@
                 }
             }
         </script>
-
-        <button id='btnTrackSearchEvent'>Track 'Search' event</button>
-        <button id='btnTrackPurchaseEvent'>Track 'Purchase' event</button>
-        <button id='btnTrackNonExistingEventOne'>Track non-existing event</button>
-        <button id='btnTrackNonExistingEventTwo'>Track non-existing event</button>
-        <button id='btnEnableOfflineMode'>Enable offline mode</button>
-        <button id='btnDisableOfflineMode'>Disable offline mode</button>
-        <button id='btnEnableSdk'>Enable SDK</button>
-        <button id='btnDisableSdk'>Disable SDK</button>
-        <button id='btnIsSdkEnabled'>Is SDK enabled?</button>
-        <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
-
-        <div id='log'></div>
+        <div id='buttons'>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackSearchEvent'>Track 'Search' Event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackPurchaseEvent'>Track 'Purchase' Event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackNonExistingEventOne'>Track Non-Existing Event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackNonExistingEventTwo'>Track Non-Existing Event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableOfflineMode'>Enable Offline Mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableOfflineMode'>Disable Offline Mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableSdk'>Enable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableSdk'>Disable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+            </div>
+        </div>
     </body>
 </html>

@@ -239,7 +239,6 @@ public class AdjustBridgeUtil {
             }
             return array;
         }
-
         return null;
     }
 
