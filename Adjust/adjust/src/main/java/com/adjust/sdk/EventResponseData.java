@@ -6,10 +6,12 @@ import org.json.JSONObject;
  * Created by pfms on 09/02/16.
  */
 public class EventResponseData extends ResponseData {
-    public String eventToken;
+    private String eventToken;
+    private String sdkPlatform;
 
-    public EventResponseData(ActivityPackage activityPackage) {
-        eventToken = activityPackage.getParameters().get("event_token");
+    public EventResponseData(final ActivityPackage activityPackage) {
+        this.eventToken = activityPackage.getParameters().get("event_token");
+        this.sdkPlatform = Util.getSdkPrefixPlatform(activityPackage.getClientSdk());
     }
 
     public AdjustEventSuccess getSuccessResponseData() {
@@ -18,15 +20,19 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventSuccess successResponseData = new AdjustEventSuccess();
-        successResponseData.message = message;
-        successResponseData.timestamp = timestamp;
-        successResponseData.adid = adid;
-        if (jsonResponse != null) {
-            successResponseData.jsonResponse = jsonResponse;
+        if (this.sdkPlatform.equals("unity")) {
+            successResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
+            successResponseData.message = message != null ? message : "";
+            successResponseData.timestamp = timestamp != null ? timestamp : "";
+            successResponseData.adid = adid != null ? adid : "";
+            successResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
-            successResponseData.jsonResponse = new JSONObject();
+            successResponseData.eventToken = this.eventToken;
+            successResponseData.message = message;
+            successResponseData.timestamp = timestamp;
+            successResponseData.adid = adid;
+            successResponseData.jsonResponse = jsonResponse;
         }
-        successResponseData.eventToken = eventToken;
 
         return successResponseData;
     }
@@ -37,16 +43,21 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventFailure failureResponseData = new AdjustEventFailure();
-        failureResponseData.message = message;
-        failureResponseData.timestamp = timestamp;
-        failureResponseData.adid = adid;
-        failureResponseData.willRetry = willRetry;
-        if (jsonResponse != null) {
-            failureResponseData.jsonResponse = jsonResponse;
+        if (this.sdkPlatform.equals("unity")) {
+            failureResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
+            failureResponseData.message = message != null ? message : "";
+            failureResponseData.timestamp = timestamp != null ? timestamp : "";
+            failureResponseData.adid = adid != null ? adid : "";
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
-            failureResponseData.jsonResponse = new JSONObject();
+            failureResponseData.eventToken = this.eventToken;
+            failureResponseData.message = message;
+            failureResponseData.timestamp = timestamp;
+            failureResponseData.adid = adid;
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse;
         }
-        failureResponseData.eventToken = eventToken;
 
         return failureResponseData;
     }

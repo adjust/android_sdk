@@ -25,7 +25,7 @@ public class ResponseData {
         ResponseData responseData;
         switch (activityKind) {
             case SESSION:
-                responseData = new SessionResponseData();
+                responseData = new SessionResponseData(activityPackage);
                 break;
             case CLICK:
                 responseData = new SdkClickResponseData();
