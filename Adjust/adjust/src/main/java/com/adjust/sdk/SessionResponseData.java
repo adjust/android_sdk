@@ -18,12 +18,20 @@ public class SessionResponseData extends ResponseData {
         }
 
         AdjustSessionSuccess successResponseData = new AdjustSessionSuccess();
-        if (this.sdkPlatform.equals("unity")) {
+        if (this.sdkPlatform == null) {
+            // Native Android platform.
+            successResponseData.message = message;
+            successResponseData.timestamp = timestamp;
+            successResponseData.adid = adid;
+            successResponseData.jsonResponse = jsonResponse;
+        } else if (this.sdkPlatform.equals("unity")) {
+            // Unity platform.
             successResponseData.message = message != null ? message : "";
             successResponseData.timestamp = timestamp != null ? timestamp : "";
             successResponseData.adid = adid != null ? adid : "";
             successResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
+            // Rest of non native platforms.
             successResponseData.message = message;
             successResponseData.timestamp = timestamp;
             successResponseData.adid = adid;
@@ -39,13 +47,22 @@ public class SessionResponseData extends ResponseData {
         }
 
         AdjustSessionFailure failureResponseData = new AdjustSessionFailure();
-        if (this.sdkPlatform.equals("unity")) {
+        if (this.sdkPlatform == null) {
+            // Native Android platform.
+            failureResponseData.message = message;
+            failureResponseData.timestamp = timestamp;
+            failureResponseData.adid = adid;
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse;
+        }  else if (this.sdkPlatform.equals("unity")) {
+            // Unity platform.
             failureResponseData.message = message != null ? message : "";
             failureResponseData.timestamp = timestamp != null ? timestamp : "";
             failureResponseData.adid = adid != null ? adid : "";
             failureResponseData.willRetry = willRetry;
             failureResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
+            // Rest of non native platforms.
             failureResponseData.message = message;
             failureResponseData.timestamp = timestamp;
             failureResponseData.adid = adid;

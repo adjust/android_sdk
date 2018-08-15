@@ -20,13 +20,22 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventSuccess successResponseData = new AdjustEventSuccess();
-        if (this.sdkPlatform.equals("unity")) {
+        if (this.sdkPlatform == null) {
+            // Native Android platform.
+            successResponseData.eventToken = this.eventToken;
+            successResponseData.message = message;
+            successResponseData.timestamp = timestamp;
+            successResponseData.adid = adid;
+            successResponseData.jsonResponse = jsonResponse;
+        } else if (this.sdkPlatform.equals("unity")) {
+            // Unity platform.
             successResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
             successResponseData.message = message != null ? message : "";
             successResponseData.timestamp = timestamp != null ? timestamp : "";
             successResponseData.adid = adid != null ? adid : "";
             successResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
+            // Rest of non native platforms.
             successResponseData.eventToken = this.eventToken;
             successResponseData.message = message;
             successResponseData.timestamp = timestamp;
@@ -43,7 +52,16 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventFailure failureResponseData = new AdjustEventFailure();
-        if (this.sdkPlatform.equals("unity")) {
+        if (this.sdkPlatform == null) {
+            // Native Android platform.
+            failureResponseData.eventToken = this.eventToken;
+            failureResponseData.message = message;
+            failureResponseData.timestamp = timestamp;
+            failureResponseData.adid = adid;
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse;
+        } else if (this.sdkPlatform.equals("unity")) {
+            // Unity platform.
             failureResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
             failureResponseData.message = message != null ? message : "";
             failureResponseData.timestamp = timestamp != null ? timestamp : "";
@@ -51,6 +69,7 @@ public class EventResponseData extends ResponseData {
             failureResponseData.willRetry = willRetry;
             failureResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
+            // Rest of non native platforms.
             failureResponseData.eventToken = this.eventToken;
             failureResponseData.message = message;
             failureResponseData.timestamp = timestamp;
