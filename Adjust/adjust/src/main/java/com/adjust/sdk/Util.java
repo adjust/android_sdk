@@ -668,4 +668,40 @@ public class Util {
         int endOccuranceOfRootCause = sStackTrace.indexOf("\n", startOccuranceOfRootCause);
         return sStackTrace.substring(startOccuranceOfRootCause, endOccuranceOfRootCause);
     }
+
+    public static String getSdkPrefix(final String clientSdk) {
+        if (clientSdk == null) {
+            return null;
+        }
+        if (!clientSdk.contains("@")) {
+            return null;
+        }
+
+        String[] splitted = clientSdk.split("@");
+        if (splitted == null) {
+            return null;
+        }
+        if (splitted.length != 2) {
+            return null;
+        }
+
+        return splitted[0];
+    }
+
+    public static String getSdkPrefixPlatform(final String clientSdk) {
+        String sdkPrefix = getSdkPrefix(clientSdk);
+        if (sdkPrefix == null) {
+            return null;
+        }
+
+        String[] splitted = sdkPrefix.split("\\d+", 2);
+        if (splitted == null) {
+            return null;
+        }
+        if (splitted.length == 0) {
+            return null;
+        }
+
+        return splitted[0];
+    }
 }
