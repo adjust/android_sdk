@@ -1,21 +1,21 @@
 ## Summary
 
-This is the guide to the Android SDK of adjust.com™ for Android apps which are using web views. You can read more about adjust.com™ at [adjust.com].
+This is the guide to the Android SDK of Adjust™ for Android apps which are using web views. You can read more about Adjust™ at [adjust.com].
 
 ## Table of contents
 
 * [Example app](#example-app)
 * [Basic integration](#basic-integration)
-   * [Add native adjust Android SDK](#native-add)
-   * [Add adjust web bridge SDK to your project](#bridge-add)
+   * [Add native Adjust Android SDK](#native-add)
+   * [Add Adjust web bridge SDK to your project](#bridge-add)
    * [Add Google Play Services](#sdk-gps)
    * [Add permissions](#sdk-permissions)
    * [Proguard settings](#sdk-proguard)
    * [Install referrer](#install-referrer)
       * [Google Play Referrer API](#gpr-api)
       * [Google Play Store intent](#gps-intent)
-   * [Integrate adjust web bridge SDK into your app](#bridge-integrate-app)
-   * [Integrate adjust web bridge SDK into your web view](#bridge-integrate-web)
+   * [Integrate Adjust web bridge SDK into your app](#bridge-integrate-app)
+   * [Integrate Adjust web bridge SDK into your web view](#bridge-integrate-web)
    * [Session tracking](#session-tracking)
       * [API level 14 and higher](#session-tracking-api14)
       * [API level between 9 and 13](#session-tracking-api9)
@@ -61,19 +61,19 @@ There is an example app inside the [`example-webbridge` directory][example-webbr
 
 These are the minimal steps required to integrate the Adjust SDK into your Android project. We are going to assume that you use Android Studio for your Android development and target an Android API level 9 (Gingerbread) or later.
 
-### <a id="native-add">Add native adjust Android SDK
+### <a id="native-add">Add native Adjust Android SDK
 
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.12.4'
+compile 'com.adjust.sdk:adjust-android:4.14.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.12.4'
+implementation 'com.adjust.sdk:adjust-android:4.14.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -83,23 +83,23 @@ This applies when adding the Google Play Services dependency to your `build.grad
 
 You can also add the Adjust SDK to your project as a JAR library. The latest SDK version's JAR library can be found on our [releases page][releases].
 
-### <a id="bridge-add">Add adjust web bridge SDK to your project
+### <a id="bridge-add"></a>Add Adjust web bridge SDK to your project
 
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android-webbridge:4.12.0'
+compile 'com.adjust.sdk:adjust-android-webbridge:4.14.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.12.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.14.0'
 ```
 
 ---
 
-You can also add the adjust web bridge SDK to your project as a JAR library. The latest SDK version's JAR library can be found on our [releases page][releases].
+You can also add the Adjust web bridge SDK to your project as a JAR library. The latest SDK version's JAR library can be found on our [releases page][releases].
 
 ### <a id="sdk-gps"></a>Add Google Play Services
 
@@ -157,20 +157,6 @@ If you are using Proguard, add these lines to your Proguard file:
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
 }
--keep class dalvik.system.VMRuntime {
-    java.lang.String getRuntime();
-}
--keep class android.os.Build {
-    java.lang.String[] SUPPORTED_ABIS;
-    java.lang.String CPU_ABI;
-}
--keep class android.content.res.Configuration {
-    android.os.LocaleList getLocales();
-    java.util.Locale locale;
-}
--keep class android.os.LocaledList {
-    java.util.Locale get(int);
-}
 -keep public class com.android.installreferrer.** { *; }
 ```
 
@@ -219,13 +205,13 @@ We use this broadcast receiver to retrieve the install referrer and pass it to o
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
 
-### <a id="bridge-integrate-app"></a> Integrate adjust web bridge SDK into your app
+### <a id="bridge-integrate-app"></a> Integrate Adjust web bridge SDK into your app
 
 After you have obtained the reference to your `WebView` object, you need to:
 
-- call `webView.getSettings().setJavaScriptEnabled(true);`, to enable javascript in the web view.
-- start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.registerAndGetInstance(getApplication(), webview)`
-- This will also register the adjust bridge as an Javascript Interface to the web view.
+- Call `webView.getSettings().setJavaScriptEnabled(true);`, to enable Javascript in the web view.
+- Start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.registerAndGetInstance(getApplication(), webview)`
+- This will also register the Adjust bridge as an Javascript Interface to the web view.
 
 After this steps, your Activity should look like this:
 
@@ -253,12 +239,12 @@ public class MainActivity extends Activity {
 }
 ```
 
-By completing this, you have successfully added AdjustBridge to your app and enabled the Javascript bridge to communicate
-between adjust's native Android SDK and your page which will be loaded in web view.
+By completing this, you have successfully added Adjust bridge to your app and enabled the Javascript bridge to communicate
+between Adjust's native Android SDK and your page which will be loaded in web view.
 
-### <a id="bridge-integrate-web"></a> Integrate adjust web bridge SDK into your web view
+### <a id="bridge-integrate-web"></a> Integrate Adjust web bridge SDK into your web view
 
-In your HTML file, you need to import the adjust Javascript files, that are located in the root of the assets folder. If your HTML file is there as well, you can import them like this:
+In your HTML file, you need to import the Adjust Javascript files, that are located in the root of the assets folder. If your HTML file is there as well, you can import them like this:
 
 ```html
 <script type="text/javascript" src="adjust.js"></script>
@@ -266,7 +252,7 @@ In your HTML file, you need to import the adjust Javascript files, that are loca
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 
-Once you added references to the Javascript files, you can use them in your HTML file to initialise the adjust SDK:
+Once you added references to the Javascript files, you can use them in your HTML file to initialise the Adjust SDK:
 
 ```js
 // ...
@@ -279,9 +265,6 @@ Adjust.onCreate(adjustConfig);
 
 // ...
 ```
-
-TODO change screenshot with new AdjustConfig signature
-![][bridge_init_js_android]
 
 Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
 
@@ -305,7 +288,7 @@ you keep this value meaningful at all times! This is especially important if you
 
 ### <a id="session-tracking-api14"></a>API level 14 and higher
 
-If your app `minSdkVersion` in gradle is bigger or equal to `14`, the adjust sdk web bridge automatically register Activity Lifecycle callbacks to onResume and onPause events.
+If your app `minSdkVersion` in gradle is bigger or equal to `14`, the Adjust sdk web bridge automatically register Activity Lifecycle callbacks to onResume and onPause events.
 
 ### <a id="session-tracking-api9"></a>API level between 9 and 13
 
@@ -340,7 +323,7 @@ public class YourActivity extends Activity {
 
 Repeat these steps for **every** Activity of your app. Don't forget these steps when you create new Activities in the future. Depending on your coding style you might want to implement this in a common superclass of all your Activities.
 
-### <a id="adjust-logging">AdjustBridge logging
+### <a id="adjust-logging"></a>AdjustBridge logging
 
 You can increase or decrease the amount of logs you see in tests by calling `setLogLevel` on your `AdjustConfig` instance
 with one of the following parameters:
@@ -369,18 +352,18 @@ Adjust.onCreate(adjustConfig);
 // ...
 ```
 
-### <a id="build-the-app">Build your app
+### <a id="build-the-app"></a>Build your app
 
 Build and run your app. If the build succeeds, you should carefully read the SDK logs in the console. After the app launches
 for the first time, you should see the info log `Install tracked`.
 
 ![][bridge_install_tracked]
 
-## <a id="additional-features">Additional features
+## <a id="additional-features"></a>Additional features
 
-Once you integrate the adjust SDK into your project, you can take advantage of the following features.
+Once you integrate the Adjust SDK into your project, you can take advantage of the following features.
 
-### <a id="event-tracking">Event tracking
+### <a id="event-tracking"></a>Event tracking
 
 You can use adjust to track any event in your app. Suppose you want to track every tap on a button. You would have to create a new event token in your [dashboard]. Let's say that event token is `abc123`. In your button's `onClick` method you could then add the following lines to track the click:
 
@@ -389,7 +372,7 @@ let adjustEvent = new AdjustEvent('abc123');
 Adjust.trackEvent(adjustEvent);
 ```
 
-### <a id="revenue-tracking">Revenue tracking
+### <a id="revenue-tracking"></a>Revenue tracking
 
 If your users can generate revenue by tapping on advertisements or making in-app purchases you can track those revenues with events. Lets say a tap is worth one Euro cent. You could then track the revenue event like this:
 
@@ -400,7 +383,7 @@ adjustEvent.setRevenue(0.01, 'EUR');
 Adjust.trackEvent(adjustEvent);
 ```
 
-When you set a currency token, adjust will automatically convert the incoming revenues into a reporting revenue of your
+When you set a currency token, Adjust will automatically convert the incoming revenues into a reporting revenue of your
 choice. Read more about [currency conversion here.][currency-conversion]
 
 You can read more about revenue and event tracking in the [event tracking guide][event-tracking-guide].
@@ -421,7 +404,7 @@ adjustEvent.setOrderId('{OrderId}');
 Adjust.trackEvent(event);
 ```
 
-#### <a id="callback-parameters">Callback parameters
+#### <a id="callback-parameters"></a>Callback parameters
 
 You can register a callback URL for your events in your [dashboard]. We will send a GET request to that URL whenever the event is tracked. You can add callback parameters to that event by calling `addCallbackParameter` to the event instance before tracking it. We will then append these parameters to your callback URL.
 
@@ -444,7 +427,7 @@ It should be mentioned that we support a variety of placeholders like `{gps_adid
 
 You can read more about using URL callbacks, including a full list of available values, in our [callbacks guide][callbacks-guide].
 
-#### <a id="partner-parameters">Partner parameters
+#### <a id="partner-parameters"></a>Partner parameters
 
 You can also add parameters to be transmitted to network partners, which have been activated in your Adjust dashboard.
 
@@ -531,7 +514,7 @@ In this case, this will make the Adjust SDK not send the initial install session
 
 **The maximum delay start time of the adjust SDK is 10 seconds**.
 
-### <a id="attribution-callback">Attribution callback
+### <a id="attribution-callback"></a>Attribution callback
 
 You can register a callback function to be notified of tracker attribution changes. Due to the different sources considered for attribution, this information can not be provided synchronously.
 
@@ -595,7 +578,7 @@ The listener function will be called after the SDK tries to send a package to th
 
 - `(string) message` the message from the server or the error logged by the SDK.
 - `(string) timeStamp` timestamp from the server.
-- `(string) adid` a unique device identifier provided by adjust.
+- `(string) adid` a unique device identifier provided by Adjust.
 - `(JSON) jsonResponse` the JSON object with the response from the server.
 
 Both event response data objects contain:
@@ -606,7 +589,7 @@ And both event and session failed objects also contain:
 
 - `(boolean) willRetry` indicates there will be an attempt to resend the package at a later time.
 
-### <a id="disable-tracking">Disable tracking
+### <a id="disable-tracking"></a>Disable tracking
 
 You can disable the Adjust SDK from tracking any activities of the current device by calling `setEnabled` with parameter `false`. **This setting is remembered between sessions**.
 
@@ -616,7 +599,7 @@ Adjust.setEnabled(false);
 
 You can check if the Adjust SDK is currently enabled by calling the function `isEnabled`. It is always possible to activatе the Adjust SDK by invoking `setEnabled` with the enabled parameter as `true`.
 
-### <a id="offline-mode">Offline mode
+### <a id="offline-mode"></a>Offline mode
 
 You can put the Adjust SDK in offline mode to suspend transmission to our servers, while retaining tracked data to be sent later. While in offline mode, all information is saved in a file, so be careful not to trigger too many events while in offline mode.
 
@@ -630,7 +613,7 @@ Conversely, you can deactivate offline mode by calling `setOfflineMode` with `fa
 
 Unlike disabling tracking, this setting is **not remembered** between sessions. This means that the SDK is in online mode whenever it is started, even if the app was terminated in offline mode.
 
-### <a id="event-buffering">Event buffering
+### <a id="event-buffering"></a>Event buffering
 
 If your app makes heavy use of event tracking, you might want to delay some HTTP requests in order to send them in one batch
 every minute. You can enable event buffering with your `AdjustConfig` instance:
@@ -665,7 +648,7 @@ adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
 Adjust.onCreate(adjustConfig);
 ```
 
-### <a id="background-tracking">Background tracking
+### <a id="background-tracking"></a>Background tracking
 
 The default behaviour of the Adjust SDK is to pause sending HTTP requests while the app is in the background. You can change this in your `AdjustConfig` instance:
 
@@ -887,7 +870,7 @@ Adjust enables you to run re-engagement campaigns through deep links. For more i
 
 If you are using this feature, in order for your user to be properly reattributed, you need to make one additional call to the native Adjust SDK in your app.
 
-Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
+Once you have received deep link content information in your app, add a call to the `Adjust.appWillOpenUrl` method. By making this call, the Adjust SDK will try to find if there is any new attribution information inside of the deep link. If there is any, it will be sent to the Adjust backend. If your user should be reattributed due to a click on the Adjust tracker URL with deep link content, you will see the [attribution callback](#attribution-callback) in your app being triggered with new attribution info for this user.
 
 The call to `Adjust.appWillOpenUrl` should be done like this:
 
@@ -946,12 +929,11 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 [bridge_install_tracked]:  https://raw.githubusercontent.com/adjust/sdks/master/Resources/android/bridge/bridge_install_tracked.png
 
 
-## <a id="license">License
+## <a id="license"></a>License
 
-The adjust SDK is licensed under the MIT License.
+The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2018 adjust GmbH,
-http://www.adjust.com
+Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
