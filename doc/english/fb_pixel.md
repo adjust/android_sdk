@@ -4,9 +4,13 @@
 
 It is also now possible to use the Facebook Pixel in your app's webv iew with the Adjust SDK, without integrating the FB SDK.
 
-### Facebook integration
+## Facebook integration
 
-#### Facebook App ID
+### Example app
+
+There is an example app inside the [`example-fbpixel` directory][example-fbpixel] that demonstrates how Facebook Pixel events can be tracked with usage of Adjust web view SDK.
+
+### Facebook App ID
 
 There is no need to integrate the FB SDK; however, you must follow a few of the same integration steps from the FB SDK in order for the Adjust SDK to integrate the Facebook Pixel.
 
@@ -32,7 +36,7 @@ you will need to add your Facebook App ID to the app. You can follow the steps i
   </application>
   ```
 
-#### Facebook Pixel configuration
+### Facebook Pixel configuration
 
 Follow Facebook's guide on how to integrate the Facebook Pixel. The Javascript code should look something like this:
 
@@ -57,9 +61,9 @@ fbq('set', 'mobileBridge', <YOUR_PIXEL_ID>, <YOUR_FB_APP_ID>);
 
 **Note**: Please pay attention that it is **very important** that you first call `'init'` and immediately afterwards `'set'` method. Facebook's script snipet they offer you to paste to your HTML web page (like shown above) contains `'track'` method for page view event right after call to `'init'` method. In order for this page view event to be properly tracked, please make sure to call `'set'` method in between!
 
-### Adjust integration
+## Adjust integration
 
-#### Register the Facebook SDK Javascript interface
+### Register the Facebook SDK Javascript interface
 
 Follow the integration guide for [Android web view SDK](web_views.md) apps. In the section where you register and get the Adjust bridge default instance (see below):
 
@@ -73,7 +77,7 @@ save the return instance, as `adjustBridgeInstance`, for example, and then add t
 adjustBridgeInstance.registerFacebookSDKJSInterface();
 ```
 
-#### Event name configuration
+### Event name configuration
 
 The Adjust web bridge SDK translates Facebook Pixel events into Adjust events.
 
@@ -108,3 +112,5 @@ There is not a default event token configured or a mapping found for event named
 ```
 
 There is also the option to use a default Adjust event even if you do not have mapping configured. Just call `adjustConfig.setFbPixelDefaultEventToken(defaultEventToken);` before initializing the Adjust SDK.
+
+[example-fbpixel]:  ../../Adjust/example-fbpixel
