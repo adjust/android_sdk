@@ -3,7 +3,9 @@ package com.adjust.sdk;
 import org.json.JSONObject;
 
 /**
- * Created by pfms on 09/02/16.
+ * Adjust SDK
+ * Created by Pedro Silva (@nonelse) on 9th February 2016.
+ * Copyright © 2016-2018 Adjust GmbH. All rights reserved.
  */
 public class EventResponseData extends ResponseData {
     private String eventToken;

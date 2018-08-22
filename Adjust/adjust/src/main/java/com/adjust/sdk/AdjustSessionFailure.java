@@ -2,21 +2,25 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
-import java.util.Locale;
-
 /**
- * Created by pfms on 16/02/16.
+ * Adjust SDK
+ * Created by Pedro Silva (@nonelse) on 16th February 2016.
+ * Copyright © 2016-2018 Adjust GmbH. All rights reserved.
  */
 public class AdjustSessionFailure {
+    public boolean willRetry;
+    public String adid;
     public String message;
     public String timestamp;
-    public String adid;
-    public boolean willRetry;
     public JSONObject jsonResponse;
 
     @Override
     public String toString() {
         return Util.formatString("Session Failure msg:%s time:%s adid:%s retry:%b json:%s",
-            message, timestamp, adid, willRetry, jsonResponse);
+                message,
+                timestamp,
+                adid,
+                willRetry,
+                jsonResponse);
     }
 }
