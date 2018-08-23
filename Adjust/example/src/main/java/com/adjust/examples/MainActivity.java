@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     public void onTrackSimpleEventClick(View v) {
         AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
 
+        // Assign custom identifier to event which will be reported in success/failure callbacks.
+        event.setCallbackId("PrettyRandomIdentifier");
+
         Adjust.trackEvent(event);
     }
 

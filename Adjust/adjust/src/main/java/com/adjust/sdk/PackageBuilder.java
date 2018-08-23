@@ -101,6 +101,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
+        PackageBuilder.addString(parameters, "event_callback_id", event.callbackId);
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,

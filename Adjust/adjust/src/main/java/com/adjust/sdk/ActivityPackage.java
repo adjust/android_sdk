@@ -154,7 +154,7 @@ public class ActivityPackage implements Serializable {
         if (parameters != null) {
             builder.append("Parameters:");
             SortedMap<String,String> sortedParameters = new TreeMap<String,String>(parameters);
-            List<String> stringsToExclude = Arrays.asList("app_secret", "secret_id");
+            List<String> stringsToExclude = Arrays.asList("app_secret", "secret_id", "event_callback_id");
             for (Map.Entry<String,String> entry : sortedParameters.entrySet() ) {
                 String key = entry.getKey();
                 if (stringsToExclude.contains(key)) {
