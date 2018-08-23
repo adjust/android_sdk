@@ -669,7 +669,7 @@ public class Util {
         return sStackTrace.substring(startOccuranceOfRootCause, endOccuranceOfRootCause);
     }
 
-    public static String getSdkPrefix(final String clientSdk) {
+    private static String getSdkPrefix(final String clientSdk) {
         if (clientSdk == null) {
             return null;
         }
