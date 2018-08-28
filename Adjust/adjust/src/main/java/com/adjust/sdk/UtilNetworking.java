@@ -82,6 +82,7 @@ public class UtilNetworking {
 
             String appSecret = extractAppSecret(parameters);
             String secretId = extractSecretId(parameters);
+            extractEventCallbackId(parameters);
 
             Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
             URL url = new URL(uri.toString());
