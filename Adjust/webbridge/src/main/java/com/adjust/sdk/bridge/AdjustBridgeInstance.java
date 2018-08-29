@@ -377,6 +377,7 @@ public class AdjustBridgeInstance {
             Object callbackParametersField = jsonAdjustEvent.get("callbackParameters");
             Object partnerParametersField = jsonAdjustEvent.get("partnerParameters");
             Object orderIdField = jsonAdjustEvent.get("orderId");
+            Object callbackIdField = jsonAdjustEvent.get("callbackId");
 
             String eventToken = AdjustBridgeUtil.fieldToString(eventTokenField);
             AdjustEvent adjustEvent = new AdjustEvent(eventToken);
@@ -416,6 +417,12 @@ public class AdjustBridgeInstance {
             String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
             if (orderId != null) {
                 adjustEvent.setOrderId(orderId);
+            }
+
+            // Callback id
+            String callbackId = AdjustBridgeUtil.fieldToString(callbackIdField);
+            if (callbackId != null) {
+                adjustEvent.setCallbackId(callbackId);
             }
 
             // Track event

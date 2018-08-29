@@ -5,6 +5,7 @@ function AdjustEvent(eventToken) {
     this.callbackParameters = [];
     this.partnerParameters = [];
     this.orderId = null;
+    this.callbackId = null;
 }
 
 AdjustEvent.prototype.setRevenue = function(revenue, currency) {
@@ -24,4 +25,8 @@ AdjustEvent.prototype.addPartnerParameter = function(key, value) {
 
 AdjustEvent.prototype.setOrderId = function(orderId) {
     this.orderId = orderId;
+};
+
+AdjustEvent.prototype.setCallbackId = function(callbackId) {
+    this.callbackId = callbackId;
 };
