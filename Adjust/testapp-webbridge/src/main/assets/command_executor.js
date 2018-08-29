@@ -364,6 +364,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("timestamp", eventSuccess.timestamp);
             TestLibrary.addInfoToSend("adid", eventSuccess.adid);
             TestLibrary.addInfoToSend("eventToken", eventSuccess.eventToken);
+            TestLibrary.addInfoToSend("callbackId", eventSuccess.callbackId);
             TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(eventSuccess.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
@@ -378,6 +379,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("adid", eventFailed.adid);
             TestLibrary.addInfoToSend("eventToken", eventFailed.eventToken);
             TestLibrary.addInfoToSend("willRetry", eventFailed.willRetry);
+            TestLibrary.addInfoToSend("callbackId", eventFailed.callbackId);
             TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(eventFailed.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
@@ -454,6 +456,11 @@ AdjustCommandExecutor.prototype.event = function(params) {
     if ('orderId' in params) {
         var orderId = getFirstParameterValue(params, 'orderId');
         adjustEvent.setOrderId(orderId);
+    }
+
+    if ('callbackId' in params) {
+        var callbackId = getFirstParameterValue(params, 'callbackId');
+        adjustEvent.setCallbackId(callbackId);
     }
 };
 
