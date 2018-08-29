@@ -338,9 +338,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("message", sessionSuccess.message);
             TestLibrary.addInfoToSend("timestamp", sessionSuccess.timestamp);
             TestLibrary.addInfoToSend("adid", sessionSuccess.adid);
-            if (sessionSuccess.jsonResponse != null) {
-                TestLibrary.addInfoToSend("jsonResponse", sessionSuccess.jsonResponse.toString());
-            }
+            TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(sessionSuccess.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
         });
@@ -353,9 +351,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("timestamp", sessionFailed.timestamp);
             TestLibrary.addInfoToSend("adid", sessionFailed.adid);
             TestLibrary.addInfoToSend("willRetry", sessionFailed.willRetry);
-            if (sessionFailed.jsonResponse != null) {
-                TestLibrary.addInfoToSend("jsonResponse", sessionFailed.jsonResponse.toString());
-            }
+            TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(sessionFailed.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
         });
@@ -368,9 +364,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("timestamp", eventSuccess.timestamp);
             TestLibrary.addInfoToSend("adid", eventSuccess.adid);
             TestLibrary.addInfoToSend("eventToken", eventSuccess.eventToken);
-            if (eventSuccess.jsonResponse != null) {
-                TestLibrary.addInfoToSend("jsonResponse", eventSuccess.jsonResponse.toString());
-            }
+            TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(eventSuccess.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
         });
@@ -384,9 +378,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("adid", eventFailed.adid);
             TestLibrary.addInfoToSend("eventToken", eventFailed.eventToken);
             TestLibrary.addInfoToSend("willRetry", eventFailed.willRetry);
-            if (eventFailed.jsonResponse != null) {
-                TestLibrary.addInfoToSend("jsonResponse", eventFailed.jsonResponse.toString());
-            }
+            TestLibrary.addInfoToSend("jsonResponse", JSON.stringify(eventFailed.jsonResponse));
 
             TestLibrary.sendInfoToServer(basePath);
         });
