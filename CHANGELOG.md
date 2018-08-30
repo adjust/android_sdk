@@ -1,3 +1,17 @@
+### Version 4.15.0 (30th August 2018)
+#### Added
+- Added `setCallbackId` method on `AdjustEvent` object for users to set custom ID on event object which will later be reported in event success/failure callbacks.
+- Added support for tracking Facebook Pixel events with Android web view SDK.
+- Aligned feature set of Android web view SDK with native Android SDK.
+- Added example app which demonstrates how Android web view SDK can be used to track Facebook Pixel events.
+
+#### Changed
+- SDK will now fire attribution request each time upon session tracking finished in case it lacks attribution info.
+- Removed reading of `vm_isa` parameter.
+- Removed unneccessary reflection calls.
+
+---
+
 ### Version 4.14.0 (8th June 2018)
 #### Added
 - Added `Adjust.appWillOpenUrl(Uri, Context)` method to enable deep link caching.
