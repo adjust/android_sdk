@@ -26,7 +26,7 @@ dependencies {
     // Add SDK via module.
     implementation project(":adjust")
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.14.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.15.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
