@@ -1,4 +1,4 @@
-### Version 4.15.0 (30th August 2018)
+### Version 4.15.0 (31st August 2018)
 #### Added
 - Added `setCallbackId` method on `AdjustEvent` object for users to set custom ID on event object which will later be reported in event success/failure callbacks.
 - Added `callbackId` member to `AdjustEventSuccess` class.
@@ -8,6 +8,7 @@
 - Added example app which demonstrates how Android web view SDK can be used to track Facebook Pixel events.
 
 #### Changed
+- Marked `setReadMobileEquipmentIdentity` method of `AdjustConfig` object as deprecated.
 - SDK will now fire attribution request each time upon session tracking finished in case it lacks attribution info.
 - Removed reading of `vm_isa` parameter.
 - Removed unneccessary reflection calls.
