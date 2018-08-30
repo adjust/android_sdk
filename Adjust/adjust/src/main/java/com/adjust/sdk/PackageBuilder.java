@@ -284,13 +284,6 @@ class PackageBuilder {
 
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
-        if (adjustConfig.readMobileEquipmentIdentity) {
-            TelephonyManager telephonyManager = (TelephonyManager)adjustConfig.context.getSystemService(Context.TELEPHONY_SERVICE);
-
-            PackageBuilder.addString(parameters, "device_ids", Util.getTelephonyIds(telephonyManager));
-            PackageBuilder.addString(parameters, "imeis", Util.getIMEIs(telephonyManager));
-            PackageBuilder.addString(parameters, "meids", Util.getMEIDs(telephonyManager));
-        }
     }
 
     private void injectActivityState(Map<String, String> parameters) {

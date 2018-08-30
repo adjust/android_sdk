@@ -35,7 +35,6 @@ public class AdjustConfig {
     boolean startOffline;
     String secretId;
     String appSecret;
-    boolean readMobileEquipmentIdentity;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -143,8 +142,9 @@ public class AdjustConfig {
         this.appSecret = Util.formatString("%d%d%d%d", info1, info2, info3, info4);
     }
 
+    @Deprecated
     public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {
-        this.readMobileEquipmentIdentity = readMobileEquipmentIdentity;
+        logger.warn("This method has been deprecated and shouldn't be used anymore");
     }
 
     public boolean isValid() {

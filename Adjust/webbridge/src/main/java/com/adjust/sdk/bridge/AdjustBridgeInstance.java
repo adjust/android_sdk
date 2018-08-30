@@ -154,7 +154,6 @@ public class AdjustBridgeInstance {
             Object info2Field = jsonAdjustConfig.get("info2");
             Object info3Field = jsonAdjustConfig.get("info3");
             Object info4Field = jsonAdjustConfig.get("info4");
-            Object readMobileEquipmentIdentityField = jsonAdjustConfig.get("readMobileEquipmentIdentity");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
 
@@ -320,12 +319,6 @@ public class AdjustBridgeInstance {
             Long info4 = AdjustBridgeUtil.fieldToLong(info4Field);
             if (secretId != null && info1 != null && info2 != null && info3 != null && info4 != null) {
                 adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
-            }
-
-            // User agent
-            Boolean readMobileEquipmentIdentity = AdjustBridgeUtil.fieldToBoolean(readMobileEquipmentIdentityField);
-            if (readMobileEquipmentIdentity != null) {
-                adjustConfig.setReadMobileEquipmentIdentity(readMobileEquipmentIdentity);
             }
 
             // Check Pixel Default Event Token

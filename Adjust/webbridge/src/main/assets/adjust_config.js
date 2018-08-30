@@ -46,7 +46,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.info2 = null;
     this.info3 = null;
     this.info4 = null;
-    this.readMobileEquipmentIdentity = null;
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
 }
@@ -204,9 +203,7 @@ AdjustConfig.prototype.setAppSecret = function(secretId, info1, info2, info3, in
     this.info4 = info4;
 };
 
-AdjustConfig.prototype.setReadMobileEquipmentIdentity = function(readMobileEquipmentIdentity) {
-    this.readMobileEquipmentIdentity = readMobileEquipmentIdentity;
-};
+AdjustConfig.prototype.setReadMobileEquipmentIdentity = function(readMobileEquipmentIdentity) {};
 
 AdjustConfig.prototype.setFbPixelDefaultEventToken = function(fbPixelDefaultEventToken) {
     this.fbPixelDefaultEventToken = fbPixelDefaultEventToken;
