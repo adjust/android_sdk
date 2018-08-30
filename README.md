@@ -30,6 +30,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
       * [In-App Purchase verification](#iap-verification)
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
+      * [Callback identifier](#callback-id)
    * [Session parameters](#session-parameters)
       * [Session callback parameters](#session-callback-parameters)
       * [Session partner parameters](#session-partner-parameters)
@@ -462,6 +463,18 @@ Adjust.trackEvent(event);
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
+### <a id="callback-id"></a>Callback identifier
+
+You can also add custom string identifier to each event you want to track. This identifier will later be reported in event success and/or event failure callbacks to enable you to keep track on which event was successfully tracked or not. You can set this identifier by calling the `setCallbackId` method on your `AdjustEvent` instance:
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setCallbackId("Your-Custom-Id");
+
+Adjust.trackEvent(event);
+```
+
 ### <a id="session-parameters"></a>Set up session parameters
 
 Some parameters are saved to be sent in every **event** and **session** of the Adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
@@ -625,6 +638,7 @@ The listener function will be called after the SDK tries to send a package to th
 Both event response data objects contain:
 
 - `String eventToken` the event token, if the package tracked was an event.
+- `String callbackId` the custom defined callback ID set on event object.
 
 If any value is unavailable, it will default to `null`.
 
