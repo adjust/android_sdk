@@ -13,6 +13,7 @@ public class AdjustEvent {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
     String orderId;
+    String callbackId;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -61,6 +62,10 @@ public class AdjustEvent {
 
     public void setOrderId(String orderId) {
         this.orderId = orderId;
+    }
+
+    public void setCallbackId(String callbackId) {
+        this.callbackId = callbackId;
     }
 
     public boolean isValid() {

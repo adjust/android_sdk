@@ -3,6 +3,7 @@ package com.adjust.testlibrary;
 import android.os.SystemClock;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -198,6 +199,7 @@ public class TestLibrary {
 
     private void execTestCommandsI(List<TestCommand> testCommands) throws InterruptedException {
         debug("testCommands: %s", testCommands);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
         for (TestCommand testCommand : testCommands) {
             if (Thread.interrupted()) {
@@ -227,9 +229,13 @@ public class TestLibrary {
             if (commandListener != null) {
                 commandListener.executeCommand(testCommand.className, testCommand.functionName, testCommand.params);
             } else if (commandJsonListener != null) {
-                commandJsonListener.executeCommand(testCommand.className, testCommand.functionName, gson.toJson(testCommand.params));
+                String toJsonParams = gson.toJson(testCommand.params);
+                debug("commandJsonListener test command params toJson: %s", toJsonParams);
+                commandJsonListener.executeCommand(testCommand.className, testCommand.functionName, toJsonParams);
             } else if (commandRawJsonListener != null) {
-                commandRawJsonListener.executeCommand(gson.toJson(testCommand));
+                String toJsonCommand = gson.toJson(testCommand);
+                debug("commandRawJsonListener test command toJson: %s", toJsonCommand);
+                commandRawJsonListener.executeCommand(toJsonCommand);
             }
             long timeAfter = System.nanoTime();
             long timeElapsedMillis = TimeUnit.NANOSECONDS.toMillis(timeAfter - timeBefore);

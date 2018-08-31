@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	    <style type='text/css'>
+            html { font-family:Helvetica; color:#222; }
+            h1 { color:steelblue; font-size:24px; margin-top:24px; }
+            button { margin:0 3px 10px; font-size:12px; }
+            .logLine { border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; }
+	    </style>
+        <script type="text/javascript" src="adjust_event.js"></script>
+        <script type="text/javascript" src="adjust_config.js"></script>
+        <script type="text/javascript" src="adjust.js"></script>
+        <script type="text/javascript" src="test_library.js"></script>
+        <script type="text/javascript" src="command_executor.js"></script>
+    </head>
+    <body>
+        <h1>Adjust Web View SDK Test</h1>
+
+        <script language="javascript">
+            var baseUrl = "https://10.0.2.2:8443";
+            var gdprUrl = "https://10.0.2.2:8443";
+
+            window.onload = function() {
+                // TestLibrary.addTestDirectory('current/user-agent');
+                // TestLibrary.addTest('current/deeplink-deferred/Test_DeferredDeeplink_callback_false');
+                TestLibrary.startTestSession("web-bridge4.15.0@android4.15.0");
+            }
+        </script>
+        <div id='log'></div>
+    </body>
+</html>

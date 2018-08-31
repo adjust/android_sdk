@@ -46,6 +46,7 @@ public class UtilNetworking {
 
             String appSecret = extractAppSecret(parameters);
             String secretId = extractSecretId(parameters);
+            extractEventCallbackId(parameters);
 
             String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
@@ -81,6 +82,7 @@ public class UtilNetworking {
 
             String appSecret = extractAppSecret(parameters);
             String secretId = extractSecretId(parameters);
+            extractEventCallbackId(parameters);
 
             Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
             URL url = new URL(uri.toString());
@@ -269,6 +271,10 @@ public class UtilNetworking {
 
     private static String extractSecretId(Map<String, String> parameters) {
         return parameters.remove("secret_id");
+    }
+
+    private static void extractEventCallbackId(Map<String, String> parameters) {
+        parameters.remove("event_callback_id");
     }
 
     private static String buildAuthorizationHeader(Map<String, String> parameters,

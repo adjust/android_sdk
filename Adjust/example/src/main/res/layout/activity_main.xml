@@ -101,6 +101,19 @@
         android:text="@string/btn_is_sdk_enabled" />
 
     <Button
+        android:id="@+id/btnFireIntent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="0.143"
+        android:onClick="onFireIntentClick"
+        android:text="@string/btn_fire_intent" />
+
+    <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_service_activity"

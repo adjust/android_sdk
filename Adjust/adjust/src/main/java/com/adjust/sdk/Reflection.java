@@ -2,48 +2,24 @@ package com.adjust.sdk;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Build;
+import android.os.LocaleList;
 import android.telephony.TelephonyManager;
-
-import com.adjust.sdk.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import static com.adjust.sdk.Constants.PLUGINS;
 
 public class Reflection {
-
-    public static Object getVMRuntimeObject() {
-        try {
-            return invokeStaticMethod("dalvik.system.VMRuntime", "getRuntime", null);
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    public static String getVmInstructionSet() {
-        try {
-            Object VMRuntimeObject = getVMRuntimeObject();
-
-            String vmInstructionSet = (String)invokeInstanceMethod(VMRuntimeObject, "vmInstructionSet", null);
-            return vmInstructionSet;
-        } catch (Throwable t) {
-            return null;
-        }
+    private static Object getAdvertisingInfoObject(Context context) throws Exception {
+        return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
     }
 
     public static String getPlayAdId(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
-
             String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
-
             return playAdid;
         } catch (Throwable t) {
             return null;
@@ -53,141 +29,12 @@ public class Reflection {
     public static Boolean isPlayTrackingEnabled(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
-
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
-
             Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
-
             return isPlayTrackingEnabled;
         } catch (Throwable t) {
             return null;
         }
-    }
-
-    public static String getMacAddress(Context context) {
-        try {
-            String macSha1 = (String) invokeStaticMethod(
-                    "com.adjust.sdk.plugin.MacAddressUtil",
-                    "getMacAddress",
-                    new Class[]{Context.class}, context
-            );
-
-            return macSha1;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    public static String getAndroidId(Context context) {
-        try {
-            String androidId = (String) invokeStaticMethod("com.adjust.sdk.plugin.AndroidIdUtil", "getAndroidId"
-                    , new Class[]{Context.class}, context);
-
-            return androidId;
-        } catch (Throwable t) {
-            return null;
-        }
-    }
-
-    public static String getImei(TelephonyManager telephonyManager) {
-        // return telephonyManager.getImei();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getImei", null);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static String getImei(TelephonyManager telephonyManager, int index) {
-        // return telephonyManager.getImei();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getImei", new Class[]{int.class}, index);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
-    public static String getMeid(TelephonyManager telephonyManager) {
-        // return telephonyManager.getMeid();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getMeid", null);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static String getMeid(TelephonyManager telephonyManager, int index) {
-        // return telephonyManager.getMeid();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getMeid", new Class[]{int.class}, index);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
-    public static String getTelephonyId(TelephonyManager telephonyManager) {
-        // return telephonyManager.getDeviceId();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", null);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
-        // return telephonyManager.getDeviceId();
-        try {
-            return (String) invokeInstanceMethod(telephonyManager, "getDeviceId", new Class[]{int.class}, index);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private static Object getAdvertisingInfoObject(Context context)
-            throws Exception {
-        return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient",
-                "getAdvertisingIdInfo",
-                new Class[]{Context.class}, context
-        );
-    }
-
-    public static String[] getSupportedAbis() {
-        String[] supportedAbis = null;
-        try {
-            supportedAbis = (String[])readField("android.os.Build", "SUPPORTED_ABIS");
-        } catch (Throwable t) {}
-        return supportedAbis;
-    }
-
-    public static String getCpuAbi() {
-        String cpuAbi = null;
-        try {
-            cpuAbi = (String) readField("android.os.Build", "CPU_ABI");
-        }catch (Throwable t) {}
-        return cpuAbi;
-    }
-
-    public static Locale getLocaleFromLocaleList(Configuration configuration) {
-        Locale locale = null;
-        try {
-            Object localesList = invokeInstanceMethod(configuration, "getLocales", null);
-            if (localesList ==  null) {
-                return null;
-            }
-            locale = (Locale)invokeInstanceMethod(localesList, "get", new Class[]{int.class}, 0);
-
-        }catch (Throwable t) {}
-        return locale;
-    }
-
-    public static Locale getLocaleFromField(Configuration configuration) {
-        Locale locale = null;
-        try {
-            locale = (Locale)readField("android.content.res.Configuration", "locale", configuration);
-        }catch (Throwable t) {}
-        return locale;
     }
 
     public static Class forName(String className) {
@@ -268,35 +115,5 @@ public class Reflection {
             return null;
         }
         return fieldObject.get(instance);
-    }
-
-    public static Map<String, String> getPluginKeys(Context context) {
-        Map<String, String> pluginKeys = new HashMap<String, String>();
-
-        for (Plugin plugin : getPlugins()) {
-            Map.Entry<String, String> pluginEntry = plugin.getParameter(context);
-            if (pluginEntry != null) {
-                pluginKeys.put(pluginEntry.getKey(), pluginEntry.getValue());
-            }
-        }
-
-        if (pluginKeys.size() == 0) {
-            return null;
-        } else {
-            return pluginKeys;
-        }
-    }
-
-    private static List<Plugin> getPlugins() {
-        List<Plugin> plugins = new ArrayList<Plugin>(PLUGINS.size());
-
-        for (String pluginName : PLUGINS) {
-            Object pluginObject = Reflection.createDefaultInstance(pluginName);
-            if (pluginObject != null && pluginObject instanceof Plugin) {
-                plugins.add((Plugin) pluginObject);
-            }
-        }
-
-        return plugins;
     }
 }

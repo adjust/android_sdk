@@ -3,13 +3,19 @@ package com.adjust.sdk;
 import org.json.JSONObject;
 
 /**
- * Created by pfms on 09/02/16.
+ * Adjust SDK
+ * Created by Pedro Silva (@nonelse) on 9th February 2016.
+ * Copyright © 2016-2018 Adjust GmbH. All rights reserved.
  */
 public class EventResponseData extends ResponseData {
-    public String eventToken;
+    private String eventToken;
+    private String callbackId;
+    private String sdkPlatform;
 
-    public EventResponseData(ActivityPackage activityPackage) {
-        eventToken = activityPackage.getParameters().get("event_token");
+    public EventResponseData(final ActivityPackage activityPackage) {
+        this.eventToken = activityPackage.getParameters().get("event_token");
+        this.callbackId = activityPackage.getParameters().get("event_callback_id");
+        this.sdkPlatform = Util.getSdkPrefixPlatform(activityPackage.getClientSdk());
     }
 
     public AdjustEventSuccess getSuccessResponseData() {
@@ -18,15 +24,23 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventSuccess successResponseData = new AdjustEventSuccess();
-        successResponseData.message = message;
-        successResponseData.timestamp = timestamp;
-        successResponseData.adid = adid;
-        if (jsonResponse != null) {
-            successResponseData.jsonResponse = jsonResponse;
+        if ("unity".equals(this.sdkPlatform)) {
+            // Unity platform.
+            successResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
+            successResponseData.message = message != null ? message : "";
+            successResponseData.timestamp = timestamp != null ? timestamp : "";
+            successResponseData.adid = adid != null ? adid : "";
+            successResponseData.callbackId = this.callbackId != null ? this.callbackId : "";
+            successResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
-            successResponseData.jsonResponse = new JSONObject();
+            // Rest of all platforms.
+            successResponseData.eventToken = this.eventToken;
+            successResponseData.message = message;
+            successResponseData.timestamp = timestamp;
+            successResponseData.adid = adid;
+            successResponseData.callbackId = this.callbackId;
+            successResponseData.jsonResponse = jsonResponse;
         }
-        successResponseData.eventToken = eventToken;
 
         return successResponseData;
     }
@@ -37,16 +51,25 @@ public class EventResponseData extends ResponseData {
         }
 
         AdjustEventFailure failureResponseData = new AdjustEventFailure();
-        failureResponseData.message = message;
-        failureResponseData.timestamp = timestamp;
-        failureResponseData.adid = adid;
-        failureResponseData.willRetry = willRetry;
-        if (jsonResponse != null) {
-            failureResponseData.jsonResponse = jsonResponse;
+        if ("unity".equals(this.sdkPlatform)) {
+            // Unity platform.
+            failureResponseData.eventToken = this.eventToken != null ? this.eventToken : "";
+            failureResponseData.message = message != null ? message : "";
+            failureResponseData.timestamp = timestamp != null ? timestamp : "";
+            failureResponseData.adid = adid != null ? adid : "";
+            failureResponseData.callbackId = this.callbackId != null ? this.callbackId : "";
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse != null ? jsonResponse : new JSONObject();
         } else {
-            failureResponseData.jsonResponse = new JSONObject();
+            // Rest of all platforms.
+            failureResponseData.eventToken = this.eventToken;
+            failureResponseData.message = message;
+            failureResponseData.timestamp = timestamp;
+            failureResponseData.adid = adid;
+            failureResponseData.callbackId = this.callbackId;
+            failureResponseData.willRetry = willRetry;
+            failureResponseData.jsonResponse = jsonResponse;
         }
-        failureResponseData.eventToken = eventToken;
 
         return failureResponseData;
     }

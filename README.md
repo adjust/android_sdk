@@ -30,6 +30,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
       * [In-App Purchase verification](#iap-verification)
       * [Callback parameters](#callback-parameters)
       * [Partner parameters](#partner-parameters)
+      * [Callback identifier](#callback-id)
    * [Session parameters](#session-parameters)
       * [Session callback parameters](#session-callback-parameters)
       * [Session partner parameters](#session-partner-parameters)
@@ -48,7 +49,6 @@ our [Android web views SDK guide](doc/english/web_views.md).
       * [Adjust device identifier](#di-adid)
    * [User attribution](#user-attribution)
    * [Push token](#push-token)
-   * [Track additional device identifiers](#track-additional-ids)
    * [Pre-installed trackers](#pre-installed-trackers)
    * [Deep linking](#deeplinking)
       * [Standard deep linking scenario](#deeplinking-standard)
@@ -73,14 +73,14 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.14.0'
+compile 'com.adjust.sdk:adjust-android:4.15.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.14.0'
+implementation 'com.adjust.sdk:adjust-android:4.15.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -97,7 +97,7 @@ Since the 1st of August of 2014, apps in the Google Play Store must use the [Goo
 1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:10.2.1'
+    compile 'com.google.android.gms:play-services-analytics:11.8.0'
     ```
 
     ![][gradle_gps]
@@ -145,20 +145,6 @@ If you are using Proguard, add these lines to your Proguard file:
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
-}
--keep class dalvik.system.VMRuntime {
-    java.lang.String getRuntime();
-}
--keep class android.os.Build {
-    java.lang.String[] SUPPORTED_ABIS;
-    java.lang.String CPU_ABI;
-}
--keep class android.content.res.Configuration {
-    android.os.LocaleList getLocales();
-    java.util.Locale locale;
-}
--keep class android.os.LocaleList {
-    java.util.Locale get(int);
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -476,6 +462,18 @@ Adjust.trackEvent(event);
 
 You can read more about special partners and these integrations in our [guide to special partners][special-partners].
 
+### <a id="callback-id"></a>Callback identifier
+
+You can also add custom string identifier to each event you want to track. This identifier will later be reported in event success and/or event failure callbacks to enable you to keep track on which event was successfully tracked or not. You can set this identifier by calling the `setCallbackId` method on your `AdjustEvent` instance:
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setCallbackId("Your-Custom-Id");
+
+Adjust.trackEvent(event);
+```
+
 ### <a id="session-parameters"></a>Set up session parameters
 
 Some parameters are saved to be sent in every **event** and **session** of the Adjust SDK. Once you have added any of these parameters, you don't need to add them every time, since they will be saved locally. If you add the same parameter twice, there will be no effect.
@@ -639,6 +637,7 @@ The listener function will be called after the SDK tries to send a package to th
 Both event response data objects contain:
 
 - `String eventToken` the event token, if the package tracked was an event.
+- `String callbackId` the custom defined callback ID set on event object.
 
 If any value is unavailable, it will default to `null`.
 
@@ -791,26 +790,6 @@ We still support the previous signature of the same method:
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
-### <a id="track-additional-ids"></a>Track additional device identifiers
-
-If you are distributing your app **outside of the Google Play Store** and would like to track additional device identifiers (IMEI and MEID), you need to explicitly instruct the Adjust SDK to do so. You can do that by calling the `setReadMobileEquipmentIdentity` method of the `AdjustConfig` instance and passing a `true` parameter to it. **The Adjust SDK does not collect these identifiers by default**.
-
-```java
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
-config.setReadMobileEquipmentIdentity(true);
-
-Adjust.onCreate(config);
-```
-
-You will also need to add the `READ_PHONE_STATE` permission to your `AndroidManifest.xml` file:
-
-```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
-
-In order to use this feature, additional steps are required within your Adjust Dashboard. For more information, please contact your dedicated account manager or write an email to support@adjust.com.
-
 ### <a id="pre-installed-trackers"></a>Pre-installed trackers
 
 If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
@@ -818,7 +797,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
 1. Create a new tracker in your [dashboard].
 2. Open your app delegate and add set the default tracker of your `AdjustConfig`:
 
-  ```objc
+  ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
   config.setDefaultTracker("{TrackerToken}");
   Adjust.onCreate(config);
@@ -1039,6 +1018,21 @@ V/Adjust: Path:      /sdk_click
 
 If you perform this test before launching the app, you won't see the package being sent. The package will be sent once the app is launched.
 
+**Important:** Please be aware that usage of `adb` tool for testing this particular feature is not the best way to go. In order to test your full referrer content (in case you have multiple parameters separated with `&`), with `adb` you actually need to encode that content in order to get it into your broadcast receiver. If you don't encode it, `adb` will cut your referrer after first `&` sign and deliver wrong content to your broadcast receiver.
+
+If you would like to see how an app receives unencoded referrer value, you can try our example app and alter content being passed to be fired with intent inside of the `onFireIntentClick` method inside `MainActivity.java` file:
+
+```java
+public void onFireIntentClick(View v) {
+    Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+    intent.setPackage("com.adjust.examples");
+    intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+    sendBroadcast(intent);
+}
+```
+
+Feel free to alter second parameter of `putExtra` method with content of your choice.
+
 ### <a id="ts-event-at-launch"></a>Can I trigger an event at application launch?
 
 Not how you might intuitively think. The `onCreate` method on the global `Application` class is called not only at application launch, but also when a system or application event is captured by the app.
@@ -1099,7 +1093,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2017 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

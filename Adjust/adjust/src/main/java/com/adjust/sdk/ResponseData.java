@@ -2,30 +2,30 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
-import java.util.Locale;
-
 /**
- * Created by pfms on 03/12/15.
+ * Adjust SDK
+ * Created by Pedro Silva (@nonelse) on 3rd December 2015.
+ * Copyright © 2015-2018 Adjust GmbH. All rights reserved.
  */
 public class ResponseData {
-    public ActivityKind activityKind;
-    public String message;
-    public String timestamp;
-    public String adid;
     public boolean success;
     public boolean willRetry;
+    public String adid;
+    public String message;
+    public String timestamp;
     public JSONObject jsonResponse;
+    public ActivityKind activityKind;
     public TrackingState trackingState;
     public AdjustAttribution attribution;
 
     protected ResponseData() {}
 
     public static ResponseData buildResponseData(ActivityPackage activityPackage) {
-        ActivityKind activityKind = activityPackage.getActivityKind();
         ResponseData responseData;
+        ActivityKind activityKind = activityPackage.getActivityKind();
         switch (activityKind) {
             case SESSION:
-                responseData = new SessionResponseData();
+                responseData = new SessionResponseData(activityPackage);
                 break;
             case CLICK:
                 responseData = new SdkClickResponseData();
@@ -40,7 +40,6 @@ public class ResponseData {
                 responseData = new ResponseData();
                 break;
         }
-
         responseData.activityKind = activityKind;
 
         return responseData;
@@ -48,7 +47,6 @@ public class ResponseData {
 
     @Override
     public String toString() {
-        return Util.formatString("message:%s timestamp:%s json:%s",
-                message, timestamp, jsonResponse);
+        return Util.formatString("message:%s timestamp:%s json:%s", message, timestamp, jsonResponse);
     }
 }

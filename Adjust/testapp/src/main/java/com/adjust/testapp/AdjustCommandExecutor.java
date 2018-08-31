@@ -368,6 +368,7 @@ public class AdjustCommandExecutor {
                     MainActivity.testLibrary.addInfoToSend("timestamp", eventSuccessResponseData.timestamp);
                     MainActivity.testLibrary.addInfoToSend("adid", eventSuccessResponseData.adid);
                     MainActivity.testLibrary.addInfoToSend("eventToken", eventSuccessResponseData.eventToken);
+                    MainActivity.testLibrary.addInfoToSend("callbackId", eventSuccessResponseData.callbackId);
                     if (eventSuccessResponseData.jsonResponse != null ) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", eventSuccessResponseData.jsonResponse.toString());
                     }
@@ -387,11 +388,27 @@ public class AdjustCommandExecutor {
                     MainActivity.testLibrary.addInfoToSend("timestamp", eventFailureResponseData.timestamp);
                     MainActivity.testLibrary.addInfoToSend("adid", eventFailureResponseData.adid);
                     MainActivity.testLibrary.addInfoToSend("eventToken", eventFailureResponseData.eventToken);
+                    MainActivity.testLibrary.addInfoToSend("callbackId", eventFailureResponseData.callbackId);
                     MainActivity.testLibrary.addInfoToSend("willRetry", String.valueOf(eventFailureResponseData.willRetry));
                     if (eventFailureResponseData.jsonResponse != null) {
                         MainActivity.testLibrary.addInfoToSend("jsonResponse", eventFailureResponseData.jsonResponse.toString());
                     }
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
+                }
+            });
+        }
+
+        if (command.containsParameter("deferredDeeplinkCallback")) {
+            String launchDeferredDeeplinkS = command.getFirstParameterValue("deferredDeeplinkCallback");
+            final boolean launchDeferredDeeplink = "true".equals(launchDeferredDeeplinkS);
+            final String localBasePath = basePath;
+            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri deeplink) {
+                    Log.d("TestApp", "deferred_deep_link = " + deeplink.toString());
+                    MainActivity.testLibrary.addInfoToSend("deeplink", deeplink.toString());
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
+                    return launchDeferredDeeplink;
                 }
             });
         }
@@ -455,6 +472,10 @@ public class AdjustCommandExecutor {
         if (command.parameters.containsKey("orderId")) {
             String orderId = command.getFirstParameterValue("orderId");
             adjustEvent.setOrderId(orderId);
+        }
+        if (command.parameters.containsKey("callbackId")) {
+            String callbackId = command.getFirstParameterValue("callbackId");
+            adjustEvent.setCallbackId(callbackId);
         }
 
 //        Adjust.trackEvent(adjustEvent);

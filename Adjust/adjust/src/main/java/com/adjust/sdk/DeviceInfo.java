@@ -9,8 +9,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import java.util.Date;
@@ -56,10 +54,8 @@ class DeviceInfo {
     String hardwareName;
     String abi;
     String buildName;
-    String vmInstructionSet;
     String appInstallTime;
     String appUpdateTime;
-    Map<String, String> pluginKeys;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
@@ -88,18 +84,40 @@ class DeviceInfo {
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(sdkPrefix);
         fbAttributionId = getFacebookAttributionId(context);
-        pluginKeys = Util.getPluginKeys(context);
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
-        vmInstructionSet = getVmInstructionSet();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
     }
 
     void reloadDeviceIds(Context context) {
-        isTrackingEnabled = Util.isPlayTrackingEnabled(context);
-        playAdId = Util.getPlayAdId(context);
+        for (int i = 0; i < 3; i += 1) {
+            try {
+                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
+                playAdId = gpsInfo.getGpsAdid();
+                if (playAdId != null) {
+                    break;
+                }
+            } catch (Exception e) {}
+            playAdId = Util.getPlayAdId(context);
+            if (playAdId != null) {
+                break;
+            }
+        }
+        for (int i = 0; i < 3; i += 1) {
+            try {
+                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
+                isTrackingEnabled = gpsInfo.isTrackingEnabled();
+                if (isTrackingEnabled != null) {
+                    break;
+                }
+            } catch (Exception e) {}
+            isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+            if (isTrackingEnabled != null) {
+                break;
+            }
+        }
 
         if (playAdId == null && !nonGoogleIdsRead) {
             if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
@@ -108,9 +126,7 @@ class DeviceInfo {
             String macAddress = Util.getMacAddress(context);
             macSha1 = getMacSha1(macAddress);
             macShortMd5 = getMacShortMd5(macAddress);
-
             androidId = Util.getAndroidId(context);
-
             nonGoogleIdsRead = true;
         }
     }
@@ -306,11 +322,6 @@ class DeviceInfo {
         }
 
         return SupportedABIS[0];
-    }
-
-    private String getVmInstructionSet() {
-        String instructionSet = Util.getVmInstructionSet();
-        return instructionSet;
     }
 
     private String getAppInstallTime(Context context) {

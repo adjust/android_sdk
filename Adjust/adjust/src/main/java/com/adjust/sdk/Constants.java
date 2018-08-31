@@ -30,7 +30,7 @@ public interface Constants {
     String GDPR_URL = "https://gdpr.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.14.0";
+    String CLIENT_SDK = "android4.15.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -63,7 +63,4 @@ public interface Constants {
     String PARTNER_PARAMETERS = "partner_params";
 
     int MAX_INSTALL_REFERRER_RETRIES = 2;
-
-    // List of known plugins, possibly not active
-    List<String> PLUGINS = Arrays.asList();
 }

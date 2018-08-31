@@ -16,6 +16,8 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.LocaleList;
 import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
@@ -143,106 +145,11 @@ public class Util {
     }
 
     public static String getMacAddress(Context context) {
-        return Reflection.getMacAddress(context);
+        return MacAddressUtil.getMacAddress(context);
     }
 
-    public static Map<String, String> getPluginKeys(Context context) {
-        return Reflection.getPluginKeys(context);
-    }
     public static String getAndroidId(Context context) {
-        return Reflection.getAndroidId(context);
-    }
-
-    public static String getTelephonyId(TelephonyManager telephonyManager) {
-        return Reflection.getTelephonyId(telephonyManager);
-    }
-
-    public static String getIMEI(TelephonyManager telephonyManager) {
-        return Reflection.getImei(telephonyManager);
-    }
-
-    public static String getMEID(TelephonyManager telephonyManager) {
-        return Reflection.getMeid(telephonyManager);
-    }
-
-    public static String getIMEI(TelephonyManager telephonyManager, int index) {
-        return Reflection.getImei(telephonyManager, index);
-    }
-
-    public static String getMEID(TelephonyManager telephonyManager, int index) {
-        return Reflection.getMeid(telephonyManager, index);
-    }
-
-    public static String getTelephonyId(TelephonyManager telephonyManager, int index) {
-        return Reflection.getTelephonyId(telephonyManager, index);
-    }
-
-    public static boolean tryAddToStringList(List<String> list, String value) {
-        if (value == null) {
-            return false;
-        }
-        if (list.contains(value)) {
-            return false;
-        }
-
-        return list.add(value);
-    }
-
-    public static String getTelephonyIds(TelephonyManager telephonyManager) {
-        List<String> telephonyIdList = new ArrayList<String>();
-
-        String telephonyId0 = getTelephonyId(telephonyManager, 0);
-        tryAddToStringList(telephonyIdList, telephonyId0);
-
-        for (int i = 1; i < 10; i++) {
-            String telephonyId = getTelephonyId(telephonyManager, i);
-            if (!tryAddToStringList(telephonyIdList, telephonyId)) {
-                break;
-            }
-        }
-
-        String telephonyIdMax = getTelephonyId(telephonyManager, Integer.MAX_VALUE);
-        tryAddToStringList(telephonyIdList, telephonyIdMax);
-
-        return TextUtils.join(",", telephonyIdList);
-    }
-
-    public static String getIMEIs(TelephonyManager telephonyManager) {
-        List<String> imeiList = new ArrayList<String>();
-
-        String imei0 = getIMEI(telephonyManager, 0);
-        tryAddToStringList(imeiList, imei0);
-
-        for (int i = 1; i < 10; i++) {
-            String imei = getIMEI(telephonyManager, i);
-            if (!tryAddToStringList(imeiList, imei)) {
-                break;
-            }
-        }
-
-        String imeiMax = getIMEI(telephonyManager, Integer.MAX_VALUE);
-        tryAddToStringList(imeiList, imeiMax);
-
-        return TextUtils.join(",", imeiList);
-    }
-
-    public static String getMEIDs(TelephonyManager telephonyManager) {
-        List<String> meidList = new ArrayList<String>();
-
-        String meid0 = getMEID(telephonyManager, 0);
-        tryAddToStringList(meidList, meid0);
-
-        for (int i = 1; i < 10; i++) {
-            String meid = getMEID(telephonyManager, i);
-            if (!tryAddToStringList(meidList, meid)) {
-                break;
-            }
-        }
-
-        String meidMax = getMEID(telephonyManager, Integer.MAX_VALUE);
-        tryAddToStringList(meidList, meidMax);
-
-        return TextUtils.join(",", meidList);
+        return AndroidIdUtil.getAndroidId(context);
     }
 
     public static <T> T readObject(Context context, String filename, String objectName, Class<T> type) {
@@ -461,11 +368,17 @@ public class Util {
     }
 
     public static String[] getSupportedAbis() {
-        return Reflection.getSupportedAbis();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            return Build.SUPPORTED_ABIS;
+        }
+        return null;
     }
 
     public static String getCpuAbi() {
-        return Reflection.getCpuAbi();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return Build.CPU_ABI;
+        }
+        return null;
     }
 
     public static String getReasonString(String message, Throwable throwable) {
@@ -538,16 +451,19 @@ public class Util {
         return mergedParameters;
     }
 
-    public static String getVmInstructionSet() {
-        return Reflection.getVmInstructionSet();
-    }
-
     public static Locale getLocale(Configuration configuration) {
-        Locale locale = Reflection.getLocaleFromLocaleList(configuration);
-        if (locale != null) {
-            return locale;
+        // Configuration.getLocales() added as of API 24.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            LocaleList localesList = configuration.getLocales();
+            if (localesList != null && !localesList.isEmpty()) {
+                return localesList.get(0);
+            }
         }
-        return Reflection.getLocaleFromField(configuration);
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return configuration.locale;
+        }
+        return null;
     }
 
     public static String getFireAdvertisingId(ContentResolver contentResolver) {
@@ -659,5 +575,41 @@ public class Util {
         int startOccuranceOfRootCause = sStackTrace.indexOf("Caused by:");
         int endOccuranceOfRootCause = sStackTrace.indexOf("\n", startOccuranceOfRootCause);
         return sStackTrace.substring(startOccuranceOfRootCause, endOccuranceOfRootCause);
+    }
+
+    private static String getSdkPrefix(final String clientSdk) {
+        if (clientSdk == null) {
+            return null;
+        }
+        if (!clientSdk.contains("@")) {
+            return null;
+        }
+
+        String[] splitted = clientSdk.split("@");
+        if (splitted == null) {
+            return null;
+        }
+        if (splitted.length != 2) {
+            return null;
+        }
+
+        return splitted[0];
+    }
+
+    public static String getSdkPrefixPlatform(final String clientSdk) {
+        String sdkPrefix = getSdkPrefix(clientSdk);
+        if (sdkPrefix == null) {
+            return null;
+        }
+
+        String[] splitted = sdkPrefix.split("\\d+", 2);
+        if (splitted == null) {
+            return null;
+        }
+        if (splitted.length == 0) {
+            return null;
+        }
+
+        return splitted[0];
     }
 }

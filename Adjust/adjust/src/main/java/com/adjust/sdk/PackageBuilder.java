@@ -101,6 +101,7 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
         PackageBuilder.addString(parameters, "currency", event.currency);
+        PackageBuilder.addString(parameters, "event_callback_id", event.callbackId);
 
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
@@ -249,12 +250,10 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
-        PackageBuilder.addString(parameters, "vm_isa", deviceInfo.vmInstructionSet);
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
         PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
-        fillPluginKeys(parameters);
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
@@ -285,13 +284,6 @@ class PackageBuilder {
 
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
-        if (adjustConfig.readMobileEquipmentIdentity) {
-            TelephonyManager telephonyManager = (TelephonyManager)adjustConfig.context.getSystemService(Context.TELEPHONY_SERVICE);
-
-            PackageBuilder.addString(parameters, "device_ids", Util.getTelephonyIds(telephonyManager));
-            PackageBuilder.addString(parameters, "imeis", Util.getIMEIs(telephonyManager));
-            PackageBuilder.addString(parameters, "meids", Util.getMEIDs(telephonyManager));
-        }
     }
 
     private void injectActivityState(Map<String, String> parameters) {
@@ -324,16 +316,6 @@ class PackageBuilder {
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")) {
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
-        }
-    }
-
-    private void fillPluginKeys(Map<String, String> parameters) {
-        if (deviceInfo.pluginKeys == null) {
-            return;
-        }
-
-        for (Map.Entry<String, String> entry : deviceInfo.pluginKeys.entrySet()) {
-            PackageBuilder.addString(parameters, entry.getKey(), entry.getValue());
         }
     }
 

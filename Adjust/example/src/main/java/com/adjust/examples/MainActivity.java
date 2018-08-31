@@ -69,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     public void onTrackSimpleEventClick(View v) {
         AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
 
+        // Assign custom identifier to event which will be reported in success/failure callbacks.
+        event.setCallbackId("PrettyRandomIdentifier");
+
         Adjust.trackEvent(event);
     }
 
@@ -128,6 +131,13 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_disabled,
                     Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void onFireIntentClick(View v) {
+        Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+        intent.setPackage("com.adjust.examples");
+        intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+        sendBroadcast(intent);
     }
 
     public void onServiceActivityClick(View v) {
