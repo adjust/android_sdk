@@ -5,6 +5,8 @@ This is the Android SDK of Adjust™. You can read more about Adjust™ at [adju
 If your app is an app which uses web views and you would like to use Adjust tracking from Javascript code, please consult
 our [Android web views SDK guide](doc/english/web_views.md).
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## Table of contents
 
 * [Example apps](#example-apps)
@@ -1049,6 +1051,11 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 [dashboard]:                      http://adjust.com
 [adjust.com]:                     http://adjust.com
+
+[en-readme]:  README.md
+[zh-readme]: doc/chinese/android_sdk_readme_zh.md
+[ja-readme]: doc/japanese/android_sdk_readme_ja.md
+[ko-readme]: doc/korean/android_sdk_readme_ko.md
 
 [maven]:                          http://maven.org
 [example-java]:                   Adjust/example-app-java
