@@ -24,8 +24,8 @@ dependencies {
 task makeReleaseJar(type: Copy) {
     dependsOn 'build'
 
-    from('build/intermediates/bundles/release/')
-    into('build/outputs/')
+    from('build/intermediates/intermediate-jars/release/')
+    into('build/outputs/jar/')
     include('classes.jar')
     rename ('classes.jar', "adjust-${getVersionName()}-release.jar")
 }
@@ -33,8 +33,8 @@ task makeReleaseJar(type: Copy) {
 task makeDebugJar(type: Copy) {
     dependsOn 'build'
 
-    from('build/intermediates/bundles/debug/')
-    into('build/outputs/')
+    from('build/intermediates/intermediate-jars/debug/')
+    into('build/outputs/jar/')
     include('classes.jar')
     rename ('classes.jar', "adjust-${getVersionName()}-debug.jar")
 }
