@@ -1,16 +1,15 @@
 package com.adjust.sdk.nonplay;
 
 import android.content.Context;
-import android.telephony.TelephonyManager;
+import android.provider.Settings;
 import android.text.TextUtils;
 
 import com.adjust.sdk.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static com.adjust.sdk.nonplay.MacAddressUtil.injectMacAddress;
 import static com.adjust.sdk.nonplay.TelephonyIdsUtil.injectIMEI;
 
 public class Utils {
@@ -18,6 +17,8 @@ public class Utils {
         Map<String, String> parameters = new HashMap<String, String>();
 
         injectIMEI(parameters, context, logger);
+        injectAndroidId(parameters, context);
+        injectMacAddress(parameters, context);
 
         return parameters;
     }
@@ -28,5 +29,11 @@ public class Utils {
         }
 
         parameters.put(key, value);
+    }
+
+    static void injectAndroidId(Map<String, String> parameters, Context context) {
+        String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        addStringToMap(parameters, "android_id", androidId);
     }
 }
