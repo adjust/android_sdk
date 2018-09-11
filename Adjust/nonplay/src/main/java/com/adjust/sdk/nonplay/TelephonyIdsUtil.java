@@ -1,0 +1,151 @@
+package com.adjust.sdk.nonplay;
+
+import android.content.Context;
+import android.os.Build;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
+
+import com.adjust.sdk.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static com.adjust.sdk.nonplay.Utils.addStringToMap;
+
+public class TelephonyIdsUtil {
+    static void injectIMEI(Map<String, String> parameters, Context context, Logger logger) {
+        if (!AdjustNonPlay.isReadIMEIset) {
+            return;
+        }
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+        addStringToMap(parameters, "telephony_ids", getTelephonyIds(telephonyManager, logger));
+        addStringToMap(parameters, "imeis", getIMEIs(telephonyManager, logger));
+        addStringToMap(parameters, "meids", getMEIDs(telephonyManager, logger));
+    }
+
+    private static String getTelephonyIds(TelephonyManager telephonyManager, Logger logger) {
+        List<String> telephonyIdList = new ArrayList<String>();
+
+        String telephonyNoIdx = getDefaultTelephonyId(telephonyManager, logger);
+        tryAddToStringList(telephonyIdList, telephonyNoIdx);
+
+        for (int i = 0; i < 10; i++) {
+            String telephonyId = getTelephonyIdByIndex(telephonyManager, i, logger);
+            if (!tryAddToStringList(telephonyIdList, telephonyId)) {
+                break;
+            }
+        }
+
+        return TextUtils.join(",", telephonyIdList);
+    }
+
+    // XXX test difference mentioned here https://stackoverflow.com/a/35343531
+    private static String getDefaultTelephonyId(TelephonyManager telephonyManager, Logger logger) {
+        try {
+            return telephonyManager.getDeviceId();
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read default Telephony Id: %s", e.getMessage());
+        }
+        return null;
+    }
+
+    private static String getTelephonyIdByIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                return telephonyManager.getDeviceId(index);
+            }
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read Telephony Id in position %d: %s", index, e.getMessage());
+        }
+        return null;
+    }
+
+    private static String getIMEIs(TelephonyManager telephonyManager, Logger logger) {
+        List<String> imeiList = new ArrayList<String>();
+
+        String imeiNoIdx = getDefaultIMEI(telephonyManager, logger);
+        tryAddToStringList(imeiList, imeiNoIdx);
+
+        for (int i = 0; i < 10; i++) {
+            String imei = getIMEIbyIndex(telephonyManager, i, logger);
+            if (!tryAddToStringList(imeiList, imei)) {
+                break;
+            }
+        }
+
+        return TextUtils.join(",", imeiList);
+    }
+
+    private static String getDefaultIMEI(TelephonyManager telephonyManager, Logger logger) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return telephonyManager.getImei();
+            }
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read default IMEI: %s", e.getMessage());
+        }
+        return null;
+    }
+
+    private static String getIMEIbyIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return telephonyManager.getImei(index);
+            }
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read IMEI in position %d: %s", index, e.getMessage());
+        }
+        return null;
+    }
+
+    public static String getMEIDs(TelephonyManager telephonyManager, Logger logger) {
+        List<String> meidList = new ArrayList<String>();
+
+        String meidNoIdx = getDefaultMEID(telephonyManager, logger);
+        tryAddToStringList(meidList, meidNoIdx);
+
+        for (int i = 0; i < 10; i++) {
+            String meid = getMEIDbyIndex(telephonyManager, i, logger);
+            if (!tryAddToStringList(meidList, meid)) {
+                break;
+            }
+        }
+
+        return TextUtils.join(",", meidList);
+    }
+
+    private static String getDefaultMEID(TelephonyManager telephonyManager, Logger logger) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return telephonyManager.getMeid();
+            }
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read default MEID: %s", e.getMessage());
+        }
+        return null;
+    }
+
+    private static String getMEIDbyIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                return telephonyManager.getMeid(index);
+            }
+        } catch (SecurityException e) {
+            logger.debug("Couldn't read MEID in position %d: %s", index, e.getMessage());
+        }
+        return null;
+    }
+
+    private static boolean tryAddToStringList(List<String> list, String value) {
+        if (value == null) {
+            return false;
+        }
+        if (list.contains(value)) {
+            return false;
+        }
+
+        return list.add(value);
+    }
+}
