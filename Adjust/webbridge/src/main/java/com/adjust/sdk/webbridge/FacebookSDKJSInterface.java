@@ -1,4 +1,4 @@
-package com.adjust.sdk.bridge;
+package com.adjust.sdk.webbridge;
 /**
  * Taken and adapted from
  * https://github.com/facebook/facebook-android-sdk/blob/8cb6f95df8d2763f67e136eb7b2a66d9ddfc5157/facebook-core/src/main/java/com/facebook/appevents/FacebookSDKJSInterface.java
@@ -38,8 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 public class FacebookSDKJSInterface {
     private static final String PROTOCOL = "fbmq-0.1";

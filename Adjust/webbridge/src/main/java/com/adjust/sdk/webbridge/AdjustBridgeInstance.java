@@ -1,7 +1,6 @@
-package com.adjust.sdk.bridge;
+package com.adjust.sdk.webbridge;
 
 import android.annotation.TargetApi;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;

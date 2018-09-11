@@ -1,15 +1,13 @@
 package com.example.examples;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.adjust.sdk.bridge.AdjustBridge;
-import com.adjust.sdk.bridge.AdjustBridgeInstance;
+import com.adjust.sdk.webbridge.AdjustBridge;
+import com.adjust.sdk.webbridge.AdjustBridgeInstance;
 
 public class MainActivity extends AppCompatActivity {
 

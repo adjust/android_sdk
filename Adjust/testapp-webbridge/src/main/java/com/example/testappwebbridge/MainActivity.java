@@ -11,7 +11,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.adjust.sdk.Adjust;
-import com.adjust.sdk.bridge.AdjustBridge;
+import com.adjust.sdk.webbridge.AdjustBridge;
 
 public class MainActivity extends AppCompatActivity {
     WebView webView;

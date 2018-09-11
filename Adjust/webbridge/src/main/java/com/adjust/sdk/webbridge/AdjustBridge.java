@@ -1,4 +1,4 @@
-package com.adjust.sdk.bridge;
+package com.adjust.sdk.webbridge;
 
 import android.webkit.WebView;
 import android.app.Application;
