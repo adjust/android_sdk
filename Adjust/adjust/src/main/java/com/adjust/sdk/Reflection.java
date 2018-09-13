@@ -10,10 +10,26 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Locale;
+import java.util.Map;
 
 public class Reflection {
     private static Object getAdvertisingInfoObject(Context context) throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
+    }
+
+    static Map<String, String> getNonPlayParameters(Context context, ILogger logger) {
+        Object nonPlayParameters = null;
+        try {
+            nonPlayParameters = invokeStaticMethod("com.adjust.sdk.nonplay.Util", "getNonPlayParameters", new Class[]{Context.class, ILogger.class}, context, logger);
+
+            Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>)(Class) Map.class;
+
+            if (nonPlayParameters != null && stringStringMapClass.isInstance(nonPlayParameters)) {
+                return (Map<String, String>) nonPlayParameters;
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     public static String getPlayAdId(Context context) {

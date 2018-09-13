@@ -28,6 +28,8 @@ dependencies {
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.15.1'
 
+    implementation project(":nonplay")
+
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
     testImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'

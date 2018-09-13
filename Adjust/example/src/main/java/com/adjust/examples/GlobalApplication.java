@@ -21,6 +21,7 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.nonplay.AdjustNonPlay;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -146,6 +147,8 @@ public class GlobalApplication extends Application {
 
         // Remove all session partner parameters.
         Adjust.resetSessionPartnerParameters();
+
+        AdjustNonPlay.readIMEI();
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);

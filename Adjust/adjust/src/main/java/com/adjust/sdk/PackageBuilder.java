@@ -210,6 +210,7 @@ class PackageBuilder {
         injectConfig(parameters);
         injectActivityState(parameters);
         injectCommonParameters(parameters);
+        injectPluginParameters(parameters);
 
         // general
         checkDeviceIds(parameters);
@@ -223,6 +224,7 @@ class PackageBuilder {
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
         injectCommonParameters(parameters);
+        injectPluginParameters(parameters);
 
         checkDeviceIds(parameters);
 
@@ -266,6 +268,13 @@ class PackageBuilder {
             PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
+    }
+
+    private void injectPluginParameters(Map<String, String> parameters) {
+        Map<String, String> nonPlayParameters = Reflection.getNonPlayParameters(adjustConfig.context, logger);
+        if (nonPlayParameters != null) {
+            parameters.putAll(nonPlayParameters);
         }
     }
 
