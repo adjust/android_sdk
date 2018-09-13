@@ -10,15 +10,12 @@
 package com.adjust.sdk;
 
 import android.content.ContentResolver;
-import android.content.Context;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
@@ -206,11 +203,11 @@ class PackageBuilder {
     private Map<String, String> getDefaultParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
+        injectPluginParameters(parameters);
         injectDeviceInfo(parameters);
         injectConfig(parameters);
         injectActivityState(parameters);
         injectCommonParameters(parameters);
-        injectPluginParameters(parameters);
 
         // general
         checkDeviceIds(parameters);
@@ -221,10 +218,10 @@ class PackageBuilder {
     private Map<String, String> getIdsParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
+        injectPluginParameters(parameters);
         injectDeviceInfoIds(parameters);
         injectConfig(parameters);
         injectCommonParameters(parameters);
-        injectPluginParameters(parameters);
 
         checkDeviceIds(parameters);
 
@@ -265,6 +262,15 @@ class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
 
         if (deviceInfo.playAdId == null) {
+            boolean nonPlayParametersLoaded =
+                    parameters.containsKey("mac_sha1") ||
+                    parameters.containsKey("mac_md5") ||
+                    parameters.containsKey("android_id");
+
+            if (nonPlayParametersLoaded) {
+                return;
+            }
+            logger.warn("Non play store parameters to be read.\nIf that was the intention, please use the adjust-android-nonplay library.");
             PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
