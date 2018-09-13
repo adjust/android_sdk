@@ -5,7 +5,7 @@ import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import com.adjust.sdk.Logger;
+import com.adjust.sdk.ILogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.Map;
 import static com.adjust.sdk.nonplay.Util.addStringToMap;
 
 public class TelephonyIdsUtil {
-    static void injectIMEI(Map<String, String> parameters, Context context, Logger logger) {
+    static void injectIMEI(Map<String, String> parameters, Context context, ILogger logger) {
         if (!AdjustNonPlay.isReadIMEIset) {
             return;
         }
@@ -25,7 +25,7 @@ public class TelephonyIdsUtil {
         addStringToMap(parameters, "meids", getMEIDs(telephonyManager, logger));
     }
 
-    private static String getTelephonyIds(TelephonyManager telephonyManager, Logger logger) {
+    private static String getTelephonyIds(TelephonyManager telephonyManager, ILogger logger) {
         List<String> telephonyIdList = new ArrayList<String>();
 
         String telephonyNoIdx = getDefaultTelephonyId(telephonyManager, logger);
@@ -42,7 +42,7 @@ public class TelephonyIdsUtil {
     }
 
     // XXX test difference mentioned here https://stackoverflow.com/a/35343531
-    private static String getDefaultTelephonyId(TelephonyManager telephonyManager, Logger logger) {
+    private static String getDefaultTelephonyId(TelephonyManager telephonyManager, ILogger logger) {
         try {
             return telephonyManager.getDeviceId();
         } catch (SecurityException e) {
@@ -51,7 +51,7 @@ public class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getTelephonyIdByIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+    private static String getTelephonyIdByIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return telephonyManager.getDeviceId(index);
@@ -62,7 +62,7 @@ public class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getIMEIs(TelephonyManager telephonyManager, Logger logger) {
+    private static String getIMEIs(TelephonyManager telephonyManager, ILogger logger) {
         List<String> imeiList = new ArrayList<String>();
 
         String imeiNoIdx = getDefaultIMEI(telephonyManager, logger);
@@ -78,7 +78,7 @@ public class TelephonyIdsUtil {
         return TextUtils.join(",", imeiList);
     }
 
-    private static String getDefaultIMEI(TelephonyManager telephonyManager, Logger logger) {
+    private static String getDefaultIMEI(TelephonyManager telephonyManager, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getImei();
@@ -89,7 +89,7 @@ public class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getIMEIbyIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+    private static String getIMEIbyIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getImei(index);
@@ -100,7 +100,7 @@ public class TelephonyIdsUtil {
         return null;
     }
 
-    public static String getMEIDs(TelephonyManager telephonyManager, Logger logger) {
+    public static String getMEIDs(TelephonyManager telephonyManager, ILogger logger) {
         List<String> meidList = new ArrayList<String>();
 
         String meidNoIdx = getDefaultMEID(telephonyManager, logger);
@@ -116,7 +116,7 @@ public class TelephonyIdsUtil {
         return TextUtils.join(",", meidList);
     }
 
-    private static String getDefaultMEID(TelephonyManager telephonyManager, Logger logger) {
+    private static String getDefaultMEID(TelephonyManager telephonyManager, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getMeid();
@@ -127,7 +127,7 @@ public class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getMEIDbyIndex(TelephonyManager telephonyManager, int index, Logger logger) {
+    private static String getMEIDbyIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getMeid(index);

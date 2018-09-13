@@ -4,6 +4,7 @@ import android.content.Context;
 import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.adjust.sdk.ILogger;
 import com.adjust.sdk.Logger;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import static com.adjust.sdk.nonplay.MacAddressUtil.injectMacAddress;
 import static com.adjust.sdk.nonplay.TelephonyIdsUtil.injectIMEI;
 
 public class Util {
-    public static Map<String, String> getNonPlayParameters(Context context, Logger logger) {
+    public static Map<String, String> getNonPlayParameters(Context context, ILogger logger) {
         Map<String, String> parameters = new HashMap<String, String>();
 
         injectIMEI(parameters, context, logger);
