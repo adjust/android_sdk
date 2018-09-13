@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.adjust.sdk.nonplay.Utils.addStringToMap;
+import static com.adjust.sdk.nonplay.Util.addStringToMap;
 
 public class TelephonyIdsUtil {
     static void injectIMEI(Map<String, String> parameters, Context context, Logger logger) {

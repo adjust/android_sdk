@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.adjust.sdk.nonplay.Utils.addStringToMap;
+import static com.adjust.sdk.nonplay.Util.addStringToMap;
 
 public class MacAddressUtil {
     static void injectMacAddress(Map<String, String> parameters, Context context) {

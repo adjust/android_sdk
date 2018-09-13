@@ -12,7 +12,7 @@ import java.util.Map;
 import static com.adjust.sdk.nonplay.MacAddressUtil.injectMacAddress;
 import static com.adjust.sdk.nonplay.TelephonyIdsUtil.injectIMEI;
 
-public class Utils {
+public class Util {
     public static Map<String, String> getNonPlayParameters(Context context, Logger logger) {
         Map<String, String> parameters = new HashMap<String, String>();
 
