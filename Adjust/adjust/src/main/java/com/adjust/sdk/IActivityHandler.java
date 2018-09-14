@@ -35,7 +35,7 @@ public interface IActivityHandler {
 
     void sendReftagReferrer();
 
-    void sendInstallReferrer(long clickTime, long installBegin, String installReferrer);
+    void sendInstallReferrer(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds);
 
     void setOfflineMode(boolean enabled);
 

@@ -453,11 +453,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendInstallReferrer(final long clickTime, final long installBegin, final String installReferrer) {
+    public void sendInstallReferrer(final String installReferrer, final long referrerClickTimestampSeconds, final long installBeginTimestampSeconds) {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInstallReferrerI(clickTime, installBegin, installReferrer);
+                sendInstallReferrerI(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
             }
         });
     }
@@ -815,7 +815,12 @@ public class ActivityHandler implements IActivityHandler {
             updatePackagesI();
         }
 
-        installReferrer = new InstallReferrer(adjustConfig.context, this);
+        installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
+                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+            }
+        });
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
         sendReftagReferrerI();
     }
@@ -1437,7 +1442,7 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendReftagReferrers();
     }
 
-    private void sendInstallReferrerI(final long clickTime, final long installBegin, final String installReferrer) {
+    private void sendInstallReferrerI(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
         if (!isEnabledI()) {
             return;
         }
@@ -1446,8 +1451,8 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (clickTime == activityState.clickTime
-                && installBegin == activityState.installBegin
+        if (referrerClickTimestampSeconds == activityState.clickTime
+                && installBeginTimestampSeconds == activityState.installBegin
                 && installReferrer.equals(activityState.installReferrer)) {
             // Same click already sent before, nothing to be done.
             return;
@@ -1456,8 +1461,8 @@ public class ActivityHandler implements IActivityHandler {
         // Create sdk click
         ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
                 installReferrer,
-                clickTime,
-                installBegin,
+                referrerClickTimestampSeconds,
+                installBeginTimestampSeconds,
                 activityState,
                 adjustConfig,
                 deviceInfo,
