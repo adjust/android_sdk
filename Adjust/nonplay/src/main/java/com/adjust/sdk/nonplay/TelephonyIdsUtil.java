@@ -6,23 +6,22 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.adjust.sdk.ILogger;
+import com.adjust.sdk.PackageBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.adjust.sdk.nonplay.Util.addStringToMap;
-
-public class TelephonyIdsUtil {
+class TelephonyIdsUtil {
     static void injectIMEI(Map<String, String> parameters, Context context, ILogger logger) {
         if (!AdjustNonPlay.isReadIMEIset) {
             return;
         }
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-        addStringToMap(parameters, "telephony_ids", getTelephonyIds(telephonyManager, logger));
-        addStringToMap(parameters, "imeis", getIMEIs(telephonyManager, logger));
-        addStringToMap(parameters, "meids", getMEIDs(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "telephony_ids", getTelephonyIds(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "imeis", getIMEIs(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "meids", getMEIDs(telephonyManager, logger));
     }
 
     private static String getTelephonyIds(TelephonyManager telephonyManager, ILogger logger) {

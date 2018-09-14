@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.Logger;
+import com.adjust.sdk.PackageBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,17 +25,9 @@ public class Util {
         return parameters;
     }
 
-    static void addStringToMap(Map<String, String> parameters, String key, String value) {
-        if (TextUtils.isEmpty(value)) {
-            return;
-        }
-
-        parameters.put(key, value);
-    }
-
-    static void injectAndroidId(Map<String, String> parameters, Context context) {
+    private static void injectAndroidId(Map<String, String> parameters, Context context) {
         String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        addStringToMap(parameters, "android_id", androidId);
+        PackageBuilder.addString(parameters, "android_id", androidId);
     }
 }

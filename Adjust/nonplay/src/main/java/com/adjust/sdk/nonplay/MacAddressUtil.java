@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.text.TextUtils;
 
+import com.adjust.sdk.PackageBuilder;
 import com.adjust.sdk.Util;
 
 import java.io.BufferedReader;
@@ -12,13 +13,11 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.adjust.sdk.nonplay.Util.addStringToMap;
-
-public class MacAddressUtil {
+class MacAddressUtil {
     static void injectMacAddress(Map<String, String> parameters, Context context) {
         String macAddress = getMacAddress(context);
-        addStringToMap(parameters, "mac_sha1", getMacSha1(macAddress));
-        addStringToMap(parameters, "mac_md5", getMacShortMd5(macAddress));
+        PackageBuilder.addString(parameters, "mac_sha1", getMacSha1(macAddress));
+        PackageBuilder.addString(parameters, "mac_md5", getMacShortMd5(macAddress));
     }
 
     private static String getMacSha1(String macAddress) {
