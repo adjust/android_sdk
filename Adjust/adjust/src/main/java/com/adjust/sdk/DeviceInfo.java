@@ -65,8 +65,6 @@ class DeviceInfo {
         int screenLayout = configuration.screenLayout;
         ContentResolver contentResolver = context.getContentResolver();
 
-        reloadDeviceIds(context);
-
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
         deviceType = getDeviceType(screenLayout);
@@ -91,7 +89,7 @@ class DeviceInfo {
         appUpdateTime = getAppUpdateTime(context);
     }
 
-    void reloadDeviceIds(Context context) {
+    void reloadPlayIds(Context context) {
         for (int i = 0; i < 3; i += 1) {
             try {
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
@@ -118,17 +116,17 @@ class DeviceInfo {
                 break;
             }
         }
+    }
 
-        if (playAdId == null && !nonGoogleIdsRead) {
-            if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-                AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
-            }
-            String macAddress = Util.getMacAddress(context);
-            macSha1 = getMacSha1(macAddress);
-            macShortMd5 = getMacShortMd5(macAddress);
-            androidId = Util.getAndroidId(context);
-            nonGoogleIdsRead = true;
+    void reloadNonPlayIds(Context context) {
+        if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
+            AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
         }
+        String macAddress = Util.getMacAddress(context);
+        macSha1 = getMacSha1(macAddress);
+        macShortMd5 = getMacShortMd5(macAddress);
+        androidId = Util.getAndroidId(context);
+        nonGoogleIdsRead = true;
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {

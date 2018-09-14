@@ -32,6 +32,21 @@ public class Reflection {
         return null;
     }
 
+    static Map<String, String> getPlayParameters(Context context, ILogger logger) {
+        Object playParameters = null;
+        try {
+            playParameters = invokeStaticMethod("com.adjust.sdk.play.Util", "getPlayParameters", new Class[]{Context.class, ILogger.class}, context, logger);
+
+            Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>)(Class) Map.class;
+
+            if (playParameters != null && stringStringMapClass.isInstance(playParameters)) {
+                return (Map<String, String>) playParameters;
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     public static String getPlayAdId(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);

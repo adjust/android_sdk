@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
-class PackageBuilder {
+public class PackageBuilder {
     private AdjustConfig adjustConfig;
     private DeviceInfo deviceInfo;
     private ActivityStateCopy activityStateCopy;
@@ -228,6 +228,17 @@ class PackageBuilder {
         return parameters;
     }
 
+    private void injectPluginParameters(Map<String, String> parameters) {
+        Map<String, String> nonPlayParameters = Reflection.getNonPlayParameters(adjustConfig.context, logger);
+        if (nonPlayParameters != null) {
+            parameters.putAll(nonPlayParameters);
+        }
+        Map<String, String> playParameters = Reflection.getPlayParameters(adjustConfig.context, logger);
+        if (playParameters != null) {
+            parameters.putAll(playParameters);
+        }
+    }
+
     private void injectDeviceInfo(Map<String, String> parameters) {
         injectDeviceInfoIds(parameters);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
@@ -256,32 +267,47 @@ class PackageBuilder {
     }
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
-        deviceInfo.reloadDeviceIds(adjustConfig.context);
+        injectPlayIds(parameters);
+        injectNonPlayIds(parameters);
+    }
+
+    private void injectPlayIds(Map<String, String> parameters) {
+        if (containsPlayIds(parameters)) {
+            logger.verbose("Play ids loaded from play plugin");
+            return;
+        }
+        deviceInfo.reloadPlayIds(adjustConfig.context);
 
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-
-        if (deviceInfo.playAdId == null) {
-            boolean nonPlayParametersLoaded =
-                    parameters.containsKey("mac_sha1") ||
-                    parameters.containsKey("mac_md5") ||
-                    parameters.containsKey("android_id");
-
-            if (nonPlayParametersLoaded) {
-                return;
-            }
-            logger.warn("Non play store parameters to be read.\nIf that was the intention, please use the adjust-android-nonplay library.");
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-        }
     }
 
-    private void injectPluginParameters(Map<String, String> parameters) {
-        Map<String, String> nonPlayParameters = Reflection.getNonPlayParameters(adjustConfig.context, logger);
-        if (nonPlayParameters != null) {
-            parameters.putAll(nonPlayParameters);
+    private void injectNonPlayIds(Map<String, String> parameters) {
+        if (containsPlayIds(parameters)) {
+            logger.verbose("Play ids detected, non-play ids won't be read");
+            return;
         }
+        boolean nonPlayParametersLoaded =
+                parameters.containsKey("mac_sha1") ||
+                parameters.containsKey("mac_md5") ||
+                parameters.containsKey("android_id");
+
+        if (nonPlayParametersLoaded) {
+            logger.verbose("Non-play ids already loaded");
+
+            return;
+        }
+
+        logger.warn("Non-play store ids will to be read.\nIf that was the intention, please use the adjust-android-nonplay library.");
+
+        deviceInfo.reloadNonPlayIds(adjustConfig.context);
+        PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+        PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+        PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+    }
+
+    private boolean containsPlayIds(Map<String, String> parameters) {
+        return parameters.containsKey("tracking_enabled") || parameters.containsKey("gps_adid");
     }
 
     private void injectConfig(Map<String, String> parameters) {
