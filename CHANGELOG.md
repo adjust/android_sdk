@@ -1,3 +1,10 @@
+### Version 4.15.1 (19th September 2018)
+#### Changed
+- Changed way how `AdjustAttribution` object is being passed to Unity layer.
+- Modified paths in Gradle tasks for building JAR files.
+
+---
+
 ### Version 4.15.0 (31st August 2018)
 #### Added
 - Added `setCallbackId` method on `AdjustEvent` object for users to set custom ID on event object which will later be reported in event success/failure callbacks.
