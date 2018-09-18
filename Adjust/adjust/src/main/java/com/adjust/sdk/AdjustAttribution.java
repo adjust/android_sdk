@@ -34,19 +34,32 @@ public class AdjustAttribution implements Serializable {
     public String clickLabel;
     public String adid;
 
-    public static AdjustAttribution fromJson(JSONObject jsonObject, String adid) {
+    public static AdjustAttribution fromJson(JSONObject jsonObject, String adid, String sdkPlatform) {
         if (jsonObject == null) return null;
 
         AdjustAttribution attribution = new AdjustAttribution();
 
-        attribution.trackerToken = jsonObject.optString("tracker_token", null);
-        attribution.trackerName = jsonObject.optString("tracker_name", null);
-        attribution.network = jsonObject.optString("network", null);
-        attribution.campaign = jsonObject.optString("campaign", null);
-        attribution.adgroup = jsonObject.optString("adgroup", null);
-        attribution.creative = jsonObject.optString("creative", null);
-        attribution.clickLabel = jsonObject.optString("click_label", null);
-        attribution.adid = adid;
+        if ("unity".equals(sdkPlatform)) {
+            // Unity platform.
+            attribution.trackerToken = jsonObject.optString("tracker_token", "");
+            attribution.trackerName = jsonObject.optString("tracker_name", "");
+            attribution.network = jsonObject.optString("network", "");
+            attribution.campaign = jsonObject.optString("campaign", "");
+            attribution.adgroup = jsonObject.optString("adgroup", "");
+            attribution.creative = jsonObject.optString("creative", "");
+            attribution.clickLabel = jsonObject.optString("click_label", "");
+            attribution.adid = adid != null ? adid : "";
+        } else {
+            // Rest of all platforms.
+            attribution.trackerToken = jsonObject.optString("tracker_token", null);
+            attribution.trackerName = jsonObject.optString("tracker_name", null);
+            attribution.network = jsonObject.optString("network", null);
+            attribution.campaign = jsonObject.optString("campaign", null);
+            attribution.adgroup = jsonObject.optString("adgroup", null);
+            attribution.creative = jsonObject.optString("creative", null);
+            attribution.clickLabel = jsonObject.optString("click_label", null);
+            attribution.adid = adid;
+        }
 
         return attribution;
     }
