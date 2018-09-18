@@ -1,0 +1,160 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(":adjust")
+}
+
+task adjustCriteoAndroidJar(type: Jar) {
+    dependsOn 'build'
+
+    from('build/intermediates/classes/release/')
+    archiveName "${project.name}.jar"
+}
+
+task androidJavadocs(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation
+    if (org.gradle.internal.jvm.Jvm.current().getJavaVersion() == JavaVersion.VERSION_1_8) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+}
+
+task adjustCriteoAndroidJavadocsJar(type: Jar) {
+    dependsOn 'androidJavadocs'
+
+    classifier = 'javadoc'
+    from androidJavadocs.destinationDir
+}
+
+task adjustCriteoAndroidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    //archives adjustCoreAndroidJar
+    archives adjustCriteoAndroidJavadocsJar
+    archives adjustCriteoAndroidSourcesJar
+}
+
+publishing {
+    publications {
+        mavenAndroidCriteo(MavenPublication) {
+            customizePom(pom)
+            groupId 'com.adjust.sdk'
+            artifactId 'adjust-android-criteo'
+            version '4.15.0'
+
+            // create the sign pom artifact
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            // create the signed artifacts
+            project.tasks.signArchives.signatureFiles.each {
+                artifact(it) {
+                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
+                    if (matcher.find()) {
+                        classifier = matcher.group(1)
+                    } else {
+                        classifier = null
+                    }
+                    extension = 'jar.asc'
+                }
+            }
+
+            artifact adjustCriteoAndroidJar
+            artifact adjustCriteoAndroidJavadocsJar
+            artifact adjustCriteoAndroidSourcesJar
+        }
+    }
+
+    repositories {
+        maven {
+            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            credentials {
+                username sonatypeUsername
+                password sonatypePassword
+            }
+        }
+    }
+}
+
+def customizePom(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // add all items necessary for maven central publication
+        root.children().last() + {
+
+            description 'The Criteo plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Criteo plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+model {
+    tasks.generatePomFileForMavenAndroidCriteoPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+    tasks.publishMavenAndroidCriteoPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidCriteoPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+}
+
+signing {
+    sign configurations.archives
+}
