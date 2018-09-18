@@ -29,6 +29,7 @@ import static com.adjust.sdk.Constants.XLARGE;
  */
 class DeviceInfo {
     String playAdId;
+    String playAdIdSource;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsRead = false;
     String macSha1;
@@ -95,11 +96,13 @@ class DeviceInfo {
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
                 playAdId = gpsInfo.getGpsAdid();
                 if (playAdId != null) {
+                    playAdIdSource = "service";
                     break;
                 }
             } catch (Exception e) {}
             playAdId = Util.getPlayAdId(context);
             if (playAdId != null) {
+                playAdIdSource = "library";
                 break;
             }
         }
