@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * Adjust SDK
  * Created by Pedro Silva (@nonelse) on 9th February 2016.
- * Copyright © 2016-2018 Adjust GmbH. All rights reserved.
+ * Copyright \u00a9 2016-2018 Adjust GmbH. All rights reserved.
  */
 public class SessionResponseData extends ResponseData {
     private String sdkPlatform;

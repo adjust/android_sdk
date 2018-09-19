@@ -22,8 +22,8 @@ task clearJar(type: Delete) {
 }
 
 task makeJar(type: Copy) {
-    from('build/intermediates/bundles/debug/')
-    into('build/outputs/')
+    from('build/intermediates/intermediate-jars/debug/')
+    into('build/outputs/jar/')
     include('classes.jar')
     rename('classes.jar', "adjust-testing.jar")
 }

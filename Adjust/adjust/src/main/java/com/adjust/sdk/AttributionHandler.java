@@ -178,7 +178,9 @@ public class AttributionHandler implements IAttributionHandler {
         activityHandler.setAskingAttribution(false);
 
         JSONObject attributionJson = responseData.jsonResponse.optJSONObject("attribution");
-        responseData.attribution = AdjustAttribution.fromJson(attributionJson, responseData.adid);
+        responseData.attribution = AdjustAttribution.fromJson(attributionJson,
+                responseData.adid,
+                Util.getSdkPrefixPlatform(attributionPackage.getClientSdk()));
     }
 
     private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 /**
  * Adjust SDK
  * Created by Pedro Silva (@nonelse) on 3rd December 2015.
- * Copyright © 2015-2018 Adjust GmbH. All rights reserved.
+ * Copyright \u00a9 2015-2018 Adjust GmbH. All rights reserved.
  */
 public class ResponseData {
     public boolean success;
