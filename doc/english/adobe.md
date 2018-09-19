@@ -19,20 +19,28 @@ public class YourApplicationClass extends Application {
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
-            public void onAttributionChanged(Attribution attribution) {
-                Map<String,Object> dataAdjust = new HashMap<String,Object>();
+            public void onAttributionChanged(AdjustAttribution attribution) {
+                Map<String,Object> adjustData = new HashMap<String, Object>();
                 
                 // Do not change the key "Adjust Network". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Network", adjustAttribution.network);
+                if (attribution.network != null) {
+                    adjustData.put("Adjust Network", attribution.network);
+                }
                 // Do not change the key "Adjust Campaign". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Campaign", adjustAttribution.campaign);
+                if (attribution.campaign != null) {
+                    adjustData.put("Adjust Campaign", attribution.campaign);
+                }
                 // Do not change the key "Adjust Adgroup". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Adgroup", adjustAttribution.adgroup);
+                if (attribution.adgroup != null) {
+                    adjustData.put("Adjust Adgroup", attribution.adgroup);
+                }
                 // Do not change the key "Adjust Creative". This key is being used in the Data Connector Processing Rule
-                dataAdjust.put("Adjust Creative", adjustAttribution.creative);
+                if (attribution.creative != null) {
+                    adjustData.put("Adjust Creative", attribution.creative);
+                }
 
                 // Send Data to Adobe using Track Action
-                Analytics.trackAction("Adjust Campaign Data Received", dataAdjust);
+                Analytics.trackAction("Adjust Campaign Data Received", adjustData);
             }
         });
 
