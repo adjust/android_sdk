@@ -15,6 +15,9 @@ import java.util.Map;
 
 class MacAddressUtil {
     static void injectMacAddress(Map<String, String> parameters, Context context) {
+        if (!AdjustNonPlay.isMacAddressToBeRead) {
+            return;
+        }
         String macAddress = getMacAddress(context);
         PackageBuilder.addString(parameters, "mac_sha1", getMacSha1(macAddress));
         PackageBuilder.addString(parameters, "mac_md5", getMacShortMd5(macAddress));

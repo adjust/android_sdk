@@ -26,6 +26,9 @@ public class Util {
     }
 
     private static void injectAndroidId(Map<String, String> parameters, Context context) {
+        if (!AdjustNonPlay.isAndroidIdToBeRead) {
+            return;
+        }
         String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
         PackageBuilder.addString(parameters, "android_id", androidId);
