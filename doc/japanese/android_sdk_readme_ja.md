@@ -6,9 +6,7 @@ Web Viewをアプリ内でご使用の場合、Javascriptコードからadjust�
 <section id='toc-section'>
 </section>
 
-
-
-
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
 
 ### <a id="example-app"></a>アプリサンプル
 
@@ -977,6 +975,10 @@ adjust SDKはこの場合の初期化についてサポートしています。�
 
 [dashboard]:http://adjust.com
 [adjust.com]:http://adjust.com
+[en-readme]:  ../../README.md
+[zh-readme]: ../chinese/android_sdk_readme_zh.md
+[ja-readme]: ../japanese/android_sdk_readme_ja.md
+[ko-readme]: ../korean/android_sdk_readme_ko.md
 
 [maven]:http://maven.org
 [example]:https://github.com/adjust/android_sdk/tree/master/Adjust/example
