@@ -1,1 +1,1 @@
-include ':adjust', ':test', ':example', ':example-tv', ':testlibrary', ':testapp', ':example-webbridge', ':webbridge', ':testapp-webbridge', ':example-fbpixel', ':nonplay', ':play', ':criteo', ':trademob', ':sociomantic'
+include ':adjust', ':test', ':example', ':example-tv', ':testlibrary', ':testapp', ':example-webbridge', ':webbridge', ':testapp-webbridge', ':example-fbpixel', ':imei', ':play', ':criteo', ':trademob', ':sociomantic'

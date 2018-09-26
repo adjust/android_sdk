@@ -229,9 +229,9 @@ public class PackageBuilder {
     }
 
     private void injectPluginParameters(Map<String, String> parameters) {
-        Map<String, String> nonPlayParameters = Reflection.getNonPlayParameters(adjustConfig.context, logger);
-        if (nonPlayParameters != null) {
-            parameters.putAll(nonPlayParameters);
+        Map<String, String> imeiParameters = Reflection.getIMEIparameters(adjustConfig.context, logger);
+        if (imeiParameters != null) {
+            parameters.putAll(imeiParameters);
         }
     }
 

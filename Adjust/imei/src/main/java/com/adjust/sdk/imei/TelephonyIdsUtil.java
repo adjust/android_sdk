@@ -1,4 +1,4 @@
-package com.adjust.sdk.nonplay;
+package com.adjust.sdk.imei;
 
 import android.content.Context;
 import android.os.Build;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 class TelephonyIdsUtil {
     static void injectIMEI(Map<String, String> parameters, Context context, ILogger logger) {
-        if (!AdjustNonPlay.isIMEItoBeRead) {
+        if (!AdjustIMEI.isIMEItoBeRead) {
             return;
         }
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);

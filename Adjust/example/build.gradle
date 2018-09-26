@@ -28,7 +28,7 @@ dependencies {
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.15.1'
 
-    implementation project(":nonplay")
+    implementation project(':imei')
 
     implementation project(":play")
 

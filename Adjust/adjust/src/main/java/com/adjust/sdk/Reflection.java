@@ -17,10 +17,10 @@ public class Reflection {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
     }
 
-    static Map<String, String> getNonPlayParameters(Context context, ILogger logger) {
+    static Map<String, String> getIMEIparameters(Context context, ILogger logger) {
         Object nonPlayParameters = null;
         try {
-            nonPlayParameters = invokeStaticMethod("com.adjust.sdk.nonplay.Util", "getNonPlayParameters", new Class[]{Context.class, ILogger.class}, context, logger);
+            nonPlayParameters = invokeStaticMethod("com.adjust.sdk.imei.Util", "getIMEIparameters", new Class[]{Context.class, ILogger.class}, context, logger);
 
             Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>)(Class) Map.class;
 
