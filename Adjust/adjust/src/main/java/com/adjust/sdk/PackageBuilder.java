@@ -233,10 +233,6 @@ public class PackageBuilder {
         if (nonPlayParameters != null) {
             parameters.putAll(nonPlayParameters);
         }
-        Map<String, String> playParameters = Reflection.getPlayParameters(adjustConfig.context, logger);
-        if (playParameters != null) {
-            parameters.putAll(playParameters);
-        }
     }
 
     private void injectDeviceInfo(Map<String, String> parameters) {
@@ -268,14 +264,17 @@ public class PackageBuilder {
 
     private void injectDeviceInfoIds(Map<String, String> parameters) {
         injectPlayIds(parameters);
+
+        if (containsPlayIds(parameters)) {
+            logger.verbose("Play ids detected, fallback non-play ids won't be read");
+            return;
+        }
+
+        logger.warn("Fallback non-play store device ids will to be read");
         injectNonPlayIds(parameters);
     }
 
     private void injectPlayIds(Map<String, String> parameters) {
-        if (containsPlayIds(parameters)) {
-            logger.verbose("Play ids loaded from play plugin");
-            return;
-        }
         deviceInfo.reloadPlayIds(adjustConfig.context);
 
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
@@ -284,24 +283,8 @@ public class PackageBuilder {
     }
 
     private void injectNonPlayIds(Map<String, String> parameters) {
-        if (containsPlayIds(parameters)) {
-            logger.verbose("Play ids detected, non-play ids won't be read");
-            return;
-        }
-        boolean nonPlayParametersLoaded =
-                parameters.containsKey("mac_sha1") ||
-                parameters.containsKey("mac_md5") ||
-                parameters.containsKey("android_id");
-
-        if (nonPlayParametersLoaded) {
-            logger.verbose("Non-play ids already loaded");
-
-            return;
-        }
-
-        logger.warn("Non-play store ids will to be read.\nIf that was the intention, please use the adjust-android-nonplay library.");
-
         deviceInfo.reloadNonPlayIds(adjustConfig.context);
+
         PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
         PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);

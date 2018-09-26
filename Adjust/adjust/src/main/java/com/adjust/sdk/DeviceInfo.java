@@ -13,7 +13,6 @@ import android.util.DisplayMetrics;
 
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
@@ -31,7 +30,7 @@ class DeviceInfo {
     String playAdId;
     String playAdIdSource;
     Boolean isTrackingEnabled;
-    private boolean nonGoogleIdsRead = false;
+    private boolean nonGoogleIdsReadOnce = false;
     String macSha1;
     String macShortMd5;
     String androidId;
@@ -91,6 +90,7 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(Context context) {
+        playAdIdSource = null;
         for (int i = 0; i < 3; i += 1) {
             try {
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
@@ -122,6 +122,9 @@ class DeviceInfo {
     }
 
     void reloadNonPlayIds(Context context) {
+        if (nonGoogleIdsReadOnce) {
+            return;
+        }
         if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
             AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
         }
@@ -129,7 +132,7 @@ class DeviceInfo {
         macSha1 = getMacSha1(macAddress);
         macShortMd5 = getMacShortMd5(macAddress);
         androidId = Util.getAndroidId(context);
-        nonGoogleIdsRead = true;
+        nonGoogleIdsReadOnce = true;
     }
 
     private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
