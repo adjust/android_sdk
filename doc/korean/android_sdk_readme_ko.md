@@ -4,6 +4,8 @@
 
 Web views를 쓰는 앱이며 Javascript 코드에서 Adjust 추적을 사용하고자 할 경우 안드로이드 [web views SDK 설명서](doc/english/web_views.md)를 참조해 주십시오.
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## 목차
 
 * [앱 예제](#example-app)
@@ -1048,6 +1050,10 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 
 [dashboard]:                      http://adjust.com
 [adjust.com]:                     http://adjust.com
+[en-readme]:  ../../README.md
+[zh-readme]: ../chinese/android_sdk_readme_zh.md
+[ja-readme]: ../japanese/android_sdk_readme_ja.md
+[ko-readme]: ../korean/android_sdk_readme_ko.md
 
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
