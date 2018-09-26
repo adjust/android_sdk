@@ -4,9 +4,11 @@
 
 如果您的应用正在使用web views，您希望Adjust通过Javascript代码跟踪，请参照我们的[安卓web views SDK指南](doc/english/web_views.md)。
 
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+
 ## 目录
 
-* [应用示例](#example-app)
+* [应用示例](#example-apps)
 * [基本集成](#basic-integration)
    * [添加SDK至您的项目](#sdk-add)
    * [添加Google Play服务](#sdk-gps)
@@ -29,6 +31,7 @@
       * [应用收入验证](#iap-verification)
       * [回调参数](#callback-parameters)
       * [合作伙伴参数](#partner-parameters)
+      * [回调ID](#callback-id)
    * [会话参数](#session-parameters)
       * [会话回调参数](#session-callback-parameters)
       * [会话合作伙伴参数](#session-partner-parameters)
@@ -47,7 +50,6 @@
       * [Adjust设备ID](#di-adid)
    * [用户归因](#user-attribution)
    * [推送标签（Push token）](#push-token)
-   * [跟踪其它设备ID](#track-additional-ids)
    * [预安装跟踪码](#pre-installed-trackers)
    * [深度链接](#deeplinking)
       * [标准深度链接场景](#deeplinking-standard)
@@ -59,9 +61,9 @@
    * [我是否可以在应用激活时触发事件？](#ts-event-at-launch)
 * [许可协议](#license)
 
-## <a id="example-app"></a>应用示例
+## <a id="example-apps"></a>应用示例
 
-[`example`目录][example]内有应用示例。您可以打开安卓项目查看如何集成Adjust SDK的示例。
+[`example`目录][example]内有安卓应用示例，[`example-tv` directory][example-tv]内有安卓 TV 应用示例。您可以打开安卓项目查看如何集成Adjust SDK的示例。
 
 ## <a id="basic-integration"></a>基本集成
 
@@ -72,14 +74,14 @@
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.13.0'
+compile 'com.adjust.sdk:adjust-android:4.15.1'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **注意**:如果您正在使用`Gradle 3.0.0 or above`，请确保使用的是`implementation`关键词而不是`compile`，如下所示：
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.13.0'
+implementation 'com.adjust.sdk:adjust-android:4.15.1'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -96,7 +98,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 1. 打开您应用中的`build.gradle`文件，找到`dependencies`程序块。添加如下代码行：
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:10.2.1'
+    compile 'com.google.android.gms:play-services-analytics:11.8.0'
     ```
 
     ![][gradle_gps]
@@ -141,20 +143,6 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
-}
--keep class dalvik.system.VMRuntime {
-    java.lang.String getRuntime();
-}
--keep class android.os.Build {
-    java.lang.String[] SUPPORTED_ABIS;
-    java.lang.String CPU_ABI;
-}
--keep class android.content.res.Configuration {
-    android.os.LocaleList getLocales();
-    java.util.Locale locale;
-}
--keep class android.os.LocaledList {
-    java.util.Locale get(int);
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -471,6 +459,15 @@ Adjust.trackEvent(event);
 ```
 您可在我们的[特殊合作伙伴指南][special-partners]中了解到有关特殊合作伙伴和集成的更多信息。
 
+### <a id="callback-id"></a>回调ID
+您还可为想要跟踪的每个事件添加自定义字符串ID。此ID将在之后的事件成功和/或事件失败回调中被报告，以便您了解哪些事件跟踪成功或者失败。您可通过调用`AdjustEvent`实例上的`setCallbackId`方法来设置此ID:
+
+ ```java
+AdjustEvent event = new AdjustEvent("abc123");
+ event.setCallbackId("Your-Custom-Id");
+ Adjust.trackEvent(event);
+```
+
 ### <a id="session-parameters">会话参数
 
 一些参数被保存发送到Adjust SDK的每一个**事件**和**会话**中。一旦您已经添加任一这些参数，您无需再每次添加它们，因为这些参数已经被保存至本地。如果您添加同样参数两次，也不会有任何影响。
@@ -633,6 +630,7 @@ Adjust.onCreate(config);
 两个事件响应数据对象均包含：
 
 - 如果跟踪的包是一个事件，`String eventToken`代表事件识别码。
+- `String callbackId` 为事件对象设置的自定义回调ID。
 
 事件和会话跟踪不成功的对象也均包含：
 
@@ -767,6 +765,8 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 ### <a id="push-token"></a>推送标签（Push token）
 
+推送标签适用于Adjust受众分群工具（Audience Builder）和客户回传，是卸载跟踪功能的必需信息。
+
 每当您获取或更新识别码时，请添加以下调用至Adjust，以发送推送标签给我们：
 
 ```java
@@ -781,28 +781,6 @@ Adjust.setPushToken(pushNotificationsToken, context);
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
-推送标签适用于Adjust受众分群工具（Audience Builder）和客户回传，是卸载跟踪功能的必需信息。
-
-### <a id="track-additional-ids"></a>跟踪其它设备ID
-
-如果您在**非Google Play商店**发布应用，并希望跟踪其它设备ID(IMEI和MEID)，您需要明确指示SDK进行跟踪。这可以通过调用`AdjustConfig`实例的`setReadMobileEquipmentIdentity`方式，并传递`true`参数来实现。**Adjust SDK默认不收集这些ID**。
-
-```java
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
-config.setReadMobileEquipmentIdentity(true);
-
-Adjust.onCreate(config);
-```
-
-您还需要添加`READ_PHONE_STATE`权限至`AndroidManifest.xml`文件：
-
-```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
-
-为了使用该功能，您需要在Adjust控制面板中进行额外设置。更多信息，请咨询您的客户经理或发送电邮至support@adjust.com。
-
 ### <a id="pre-installed-trackers">预安装跟踪码
 
 如果您希望使用Adjust SDK来识别已在设备中预安装您的应用的用户，请执行以下步骤。
@@ -810,7 +788,7 @@ Adjust.onCreate(config);
 1. 在[控制面板]中创建一个新的跟踪码。
 2. 打开应用委托，并在`AdjustConfig`实例中添加设置默认跟踪码:
 
-  ```objc
+  ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
   config.setDefaultTracker("{TrackerToken}");
   Adjust.onCreate(config);
@@ -928,9 +906,9 @@ Adjust能够让您使用深度链接来运行再参与推广活动。您可查�
 
 如果您正在使用该功能，为了准确地再归因您的用户，您需要在应用中作一个额外回传至Adjust SDK。
 
-一旦您已经在应用中收到深度链接内容信息，请添加回传至`Adjust.appWillOpenUrl`方式。添加该回传后，Adjust SDK将尝试查找在深度链接中是否有任何新的归因信息，一旦找到，该信息将被发送至Adjust后台。如果您的用户因为点击带有深度链接内容的Adjust 跟踪链接，而应该被再归因，您将会看到应用中的[归因回传](#attribution-callback)被该用户的新归因信息触发。
+一旦您已经在应用中收到深度链接内容信息，请添加回传至 `Adjust.appWillOpenUrl(Uri, Context)` 方式。添加该回传后，Adjust SDK将尝试查找在深度链接中是否有任何新的归因信息，一旦找到，该信息将被发送至Adjust后台。如果您的用户因为点击带有深度链接内容的Adjust 跟踪链接，而应该被再归因，您将会看到应用中的[归因回传](#attribution-callback)被该用户的新归因信息触发。
 
-请如下示添加至`Adjust.appWillOpenUrl`的回传：
+请如下示添加至`Adjust.appWillOpenUrl(Uri, Context)`的回传：
 
 ```java
 @Override
@@ -941,7 +919,7 @@ protected void onCreate(Bundle savedInstanceState) {
     Intent intent = getIntent();
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
 
@@ -952,9 +930,11 @@ protected void onNewIntent(Intent intent) {
 
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+	  Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
+
+**注意**: `Adjust.appWillOpenUrl(Uri)` 方法从 Android SDK v4.14.0 起已被标记为 **deprecated**，请使用 `Adjust.appWillOpenUrl(Uri, Context)` 方法。
 
 ## <a id="troubleshooting">故障排查
 
@@ -1002,7 +982,7 @@ adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid
 
 如果您将日志量设置为`verbose`，您应该可以通过读取referrer查看日志：
 
-````
+```
 V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
 ```
 
@@ -1026,6 +1006,21 @@ V/Adjust: Path:      /sdk_click
 
 如果您在启动应用前执行以上测试，软件包将不会被发送。以上软件包将于应用启动后被发送。
 
+**重要:** 请注意，使用`adb`工具来测试该特定功能并不是最佳的方式。为了测试完整的referrer内容（在由`&`分隔多个参数的情况下），如使用`adb`工具您需要对内容进行编码以便发送给广播接收器。如未编码，`adb`将在第一个`&`符号后剪切referrer，并向您的广播接收器发送错误内容。
+
+如果您希望查看应用如何接收未编码的referrer值，您可使用我们的示例应用，并更改传递的内容，以便被`MainActivity.java`文件内`onFireIntentClick`方法中的意图触发：
+
+ ```java
+public void onFireIntentClick(View v) {
+    Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+    intent.setPackage("com.adjust.examples");
+    intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+    sendBroadcast(intent);
+}
+```
+
+您可随意使用自选内容更改`putExtra`方法的第二个参数。
+
 ### <a id="ts-event-at-launch">我是否可以在应用激活时触发事件？
 
 和您想象的可能不一样，在`Application`全局类上的`onCreate`方法不仅在应用激活时被调用，而且每当应用记录到系统或应用事件时也被调用。
@@ -1042,9 +1037,14 @@ V/Adjust: Path:      /sdk_click
 
 [dashboard]:                      http://adjust.com
 [adjust.com]:                     http://adjust.com
+[en-readme]:  ../../README.md
+[zh-readme]: ../chinese/android_sdk_readme_zh.md
+[ja-readme]: ../japanese/android_sdk_readme_ja.md
+[ko-readme]: ../korean/android_sdk_readme_ko.md
 
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
@@ -1085,7 +1085,7 @@ V/Adjust: Path:      /sdk_click
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2017 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
