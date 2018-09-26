@@ -23,8 +23,6 @@ dependencies {
 }
 
 task adjustCoreAndroidJar(type: Jar) {
-    dependsOn 'build'
-
     from('build/intermediates/classes/release/')
     archiveName "${project.name}.jar"
 }
@@ -51,7 +49,7 @@ task adjustCoreAndroidSourcesJar(type: Jar) {
 }
 
 artifacts {
-    //archives adjustCoreAndroidJar
+    archives adjustCoreAndroidJar
     archives adjustCoreAndroidJavadocsJar
     archives adjustCoreAndroidSourcesJar
 }
