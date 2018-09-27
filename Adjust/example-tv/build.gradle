@@ -1,13 +1,18 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/staging/"
+    }
+}
+
 android {
-    compileSdkVersion 26
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 21
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -25,6 +30,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
 
     implementation project(":adjust")
+
     implementation 'com.android.installreferrer:installreferrer:1.0'
     implementation 'com.google.android.gms:play-services-analytics:15.0.2'
 }

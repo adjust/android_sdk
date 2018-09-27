@@ -1,13 +1,18 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/staging/"
+    }
+}
+
 android {
     compileSdkVersion 28
-    buildToolsVersion '28.0.2'
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 14
-        targetSdkVersion 26
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -24,9 +29,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:11.8.0'
 
     // Add SDK via module.
-    implementation project(":adjust")
+    //implementation project(":adjust")
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.15.1'
+    implementation 'com.adjust.sdk:adjust-android:4.15.2'
 
     implementation project(':imei')
 
