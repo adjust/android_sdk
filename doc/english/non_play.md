@@ -2,7 +2,7 @@
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-This guide is meant for apps that are **not** being publish to the Play Store. If you are, please follow [this guide]()
+This guide is meant for apps that are **not** being publish to the Play Store. If you are, please follow [this guide](../../README.md)
 
 ## Table of contents
 
@@ -277,9 +277,6 @@ If you are using Maven, add the following to your `build.gradle` file:
 ```
 compile 'com.adjust.sdk:adjust-android-imei:4.15.2'
 ```
-
-or `implementation` if you are using gradle 3.0.0 or above.
-
 
 Add the following permission, if it is not already present in your `AndroidManifest.xml` file:
 
