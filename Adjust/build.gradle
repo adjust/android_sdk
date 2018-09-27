@@ -1,12 +1,28 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+// common in all sub-projects
+subprojects {
+}
+
+ext {
+    // android config
+    coreMinSdkVersion = 9
+    coreCompileSdkVersion = 28
+    coreTargetSdkVersion = 28
+    coreVersionName = '4.15.0'
+    defaultVersionCode = 1
+
+    // POM
+    adjustGroupId = 'com.adjust.sdk'
+}
+
 buildscript {
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.4'
+        classpath 'com.android.tools.build:gradle:3.2.0'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files

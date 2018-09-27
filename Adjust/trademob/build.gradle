@@ -2,25 +2,33 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/staging/"
+    }
+}
+
 android {
-    compileSdkVersion 28
+    compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion 9
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        versionName rootProject.ext.coreVersionName
+        versionCode rootProject.ext.defaultVersionCode
     }
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Add SDK via module.
     implementation project(":adjust")
+    // Add SDK via Maven.
+    //implementation 'com.adjust.sdk:adjust-android:4.15.2'
 }
 
 task adjustTrademobAndroidJar(type: Jar) {
-    dependsOn 'build'
-
     from('build/intermediates/classes/release/')
     archiveName "${project.name}.jar"
 }
@@ -47,6 +55,7 @@ task adjustTrademobAndroidSourcesJar(type: Jar) {
 }
 
 artifacts {
+    archives adjustTrademobAndroidJar
     archives adjustTrademobAndroidJavadocsJar
     archives adjustTrademobAndroidSourcesJar
 }
@@ -55,9 +64,9 @@ publishing {
     publications {
         mavenAndroidTrademob(MavenPublication) {
             customizePom(pom)
-            groupId 'com.adjust.sdk'
+            groupId rootProject.ext.adjustGroupId
             artifactId 'adjust-android-trademob'
-            version '4.15.0'
+            version rootProject.ext.coreVersionName
 
             // create the sign pom artifact
             pom.withXml {
@@ -72,14 +81,24 @@ publishing {
 
             // create the signed artifacts
             project.tasks.signArchives.signatureFiles.each {
+                // exclude "usual" archive artifact .aar
+                def signFileName = it.toString()
+                if (signFileName.contains('aar')) {
+                    return
+                }
+                // create a maven artifact for each asc signature
                 artifact(it) {
-                    def matcher = it.file =~ /-(sources|javadoc)\.jar\.asc$/
-                    if (matcher.find()) {
-                        classifier = matcher.group(1)
+                    //println "archive name ${signFileName}"
+                    if (signFileName.contains('-sources')) {
+                        classifier = 'sources'
+                        extension = 'jar.asc'
+                    } else if (signFileName.contains('-javadoc')) {
+                        classifier = 'javadoc'
+                        extension = 'jar.asc'
                     } else {
                         classifier = null
+                        extension = 'jar.asc'
                     }
-                    extension = 'jar.asc'
                 }
             }
 
@@ -106,6 +125,7 @@ def customizePom(pom) {
 
         // add all items necessary for maven central publication
         root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
 
             description 'The Trademob plugin for Adjust SDK for Android'
             name 'Adjust Android SDK Trademob plugin'
