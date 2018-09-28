@@ -287,7 +287,8 @@ Add the following permission, if it is not already present in your `AndroidManif
 Remember that after `Android 6.0` it might be necessary to [request App permission](https://developer.android.com/training/permissions/requesting) 
 for this permission, if the Android OS has not be altered to avoid it.
 
-Enable the feature before starting the sdk:
+
+Finally, you need to call `AdjustIMEI.readIMEI()` before starting the sdk to allow IMEI and MEID to be read:
 
 ```java
 // ...
@@ -297,6 +298,8 @@ Adjust.onCreate(config);
 
 // ...
 ```
+
+a similar `AdjustIMEI.doNotReadIMEI()` can be called to stop the sdk from reading IMEI and MEID values.
 
 ### <a id="build-the-app"></a>Build your app
 
