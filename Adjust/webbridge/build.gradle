@@ -29,9 +29,14 @@ dependencies {
 }
 
 task adjustWebBridgeAndroidJar(type: Jar) {
+    dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
 
+    from('build/intermediates/library_assets/release/packageReleaseAssets/out/') {
+        into('assets')
+    }
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+
     archiveName "${project.name}.jar"
 }
 
