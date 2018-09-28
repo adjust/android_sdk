@@ -29,7 +29,9 @@ dependencies {
 }
 
 task adjustCriteoAndroidJar(type: Jar) {
-    from('build/intermediates/classes/release/')
+    dependsOn 'compileReleaseJavaWithJavac'
+
+    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
     archiveName "${project.name}.jar"
 }
 
