@@ -31,6 +31,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [인앱 구매 검증](#iap-verification)
       * [콜백 파라미터](#callback-parameters)
       * [파트너 파라미터](#partner-parameters)
+      * [콜백 ID](#callback-id)
     * [세션 파라미터](#session-parameters)
       * [세션 콜백 파라미터](#session-callback-parameters)
       * [세션 파트너 파라미터](#session-partner-parameters)
@@ -49,7 +50,6 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Adjust 기기 식별자](#di-adid)
     * [사용자 어트리뷰션](#user-attribution)
     * [푸시 토큰(push token)](#push-token)
-    * [기타 기기 식별자 추적](#track-additional-ids)
     * [사전 설치 트래커(pre-installed trackers)](#pre-installed-trackers)
     * [딥링크](#deeplinking)
         * [기본 딥링크](#deeplinking-standard)
@@ -74,7 +74,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.12.0'
+compile 'com.adjust.sdk:adjust-android:4.15.1'
 compile 'com.android.installreferrer:installreferrer:1.0'
 
 ```
@@ -82,7 +82,7 @@ compile 'com.android.installreferrer:installreferrer:1.0'
 **주의**: `gradle 3.0.0 이상 버전`을 사용하는 경우 아래와 같이 `compile` 대신 `implementation` 키워드를 사용하십시오. 
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.12.0'
+implementation 'com.adjust.sdk:adjust-android:4.15.1'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 
 ```
@@ -91,14 +91,14 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 
 Adjust SDK를 JAR 라이브러리로 프로젝트에 추가할 수도 있습니다. 가장 최근 SDK 버전용 JAR 라이브러리는 [release][releases] 페이지에서 찾을 수 있습니다.
 
-### <a id="google-play-services"></a>Google Play 서비스 추가
+### <a id="sdk-gps"></a>Google Play 서비스 추가
 
 2014년 8월 1일 자로 Google Play Store의 앱은 [Google 광고 ID][google_ad_id]를 사용하여 장치를 고유하게 식별해야 합니다. Adjust SDK에서 Google 광고 ID를 사용할 수 있게 하려면 [Google Play 서비스][google_play_services]를 연동해야 합니다. 이 작업을 아직 수행하지 않은 경우 다음 단계를 수행하십시오.
 
 1. 앱의 `build.gradle` 파일을 열고 `dependencies` 블록을 찾은 후 다음 라인을 추가합니다.
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:10.2.1'
+    compile 'com.google.android.gms:play-services-analytics:11.8.0'
     ```
 
     ![][gradle_gps]
@@ -143,20 +143,6 @@ Proguard를 사용 중인 경우 다음 행을 Proguard 파일에 추가합니�
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {
     java.lang.String getId();
     boolean isLimitAdTrackingEnabled();
-}
--keep class dalvik.system.VMRuntime {
-    java.lang.String getRuntime();
-}
--keep class android.os.Build {
-    java.lang.String[] SUPPORTED_ABIS;
-    java.lang.String CPU_ABI;
-}
--keep class android.content.res.Configuration {
-    android.os.LocaledList getLocales();
-    java.util.Locale locale;
-}
--keep class android.os.LocaledList {
-    java.util.Locale get(int);
 }
 -keep public class com.android.installreferrer.** { *; }
 ```
@@ -273,16 +259,16 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
 
 #### <a id="session-tracking-api14"></a>API 레벨 14 이상
 
-  1. `ActivityLifecycleCallbacks` 인터페이스를 구현하는 비공개 클래스를 추가합니다. 이 인터페이스에 액세스할 권한이 없다면, 앱의 대상 Android api 레벨이 14보다 낮기 때문입니다. 이 [지침](#session-tracking-api9)에 따라 각 작업을 수동으로 업데이트해야 합니다. 이전에 앱의 각 작업에 대한 `Adjust.onResume` 및 `Adjust.onPause` 호출이 있었을 경우 각 호출을 제거해야 합니다.
+1. `ActivityLifecycleCallbacks` 인터페이스를 구현하는 비공개 클래스를 추가합니다. 이 인터페이스에 액세스할 권한이 없다면, 앱의 대상 Android api 레벨이 14보다 낮기 때문입니다. 이 [지침](#session-tracking-api9)에 따라 각 작업을 수동으로 업데이트해야 합니다. 이전에 앱의 각 작업에 대한 `Adjust.onResume` 및 `Adjust.onPause` 호출이 있었을 경우 각 호출을 제거해야 합니다.
 
     ![][activity_lifecycle_class]
 
-  2. `onActivityResumed(Activity activity)` 메서드를 편집하고 `Adjust.onResume()`에 호출을 추가합니다.
+2. `onActivityResumed(Activity activity)` 메서드를 편집하고 `Adjust.onResume()`에 호출을 추가합니다.
 `onActivityPaused(Activity activity)` 메서드를 편집하고 `Adjust.onPause()`에 호출을 추가합니다.
 
     ![][activity_lifecycle_methods]
 
-  3. adjust SDK가 구성된 `onCreate()` 메서드를 추가하고 `registerActivityLifecycleCallbacks` 호출을 이전에 만든 `ActivityLifecycleCallbacks` 클래스의 인스턴스와 함께 추가합니다.
+3. adjust SDK가 구성된 `onCreate()` 메서드를 추가하고 `registerActivityLifecycleCallbacks` 호출을 이전에 만든 `ActivityLifecycleCallbacks` 클래스의 인스턴스와 함께 추가합니다.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -348,7 +334,7 @@ public class YourActivity extends Activity {
 }
 ```
 
-![](https://camo.githubusercontent.com/f23435fcdc1cbae9f18bcc8aa6ec382151bc5fd0/68747470733a2f2f7261772e6769746875622e636f6d2f61646a7573742f73646b732f6d61737465722f5265736f75726365732f616e64726f69642f76342f31345f61637469766974792e706e67)
+![][activity]
 
 **모든** 앱 액티비티에서 이같은 단계를 반복해야 하므로 신규 액티비티 생성 시에 잊지 마세요. 코딩 유형에 따라 액티비티 전체에서 이를 공통 슈퍼클래스로 설정해야 할 수도 있습니다.
 
@@ -473,6 +459,18 @@ Adjust.trackEvent(event);
 ```
 
 특별 파트너와 그 연동에 대한 자세한 내용은 [특별 파트너 설명서][special-partners]를 참조하십시오.
+
+### <a id="callback-id"></a>콜백 ID
+
+추적하고자 하는 각 이벤트에 개별 스트링 ID를 따로 붙일 수도 있습니다. 나중에 이벤트 성공/실패 콜백에서 해당 ID에 전달하여 이벤트 트래킹의 성공 또는 실패 여부를 추적할 수 있게 해 줍니다. `AdjustEvent` 인스턴스에서  `setCallbackId` 메서드를 호출하여 설정할 수 있습니다:
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setCallbackId("Your-Custom-Id");
+
+Adjust.trackEvent(event);
+```
 
 ### <a id="session-parameters">세션 파라미터 설정
 
@@ -638,6 +636,7 @@ Adjust.onCreate(config);
 이벤트 응답 데이터 개체 두 가지에는 다음 정보가 포함됩니다.
 
 - `String eventToken` 추적 패키지가 이벤트인 경우 이벤트 토큰
+- `String callbackId`: 이벤트 객체에서 사용자가 설정하는 콜백 ID.
 
 값을 사용할 수 없을 경우 `null`로 기본 설정됩니다.
 
@@ -774,6 +773,8 @@ AdjustAttribution attribution = Adjust.getAttribution();
 
 ### <a id="push-token"></a>푸시 토큰
 
+푸시 토큰은 Audience Builder와 클라이언트 콜백에 사용되며, 앱 제거(uninstall) 및 재설치 (reinstall) 트래킹을 위해 필수입니다.
+
 푸시 알림 토큰을 전송하려면 앱에서 토큰을 받거나 값 변화가 있을 때마다 아래와 같이 Adjust에 대한 호출을 추가하세요.
 
 ```java
@@ -787,28 +788,6 @@ Adjust.setPushToken(pushNotificationsToken, context);
 Adjust.setPushToken(pushNotificationsToken);
 ```
 
-푸시 토큰은 Audience Builder와 클라이언트 콜백에 사용되며, 앱 제거(uninstall) 및 재설치 (reinstall) 트래킹을 위해 필수입니다.
-
-### <a id="track-additional-ids">기타 기기 식별자 추적
-
-**Google Play Store** 이외의 안드로이드 앱 스토어에서 앱을 배포 중이며 기타 기기 식별자(IMEI 및 MEID)를 추적하고자 할 경우 Adjust SDK에 해당 명령을 내려야 합니다. `AdjustConfig` 인스턴스 내 `setReadMobileEquipmentIdentity` 메서드를 아래와 같이 호출하여 `true` 파라미터를 전달하면 됩니다. **Adjust SDK는 이들 식별자를 기본값으로 수집하지 않습니다**.
-
-```objc
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
-config.setReadMobileEquipmentIdentity(true);
-
-Adjust.onCreate(config);
-```
-
-그리고 `AndroidManifest.xml` 파일에 `READ_PHONE_STATE` 권한을 추가해야 합니다.
-
-```xml
-<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-```
- 
-이 기능을 사용하려면 Adjust 대시보드에서 추가 단계를 거쳐야 합니다. 자세한 사항을 알아 보려면 계정 매니저에게 연락하거나 [support@adjust.com][support@adjust.com]으로 메일을 보내 주십시오.
-
 ### <a id="pre-installed-trackers">사전 설치 트래커
 
 Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를 인식하고 싶다면 다음 절차를 따르세요.
@@ -817,7 +796,7 @@ Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를
 
 2. 앱 델리게이트를 열고 `AdjustConfig` 인스턴스의 기본값 트래커를 다음과 같이 설정합니다.
 
-```objc
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setDefaultTracker("{TrackerToken}");
 Adjust.onCreate(config);
@@ -1034,6 +1013,21 @@ V/Adjust: Path:      /sdk_click
 
 앱 시작 전에 이 테스트를 실시하면 전송할 패키지가 보이지 않습니다. 패키지는 앱이 시작된 후에 전송됩니다.
 
+**중요:** 이 기능 테스트에 `adb`툴 사용을 권장하지 않는다는 사실에 주의해 주십시오. (여러 개의 파라미터를 `&`로 구분해 놓은 경우) 참조자 내용 전체를 `adb`에서 테스트한다면, 브로드캐스트 수신자에 들어가게 하기 위해 해당 내용을 인코딩해야 합니다. 인코딩을 하지 않으면 `adb`에서 첫 번째 `&` 다음에 나오는 참조자 내용을 잘라 버리기 때문에 브로드캐스트 수신자에 올바르지 않은 내용이 전달됩니다. 
+
+인코딩되지 않은 참조자 값이 앱에서 어떻게 수신되는지 보려면 아래 Adjust의 예제 앱을 참조하십시오. 전달되는 내용 중  `MainActivity.java` 파일에 있는 `onFireIntentClick` 메서드 내 인텐트로 촉발되는 부분을 다르게 써 본 후 그 결과를 확인할 수 있습니다.
+
+```java
+public void onFireIntentClick(View v) {
+    Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+    intent.setPackage("com.adjust.examples");
+    intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+    sendBroadcast(intent);
+}
+```
+
+`putExtra` 메서드에서 두 번째 파라미터를 필요한 대로 바꿔 쓰시면 됩니다. 
+
 ### <a id="ts-event-at-launch">응용 프로그램 런칭 시 이벤트를 촉발할 수 있나요?
 
 직관적으로 생각하는 것과는 다를 수 있습니다. 전역 `Application` 클래스의 `onCreate` 메서드는 응용 프로그램이 시작될 때뿐만 아니라, 시스템 또는 응용 프로그램 이벤트가 앱에 의해 캡처될 때도 호출됩니다.
@@ -1096,7 +1090,7 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 
 adjust SDK는 MIT 라이선스에 따라 사용이 허가되었습니다.
 
-Copyright (c) 2012-2017 adjust GmbH,
+Copyright (c) 2012-2018 adjust GmbH,
 http://www.adjust.com
 
 이로써 본 소프트웨어와 관련 문서 파일(이하 "소프트웨어")의 복사본을 받는 사람에게는 아래 조건에 따라 소프트웨어를 제한 없이 다룰 수 있는 권한이 무료로 부여됩니다. 이 권한에는 소프트웨어를 사용, 복사, 수정, 병합, 출판, 배포 및/또는 판매하거나 2차 사용권을 부여할 권리와 소프트웨어를 제공 받은 사람이 소프트웨어를 사용, 복사, 수정, 병합, 출판, 배포 및/또는 판매하거나 2차 사용권을 부여하는 것을 허가할 수 있는 권리가 제한 없이 포함됩니다.
