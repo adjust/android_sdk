@@ -1,8 +1,9 @@
 ## Sociomantic plugin
 
-Add the dependency of the adjust sdk with the Sociomantic plugin:
+Add the dependency of the Sociomantic plugin adjust alongside the adjust sdk:
 
 ```
+compile 'com.adjust.sdk:adjust-android:4.15.0'
 compile 'com.adjust.sdk:adjust-android-sociomantic:4.15.0'
 ```
 

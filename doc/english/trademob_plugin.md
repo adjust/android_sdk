@@ -1,8 +1,9 @@
 ## Trademob plugin
 
-Add the dependency of the adjust sdk with the Trademob plugin:
+Add the dependency of the Trademob plugin adjust alongside the adjust sdk:
 
 ```
+compile 'com.adjust.sdk:adjust-android:4.15.0'
 compile 'com.adjust.sdk:adjust-android-trademob:4.15.0'
 ```
 
