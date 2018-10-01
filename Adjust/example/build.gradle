@@ -29,13 +29,13 @@ dependencies {
     implementation 'com.google.android.gms:play-services-analytics:11.8.0'
 
     // Add SDK via module.
-    //implementation project(":adjust")
+    implementation project(":adjust")
     // Add SDK via Maven.
-    implementation 'com.adjust.sdk:adjust-android:4.15.2'
+    //implementation 'com.adjust.sdk:adjust-android:4.15.2'
 
-    implementation project(':imei')
+    //implementation project(':imei')
 
-    implementation project(":play")
+    //implementation project(":play")
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'

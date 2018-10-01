@@ -21,7 +21,6 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.imei.AdjustIMEI;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -38,7 +37,7 @@ public class GlobalApplication extends Application {
         super.onCreate();
 
         LeakCanary.install(this);
-
+/*
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
                 .detectAll()
                 .penaltyLog()
@@ -47,7 +46,7 @@ public class GlobalApplication extends Application {
                 .detectAll()
                 .penaltyLog()
                 .build());
-
+*/
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
@@ -148,7 +147,7 @@ public class GlobalApplication extends Application {
         // Remove all session partner parameters.
         Adjust.resetSessionPartnerParameters();
 
-        AdjustIMEI.readIMEI();
+        //AdjustIMEI.readIMEI();
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
