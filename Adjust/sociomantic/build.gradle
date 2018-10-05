@@ -21,16 +21,14 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     // Add SDK via module.
     implementation project(":adjust")
     // Add SDK via Maven.
-    //implementation 'com.adjust.sdk:adjust-android:4.15.2'
+    // implementation 'com.adjust.sdk:adjust-android:4.15.2'
 }
 
 task adjustSociomanticAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
-
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
     archiveName "${project.name}.jar"
 }
@@ -38,7 +36,7 @@ task adjustSociomanticAndroidJar(type: Jar) {
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation
+    // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation.
     if (org.gradle.internal.jvm.Jvm.current().getJavaVersion() == JavaVersion.VERSION_1_8) {
         options.addStringOption('Xdoclint:none', '-quiet')
     }
@@ -46,7 +44,6 @@ task androidJavadocs(type: Javadoc) {
 
 task adjustSociomanticAndroidJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
-
     classifier = 'javadoc'
     from androidJavadocs.destinationDir
 }
@@ -70,7 +67,7 @@ publishing {
             artifactId 'adjust-android-sociomantic'
             version rootProject.ext.coreVersionName
 
-            // create the sign pom artifact
+            // Create the sign pom artifact.
             pom.withXml {
                 def pomFile = file("${project.buildDir}/generated-pom.xml")
                 writeTo(pomFile)
@@ -81,16 +78,15 @@ publishing {
                 }
             }
 
-            // create the signed artifacts
+            // Create the signed artifacts.
             project.tasks.signArchives.signatureFiles.each {
-                // exclude "usual" archive artifact .aar
+                // Exclude "usual" archive artifact .aar.
                 def signFileName = it.toString()
                 if (signFileName.contains('aar')) {
                     return
                 }
-                // create a maven artifact for each asc signature
+                // Create a Maven artifact for each asc signature.
                 artifact(it) {
-                    //println "archive name ${signFileName}"
                     if (signFileName.contains('-sources')) {
                         classifier = 'sources'
                         extension = 'jar.asc'
@@ -127,10 +123,9 @@ def customizePom(pom) {
     pom.withXml {
         def root = asNode()
 
-        // add all items necessary for maven central publication
+        // Add all items necessary for maven central publication
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
-
             description 'The Sociomantic plugin for Adjust SDK for Android'
             name 'Adjust Android SDK Sociomantic plugin'
             url 'https://github.com/adjust/android_sdk'
@@ -139,7 +134,6 @@ def customizePom(pom) {
                 name 'adjust GmbH'
                 url 'http://www.adjust.com'
             }
-
             licenses {
                 license {
                     name 'MIT License'
