@@ -279,7 +279,7 @@ public class PackageBuilder {
 
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_source", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
     }
 
     private void injectNonPlayIds(Map<String, String> parameters) {
