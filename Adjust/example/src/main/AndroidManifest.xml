@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.adjust.examples">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.adjust.examples">
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <!-- Use ONLY IF you are using plugin-imei and if your app is NOT DISTRIBUTED in Play Store -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
@@ -30,28 +29,21 @@
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!--
-                 note that the leading "/" is required for pathPrefix
-                 Accepts URIs that begin with "example://”
-                -->
-                <data android:scheme="adjustExample" />
+                <data android:scheme="adjust-example" />
             </intent-filter>
         </activity>
+        <activity android:name=".ServiceActivity"></activity>
 
         <service
             android:name=".ServiceExample"
             android:enabled="true"
             android:exported="true" />
-
-        <activity android:name=".ServiceActivity"></activity>
     </application>
 
 </manifest>
