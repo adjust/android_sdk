@@ -17,13 +17,11 @@ public class Reflection {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
     }
 
-    static Map<String, String> getIMEIparameters(Context context, ILogger logger) {
+    static Map<String, String> getImeiParameters(Context context, ILogger logger) {
         Object nonPlayParameters = null;
         try {
-            nonPlayParameters = invokeStaticMethod("com.adjust.sdk.imei.Util", "getIMEIparameters", new Class[]{Context.class, ILogger.class}, context, logger);
-
-            Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>)(Class) Map.class;
-
+            nonPlayParameters = invokeStaticMethod("com.adjust.sdk.imei.Util", "getImeiParameters", new Class[]{Context.class, ILogger.class}, context, logger);
+            Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>) (Class) Map.class;
             if (nonPlayParameters != null && stringStringMapClass.isInstance(nonPlayParameters)) {
                 return (Map<String, String>) nonPlayParameters;
             }
@@ -92,14 +90,12 @@ public class Reflection {
     public static Object invokeStaticMethod(String className, String methodName, Class[] cArgs, Object... args)
             throws Exception {
         Class classObject = Class.forName(className);
-
         return invokeMethod(classObject, methodName, null, cArgs, args);
     }
 
     public static Object invokeInstanceMethod(Object instance, String methodName, Class[] cArgs, Object... args)
             throws Exception {
         Class classObject = instance.getClass();
-
         return invokeMethod(classObject, methodName, instance, cArgs, args);
     }
 
@@ -110,8 +106,8 @@ public class Reflection {
         if (methodObject == null) {
             return null;
         }
-        Object resultObject = methodObject.invoke(instance, args);
 
+        Object resultObject = methodObject.invoke(instance, args);
         return resultObject;
     }
 

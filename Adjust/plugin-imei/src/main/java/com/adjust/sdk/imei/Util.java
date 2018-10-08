@@ -7,14 +7,12 @@ import com.adjust.sdk.ILogger;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.adjust.sdk.imei.TelephonyIdsUtil.injectIMEI;
+import static com.adjust.sdk.imei.TelephonyIdsUtil.injectImei;
 
 public class Util {
-    public static Map<String, String> getIMEIparameters(Context context, ILogger logger) {
+    public static Map<String, String> getImeiParameters(Context context, ILogger logger) {
         Map<String, String> parameters = new HashMap<String, String>();
-
-        injectIMEI(parameters, context, logger);
-
+        injectImei(parameters, context, logger);
         return parameters;
     }
 }

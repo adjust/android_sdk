@@ -13,20 +13,19 @@ import java.util.List;
 import java.util.Map;
 
 class TelephonyIdsUtil {
-    static void injectIMEI(Map<String, String> parameters, Context context, ILogger logger) {
+    static void injectImei(Map<String, String> parameters, Context context, ILogger logger) {
         if (!AdjustImei.isImeiToBeRead) {
             return;
         }
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         PackageBuilder.addString(parameters, "telephony_ids", getTelephonyIds(telephonyManager, logger));
-        PackageBuilder.addString(parameters, "imeis", getIMEIs(telephonyManager, logger));
-        PackageBuilder.addString(parameters, "meids", getMEIDs(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "imeis", getImeis(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "meids", getMeids(telephonyManager, logger));
     }
 
     private static String getTelephonyIds(TelephonyManager telephonyManager, ILogger logger) {
         List<String> telephonyIdList = new ArrayList<String>();
-
         String telephonyNoIdx = getDefaultTelephonyId(telephonyManager, logger);
         tryAddToStringList(telephonyIdList, telephonyNoIdx);
 
@@ -61,14 +60,13 @@ class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getIMEIs(TelephonyManager telephonyManager, ILogger logger) {
+    private static String getImeis(TelephonyManager telephonyManager, ILogger logger) {
         List<String> imeiList = new ArrayList<String>();
-
-        String imeiNoIdx = getDefaultIMEI(telephonyManager, logger);
+        String imeiNoIdx = getDefaultImei(telephonyManager, logger);
         tryAddToStringList(imeiList, imeiNoIdx);
 
         for (int i = 0; i < 10; i++) {
-            String imei = getIMEIbyIndex(telephonyManager, i, logger);
+            String imei = getImeiByIndex(telephonyManager, i, logger);
             if (!tryAddToStringList(imeiList, imei)) {
                 break;
             }
@@ -77,7 +75,7 @@ class TelephonyIdsUtil {
         return TextUtils.join(",", imeiList);
     }
 
-    private static String getDefaultIMEI(TelephonyManager telephonyManager, ILogger logger) {
+    private static String getDefaultImei(TelephonyManager telephonyManager, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getImei();
@@ -88,7 +86,7 @@ class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getIMEIbyIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
+    private static String getImeiByIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getImei(index);
@@ -99,14 +97,14 @@ class TelephonyIdsUtil {
         return null;
     }
 
-    public static String getMEIDs(TelephonyManager telephonyManager, ILogger logger) {
+    public static String getMeids(TelephonyManager telephonyManager, ILogger logger) {
         List<String> meidList = new ArrayList<String>();
 
-        String meidNoIdx = getDefaultMEID(telephonyManager, logger);
+        String meidNoIdx = getDefaultMeid(telephonyManager, logger);
         tryAddToStringList(meidList, meidNoIdx);
 
         for (int i = 0; i < 10; i++) {
-            String meid = getMEIDbyIndex(telephonyManager, i, logger);
+            String meid = getMeidByIndex(telephonyManager, i, logger);
             if (!tryAddToStringList(meidList, meid)) {
                 break;
             }
@@ -115,7 +113,7 @@ class TelephonyIdsUtil {
         return TextUtils.join(",", meidList);
     }
 
-    private static String getDefaultMEID(TelephonyManager telephonyManager, ILogger logger) {
+    private static String getDefaultMeid(TelephonyManager telephonyManager, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getMeid();
@@ -126,7 +124,7 @@ class TelephonyIdsUtil {
         return null;
     }
 
-    private static String getMEIDbyIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
+    private static String getMeidByIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 return telephonyManager.getMeid(index);

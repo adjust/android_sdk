@@ -229,7 +229,7 @@ public class PackageBuilder {
     }
 
     private void injectPluginParameters(Map<String, String> parameters) {
-        Map<String, String> imeiParameters = Reflection.getIMEIparameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
         if (imeiParameters != null) {
             parameters.putAll(imeiParameters);
         }
