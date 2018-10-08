@@ -266,11 +266,11 @@ public class PackageBuilder {
         injectPlayIds(parameters);
 
         if (containsPlayIds(parameters)) {
-            logger.verbose("Play ids detected, fallback non-play ids won't be read");
+            logger.verbose("Google Advertising ID detected, fallback non Google Play IDs won't take place");
             return;
         }
 
-        logger.warn("Fallback non-play store device ids will to be read");
+        logger.warn("Google Advertising ID not detected, fallback non Google Play IDs will take place");
         injectNonPlayIds(parameters);
     }
 
