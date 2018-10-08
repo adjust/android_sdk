@@ -1,13 +1,13 @@
 package com.adjust.sdk.imei;
 
-public class AdjustIMEI {
-    static boolean isIMEItoBeRead = false;
+public class AdjustImei {
+    static boolean isImeiToBeRead = false;
 
-    public static void readIMEI() {
-        AdjustIMEI.isIMEItoBeRead = true;
+    public static void readImei() {
+        AdjustImei.isImeiToBeRead = true;
     }
 
-    public static void doNotReadIMEI() {
-        AdjustIMEI.isIMEItoBeRead = false;
+    public static void doNotReadImei() {
+        AdjustImei.isImeiToBeRead = false;
     }
 }

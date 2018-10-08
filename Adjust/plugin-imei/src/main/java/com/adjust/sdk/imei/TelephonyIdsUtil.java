@@ -14,7 +14,7 @@ import java.util.Map;
 
 class TelephonyIdsUtil {
     static void injectIMEI(Map<String, String> parameters, Context context, ILogger logger) {
-        if (!AdjustIMEI.isIMEItoBeRead) {
+        if (!AdjustImei.isImeiToBeRead) {
             return;
         }
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
