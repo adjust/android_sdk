@@ -30,10 +30,10 @@ dependencies {
 
     // Add SDK via module.
     implementation project(":adjust")
+    // implementation project(':plugin-imei')
+    // implementation project(":plugin-play")
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.15.2'
-    // implementation project(':imei')
-    // implementation project(":play")
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.4'
     releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
