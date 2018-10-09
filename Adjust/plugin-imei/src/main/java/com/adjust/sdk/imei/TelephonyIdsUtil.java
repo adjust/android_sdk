@@ -19,59 +19,54 @@ class TelephonyIdsUtil {
         }
 
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        PackageBuilder.addString(parameters, "telephony_ids", getTelephonyIds(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "imei", getDefaultImei(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "meid", getDefaultMeid(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "device_id", getDefaultDeviceId(telephonyManager, logger));
         PackageBuilder.addString(parameters, "imeis", getImeis(telephonyManager, logger));
         PackageBuilder.addString(parameters, "meids", getMeids(telephonyManager, logger));
+        PackageBuilder.addString(parameters, "device_ids", getDeviceIds(telephonyManager, logger));
     }
 
-    private static String getTelephonyIds(TelephonyManager telephonyManager, ILogger logger) {
+    private static String getDeviceIds(TelephonyManager telephonyManager, ILogger logger) {
         List<String> telephonyIdList = new ArrayList<String>();
-        String telephonyNoIdx = getDefaultTelephonyId(telephonyManager, logger);
-        tryAddToStringList(telephonyIdList, telephonyNoIdx);
-
         for (int i = 0; i < 10; i++) {
-            String telephonyId = getTelephonyIdByIndex(telephonyManager, i, logger);
+            String telephonyId = getDeviceIdByIndex(telephonyManager, i, logger);
             if (!tryAddToStringList(telephonyIdList, telephonyId)) {
                 break;
             }
         }
-
         return TextUtils.join(",", telephonyIdList);
     }
 
-    // XXX test difference mentioned here https://stackoverflow.com/a/35343531
-    private static String getDefaultTelephonyId(TelephonyManager telephonyManager, ILogger logger) {
+    // Test difference mentioned here https://stackoverflow.com/a/35343531
+    private static String getDefaultDeviceId(TelephonyManager telephonyManager, ILogger logger) {
         try {
             return telephonyManager.getDeviceId();
         } catch (SecurityException e) {
-            logger.debug("Couldn't read default Telephony Id: %s", e.getMessage());
+            logger.debug("Couldn't read default Device Id: %s", e.getMessage());
         }
         return null;
     }
 
-    private static String getTelephonyIdByIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
+    private static String getDeviceIdByIndex(TelephonyManager telephonyManager, int index, ILogger logger) {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 return telephonyManager.getDeviceId(index);
             }
         } catch (SecurityException e) {
-            logger.debug("Couldn't read Telephony Id in position %d: %s", index, e.getMessage());
+            logger.debug("Couldn't read Device Id in position %d: %s", index, e.getMessage());
         }
         return null;
     }
 
     private static String getImeis(TelephonyManager telephonyManager, ILogger logger) {
         List<String> imeiList = new ArrayList<String>();
-        String imeiNoIdx = getDefaultImei(telephonyManager, logger);
-        tryAddToStringList(imeiList, imeiNoIdx);
-
         for (int i = 0; i < 10; i++) {
             String imei = getImeiByIndex(telephonyManager, i, logger);
             if (!tryAddToStringList(imeiList, imei)) {
                 break;
             }
         }
-
         return TextUtils.join(",", imeiList);
     }
 
@@ -99,17 +94,12 @@ class TelephonyIdsUtil {
 
     public static String getMeids(TelephonyManager telephonyManager, ILogger logger) {
         List<String> meidList = new ArrayList<String>();
-
-        String meidNoIdx = getDefaultMeid(telephonyManager, logger);
-        tryAddToStringList(meidList, meidNoIdx);
-
         for (int i = 0; i < 10; i++) {
             String meid = getMeidByIndex(telephonyManager, i, logger);
             if (!tryAddToStringList(meidList, meid)) {
                 break;
             }
         }
-
         return TextUtils.join(",", meidList);
     }
 
@@ -142,7 +132,6 @@ class TelephonyIdsUtil {
         if (list.contains(value)) {
             return false;
         }
-
         return list.add(value);
     }
 }
