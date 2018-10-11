@@ -2,7 +2,7 @@
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-This guide is meant for apps that are **not** being publish to the Play Store. If you are, please follow [this guide](../../README.md)
+This guide is meant for apps that are **NOT** being published to the Google Play Store. If you are, please follow [this guide](../../README.md)
 
 ## Table of contents
 
@@ -271,7 +271,7 @@ Adjust.onCreate(config);
 
 ### <a id="imei-plugin"></a>IMEI plugin
 
-It's possible to have the Adjust SDK read the IMEI and MEID values of the device, using the IMEI plugin.
+You can use the IMEI plugin to have the Adjust SDK additionally read the IMEI and MEID values of a device.
 
 If you are using Maven, add the following to your `build.gradle` file:
 
@@ -285,11 +285,10 @@ Add the following permission, if it is not already present in your `AndroidManif
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 ```
 
-Remember that after `Android 6.0` it might be necessary to [request App permission](https://developer.android.com/training/permissions/requesting) 
-for this permission, if the Android OS has not be altered to avoid it.
+Remember that after `Android 6.0` it might be necessary to [request App permission](https://developer.android.com/training/permissions/requesting) if the Android OS has not already been altered to avoid it.
 
 
-Finally, you need to call `AdjustImei.readImei()` before starting the SDK to allow IMEI and MEID to be read:
+Finally, in order to read IMEI and MEID values, you need to call `AdjustImei.readImei()` before starting the SDK:
 
 ```java
 // ...
@@ -300,7 +299,7 @@ Adjust.onCreate(config);
 // ...
 ```
 
-a similar `AdjustIMEI.doNotReadImei()` can be called to stop the SDK from reading IMEI and MEID values.
+You can call a similar method `AdjustIMEI.doNotReadImei()` to stop the SDK from reading IMEI and MEID values.
 
 ### <a id="build-the-app"></a>Build your app
 
