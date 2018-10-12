@@ -62,7 +62,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
 
 ## <a id="example-apps"></a>Example apps
 
-There are example apps for Android inside the [`example` directory][example] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
+There are example apps for Android inside the [`example-app-java` directory][example-java] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
@@ -1051,7 +1051,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [adjust.com]:                     http://adjust.com
 
 [maven]:                          http://maven.org
-[example]:                        Adjust/example-app-java
+[example-java]:                   Adjust/example-app-java
 [example-tv]:                     Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
