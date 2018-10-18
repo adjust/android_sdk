@@ -427,6 +427,17 @@ adjustのダッシュボード上で連携が有効化されているネット�
 
 スペシャルパートナーとその統合について詳しくは[連携パートナーガイド][special-partners]をご覧ください。
 
+### <a id="callback-id"></a>コールバック ID
+トラッキングしたいイベントにカスタムIDを追加できます。このIDはイベントをトラッキングし、成功か失敗かの通知を受け取けとれるようコールバックを登録することができます。このIDは`AdjustEvent`インスタンスの`setCallbackId`メソッドと呼ぶように設定できます：
+
+```java
+AdjustEvent event = new AdjustEvent("abc123");
+
+event.setCallbackId("Your-Custom-Id");
+
+Adjust.trackEvent(event);
+```
+
 #### <a id="session-parameters">セッションパラメータ
 
 いくつかのパラメータは、adjust SDKのイベントごと、セッションごとに送信するために保存されます。
@@ -611,6 +622,7 @@ Adjust.onCreate(config);
 イベントのレスポンスデータは以下を含みます。
 
 - `String eventToken` トラッキングされたパッケージがイベントだった場合、そのイベントトークン
+- `String callbackId` イベントオブジェクトにカスタム設定されたコールバックID
 
 失敗したイベントとセッションは以下を含みます。
 
@@ -659,6 +671,16 @@ config.setEventBufferingEnabled(true);
 Adjust.onCreate(config);
 ```
 
+### <a id="gdpr-forget-me"></a>GDPR消去する権利（忘れられる権利）
+
+次のメソッドを呼び出すと、EUの一般データ保護規制（GDPR）第17条に従い、ユーザーが消去する権利（忘れられる権利）を行使した際にAdjust SDKがAdjustバックエンドに情報を通知します。
+
+```objc
+[Adjust gdprForgetMe];
+```
+
+この情報を受け取ると、Adjustはユーザーのデータを消去し、Adjust SDKはユーザーの追跡を停止します。この削除された端末からのリクエストは今後、Adjustに送信されません。
+
 #### <a id="background-tracking"></a>バックグラウンドでのトラッキング
 
 adjust SDKはデフォルドではアプリがバックグラウンドにある時はHTTPリクエストを停止します。
@@ -705,7 +727,7 @@ Adjust.setPushToken(pushNotificationsToken);
 1. [dashboard]上で新しいトラッカーを作成してください。
 2. App Delegateを開き、`ADJConfig`のデフォルトトラッカーを設定してください。
 
-  ```objc
+  ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
   config.setDefaultTracker("{TrackerToken}");
   Adjust.onCreate(config);
@@ -848,12 +870,12 @@ adjustはディープリンクを使ったリエンゲージメントキャン�
 
 この機能をご利用の場合、ユーザーが正しくリアトリビューションされるために、adjust SDKへのコールを追加してください。
 
-アプリでディープリンクの内容データを受信したら、`Adjust.appWillOpenUrl`メソッドへのコールを追加してください。
+アプリでディープリンクの内容データを受信したら、`Adjust.appWillOpenUrl(Uri, Context)`メソッドへのコールを追加してください。
 このコールによって、adjust SDKはディープリンクの中に新たなアトリビューションが存在するかを調べ、あった場合はadjustサーバーにこれを送信します。
 ディープリンクのついたadjustトラッカーURLのクリックによってユーザーがリアトリビュートされる場合、
 [アトリビューションコールバック](#attribution-callback)がこのユーザーの新しいアトリビューションデータで呼ばれます。
 
-`Adjust.appWillOpenUrl`のコールは下記のようになります。
+`Adjust.appWillOpenUrl(Uri, Context)`のコールは下記のようになります。
 
 ```java
 @Override
@@ -864,7 +886,7 @@ protected void onCreate(Bundle savedInstanceState) {
     Intent intent = getIntent();
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
 
@@ -875,9 +897,10 @@ protected void onNewIntent(Intent intent) {
 
     Uri data = intent.getData();
 
-    Adjust.appWillOpenUrl(data);
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
+**注**: Android SDK v4.14.0より`Adjust.appWillOpenUrl(Uri)` メソッドは**deprecated**（推奨されていません） と表示されます。代わりに`Adjust.appWillOpenUrl(Uri, Context)`メソッドを使用してください。
 
 ### <a id="troubleshooting">トラブルシューティング
 
@@ -957,6 +980,18 @@ V/Adjust: Path:      /sdk_click
 
 アプリの起動前にこのテストを行う場合、パッケージの送信は表示されません。パッケージはアプリの起動後に送信されます。
 
+"**重要:** この機能をテストをするために`adb`ツールを利用することは推奨しておりません。全てのリファラコンテンツを`adb`でテストするためには（`&`で分けられた複数のパラメータがある場合）、ブロードキャストリシーバーで受信するためにコンテンツをエンコードすることが必要です。もしエンコードをしないと、`adb`はレファラを最初の`&`サインで切り、誤ったコンテンツをブロードキャストレシーバーに伝えます。アプリがどのようにエンコードされていないリファラを受信しているかを確認したい場合は、Adjustのサンプルアプリを利用して、`MainActivity.java`ファイルの`onFireIntentClick`メソッドのインテント内に送信されたコンテンツを変更してください:
+
+```java
+public void onFireIntentClick(View v) {
+    Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
+    intent.setPackage("com.adjust.examples");
+    intent.putExtra("referrer", "utm_source=test&utm_medium=test&utm_term=test&utm_content=test&utm_campaign=test");
+    sendBroadcast(intent);
+}
+```
+自分の選んだコンテントで`putExtra`2番目のパラメーターを自由に変更してください。
+
 #### <a id="ts-event-at-launch">アプリ起動時にイベントを始動したい
 
 直感的には分かりにくいですが、グローバル`Application`クラスの`onCreate`メソッドはアプリ起動時だけでなく、
@@ -1017,21 +1052,12 @@ adjust SDKはこの場合の初期化についてサポートしています。�
 [activity_lifecycle_methods]:https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
 [activity_lifecycle_register]:https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
-### <a id="gdpr-forget-me"></a>GDPR消去する権利（忘れられる権利）
-
-次のメソッドを呼び出すと、EUの一般データ保護規制（GDPR）第17条に従い、ユーザーが消去する権利（忘れられる権利）を行使した際にAdjust SDKがAdjustバックエンドに情報を通知します。
-
-```objc
-[Adjust gdprForgetMe];
-```
-
-この情報を受け取ると、Adjustはユーザーのデータを消去し、Adjust SDKはユーザーの追跡を停止します。この削除された端末からのリクエストは今後、Adjustに送信されません。
 
 ### <a id="license"></a>ライセンス
 
 adjust SDKはMITライセンスを適用しています。
 
-Copyright (c) 2012-2016 adjust GmbH,
+Copyright (c) 2012-2018 Adjust GmbH,
 http://www.adjust.com
 
 以下に定める条件に従い、本ソフトウェアおよび関連文書のファイル（以下「ソフトウェア」）の複製を取得するすべての人に対し、
