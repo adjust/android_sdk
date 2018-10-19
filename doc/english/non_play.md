@@ -2,7 +2,7 @@
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-This guide is meant for apps that are **NOT being published to the Google Play Store**. If you are, please follow [this guide](../../README.md) instead.
+**Important:** this guide is meant for apps that are **NOT being published to the Google Play Store**. If you are, please follow [this guide](../../README.md) instead.
 
 ## Table of contents
 
@@ -302,7 +302,7 @@ Adjust.onCreate(config);
 
 You can call a similar method `AdjustIMEI.doNotReadImei()` to stop the SDK from reading IMEI and MEID values.
 
-However, please keep in mind that IMEI and MEID are persistent identifiers and that it is your responsibility to ensure that the collection and processing of this personal data from your app's end-users is lawful.
+However, **please keep in mind** that IMEI and MEID are persistent identifiers and that it is your responsibility to ensure that the collection and processing of this personal data from your app's end-users is lawful.
 
 ### <a id="build-the-app"></a>Build your app
 
