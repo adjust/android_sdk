@@ -239,7 +239,7 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 
     ![][application_config]
 
-    将`{YourAppToken}`替换为您的应用识别码（app token）。您可以在[控制面板]中找到该应用识别码。
+    将`{YourAppToken}`替换为您的应用识别码（app token）。您可以在[控制面板][dashboard]中找到该应用识别码。
 
     取决于您的应用制作是用于测试或产品开发目的，您必须将`environment`（环境模式）设为以下值之一：
 
@@ -376,7 +376,7 @@ Adjust.onCreate(config);
 
 ### <a id="event-tracking">事件跟踪
 
-您可以使用Adjust来跟踪应用中的任何事件。假设您想要跟踪具体按钮的每次点击，您必须在[控制面板]中创建一个新的事件识别码（Event Token）。例如事件识别码是`abc123`，在按钮的`onClick`方法中，您可以添加以下代码行来跟踪点击：
+您可以使用Adjust来跟踪应用中的任何事件。假设您想要跟踪具体按钮的每次点击，您必须在[控制面板][dashboard]中创建一个新的事件识别码（Event Token）。例如事件识别码是`abc123`，在按钮的`onClick`方法中，您可以添加以下代码行来跟踪点击：
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
@@ -502,7 +502,7 @@ Adjust.resetSessionCallbackParameters();
 
 与[会话回调参数](#session-callback-parameters)的方式一样，会话合作伙伴参数也将被发送至Adjust SDK的每一个事件和会话中。
 
-它们将被传送至渠道合作伙伴，以集成您在Adjust[控制面板]上已经激活的模块。
+它们将被传送至渠道合作伙伴，以集成您在Adjust[控制面板][dashboard]上已经激活的模块。
 
 会话合作伙伴参数具有与事件合作伙伴参数类似的接口。该参数是通过调用`Adjust.addSessionPartnerParameter(String key, String value)`被添加，而不是通过添加Key和值至事件:
 
@@ -676,8 +676,8 @@ Adjust.onCreate(config);
 
 根据欧盟的《一般数据保护条例》(GDPR) 第 17 条规定，用户行使被遗忘权时，您可以通知 Adjust。调用以下方法，Adjust SDK 将会收到指示向 Adjust 后端传达用户选择被遗忘的信息：
 
-```objc
-[Adjust gdprForgetMe];
+```java
+Adjust.gdprForgetMe(context);
 ```
 
 收到此信息后，Adjust 将清除该用户数据，并且 Adjust SDK 将停止跟踪该用户。以后不会再向 Adjust 发送来自此设备的请求。
@@ -785,7 +785,7 @@ Adjust.setPushToken(pushNotificationsToken);
 
 如果您希望使用Adjust SDK来识别已在设备中预安装您的应用的用户，请执行以下步骤。
 
-1. 在[控制面板]中创建一个新的跟踪码。
+1. 在[控制面板][dashboard]中创建一个新的跟踪码。
 2. 打开应用委托，并在`AdjustConfig`实例中添加设置默认跟踪码:
 
   ```java
