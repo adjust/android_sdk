@@ -2,7 +2,7 @@
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-**Important:** this guide is meant for apps that are **NOT being published to the Google Play Store**. If you are, please follow [this guide](../../README.md) instead.
+**Important:** This guide is meant for apps that are **NOT being published to the Google Play Store**. If your app will be published to Google Play Store, please follow [this guide](../../README.md) instead.
 
 ## Table of contents
 
@@ -271,9 +271,9 @@ Adjust.onCreate(config);
 
 ### <a id="imei-plugin"></a>IMEI plugin
 
-For specific markets, IMEI and MEID can be used for attribution on Android. In order to use this feature, please complete the [required steps][imei_doc] within your Adjust Dashboard and then use this plugin.
+For specific markets, IMEI and MEID can be used for attribution on Android. In order to use this feature, please complete the [required steps][imei-doc] within your Adjust Dashboard and then use this plugin.
 
-This IMEI plugin respects the [behavior of the Adjust Android SDK][gps_adid] in terms of device ID reading **while additionally** allowing the Adjust Android SDK to read the IMEI and MEID values of a device.
+This IMEI plugin respects the [behavior of the Adjust Android SDK][gps-adid] in terms of device ID reading **while additionally** allowing the Adjust SDK to read the IMEI and MEID values of a device.
 
 If you are using Maven, add the following to your `build.gradle` file:
 
@@ -287,7 +287,7 @@ Add the following permission, if it is not already present in your `AndroidManif
 <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 ```
 
-Remember that after `Android 6.0` it might be necessary to [request App permission](https://developer.android.com/training/permissions/requesting) if the Android OS has not already been altered to avoid it.
+Remember that after `Android 6.0` it might be necessary to [request app permission](https://developer.android.com/training/permissions/requesting) if the Android OS has not already been altered to avoid it.
 
 Finally, in order to read IMEI and MEID values, you need to call `AdjustImei.readImei()` before starting the SDK:
 
@@ -300,7 +300,7 @@ Adjust.onCreate(config);
 // ...
 ```
 
-You can call a similar method `AdjustIMEI.doNotReadImei()` to stop the SDK from reading IMEI and MEID values.
+You can call a similar method `AdjustImei.doNotReadImei()` to stop the SDK from reading IMEI and MEID values.
 
 However, **please keep in mind** that IMEI and MEID are persistent identifiers and that it is your responsibility to ensure that the collection and processing of this personal data from your app's end-users is lawful.
 
@@ -917,6 +917,8 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
+[imei-doc]:                       https://docs.adjust.com/en/imei-and-meid-attribution-for-android
+[gps-adid]:                       https://github.com/adjust/android_sdk/blob/master/doc/english/gps_adid.md
 [event-tracking]:                 https://docs.adjust.com/en/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
 [application_name]:               http://developer.android.com/guide/topics/manifest/application-element.html#nm
@@ -947,9 +949,6 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [activity_lifecycle_class]:     https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
 [activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
 [activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
-
-[imei_doc]: https://docs.adjust.com/en/imei-and-meid-attribution-for-android
-[gps_adid]: https://github.com/adjust/android_sdk/blob/master/doc/english/gps_adid.md
 
 ## <a id="license"></a>License
 
