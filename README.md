@@ -1049,13 +1049,12 @@ If you want to trigger an event after the install, use the [attribution callback
 
 If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
 
-[dashboard]:                      http://adjust.com
-[adjust.com]:                     http://adjust.com
-
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
 [en-readme]:  README.md
-[zh-readme]: doc/chinese/android_sdk_readme_zh.md
-[ja-readme]: doc/japanese/android_sdk_readme_ja.md
-[ko-readme]: doc/korean/android_sdk_readme_ko.md
+[zh-readme]:  doc/chinese/README.md
+[ja-readme]:  doc/japanese/README.md
+[ko-readme]:  doc/korean/README.md
 
 [maven]:                          http://maven.org
 [example-java]:                   Adjust/example-app-java

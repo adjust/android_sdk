@@ -1042,12 +1042,12 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 
 앱이 시작될 때 이벤트를 촉발시키려면 시작된 작업의 `onCreate` 메서드를 사용하십시오.
 
-[dashboard]:                      http://adjust.com
-[adjust.com]:                     http://adjust.com
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
 [en-readme]:  ../../README.md
-[zh-readme]: ../chinese/android_sdk_readme_zh.md
-[ja-readme]: ../japanese/android_sdk_readme_ja.md
-[ko-readme]: ../korean/android_sdk_readme_ko.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
 
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example

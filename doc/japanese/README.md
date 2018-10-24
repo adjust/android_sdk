@@ -1008,12 +1008,12 @@ adjust SDKはこの場合の初期化についてサポートしています。�
 
 アプリ起動時にイベントを作動させたい場合は、スタートするアクティビティの`onCreate`メソッドをご使用ください。
 
-[dashboard]:http://adjust.com
-[adjust.com]:http://adjust.com
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
 [en-readme]:  ../../README.md
-[zh-readme]: ../chinese/android_sdk_readme_zh.md
-[ja-readme]: ../japanese/android_sdk_readme_ja.md
-[ko-readme]: ../korean/android_sdk_readme_ko.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
 
 [maven]:http://maven.org
 [example]:https://github.com/adjust/android_sdk/tree/master/Adjust/example

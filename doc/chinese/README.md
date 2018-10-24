@@ -1035,12 +1035,12 @@ public void onFireIntentClick(View v) {
 
 如果您希望在应用激活后触发事件，请使用被启动的Activity的`onCreate`方法。
 
-[dashboard]:                      http://adjust.com
-[adjust.com]:                     http://adjust.com
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
 [en-readme]:  ../../README.md
-[zh-readme]: ../chinese/android_sdk_readme_zh.md
-[ja-readme]: ../japanese/android_sdk_readme_ja.md
-[ko-readme]: ../korean/android_sdk_readme_ko.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
 
 [maven]:                          http://maven.org
 [example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
