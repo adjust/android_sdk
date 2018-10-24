@@ -1056,11 +1056,6 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [ja-readme]:  doc/japanese/README.md
 [ko-readme]:  doc/korean/README.md
 
-[en-readme]:  README.md
-[zh-readme]: doc/chinese/android_sdk_readme_zh.md
-[ja-readme]: doc/japanese/android_sdk_readme_ja.md
-[ko-readme]: doc/korean/android_sdk_readme_ko.md
-
 [maven]:                          http://maven.org
 [example-java]:                   Adjust/example-app-java
 [example-tv]:                     Adjust/example-app-tv
