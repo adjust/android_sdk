@@ -2,7 +2,7 @@
 
 这是Adjust™的安卓SDK包。您可以访问[adjust.com]了解更多有关Adjust™的信息。
 
-**重要：** 本指南仅适用于**非Google Play商店**中发布的应用。如果您的应用需在Google Play商店发布，请移步至[另一指南](android_sdk_readme_zh.md)。
+**重要：** 本指南仅适用于**非Google Play商店**中发布的应用。如果您的应用需在Google Play商店发布，请移步至[另一指南](README.md)。
 
 ## 目录
 
