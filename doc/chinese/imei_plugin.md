@@ -66,13 +66,13 @@
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.16.0'
+compile 'com.adjust.sdk:adjust-android:4.15.1'
 ```
 
 **注意**:如果您正在使用`Gradle 3.0.0 or above`，请确保使用的是`implementation`关键词而不是`compile`，如下所示：
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.16.0'
+implementation 'com.adjust.sdk:adjust-android:4.15.1'
 ```
 
 ---
@@ -278,7 +278,7 @@ Adjust.onCreate(config);
 如果您使用的是 Maven，请在您的 `build.gradle` 文件中添加：
 
 ```
-compile 'com.adjust.sdk:adjust-android-imei:4.16.0'
+compile 'com.adjust.sdk:adjust-android-imei:4.15.2'
 ```
 
 如果您的 `AndroidManifest.xml` 文件中尚未包含以下权限，请添加：
