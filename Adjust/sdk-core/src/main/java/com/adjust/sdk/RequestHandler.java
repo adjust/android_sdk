@@ -27,7 +27,7 @@ public class RequestHandler implements IRequestHandler {
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
-        this.executor = new SingleThreadScheduler();//new SingleScheduledThreadFuturePoolExecutor("RequestHandler", false);
+        this.executor = new SingleThreadScheduler();//new SingleThreadFutureScheduler("RequestHandler", false);
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();

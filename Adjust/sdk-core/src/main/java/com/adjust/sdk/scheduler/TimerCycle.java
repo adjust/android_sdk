@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private ThreadFutureScheduler scheduler;
+    private FutureScheduler scheduler;
 
     private ScheduledFuture waitingTask;
     private String name;
@@ -22,7 +22,7 @@ public class TimerCycle {
     private ILogger logger;
 
     public TimerCycle(Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.scheduler = new SingleScheduledThreadFuturePoolExecutor(name, true);
+        this.scheduler = new SingleThreadFutureScheduler(name, true);
 
         this.name = name;
         this.command = command;

@@ -89,7 +89,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         logger = AdjustFactory.getLogger();
         backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
-        scheduler = new SingleThreadScheduler();//new SingleScheduledThreadFuturePoolExecutor(SCHEDULED_EXECUTOR_SOURCE, false);
+        scheduler = new SingleThreadScheduler();//new SingleThreadFutureScheduler(SCHEDULED_EXECUTOR_SOURCE, false);
     }
 
     /**

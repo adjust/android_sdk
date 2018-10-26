@@ -52,7 +52,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler, boolean startsSending) {
         logger = AdjustFactory.getLogger();
-        scheduler = new SingleThreadScheduler(); //new SingleScheduledThreadFuturePoolExecutor("AttributionHandler", false);
+        scheduler = new SingleThreadScheduler(); //new SingleThreadFutureScheduler("AttributionHandler", false);
         timer = new TimerOnce(new Runnable() {
             @Override
             public void run() {

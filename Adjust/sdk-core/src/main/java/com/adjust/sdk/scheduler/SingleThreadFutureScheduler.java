@@ -8,10 +8,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class SingleScheduledThreadFuturePoolExecutor implements ThreadFutureScheduler {
+public class SingleThreadFutureScheduler implements FutureScheduler {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
-    public SingleScheduledThreadFuturePoolExecutor(final String source, boolean doKeepAlive) {
+    public SingleThreadFutureScheduler(final String source, boolean doKeepAlive) {
         this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
                 1,
                 new ThreadFactoryWrapper(source),
@@ -38,11 +38,6 @@ public class SingleScheduledThreadFuturePoolExecutor implements ThreadFutureSche
     @Override
     public ScheduledFuture<?> scheduleFutureWithFixedDelay(Runnable command, long initialMillisecondDelay, long millisecondDelay) {
         return scheduledThreadPoolExecutor.scheduleWithFixedDelay(new RunnableWrapper(command), initialMillisecondDelay, millisecondDelay, TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void submit(Runnable task) {
-        scheduledThreadPoolExecutor.submit(new RunnableWrapper(task));
     }
 
     @Override
