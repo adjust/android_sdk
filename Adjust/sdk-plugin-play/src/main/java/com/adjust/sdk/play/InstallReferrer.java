@@ -7,7 +7,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ILogger;
 
 import com.adjust.sdk.InstallReferrerReadListener;
-import com.adjust.sdk.TimerOnce;
+import com.adjust.sdk.scheduler.TimerOnce;
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;

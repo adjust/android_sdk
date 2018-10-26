@@ -1,5 +1,8 @@
 package com.adjust.sdk;
 
+import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
+import com.adjust.sdk.scheduler.ThreadScheduler;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -8,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
 
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
@@ -69,7 +71,7 @@ public class SdkClickHandler implements ISdkClickHandler {
     /**
      * Custom actions scheduled executor.
      */
-    private CustomScheduledExecutor scheduledExecutor;
+    private ThreadScheduler scheduler;
 
     /**
      * ActivityHandler instance.
@@ -87,7 +89,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         logger = AdjustFactory.getLogger();
         backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
-        scheduledExecutor = new CustomScheduledExecutor(SCHEDULED_EXECUTOR_SOURCE, false);
+        scheduler = new SingleScheduledThreadPoolExecutor(SCHEDULED_EXECUTOR_SOURCE, false);
     }
 
     /**
@@ -124,7 +126,7 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     @Override
     public void sendSdkClick(final ActivityPackage sdkClick) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 packageQueue.add(sdkClick);
@@ -142,7 +144,7 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     @Override
     public void sendReftagReferrers() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -198,12 +200,8 @@ public class SdkClickHandler implements ISdkClickHandler {
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
 
-        if (scheduledExecutor != null) {
-            try {
-                scheduledExecutor.shutdownNow();
-            } catch (SecurityException e) {
-
-            }
+        if (scheduler != null) {
+            scheduler.teardown();
         }
 
         if (packageQueue != null) {
@@ -217,14 +215,14 @@ public class SdkClickHandler implements ISdkClickHandler {
         logger = null;
         packageQueue = null;
         backoffStrategy = null;
-        scheduledExecutor = null;
+        scheduler = null;
     }
 
     /**
      * Send next sdk_click package from the queue.
      */
     private void sendNextSdkClick() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 sendNextSdkClickI();
@@ -266,7 +264,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
 
-        scheduledExecutor.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
+        scheduler.schedule(runnable, waitTimeMilliSeconds);
     }
 
     /**

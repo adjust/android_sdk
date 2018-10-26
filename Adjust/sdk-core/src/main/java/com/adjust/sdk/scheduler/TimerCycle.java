@@ -1,6 +1,9 @@
-package com.adjust.sdk;
+package com.adjust.sdk.scheduler;
 
-import java.lang.ref.WeakReference;
+import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.ILogger;
+import com.adjust.sdk.Util;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerCycle {
-    private CustomScheduledExecutor executor;
+    private ThreadScheduler scheduler;
 
     private ScheduledFuture waitingTask;
     private String name;
@@ -19,7 +22,7 @@ public class TimerCycle {
     private ILogger logger;
 
     public TimerCycle(Runnable command, long initialDelay, long cycleDelay, String name) {
-        this.executor = new CustomScheduledExecutor(name, true);
+        this.scheduler = new SingleScheduledThreadPoolExecutor(name, true);
 
         this.name = name;
         this.command = command;
@@ -43,13 +46,13 @@ public class TimerCycle {
 
         logger.verbose("%s starting", name);
 
-        waitingTask = executor.scheduleWithFixedDelay(new Runnable() {
+        waitingTask = scheduler.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
                 command.run();
             }
-        }, initialDelay, cycleDelay, TimeUnit.MILLISECONDS);
+        }, initialDelay, cycleDelay);
 
         isPaused = false;
     }
@@ -84,13 +87,10 @@ public class TimerCycle {
     public void teardown() {
         cancel(true);
 
-        if (executor != null) {
-            try {
-                executor.shutdownNow();
-            } catch (SecurityException ignored) {
-            }
+        if (scheduler != null) {
+            scheduler.teardown();
         }
 
-        executor = null;
+        scheduler = null;
     }
 }

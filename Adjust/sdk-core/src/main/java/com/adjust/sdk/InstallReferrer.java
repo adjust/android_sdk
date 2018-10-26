@@ -2,9 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.ref.WeakReference;
+import com.adjust.sdk.scheduler.TimerOnce;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -11,11 +11,13 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
+import com.adjust.sdk.scheduler.ThreadScheduler;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
@@ -26,7 +28,7 @@ public class PackageHandler implements IPackageHandler {
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
-    private CustomScheduledExecutor scheduledExecutor;
+    private ThreadScheduler scheduler;
     private IRequestHandler requestHandler;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private List<ActivityPackage> packageQueue;
@@ -41,10 +43,8 @@ public class PackageHandler implements IPackageHandler {
     @Override
     public void teardown() {
         logger.verbose("PackageHandler teardown");
-        if (scheduledExecutor != null) {
-            try {
-                scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+        if (scheduler != null) {
+            scheduler.teardown();
         }
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
@@ -55,7 +55,7 @@ public class PackageHandler implements IPackageHandler {
         if (packageQueue != null) {
             packageQueue.clear();
         }
-        scheduledExecutor = null;
+        scheduler = null;
         requestHandler = null;
         activityHandlerWeakRef = null;
         packageQueue = null;
@@ -72,13 +72,13 @@ public class PackageHandler implements IPackageHandler {
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {
-        this.scheduledExecutor = new CustomScheduledExecutor("PackageHandler", false);
+        this.scheduler = new SingleScheduledThreadPoolExecutor("PackageHandler", false);
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
         init(activityHandler, context, startsSending);
 
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 initI();
@@ -98,7 +98,7 @@ public class PackageHandler implements IPackageHandler {
     // add a package to the queue
     @Override
     public void addPackage(final ActivityPackage activityPackage) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 addI(activityPackage);
@@ -109,7 +109,7 @@ public class PackageHandler implements IPackageHandler {
     // try to send the oldest package
     @Override
     public void sendFirstPackage() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 sendFirstI();
@@ -121,7 +121,7 @@ public class PackageHandler implements IPackageHandler {
     // (after success or possibly permanent failure)
     @Override
     public void sendNextPackage(ResponseData responseData) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 sendNextI();
@@ -168,7 +168,7 @@ public class PackageHandler implements IPackageHandler {
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
         logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
-        scheduledExecutor.schedule(runnable, waitTimeMilliSeconds, TimeUnit.MILLISECONDS);
+        scheduler.schedule(runnable, waitTimeMilliSeconds);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -191,7 +191,7 @@ public class PackageHandler implements IPackageHandler {
         } else {
             sessionParametersCopy = null;
         }
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 updatePackagesI(sessionParametersCopy);
@@ -201,7 +201,7 @@ public class PackageHandler implements IPackageHandler {
 
     @Override
     public void flush() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 flushI();

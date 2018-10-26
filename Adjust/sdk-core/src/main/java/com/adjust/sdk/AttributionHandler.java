@@ -10,6 +10,10 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
+import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
+import com.adjust.sdk.scheduler.ThreadScheduler;
+import com.adjust.sdk.scheduler.TimerOnce;
+
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
@@ -23,7 +27,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     private ILogger logger;
     private TimerOnce timer;
-    private CustomScheduledExecutor scheduledExecutor;
+    private ThreadScheduler scheduler;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
 
     @Override
@@ -33,10 +37,8 @@ public class AttributionHandler implements IAttributionHandler {
         if (timer != null) {
             timer.teardown();
         }
-        if (scheduledExecutor != null) {
-            try {
-                scheduledExecutor.shutdownNow();
-            } catch(SecurityException se) {}
+        if (scheduler != null) {
+            scheduler.teardown();
         }
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
@@ -44,13 +46,13 @@ public class AttributionHandler implements IAttributionHandler {
 
         timer = null;
         logger = null;
-        scheduledExecutor = null;
+        scheduler = null;
         activityHandlerWeakRef = null;
     }
 
     public AttributionHandler(IActivityHandler activityHandler, boolean startsSending) {
         logger = AdjustFactory.getLogger();
-        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler", false);
+        scheduler = new SingleScheduledThreadPoolExecutor("AttributionHandler", false);
         timer = new TimerOnce(new Runnable() {
             @Override
             public void run() {
@@ -70,7 +72,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void getAttribution() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 lastInitiatedBy = "sdk";
@@ -81,7 +83,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void checkSessionResponse(final SessionResponseData sessionResponseData) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -95,7 +97,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     @Override
     public void checkSdkClickResponse(final SdkClickResponseData sdkClickResponseData) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -108,7 +110,7 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     public void checkAttributionResponse(final AttributionResponseData attributionResponseData) {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -131,7 +133,7 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void sendAttributionRequest() {
-        scheduledExecutor.submit(new Runnable() {
+        scheduler.submit(new Runnable() {
             @Override
             public void run() {
                 sendAttributionRequestI();

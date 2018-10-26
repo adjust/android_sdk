@@ -1,6 +1,9 @@
-package com.adjust.sdk;
+package com.adjust.sdk.scheduler;
 
-import java.lang.ref.WeakReference;
+import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.ILogger;
+import com.adjust.sdk.Util;
+
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -8,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerOnce {
-    private CustomScheduledExecutor executor;
+    private ThreadScheduler scheduler;
 
     private ScheduledFuture waitingTask;
     private String name;
@@ -17,7 +20,7 @@ public class TimerOnce {
 
     public TimerOnce(Runnable command, String name) {
         this.name = name;
-        this.executor = new CustomScheduledExecutor(name, true);
+        this.scheduler = new SingleScheduledThreadPoolExecutor(name, true);
         this.command = command;
         this.logger = AdjustFactory.getLogger();
     }
@@ -30,14 +33,14 @@ public class TimerOnce {
 
         logger.verbose("%s starting. Launching in %s seconds", name, fireInSeconds);
 
-        waitingTask = executor.schedule(new Runnable() {
+        waitingTask = scheduler.schedule(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);
                 command.run();
                 waitingTask = null;
             }
-        }, fireIn, TimeUnit.MILLISECONDS);
+        }, fireIn);
     }
 
     public long getFireIn() {
@@ -63,6 +66,10 @@ public class TimerOnce {
     public void teardown() {
         cancel(true);
 
-        executor = null;
+        if (scheduler != null) {
+            scheduler.teardown();
+        }
+
+        scheduler = null;
     }
 }
