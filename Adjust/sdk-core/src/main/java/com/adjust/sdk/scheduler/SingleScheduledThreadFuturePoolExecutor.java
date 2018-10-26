@@ -2,18 +2,16 @@ package com.adjust.sdk.scheduler;
 
 import com.adjust.sdk.AdjustFactory;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class SingleScheduledThreadPoolExecutor implements ThreadScheduler {
+public class SingleScheduledThreadFuturePoolExecutor implements ThreadFutureScheduler {
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
 
-    public SingleScheduledThreadPoolExecutor(final String source, boolean doKeepAlive) {
+    public SingleScheduledThreadFuturePoolExecutor(final String source, boolean doKeepAlive) {
         this.scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(
                 1,
                 new ThreadFactoryWrapper(source),
@@ -33,23 +31,18 @@ public class SingleScheduledThreadPoolExecutor implements ThreadScheduler {
     }
 
     @Override
-    public ScheduledFuture<?> schedule(Runnable command, long millisecondDelay) {
+    public ScheduledFuture<?> scheduleFuture(Runnable command, long millisecondDelay) {
         return scheduledThreadPoolExecutor.schedule(new RunnableWrapper(command), millisecondDelay, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialMillisecondDelay, long millisecondDelay) {
+    public ScheduledFuture<?> scheduleFutureWithFixedDelay(Runnable command, long initialMillisecondDelay, long millisecondDelay) {
         return scheduledThreadPoolExecutor.scheduleWithFixedDelay(new RunnableWrapper(command), initialMillisecondDelay, millisecondDelay, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public Future<?> submit(Runnable task) {
-        return scheduledThreadPoolExecutor.submit(new RunnableWrapper(task));
-    }
-
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        return scheduledThreadPoolExecutor.submit(new CallableWrapper<T>(task));
+    public void submit(Runnable task) {
+        scheduledThreadPoolExecutor.submit(new RunnableWrapper(task));
     }
 
     @Override

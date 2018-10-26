@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by pfms on 08/05/15.
  */
 public class TimerOnce {
-    private ThreadScheduler scheduler;
+    private ThreadFutureScheduler scheduler;
 
     private ScheduledFuture waitingTask;
     private String name;
@@ -20,7 +20,7 @@ public class TimerOnce {
 
     public TimerOnce(Runnable command, String name) {
         this.name = name;
-        this.scheduler = new SingleScheduledThreadPoolExecutor(name, true);
+        this.scheduler = new SingleScheduledThreadFuturePoolExecutor(name, true);
         this.command = command;
         this.logger = AdjustFactory.getLogger();
     }
@@ -33,7 +33,7 @@ public class TimerOnce {
 
         logger.verbose("%s starting. Launching in %s seconds", name, fireInSeconds);
 
-        waitingTask = scheduler.schedule(new Runnable() {
+        waitingTask = scheduler.scheduleFuture(new Runnable() {
             @Override
             public void run() {
                 logger.verbose("%s fired", name);

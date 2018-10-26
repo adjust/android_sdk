@@ -1,6 +1,6 @@
 package com.adjust.sdk;
 
-import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
+import com.adjust.sdk.scheduler.SingleThreadScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 
 import org.json.JSONArray;
@@ -89,7 +89,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         logger = AdjustFactory.getLogger();
         backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
-        scheduler = new SingleScheduledThreadPoolExecutor(SCHEDULED_EXECUTOR_SOURCE, false);
+        scheduler = new SingleThreadScheduler();//new SingleScheduledThreadFuturePoolExecutor(SCHEDULED_EXECUTOR_SOURCE, false);
     }
 
     /**

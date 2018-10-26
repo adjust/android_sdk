@@ -10,7 +10,7 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
-import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
+import com.adjust.sdk.scheduler.SingleThreadScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 import com.adjust.sdk.scheduler.TimerOnce;
 
@@ -52,7 +52,7 @@ public class AttributionHandler implements IAttributionHandler {
 
     public AttributionHandler(IActivityHandler activityHandler, boolean startsSending) {
         logger = AdjustFactory.getLogger();
-        scheduler = new SingleScheduledThreadPoolExecutor("AttributionHandler", false);
+        scheduler = new SingleThreadScheduler(); //new SingleScheduledThreadFuturePoolExecutor("AttributionHandler", false);
         timer = new TimerOnce(new Runnable() {
             @Override
             public void run() {

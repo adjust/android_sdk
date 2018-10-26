@@ -31,13 +31,8 @@ public class SingleThreadPoolExecutor implements ThreadExecutor  {
         threadPoolExecutor.allowCoreThreadTimeOut(true);
     }
     @Override
-    public Future<?> submit(Runnable task) {
-        return threadPoolExecutor.submit(new RunnableWrapper(task));
-    }
-
-    @Override
-    public <T> Future<T> submit(Callable<T> task) {
-        return threadPoolExecutor.submit(new CallableWrapper<T>(task));
+    public void submit(Runnable task) {
+        threadPoolExecutor.submit(new RunnableWrapper(task));
     }
 
     @Override

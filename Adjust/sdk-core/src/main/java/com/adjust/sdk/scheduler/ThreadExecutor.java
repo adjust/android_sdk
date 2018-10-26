@@ -8,7 +8,6 @@ import java.util.concurrent.Future;
  */
 
 public interface ThreadExecutor {
-    Future<?> submit(Runnable task);
-    <T> Future<T> submit(Callable<T> task);
+    void submit(Runnable task);
     void teardown();
 }

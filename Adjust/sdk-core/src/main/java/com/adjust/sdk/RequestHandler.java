@@ -9,8 +9,8 @@
 
 package com.adjust.sdk;
 
-import com.adjust.sdk.scheduler.SingleScheduledThreadPoolExecutor;
-import com.adjust.sdk.scheduler.ThreadScheduler;
+import com.adjust.sdk.scheduler.SingleThreadScheduler;
+import com.adjust.sdk.scheduler.ThreadExecutor;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,7 +18,7 @@ import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 
 public class RequestHandler implements IRequestHandler {
-    private ThreadScheduler scheduler;
+    private ThreadExecutor executor;
     private WeakReference<IPackageHandler> packageHandlerWeakRef;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private ILogger logger;
@@ -27,7 +27,7 @@ public class RequestHandler implements IRequestHandler {
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
-        this.scheduler = new SingleScheduledThreadPoolExecutor("RequestHandler", false);
+        this.executor = new SingleThreadScheduler();//new SingleScheduledThreadFuturePoolExecutor("RequestHandler", false);
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();
@@ -41,7 +41,7 @@ public class RequestHandler implements IRequestHandler {
 
     @Override
     public void sendPackage(final ActivityPackage activityPackage, final int queueSize) {
-        scheduler.submit(new Runnable() {
+        executor.submit(new Runnable() {
             @Override
             public void run() {
                 sendI(activityPackage, queueSize);
@@ -52,8 +52,8 @@ public class RequestHandler implements IRequestHandler {
     @Override
     public void teardown() {
         logger.verbose("RequestHandler teardown");
-        if (scheduler != null) {
-            scheduler.teardown();
+        if (executor != null) {
+            executor.teardown();
         }
         if (packageHandlerWeakRef != null) {
             packageHandlerWeakRef.clear();
@@ -61,7 +61,7 @@ public class RequestHandler implements IRequestHandler {
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
         }
-        scheduler = null;
+        executor = null;
         packageHandlerWeakRef = null;
         activityHandlerWeakRef = null;
         logger = null;
