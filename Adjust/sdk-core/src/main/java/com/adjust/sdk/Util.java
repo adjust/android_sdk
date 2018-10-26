@@ -223,8 +223,13 @@ public class Util {
     }
 
     public static boolean checkPermission(Context context, String permission) {
-        int result = context.checkCallingOrSelfPermission(permission);
-        return result == PackageManager.PERMISSION_GRANTED;
+        try {
+            int result = context.checkCallingOrSelfPermission(permission);
+            return result == PackageManager.PERMISSION_GRANTED;
+        } catch (Exception e) {
+            getLogger().debug("Unable to check permission '%s' with message (%s)", permission, e.getMessage());
+            return false;
+        }
     }
 
     public static String readStringField(ObjectInputStream.GetField fields, String name, String defaultValue) {
