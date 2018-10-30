@@ -66,13 +66,13 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.15.1'
+compile 'com.adjust.sdk:adjust-android:4.16.0'
 ```
 
 **Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.15.1'
+implementation 'com.adjust.sdk:adjust-android:4.16.0'
 ```
 
 ---
@@ -278,7 +278,7 @@ This IMEI plugin respects the [behavior of the Adjust Android SDK][gps-adid] in 
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android-imei:4.15.2'
+compile 'com.adjust.sdk:adjust-android-imei:4.16.0'
 ```
 
 Add the following permission, if it is not already present in your `AndroidManifest.xml` file:
