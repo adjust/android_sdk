@@ -54,22 +54,25 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
 
     @Override
     public void schedule(final Runnable task, final long millisecondsDelay) {
-        if (isTeardown) {
-            return;
-        }
-
-        threadPoolExecutor.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Thread.sleep(millisecondsDelay);
-                } catch (InterruptedException e) {
-                    AdjustFactory.getLogger().warn("Sleep delay exception: %s",
-                            e.getMessage());
-                }
-                submit(task);
+        synchronized (queue) {
+            if (isTeardown) {
+                return;
             }
-        });
+
+            threadPoolExecutor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(millisecondsDelay);
+                    } catch (InterruptedException e) {
+                        AdjustFactory.getLogger().warn("Sleep delay exception: %s",
+                                e.getMessage());
+                    }
+
+                    submit(task);
+                }
+            });
+        }
     }
 
     private void processQueue(final Runnable firstRunnable) {
