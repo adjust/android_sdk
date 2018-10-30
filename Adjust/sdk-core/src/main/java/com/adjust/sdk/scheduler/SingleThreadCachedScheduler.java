@@ -20,8 +20,7 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
         isThreadProcessing = false;
         isTeardown = false;
 
-
-        // Same configuration as Executors.newCachedThreadPool()
+        // Same configuration as Executors.newCachedThreadPool().
         threadPoolExecutor = new ThreadPoolExecutor(
             0, Integer.MAX_VALUE,
             60L, TimeUnit.SECONDS,
@@ -68,7 +67,6 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
                     AdjustFactory.getLogger().warn("Sleep delay exception: %s",
                             e.getMessage());
                 }
-
                 submit(task);
             }
         });
@@ -78,15 +76,14 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
         threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                // execute the first task
+                // Execute the first task.
                 tryExecuteRunnable(firstRunnable);
 
-                Runnable runnable = null;
-
+                Runnable runnable;
                 // Process all available items in the queue.
                 while (true) {
                     synchronized (queue) {
-                        // possible teardown happened meanwhile
+                        // Possible teardown happened meanwhile.
                         if (isTeardown) {
                             return;
                         }
@@ -99,7 +96,6 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
                         queue.remove(0);
                     }
                     tryExecuteRunnable(runnable);
-                    runnable = null;
                 }
             }
         });
@@ -110,11 +106,9 @@ public class SingleThreadCachedScheduler implements ThreadScheduler {
             if (isTeardown) {
                 return;
             }
-
             runnable.run();
         } catch (Throwable t) {
-            AdjustFactory.getLogger().warn("Execution failed: %s",
-                    t.getMessage());
+            AdjustFactory.getLogger().warn("Execution failed: %s", t.getMessage());
         }
     }
 
