@@ -74,14 +74,14 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.15.1'
+compile 'com.adjust.sdk:adjust-android:4.16.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 **注意**:如果您正在使用`Gradle 3.0.0 or above`，请确保使用的是`implementation`关键词而不是`compile`，如下所示：
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.15.1'
+implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 

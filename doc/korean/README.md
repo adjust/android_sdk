@@ -74,7 +74,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.15.1'
+compile 'com.adjust.sdk:adjust-android:4.16.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
 
 ```
@@ -82,7 +82,7 @@ compile 'com.android.installreferrer:installreferrer:1.0'
 **주의**: `gradle 3.0.0 이상 버전`을 사용하는 경우 아래와 같이 `compile` 대신 `implementation` 키워드를 사용하십시오. 
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.15.1'
+implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 
 ```
