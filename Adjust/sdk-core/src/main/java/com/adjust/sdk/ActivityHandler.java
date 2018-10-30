@@ -17,7 +17,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
 
-import com.adjust.sdk.scheduler.SingleThreadScheduler;
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadExecutor;
 import com.adjust.sdk.scheduler.TimerCycle;
 import com.adjust.sdk.scheduler.TimerOnce;
@@ -204,7 +204,7 @@ public class ActivityHandler implements IActivityHandler {
 
         logger.lockLogLevel();
 
-        executor = new SingleThreadScheduler();//new SingleThreadPoolExecutor("ActivityHandler");
+        executor = new SingleThreadCachedScheduler("ActivityHandler");
         internalState = new InternalState();
 
         // enabled by default

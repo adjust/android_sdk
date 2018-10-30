@@ -9,7 +9,7 @@
 
 package com.adjust.sdk;
 
-import com.adjust.sdk.scheduler.SingleThreadScheduler;
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadExecutor;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class RequestHandler implements IRequestHandler {
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
-        this.executor = new SingleThreadScheduler();//new SingleThreadFutureScheduler("RequestHandler", false);
+        this.executor = new SingleThreadCachedScheduler("RequestHandler");
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();

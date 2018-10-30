@@ -1,19 +1,40 @@
 package com.adjust.sdk.scheduler;
 
-import android.os.Process;
+import com.adjust.sdk.AdjustFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-public class SingleThreadScheduler implements ThreadScheduler {
+public class SingleThreadCachedScheduler implements ThreadScheduler {
     private final List<Runnable> queue;
     private boolean isThreadProcessing;
     private boolean isTeardown;
+    private ThreadPoolExecutor threadPoolExecutor;
 
-    public SingleThreadScheduler() {
+    public SingleThreadCachedScheduler(final String source) {
         this.queue = new ArrayList<>();
         isThreadProcessing = false;
         isTeardown = false;
+
+
+        // Same configuration as Executors.newCachedThreadPool()
+        threadPoolExecutor = new ThreadPoolExecutor(
+            0, Integer.MAX_VALUE,
+            60L, TimeUnit.SECONDS,
+            new SynchronousQueue<Runnable>(),
+            new ThreadFactoryWrapper(source),
+            new RejectedExecutionHandler() {     // Logs rejected runnables rejected from the entering the pool
+                @Override
+                public void rejectedExecution(Runnable runnable, ThreadPoolExecutor executor) {
+                    AdjustFactory.getLogger().warn("Runnable [%s] rejected from [%s] ",
+                            runnable.toString(), source);
+                }
+            }
+        );
     }
 
     @Override
@@ -38,29 +59,25 @@ public class SingleThreadScheduler implements ThreadScheduler {
             return;
         }
 
-        Thread thread = new Thread(new Runnable() {
+        threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_LOWEST);
-
                 try {
                     Thread.sleep(millisecondsDelay);
                 } catch (InterruptedException e) {
+                    AdjustFactory.getLogger().warn("Sleep delay exception: %s",
+                            e.getMessage());
                 }
 
                 submit(task);
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private void processQueue(final Runnable firstRunnable) {
-        Thread thread = new Thread(new Runnable() {
+        threadPoolExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND + Process.THREAD_PRIORITY_MORE_FAVORABLE);
-
                 // execute the first task
                 tryExecuteRunnable(firstRunnable);
 
@@ -68,29 +85,8 @@ public class SingleThreadScheduler implements ThreadScheduler {
 
                 // Process all available items in the queue.
                 while (true) {
-                    // possible teardown happened meanwhile
-
                     synchronized (queue) {
-                        if (isTeardown) {
-                            return;
-                        }
-                        if (queue.isEmpty()) {
-                            runnable = new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                    }
-                                }
-                            };
-                        }
-                    }
-                    if (runnable != null) {
-                        tryExecuteRunnable(runnable);
-                    }
-
-                    synchronized (queue) {
+                        // possible teardown happened meanwhile
                         if (isTeardown) {
                             return;
                         }
@@ -107,8 +103,6 @@ public class SingleThreadScheduler implements ThreadScheduler {
                 }
             }
         });
-        thread.setDaemon(true);
-        thread.start();
     }
 
     private void tryExecuteRunnable(Runnable runnable) {
@@ -119,6 +113,8 @@ public class SingleThreadScheduler implements ThreadScheduler {
 
             runnable.run();
         } catch (Throwable t) {
+            AdjustFactory.getLogger().warn("Execution failed: %s",
+                    t.getMessage());
         }
     }
 
@@ -127,6 +123,7 @@ public class SingleThreadScheduler implements ThreadScheduler {
         synchronized (queue) {
             isTeardown = true;
             queue.clear();
+            threadPoolExecutor.shutdown();
         }
     }
 }

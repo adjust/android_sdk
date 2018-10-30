@@ -11,7 +11,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import com.adjust.sdk.scheduler.SingleThreadScheduler;
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 
 import java.lang.ref.WeakReference;
@@ -72,7 +72,7 @@ public class PackageHandler implements IPackageHandler {
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
                           boolean startsSending) {
-        this.scheduler = new SingleThreadScheduler(); //new SingleThreadFutureScheduler("PackageHandler", false);
+        this.scheduler = new SingleThreadCachedScheduler("PackageHandler");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
 
