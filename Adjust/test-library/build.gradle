@@ -16,15 +16,27 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 }
 
-task clearJar(type: Delete) {
-    delete "build/outputs/adjust-testing.jar"
+task adjustClearJarDebug(type: Delete) {
+    delete "build/outputs/test-library-debug.jar"
 }
 
-task makeJar(type: Copy) {
+task adjustClearJarRelease(type: Delete) {
+    delete "build/outputs/test-library-release.jar"
+}
+
+task adjustMakeJarDebug(type: Copy) {
     from('build/intermediates/intermediate-jars/debug/')
-    into('build/outputs/jar/')
+    into('build/libs/')
     include('classes.jar')
-    rename('classes.jar', "adjust-testing.jar")
+    rename('classes.jar', "test-library-debug.jar")
 }
 
-makeJar.dependsOn(clearJar, build)
+task adjustMakeJarRelease(type: Copy) {
+    from('build/intermediates/intermediate-jars/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar', "test-library-release.jar")
+}
+
+adjustMakeJarDebug.dependsOn(adjustClearJarDebug, build)
+adjustMakeJarRelease.dependsOn(adjustClearJarRelease, build)
