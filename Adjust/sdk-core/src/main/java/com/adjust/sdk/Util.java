@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.LocaleList;
@@ -616,5 +617,24 @@ public class Util {
         }
 
         return splitted[0];
+    }
+
+    public static boolean isUrlFilteredOut(Uri url) {
+        if (url == null) {
+            return true;
+        }
+
+        String urlString = url.toString();
+
+        if (urlString == null || urlString.length() == 0) {
+            return true;
+        }
+
+        // Url with FB credentials to be filtered out
+        if (urlString.matches(Constants.FB_AUTH_REGEX)) {
+            return true;
+        }
+
+        return false;
     }
 }

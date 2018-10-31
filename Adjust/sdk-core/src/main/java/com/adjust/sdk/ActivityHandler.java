@@ -1477,6 +1477,10 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        if (Util.isUrlFilteredOut(url)) {
+            return;
+        }
+
         ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
                 url,
                 clickTime,

@@ -63,4 +63,6 @@ public interface Constants {
     String PARTNER_PARAMETERS = "partner_params";
 
     int MAX_INSTALL_REFERRER_RETRIES = 2;
+
+    String FB_AUTH_REGEX = "^(fb|vk)[0-9]{5,}[^:]*://authorize.*access_token=";
 }
