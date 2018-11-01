@@ -63,7 +63,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ## <a id="example-app"></a>앱 예제
 
-[`example` 디렉토리][example]에 앱 예제가 있습니다. 안드로이드 프로젝트를 열어 adjust SDK 연동 방법의 예를 확인할 수 있습니다.
+[`example-app-java` directory][example-java] 안에 예시 앱이 있습니다. 그리고 [`example-tv` directory][example-tv]안에 예시 Android TV가 있습니다.  Android 프로젝트를 열어 Adjust SDK 연동 방법의 예를 확인할 수 있습니다.
 
 ## <a id="basic-integration"></a>기본 연동
 
@@ -1050,7 +1050,8 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 [ko-readme]:  ../korean/README.md
 
 [maven]:                          http://maven.org
-[example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[example-java]:                   ../../Adjust/example-app-java
+[example-tv]:                     ../../Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       https://github.com/adjust/sdks/blob/master/doc/ko-sdks/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
