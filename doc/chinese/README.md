@@ -1043,8 +1043,8 @@ public void onFireIntentClick(View v) {
 [ko-readme]:  ../korean/README.md
 
 [maven]:                          http://maven.org
-[example-java]:                   https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-java
-[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-tv
+[example-java]:                   ../../Adjust/example-app-java
+[example-tv]:                     ../../Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
