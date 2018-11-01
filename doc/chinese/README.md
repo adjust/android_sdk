@@ -63,7 +63,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ## <a id="example-apps"></a>应用示例
 
-[`example`目录][example]内有安卓应用示例，[`example-tv` directory][example-tv]内有安卓 TV 应用示例。您可以打开安卓项目查看如何集成Adjust SDK的示例。
+[`example-app-java`目录][example-java]内有安卓应用示例，[`example-tv` 目录][example-tv]内有安卓 TV 应用示例。您可以打开安卓项目查看如何集成Adjust SDK的示例。
 
 ## <a id="basic-integration"></a>基本集成
 
@@ -1043,8 +1043,8 @@ public void onFireIntentClick(View v) {
 [ko-readme]:  ../korean/README.md
 
 [maven]:                          http://maven.org
-[example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
-[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-tv
+[example-java]:                   https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-java
+[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
