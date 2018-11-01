@@ -158,7 +158,7 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildAttributionPackage() {
-        Map<String, String> parameters = getIdsParameters();
+        Map<String, String> parameters = getAttributionParameters();
 
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
@@ -225,6 +225,13 @@ public class PackageBuilder {
 
         checkDeviceIds(parameters);
 
+        return parameters;
+    }
+
+    private Map<String, String> getAttributionParameters() {
+        Map<String, String> parameters = getIdsParameters();
+
+        injectActivityState(parameters);
         return parameters;
     }
 
