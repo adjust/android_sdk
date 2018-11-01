@@ -8,10 +8,9 @@ Web Viewをアプリ内でご使用の場合、Javascriptコードからadjust�
 
 Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
 
-### <a id="example-app"></a>アプリサンプル
+### <a id="example-app"></a>サンプルアプリ
 
-サンプルアプリが[`example`ディレクトリ][example]にあります。
-このAndroidプロジェクトをadjust SDK利用の参考にご活用ください。
+サンプルアプリがexampleディレクトリ([`example-app-java` directory][example-java] )に、Android TVのサンプルが [`example-tv` directory][example-tv]にご用意しています。 Androidプロジェクトを開き、SDK実装の際は、このサンプルをご参照ください。
 
 ### <a id="basic-integration"></a>基本的な連携方法
 
@@ -1016,7 +1015,8 @@ adjust SDKはこの場合の初期化についてサポートしています。�
 [ko-readme]:  ../korean/README.md
 
 [maven]:http://maven.org
-[example]:https://github.com/adjust/android_sdk/tree/master/Adjust/example
+[example-java]:  ../../Adjust/example-app-java
+[example-tv]:  ../../Adjust/example-app-tv
 [releases]:https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:doc/english/referrer.md
 [google_ad_id]:https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
