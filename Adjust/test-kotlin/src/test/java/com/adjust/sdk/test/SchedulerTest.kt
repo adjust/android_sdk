@@ -1,32 +1,105 @@
 package com.adjust.sdk.test
 
-import com.adjust.sdk.scheduler.SingleThreadCachedScheduler
+import com.adjust.sdk.scheduler.*
 import org.junit.Assert
 import org.junit.Test
-import java.lang.Thread.sleep
+import java.util.concurrent.TimeUnit
 
 class SchedulerTest {
     @Test
-    fun stcs_submits_inOrder() {
-        val ts = SingleThreadCachedScheduler("s")
+    fun threadExecutor_submitsVarious_executesInOrder() {
+        val threadExecutor: ThreadExecutor = SingleThreadCachedScheduler("s")
         var s = "";
-        ts.submit { s += "a" }
-        ts.submit { s += "b" }
-        ts.submit { s += "c" }
+        threadExecutor.submit { s += "a" }
+        threadExecutor.submit { s += "b" }
+        threadExecutor.submit { s += "c" }
         Thread.sleep(1000)
         Assert.assertEquals("abc", s)
     }
 
     @Test
-    fun stcs_schedules_inOrder() {
-        val ts = SingleThreadCachedScheduler("s")
+    fun threadScheduler_schedulesVariousDelayed_executesInDelayedOrder() {
+        val threadScheduler: ThreadScheduler = SingleThreadCachedScheduler("s")
         var s = "";
-        ts.submit { s += "a" }
-        ts.schedule ({ s += "e"}, 500)
-        ts.submit { s += "b" }
-        ts.schedule ({ s += "d"}, 250)
-        ts.submit { s += "c" }
+        threadScheduler.submit { s += "a" }
+        threadScheduler.schedule ({ s += "e"}, 500)
+        threadScheduler.submit { s += "b" }
+        threadScheduler.schedule ({ s += "d"}, 250)
+        threadScheduler.submit { s += "c" }
         Thread.sleep(1000)
         Assert.assertEquals("abcde", s)
     }
+
+    @Test
+    fun futureScheduler_ScheduleAndWaitWithKeepAlive() {
+        // arrange
+        val futureScheduler: FutureScheduler = SingleThreadFutureScheduler("s", true)
+
+        // act
+        var s = "";
+        val scheduledFuture = futureScheduler.scheduleFuture({ s += "a" }, 500)
+
+        val withDelay = scheduledFuture.getDelay(TimeUnit.MILLISECONDS)
+        val isNotDone = scheduledFuture.isDone
+        val isNotCanceledBefore = scheduledFuture.isCancelled
+        // wait for finish
+        scheduledFuture.get()
+
+        val noDelay = scheduledFuture.getDelay(TimeUnit.MILLISECONDS)
+        val isDone = scheduledFuture.isDone
+        val isNotCanceledBeforeAfter = scheduledFuture.isCancelled
+
+        // assert
+        // before finish
+        Assert.assertTrue(withDelay > 0L)
+        Assert.assertTrue(withDelay < 500L)
+        Assert.assertTrue(noDelay <= 0L)
+        Assert.assertFalse(isNotDone)
+
+        // after finish
+        Assert.assertEquals("a", s)
+        Assert.assertTrue(isDone)
+        Assert.assertFalse(isNotCanceledBefore)
+        Assert.assertFalse(isNotCanceledBeforeAfter)
+    }
+
+    @Test
+    fun futureScheduler_ScheduleAndCancelWithKeepAlive() {
+        // arrange
+        val futureScheduler: FutureScheduler = SingleThreadFutureScheduler("s", true)
+
+        // act
+        var s = "";
+        val scheduledFuture = futureScheduler.scheduleFuture({ s += "a" }, 500)
+
+        // cancel
+        scheduledFuture.cancel(false)
+
+        val isDone = scheduledFuture.isDone
+        val isCancelled = scheduledFuture.isCancelled
+
+        // assert
+        Assert.assertEquals("", s)
+        Assert.assertTrue(isDone)
+        Assert.assertTrue(isCancelled)
+    }
+
+    @Test
+    fun futureScheduler_ScheduleWithFixedDelayWithKeepAlive() {
+        // arrange
+        val futureScheduler: FutureScheduler = SingleThreadFutureScheduler("s", true)
+
+        // act
+        var s = "";
+        val scheduledFuture = futureScheduler.scheduleFutureWithFixedDelay({ s += "a" }, 500, 500)
+
+        Thread.sleep(650)
+        val s1 = s
+        Thread.sleep(650)
+
+        // assert
+        Assert.assertEquals("a", s1)
+        Assert.assertEquals("aa", s)
+    }
+
 }
