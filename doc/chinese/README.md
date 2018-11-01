@@ -93,7 +93,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 
 ### <a id="sdk-gps"></a>添加Google Play服务
 
-自2014年8月1日起，在Google Play商店中的应用必须使用[Google广告ID] [google-ad-id]以唯一标识每个设备。为了让Adjust SDK能够使用Google广告ID,您必须集成[Google Play服务] [google-play-services]。如果您还未完成该集成，请遵循以下步骤进行设置：
+自2014年8月1日起，在Google Play商店中的应用必须使用[Google广告ID][google_ad_id]]以唯一标识每个设备。为了让Adjust SDK能够使用Google广告ID,您必须集成[Google Play服务][google_play_services]。如果您还未完成该集成，请遵循以下步骤进行设置：
 
 1. 打开您应用中的`build.gradle`文件，找到`dependencies`程序块。添加如下代码行：
 
@@ -464,8 +464,10 @@ Adjust.trackEvent(event);
 
  ```java
 AdjustEvent event = new AdjustEvent("abc123");
- event.setCallbackId("Your-Custom-Id");
- Adjust.trackEvent(event);
+
+event.setCallbackId("Your-Custom-Id");
+
+Adjust.trackEvent(event);
 ```
 
 ### <a id="session-parameters">会话参数
@@ -631,6 +633,8 @@ Adjust.onCreate(config);
 
 - 如果跟踪的包是一个事件，`String eventToken`代表事件识别码。
 - `String callbackId` 为事件对象设置的自定义回调ID。
+
+当值不可用时，则默认为`null`。
 
 事件和会话跟踪不成功的对象也均包含：
 
