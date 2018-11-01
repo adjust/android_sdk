@@ -76,7 +76,6 @@ Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합
 ```
 compile 'com.adjust.sdk:adjust-android:4.16.0'
 compile 'com.android.installreferrer:installreferrer:1.0'
-
 ```
 
 **주의**: `gradle 3.0.0 이상 버전`을 사용하는 경우 아래와 같이 `compile` 대신 `implementation` 키워드를 사용하십시오. 
@@ -84,10 +83,11 @@ compile 'com.android.installreferrer:installreferrer:1.0'
 ```
 implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
-
 ```
 
 이는 Google Play Services 의존 파일(dependency)을 `build.gradle`에 추가할 때 적용됩니다.
+
+---
 
 Adjust SDK를 JAR 라이브러리로 프로젝트에 추가할 수도 있습니다. 가장 최근 SDK 버전용 JAR 라이브러리는 [release][releases] 페이지에서 찾을 수 있습니다.
 
@@ -178,6 +178,7 @@ compile 'com.android.installreferrer:installreferrer:1.0'
 ```xml
 <receiver
     android:name="com.adjust.sdk.AdjustReferrerReceiver"
+    android:permission="android.permission.INSTALL_PACKAGES"
     android:exported="true" >
     <intent-filter>
         <action android:name="com.android.vending.INSTALL_REFERRER" />
@@ -288,21 +289,23 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
 
             //...
         }
-    }
-    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
 
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
-        }
-        //...
-    }
+         private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
+             @Override
+             public void onActivityResumed(Activity activity) {
+                 Adjust.onResume();
+             }
+
+             @Override
+             public void onActivityPaused(Activity activity) {
+                 Adjust.onPause();
+             }
+
+             //...
+         }
+      }
     ```
-
+    
     ![][activity_lifecycle_register]
 
 #### <a id="session-tracking-api9"></a>API 레벨 9-13
@@ -387,7 +390,7 @@ Adjust.trackEvent(event);
 
 사용자가 광고를 누르거나 인앱 구매를 할 때 매출이 발생하는 경우, 이벤트를 사용하여 해당 매출을 추적할 수 있습니다. 예를 들어 광고를 한 번 누를 때 0.01 유로의 매출이 발생한다면 매출 이벤트를 다음과 같이 추적할 수 있습니다.
 
-```cs
+```java
 AdjustEvent event = new AdjustEvent("abc123");
 event.setRevenue(0.01, "EUR");
 Adjust.trackEvent(event);
@@ -484,7 +487,7 @@ Adjust.trackEvent(event);
 
 세션 콜백 파라미터는 이벤트 콜백 파라마터와 비슷한 인터페이스를 지녔지만, 이벤트에 키, 값을 추가하는 대신 `Adjust.addSessionCallbackParameter(String key, String value)` 메서드를 호출하여 추가합니다.
 
-```
+```java
 Adjust.addSessionCallbackParameter("foo", "bar");
 ```
 
@@ -492,13 +495,13 @@ Adjust.addSessionCallbackParameter("foo", "bar");
 
 원하는 키를 `Adjust.removeSessionCallbackParameter(String key)` 메서드로 전달하여 특정 세션 콜백 파라미터를 제거할 수 있습니다.
 
-```
+```java
 Adjust.removeSessionCallbackParameter("foo");
 ```
 
 세션 콜백 파라미터의 키와 값을 전부 없애고 싶다면 `Adjust.resetSessionCallbackParameters()` 메서드로 재설정하면 됩니다.
 
-```
+```java
 Adjust.resetSessionCallbackParameters();
 ```
 
@@ -510,7 +513,7 @@ Adjust SDK 내 모든 이벤트 및 세션에서 전송되는 [세션 콜백 파
 
 세션 파트너 파라미터는 이벤트 파트너 파라미터와 인터페이스가 비슷하지만, 이벤트에 키, 값을 추가하는 대신 `Adjust.addSessionPartnerParameter(String key, String value)` 메서드를 호출하여 추가합니다.
 
-```
+```java
 Adjust.addSessionPartnerParameter("foo", "bar");
 ```
 
@@ -518,13 +521,13 @@ Adjust.addSessionPartnerParameter("foo", "bar");
 
 원하는 키를 `Adjust.removeSessionPartnerParameter(String key)` 메서드로 전달하여 특정 세션 파트너 파라미터를 제거할 수 있습니다.
 
-```
+```java
 Adjust.removeSessionPartnerParameter("foo");
 ```
 
 세션 파트너 파라미터의 키와 값을 전부 없애고 싶다면 `Adjust.resetSessionPartnerParameters()` 메서드로 재설정하면 됩니다.
 
-```
+```java
 Adjust.resetSessionPartnerParameters();
 ```
 
@@ -534,8 +537,8 @@ Adjust SDK에 예약 시작을 걸면 앱이 고유 식별자 등의 세션 파�
 
 `AdjustConfig` 인스턴스의 `setDelayStart` 메소드에서 예약 시작 시각을 초 단위로 설정하세요.
 
-```
-config.setDelayStart(5.5);
+```java
+adjustConfig.setDelayStart(5.5);
 ```
 
 이 경우 Adjust SDK는 최초 인스톨 세션 및 생성된 이벤트를 5.5초간 기다렸다가 전송합니다. 이 시간이 지난 후, 또는 그 사이에 `Adjust.sendFirstPackages()`을 호출했을 경우 모든 세션 파라미터가 지연된 인스톨 세션 및 이벤트에 추가되며 Adjust SDK는 원래대로 돌아옵니다.
@@ -684,8 +687,8 @@ Adjust.onCreate(config);
 
 유럽연합(EU) 일반 개인정보 보호법 제 17조에 의거하여, 사용자가 잊힐 권리를 행사하였을 경우  Adjust에 이를 통보할 수 있습니다. 다음 매서드를 호출하면 Adjust SDK는 사용자가 잊힐 권리를 사용하기로 했음을 Adjust 백엔드에 전달합니다:
 
-```objc
-[Adjust gdprForgetMe];
+```java
+Adjust.gdprForgetMe(context);
 ```
 
 이 정보를 받는 즉시 Adjust는 사용자의 데이터를 삭제하며 Adjust SDK는 해당 사용자 추적을 중단합니다. 향후 이 기기로부터 어떤 요청도 Adjust에 전송되지 않습니다.
@@ -698,7 +701,7 @@ SDK 서명이 계정에서 이미 사용 가능 상태로 Adjust 대시보드에
 
 `AdjustConfig` 인스턴스에서 `setAppSecret`를 호출하면 App Secret이 설정됩니다.
 
-```cpp
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setAppSecret(secretId, info1, info2, info3, info4);
@@ -710,7 +713,7 @@ Adjust.onCreate(config);
 
 Adjust SDK 기본값 행위는 **앱이 백그라운드에 있을 동안에는 HTTP 요청 전송을 잠시 중지**하는 것입니다. `AdjustConfig` 인스턴스에서 이 설정을 바꿀 수 있습니다.
 
-```cpp
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 config.setSendInBackground(true);
@@ -743,7 +746,7 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 
 Amazon 광고 ID를 얻으려면 `Adjust` 인스턴스에서 다음 메서드를 호출하면 됩니다.
 
-```cpp
+```java
 String amazonAdId = Adjust.getAmazonAdId(context);
 ```
 
@@ -751,7 +754,7 @@ String amazonAdId = Adjust.getAmazonAdId(context);
 
 Adjust 백엔드는 앱을 인스톨한 장치에서 고유한 **Adjust 기기 식별자** (**adid**)를 생성합니다. 이 식별자를 얻으려면 `Adjust` 인스턴스에서 다음 메서드를 호출하면 됩니다.
 
-```cpp
+```java
 String adid = Adjust.getAdid();
 ```
 
@@ -763,7 +766,7 @@ String adid = Adjust.getAdid();
 
 [어트리뷰션 콜백 섹션](#attribution-callback)에서 설명한 바와 같이, 이 콜백은 변동이 있을 때마다 새로운 어트리뷰션 관련 정보를 전달할 목적으로 촉발됩니다. 사용자의 현재 어트리뷰션 값 관련 정보를 언제든 억세스하고 싶다면, `Adjust` 인스턴스의 다음 메서드를 호출하면 됩니다.
 
-```cpp
+```java
 AdjustAttribution attribution = Adjust.getAttribution();
 ```
 
@@ -816,7 +819,7 @@ URL에서 앱으로 딥링크를 거는 옵션이 있는 Adjust 트래커 URL을
 
 #### <a id="deeplinking-standard">기본 딥링크
 
-사용자가 앱을 설치하고 `deep_link` 파라미터가 들어간 Adjust 트래커 URL을 클릭 시 런칭하도록 하려 할 경우, 앱에 딥링크를 활성화해야 합니다. 이는 원하는 **고유 스킴명 (scheme name)**을 선택하여 사용자가 링크를 클릭하고 앱이 열릴 때 런칭할 작업을 배정하여 이루어집니다. 이 과정은 `AndroidManifest.xml`에 설정되어 있습니다. `intent-filter` 섹션을 매니페스트 파일 내 원하는 작업 정의에 추가하고 `android:scheme` 어트리뷰션값을 원하는 스킴명과 함께 배정하면 됩니다. 
+사용자가 앱을 설치하고 `deep_link` 파라미터가 들어간 Adjust 트래커 URL을 클릭 시 런칭하도록 하려 할 경우, 앱에 딥링크를 활성화해야 합니다. 이는 원하는 **고유 스킴명 (scheme name)** 을 선택하여 사용자가 링크를 클릭하고 앱이 열릴 때 런칭할 작업을 배정하여 이루어집니다. 이 과정은 `AndroidManifest.xml`에 설정되어 있습니다. `intent-filter` 섹션을 매니페스트 파일 내 원하는 작업 정의에 추가하고 `android:scheme` 어트리뷰션값을 원하는 스킴명과 함께 배정하면 됩니다. 
 
 ```xml
 <activity
@@ -885,7 +888,7 @@ protected void onNewIntent(Intent intent) {
 
  딥링크에서 `deep_link` 파라미터 내용 정보를 얻으려면 `AdjustConfig` 개체에 리스너를 설치해야 합니다. Adjust SDK가 백엔드에서 딥링크 정보를 얻으면 리스너가 촉발됩니다.
 
-```
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 // Evaluate the deeplink to be launched.
