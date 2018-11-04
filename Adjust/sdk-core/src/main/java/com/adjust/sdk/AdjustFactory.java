@@ -125,12 +125,11 @@ public class AdjustFactory {
     }
 
     public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
-                                                            ActivityPackage attributionPackage,
                                                             boolean startsSending) {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, attributionPackage, startsSending);
+            return new AttributionHandler(activityHandler, startsSending);
         }
-        attributionHandler.init(activityHandler, attributionPackage, startsSending);
+        attributionHandler.init(activityHandler, startsSending);
         return attributionHandler;
     }
 

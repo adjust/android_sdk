@@ -659,16 +659,6 @@ public class ActivityHandler implements IActivityHandler {
         return this.gdprPath;
     }
 
-    public ActivityPackage getAttributionPackageI() {
-        long now = System.currentTimeMillis();
-        PackageBuilder attributionBuilder = new PackageBuilder(adjustConfig,
-                deviceInfo,
-                activityState,
-                sessionParameters,
-                now);
-        return attributionBuilder.buildAttributionPackage();
-    }
-
     public InternalState getInternalState() {
         return internalState;
     }
@@ -804,11 +794,7 @@ public class ActivityHandler implements IActivityHandler {
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
-        ActivityPackage attributionPackage = getAttributionPackageI();
-
-        attributionHandler = AdjustFactory.getAttributionHandler(this,
-                attributionPackage,
-                toSendI(false));
+        attributionHandler = AdjustFactory.getAttributionHandler(this, toSendI(false));
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(this, toSendI(true));
 

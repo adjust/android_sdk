@@ -1,3 +1,11 @@
+//
+//  AttributionHandler.java
+//  Adjust SDK
+//
+//  Created by Pedro Silva (@nonelse) on 7th November 2014.
+//  Copyright (c) 2014-2018 Adjust GmbH. All rights reserved.
+//
+
 package com.adjust.sdk;
 
 import android.net.Uri;
@@ -5,26 +13,22 @@ import android.net.Uri;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.util.Map;
 
-/**
- * Created by pfms on 07/11/14.
- */
 public class AttributionHandler implements IAttributionHandler {
-    private CustomScheduledExecutor scheduledExecutor;
-    private WeakReference<IActivityHandler> activityHandlerWeakRef;
-    private ILogger logger;
-    private ActivityPackage attributionPackage;
-    private TimerOnce timer;
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
-
     private boolean paused;
     private String basePath;
+
+    private ILogger logger;
+    private TimerOnce timer;
+    private ActivityPackage attributionPackage;
+    private CustomScheduledExecutor scheduledExecutor;
+    private WeakReference<IActivityHandler> activityHandlerWeakRef;
 
     @Override
     public void teardown() {
         logger.verbose("AttributionHandler teardown");
+
         if (timer != null) {
             timer.teardown();
         }
@@ -36,37 +40,32 @@ public class AttributionHandler implements IAttributionHandler {
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
         }
-        scheduledExecutor = null;
-        activityHandlerWeakRef = null;
-        logger = null;
-        attributionPackage = null;
+
         timer = null;
+        logger = null;
+        scheduledExecutor = null;
+        attributionPackage = null;
+        activityHandlerWeakRef = null;
     }
 
-    public AttributionHandler(IActivityHandler activityHandler,
-                              ActivityPackage attributionPackage,
-                              boolean startsSending) {
-        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler", false);
+    public AttributionHandler(IActivityHandler activityHandler, boolean startsSending) {
         logger = AdjustFactory.getLogger();
-
+        scheduledExecutor = new CustomScheduledExecutor("AttributionHandler", false);
         timer = new TimerOnce(new Runnable() {
             @Override
             public void run() {
                 sendAttributionRequest();
             }
         }, ATTRIBUTION_TIMER_NAME);
-
         basePath = activityHandler.getBasePath();
-        init(activityHandler, attributionPackage, startsSending);
+        init(activityHandler, startsSending);
     }
 
     @Override
-    public void init(IActivityHandler activityHandler,
-                     ActivityPackage attributionPackage,
-                     boolean startsSending) {
+    public void init(IActivityHandler activityHandler, boolean startsSending) {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
-        this.attributionPackage = attributionPackage;
         this.paused = !startsSending;
+        setAttributionPackage();
     }
 
     @Override
@@ -230,6 +229,8 @@ public class AttributionHandler implements IAttributionHandler {
             return;
         }
 
+        // Create attribution package before sending attribution request.
+        setAttributionPackage();
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
@@ -249,5 +250,17 @@ public class AttributionHandler implements IAttributionHandler {
             logger.error("Failed to get attribution (%s)", e.getMessage());
             return;
         }
+    }
+
+    private void setAttributionPackage() {
+        long now = System.currentTimeMillis();
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                activityHandler.getAdjustConfig(),
+                activityHandler.getDeviceInfo(),
+                activityHandler.getActivityState(),
+                activityHandler.getSessionParameters(),
+                now);
+        this.attributionPackage = packageBuilder.buildAttributionPackage();
     }
 }
