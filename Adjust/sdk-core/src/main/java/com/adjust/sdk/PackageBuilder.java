@@ -25,7 +25,7 @@ public class PackageBuilder {
     private ActivityStateCopy activityStateCopy;
     private SessionParameters sessionParameters;
 
-    long clicktTimeInSeconds = -1;
+    long clickTimeInSeconds = -1;
     long clickTimeInMilliseconds = -1;
     long installBeginTimeInSeconds = -1;
     String reftag;
@@ -105,7 +105,7 @@ public class PackageBuilder {
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
         clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
-        clickPackage.setClickTimeInSeconds(clicktTimeInSeconds);
+        clickPackage.setClickTimeInSeconds(clickTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
         clickPackage.setParameters(parameters);
         return clickPackage;
@@ -375,7 +375,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addMapJson(parameters, "callback_params", this.sessionParameters.callbackParameters);
         PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
-        PackageBuilder.addDateInSeconds(parameters, "click_time", clicktTimeInSeconds);
+        PackageBuilder.addDateInSeconds(parameters, "click_time", clickTimeInSeconds);
         PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
         PackageBuilder.addString(parameters, "country", deviceInfo.country);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
@@ -544,7 +544,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, key, intValue);
     }
 
-    public static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+    static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
         if (map == null) {
             return;
         }
