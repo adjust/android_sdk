@@ -101,7 +101,6 @@ public class AttributionHandler implements IAttributionHandler {
                 if (activityHandler == null) {
                     return;
                 }
-
                 checkSdkClickResponseI(activityHandler, sdkClickResponseData);
             }
         });
@@ -115,7 +114,6 @@ public class AttributionHandler implements IAttributionHandler {
                 if (activityHandler == null) {
                     return;
                 }
-
                 checkAttributionResponseI(activityHandler, attributionResponseData);
             }
         });
@@ -131,7 +129,7 @@ public class AttributionHandler implements IAttributionHandler {
         paused = false;
     }
 
-    public void sendAttributionRequest() {
+    private void sendAttributionRequest() {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
@@ -141,7 +139,7 @@ public class AttributionHandler implements IAttributionHandler {
     }
 
     private void getAttributionI(long delayInMilliseconds, boolean isInitiatedBySdk) {
-        // don't reset if new time is shorter than last one
+        // Don't reset if new time is shorter than last one.
         if (timer.getFireIn() > delayInMilliseconds) {
             return;
         }
@@ -149,14 +147,13 @@ public class AttributionHandler implements IAttributionHandler {
         if (delayInMilliseconds != 0) {
             double waitTimeSeconds = delayInMilliseconds / 1000.0;
             String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
             logger.debug("Waiting to query attribution in %s seconds", secondsString);
         }
 
         String initiatedBy = isInitiatedBySdk ? "sdk" : "backend";
         attributionPackage.getParameters().put("initiated_by", initiatedBy);
 
-        // set the new time the timer will fire in
+        // Set the new time the timer will fire in.
         timer.startIn(delayInMilliseconds);
     }
 
@@ -166,39 +163,33 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         long timerMilliseconds = responseData.jsonResponse.optLong("ask_in", -1);
-
         if (timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
-
             getAttributionI(timerMilliseconds, false);
-
             return;
         }
-        activityHandler.setAskingAttribution(false);
 
+        activityHandler.setAskingAttribution(false);
         JSONObject attributionJson = responseData.jsonResponse.optJSONObject("attribution");
-        responseData.attribution = AdjustAttribution.fromJson(attributionJson,
+        responseData.attribution = AdjustAttribution.fromJson(
+                attributionJson,
                 responseData.adid,
                 Util.getSdkPrefixPlatform(attributionPackage.getClientSdk()));
     }
 
     private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
         checkAttributionI(activityHandler, sessionResponseData);
-
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
     private void checkSdkClickResponseI(IActivityHandler activityHandler, SdkClickResponseData sdkClickResponseData) {
         checkAttributionI(activityHandler, sdkClickResponseData);
-
         activityHandler.launchSdkClickResponseTasks(sdkClickResponseData);
     }
 
     private void checkAttributionResponseI(IActivityHandler activityHandler, AttributionResponseData attributionResponseData) {
         checkAttributionI(activityHandler, attributionResponseData);
-
         checkDeeplinkI(attributionResponseData);
-
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
@@ -206,17 +197,14 @@ public class AttributionHandler implements IAttributionHandler {
         if (attributionResponseData.jsonResponse == null) {
             return;
         }
-
         JSONObject attributionJson = attributionResponseData.jsonResponse.optJSONObject("attribution");
         if (attributionJson == null) {
             return;
         }
-
         String deeplinkString = attributionJson.optString("deeplink", null);
         if (deeplinkString == null) {
             return;
         }
-
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
@@ -235,20 +223,16 @@ public class AttributionHandler implements IAttributionHandler {
 
         try {
             ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath);
-
             if (!(responseData instanceof AttributionResponseData)) {
                 return;
             }
-
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandlerWeakRef.get().gotOptOutResponse();
                 return;
             }
-
             checkAttributionResponse((AttributionResponseData)responseData);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
-            return;
         }
     }
 
