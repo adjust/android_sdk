@@ -76,14 +76,11 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildSessionPackage(boolean isInDelay) {
-        Map<String, String> parameters;
-        parameters = getAttributableParameters(isInDelay);
-
+        Map<String, String> parameters = getSessionParameters(isInDelay);
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
         sessionPackage.setParameters(parameters);
-
         return sessionPackage;
     }
 
@@ -167,31 +164,12 @@ public class PackageBuilder {
         return parameters;
     }
 
-    public ActivityPackage buildEventPackage(AdjustEvent event,
-                                             boolean isInDelay) {
-        Map<String, String> parameters = getDefaultParameters();
-        PackageBuilder.addLong(parameters, "event_count", activityStateCopy.eventCount);
-        PackageBuilder.addString(parameters, "event_token", event.eventToken);
-        PackageBuilder.addDouble(parameters, "revenue", event.revenue);
-        PackageBuilder.addString(parameters, "currency", event.currency);
-        PackageBuilder.addString(parameters, "event_callback_id", event.callbackId);
-
-        if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS,
-                    Util.mergeParameters(this.sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
-            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS,
-                    Util.mergeParameters(this.sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
-        }
+    public ActivityPackage buildEventPackage(AdjustEvent event, boolean isInDelay) {
+        Map<String, String> parameters = getEventParameters(event, isInDelay);
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
-
-        if (isInDelay) {
-            eventPackage.setCallbackParameters(event.callbackParameters);
-            eventPackage.setPartnerParameters(event.partnerParameters);
-        }
-
         return eventPackage;
     }
 
@@ -277,19 +255,7 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildClickPackage(String source) {
-        Map<String, String> parameters = getAttributableParameters(false);
-
-        PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
-        PackageBuilder.addString(parameters, "reftag", reftag);
-        PackageBuilder.addMapJson(parameters, "params", extraParameters);
-        PackageBuilder.addString(parameters, "referrer", referrer);
-        PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
-        PackageBuilder.addString(parameters, "deeplink", deeplink);
-        PackageBuilder.addDateInSeconds(parameters, "click_time", clicktTimeInSeconds);
-        PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
-        injectAttribution(parameters);
-
+        Map<String, String> parameters = getClickParameters(source);
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.CLICK);
         clickPackage.setPath("/sdk_click");
         clickPackage.setSuffix("");
@@ -297,7 +263,6 @@ public class PackageBuilder {
         clickPackage.setClickTimeInSeconds(clicktTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
         clickPackage.setParameters(parameters);
-
         return clickPackage;
     }
 
@@ -391,15 +356,11 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildInfoPackage(String source) {
-        Map<String, String> parameters = getIdsParameters();
-
-        PackageBuilder.addString(parameters, "source", source);
-
+        Map<String, String> parameters = getInfoParameters(source);
         ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
         clickPackage.setPath("/sdk_info");
         clickPackage.setSuffix("");
         clickPackage.setParameters(parameters);
-
         return clickPackage;
     }
 
@@ -448,13 +409,11 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildAttributionPackage() {
-        Map<String, String> parameters = getIdsParameters();
-
+        Map<String, String> parameters = getAttributionParameters();
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
         attributionPackage.setParameters(parameters);
-
         return attributionPackage;
     }
 
@@ -509,13 +468,11 @@ public class PackageBuilder {
     }
 
     public ActivityPackage buildGdprPackage() {
-        Map<String, String> parameters = getIdsParameters();
-
+        Map<String, String> parameters = getGdprParameters();
         ActivityPackage gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR);
         gdprPackage.setPath("/gdpr_forget_device");
         gdprPackage.setSuffix("");
         gdprPackage.setParameters(parameters);
-
         return gdprPackage;
     }
 
