@@ -87,6 +87,12 @@ public class PackageBuilder {
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
         eventPackage.setParameters(parameters);
+
+        if (isInDelay) {
+            eventPackage.setCallbackParameters(event.callbackParameters);
+            eventPackage.setPartnerParameters(event.partnerParameters);
+        }
+
         return eventPackage;
     }
 
