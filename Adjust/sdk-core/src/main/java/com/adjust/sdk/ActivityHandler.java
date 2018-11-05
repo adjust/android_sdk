@@ -1464,6 +1464,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (Util.isUrlFilteredOut(url)) {
+            logger.debug("Deep link (" + url.toString() + ") processing skipped");
             return;
         }
 
