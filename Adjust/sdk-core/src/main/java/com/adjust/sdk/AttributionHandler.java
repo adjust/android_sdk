@@ -18,13 +18,13 @@ public class AttributionHandler implements IAttributionHandler {
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
     private boolean paused;
     private String basePath;
+    private String clientSdk;
+    private String lastInitiatedBy;
 
     private ILogger logger;
     private TimerOnce timer;
     private CustomScheduledExecutor scheduledExecutor;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
-    private String lastInitiatedByDescription;
-    private String clientSdk;
 
     @Override
     public void teardown() {
@@ -73,7 +73,7 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                lastInitiatedByDescription = "sdk";
+                lastInitiatedBy = "sdk";
                 getAttributionI(0);
             }
         });
@@ -163,7 +163,7 @@ public class AttributionHandler implements IAttributionHandler {
         long timerMilliseconds = responseData.jsonResponse.optLong("ask_in", -1);
         if (timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
-            lastInitiatedByDescription = "backend";
+            lastInitiatedBy = "backend";
             getAttributionI(timerMilliseconds);
             return;
         }
@@ -244,8 +244,8 @@ public class AttributionHandler implements IAttributionHandler {
                 activityHandler.getActivityState(),
                 activityHandler.getSessionParameters(),
                 now);
-        ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedByDescription);
-        lastInitiatedByDescription = null;
+        ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedBy);
+        lastInitiatedBy = null;
         return activityPackage;
     }
 }
