@@ -21,9 +21,10 @@ public class AttributionHandler implements IAttributionHandler {
 
     private ILogger logger;
     private TimerOnce timer;
-    private ActivityPackage attributionPackage;
     private CustomScheduledExecutor scheduledExecutor;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
+    private String lastInitiatedByDescription;
+    private String clientSdk;
 
     @Override
     public void teardown() {
@@ -44,7 +45,6 @@ public class AttributionHandler implements IAttributionHandler {
         timer = null;
         logger = null;
         scheduledExecutor = null;
-        attributionPackage = null;
         activityHandlerWeakRef = null;
     }
 
@@ -58,6 +58,7 @@ public class AttributionHandler implements IAttributionHandler {
             }
         }, ATTRIBUTION_TIMER_NAME);
         basePath = activityHandler.getBasePath();
+        clientSdk = activityHandler.getDeviceInfo().clientSdk;
         init(activityHandler, startsSending);
     }
 
@@ -65,7 +66,6 @@ public class AttributionHandler implements IAttributionHandler {
     public void init(IActivityHandler activityHandler, boolean startsSending) {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.paused = !startsSending;
-        setAttributionPackage();
     }
 
     @Override
@@ -73,7 +73,8 @@ public class AttributionHandler implements IAttributionHandler {
         scheduledExecutor.submit(new Runnable() {
             @Override
             public void run() {
-                getAttributionI(0, true);
+                lastInitiatedByDescription = "sdk";
+                getAttributionI(0);
             }
         });
     }
@@ -138,7 +139,7 @@ public class AttributionHandler implements IAttributionHandler {
         });
     }
 
-    private void getAttributionI(long delayInMilliseconds, boolean isInitiatedBySdk) {
+    private void getAttributionI(long delayInMilliseconds) {
         // Don't reset if new time is shorter than last one.
         if (timer.getFireIn() > delayInMilliseconds) {
             return;
@@ -149,9 +150,6 @@ public class AttributionHandler implements IAttributionHandler {
             String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
             logger.debug("Waiting to query attribution in %s seconds", secondsString);
         }
-
-        String initiatedBy = isInitiatedBySdk ? "sdk" : "backend";
-        attributionPackage.getParameters().put("initiated_by", initiatedBy);
 
         // Set the new time the timer will fire in.
         timer.startIn(delayInMilliseconds);
@@ -165,7 +163,8 @@ public class AttributionHandler implements IAttributionHandler {
         long timerMilliseconds = responseData.jsonResponse.optLong("ask_in", -1);
         if (timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
-            getAttributionI(timerMilliseconds, false);
+            lastInitiatedByDescription = "backend";
+            getAttributionI(timerMilliseconds);
             return;
         }
 
@@ -174,7 +173,7 @@ public class AttributionHandler implements IAttributionHandler {
         responseData.attribution = AdjustAttribution.fromJson(
                 attributionJson,
                 responseData.adid,
-                Util.getSdkPrefixPlatform(attributionPackage.getClientSdk()));
+                Util.getSdkPrefixPlatform(clientSdk));
     }
 
     private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
@@ -218,7 +217,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         // Create attribution package before sending attribution request.
-        setAttributionPackage();
+        ActivityPackage attributionPackage = buildAndGetAttributionPackage();
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
@@ -236,7 +235,7 @@ public class AttributionHandler implements IAttributionHandler {
         }
     }
 
-    private void setAttributionPackage() {
+    private ActivityPackage buildAndGetAttributionPackage() {
         long now = System.currentTimeMillis();
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
         PackageBuilder packageBuilder = new PackageBuilder(
@@ -245,6 +244,8 @@ public class AttributionHandler implements IAttributionHandler {
                 activityHandler.getActivityState(),
                 activityHandler.getSessionParameters(),
                 now);
-        this.attributionPackage = packageBuilder.buildAttributionPackage();
+        ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedByDescription);
+        lastInitiatedByDescription = null;
+        return activityPackage;
     }
 }

@@ -111,9 +111,11 @@ public class PackageBuilder {
         return clickPackage;
     }
 
-    ActivityPackage buildAttributionPackage() {
+    ActivityPackage buildAttributionPackage(String initiatedByDescription) {
         Map<String, String> parameters = getAttributionParameters();
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
+        PackageBuilder.addString(parameters, "initiated_by", initiatedByDescription);
+
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
         attributionPackage.setParameters(parameters);
