@@ -112,10 +112,8 @@ public class PackageBuilder {
     }
 
     ActivityPackage buildAttributionPackage(String initiatedByDescription) {
-        Map<String, String> parameters = getAttributionParameters();
+        Map<String, String> parameters = getAttributionParameters(initiatedByDescription);
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
-        PackageBuilder.addString(parameters, "initiated_by", initiatedByDescription);
-
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
         attributionPackage.setParameters(parameters);
@@ -425,7 +423,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getAttributionParameters() {
+    private Map<String, String> getAttributionParameters(String initiatedBy) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
@@ -464,6 +462,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "initiated_by", initiatedBy);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
