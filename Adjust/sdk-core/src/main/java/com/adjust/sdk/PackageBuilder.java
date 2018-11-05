@@ -400,7 +400,9 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
+        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
+        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -424,6 +426,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "source", source);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
+        PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
         checkDeviceIds(parameters);
         return parameters;
