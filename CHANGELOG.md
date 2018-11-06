@@ -1,3 +1,16 @@
+### Version 4.16.0 (6th November 2018)
+#### Added
+- Added `README` localisation in Chinese, Korean and Japanese.
+- Added sending of `android_uuid` with each attribution request.
+- Added Gradle tasks for usage in Adjust non native SDKs.
+
+#### Changed
+- Refactored scheduler.
+- Started to catch potential exceptions in case of `checkCallingOrSelfPermission` method call.
+- Renamed Android project modules.
+
+---
+
 ### Version 4.15.1 (19th September 2018)
 #### Changed
 - Changed way how `AdjustAttribution` object is being passed to Unity layer.
