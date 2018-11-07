@@ -74,38 +74,23 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.16.0'
-compile 'com.android.installreferrer:installreferrer:1.0'
-```
-
-**주의**: `gradle 3.0.0 이상 버전`을 사용하는 경우 아래와 같이 `compile` 대신 `implementation` 키워드를 사용하십시오. 
-
-```
 implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
-
-이는 Google Play Services 의존 파일(dependency)을 `build.gradle`에 추가할 때 적용됩니다.
-
----
-
-Adjust SDK를 JAR 라이브러리로 프로젝트에 추가할 수도 있습니다. 가장 최근 SDK 버전용 JAR 라이브러리는 [release][releases] 페이지에서 찾을 수 있습니다.
 
 ### <a id="sdk-gps"></a>Google Play 서비스 추가
 
 2014년 8월 1일 자로 Google Play Store의 앱은 [Google 광고 ID][google_ad_id]를 사용하여 장치를 고유하게 식별해야 합니다. Adjust SDK에서 Google 광고 ID를 사용할 수 있게 하려면 [Google Play 서비스][google_play_services]를 연동해야 합니다. 이 작업을 아직 수행하지 않은 경우 다음 단계를 수행하십시오.
 
-1. 앱의 `build.gradle` 파일을 열고 `dependencies` 블록을 찾은 후 다음 라인을 추가합니다.
+- 앱의 `build.gradle` 파일을 열고 `dependencies` 블록을 찾은 후 다음 라인을 추가합니다.
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:11.8.0'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     ```
-
-    ![][gradle_gps]
 
 **주의**: Adjust SDK는 Google Play 서비스 라이브러리 내 `play-services-analytics` 부분의 어떤 특정 버전에도 연결되어 있지 않으므로 언제나 가장 최신 또는 필요한 버전을 사용하면 됩니다.
 
-2. **Google Play 서비스 버전 7 이상을 사용 중인 경우 이 단계를 건너뜁니다.** Package Explorer에서 Android 프로젝트의 `AndroidManifest.xml`을 엽니다. `<application>` 요소에 다음 `meta-data` 태그를 추가합니다.
+- **Google Play 서비스 버전 7 이상을 사용 중인 경우 이 단계를 건너뜁니다.** Package Explorer에서 Android 프로젝트의 `AndroidManifest.xml`을 엽니다. `<application>` 요소에 다음 `meta-data` 태그를 추가합니다.
 
 
     ```xml
@@ -160,7 +145,7 @@ Adjust는 앱 설치를 소스에 제대로 어트리뷰트하기 위해 **설�
 앱에서 Google Play Referrer API를 지원하려면, [프로젝트에 SDK 추가](#sdk-add)에 설명한 대로 확실하게 실행한 다음 `build.gradle` 파일에 다음 라인을 추가했는지 확인합니다. 
 
 ```
-compile 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 그리고 [Proguard 설정](#sdk-proguard)에서 언급한 내용, 특히 이 기능에 필요한 부분이 확실히 추가되었는지도 살펴보세요.
@@ -186,8 +171,6 @@ compile 'com.android.installreferrer:installreferrer:1.0'
 </receiver>
 ```
 
-![][receiver]
-
 Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 검색 후 백엔드에 전달합니다.
 
 `INSTALL_REFERRER` 인텐트 수신을 위해 다른 브로드캐스트 리시버를 사용 중이라면 [이 지침][referrer]에 따라 브로드캐스트 리시버를 추가하세요.
@@ -200,25 +183,20 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
 
 전역 android [응용 프로그램][android_application] 클래스를 사용하여 SDK를 초기화하는 것이 좋습니다. 앱에 이 클래스가 아직 없는 경우 다음 단계를 수행하십시오.
 
-1. `Application`을 확장하는 클래스를 만듭니다.
-    ![][application_class]
-
-2. 앱의 `AndroidManifest.xml` 파일을 열고 `<application>` 요소를 찾습니다.
-3. `android:name` 특성을 추가하고 새 응용 프로그램 클래스 이름으로 설정한 후 이름 앞에 점을 추가합니다.
+- `Application`을 확장하는 클래스를 만듭니다.
+- 앱의 `AndroidManifest.xml` 파일을 열고 `<application>` 요소를 찾습니다.
+- `android:name` 특성을 추가하고 새 응용 프로그램 클래스 이름으로 설정한 후 이름 앞에 점을 추가합니다.
 
     앱 예제에서는 이름이 `GlobalApplication`인 `Application` 클래스를 사용하므로, 매니페스트 파일은 다음과 같이 구성됩니다.
 
     ```xml
      <application
        android:name=".GlobalApplication"
-       ... >
-         ...
+       <!-- ...-->
     </application>
     ```
 
-    ![][manifest_application]
-
-4. `Application` 클래스에서 `onCreate` 메서드를 추가하거나 만들고 다음 코드를 추가하여 Adjust SDK를 초기화합니다.
+- `Application` 클래스에서 `onCreate` 메서드를 추가하거나 만들고 다음 코드를 추가하여 Adjust SDK를 초기화합니다.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -237,8 +215,6 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
     }
     ```
 
-    ![][application_config]
-
     `{YourAppToken}`을 앱 토큰으로 대체합니다. 앱 토큰은 [대시보드][adjust.com]에서 찾을
     수 있습니다.
 
@@ -249,10 +225,9 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
     String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
     ```
 
-    **중요:** 이 값은 앱을 테스트하는 경우에만
-    `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정해야 합니다. 앱을 게시하기 전에 environment를 `AdjustConfig.ENVIRONMENT_PRODUCTION`으로 설정해야 합니다. 개발 및 테스트를 다시 시작할 경우에는 `AdjustConfig.ENVIRONMENT_SANDBOX`로 다시 설정하십시오.
+**중요:** 이 값은 앱을 테스트하는 경우에만 `AdjustConfig.ENVIRONMENT_SANDBOX`로 설정해야 합니다. 앱을 게시하기 전에 environment를 `AdjustConfig.ENVIRONMENT_PRODUCTION`으로 설정해야 합니다. 개발 및 테스트를 다시 시작할 경우에는 `AdjustConfig.ENVIRONMENT_SANDBOX`로 다시 설정하십시오.
 
-    이 environment는 실제 트래픽과 테스트 장치의 테스트 트래픽을 구별하기 위해 사용합니다. 이 값을 항상 유의미하게 유지해야 합니다! 매출을 추적하는 경우에 특히 중요합니다.
+이 environment는 실제 트래픽과 테스트 장치의 테스트 트래픽을 구별하기 위해 사용합니다. 이 값을 항상 유의미하게 유지해야 합니다! 
 
 #### <a id="session-tracking"></a>세션 추적
 
@@ -260,16 +235,12 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
 
 #### <a id="session-tracking-api14"></a>API 레벨 14 이상
 
-1. `ActivityLifecycleCallbacks` 인터페이스를 구현하는 비공개 클래스를 추가합니다. 이 인터페이스에 액세스할 권한이 없다면, 앱의 대상 Android api 레벨이 14보다 낮기 때문입니다. 이 [지침](#session-tracking-api9)에 따라 각 작업을 수동으로 업데이트해야 합니다. 이전에 앱의 각 작업에 대한 `Adjust.onResume` 및 `Adjust.onPause` 호출이 있었을 경우 각 호출을 제거해야 합니다.
+- `ActivityLifecycleCallbacks` 인터페이스를 구현하는 비공개 클래스를 추가합니다. 이 인터페이스에 액세스할 권한이 없다면, 앱의 대상 Android api 레벨이 14보다 낮기 때문입니다. 이 [지침](#session-tracking-api9)에 따라 각 작업을 수동으로 업데이트해야 합니다. 이전에 앱의 각 작업에 대한 `Adjust.onResume` 및 `Adjust.onPause` 호출이 있었을 경우 각 호출을 제거해야 합니다.
 
-    ![][activity_lifecycle_class]
-
-2. `onActivityResumed(Activity activity)` 메서드를 편집하고 `Adjust.onResume()`에 호출을 추가합니다.
+- `onActivityResumed(Activity activity)` 메서드를 편집하고 `Adjust.onResume()`에 호출을 추가합니다.
 `onActivityPaused(Activity activity)` 메서드를 편집하고 `Adjust.onPause()`에 호출을 추가합니다.
 
-    ![][activity_lifecycle_methods]
-
-3. adjust SDK가 구성된 `onCreate()` 메서드를 추가하고 `registerActivityLifecycleCallbacks` 호출을 이전에 만든 `ActivityLifecycleCallbacks` 클래스의 인스턴스와 함께 추가합니다.
+- adjust SDK가 구성된 `onCreate()` 메서드를 추가하고 `registerActivityLifecycleCallbacks` 호출을 이전에 만든 `ActivityLifecycleCallbacks` 클래스의 인스턴스와 함께 추가합니다.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -305,8 +276,6 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
          }
       }
     ```
-    
-    ![][activity_lifecycle_register]
 
 #### <a id="session-tracking-api9"></a>API 레벨 9-13
 
@@ -314,10 +283,10 @@ Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 �
 
 올바른 세션 추적을 위해서는 작업 재개 혹은 중지가 있을 때마다 Adjust SDK 메서드 몇 가지를 호출해야 합니다. 그렇게 하지 않으면 SDK가 세션 시작이나 종결을 놓칠 수 있습니다. 이 작업을 위해서는 **앱 내 각 작업 시 다음 단계를 수행해야 합니다**.
 
-  1. 작업 소스 파일을 엽니다.
-  2. 파일 맨 위에 `import` 문을 추가합니다.
-  3. 작업 `onResume` 메소드에서 `Adjust.onResume()` 메소드를 호출합니다. 필요 시에는 이 메소드를 만듭니다.
-  4. 작업 `onPause` 메소드에서 `Adjust.onPause()` 메소드를 호출합니다. 필요 시에는 이 메소드를 만듭니다.   
+- 작업 소스 파일을 엽니다.
+- 파일 맨 위에 `import` 문을 추가합니다.
+- 작업 `onResume` 메소드에서 `Adjust.onResume()` 메소드를 호출합니다. 필요 시에는 이 메소드를 만듭니다.
+- 작업 `onPause` 메소드에서 `Adjust.onPause()` 메소드를 호출합니다. 필요 시에는 이 메소드를 만듭니다.   
 
 단계 수행 후 작업이 다음과 같이 보여야 합니다.
 
@@ -336,8 +305,6 @@ public class YourActivity extends Activity {
     // ...
 }
 ```
-
-![][activity]
 
 **모든** 앱 액티비티에서 이같은 단계를 반복해야 하므로 신규 액티비티 생성 시에 잊지 마세요. 코딩 유형에 따라 액티비티 전체에서 이를 공통 슈퍼클래스로 설정해야 할 수도 있습니다.
 
@@ -370,8 +337,6 @@ Adjust.onCreate(config);
 ### <a id="build-the-app"></a>앱 빌드
 
 안드로이드 앱을 작성하고 실행합니다. `LogCat` 뷰어에서 `tag:Adjust` 필터를 설정하여 다른 모든 로그를 숨길 수 있습니다. 앱이 시작된 후에 다음 `Install tracked` Adjust 로그가 표시됩니다. 
-
-![][log_message]
 
 ## <a id="additional-features"></a>추가 기능
 
@@ -410,10 +375,8 @@ Adjust.trackEvent(event);
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setRevenue(0.01, "EUR");
 event.setOrderId("{OrderId}");
-
 Adjust.trackEvent(event);
 ```
 
@@ -429,10 +392,8 @@ Adjust의 서버 측 수신 확인 도구인 구매 검증(Purchase Verification
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addCallbackParameter("key", "value");
 event.addCallbackParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 
@@ -454,10 +415,8 @@ Adjust 대시보드에서 활성화된 연동에 대해 네트워크 파트너�
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addPartnerParameter("key", "value");
 event.addPartnerParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 
@@ -469,9 +428,7 @@ Adjust.trackEvent(event);
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setCallbackId("Your-Custom-Id");
-
 Adjust.trackEvent(event);
 ```
 
@@ -677,9 +634,7 @@ Adjust.setOfflineMode(true);
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setEventBufferingEnabled(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -703,9 +658,7 @@ SDK 서명이 계정에서 이미 사용 가능 상태로 Adjust 대시보드에
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setAppSecret(secretId, info1, info2, info3, info4);
-
 Adjust.onCreate(config);
 ```
 
@@ -715,9 +668,7 @@ Adjust SDK 기본값 행위는 **앱이 백그라운드에 있을 동안에는 H
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setSendInBackground(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -795,9 +746,9 @@ Adjust.setPushToken(pushNotificationsToken);
 
 Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를 인식하고 싶다면 다음 절차를 따르세요.
 
-1. [대시보드][adjust.com]에 새 트래커를 생성합니다.
+- [대시보드][adjust.com]에 새 트래커를 생성합니다.
 
-2. 앱 델리게이트를 열고 `AdjustConfig` 인스턴스의 기본값 트래커를 다음과 같이 설정합니다.
+- 앱 델리게이트를 열고 `AdjustConfig` 인스턴스의 기본값 트래커를 다음과 같이 설정합니다.
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -807,7 +758,7 @@ Adjust.onCreate(config);
 
 `{TrackerToken}`을 2에서 생성한 트래커 토큰으로 대체합니다. 대시보드에서는 (`http://app.adjust.com/`을 포함하는) 트래커 URL을 표시한다는 사실을 명심하세요. 소스코드에서는 전체 URL을 표시할 수 없으며 6자로 이루어진 토큰만을 명시해야 합니다.
 
-3. 앱 빌드를 실행하세요. LogCat에서 다음 라인을 볼 수 있을 것입니다.
+- 앱 빌드를 실행하세요. LogCat에서 다음 라인을 볼 수 있을 것입니다.
 
 ``` 
 Default tracker: 'abc123'
@@ -866,7 +817,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -877,7 +827,6 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -929,7 +878,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
@@ -940,7 +888,6 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
     Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
@@ -1071,24 +1018,6 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 [activity_resume_pause]:          doc/activity_resume_pause.md
 [reattribution-with-deeplinks]:   https://docs.adjust.com/ko/deeplinking/#part-6-1
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk/tree/master/doc/korean
-
-[activity]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
-[proguard]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
-[receiver]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
-[gradle_gps]:                   https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
-[log_message]:                  https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
-[manifest_gps]:                 https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
-[gradle_adjust]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
-[import_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
-[select_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
-[imported_module]:              https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
-[application_class]:            https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
-[application_config]:           https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[manifest_permissions]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[manifest_application]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
-[activity_lifecycle_class]:     https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
-[activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
-[activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 ## <a id="license"></a>라이선스
 
