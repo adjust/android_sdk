@@ -1,4 +1,4 @@
-### Version 4.16.0 (6th November 2018)
+### Version 4.16.0 (7th November 2018)
 #### Added
 - Added `README` localisation in Chinese, Korean and Japanese.
 - Added sending of `android_uuid` with each attribution request.
