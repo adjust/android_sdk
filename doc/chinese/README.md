@@ -74,38 +74,23 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.16.0'
-compile 'com.android.installreferrer:installreferrer:1.0'
-```
-
-**注意**:如果您正在使用`Gradle 3.0.0 or above`，请确保使用的是`implementation`关键词而不是`compile`，如下所示：
-
-```
 implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
-
-这适用于添加Google Play Services dependency到您的`build.gradle`文件。
-
----
-
-您还可将Adjust SDK作为JAR库添加到项目中。最新SDK版本的JAR库可从我们的[发布专页][releases]中获取。
 
 ### <a id="sdk-gps"></a>添加Google Play服务
 
 自2014年8月1日起，在Google Play商店中的应用必须使用[Google广告ID][google_ad_id]]以唯一标识每个设备。为了让Adjust SDK能够使用Google广告ID,您必须集成[Google Play服务][google_play_services]。如果您还未完成该集成，请遵循以下步骤进行设置：
 
-1. 打开您应用中的`build.gradle`文件，找到`dependencies`程序块。添加如下代码行：
+- 打开您应用中的`build.gradle`文件，找到`dependencies`程序块。添加如下代码行：
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:11.8.0'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     ```
-
-    ![][gradle_gps]
 
     **注意**:Adjust SDK未与Google Play服务库中`play-services-analytics`的任何特定版本绑定，因此您可自由选择使用最新版本（或您需要的任何版本）。
 
-2. **如果您正在使用Google Play服务7或者以上版本，请跳过该步骤**:
+- **如果您正在使用Google Play服务7或者以上版本，请跳过该步骤**:
    在Package Explorer中，打开安卓项目的`AndroidManifest.xml`。在`<application>`元素中添加以下 `meta-data` 标签。
 
     ```xml
@@ -160,7 +145,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 为了让您的应用支持Google Play Referrer API，请确保已经遵循[添加SDK至您的项目](#sdk-add)章节进行了正确设置，并在`build.gradle`文件中添加了如下代码行：
 
 ```
-compile 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 同时，请确保您已经添加了[Proguard设置](#sdk-proguard)章节中所提及的全部规则，尤其是该功能必需的规则：
@@ -186,8 +171,6 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 </receiver>
 ```
 
-![][receiver]
-
 我们使用这个广播接收器来检索install referrer，并将其传送给后端。
 
 如果您已经为`INSTALL_REFERRER`intent使用了不同的广播接收器，请遵循[此说明][referrer]来添加Adjust广播接收器。
@@ -200,25 +183,21 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 
 我们推荐使用全局安卓[应用程序][android_application]类来初始化SDK。如果您的应用中还没有此类，请按照以下步骤设置：
 
-1. 创建一个扩展`Application`的类。
-    ![][application_class]
-
-2. 打开应用中的`AndroidManifest.xml`文件并找到 `<application>` 元素。
-3. 添加`android:name`属性，将其设置为您的新应用程序类的名称，并带一个点为前缀。
+- 创建一个扩展`Application`的类。
+- 打开应用中的`AndroidManifest.xml`文件并找到 `<application>` 元素。
+- 添加`android:name`属性，将其设置为您的新应用程序类的名称，并带一个点为前缀。
 
     在此应用示例中，我们将`Application`类命名为`GlobalApplication`，因此manifest文件被设置为：
 
     ```xml
      <application
        android:name=".GlobalApplication"
-       ... >
-         ...
+       <!-- ...-->
+ 
     </application>
     ```
 
-    ![][manifest_application]
-
-4. 在您的`Application`类中找到或者创建`onCreate`方法，并添加如下代码来初始化Adjust SDK:
+- 在您的`Application`类中找到或者创建`onCreate`方法，并添加如下代码来初始化Adjust SDK:
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -237,8 +216,6 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
     }
     ```
 
-    ![][application_config]
-
     将`{YourAppToken}`替换为您的应用识别码（app token）。您可以在[控制面板][dashboard]中找到该应用识别码。
 
     取决于您的应用制作是用于测试或产品开发目的，您必须将`environment`（环境模式）设为以下值之一：
@@ -248,9 +225,9 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
     String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
     ```
 
-    **重要:** 仅当您或其他人测试您的应用时，该值应设为 `AdjustConfig.ENVIRONMENT_SANDBOX`。在您发布应用之前，请确保将环境改设为 `AdjustConfig.ENVIRONMENT_PRODUCTION`。再次研发和测试时，请将其设回为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
+**重要:** 仅当您或其他人测试您的应用时，该值应设为 `AdjustConfig.ENVIRONMENT_SANDBOX`。在您发布应用之前，请确保将环境改设为 `AdjustConfig.ENVIRONMENT_PRODUCTION`。再次研发和测试时，请将其设回为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
 
-    我们按照设置的环境来区分真实流量和来自测试设备的测试流量。非常重要的是，您必须始终让该值保持有意义！这一点在您进行收入跟踪时尤为重要。
+我们按照设置的环境来区分真实流量和来自测试设备的测试流量。非常重要的是，您必须始终让该值保持有意义！
 
 ### <a id="session-tracking"></a>会话跟踪
 
@@ -258,15 +235,11 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 
 ### <a id="session-tracking-api14"></a>API level 14及以上版本
 
-1. 添加一个私有类(private class)以实现`ActivityLifecycleCallbacks`接口。如果您不能访问该接口，则表示您的应用仅支持安卓API level 14以下版本。在此种情况下，请按照此[说明](#session-tracking-api9)手动更新每项Activity。如果您在之前已经对应用的每个Activity调用了`Adjust.onResume`和`Adjust.onPause`，请将其全部删除。
+- 添加一个私有类(private class)以实现`ActivityLifecycleCallbacks`接口。如果您不能访问该接口，则表示您的应用仅支持安卓API level 14以下版本。在此种情况下，请按照此[说明](#session-tracking-api9)手动更新每项Activity。如果您在之前已经对应用的每个Activity调用了`Adjust.onResume`和`Adjust.onPause`，请将其全部删除。
 
-    ![][activity_lifecycle_class]
+- 编辑`onActivityResumed(Activity activity)`方法，添加对`Adjust.onResume()`的调用。编辑`onActivityPaused(Activity activity)`方法，添加对`Adjust.onPause()`的调用。
 
-2. 编辑`onActivityResumed(Activity activity)`方法，添加对`Adjust.onResume()`的调用。编辑`onActivityPaused(Activity activity)`方法，添加对`Adjust.onPause()`的调用。
-
-    ![][activity_lifecycle_methods]
-
-3. 在设置Adjust SDK的位置添加`onCreate()` 方法，并添加调用 `registerActivityLifecycleCallbacks`以及被创建的`ActivityLifecycleCallbacks`类实例。
+- 在设置Adjust SDK的位置添加`onCreate()` 方法，并添加调用 `registerActivityLifecycleCallbacks`以及被创建的`ActivityLifecycleCallbacks`类实例。
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -303,8 +276,6 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
       }
     ```
 
-    ![][activity_lifecycle_register]
-
 ### <a id="session-tracking-api9"></a>API level 9-13版本
 
 如果您的应用gradle中的`minSdkVersion`是在9至13版本之间，您应当考虑至少升级至版本14以简化集成流程。请咨询官方安卓[控制面板][android-dashboard]了解目前市场上广泛使用的主要版本。
@@ -312,10 +283,10 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 为了进行准确的会话跟踪，每当任一Activity重新开始或者暂停时都需要调用某个Adjust SDK方法。否则SDK可能会错过一个会话开始或者会话结束。**请遵循以下步骤对您的应用中的每个
 Activity**进行正确设置：
 
-1. 打开Activity的源文件。
-2. 在文件顶部添加`import`语句。
-3. 在Activity的`onResume`方法中调用 Adjust.onResume`。必要时创建该方法。
-4. 在Activity的`onPause`方法中调用`Adjust.onPause`。必要时创建该方法。
+- 打开Activity的源文件。
+- 在文件顶部添加`import`语句。
+- 在Activity的`onResume`方法中调用 Adjust.onResume`。必要时创建该方法。
+- 在Activity的`onPause`方法中调用`Adjust.onPause`。必要时创建该方法。
 
 完成以上步骤后，您的Activity应如下：
 
@@ -334,8 +305,6 @@ public class YourActivity extends Activity {
     // ...
 }
 ```
-
-![][activity]
 
 对您的应用中的**每个**Activity重复以上步骤。如果您在之后创建新的Activity，也请按照以上步骤设置。取决于您的编码方式，您也可通过设置所有Activitiy的通用超类来实现它。
 
@@ -368,9 +337,7 @@ Adjust.onCreate(config);
 
 构建并运行您的安卓应用。在`LogCat`查看工具中，您可以设置筛选`tag:Adjust`来隐藏所有其他日志。应用启动后，您可看到以下Adjust日志：`Install tracked`（安装已跟踪）。
 
-![][log_message]
-
-## 附加功能
+## <a id="additional-features"></a> 附加功能
 
 一旦您已经成功将Adjust SDK集成到您的项目中，您便可以使用以下功能。
 
@@ -407,10 +374,8 @@ Adjust.trackEvent(event);
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setRevenue(0.01, "EUR");
 event.setOrderId("{OrderId}");
-
 Adjust.trackEvent(event);
 ```
 
@@ -426,10 +391,8 @@ Adjust.trackEvent(event);
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addCallbackParameter("key", "value");
 event.addCallbackParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 
@@ -451,10 +414,8 @@ http://www.adjust.com/callback?key=value&foo=bar
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addPartnerParameter("key", "value");
 event.addPartnerParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 您可在我们的[特殊合作伙伴指南][special-partners]中了解到有关特殊合作伙伴和集成的更多信息。
@@ -464,9 +425,7 @@ Adjust.trackEvent(event);
 
  ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setCallbackId("Your-Custom-Id");
-
 Adjust.trackEvent(event);
 ```
 
@@ -670,9 +629,7 @@ Adjust.setOfflineMode(true);
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setEventBufferingEnabled(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -696,9 +653,7 @@ Adjust.gdprForgetMe(context);
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setAppSecret(secretId, info1, info2, info3, info4);
-
 Adjust.onCreate(config);
 ```
 
@@ -708,9 +663,7 @@ Adjust SDK的默认行为是当应用处于后台时暂停发送HTTP请求。您
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setSendInBackground(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -789,8 +742,8 @@ Adjust.setPushToken(pushNotificationsToken);
 
 如果您希望使用Adjust SDK来识别已在设备中预安装您的应用的用户，请执行以下步骤。
 
-1. 在[控制面板][dashboard]中创建一个新的跟踪码。
-2. 打开应用委托，并在`AdjustConfig`实例中添加设置默认跟踪码:
+- 在[控制面板][dashboard]中创建一个新的跟踪码。
+- 打开应用委托，并在`AdjustConfig`实例中添加设置默认跟踪码:
 
   ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -800,7 +753,7 @@ Adjust.setPushToken(pushNotificationsToken);
 
   用您在步骤1中创建的跟踪码替换`{TrackerToken}`（跟踪码）。请注意，控制面板中显示的是跟踪URL(包括 `http://app.adjust.com/`)。在源代码中，您应该仅指定六个字符的识别码，而不是整个URL。
 
-3. 创建并运行您的应用。您应该可以在应用日志输出中看到如下行：
+- 创建并运行您的应用。您应该可以在应用日志输出中看到如下行：
 
     ```
     Default tracker: 'abc123'
@@ -847,7 +800,7 @@ https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 
 取决于`AndroidManifest.xml`文件中Activity的`android:launchMode`设置，`deep_link`参数内容的相关信息将被传递至Activity文件的合适位置。请查看[官方安卓文档][android-launch-modes]了解关于`android:launchMode`属性值的更多信息。
 
-通过`Intent`对象发送至您指定的Activity的深度链接内容信息将可能被传递至两个位置——Activity的`onCreate`或者`onNewIntent`方式。一旦应用被打开，方式被触发后，您将获得在点击URL中被传递至`deep_link`参数中的实际深度链接。您可以使用这些信息为应用增加一些附加逻辑。
+通过`Intent`对象发送至您指定的Activity的深度链接内容信息将可能被传递至两个位置 —— Activity的`onCreate`或者`onNewIntent`方式。一旦应用被打开，方式被触发后，您将获得在点击URL中被传递至`deep_link`参数中的实际深度链接。您可以使用这些信息为应用增加一些附加逻辑。
 
 您可以按以下两种方式提取深度链接内容：
 
@@ -859,7 +812,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -870,7 +822,6 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -922,7 +873,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
@@ -933,8 +883,7 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
-	  Adjust.appWillOpenUrl(data, getApplicationContext());
+    Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
 
@@ -1067,23 +1016,6 @@ public void onFireIntentClick(View v) {
 [reattribution-with-deeplinks]:   https://docs.adjust.com/zh/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 
-[activity]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
-[proguard]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
-[receiver]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
-[gradle_gps]:                   https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
-[log_message]:                  https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
-[manifest_gps]:                 https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
-[gradle_adjust]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
-[import_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
-[select_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
-[imported_module]:              https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
-[application_class]:            https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
-[application_config]:           https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[manifest_permissions]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[manifest_application]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
-[activity_lifecycle_class]:     https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
-[activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
-[activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 ## <a id="license"></a>许可协议
 
