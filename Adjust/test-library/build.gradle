@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 28
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.google.code.gson:gson:2.8.5'
+}
+
+task adjustClearJarDebug(type: Delete) {
+    delete "build/outputs/test-library-debug.jar"
+}
+
+task adjustClearJarRelease(type: Delete) {
+    delete "build/outputs/test-library-release.jar"
+}
+
+task adjustMakeJarDebug(type: Copy) {
+    from('build/intermediates/intermediate-jars/debug/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar', "test-library-debug.jar")
+}
+
+task adjustMakeJarRelease(type: Copy) {
+    from('build/intermediates/intermediate-jars/release/')
+    into('build/libs/')
+    include('classes.jar')
+    rename('classes.jar', "test-library-release.jar")
+}
+
+adjustMakeJarDebug.dependsOn(adjustClearJarDebug, build)
+adjustMakeJarRelease.dependsOn(adjustClearJarRelease, build)

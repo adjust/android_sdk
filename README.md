@@ -2,8 +2,9 @@
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
 
-If your app is an app which uses web views and you would like to use Adjust tracking from Javascript code, please consult
-our [Android web views SDK guide](doc/english/web_views.md).
+If your app is an app which uses web views and you would like to use Adjust tracking from Javascript code, please consult our [Android web views SDK guide](doc/english/web_views.md).
+
+Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
 
 ## Table of contents
 
@@ -62,7 +63,7 @@ our [Android web views SDK guide](doc/english/web_views.md).
 
 ## <a id="example-apps"></a>Example apps
 
-There are example apps for Android inside the [`example` directory][example] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
+There are example apps for Android inside the [`example-app-java` directory][example-java] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
@@ -73,42 +74,23 @@ These are the minimal steps required to integrate the Adjust SDK into your Andro
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```
-compile 'com.adjust.sdk:adjust-android:4.15.1'
-compile 'com.android.installreferrer:installreferrer:1.0'
-```
-
-**Note**: If you are using `Gradle 3.0.0 or above`, make sure to use the `implementation` keyword instead of `compile` as follows:
-
-```
-implementation 'com.adjust.sdk:adjust-android:4.15.1'
+implementation 'com.adjust.sdk:adjust-android:4.16.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
-
-This applies when adding the Google Play Services dependency to your `build.gradle` file.
-
----
-
-You can also add the Adjust SDK to your project as a JAR library. The latest SDK version's JAR library can be found on our [releases page][releases].
 
 ### <a id="sdk-gps"></a>Add Google Play Services
 
 Since the 1st of August of 2014, apps in the Google Play Store must use the [Google Advertising ID][google_ad_id] to uniquely identify devices. To allow the Adjust SDK to use the Google Advertising ID, you must integrate the [Google Play Services][google_play_services]. If you haven't done this yet, follow these steps:
 
-1. Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
+- Open the `build.gradle` file of your app and find the `dependencies` block. Add the following line:
 
     ```
-    compile 'com.google.android.gms:play-services-analytics:11.8.0'
+    implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     ```
 
-    ![][gradle_gps]
-    
-    **Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services 
-    library, so feel free to always use the latest version of it (or whichever you might need)
+    **Note**: The Adjust SDK is not tied to any specific version of the `play-services-analytics` part of the Google Play Services library, so feel free to always use the latest version of it (or whichever you might need).
 
-2. **Skip this step if you are using version 7 or later of Google Play Services**:
-   In the Package Explorer open the `AndroidManifest.xml` of your Android
-   project.  Add the following `meta-data` tag inside the `<application>`
-   element.
+- **Skip this step if you are using version 7 or later of Google Play Services**: In the Package Explorer open the `AndroidManifest.xml` of your Android project. Add the following `meta-data` tag inside the `<application>` element.
 
     ```xml
     <meta-data android:name="com.google.android.gms.version"
@@ -162,7 +144,7 @@ In order to correctly attribute an install of your app to its source, Adjust nee
 In order to support this in your app, please make sure that you have followed the [Add the SDK to your project](#sdk-add) chapter properly and that you have following line added to your `build.gradle` file:
 
 ```
-compile 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 Also, make sure that you have paid attention to the [Proguard settings](#sdk-proguard) chapter and that you have added all the rules mentioned in it, especially the one needed for this feature:
@@ -188,8 +170,6 @@ The Google Play Store `INSTALL_REFERRER` intent should be captured with a broadc
 </receiver>
 ```
 
-![][receiver]
-
 We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
 
 If you are already using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to add the Adjust broadcast receiver.
@@ -202,24 +182,19 @@ To start with, we'll set up basic session tracking.
 
 We recommend using a global android [Application][android_application] class to initialize the SDK. If you don't have one in your app already, follow these steps:
 
-1. Create a class that extends `Application`.
-    ![][application_class]
-
-2. Open the `AndroidManifest.xml` file of your app and locate the `<application>` element.
-3. Add the attribute `android:name` and set it to the name of your new application class pefixed by a dot.
+- Create a class that extends `Application`.
+- Open the `AndroidManifest.xml` file of your app and locate the `<application>` element.
+- Add the attribute `android:name` and set it to the name of your new application class pefixed by a dot.
 
     In our example app we use an `Application` class named `GlobalApplication`, so the manifest file is configured as:
     ```xml
      <application
        android:name=".GlobalApplication"
-       ... >
-         ...
+       <!-- ...-->
     </application>
     ```
 
-    ![][manifest_application]
-
-4. In your `Application` class find or create the `onCreate` method and add the following code to initialize the Adjust SDK:
+- In your `Application` class find or create the `onCreate` method and add the following code to initialize the Adjust SDK:
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -238,20 +213,18 @@ We recommend using a global android [Application][android_application] class to 
     }
     ```
 
-    ![][application_config]
+Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
 
-    Replace `{YourAppToken}` with your app token. You can find this in your [dashboard].
+Depending on whether you are building your app for testing or for production, you must set `environment` with one of these values:
 
-    Depending on whether you are building your app for testing or for production, you must set `environment` with one of these values:
+```java
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+```
 
-    ```java
-    String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
-    ```
+**Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` before you publish the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start developing and testing it again.
 
-    **Important:** This value should be set to `AdjustConfig.ENVIRONMENT_SANDBOX` if and only if you or someone else is testing your app. Make sure to set the environment to `AdjustConfig.ENVIRONMENT_PRODUCTION` before you publish the app. Set it back to `AdjustConfig.ENVIRONMENT_SANDBOX` when you start developing and testing it again.
-
-    We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times, especially if you are tracking revenue.
+We use this environment to distinguish between real traffic and test traffic from test devices. It is imperative that you keep this value meaningful at all times.
 
 ### <a id="session-tracking"></a>Session tracking
 
@@ -259,16 +232,10 @@ We recommend using a global android [Application][android_application] class to 
 
 ### <a id="session-tracking-api14"></a>API level 14 and higher
 
-1. Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this interface, your app is targeting an Android API level inferior to 14. You will have to update manually each Activity by following these [instructions](#session-tracking-api9). If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app before, you should remove them.
-
-    ![][activity_lifecycle_class]
-
-2. Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`. Edit the
+- Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this interface, your app is targeting an Android API level inferior to 14. You will have to update manually each Activity by following these [instructions](#session-tracking-api9). If you had `Adjust.onResume` and `Adjust.onPause` calls on each Activity of your app before, you should remove them.
+- Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`. Edit the
 `onActivityPaused(Activity activity)` method and add a call to `Adjust.onPause()`.
-
-    ![][activity_lifecycle_methods]
-
-3. Add on the `onCreate()` method where the Adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
+- Add on the `onCreate()` method where the Adjust SDK is configured and add call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -305,18 +272,16 @@ We recommend using a global android [Application][android_application] class to 
       }
     ```
 
-    ![][activity_lifecycle_register]
-
 ### <a id="session-tracking-api9"></a>API level between 9 and 13
 
 If your app `minSdkVersion` in gradle is between `9` and `13`, consider updating it to at least `14` to simplify the integration process in the long term. Consult the official Android [dashboard][android-dashboard] to know the latest market share of the major versions.
 
 To provide proper session tracking it is required to call certain Adjust SDK methods every time any Activity resumes or pauses. Otherwise the SDK might miss a session start or session end. In order to do so you should **follow these steps for each Activity of your app**:
 
-1. Open the source file of your Activity.
-2. Add the `import` statement at the top of the file.
-3. In your Activity's `onResume` method call `Adjust.onResume()`. Create the method if needed.
-4. In your Activity's `onPause` method call `Adjust.onPause()`. Create the method if needed.
+- Open the source file of your Activity.
+- Add the `import` statement at the top of the file.
+- In your Activity's `onResume` method call `Adjust.onResume()`. Create the method if needed.
+- In your Activity's `onPause` method call `Adjust.onPause()`. Create the method if needed.
 
 After these steps your activity should look like this:
 
@@ -335,8 +300,6 @@ public class YourActivity extends Activity {
     // ...
 }
 ```
-
-![][activity]
 
 Repeat these steps for **every** Activity of your app. Don't forget these steps when you create new Activities in the future. Depending on your coding style you might want to implement this in a common superclass of all your Activities.
 
@@ -368,9 +331,7 @@ Adjust.onCreate(config);
 
 ### <a id="build-the-app"></a>Build your app
 
-Build and run your Android app. In your `LogCat` viewer you can set the filter `tag:Adjust` to hide all other logs. After your app has launched you should see the following Adjust log: `Install tracked`
-
-![][log_message]
+Build and run your Android app. In your `LogCat` viewer you can set the filter `tag:Adjust` to hide all other logs. After your app has launched you should see the following Adjust log: `Install tracked`.
 
 ## Additional Features
 
@@ -409,10 +370,8 @@ If you want to track in-app purchases, please make sure to call `trackEvent` onl
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setRevenue(0.01, "EUR");
 event.setOrderId("{OrderId}");
-
 Adjust.trackEvent(event);
 ```
 
@@ -428,10 +387,8 @@ For example, suppose you have registered the URL `http://www.adjust.com/callback
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addCallbackParameter("key", "value");
 event.addCallbackParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 
@@ -453,10 +410,8 @@ This works similarly to the callback parameters mentioned above, but can be adde
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.addPartnerParameter("key", "value");
 event.addPartnerParameter("foo", "bar");
-
 Adjust.trackEvent(event);
 ```
 
@@ -468,9 +423,7 @@ You can also add custom string identifier to each event you want to track. This 
 
 ```java
 AdjustEvent event = new AdjustEvent("abc123");
-
 event.setCallbackId("Your-Custom-Id");
-
 Adjust.trackEvent(event);
 ```
 
@@ -675,9 +628,7 @@ If your app makes heavy use of event tracking, you might want to delay some HTTP
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setEventBufferingEnabled(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -701,9 +652,7 @@ An App Secret is set by calling `setAppSecret` on your `AdjustConfig` instance:
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setAppSecret(secretId, info1, info2, info3, info4);
-
 Adjust.onCreate(config);
 ```
 
@@ -713,9 +662,7 @@ The default behaviour of the Adjust SDK is to pause sending HTTP requests while 
 
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
 config.setSendInBackground(true);
-
 Adjust.onCreate(config);
 ```
 
@@ -794,8 +741,8 @@ Adjust.setPushToken(pushNotificationsToken);
 
 If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps.
 
-1. Create a new tracker in your [dashboard].
-2. Open your app delegate and add set the default tracker of your `AdjustConfig`:
+- Create a new tracker in your [dashboard].
+- Open your app delegate and add set the default tracker of your `AdjustConfig`:
 
   ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -803,10 +750,9 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
   Adjust.onCreate(config);
   ```
 
-  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the 
-  entire URL.
+  Replace `{TrackerToken}` with the tracker token you created in step 1. Please note that the Dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
 
-3. Build and run your app. You should see a line like the following in your LogCat:
+- Build and run your app. You should see a line like the following in your LogCat:
 
     ```
     Default tracker: 'abc123'
@@ -853,7 +799,7 @@ After clicking this tracker URL, and with the app set as described above, your a
 
 Depending on the `android:launchMode` setting of your Activity in the `AndroidManifest.xml` file, information about the `deep_link` parameter content will be delivered to the appropriate place in the Activity file. For more information about the possible values of the `android:launchMode` property, check [the official Android documentation][android-launch-modes].
 
-There are two places within your desired Activity where information about the deep link content will be delivered via the `Intent` object--either in the Activity's `onCreate` or `onNewIntent` methods. Once your app has launched and one of these methods has been triggered, you will be able to get the actual deep link passed in the `deep_link` parameter in the click URL. You can then use this information to conduct some additional logic in your app.
+There are two places within your desired Activity where information about the deep link content will be delivered via the `Intent` object - either in the Activity's `onCreate` or `onNewIntent` methods. Once your app has launched and one of these methods has been triggered, you will be able to get the actual deep link passed in the `deep_link` parameter in the click URL. You can then use this information to conduct some additional logic in your app.
 
 You can extract the deep link content from these two methods like this:
 
@@ -865,7 +811,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -876,7 +821,6 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
     // data.toString() -> This is your deep_link parameter value.
 }
 ```
@@ -928,7 +872,6 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-
     Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
@@ -939,7 +882,6 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-
     Adjust.appWillOpenUrl(data, getApplicationContext());
 }
 ```
@@ -1047,12 +989,16 @@ If you want to trigger an event after the install, use the [attribution callback
 
 If you want to trigger an event when the app is launched, use the `onCreate` method of the Activity which is started.
 
-[dashboard]:                      http://adjust.com
-[adjust.com]:                     http://adjust.com
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
+[en-readme]:  README.md
+[zh-readme]:  doc/chinese/README.md
+[ja-readme]:  doc/japanese/README.md
+[ko-readme]:  doc/korean/README.md
 
 [maven]:                          http://maven.org
-[example]:                        https://github.com/adjust/android_sdk/tree/master/Adjust/example
-[example-tv]:                     https://github.com/adjust/android_sdk/tree/master/Adjust/example-tv
+[example-java]:                   Adjust/example-app-java
+[example-tv]:                     Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
 [google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
@@ -1070,24 +1016,6 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [activity_resume_pause]:          doc/activity_resume_pause.md
 [reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-
-[activity]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/14_activity.png
-[proguard]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/08_proguard_new.png
-[receiver]:                     https://raw.github.com/adjust/sdks/master/Resources/android/v4/09_receiver.png
-[gradle_gps]:                   https://raw.github.com/adjust/sdks/master/Resources/android/v4/05_gradle_gps.png
-[log_message]:                  https://raw.github.com/adjust/sdks/master/Resources/android/v4/15_log_message.png
-[manifest_gps]:                 https://raw.github.com/adjust/sdks/master/Resources/android/v4/06_manifest_gps.png
-[gradle_adjust]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/04_gradle_adjust.png
-[import_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/01_import_module.png
-[select_module]:                https://raw.github.com/adjust/sdks/master/Resources/android/v4/02_select_module.png
-[imported_module]:              https://raw.github.com/adjust/sdks/master/Resources/android/v4/03_imported_module.png
-[application_class]:            https://raw.github.com/adjust/sdks/master/Resources/android/v4/11_application_class.png
-[application_config]:           https://raw.github.com/adjust/sdks/master/Resources/android/v4/13_application_config.png
-[manifest_permissions]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/07_manifest_permissions.png
-[manifest_application]:         https://raw.github.com/adjust/sdks/master/Resources/android/v4/12_manifest_application.png
-[activity_lifecycle_class]:     https://raw.github.com/adjust/sdks/master/Resources/android/v4/16_activity_lifecycle_class.png
-[activity_lifecycle_methods]:   https://raw.github.com/adjust/sdks/master/Resources/android/v4/17_activity_lifecycle_methods.png
-[activity_lifecycle_register]:  https://raw.github.com/adjust/sdks/master/Resources/android/v4/18_activity_lifecycle_register.png
 
 ## <a id="license"></a>License
 
