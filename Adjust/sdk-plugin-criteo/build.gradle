@@ -126,6 +126,7 @@ def customizePom(pom) {
 
         // Add all items necessary for maven central publication
         root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
             description 'The Criteo plugin for Adjust SDK for Android'
             name 'Adjust Android SDK Criteo plugin'
             url 'https://github.com/adjust/android_sdk'
