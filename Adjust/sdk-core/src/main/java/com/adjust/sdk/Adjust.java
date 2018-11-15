@@ -278,6 +278,16 @@ public class Adjust {
     }
 
     /**
+     * Called to get native SDK version string.
+     *
+     * @return Native SDK version string.
+     */
+    public static String getSdkVersion() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        return adjustInstance.getSdkVersion();
+    }
+
+    /**
      * Used for testing purposes only. Do NOT use this method.
      *
      * @param testOptions Adjust integration tests options

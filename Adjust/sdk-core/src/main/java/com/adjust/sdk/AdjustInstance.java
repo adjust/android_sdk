@@ -412,6 +412,15 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to get native SDK version string.
+     *
+     * @return Native SDK version string.
+     */
+    public String getSdkVersion() {
+        return Util.getSdkVersion();
+    }
+
+    /**
      * Check if ActivityHandler instance is set or not.
      *
      * @return boolean indicating whether ActivityHandler instance is set or not
