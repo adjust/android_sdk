@@ -8,18 +8,17 @@ Web Viewをアプリ内でご使用の場合、Javascriptコードからadjust�
 
 Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
 
-### <a id="example-app"></a>サンプルアプリ
+### <a id="example-apps"></a>サンプルアプリ
 
 サンプルアプリがexampleディレクトリ([`example-app-java` directory][example-java] )に、Android TVのサンプルが [`example-tv` directory][example-tv]にご用意しています。 Androidプロジェクトを開き、SDK実装の際は、このサンプルをご参照ください。
 
-### <a id="basic-integration"></a>基本的な連携方法
+### <a id="basic-integration"></a>基本的な導入方法
 
-Androidプロジェクトにadjust SDKを連携させるための手順を説明します。
-Android の開発に Android Studio が使用されていること、Android API レベル9(Gingerbread)以降が使用されていることを仮定します。
+Adjust SDKをAndroidプロジェクトに連携する手順を説明します。ここでは、Androidアプリケーションの開発にAndroid Studioが使用されていること、対象はAndroid APIレベル9（Gingerbread）以降であることを条件に説明します。
  
-#### <a id="sdk-add"></a>プロジェクトへのSDKの追加
+#### <a id="sdk-add"></a>SDKをプロジェクトに追加する
 
-Mavenをご利用の場合、アプリの`build.gradle`ファイルを開き、代わりに書きの行を加えてください。
+Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
  
 ```
 implementation 'com.adjust.sdk:adjust-android:4.16.0'
@@ -28,19 +27,18 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
  
 #### <a id="sdk-gps"></a>Google Playサービスの追加
 
-2014年8月1日以降、Google Playストア内のアプリはデバイスの特定のために[Google広告ID][google_ad_id]を使うことが必須とされています。
-adjust SDKでGoogle広告IDを使うためには、[Google Playサービス][google_play_services]を連携させる必要があります。
-Google Playサービスの連携がお済みでない場合は、以下の手順に進んでください。
+2014年8月1日より、Google Playストアのアプリには、端末をユニーク判別するために[Google Advertising ID][google_ad_id]の使用が義務付けられました。Adjust SDKでGoogle広告IDを使用するには、[Google Playサービス][google_play_services]を導入する必要があります。導入済みではい場合は、以下の手順に沿って設定してください。
 
-- `build.gradle`ファイルを開き、`dependencies`ブロックを探してください。そこに、以下の行を追加してください。
+- アプリの`build.gradle`ファイルを開き、`dependencies`ブロックに次の行を追加してください。
 
     ```
         implementation 'com.google.android.gms:play-services-analytics:16.0.4'
     ```
+**注意**：Adjust SDKは、Google Playサービスの一つである`play-services-analytics`ライブラリの特定のバージョンとは紐付いていませんので、必要に応じて最新バージョンをご使用ください。
 
-- **Google Playサービスのバージョン7以降を使っている場合は、このステップは飛ばしてください。**
-パッケージ・エクスプローラからAndroidプロジェクトの`AndroidManifest.xml`を開いてください。
-以下の`meta-data`タグを`<application>`エレメントの中に追加してください。
+- **Google Playサービスのバージョン7以降をご利用の方は、この手順は不要です**
+パッケージエクスプローラから、Androidプロジェクトの`AndroidManifest.xml`ファイルを開いてください。
+``エレメントの中に以下の`meta-data`タグを追加してください。
 
     ```xml
     <meta-data android:name="com.google.android.gms.version"
@@ -49,23 +47,22 @@ Google Playサービスの連携がお済みでない場合は、以下の手順
 
 #### <a id="sdk-permissions"></a>パーミッションの追加
  
-パッケージ・エクスプローラからAndroidプロジェクトの`AndroidManifest.xml`を開いてください。
-`INTERNET`の`uses-permission`タグがそこになければ、これを追加してください。
+`AndroidManifest.xml`ファイルにAdjust SDKに必要なパーミッションが存在しない場合は、以下を追加してください。
  
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-**Google Playストア向けでない**アプリの場合は、両方のパーミッションを追加してください。
- 
+**Google Playストア以外の第三者ストアからアプリをリリースする**場合は、以下のパーミッションも追加してください。
+
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
  
-#### <a id="sdk-proguard"></a>Proguard設定
+#### <a id="sdk-proguard"></a>Proguardの設定
 
-Proguardをお使いの場合は、下記の記述をProguardファイルに追加してください。
+Proguardをお使いの場合は、以下をProguardファイルに追加してください。
 
 ```
 -keep public class com.adjust.sdk.** { *; }
@@ -82,13 +79,34 @@ Proguardをお使いの場合は、下記の記述をProguardファイルに追�
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-**Google Playストア向けでない**アプリの場合は、`com.google.android.gms`の記述を省略できます。
+**Google Playストア以外の第三者ストアからアプリをリリースする**場合は、`com.google.android.gms`のルールを削除できます。
 
+#### <a id="install-referrer"></a>インストールリファラ
 
-#### <a id="sdk-broadcast-receiver"></a>Adjust broadcastレシーバ
+アプリのインストールをアトリビューションソースに正確にアトリビュートするため、Adjustは**インストールリファラ**の情報を必要とします。そのために**Google Play Referrer API**かブロードキャストレシーバを使用して、**Google Playストアのインテント**を取得します。
 
-`INSTALL_REFERRER`インテントの受信に**Broadcastレシーバを使わない**場合、`AndroidManifest.xml`の`application`タグの中に以下の`receiver`タグを追加してください。
- 
+**重要**：Google Play Referrer APIは、インストールリファラをより安全に提供し、またクリックインジェクションの不正に対抗する目的でGoogleが新たに導入したものです。アプリケーションでこれをサポートすることを**強く推奨**します。Google Playストアのインテントは、インストールのリファラー情報を取得する上で安全性が低い方法です。当面、新しいGoogle Play Referrer APIと並行して引き続き存在しますが、将来廃止される予定となっています。
+
+#### <a id="gpr-api"></a>Google Play Referrer API
+
+アプリでこのAPIをサポートするには、[Add the SDK to your project](#sdk-add) の章の手順に適切に従って、以下の行を`build.gradle`ファイルに追加していることを確認してください。
+
+```
+implementation 'com.android.installreferrer:installreferrer:1.0'
+```
+
+また、[Proguardの設定](#sdk-proguard)の章をよく読んで、記載されているすべてのルール、特に、この機能に必要なルールが追加されていることを確認してください。
+
+```
+-keep public class com.android.installreferrer.** { *; }
+```
+
+この機能は、**Adjust SDK v4.12.0以降**を使用している場合にサポートされます。
+
+#### <a id="gps-intent"></a>Google Playストアのインテント
+
+Google Play ストアの`INSTALL_REFERRER`インテントは、Broadcastレシーバを使用して受信することをおすすめします。**Broadcastレシーバを使用せずに**`INSTALL_REFERRER`インテントを取得する場合、以下の`receiver`タグを`AndroidManifest.xml`の`application`タグ内に追加してください。
+
 ```xml
 <receiver
     android:name="com.adjust.sdk.AdjustReferrerReceiver"
@@ -100,25 +118,23 @@ Proguardをお使いの場合は、下記の記述をProguardファイルに追�
 </receiver>
 ```
 
-adjustはコンバージョンをより正確にトラッキングできるよう、インストールリファラを受信するためにこのBroadcastレシーバを使用します。
+AdjustはこのBroadcastレシーバを使用して、インストールのリファラ情報を取得し、バックエンドに転送します。
 
-`INSTALL_REFERRER`インテントに別のBroadcastレシーバを既にお使いの場合、
-[こちらの手順][multibroadcast]に従ってadjustのBroadcastレシーバを追加してください。
+`INSTALL_REFERRER`インテントに対して既に他のブロードキャストレシーバを使用している場合、[こちらの説明][referrer]に従って、Adjust Broadcastレシーバを追加してください。
 
-#### <a id="sdk-integrate"></a>アプリへのSDKの連携
+#### <a id="sdk-integrate"></a>SDKをアプリに導入
  
-はじめに、基本的なセッションのトラッキングの設定を行います。
+まず最初に、基本的なセッショントラッキングを設定します。
  
 #### <a id="basic-setup"></a>基本設定
 
-SDKの初期化にグローバルAndroid[Application][android_application]クラスのご使用をおすすめします。
-まだこのクラスを実装していなければ、次の手順で実装してください。
+SDKの初期化には、Android [Application][android_application] のglobal classを使用することを推奨します。アプリ内に存在しない場合、以下の手順に従ってください。
 
-- `Application`を拡張するクラスを作成してください。
-- アプリの`AndroidManifest.xml`ファイルを開き、`<application>`エレメントを置いてください。
-- `android:name`アトリビュートを追加し、先頭にドットをつけて新しいアプリケーションクラスの名前に設定してください。
+- `Application`を継承したクラスを作成します。
+- プリの`AndroidManifest.xml`ファイルを開き、``エレメントを確認します。
+- `android:name`属性を追加し、先頭にドット（点）を付けて新規アプリケーションのクラス名をセットします。
 
-   サンプルアプリでは`GlobalApplication`と名付けた`Application`クラスを使用していますので、マニフェストファイルは以下のように設定されます。
+   サンプルアプリの場合、`GlobalApplication`という名前の`Application`クラスを使用しているため、マニフェストファイルの設定は以下の通りになります。
 
     ```xml
      <application
@@ -127,7 +143,7 @@ SDKの初期化にグローバルAndroid[Application][android_application]クラ
     </application>
     ```
     
-- `Application`クラスに`onCreate`メソッドがあればそこに、なければこれを作成し、adjust SDK初期化の以下のコードを追加してください。
+- `Application`クラスに`onCreate`メソッドがあるかどうか確認して、なければ作成してください。また、以下のコードを追加してAdjust SDKを初期化してください。
  
     ```java
     import com.adjust.sdk.Adjust;
@@ -146,9 +162,9 @@ SDKの初期化にグローバルAndroid[Application][android_application]クラ
     }
     ```
 
-`{YourAppToken}`にアプリトークンを記入してください。トークンは[dashboard]でご確認いただけます。
+`{YourAppToken}`にアプリトークンを代入してください。トークンは[dashboard]で確認できます。
 
-`environment`に以下のどちらかを設定してください。これはテスト用アプリか本番用アプリかによって異なります。
+アプリのビルドをテスト用（Sandbox）か本番用（Production）に分けるためには、SDK内の環境`environment`を以下の値のいずれかにセットする必要があります。
 
 
 ```java
@@ -156,30 +172,21 @@ String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 ```
 
-**重要** この値はアプリのテスト中のみ`AdjustConfig.ENVIRONMENT_SANDBOX`に設定してください。
-アプリを提出する前に`AdjustConfig.ENVIRONMENT_PRODUCTION`になっていることを必ず確認してください。
-再度開発やテストをする際は`AdjustConfig.ENVIRONMENT_SANDBOX`に戻してください。
+**重要**：この値はアプリのテスト中のみ、`AdjustConfig.ENVIRONMENT_SANDBOX`に設定してください。アプリをストアに申請する前に、SDKの環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に設定してください。再度開発やテストを行う場合は、設定を`AdjustConfig.ENVIRONMENT_SANDBOX`に戻してください。
 
-この変数は実際のトラフィックとテスト端末からのテストのトラフィックを区別するために利用されます。
-正しく計測するために、この値の設定には常に注意してください。収益のトラッキングの際には特に重要です。
+Adjustはこの環境設定を使用して、本番用の計測数値とテスト端末からのテスト計測を区別してレポート画面に表示します。この値の設定には常に注意が必要ですが、課金イベントを計測する場合は特に気をつけてください。
  
 #### <a id="session-tracking"></a>セッショントラッキング
 
-**重要** この作業は**非常に重要**ですので、必ず**アプリ内で正しく実装されている**ことをご確認ください。
-この実装により、adjust SDKにより的確なセッションのトラッキングが有効になります。
+**注意**：この手順は**非常に重要です**。**必ずアプリに正しく実装されていることを確認**してください。この実装を行うことにより、アプリ内のAdjust SDKで適切なセッション計測が可能になります。
  
-##### <a id="session-tracking-api14"></a>レベル14以降のAPI
+##### <a id="session-tracking-api14"></a>APIレベルが14以降
 
-- `ActivityLifecycleCallbacks`インターフェイスを実装したプライベートクラスを追加してください。
-このインターフェイスへのアクセスができなければ、そのアプリのAndroid APIレベルは14未満です。
-アクティビティをそれぞれ手動でアップデートする必要がありますので、こちらの[ガイド](#session-tracking-api9)をご参照ください。
-以前にそれぞれのアクティビティで`Adjust.onResume`と`Adjust.onPause`コールを使っていた場合は、これらを削除してください。
+- `ActivityLifecycleCallbacks`インターフェースを実装したプライベートクラスを追加します。このインターフェースを利用できなければ、そのアプリのAndroid APIレベルは14未満を対象としています。アクティビティをそれぞれ手動でアップデートする必要がありますので、こちらの[ガイド](#session-tracking-api9)を参照してください。以前に`Adjust.onResume`および`Adjust.onPause`のコールを使っていた場合、これらを削除する必要があります。
 
-- `onActivityResumed(Activity activity)`メソッドを編集し、`Adjust.onResume()`のコールを追加してください。
-`onActivityPaused(Activity activity)`メソッドを編集し、`Adjust.onPause()`のコールを追加してください。
+- `onActivityResumed(Activity activity)`メソッドを編集して、`Adjust.onResume()`のコールを追加します。`onActivityPaused(Activity activity)`メソッドを編集して、`Adjust.onPause()`のコールを追加します。
 
-- adjust SDKが設定されている部分に`onCreate()`メソッドを追加し、`registerActivityLifecycleCallbacks`のコールと
-作成した`ActivityLifecycleCallbacks`クラスのインスタンスを追加してください。
+- Adjust SDKの設定で、`onCreate()`メソッドを追加します。作成した`ActivityLifecycleCallbacks`のコールと、作成した`registerActivityLifecycleCallbacks`クラスのインスタンスを追加してください。
  
     ```java
     import com.adjust.sdk.Adjust;
@@ -218,21 +225,16 @@ String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
  
 ##### <a id="session-tracking-api9"></a>レベル9から13のAPI
 
-Gradleの`minSdkVersion`が`9`から`13`の間の場合、`14`以上にアップデートしていただくと今後の連携の手順が簡単になります。
-ぜひご検討ください。Androidの[公式ページ][android-dashboard]にて最新のマーケットシェアをご確認ください。
+Gradleの`minSdkVersion`が`9`から`13`の場合、`14`以上にアップデートすると、今後の連携の手順が容易になります。Android公式 [ダッシュボード][android-dashboard]にて、最新バージョン関する情報をご確認ください。
 
-セッショントラッキングを正しく行うためには、アクティビティの開始または停止ごとにadjust SDKの該当メソッドをコールする必要があります。
-これを怠ると、SDKはセッションの開始や終了を関知できなくなる場合があります。正しいセッショントラッキングのために、
-**すべてのアクティビティに対して以下の作業を行ってください**。
+セッショントラッキングを正しく行うためには、Acticityの開始または停止ごとにAdjust SDKの該当メソッドをコールする必要があります。この設定を行わないと、SDKはセッション開始やセッション終了を見落とす可能性があります。適切にセッションをトラッキングするには、**全てのActivityに対して以下の作業を行なってください。**
 
-- アクティビティにソースファイルを開いてください。
-- ファイル最上部に`import`の記述を加えてください。
-- アクティビティの`onResume`メソッド中に`Adjust.onResume()`へのコールを追加してください。
-  `onResume`メソッドがなければ作成してください。
-- アクティビティの`onPause`メソッド中に`Adjust.onPause()`へのコールを追加してください。
-  `onPause`メソッドがなければ作成してください。
+- Activityのソースファイルを開きます。
+- ファイルの最上部に`import`の記述を追加します。
+- Activityの`onResume`メソッド中に`Adjust.onResume()`へのコールを追加してください。必要に応じてメソッドを作成してください。
+- Activityの`onPause`メソッド中に`Adjust.onPause()`へのコールを追加してください。必要に応じてメソッドを作成してください。
 
-これらの手順が済むと、アクティビティは次のようになるはずです。
+これらの手順を行うと、Activityは以下のように記述されます。
 
 ```java
 import com.adjust.sdk.Adjust;
@@ -250,13 +252,11 @@ public class YourActivity extends Activity {
 }
 ```
 
-**すべての**アクティビティに対してこれらの作業を行ってください。今後新しいアクティビティを作成した時にも忘れずに行ってください。
-すべてのアクティビティに対する共通のスーパークラスにこれを実装するという方法もあります。
+これと同じ手順をアプリの**すべて**のActivityに行なってください。将来新しいActivityを作成する場合、この手順を忘れないでください。コーディングスタイルの違いによって、すべてのActivityに対する共通のスーパークラスにこれを実装するという方法もあります。
 
-#### <a id="adjust-logging"></a>Adjustログ
+#### <a id="adjust-logging"></a>Adjustログの取得
 
-`AdjustConfig`インスタンスの`setLogLevel`に設定するパラメータを変更することによって記録するログのレベルを調節できます。
-パラメータは以下の種類があります。
+`AdjustConfig`インスタンスの`setLogLevel`に設定するパラメータを変更することによって、記録するログのレベルを調節できます。
  
 ```java
 config.setLogLevel(LogLevel.VERBOSE);   // enable all logging
@@ -267,11 +267,22 @@ config.setLogLevel(LogLevel.ERROR);     // disable warnings as well
 config.setLogLevel(LogLevel.ASSERT);    // disable errors as well
 config.setLogLevel(LogLevel.SUPRESS);   // disable all log output
 ```
+
+すべてのログの出力を無効にする場合、ログレベルをsuppressに設定する他に、`AdjustConfig`オブジェクトのコンストラクタを使用してください。抑制されたログレベルがサポートされるべきかどうかを判定するboolean値が得られます。
+
+```java
+String appToken = "{YourAppToken}";
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+
+AdjustConfig config = new AdjustConfig(this, appToken, environment, true);
+config.setLogLevel(LogLevel.SUPRESS);
+
+Adjust.onCreate(config);
+```
  
 #### <a id="build-the-app"></a>アプリのビルド
  
-アプリをビルドして実行しましょう。`LogCat`ビューアにて`tag:Adjust`フィルターを設定し、他のログすべてを非表示にすることがでいます。
-アプリが実行されたあと、`Install tracked`のログが出力されるはずです。
+Androidアプリをビルドして実行します。`LogCat`ビューアにて`tag:Adjust`フィルターを設定し、他のすべてのログを非表示にすることができます。アプリが起動された後、`Install tracked`のログが出力されるはずです。
 
 ### 追加機能
  
@@ -454,7 +465,7 @@ adjustConfig.setDelayStart(5.5);
 この時間が過ぎるまで、もしくは`Adjust.sendFirstPackages()`がコールされるまで、
 セッションパラメータはすべてディレイインストールセッションとイベントに追加され、adjust SDKは通常通り再開します。
 
-adjust SDKのディレイスタートは最大で10秒です。
+**adjust SDKのディレイスタートは最大で10秒です。**
 
 #### <a id="attribution-callback"></a>アトリビューションコールバック
 
@@ -651,7 +662,7 @@ Adjust.setPushToken(pushNotificationsToken, context);
 すでにアプリをインストールしたことのあるユーザーをadjust SDKを使って識別したい場合は、次の手順で設定を行ってください。
 
 - [dashboard]上で新しいトラッカーを作成してください。
-- App Delegateを開き、`ADJConfig`のデフォルトトラッカーを設定してください。
+- App Delegateを開き、`AdjustConfig`のデフォルトトラッカーを設定してください。
 
   ```java
   AdjustConfig config = new AdjustConfig(this, appToken, environment);
@@ -937,25 +948,26 @@ adjust SDKはこの場合の初期化についてサポートしています。�
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[maven]:http://maven.org
-[example-java]:  ../../Adjust/example-app-java
-[example-tv]:  ../../Adjust/example-app-tv
-[releases]:https://github.com/adjust/adjust_android_sdk/releases
-[referrer]:doc/english/referrer.md
-[google_ad_id]:https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
-[event-tracking]:https://docs.adjust.com/en/event-tracking
-[callbacks-guide]:https://docs.adjust.com/en/callbacks
-[application_name]:http://developer.android.com/guide/topics/manifest/application-element.html#nm
-[special-partners]:https://docs.adjust.com/en/special-partners
-[attribution-data]:https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[android-dashboard]:http://developer.android.com/about/dashboards/index.html
-[currency-conversion]:https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
-[android_application]:http://developer.android.com/reference/android/app/Application.html
-[android-launch-modes]:https://developer.android.com/guide/topics/manifest/activity-element.html
-[google_play_services]:http://developer.android.com/google/play-services/setup.html
-[activity_resume_pause]:doc/activity_resume_pause.md
-[reattribution-with-deeplinks]:https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
-[android-purchase-verification]:https://github.com/adjust/android_purchase_sdk
+[maven]:                          http://maven.org
+[example-java]:                   ../../Adjust/example-app-java
+[example-tv]:                     ../../Adjust/example-app-tv
+[releases]:                       https://github.com/adjust/adjust_android_sdk/releases
+[referrer]:                       ../japanese/referrer.md
+[google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/en/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
+[application_name]:               http://developer.android.com/guide/topics/manifest/application-element.html#nm
+[special-partners]:               https://docs.adjust.com/en/special-partners
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android_application]:            http://developer.android.com/reference/android/app/Application.html
+[android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
+[google_play_services]:           http://developer.android.com/google/play-services/setup.html
+[activity_resume_pause]:          doc/activity_resume_pause.md
+[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 
 
 ### <a id="license"></a>ライセンス
