@@ -178,7 +178,7 @@ var Adjust = {
         } else {
             return undefined;
         }
-     },
+    },
 
     getSdkPrefix: function () {
         if (this.adjustConfig) {
