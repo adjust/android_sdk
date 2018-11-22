@@ -610,6 +610,11 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public String getSdkVersion() {
+        return Adjust.getSdkVersion();
+    }
+
+    @JavascriptInterface
     public void setTestOptions(final String testOptionsString) {
         AdjustFactory.getLogger().verbose("AdjustBridgeInstance setTestOptions: %s", testOptionsString);
 

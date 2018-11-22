@@ -172,6 +172,22 @@ var Adjust = {
         }
     },
 
+    getSdkVersion: function () {
+        if (AdjustBridge) {
+             return  this.getSdkPrefix() + '@' + AdjustBridge.getSdkVersion();
+        } else {
+            return undefined;
+        }
+     },
+
+    getSdkPrefix: function () {
+        if (this.adjustConfig) {
+            return this.adjustConfig.getSdkPrefix();
+        } else {
+            return 'web-bridge4.16.0';
+        }
+    },
+
     setTestOptions: function (testOptions) {
         var testOptionsString = JSON.stringify(testOptions);
         if (AdjustBridge) {
