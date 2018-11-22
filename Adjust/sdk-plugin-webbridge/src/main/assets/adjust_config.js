@@ -22,7 +22,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.eventBufferingEnabled = null;
     this.sendInBackground = null;
     this.logLevel = null;
-    this.sdkPrefix = Adjust.getSdkPrefix();
+    this.sdkPrefix = null;
     this.processName = null;
     this.defaultTracker = null;
     this.attributionCallbackName = null;

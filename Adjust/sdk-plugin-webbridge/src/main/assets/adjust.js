@@ -1,5 +1,8 @@
 var Adjust = {
     onCreate: function (adjustConfig) {
+        if (adjustConfig && !adjustConfig.getSdkPrefix()) {
+            adjustConfig.setSdkPrefix(this.getSdkPrefix());
+        }
         this.adjustConfig = adjustConfig;
         if (AdjustBridge) {
             AdjustBridge.onCreate(JSON.stringify(adjustConfig));
@@ -174,7 +177,7 @@ var Adjust = {
 
     getSdkVersion: function () {
         if (AdjustBridge) {
-             return  this.getSdkPrefix() + '@' + AdjustBridge.getSdkVersion();
+             return this.getSdkPrefix() + '@' + AdjustBridge.getSdkVersion();
         } else {
             return undefined;
         }
