@@ -10,11 +10,49 @@ android {
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
         versionName rootProject.ext.coreVersionName
         versionCode rootProject.ext.defaultVersionCode
+        consumerProguardFiles 'adjust-proguard-rules.txt'
     }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task adjustCoreAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-core-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-release.aar', "${project.name}.aar"
+
+}
+
+
+task adjustSdkNonNativeAarDebug (type: Copy) {
+    dependsOn 'assembleDebug'
+
+    from ('build/outputs/aar/')
+    include 'sdk-core-debug.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-debug.aar', "adjust-sdk-debug.aar"
+}
+
+task adjustSdkNonNativeAarRelease (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from ('build/outputs/aar/')
+    include 'sdk-core-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-release.aar', "adjust-sdk-release.aar"
 }
 
 task adjustCoreAndroidJar(type: Jar) {

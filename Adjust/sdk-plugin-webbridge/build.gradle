@@ -27,6 +27,16 @@ dependencies {
     // implementation 'com.adjust.sdk:adjust-android:4.17.0'
 }
 
+task adjustWebBridgeAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-webbridge-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-webbridge-release.aar', "${project.name}.aar"
+
+}
+
 task adjustWebBridgeAndroidJar(type: Jar) {
     dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
