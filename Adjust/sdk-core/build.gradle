@@ -33,9 +33,7 @@ task adjustCoreAndroidAar (type: Copy) {
     include 'sdk-core-release.aar'
     destinationDir file('build/libs/')
     rename 'sdk-core-release.aar', "${project.name}.aar"
-
 }
-
 
 task adjustSdkNonNativeAarDebug (type: Copy) {
     dependsOn 'assembleDebug'
@@ -145,6 +143,56 @@ publishing {
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
         }
+
+        mavenAndroidCoreAAR(MavenPublication) {
+            customizePom(pom)
+            groupId rootProject.ext.adjustGroupId
+            artifactId 'adjust-android-aar'
+            version rootProject.ext.coreVersionName
+
+            // Create the signed POM artifact.
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            // Create the signed artifacts.
+            project.tasks.signArchives.signatureFiles.each {
+                // Exclude "usual" archive artifact .aar.
+                def signFileName = it.toString()
+                println "signArchives name ${signFileName}"
+
+                if (signFileName.contains('sdk-core.jar')) {
+                    return
+                }
+
+                // Create a Maven artifact for each asc signature.
+                artifact(it) {
+                    //println "archive name ${signFileName}"
+                    if (signFileName.contains('-sources')) {
+                        classifier = 'sources'
+                        extension = 'jar.asc'
+                    } else if (signFileName.contains('-javadoc')) {
+                        classifier = 'javadoc'
+                        extension = 'jar.asc'
+                    } else {
+                        classifier = null
+                        extension = 'aar.asc'
+                    }
+                }
+            }
+
+            //artifact adjustCoreAndroidJar
+            artifact("$buildDir/outputs/aar/sdk-core-release.aar")
+            artifact adjustCoreAndroidJavadocsJar
+            artifact adjustCoreAndroidSourcesJar
+        }
+
     }
 
     repositories {
@@ -206,6 +254,15 @@ model {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidCorePublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.generatePomFileForMavenAndroidCoreAARPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+    tasks.publishMavenAndroidCoreAARPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidCoreAARPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
 }
