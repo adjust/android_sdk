@@ -1,4 +1,4 @@
-4package com.adjust.testapp;
+package com.adjust.testapp;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -36,6 +36,6 @@ public class MainActivity extends AppCompatActivity {
         // testLibrary.addTestDirectory("current/gdpr");
         // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_after_install_kill_before_install");
 
-        testLibrary.startTestSession("android4.17.0");
+        testLibrary.startTestSession(Adjust.getSdkVersion());
     }
 }
