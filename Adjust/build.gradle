@@ -9,7 +9,7 @@ ext {
     coreMinSdkVersion = 9
     coreCompileSdkVersion = 28
     coreTargetSdkVersion = 28
-    coreVersionName = '4.16.0'
+    coreVersionName = '4.17.0'
     defaultVersionCode = 1
 
     // POM.

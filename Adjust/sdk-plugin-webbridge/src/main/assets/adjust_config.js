@@ -22,7 +22,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.eventBufferingEnabled = null;
     this.sendInBackground = null;
     this.logLevel = null;
-    this.sdkPrefix = 'web-bridge4.16.0';
+    this.sdkPrefix = null;
     this.processName = null;
     this.defaultTracker = null;
     this.attributionCallbackName = null;
@@ -75,6 +75,10 @@ AdjustConfig.prototype.setSendInBackground = function(isEnabled) {
 
 AdjustConfig.prototype.setLogLevel = function(logLevel) {
     this.logLevel = logLevel;
+};
+
+AdjustConfig.prototype.getSdkPrefix = function() {
+    return this.sdkPrefix;
 };
 
 AdjustConfig.prototype.setSdkPrefix = function(sdkPrefix) {

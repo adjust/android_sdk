@@ -1,5 +1,8 @@
 var Adjust = {
     onCreate: function (adjustConfig) {
+        if (adjustConfig && !adjustConfig.getSdkPrefix()) {
+            adjustConfig.setSdkPrefix(this.getSdkPrefix());
+        }
         this.adjustConfig = adjustConfig;
         if (AdjustBridge) {
             AdjustBridge.onCreate(JSON.stringify(adjustConfig));
@@ -169,6 +172,22 @@ var Adjust = {
     getAttribution: function (callback) {
         if (AdjustBridge) {
             AdjustBridge.getAttribution(callback);
+        }
+    },
+
+    getSdkVersion: function () {
+        if (AdjustBridge) {
+             return this.getSdkPrefix() + '@' + AdjustBridge.getSdkVersion();
+        } else {
+            return undefined;
+        }
+    },
+
+    getSdkPrefix: function () {
+        if (this.adjustConfig) {
+            return this.adjustConfig.getSdkPrefix();
+        } else {
+            return 'web-bridge4.17.0';
         }
     },
 

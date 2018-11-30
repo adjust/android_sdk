@@ -22,9 +22,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // Add SDK via module.
-    implementation project(':sdk-core')
+    compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.16.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.17.0'
 }
 
 task adjustWebBridgeAndroidJar(type: Jar) {

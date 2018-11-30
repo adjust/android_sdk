@@ -30,7 +30,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.16.0";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.17.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -275,6 +275,16 @@ public class Adjust {
     public static AdjustAttribution getAttribution() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         return adjustInstance.getAttribution();
+    }
+
+    /**
+     * Called to get native SDK version string.
+     *
+     * @return Native SDK version string.
+     */
+    public static String getSdkVersion() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        return adjustInstance.getSdkVersion();
     }
 
     /**

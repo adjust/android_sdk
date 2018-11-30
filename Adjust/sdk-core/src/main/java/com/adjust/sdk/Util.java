@@ -637,4 +637,8 @@ public class Util {
 
         return false;
     }
+
+    public static String getSdkVersion() {
+        return Constants.CLIENT_SDK;
+    }
 }

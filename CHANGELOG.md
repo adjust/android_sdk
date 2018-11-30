@@ -1,3 +1,12 @@
+### Version 4.17.0 (30th November 2018)
+#### Added
+- Added `getSdkVersion()` method to `Adjust` interface to obtain current SDK version string.
+
+#### Fixed
+- Fixed `R.class` DEX compilation issue when using plugins (https://github.com/adjust/android_sdk/issues/362).
+
+---
+
 ### Version 4.16.0 (7th November 2018)
 #### Added
 - Added `README` localisation in Chinese, Korean and Japanese.

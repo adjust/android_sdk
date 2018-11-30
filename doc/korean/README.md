@@ -74,7 +74,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.16.0'
+implementation 'com.adjust.sdk:adjust-android:4.17.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
