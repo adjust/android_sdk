@@ -216,7 +216,6 @@ def customizePom(pom) {
             description 'The Adjust SDK for Android'
             name 'Adjust Android SDK'
             url 'https://github.com/adjust/android_sdk'
-            packaging 'aar'
             organization {
                 name 'adjust GmbH'
                 url 'http://www.adjust.com'
