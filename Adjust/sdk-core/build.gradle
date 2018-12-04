@@ -145,7 +145,7 @@ publishing {
         }
 
         mavenAndroidCoreAAR(MavenPublication) {
-            customizePom(pom)
+            customizePomForAar(pom)
             groupId rootProject.ext.adjustGroupId
             artifactId 'adjust-android-aar'
             version rootProject.ext.coreVersionName
@@ -216,7 +216,48 @@ def customizePom(pom) {
             description 'The Adjust SDK for Android'
             name 'Adjust Android SDK'
             url 'https://github.com/adjust/android_sdk'
+            packaging 'aar'
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
 
+def customizePomForAar(pom) {
+    pom.withXml {
+        // Remove the existing packaging field, as it has to be overridden with type aar
+        asNode().remove(asNode().get("packaging"))
+
+        // Add all items necessary for maven central publication.
+        asNode().children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Adjust SDK for Android'
+            name 'Adjust Android SDK'
+            url 'https://github.com/adjust/android_sdk'
+            packaging 'aar'
             organization {
                 name 'adjust GmbH'
                 url 'http://www.adjust.com'
