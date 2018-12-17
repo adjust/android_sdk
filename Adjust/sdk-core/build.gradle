@@ -147,7 +147,7 @@ publishing {
         mavenAndroidCoreAAR(MavenPublication) {
             customizePomForAar(pom)
             groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-aar'
+            artifactId 'adjust-android'
             version rootProject.ext.coreVersionName
 
             // Create the signed POM artifact.
