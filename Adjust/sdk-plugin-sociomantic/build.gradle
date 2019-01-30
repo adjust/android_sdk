@@ -27,6 +27,16 @@ dependencies {
     // implementation 'com.adjust.sdk:adjust-android:4.17.0'
 }
 
+task adjustSociomanticAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-plugin-sociomantic-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-plugin-sociomantic-release.aar', "${project.name}.aar"
+
+}
+
 task adjustSociomanticAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')

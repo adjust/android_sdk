@@ -28,6 +28,16 @@ dependencies {
     // implementation 'com.adjust.sdk:adjust-android:4.17.0'
 }
 
+task adjustCriteoAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-plugin-criteo-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-plugin-criteo-release.aar', "${project.name}.aar"
+
+}
+
 task adjustCriteoAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')

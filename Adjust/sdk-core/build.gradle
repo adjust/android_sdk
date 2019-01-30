@@ -10,11 +10,47 @@ android {
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
         versionName rootProject.ext.coreVersionName
         versionCode rootProject.ext.defaultVersionCode
+        consumerProguardFiles 'adjust-proguard-rules.txt'
     }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+task adjustCoreAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-core-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-release.aar', "${project.name}.aar"
+}
+
+task adjustSdkNonNativeAarDebug (type: Copy) {
+    dependsOn 'assembleDebug'
+
+    from ('build/outputs/aar/')
+    include 'sdk-core-debug.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-debug.aar', "adjust-sdk-debug.aar"
+}
+
+task adjustSdkNonNativeAarRelease (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from ('build/outputs/aar/')
+    include 'sdk-core-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-core-release.aar', "adjust-sdk-release.aar"
 }
 
 task adjustCoreAndroidJar(type: Jar) {
@@ -107,11 +143,66 @@ publishing {
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
         }
+
+        mavenAndroidCoreAAR(MavenPublication) {
+            customizePomForAar(pom)
+            groupId rootProject.ext.adjustGroupId
+            artifactId 'adjust-android'
+            version rootProject.ext.coreVersionName
+
+            // Create the signed POM artifact.
+            pom.withXml {
+                def pomFile = file("${project.buildDir}/generated-pom.xml")
+                writeTo(pomFile)
+                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
+                artifact(pomAscFile) {
+                    classifier = null
+                    extension = 'pom.asc'
+                }
+            }
+
+            // Create the signed artifacts.
+            project.tasks.signArchives.signatureFiles.each {
+                // Exclude "usual" archive artifact .aar.
+                def signFileName = it.toString()
+                println "signArchives name ${signFileName}"
+
+                if (signFileName.contains('sdk-core.jar')) {
+                    return
+                }
+
+                // Create a Maven artifact for each asc signature.
+                artifact(it) {
+                    //println "archive name ${signFileName}"
+                    if (signFileName.contains('-sources')) {
+                        classifier = 'sources'
+                        extension = 'jar.asc'
+                    } else if (signFileName.contains('-javadoc')) {
+                        classifier = 'javadoc'
+                        extension = 'jar.asc'
+                    } else {
+                        classifier = null
+                        extension = 'aar.asc'
+                    }
+                }
+            }
+
+            //artifact adjustCoreAndroidJar
+            artifact("$buildDir/outputs/aar/sdk-core-release.aar")
+            artifact adjustCoreAndroidJavadocsJar
+            artifact adjustCoreAndroidSourcesJar
+        }
+
     }
 
     repositories {
         maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
+                println "Using Maven SNAPSHOT repository for publishing"
+                url "https://oss.sonatype.org/content/repositories/snapshots/"
+            } else {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            }
             if (project.hasProperty("sonatypeUsername")) {
                 credentials {
                     username sonatypeUsername
@@ -130,7 +221,47 @@ def customizePom(pom) {
             description 'The Adjust SDK for Android'
             name 'Adjust Android SDK'
             url 'https://github.com/adjust/android_sdk'
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
 
+def customizePomForAar(pom) {
+    pom.withXml {
+        // Remove the existing packaging field, as it has to be overridden with type aar
+        asNode().remove(asNode().get("packaging"))
+
+        // Add all items necessary for maven central publication.
+        asNode().children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Adjust SDK for Android'
+            name 'Adjust Android SDK'
+            url 'https://github.com/adjust/android_sdk'
+            packaging 'aar'
             organization {
                 name 'adjust GmbH'
                 url 'http://www.adjust.com'
@@ -168,6 +299,15 @@ model {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidCorePublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.generatePomFileForMavenAndroidCoreAARPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+    tasks.publishMavenAndroidCoreAARPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidCoreAARPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
 }

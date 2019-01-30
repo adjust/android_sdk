@@ -27,6 +27,16 @@ dependencies {
     // implementation 'com.adjust.sdk:adjust-android:4.17.0'
 }
 
+task adjustImeiAndroidAar (type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-plugin-imei-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-plugin-imei-release.aar', "${project.name}.aar"
+
+}
+
 task adjustImeiAndroidJar(type: Jar) {
     dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
