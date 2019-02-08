@@ -2,7 +2,7 @@
 
 这是Adjust™的安卓SDK包。您可以访问[adjust.com]了解更多有关Adjust™的信息。
 
-如果您的应用正在使用web views，您希望Adjust通过Javascript代码跟踪，请参照我们的[安卓web views SDK指南](doc/english/web_views.md)。
+如果您的应用正在使用web views，您希望Adjust通过Javascript代码跟踪，请参照我们的[安卓web views SDK指南](../../doc/english/web_views.md)。
 
 Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
 
