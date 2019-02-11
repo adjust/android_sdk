@@ -19,4 +19,12 @@ public interface Constants {
     String TEST_LIBRARY_CLASSNAME = "TestLibrary";
     String WAIT_FOR_CONTROL = "control";
     String WAIT_FOR_SLEEP = "sleep";
+
+    // web socket values
+    final String SIGNAL_INFO =                  "info";
+    final String SIGNAL_INIT =                  "init";
+    final String SIGNAL_INIT_TEST_SESSION =     "init-test-session";
+    final String SIGNAL_END_WAIT =              "end-wait";
+    final String SIGNAL_LAST_COMMAND_EXECUTED = "last-command-executed";
+    final String SIGNAL_END_CURRENT_TEST =      "end-current-test";
 }
