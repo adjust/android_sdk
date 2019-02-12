@@ -19,7 +19,6 @@ import static com.adjust.test.Utils.error;
  */
 public class ControlWebSocketClient extends WebSocketClient {
     private TestLibrary testLibrary;
-    // TODO: maybe reuse the gson field from TestLibrary object
     private Gson gson = new Gson();
     private String testSessionId;
     private String webSocketClientId = UUID.randomUUID().toString();
@@ -41,23 +40,25 @@ public class ControlWebSocketClient extends WebSocketClient {
         debug(String.format("WS: onMessage, message [%s]", message));
         try {
             ControlSignal incomingSignal = gson.fromJson(message, ControlSignal.class);
-            if (incomingSignal.getType() == SignalType.INFO) {
-                debug("WS: info from the server: " + incomingSignal.getValue());
-            } else if (incomingSignal.getType() == SignalType.END_WAIT) {
-                debug("WS: end wait signal recevied, reason: " + incomingSignal.getValue());
-                this.testLibrary.signalEndWait(incomingSignal.getValue());
-            } else if (incomingSignal.getType() == SignalType.END_CURRENT_TEST) {
-                debug("WS: cancel test recevied, reason: " + incomingSignal.getValue());
-                testLibrary.resetTestLibrary();
-                // testLibrary.readResponse(httpResponse);
-                //TODO: ask for next test
-
-            }
-
-
+            this.handleIncomingSignal(incomingSignal);
         } catch (Exception ex) {
             error(String.format("WS: onMessage Error! [%s]", ex.getMessage()));
             ex.printStackTrace();
+        }
+    }
+
+    private void handleIncomingSignal(ControlSignal incomingSignal) {
+        if (incomingSignal.getType() == SignalType.INFO) {
+            debug("WS: info from the server: " + incomingSignal.getValue());
+        } else if (incomingSignal.getType() == SignalType.END_WAIT) {
+            debug("WS: end wait signal recevied, reason: " + incomingSignal.getValue());
+            this.testLibrary.signalEndWait(incomingSignal.getValue());
+        } else if (incomingSignal.getType() == SignalType.END_CURRENT_TEST) {
+            debug("WS: cancel test recevied, reason: " + incomingSignal.getValue());
+            testLibrary.resetTestLibrary();
+            // probably cannot be called from this thread
+            // testLibrary.endTestReadNext(httpResponse);
+            // TODO: ask for next test
         }
     }
 

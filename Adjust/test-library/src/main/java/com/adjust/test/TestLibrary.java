@@ -17,6 +17,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import static com.adjust.test.Constants.ONE_SECOND;
 import static com.adjust.test.Constants.TEST_LIBRARY_CLASSNAME;
 import static com.adjust.test.Constants.WAIT_FOR_CONTROL;
 import static com.adjust.test.Constants.WAIT_FOR_SLEEP;
@@ -30,23 +31,24 @@ import static com.adjust.test.UtilsNetworking.sendPostI;
 
 public class TestLibrary {
     static String baseUrl;
-    ExecutorService executor;
-    IOnExitListener onExitListener;
-    ICommandListener commandListener;
-    ICommandJsonListener commandJsonListener;
-    ICommandRawJsonListener commandRawJsonListener;
-    String currentTestName;
-    String currentBasePath;
-    Gson gson = new Gson();
+    static String controlUrl;
+    private ExecutorService executor;
+    private IOnExitListener onExitListener;
+    private ICommandListener commandListener;
+    private ICommandJsonListener commandJsonListener;
+    private ICommandRawJsonListener commandRawJsonListener;
+    private String currentTestName;
+    private String currentBasePath;
+    private Gson gson = new Gson();
     private BlockingQueue<String> waitControlQueue;
-    Map<String, String> infoToServer;
+    private Map<String, String> infoToServer;
 
     private ControlWebSocketClient controlClient;
     private TestCommand lastTestCommand;
     private String testSessionId;
 
-    StringBuilder testNames = new StringBuilder();
-    boolean exitAfterEnd = true;
+    private StringBuilder testNames = new StringBuilder();
+    private boolean exitAfterEnd = true;
 
     public TestLibrary(String baseUrl, String controlUrl, ICommandRawJsonListener commandRawJsonListener) {
         this(baseUrl, controlUrl);
@@ -65,6 +67,7 @@ public class TestLibrary {
 
     private TestLibrary(String baseUrl, String controlUrl) {
         this.baseUrl = baseUrl;
+        this.controlUrl = controlUrl;
         debug("base url: %s", baseUrl);
         debug("control url: %s", controlUrl);
         this.initializeWebSocket(controlUrl);
@@ -125,7 +128,18 @@ public class TestLibrary {
     }
 
     public void startTestSession(final String clientSdk) {
+        // TODO: implement timeout mechanism with web sockets
+
         resetTestLibrary();
+
+        // reconnect web socket client if disconnected
+        if (!this.controlClient.isOpen()) {
+            debug("reconnecting web socket client ...");
+            this.initializeWebSocket(controlUrl);
+            // instead of sleeping for 1 second, implement a callback in ControlWebSocketClient
+            // which gets called after connection has been established ??
+            SystemClock.sleep(ONE_SECOND);
+        }
 
         executor.submit(new Runnable() {
             @Override
@@ -143,24 +157,14 @@ public class TestLibrary {
         if (infoToServer == null) {
             infoToServer = new HashMap<String, String>();
         }
-
         infoToServer.put(key, value);
     }
 
-        public void sendInfoToServer(final String basePath) {
+    public void sendInfoToServer(final String basePath) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
                 sendInfoToServerI(basePath);
-            }
-        });
-    }
-
-    void readResponse(final UtilsNetworking.HttpResponse httpResponse) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                readResponseI(httpResponse);
             }
         });
     }
@@ -185,8 +189,10 @@ public class TestLibrary {
             debug("httpResponse is null");
             return;
         }
+
         List<TestCommand> testCommands = Arrays.asList(gson.fromJson(httpResponse.response, TestCommand[].class));
         this.lastTestCommand = this.getLastAdjustTestCommand(testCommands);
+
         try {
             execTestCommandsI(testCommands);
         } catch (InterruptedException e) {
@@ -223,7 +229,6 @@ public class TestLibrary {
         for (TestCommand testCommand : testCommands) {
             if(testCommand.className.toLowerCase().equals("adjust")) {
                 lastTestCommand = testCommand;
-                break;
             }
         }
         return lastTestCommand;
@@ -249,15 +254,17 @@ public class TestLibrary {
             long timeBefore = System.nanoTime();
             debug("time before %s %s: %d", testCommand.className, testCommand.functionName, timeBefore);
 
+            // execute TestLibrary command
             if (TEST_LIBRARY_CLASSNAME.equals(testCommand.className)) {
                 executeTestLibraryCommandI(testCommand);
                 long timeAfter = System.nanoTime();
                 long timeElapsedMillis = TimeUnit.NANOSECONDS.toMillis(timeAfter - timeBefore);
                 debug("time after %s %s: %d", testCommand.className, testCommand.functionName, timeAfter);
                 debug("time elapsed %s %s in milli seconds: %d", testCommand.className, testCommand.functionName, timeElapsedMillis);
-
                 continue;
             }
+
+            // execute Adjust command
             if (commandListener != null) {
                 commandListener.executeCommand(testCommand.className, testCommand.functionName, testCommand.params);
             } else if (commandJsonListener != null) {
@@ -297,7 +304,6 @@ public class TestLibrary {
             currentBasePath = params.get("basePath").get(0);
             debug("current base path %s", currentBasePath);
         }
-
         if (params.containsKey("testName")) {
             currentTestName = params.get("testName").get(0);
             debug("current test name %s", currentTestName);
@@ -306,13 +312,12 @@ public class TestLibrary {
     }
 
     private void endTestReadNext() {
-        // send end test request
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
-        // and process the next in the response
         readResponseI(httpResponse);
     }
 
     private void endTestSessionI() {
+        debug(" ---> test session ended!");
         teardown(false);
         if (exitAfterEnd) {
             exit();
@@ -329,7 +334,6 @@ public class TestLibrary {
         if (params.containsKey(WAIT_FOR_SLEEP)) {
             long millisToSleep = Long.parseLong(params.get(WAIT_FOR_SLEEP).get(0));
             debug("sleep for %s", millisToSleep);
-
             SystemClock.sleep(millisToSleep);
             debug("sleep ended");
         }

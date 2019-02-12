@@ -11,6 +11,5 @@ public enum SignalType {
     END_WAIT,
     LAST_COMMAND_EXECUTED,
     END_CURRENT_TEST,
-    LAST_TEST_EXECUTED,
     UNKNOWN
 }
