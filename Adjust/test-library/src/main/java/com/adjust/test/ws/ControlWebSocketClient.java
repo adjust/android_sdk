@@ -62,12 +62,8 @@ public class ControlWebSocketClient extends WebSocketClient {
             debug("WS: end wait signal recevied, reason: " + incomingSignal.getValue());
             this.testLibrary.signalEndWait(incomingSignal.getValue());
         } else if (incomingSignal.getType() == SignalType.CANCEL_CURRENT_TEST) {
-            // this signal is called on test timout fired
             debug("WS: cancel test recevied, reason: " + incomingSignal.getValue());
-            testLibrary.resetTestLibrary();
-            // probably cannot be called from this thread
-            // testLibrary.endTestReadNext();
-            // TODO: ask for next test
+            testLibrary.cancelTestAndGetNext();
         } else {
             debug("WS: unknown signal received by the server.");
         }

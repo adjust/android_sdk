@@ -91,7 +91,6 @@ public class TestLibrary {
     // resets test library to initial state
     public void resetTestLibrary() {
         teardown(true);
-
         executor = Executors.newCachedThreadPool();
         waitControlQueue = new LinkedBlockingQueue<String>();
     }
@@ -278,7 +277,7 @@ public class TestLibrary {
     private void executeTestLibraryCommandI(TestCommand testCommand) throws InterruptedException {
         switch (testCommand.functionName) {
             case "resetTest": resetTestI(testCommand.params); break;
-            case "endTestReadNext": endTestReadNext(); break;
+            case "endTestReadNext": endTestReadNextI(); break;
             case "endTestSession": endTestSessionI(); break;
             case "wait": waitI(testCommand.params); break;
             case "exit": exit(); break;
@@ -302,7 +301,7 @@ public class TestLibrary {
         waitControlQueue = new LinkedBlockingQueue<String>();
     }
 
-    private void endTestReadNext() {
+    private void endTestReadNextI() {
         UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
         readResponseI(httpResponse);
     }
@@ -313,6 +312,18 @@ public class TestLibrary {
         if (exitAfterEnd) {
             exit();
         }
+    }
+
+    public void cancelTestAndGetNext() {
+        resetTestLibrary();
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
+                readResponseI(httpResponse);
+            }
+        });
     }
 
     private void waitI(Map<String, List<String>> params) throws InterruptedException {
