@@ -22,6 +22,7 @@ import static com.adjust.test.Constants.TEST_LIBRARY_CLASSNAME;
 import static com.adjust.test.Constants.WAIT_FOR_CONTROL;
 import static com.adjust.test.Constants.WAIT_FOR_SLEEP;
 import static com.adjust.test.Utils.debug;
+import static com.adjust.test.Utils.error;
 import static com.adjust.test.UtilsNetworking.sendPostI;
 
 
@@ -32,6 +33,9 @@ import static com.adjust.test.UtilsNetworking.sendPostI;
 public class TestLibrary {
     static String baseUrl;
     static String controlUrl;
+    private Gson gson = new Gson();
+    private BlockingQueue<String> waitControlQueue;
+    private ControlWebSocketClient controlClient;
     private ExecutorService executor;
     private IOnExitListener onExitListener;
     private ICommandListener commandListener;
@@ -39,15 +43,10 @@ public class TestLibrary {
     private ICommandRawJsonListener commandRawJsonListener;
     private String currentTestName;
     private String currentBasePath;
-    private Gson gson = new Gson();
-    private BlockingQueue<String> waitControlQueue;
     private Map<String, String> infoToServer;
-
-    private ControlWebSocketClient controlClient;
     private TestCommand lastTestCommand;
     private String testSessionId;
-
-    private StringBuilder testNames = new StringBuilder();
+    private StringBuilder currentTestNames = new StringBuilder();
     private boolean exitAfterEnd = true;
 
     public TestLibrary(String baseUrl, String controlUrl, ICommandRawJsonListener commandRawJsonListener) {
@@ -68,8 +67,8 @@ public class TestLibrary {
     private TestLibrary(String baseUrl, String controlUrl) {
         this.baseUrl = baseUrl;
         this.controlUrl = controlUrl;
-        debug("base url: %s", baseUrl);
-        debug("control url: %s", controlUrl);
+        debug("> base url: %s", baseUrl);
+        debug("> control url: %s", controlUrl);
         this.initializeWebSocket(controlUrl);
     }
 
@@ -82,10 +81,6 @@ public class TestLibrary {
             debug(String.format("Error, cannot create/connect with server web socket: [%s]", e.getMessage()));
             e.printStackTrace();
         }
-    }
-
-    public void signalEndWait(String reason) {
-        this.waitControlQueue.offer(reason);
     }
 
     // resets test library to initial state
@@ -121,8 +116,6 @@ public class TestLibrary {
         if (!this.controlClient.isOpen()) {
             debug("reconnecting web socket client ...");
             this.initializeWebSocket(controlUrl);
-            // instead of sleeping for 1 second, implement a callback in ControlWebSocketClient
-            // which gets called after connection has been established ??
             SystemClock.sleep(ONE_SECOND);
         }
 
@@ -136,6 +129,22 @@ public class TestLibrary {
 
     public void setOnExitListener(IOnExitListener onExitListener) {
         this.onExitListener = onExitListener;
+    }
+
+    public void signalEndWait(String reason) {
+        this.waitControlQueue.offer(reason);
+    }
+
+    public void cancelTestAndGetNext() {
+        resetTestLibrary();
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
+                readResponseI(httpResponse);
+            }
+        });
     }
 
     public void addInfoToSend(String key, String value) {
@@ -155,10 +164,9 @@ public class TestLibrary {
     }
 
     private void startTestSessionI(String clientSdk) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, testNames.toString());
+        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, currentTestNames.toString());
         this.testSessionId = httpResponse.headerFields.get("Test-Session-Id").get(0);
         this.controlClient.sendInitTestSessionSignal(this.testSessionId);
-
         debug("starting new test session with ID: " + this.testSessionId);
         readResponseI(httpResponse);
     }
@@ -186,22 +194,22 @@ public class TestLibrary {
     }
 
     public void addTestDirectory(String testDir) {
-        this.testNames.append(testDir);
+        this.currentTestNames.append(testDir);
 
         if(!testDir.endsWith("/") || !testDir.endsWith("/;")) {
-            this.testNames.append("/");
+            this.currentTestNames.append("/");
         }
 
         if(!testDir.endsWith(";")) {
-            this.testNames.append(";");
+            this.currentTestNames.append(";");
         }
     }
 
     public void addTest(String testName) {
-        this.testNames.append(testName);
+        this.currentTestNames.append(testName);
 
         if(!testName.endsWith(";")) {
-            this.testNames.append(";");
+            this.currentTestNames.append(";");
         }
     }
 
@@ -225,7 +233,7 @@ public class TestLibrary {
 
         for (TestCommand testCommand : testCommands) {
             if (Thread.interrupted()) {
-                debug("Thread interrupted");
+                error("Thread interrupted");
                 return;
             }
             debug("ClassName: %s", testCommand.className);
@@ -312,18 +320,6 @@ public class TestLibrary {
         if (exitAfterEnd) {
             exit();
         }
-    }
-
-    public void cancelTestAndGetNext() {
-        resetTestLibrary();
-
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
-                readResponseI(httpResponse);
-            }
-        });
     }
 
     private void waitI(Map<String, List<String>> params) throws InterruptedException {

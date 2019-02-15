@@ -10,7 +10,7 @@ import com.adjust.test.TestLibrary;
 
 public class MainActivity extends AppCompatActivity {
     public static TestLibrary testLibrary;
-    private static final String baseIp = "192.168.8.151";
+    private static final String baseIp = "10.0.2.2";
     public static final String baseUrl = "https://" + baseIp + ":8443";
     public static final String gdprUrl = "https://" + baseIp + ":8443";
     public static final String controlUrl = "ws://" + baseIp + ":1987";
