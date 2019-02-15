@@ -83,7 +83,7 @@ public class TestLibrary {
     }
 
     // resets test library to initial state
-    public void resetTestLibrary() {
+    private void resetTestLibrary() {
         teardown(true);
         executor = Executors.newCachedThreadPool();
         waitControlQueue = new LinkedBlockingQueue<String>();
