@@ -22,6 +22,7 @@ public class ControlWebSocketClient extends WebSocketClient {
     private Gson gson = new Gson();
     private String testSessionId;
     private String webSocketClientId = UUID.randomUUID().toString();
+    private ControlSignal unknownSignal = new ControlSignal(SignalType.UNKNOWN);
 
     public ControlWebSocketClient(TestLibrary testLibrary, String serverUri) throws URISyntaxException {
         super(new URI(serverUri));
@@ -38,13 +39,20 @@ public class ControlWebSocketClient extends WebSocketClient {
     @Override
     public void onMessage(String message) {
         debug(String.format("WS: onMessage, message [%s]", message));
+        ControlSignal incomingSignal = this.parseControlSignal(message);
+        this.handleIncomingSignal(incomingSignal);
+    }
+
+    private ControlSignal parseControlSignal(String message) {
+        ControlSignal incomingSignal;
         try {
-            ControlSignal incomingSignal = gson.fromJson(message, ControlSignal.class);
-            this.handleIncomingSignal(incomingSignal);
+            incomingSignal = gson.fromJson(message, ControlSignal.class);
         } catch (Exception ex) {
             error(String.format("WS: onMessage Error! [%s]", ex.getMessage()));
             ex.printStackTrace();
+            incomingSignal = new ControlSignal(SignalType.UNKNOWN);
         }
+        return incomingSignal;
     }
 
     private void handleIncomingSignal(ControlSignal incomingSignal) {
@@ -53,12 +61,15 @@ public class ControlWebSocketClient extends WebSocketClient {
         } else if (incomingSignal.getType() == SignalType.END_WAIT) {
             debug("WS: end wait signal recevied, reason: " + incomingSignal.getValue());
             this.testLibrary.signalEndWait(incomingSignal.getValue());
-        } else if (incomingSignal.getType() == SignalType.END_CURRENT_TEST) {
+        } else if (incomingSignal.getType() == SignalType.CANCEL_CURRENT_TEST) {
+            // this signal is called on test timout fired
             debug("WS: cancel test recevied, reason: " + incomingSignal.getValue());
             testLibrary.resetTestLibrary();
             // probably cannot be called from this thread
-            // testLibrary.endTestReadNext(httpResponse);
+            // testLibrary.endTestReadNext();
             // TODO: ask for next test
+        } else {
+            debug("WS: unknown signal received by the server.");
         }
     }
 

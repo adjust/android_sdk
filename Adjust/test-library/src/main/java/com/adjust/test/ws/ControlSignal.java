@@ -52,7 +52,7 @@ public class ControlSignal {
             case INIT_TEST_SESSION:     return SIGNAL_INIT_TEST_SESSION;
             case END_WAIT:              return SIGNAL_END_WAIT;
             case LAST_COMMAND_EXECUTED: return SIGNAL_LAST_COMMAND_EXECUTED;
-            case END_CURRENT_TEST:      return SIGNAL_END_CURRENT_TEST;
+            case CANCEL_CURRENT_TEST:   return SIGNAL_CANCEL_CURRENT_TEST;
             default:                    return "unknown";
         }
     }
@@ -64,7 +64,7 @@ public class ControlSignal {
             case SIGNAL_INIT_TEST_SESSION:      return SignalType.INIT_TEST_SESSION;
             case SIGNAL_END_WAIT:               return SignalType.END_WAIT;
             case SIGNAL_LAST_COMMAND_EXECUTED:  return SignalType.LAST_COMMAND_EXECUTED;
-            case SIGNAL_END_CURRENT_TEST:       return SignalType.END_CURRENT_TEST;
+            case SIGNAL_CANCEL_CURRENT_TEST:    return SignalType.CANCEL_CURRENT_TEST;
             default:                            return SignalType.UNKNOWN;
         }
     }

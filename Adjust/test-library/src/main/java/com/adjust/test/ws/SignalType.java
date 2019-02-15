@@ -10,6 +10,6 @@ public enum SignalType {
     INIT_TEST_SESSION,
     END_WAIT,
     LAST_COMMAND_EXECUTED,
-    END_CURRENT_TEST,
+    CANCEL_CURRENT_TEST,
     UNKNOWN
 }

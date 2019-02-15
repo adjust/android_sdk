@@ -21,5 +21,5 @@ public interface Constants {
     final String SIGNAL_INIT_TEST_SESSION =     "init-test-session";
     final String SIGNAL_END_WAIT =              "end-wait";
     final String SIGNAL_LAST_COMMAND_EXECUTED = "last-command-executed";
-    final String SIGNAL_END_CURRENT_TEST =      "end-current-test";
+    final String SIGNAL_CANCEL_CURRENT_TEST =   "cancel-current-test";
 }

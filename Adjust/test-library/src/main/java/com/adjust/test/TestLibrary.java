@@ -108,28 +108,14 @@ public class TestLibrary {
             }
         }
         executor = null;
-
-        clearTest();
-    }
-
-    // clear for each test
-    private void clearTest() {
+        infoToServer = null;
         if (waitControlQueue != null) {
             waitControlQueue.clear();
         }
         waitControlQueue = null;
-        infoToServer = null;
-    }
-
-    // reset for each test
-    private void resetForNextTest() {
-        clearTest();
-        waitControlQueue = new LinkedBlockingQueue<String>();
     }
 
     public void startTestSession(final String clientSdk) {
-        // TODO: implement timeout mechanism with web sockets
-
         resetTestLibrary();
 
         // reconnect web socket client if disconnected
@@ -308,7 +294,12 @@ public class TestLibrary {
             currentTestName = params.get("testName").get(0);
             debug("current test name %s", currentTestName);
         }
-        resetForNextTest();
+
+        if (waitControlQueue != null) {
+            waitControlQueue.clear();
+        }
+        infoToServer = null;
+        waitControlQueue = new LinkedBlockingQueue<String>();
     }
 
     private void endTestReadNext() {
