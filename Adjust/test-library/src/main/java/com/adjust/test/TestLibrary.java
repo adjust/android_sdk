@@ -44,7 +44,6 @@ public class TestLibrary {
     private String currentTestName;
     private String currentBasePath;
     private Map<String, String> infoToServer;
-    private TestCommand lastTestCommand;
     private String testSessionId;
     private StringBuilder currentTestNames = new StringBuilder();
     private boolean exitAfterEnd = true;
@@ -116,6 +115,7 @@ public class TestLibrary {
         if (!this.controlClient.isOpen()) {
             debug("reconnecting web socket client ...");
             this.initializeWebSocket(controlUrl);
+            // wait for WS to reconnect
             SystemClock.sleep(ONE_SECOND);
         }
 
@@ -166,6 +166,7 @@ public class TestLibrary {
     private void startTestSessionI(String clientSdk) {
         UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, currentTestNames.toString());
         this.testSessionId = httpResponse.headerFields.get("Test-Session-Id").get(0);
+        // set test session ID on the web socket object in Test Server, so it can be uniquely identified
         this.controlClient.sendInitTestSessionSignal(this.testSessionId);
         debug("starting new test session with ID: " + this.testSessionId);
         readResponseI(httpResponse);
@@ -184,8 +185,6 @@ public class TestLibrary {
         }
 
         List<TestCommand> testCommands = Arrays.asList(gson.fromJson(httpResponse.response, TestCommand[].class));
-        this.lastTestCommand = this.getLastAdjustTestCommand(testCommands);
-
         try {
             execTestCommandsI(testCommands);
         } catch (InterruptedException e) {
@@ -215,16 +214,6 @@ public class TestLibrary {
 
     public void doNotExitAfterEnd() {
         this.exitAfterEnd = false;
-    }
-
-    private TestCommand getLastAdjustTestCommand(List<TestCommand> testCommands) {
-        TestCommand lastTestCommand = null;
-        for (TestCommand testCommand : testCommands) {
-            if(testCommand.className.toLowerCase().equals("adjust")) {
-                lastTestCommand = testCommand;
-            }
-        }
-        return lastTestCommand;
     }
 
     private void execTestCommandsI(List<TestCommand> testCommands) throws InterruptedException {
@@ -268,11 +257,6 @@ public class TestLibrary {
                 String toJsonCommand = gson.toJson(testCommand);
                 debug("commandRawJsonListener test command toJson: %s", toJsonCommand);
                 commandRawJsonListener.executeCommand(toJsonCommand);
-            }
-
-            // if last Adjust Command executed, send a signal to server about it
-            if (testCommand == this.lastTestCommand) {
-                this.controlClient.signalLastCommandExecuted(this.testSessionId);
             }
 
             long timeAfter = System.nanoTime();

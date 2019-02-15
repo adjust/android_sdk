@@ -86,9 +86,4 @@ public class ControlWebSocketClient extends WebSocketClient {
         ControlSignal initSignal = new ControlSignal(SignalType.INIT_TEST_SESSION, this.testSessionId);
         send(gson.toJson(initSignal));
     }
-
-    public void signalLastCommandExecuted(String testSessionId) {
-        ControlSignal lastCommandExecutedSignal = new ControlSignal(SignalType.LAST_COMMAND_EXECUTED, testSessionId, "n/a");
-        send(gson.toJson(lastCommandExecutedSignal));
-    }
 }

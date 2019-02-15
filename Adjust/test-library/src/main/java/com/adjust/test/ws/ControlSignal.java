@@ -9,32 +9,15 @@ import static com.adjust.test.Constants.*;
 public class ControlSignal {
     private String type;
     private String value;
-    private String sessionId;
 
     ControlSignal(SignalType type) {
         this.type = getSignalTypeString(type);
         this.value = "n/a";
-        this.sessionId = "n/a";
     }
 
     ControlSignal(SignalType type, String value) {
         this.type = getSignalTypeString(type);
         this.value = value;
-        this.sessionId = "n/a";
-    }
-
-    ControlSignal(SignalType type, String sessionId, String value) {
-        this.type = getSignalTypeString(type);
-        this.value = value;
-        this.sessionId = sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public String getSessionId() {
-        return this.sessionId;
     }
 
     public SignalType getType() {
@@ -51,7 +34,6 @@ public class ControlSignal {
             case INIT:                  return SIGNAL_INIT;
             case INIT_TEST_SESSION:     return SIGNAL_INIT_TEST_SESSION;
             case END_WAIT:              return SIGNAL_END_WAIT;
-            case LAST_COMMAND_EXECUTED: return SIGNAL_LAST_COMMAND_EXECUTED;
             case CANCEL_CURRENT_TEST:   return SIGNAL_CANCEL_CURRENT_TEST;
             default:                    return "unknown";
         }
@@ -63,7 +45,6 @@ public class ControlSignal {
             case SIGNAL_INIT:                   return SignalType.INIT;
             case SIGNAL_INIT_TEST_SESSION:      return SignalType.INIT_TEST_SESSION;
             case SIGNAL_END_WAIT:               return SignalType.END_WAIT;
-            case SIGNAL_LAST_COMMAND_EXECUTED:  return SignalType.LAST_COMMAND_EXECUTED;
             case SIGNAL_CANCEL_CURRENT_TEST:    return SignalType.CANCEL_CURRENT_TEST;
             default:                            return SignalType.UNKNOWN;
         }
