@@ -66,8 +66,8 @@ public class TestLibrary {
     private TestLibrary(String baseUrl, String controlUrl) {
         this.baseUrl = baseUrl;
         this.controlUrl = controlUrl;
-        debug("> base url: %s", baseUrl);
-        debug("> control url: %s", controlUrl);
+        debug("> base url: \t%s", baseUrl);
+        debug("> control url: \t%s", controlUrl);
         this.initializeWebSocket(controlUrl);
     }
 
@@ -137,12 +137,11 @@ public class TestLibrary {
 
     public void cancelTestAndGetNext() {
         resetTestLibrary();
-
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
-                readResponseI(httpResponse);
+            UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
+            readResponseI(httpResponse);
             }
         });
     }
