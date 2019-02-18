@@ -73,12 +73,12 @@ public class ControlWebSocketClient extends WebSocketClient {
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
-        debug(String.format("[WebSocket] onClose, reason [%s]", reason));
+        debug(String.format("[WebSocket] onClose, code [%d], reason [%s]", code, reason));
     }
 
     @Override
     public void onError(Exception ex) {
-        debug(String.format("[WebSocket] onError []", ex.getMessage()));
+        debug(String.format("[WebSocket] onError [%s]", ex.getMessage()));
     }
 
     public void sendInitTestSessionSignal(String testSessionId) {
