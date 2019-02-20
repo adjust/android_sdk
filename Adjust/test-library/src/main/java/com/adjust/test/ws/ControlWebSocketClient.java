@@ -20,7 +20,6 @@ import static com.adjust.test.Utils.error;
 public class ControlWebSocketClient extends WebSocketClient {
     private TestLibrary testLibrary;
     private Gson gson = new Gson();
-    private String testSessionId;
     private String webSocketClientId = UUID.randomUUID().toString();
 
     public ControlWebSocketClient(TestLibrary testLibrary, String serverUri) throws URISyntaxException {
@@ -82,8 +81,7 @@ public class ControlWebSocketClient extends WebSocketClient {
     }
 
     public void sendInitTestSessionSignal(String testSessionId) {
-        this.testSessionId = testSessionId;
-        ControlSignal initSignal = new ControlSignal(SignalType.INIT_TEST_SESSION, this.testSessionId);
+        ControlSignal initSignal = new ControlSignal(SignalType.INIT_TEST_SESSION, testSessionId);
         send(gson.toJson(initSignal));
     }
 }
