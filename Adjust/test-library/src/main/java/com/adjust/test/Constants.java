@@ -12,6 +12,7 @@ public interface Constants {
     String TEST_LIBRARY_CLASSNAME = "TestLibrary";
     String WAIT_FOR_CONTROL       = "control";
     String WAIT_FOR_SLEEP         = "sleep";
+    String TEST_SESSION_ID_HEADER = "Test-Session-Id";
 
     // web socket values
     String SIGNAL_INFO                = "info";

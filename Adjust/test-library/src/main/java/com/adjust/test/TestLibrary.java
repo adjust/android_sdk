@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.adjust.test.Constants.ONE_SECOND;
 import static com.adjust.test.Constants.TEST_LIBRARY_CLASSNAME;
+import static com.adjust.test.Constants.TEST_SESSION_ID_HEADER;
 import static com.adjust.test.Constants.WAIT_FOR_CONTROL;
 import static com.adjust.test.Constants.WAIT_FOR_SLEEP;
 import static com.adjust.test.Utils.debug;
@@ -164,7 +165,7 @@ public class TestLibrary {
 
     private void startTestSessionI(String clientSdk) {
         UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, currentTestNames.toString());
-        this.testSessionId = httpResponse.headerFields.get("Test-Session-Id").get(0);
+        this.testSessionId = httpResponse.headerFields.get(TEST_SESSION_ID_HEADER).get(0);
         // set test session ID on the web socket object in Test Server, so it can be uniquely identified
         this.controlClient.sendInitTestSessionSignal(this.testSessionId);
         debug("starting new test session with ID: " + this.testSessionId);
