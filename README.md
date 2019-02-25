@@ -63,7 +63,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ## <a id="example-apps"></a>Example apps
 
-There are example apps for Android inside the [`example-app-java` directory][example-java] and Android TV inside the [`example-tv` directory][example-tv]. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
+There are Android example apps inside the [`example-app-java`][example-java] and [`example-app-kotlin`][example-kotlin] directories, as well as Android TV example app inside the [`example-app-tv`][example-tv] directory. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ## <a id="basic-integration"></a>Basic integration
 
@@ -998,6 +998,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 [maven]:                          http://maven.org
 [example-java]:                   Adjust/example-app-java
+[example-kotlin]:                 Adjust/example-app-kotlin
 [example-tv]:                     Adjust/example-app-tv
 [releases]:                       https://github.com/adjust/adjust_android_sdk/releases
 [referrer]:                       doc/english/referrer.md
@@ -1021,7 +1022,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 The Adjust SDK is licensed under the MIT License.
 
-Copyright (c) 2012-2018 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2012-2019 Adjust GmbH, http://www.adjust.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
