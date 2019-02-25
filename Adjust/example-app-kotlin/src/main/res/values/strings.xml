@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Adjust Example</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="btn_simple_event">Track simple event</string>
+    <string name="btn_revenue_event">Track revenue event</string>
+    <string name="btn_callback_event">Track callback event</string>
+    <string name="btn_partner_event">Track partner event</string>
+    <string name="btn_is_sdk_enabled">Is SDK enabled?</string>
+    <string name="btn_fire_intent">Fire INSTALL_REFERRER intent</string>
+    <string name="btn_service_activity">Service Activity</string>
+    <string name="btn_return">Return</string>
+    <string name="btn_service">Service</string>
+
+    <string name="txt_enable_sdk">Enable SDK</string>
+    <string name="txt_disable_sdk">Disable SDK</string>
+    <string name="txt_enable_offline_mode">Enable offline mode</string>
+    <string name="txt_disable_offline_mode">Disable offline mode</string>
+    <string name="txt_sdk_is_enabled">Adjust SDK is ENABLED!</string>
+    <string name="txt_sdk_is_disabled">Adjust SDK is DISABLED!</string>
+</resources>
