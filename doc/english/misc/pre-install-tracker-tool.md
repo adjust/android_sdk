@@ -1,6 +1,6 @@
-# Adjust Store & Pre-install Tracker Tool
+## Adjust Store & Pre-install Tracker Tool
 
-Adjust Store & Pre-install Tracker Tool (`adjust-dtt`) is a small ruby command line tool that enables you to insert pre-installed adjust tracker information into your APK file. This information will later be read by the adjust SDK and enable you to tie the users of each pre-installed app to a specific adjust tracker.
+Adjust Store & Pre-install Tracker Tool (`adjust-dtt`) is a small ruby command line tool that enables you to insert pre-installed Adjust tracker information into your APK file. This information will later be read by the Adjust SDK and enable you to tie the users of each pre-installed app to a specific Adjust tracker.
 
 In order to run the `adjust-dtt` tool, you need to have three tools installed on your Linux / Mac OS X machine:
 
@@ -79,7 +79,7 @@ If you are exporting a signed APK from Android Studio, then you are signing the 
 
 You will need to have access to either your default debug keystore file or your custom one in order to use the `adjust-dtt` tool. The reason for this is that the `apktool`, once used to unpack the APK, completely removes any signing from the APK, and once the APK is repacked following editing, signing is not re-enabled. Because of this, you will need to run the `jarsigner` tool and pass signing information to it in order to re-sign your APK so that it can be delivered and used on Android devices.
 
-If everything is ready, the only thing left to do is to create a tracker on the adjust dashboard that you want to use as the default tracker for your pre-installed app and get its token.
+If everything is ready, the only thing left to do is to create a tracker on the Adjust dashboard that you want to use as the default tracker for your pre-installed app and get its token.
 
 With all this information, you should be able to generate an `adjust-config.yaml` configuration file and fill it up with settings for each store you want your app to be published in for which you need to set up pre-installed tracker settings.
 
@@ -105,7 +105,7 @@ You can set up following parameters:
 2. `keystore_path` = Full path to your keystore file used for APK signing (global and per store)
 3. `keystore_pass` = Your keystore signing password (global and per store)
 4. `keystore_alias` = Your keystore alias (global and per store)
-5. `default_tracker` = Your pre-installed adjust tracker token (per store only)
+5. `default_tracker` = Your pre-installed Adjust tracker token (per store only)
 
 The first four parameters can be defined globally in root if you want those settings to be used for every store for which you do not define that parameter. If you define a parameter globally and for the store, the specific store parameter will be used for APK generation. So, for example, the config file can look like this:
 
@@ -153,4 +153,3 @@ When you run the `adjust-dtt` tool, the following happens:
 7. That's it. The generated APK will have the same name as your original one with a `_[store_name]` suffix appended to it. In the aobve example, we will get three APK files generated named `example-release_store_1.apk`, `example- release_store_2.apk` and `example-release_store_3.apk`. Feel free to rename them as you wish before you distribute them.
 
 If you have any questions or issues with this tool, feel free to contact us: support@adjust.com
-

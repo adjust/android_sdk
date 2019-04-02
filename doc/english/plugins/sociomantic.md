@@ -1,59 +1,51 @@
 ## Sociomantic plugin
 
-Add the dependency of the Sociomantic plugin adjust alongside the adjust sdk:
+If you are using Maven, add the following Sociomantic plugin dependency to your `build.gradle` file next to already existing dependency to Adjust SDK:
 
+```gradle
+implementation 'com.adjust.sdk:adjust-android:4.16.0'
+implementation 'com.adjust.sdk:adjust-android-sociomantic:4.16.0'
 ```
-compile 'com.adjust.sdk:adjust-android:4.17.0'
-compile 'com.adjust.sdk:adjust-android-sociomantic:4.17.0'
+
+You can also add Adjust Sociomantic plugin as JAR file which can be downloaded from our [releases page][releases].
+
+You should have access to the Sociomantic events methods as well as constants that you should use for property names of your dictionaries:
+
+```java
+final static String SCMCategory;
+final static String SCMProductName;
+final static String SCMSalePrice;
+final static String SCMAmount;
+final static String SCMCurrency;
+final static String SCMProductURL;
+final static String SCMProductImageURL;
+final static String SCMBrand;
+final static String SCMDescription;
+final static String SCMTimestamp;
+final static String SCMValidityTimestamp;
+final static String SCMQuantity;
+final static String SCMScore;
+final static String SCMProductID;
+final static String SCMActionConfirmed;
+final static String SCMCustomerAgeGroup;
+final static String SCMCustomerEducation;
+final static String SCMCustomerGender;
+final static String SCMCustomerID;
+final static String SCMCustomerMHash;
+final static String SCMCustomerSegment;
+final static String SCMCustomerTargeting;
+final static String SCMTransaction;
 ```
 
-Or integrate adjust with Sociomantic events by following these steps:
+Before sending any Sociomantic you should set a partner id as shown below:
 
-1. Locate the `plugin/Sociomantic` folder inside the downloaded archive from our [releases page](https://github.com/adjust/android_sdk/releases).
+```java
+import com.adjust.sdk.plugin.AdjustSociomantic;
 
-2. Open the `adjust` module in Android Studio and locate the
-   `plugin` package folder in `adjust/java/com/adjust/sdk`.
+AdjustSociomantic.injectPartnerIdInSociomanticEvents("{sociomanticPartnerId}");
+```
 
-3. Drag the `AdjustSociomantic.java` file from the
-   downloaded `plugin/Sociomantic/com/adjust/sdk/plugin` folder into the `plugin` folder in the `adjust` project.
-
-4. You know have access to the Sociomantic events methods as well as constants that you should use for property names of your dictionaries:
-
-    ```java
-    final static String SCMCategory;
-    final static String SCMProductName;
-    final static String SCMSalePrice;
-    final static String SCMAmount;
-    final static String SCMCurrency;
-    final static String SCMProductURL;
-    final static String SCMProductImageURL;
-    final static String SCMBrand;
-    final static String SCMDescription;
-    final static String SCMTimestamp;
-    final static String SCMValidityTimestamp;
-    final static String SCMQuantity;
-    final static String SCMScore;
-    final static String SCMProductID;
-    final static String SCMActionConfirmed;
-    final static String SCMCustomerAgeGroup;
-    final static String SCMCustomerEducation;
-    final static String SCMCustomerGender;
-    final static String SCMCustomerID;
-    final static String SCMCustomerMHash;
-    final static String SCMCustomerSegment;
-    final static String SCMCustomerTargeting;
-    final static String SCMTransaction;
-    ```
-
-5. Before sending any Sociomantic you should set a partner id as shown below:
-
-    ```java
-    import com.adjust.sdk.plugin.AdjustSociomantic;
-
-    AdjustSociomantic.injectPartnerIdInSociomanticEvents("{sociomanticPartnerId}");
-    ```
-
-6. Now you can integrate each of the different Sociomantic events, like in the following examples:
+Now you can integrate each of the different Sociomantic events, like in the following examples below.
 
 ### Customer Event
 
@@ -65,7 +57,6 @@ Map<String, String> customerData = new HashMap<>();
 customerData.put(AdjustSociomantic.SCMCustomerAgeGroup, "0");
 
 AdjustSociomantic.injectCustomerDataIntoEvent(event, customerData);
-
 Adjust.trackEvent(event);
 ```
 
@@ -75,7 +66,6 @@ Adjust.trackEvent(event);
 import com.adjust.sdk.plugin.AdjustSociomantic;
 
 AdjustEvent event = new AdjustEvent(HOMEPAGE_TOKEN);
-
 Adjust.trackEvent(event);
 ```
 
@@ -89,12 +79,10 @@ List<String> categories = Arrays.asList("cat1", "cat2", "cat3");
 String date = "1427792434"
 
 AdjustSociomantic.injectViewListingIntoEvent(event, categories);
-
 Adjust.trackEvent(event);
 
-// You also can provide a date like this
+// You also can provide a date like this.
 AdjustSociomantic.injectViewListingIntoEvent(event, categories, date);
-
 Adjust.trackEvent(event);
 ```
 
@@ -109,16 +97,14 @@ List<String> categories = Arrays.asList("cat1", "cat2", "cat3");
 product.put(AdjustSociomantic.SCMCategory, categories);
 
 AdjustSociomantic.injectProductIntoEvent(event, "123456");
-
 Adjust.trackEvent(event);
 
-// You can also provide product information
-
+// You can also provide product information.
 AdjustSociomantic.injectProductIntoEvent(event, "123456", product);
-
 Adjust.trackEvent(event);
 ```
-*Available product parameters for reporting product view*
+
+*Available product parameters for reporting product view:*
 
 <table>
 <colgroup>
@@ -241,9 +227,7 @@ product2.put(AdjustSociomantic.SCMProductID, "2");
 String product3 = "3";
 
 List<Object> products = Arrays.asList(product1, product2, product3);
-
 AdjustSociomantic.injectCartIntoEvent(event, products);
-
 Adjust.trackEvent(event);
 ```
 
@@ -304,16 +288,13 @@ product1.put(AdjustSociomantic.SCMProductID, "1");
 product1.put(AdjustSociomantic.SCMAmount, 42);
 product1.put(AdjustSociomantic.SCMQuantity, 1);
 
-
 Map<String, Object> product2 = new HashMap<>();
 product2.put(AdjustSociomantic.SCMProductID, "2");
 
 String product3 = "3";
 
 List<Object> products = Arrays.asList(product1, product2, product3);
-
 AdjustSociomantic.injectTransactionIntoEvent(event, "123456", products);
-
 Adjust.trackEvent(event);
 ```
 
@@ -328,14 +309,12 @@ product1.put(AdjustSociomantic.SCMProductID, "1");
 product1.put(AdjustSociomantic.SCMAmount, 42);
 product1.put(AdjustSociomantic.SCMQuantity, 1);
 
-
 Map<String, Object> product2 = new HashMap<>();
 product2.put(AdjustSociomantic.SCMProductID, "2");
 
 String product3 = "3";
 
 List<Object> products = Arrays.asList(product1, product2, product3);
-
 Map<String, Object> parameters = new HashMap<>();
 parameters.put(AdjustSociomantic.SCMCurrency, "EUR");
 parameters.put(AdjustSociomantic.SCMAmount, 42);
@@ -356,16 +335,13 @@ product1.put(AdjustSociomantic.SCMProductID, "1");
 product1.put(AdjustSociomantic.SCMAmount, 42);
 product1.put(AdjustSociomantic.SCMQuantity, 1);
 
-
 Map<String, Object> product2 = new HashMap<>();
 product2.put(AdjustSociomantic.SCMProductID, "2");
 
 String product3 = "3";
 
 List<Object> products = Arrays.asList(product1, product2, product3);
-
 AdjustSociomantic.injectConfirmedTransactionIntoEvent(event, "123456", products);
-
 Adjust.trackEvent(event);
 ```
 
@@ -380,20 +356,17 @@ product1.put(AdjustSociomantic.SCMProductID, "1");
 product1.put(AdjustSociomantic.SCMAmount, 42);
 product1.put(AdjustSociomantic.SCMQuantity, 1);
 
-
 Map<String, Object> product2 = new HashMap<>();
 product2.put(AdjustSociomantic.SCMProductID, "2");
 
 String product3 = "3";
 
 List<Object> products = Arrays.asList(product1, product2, product3);
-
 Map<String, Object> parameters = new HashMap<>();
 parameters.put(AdjustSociomantic.SCMCurrency, "EUR");
 parameters.put(AdjustSociomantic.SCMAmount, 42);
 
 AdjustSociomantic.injectConfirmedTransactionIntoEvent(event, "123456", products, parameters);
-
 Adjust.trackEvent(event);
 ```
 
@@ -447,9 +420,7 @@ See cart parameters
 import com.adjust.sdk.plugin.AdjustSociomantic;
 
 AdjustEvent event = new AdjustEvent(LEAD_TOKEN);
-
 AdjustSociomantic.injectLeadIntoEvent(event, "123456");
-
 Adjust.trackEvent(event);
 ```
 
@@ -459,8 +430,9 @@ Or confirmed lead:
 import com.adjust.sdk.plugin.AdjustSociomantic;
 
 AdjustEvent event = new AdjustEvent(LEAD_TOKEN);
-
 AdjustSociomantic.injectLeadIntoEvent(event, "123456", Boolean.TRUE);
-
 Adjust.trackEvent(event);
 ```
+
+
+[releases]:  https://github.com/adjust/android_sdk/releases

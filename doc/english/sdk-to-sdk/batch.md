@@ -8,19 +8,23 @@ AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
     @Override
     public void onAttributionChanged(AdjustAttribution attribution) {
-        // initiate Batch user editor to set new attributes
+        // Initiate Batch user editor to set new attributes.
         BatchUserDataEditor editor = Batch.User.editor();
 
-        if (attribution.network != null)
+        if (attribution.network != null) {
             editor.setAttribute("adjust_network", attribution.network);
-        if (attribution.campaign != null)
+        }
+        if (attribution.campaign != null) {
             editor.setAttribute("adjust_campaign", attribution.campaign);
-        if (attribution.adgroup != null)
+        }
+        if (attribution.adgroup != null) {
             editor.setAttribute("adjust_adgroup", attribution.adgroup);
-        if (attribution.creative != null)
+        }
+        if (attribution.creative != null) {
             editor.setAttribute("adjust_creative", attribution.creative);
+        }
 
-        // send new attributes to Batch servers
+        // Send new attributes to Batch servers.
         editor.save();
     }
 });
@@ -31,4 +35,4 @@ Adjust.onCreate(config);
 Before you implement this interface, please consider the [possible conditions for usage of some of your data][attribution-data].
 
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[attribution-callback]: https://github.com/adjust/android_sdk#attribution-callback
+[attribution-callback]: ../../../README.md#af-attribution-callback

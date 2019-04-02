@@ -112,4 +112,4 @@ adjustConfig.addFbPixelMapping('fb_mobile_purchase', adjustEventTokenForPurchase
 
 如果您未配置映射，还可以选择使用默认的Adjust事件。您只需在初始化Adjust SDK之前调用`adjustConfig.setFbPixelDefaultEventToken（defaultEventToken）;`。
 
-[example-fbpixel]:  ../../Adjust/example-fbpixel
+[example-fbpixel]:  ../../Adjust/example-app-fbpixel
