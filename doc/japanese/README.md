@@ -81,7 +81,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### <a id="qs-example-apps"></a>サンプルアプリ
 
-サンプルアプリがexampleディレクトリ([example-app-java directory][example-java])にあります。Webviewに使用するネイティブアプリのためのwebbridgeのディレクトリ([example-webbridge directory][example-webbridge])とAndroid TVのサンプル （[example-tv directory][example-tv]）をご覧ください。SDK実装の際は、Androidプロジェクトを開き、このサンプルをご参照ください。
+Android サンプルアプリがexample ディレクトリ ([example-app-java][example-java]) および ([example-app-kotlin directories][example-kotlin])にあります。Webviewに使用するサンプルアプリは([example-webbridge][example-webbridge]) 、Android TVのサンプルは ([example-app-tv][example-tv])をご覧ください。をご覧ください。SDK実装の際は、Androidプロジェクトを開き、このサンプルをご参照ください。
 
 ### <a id="qs-getting-started"></a>基本的な導入方法
 
@@ -92,14 +92,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
  
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.16.0'
+implementation 'com.adjust.sdk:adjust-android:4.17.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 アプリの WebView内で Adjust SDK を使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.16.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
 ```
 
 Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、Adjust [リリースページ][releases]からダウンロードすることもできます。
@@ -1888,8 +1888,9 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-tv]:                     ../../Adjust/example-app-tv
 [example-java]:                   ../../Adjust/example-app-java
+[example-kotlin]:                 ../../Adjust/example-app-kotlin
+[example-tv]:                     ../../Adjust/example-app-tv
 [example-webbridge]:              ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
