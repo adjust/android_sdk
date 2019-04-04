@@ -83,7 +83,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### <a id="qs-example-apps"></a>应用示例
 
-[`example-app-java` 目录][example-java]内有以Java编写的原生安卓应用示例，您可查看[`example-webbridge`目录][example-webbridge]了解使用web view的原生应用示例，以及[`example-tv` 目录][example-tv]了解安卓 TV 应用示例。您还可打开安卓项目查看如何集成Adjust SDK的示例。
+[`example-app-java`][example-java] 及 [`example-app-kotlin`][example-kotlin] 目录内有原生安卓应用示例，您可查看[`example-webbridge`目录][example-webbridge]了解使用web view的原生应用示例，以及[`example-tv` 目录][example-tv]了解安卓 TV 应用示例。您还可打开安卓项目查看如何集成Adjust SDK的示例。
 
 ### <a id="qs-getting-started"></a>基本集成
 
@@ -94,14 +94,14 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.16.0'
+implementation 'com.adjust.sdk:adjust-android:4.17.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 如果您希望在应用的web view中使用Adjust SDK，请同时包含以下附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.16.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
 ```
 
 您还可以将Adjust SDK和web view扩展名作为JAR文件来添加，这可从我们的[发布页面][releases]中下载。
@@ -1893,8 +1893,9 @@ public void onFireIntentClick(View v) {
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-tv]:                     ../../Adjust/example-app-tv
 [example-java]:                   ../../Adjust/example-app-java
+[example-kotlin]:                 ../../Adjust/example-app-kotlin
+[example-tv]:                     ../../Adjust/example-app-tv
 [example-webbridge]:              ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
