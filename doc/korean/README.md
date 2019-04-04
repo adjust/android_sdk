@@ -83,7 +83,7 @@
 
 ### <a id="qs-example-apps"></a>앱 예제
 
-자바로 작성된 네이티브 안드로이드 앱에 대해서는 [`example-app-java` 디렉터리][example-java] 내에 예제 앱이 있습니다. 웹뷰를 사용하는 네이티브 앱 관련 내용은 [`example-webbridge` 디렉터리][example-webbridge]를, Android TV 앱 관련 내용은 [`example-tv` 디렉터리][example-tv]를 참조하십시오. Android 프로젝트를 열어 Adjust SDK 연동 방법의 예를 확인할 수 있습니다.
+[`example-app-java`][example-java] 와 [`example-app-kotlin` directories][example-kotlin] 안에 안드로이드 예제앱이 있습니다. 웹뷰를 사용하는 네이티브 앱의 경우 [`example-webbridge`][example-webbridge] 디렉터리 안에 웹뷰를, Android TV 앱은[`example-app-tv`][example-tv] 안에 예제앱을 확인하시기 바랍니다. Android 프로젝트를 열어 Adjust SDK 연동 방법의 예를 확인할 수 있습니다.
 
 ### <a id="qs-getting-started"></a>기본 연동
 
@@ -93,15 +93,15 @@
 
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
-```
-implementation 'com.adjust.sdk:adjust-android:4.16.0'
+```gradle
+implementation 'com.adjust.sdk:adjust-android:4.17.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 앱의 웹뷰 내에 있는 Adjust SDK를 사용하려면 다음과 같은 추가 종속성도 포함시키십시오.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.16.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
 ```
 
 또한 Adjust SDK 및 웹뷰 확장자를 JAR 파일로 추가할 수 있으며, 이 파일은 [릴리스 페이지][releases]에서 다운로드할 수 있습니다.
@@ -1893,8 +1893,9 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-tv]:                     ../../Adjust/example-app-tv
 [example-java]:                   ../../Adjust/example-app-java
+[example-kotlin]:                 ../../Adjust/example-app-kotlin
+[example-tv]:                     ../../Adjust/example-app-tv
 [example-webbridge]:              ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
