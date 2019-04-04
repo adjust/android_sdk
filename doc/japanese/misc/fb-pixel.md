@@ -125,4 +125,4 @@ There is not a default event token configured or a mapping found for event named
 また、マッピングを設定しない場合でもデフォルトのAdjustイベントの使用は可能です。Adjust SDKを初期化する前に、`adjustConfig.setFbPixelDefaultEventToken(defaultEventToken);`を呼び出してください。
 
 
-[example-fbpixel]:  ../../Adjust/example-fbpixel
+[example-fbpixel]:  ../../Adjust/example-app-fbpixel

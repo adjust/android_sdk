@@ -8,13 +8,11 @@ public class YourApplicationClass extends Application {
     public void onCreate() {
         super.onCreate();
         
-        // Initialize Adobe SDK
+        // Initialize Adobe SDK.
         Config.setContext(this.getApplicationContext());
         Config.setDebugLogging(true);
         
         // Configure Adjust
-        String appToken = "{YourAppToken}";
-        String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
         AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
         config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
@@ -22,24 +20,24 @@ public class YourApplicationClass extends Application {
             public void onAttributionChanged(AdjustAttribution attribution) {
                 Map<String,Object> adjustData = new HashMap<String, Object>();
                 
-                // Do not change the key "Adjust Network". This key is being used in the Data Connector Processing Rule
+                // Do not change the key "Adjust Network". This key is being used in the Data Connector Processing Rule.
                 if (attribution.network != null) {
                     adjustData.put("Adjust Network", attribution.network);
                 }
-                // Do not change the key "Adjust Campaign". This key is being used in the Data Connector Processing Rule
+                // Do not change the key "Adjust Campaign". This key is being used in the Data Connector Processing Rule.
                 if (attribution.campaign != null) {
                     adjustData.put("Adjust Campaign", attribution.campaign);
                 }
-                // Do not change the key "Adjust Adgroup". This key is being used in the Data Connector Processing Rule
+                // Do not change the key "Adjust Adgroup". This key is being used in the Data Connector Processing Rule.
                 if (attribution.adgroup != null) {
                     adjustData.put("Adjust Adgroup", attribution.adgroup);
                 }
-                // Do not change the key "Adjust Creative". This key is being used in the Data Connector Processing Rule
+                // Do not change the key "Adjust Creative". This key is being used in the Data Connector Processing Rule.
                 if (attribution.creative != null) {
                     adjustData.put("Adjust Creative", attribution.creative);
                 }
 
-                // Send Data to Adobe using Track Action
+                // Send Data to Adobe using Track Action.
                 Analytics.trackAction("Adjust Campaign Data Received", adjustData);
             }
         });
@@ -52,4 +50,4 @@ public class YourApplicationClass extends Application {
 Before you implement this interface, please take care to consider the [possible conditions for usage of some of your data][attribution-data].
 
 [attribution-data]:     https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
-[attribution-callback]: https://github.com/adjust/android_sdk#attribution-callback
+[attribution-callback]: ../../../README.md#af-attribution-callback

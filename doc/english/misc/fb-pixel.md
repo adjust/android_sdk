@@ -14,8 +14,7 @@ There is an example app inside the [`example-fbpixel` directory][example-fbpixel
 
 There is no need to integrate the FB SDK; however, you must follow a few of the same integration steps from the FB SDK in order for the Adjust SDK to integrate the Facebook Pixel.
 
-As is described in the [FB SDK Android SDK guide](https://developers.facebook.com/docs/android/getting-started/#app_id) 
-you will need to add your Facebook App ID to the app. You can follow the steps in that guide, but we've also copied them here below:
+As is described in the [FB SDK Android SDK guide](https://developers.facebook.com/docs/android/getting-started/#app_id) you will need to add your Facebook App ID to the app. You can follow the steps in that guide, but we've also copied them here below:
 
 - Open your `strings.xml` file. Example path: `/app/src/main/res/values/strings.xml`.
 - Add a new string with the name `facebook_app_id` and value as your Facebook App ID
@@ -113,4 +112,4 @@ There is not a default event token configured or a mapping found for event named
 
 There is also the option to use a default Adjust event even if you do not have mapping configured. Just call `adjustConfig.setFbPixelDefaultEventToken(defaultEventToken);` before initializing the Adjust SDK.
 
-[example-fbpixel]:  ../../Adjust/example-fbpixel
+[example-fbpixel]:  ../../../Adjust/example-app-fbpixel
