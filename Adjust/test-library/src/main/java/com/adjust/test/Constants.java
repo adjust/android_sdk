@@ -16,7 +16,6 @@ public interface Constants {
 
     // web socket values
     String SIGNAL_INFO                = "info";
-    String SIGNAL_INIT                = "init";
     String SIGNAL_INIT_TEST_SESSION   = "init-test-session";
     String SIGNAL_END_WAIT            = "end-wait";
     String SIGNAL_CANCEL_CURRENT_TEST = "cancel-current-test";
