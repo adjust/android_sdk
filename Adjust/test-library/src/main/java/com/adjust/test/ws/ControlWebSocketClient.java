@@ -20,7 +20,6 @@ import static com.adjust.test.Utils.error;
 public class ControlWebSocketClient extends WebSocketClient {
     private TestLibrary testLibrary;
     private Gson gson = new Gson();
-    private String webSocketClientId = UUID.randomUUID().toString();
 
     public ControlWebSocketClient(TestLibrary testLibrary, String serverUri) throws URISyntaxException {
         super(new URI(serverUri));
@@ -30,8 +29,6 @@ public class ControlWebSocketClient extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake handshakedata) {
         debug("[WebSocket] connection opened with the server");
-        ControlSignal initSignal = new ControlSignal(SignalType.INIT, this.webSocketClientId);
-        send(gson.toJson(initSignal));
     }
 
     @Override

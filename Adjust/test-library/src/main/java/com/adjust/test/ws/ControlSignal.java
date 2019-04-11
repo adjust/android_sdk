@@ -31,7 +31,6 @@ public class ControlSignal {
     private String getSignalTypeString(SignalType signalType) {
         switch (signalType) {
             case INFO:                  return SIGNAL_INFO;
-            case INIT:                  return SIGNAL_INIT;
             case INIT_TEST_SESSION:     return SIGNAL_INIT_TEST_SESSION;
             case END_WAIT:              return SIGNAL_END_WAIT;
             case CANCEL_CURRENT_TEST:   return SIGNAL_CANCEL_CURRENT_TEST;
@@ -42,7 +41,6 @@ public class ControlSignal {
     private SignalType getSignalTypeByString(String signalType) {
         switch (signalType) {
             case SIGNAL_INFO:                   return SignalType.INFO;
-            case SIGNAL_INIT:                   return SignalType.INIT;
             case SIGNAL_INIT_TEST_SESSION:      return SignalType.INIT_TEST_SESSION;
             case SIGNAL_END_WAIT:               return SignalType.END_WAIT;
             case SIGNAL_CANCEL_CURRENT_TEST:    return SignalType.CANCEL_CURRENT_TEST;
