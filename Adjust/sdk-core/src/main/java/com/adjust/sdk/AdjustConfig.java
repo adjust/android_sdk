@@ -39,6 +39,8 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
+    public static final String AD_REVENUE_MOPUB = "mopub";
+
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
     }

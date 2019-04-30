@@ -3,6 +3,8 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
+import org.json.JSONObject;
+
 /**
  * The main interface to Adjust.
  * Use the methods of this class to tell Adjust about the usage of your app.
@@ -235,6 +237,17 @@ public class Adjust {
     public static void gdprForgetMe(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.gdprForgetMe(context);
+    }
+
+    /**
+     * Track ad revenue from a source provider
+     *
+     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
+     * @param adRevenueJson JsonObject content of the ad revenue information
+     */
+    public static void trackAdRevenue(final String source, final JSONObject adRevenueJson) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.trackAdRevenue(source, adRevenueJson);
     }
 
     /**

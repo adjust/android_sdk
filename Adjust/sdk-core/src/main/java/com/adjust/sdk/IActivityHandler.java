@@ -3,6 +3,8 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
+import org.json.JSONObject;
+
 /**
  * Created by pfms on 15/12/14.
  */
@@ -60,6 +62,8 @@ public interface IActivityHandler {
     void setPushToken(String token, boolean preSaved);
 
     void gdprForgetMe();
+
+    void trackAdRevenue(String source, JSONObject adRevenueJson);
 
     void gotOptOutResponse();
 
