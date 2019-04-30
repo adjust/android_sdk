@@ -105,40 +105,6 @@ publishing {
             artifactId 'adjust-android'
             version rootProject.ext.coreVersionName
 
-            // Create the signed POM artifact.
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
-            }
-
-            // Create the signed artifacts.
-            project.tasks.signArchives.signatureFiles.each {
-                // Exclude "usual" archive artifact .aar.
-                def signFileName = it.toString()
-                if (signFileName.contains('aar')) {
-                    return
-                }
-                // Create a Maven artifact for each asc signature.
-                artifact(it) {
-                    //println "archive name ${signFileName}"
-                    if (signFileName.contains('-sources')) {
-                        classifier = 'sources'
-                        extension = 'jar.asc'
-                    } else if (signFileName.contains('-javadoc')) {
-                        classifier = 'javadoc'
-                        extension = 'jar.asc'
-                    } else {
-                        classifier = null
-                        extension = 'jar.asc'
-                    }
-                }
-            }
-
             artifact adjustCoreAndroidJar
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
@@ -161,33 +127,6 @@ publishing {
                 }
             }
 
-            // Create the signed artifacts.
-            project.tasks.signArchives.signatureFiles.each {
-                // Exclude "usual" archive artifact .aar.
-                def signFileName = it.toString()
-                println "signArchives name ${signFileName}"
-
-                if (signFileName.contains('sdk-core.jar')) {
-                    return
-                }
-
-                // Create a Maven artifact for each asc signature.
-                artifact(it) {
-                    //println "archive name ${signFileName}"
-                    if (signFileName.contains('-sources')) {
-                        classifier = 'sources'
-                        extension = 'jar.asc'
-                    } else if (signFileName.contains('-javadoc')) {
-                        classifier = 'javadoc'
-                        extension = 'jar.asc'
-                    } else {
-                        classifier = null
-                        extension = 'aar.asc'
-                    }
-                }
-            }
-
-            //artifact adjustCoreAndroidJar
             artifact("$buildDir/outputs/aar/sdk-core-release.aar")
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
@@ -295,23 +234,28 @@ model {
     tasks.generatePomFileForMavenAndroidCorePublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
+    /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidCorePublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidCorePublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
+    */
     tasks.generatePomFileForMavenAndroidCoreAARPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
+    /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidCoreAARPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidCoreAARPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
+    */
 }
 
 signing {
-    sign configurations.archives
+    sign publishing.publications.mavenAndroidCore
+    sign publishing.publications.mavenAndroidCoreAAR
 }

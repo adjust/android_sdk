@@ -78,39 +78,6 @@ publishing {
             artifactId 'adjust-android-criteo'
             version rootProject.ext.coreVersionName
 
-            // Create the signed POM artifact.
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
-            }
-
-            // Create the signed artifacts.
-            project.tasks.signArchives.signatureFiles.each {
-                // exclude "usual" archive artifact .aar
-                def signFileName = it.toString()
-                if (signFileName.contains('aar')) {
-                    return
-                }
-                // Create a Maven artifact for each asc signature
-                artifact(it) {
-                    if (signFileName.contains('-sources')) {
-                        classifier = 'sources'
-                        extension = 'jar.asc'
-                    } else if (signFileName.contains('-javadoc')) {
-                        classifier = 'javadoc'
-                        extension = 'jar.asc'
-                    } else {
-                        classifier = null
-                        extension = 'jar.asc'
-                    }
-                }
-            }
-
             artifact adjustCriteoAndroidJar
             artifact adjustCriteoAndroidJavadocsJar
             artifact adjustCriteoAndroidSourcesJar
@@ -174,14 +141,16 @@ model {
     tasks.generatePomFileForMavenAndroidCriteoPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
+    /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidCriteoPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidCriteoPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
+    */
 }
 
 signing {
-    sign configurations.archives
+    sign publishing.publications.mavenAndroidCriteo
 }
