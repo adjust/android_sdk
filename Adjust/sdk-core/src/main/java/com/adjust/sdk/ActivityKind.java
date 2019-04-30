@@ -1,7 +1,7 @@
 package com.adjust.sdk;
 
 public enum ActivityKind {
-    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION, INFO, GDPR;
+    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION, INFO, GDPR, AD_REVENUE;
 
     public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {
@@ -16,6 +16,8 @@ public enum ActivityKind {
             return INFO;
         } else if ("gdpr".equals(string)) {
             return GDPR;
+        } else if ("ad_revenue".equals(string)) {
+            return AD_REVENUE;
         } else {
             return UNKNOWN;
         }
@@ -36,6 +38,8 @@ public enum ActivityKind {
                 return "info";
             case GDPR:
                 return "gdpr";
+            case AD_REVENUE:
+                return "ad_revenue";
             default:
                 return "unknown";
         }
