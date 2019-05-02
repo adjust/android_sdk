@@ -582,7 +582,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addJsonObject(parameters, "ad_revenue_params", adRevenueJson);
+        PackageBuilder.addJsonObject(parameters, "payload", adRevenueJson);
 
         checkDeviceIds(parameters);
         return parameters;
