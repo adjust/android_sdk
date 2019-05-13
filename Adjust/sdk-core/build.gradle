@@ -26,49 +26,34 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
-task adjustCoreAndroidAar (type: Copy) {
+task adjustCoreAarRelease(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
     include 'sdk-core-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-core-release.aar', "${project.name}.aar"
+    rename 'sdk-core-release.aar', 'adjust-sdk-release.aar'
 }
 
-task adjustSdkNonNativeAarDebug (type: Copy) {
+task adjustCoreAarDebug(type: Copy) {
     dependsOn 'assembleDebug'
 
-    from ('build/outputs/aar/')
+    from('build/outputs/aar/')
     include 'sdk-core-debug.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-core-debug.aar', "adjust-sdk-debug.aar"
+    rename 'sdk-core-debug.aar', 'adjust-sdk-debug.aar'
 }
 
-task adjustSdkNonNativeAarRelease (type: Copy) {
-    dependsOn 'assembleRelease'
-
-    from ('build/outputs/aar/')
-    include 'sdk-core-release.aar'
-    destinationDir file('build/libs/')
-    rename 'sdk-core-release.aar', "adjust-sdk-release.aar"
-}
-
-task adjustCoreAndroidJar(type: Jar) {
-    dependsOn 'compileReleaseJavaWithJavac'
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
-    archiveName "${project.name}.jar"
-}
-
-task adjustSdkNonNativeJarDebug(type: Jar) {
-    dependsOn 'compileDebugJavaWithJavac'
-    from('build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/')
-    archiveName "adjust-sdk-debug.jar"
-}
-
-task adjustSdkNonNativeJarRelease(type: Jar) {
+task adjustCoreJarRelease(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
     archiveName "adjust-sdk-release.jar"
+}
+
+task adjustCoreJarDebug(type: Jar) {
+    dependsOn 'compileDebugJavaWithJavac'
+    from('build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/')
+    archiveName "adjust-sdk-debug.jar"
 }
 
 task androidJavadocs(type: Javadoc) {
@@ -92,7 +77,7 @@ task adjustCoreAndroidSourcesJar(type: Jar) {
 }
 
 artifacts {
-    archives adjustCoreAndroidJar
+    archives adjustCoreJarRelease
     archives adjustCoreAndroidJavadocsJar
     archives adjustCoreAndroidSourcesJar
 }
@@ -105,7 +90,7 @@ publishing {
             artifactId 'adjust-android'
             version rootProject.ext.coreVersionName
 
-            artifact adjustCoreAndroidJar
+            artifact adjustCoreJarRelease
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
         }
