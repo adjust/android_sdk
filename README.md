@@ -58,6 +58,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
+   * [Ad revenue tracking](#af-ad-revenue)
    * [Session and event callbacks](#af-session-event-callbacks)
    * [User attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
@@ -1320,6 +1321,38 @@ The listener function is called after the SDK receives the final attribution dat
 - `creative` the creative grouping level string of the current attribution.
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
+
+### <a id="af-ad-revenue"></a>Ad revenue tracking
+
+**Note**: This feature doesn't exist in web view SDK, only in the native one.
+
+You can track ad revenue information with Adjust SDK by ivoking following method:
+
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackAdRevenue(source, payload);
+```
+</td>
+</tr>
+</table>
+
+Parameters of the method which you need to pass are:
+
+- `source` - `String` parameter which indicates the source of ad revenue info.
+- `payload` - `JSONObject` which contains ad revenue JSON.
+
+Currently supported ad revenue sources:
+
+- MoPub (use `AD_REVENUE_MOPUB` constant as `source` parameter value).
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
