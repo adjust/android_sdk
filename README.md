@@ -1326,7 +1326,7 @@ The listener function is called after the SDK receives the final attribution dat
 
 **Note**: This feature is available only in the native SDK.
 
-You can track ad revenue information with Adjust SDK by ivoking following method:
+You can track ad revenue information with Adjust SDK by invoking following method:
 
 
 <table>
