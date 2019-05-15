@@ -1324,7 +1324,7 @@ The listener function is called after the SDK receives the final attribution dat
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
-**Note**: This feature doesn't exist in web view SDK, only in the native one.
+**Note**: This feature is available only in the native SDK.
 
 You can track ad revenue information with Adjust SDK by ivoking following method:
 
@@ -1350,9 +1350,9 @@ Parameters of the method which you need to pass are:
 - `source` - `String` parameter which indicates the source of ad revenue info.
 - `payload` - `JSONObject` which contains ad revenue JSON.
 
-Currently supported ad revenue sources:
+Currently we support the below `source` parameter values:
 
-- MoPub (use `AD_REVENUE_MOPUB` constant as `source` parameter value).
+- `AD_REVENUE_MOPUB` - representing MoPub mediation platform
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
