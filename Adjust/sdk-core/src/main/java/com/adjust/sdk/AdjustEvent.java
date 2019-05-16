@@ -77,10 +77,6 @@ public class AdjustEvent {
             logger.error("Missing Event Token");
             return false;
         }
-        if (eventToken.length() != 6) {
-            logger.error("Malformed Event Token '%s'", eventToken);
-            return false;
-        }
         return true;
     }
 
