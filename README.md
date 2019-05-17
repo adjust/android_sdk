@@ -1221,7 +1221,7 @@ In this example, this will prevent the Adjust SDK from sending the initial insta
 
 Once you have integrated the Adjust SDK into your project, you can take advantage of the following features:
 
-### <a id="af-push-token"></a>Push tokens (uninstall tracking)
+### <a id="af-push-token"></a>Push token (uninstall tracking)
 
 Push tokens are used for Audience Builder and client callbacks; they are also required for uninstall and reinstall tracking.
 
@@ -1347,8 +1347,8 @@ Adjust.trackAdRevenue(source, payload);
 
 Parameters of the method which you need to pass are:
 
-- `source` - `String` parameter which indicates the source of ad revenue info.
-- `payload` - `JSONObject` which contains ad revenue JSON.
+- `source` - `String` object which indicates the source of ad revenue info.
+- `payload` - `JSONObject` object which contains ad revenue JSON.
 
 Currently we support the below `source` parameter values:
 
