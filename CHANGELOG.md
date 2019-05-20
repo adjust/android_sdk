@@ -1,3 +1,9 @@
+### Version 4.18.0 (20th May 2018)
+#### Added
+- Added `trackAdRevenue(String, JSONObject)` method to `Adjust` interface to allow tracking of ad revenue. With this release added support for MoPub ad revenue tracking.
+
+---
+
 ### Version 4.17.0 (30th November 2018)
 #### Added
 - Added `getSdkVersion()` method to `Adjust` interface to obtain current SDK version string.
