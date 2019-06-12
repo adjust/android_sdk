@@ -1352,7 +1352,7 @@ Parameters of the method which you need to pass are:
 
 Currently we support the below `source` parameter values:
 
-- `AD_REVENUE_MOPUB` - representing MoPub mediation platform
+- `AD_REVENUE_MOPUB` - representing MoPub mediation platform (for more information, check [integration guide](sdk2sdk-mopub))
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
@@ -1942,6 +1942,8 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 [testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+
+[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>License
 
