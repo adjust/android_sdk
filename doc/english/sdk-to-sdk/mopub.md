@@ -14,6 +14,6 @@ public void onImpression(@NonNull final String adUnitId, @Nullable final Impress
 }
 ```
 
-For more information regarding MoPub callback implementation, please refer to [MoPub documentation](mopub-docs). In case you have any questions about ad revenue tracking with MoPub, please contact your dedicated account manager or send an email to support@adjust.com.
+For more information regarding MoPub callback implementation, please refer to [MoPub documentation][mopub-docs]. In case you have any questions about ad revenue tracking with MoPub, please contact your dedicated account manager or send an email to support@adjust.com.
 
 [mopub-docs]:   https://developers.mopub.com/publishers/android/impression-data/
