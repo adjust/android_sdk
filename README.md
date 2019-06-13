@@ -1326,7 +1326,7 @@ The listener function is called after the SDK receives the final attribution dat
 
 **Note**: This feature is available only in the native SDK v4.18.0 and above.
 
-You can track ad revenue information with Adjust SDK by invoking following method:
+You can track ad revenue information with Adjust SDK by invoking the following method:
 
 
 <table>
@@ -1638,7 +1638,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
   </tr>
   </table>
 
-- Replace `{TrackerToken}` with the tracker token you created in step one. Please note that the dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
+- Replace `{TrackerToken}` with the tracker token you created in step one. Please note that the dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six or seven-character token and not the entire URL.
 
 - Build and run your app. You should see a line like the following in your LogCat:
 
