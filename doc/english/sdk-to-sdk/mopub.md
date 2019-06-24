@@ -1,6 +1,6 @@
 ## Track MoPub ad revenue with Adjust SDK
 
-[Adjust Android SDK README][android_readme]
+[Adjust Android SDK README][android-readme]
 
 [MoPub Android documentation][mopub-docs]
 
@@ -21,4 +21,4 @@ public void onImpression(@NonNull final String adUnitId, @Nullable final Impress
 In case you have any questions about ad revenue tracking with MoPub, please contact your dedicated account manager or send an email to support@adjust.com.
 
 [mopub-docs]:        https://developers.mopub.com/publishers/android/impression-data/
-[android_readme]:    https://github.com/adjust/android_sdk
+[android-readme]:    ../../../README.md
