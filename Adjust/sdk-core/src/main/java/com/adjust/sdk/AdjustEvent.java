@@ -77,6 +77,10 @@ public class AdjustEvent {
             logger.error("Missing Event Token");
             return false;
         }
+        if (eventToken.length() <= 0) {
+            logger.error("Event Token can't be empty");
+            return false;
+        }
         return true;
     }
 
