@@ -135,6 +135,16 @@ public class PackageBuilder {
         return gdprPackage;
     }
 
+    ActivityPackage buildAdRevenuePackage(String source, JSONObject adRevenueJson) {
+        Map<String, String> parameters = getAdRevenueParameters(source, adRevenueJson);
+        ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
+        adRevenuePackage.setPath("/ad_revenue");
+        adRevenuePackage.setSuffix("");
+        adRevenuePackage.setParameters(parameters);
+        return adRevenuePackage;
+
+    }
+
     private Map<String, String> getSessionParameters(boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
@@ -533,6 +543,51 @@ public class PackageBuilder {
         return parameters;
     }
 
+    private Map<String, String> getAdRevenueParameters(String source, JSONObject adRevenueJson) {
+        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+
+        // Check if plugin is used and if yes, add read parameters.
+        if (imeiParameters != null) {
+            parameters.putAll(imeiParameters);
+        }
+
+        // Device identifiers.
+        deviceInfo.reloadPlayIds(adjustConfig.context);
+        PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+
+        if (!containsPlayIds(parameters)) {
+            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
+
+        // Rest of the parameters.
+        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+        PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
+        PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
+        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
+        PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
+        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
+        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
+        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+        PackageBuilder.addString(parameters, "source", source);
+        PackageBuilder.addJsonObject(parameters, "payload", adRevenueJson);
+
+        checkDeviceIds(parameters);
+        return parameters;
+    }
+
     private ActivityPackage getDefaultActivityPackage(ActivityKind activityKind) {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
@@ -552,6 +607,14 @@ public class PackageBuilder {
         }
         int intValue = value ? 1 : 0;
         PackageBuilder.addLong(parameters, key, intValue);
+    }
+
+    static void addJsonObject(Map<String, String> parameters, String key, JSONObject jsonObject) {
+        if (jsonObject == null) {
+            return;
+        }
+
+        PackageBuilder.addString(parameters, key, jsonObject.toString());
     }
 
     static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {

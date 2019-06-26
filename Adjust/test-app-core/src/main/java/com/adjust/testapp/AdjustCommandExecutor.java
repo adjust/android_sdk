@@ -22,6 +22,9 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
 
 import static com.adjust.testapp.MainActivity.baseUrl;
@@ -70,6 +73,7 @@ public class AdjustCommandExecutor {
             case "openDeeplink": openDeeplink(); break;
             case "sendReferrer": sendReferrer(); break;
             case "gdprForgetMe": gdprForgetMe(); break;
+            case "trackAdRevenue": trackAdRevenue(); break;
             //case "testBegin": testBegin(); break;
             // case "testEnd": testEnd(); break;
         }
@@ -602,6 +606,17 @@ public class AdjustCommandExecutor {
         Adjust.gdprForgetMe(this.context);
     }
 
+    private void trackAdRevenue() {
+        String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
+        String adRevenueJsonString = command.getFirstParameterValue("adRevenueJsonString");
+
+        try {
+            JSONObject adRevenueJson = new JSONObject(adRevenueJsonString);
+            Adjust.trackAdRevenue(adRevenueSource, adRevenueJson);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 /*
     private void testBegin() {
         if (command.containsParameter("teardown")) {

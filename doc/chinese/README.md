@@ -94,7 +94,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.17.0'
+implementation 'com.adjust.sdk:adjust-android:4.18.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 

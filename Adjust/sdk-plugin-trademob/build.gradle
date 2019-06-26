@@ -24,7 +24,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.17.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.18.0'
 }
 
 task adjustTrademobAndroidAar (type: Copy) {
@@ -77,39 +77,6 @@ publishing {
             groupId rootProject.ext.adjustGroupId
             artifactId 'adjust-android-trademob'
             version rootProject.ext.coreVersionName
-
-            // Create the sign pom artifact.
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
-            }
-
-            // Create the signed artifacts.
-            project.tasks.signArchives.signatureFiles.each {
-                // exclude "usual" archive artifact .aar
-                def signFileName = it.toString()
-                if (signFileName.contains('aar')) {
-                    return
-                }
-                // Create a maven artifact for each asc signature.
-                artifact(it) {
-                    if (signFileName.contains('-sources')) {
-                        classifier = 'sources'
-                        extension = 'jar.asc'
-                    } else if (signFileName.contains('-javadoc')) {
-                        classifier = 'javadoc'
-                        extension = 'jar.asc'
-                    } else {
-                        classifier = null
-                        extension = 'jar.asc'
-                    }
-                }
-            }
 
             artifact adjustTrademobAndroidJar
             artifact adjustTrademobAndroidJavadocsJar
@@ -174,14 +141,16 @@ model {
     tasks.generatePomFileForMavenAndroidTrademobPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
+    /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidTrademobPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
     tasks.publishMavenAndroidTrademobPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
+    */
 }
 
 signing {
-    sign configurations.archives
+    sign publishing.publications.mavenAndroidTrademob
 }

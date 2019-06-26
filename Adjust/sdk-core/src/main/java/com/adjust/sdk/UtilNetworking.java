@@ -318,12 +318,26 @@ public class UtilNetworking {
         String deviceIdentifierName = getValidIdentifier(parameters);
         String deviceIdentifier = parameters.get(deviceIdentifierName);
 
+        String sourceName = "source";
+        String sourceValue = parameters.get(sourceName);
+
+        String payloadName = "payload";
+        String payloadValue = parameters.get(payloadName);
+
         Map<String, String> signatureParams = new HashMap<String, String>();
 
         signatureParams.put("app_secret", appSecret);
         signatureParams.put(createdAtName, createdAt);
         signatureParams.put(activityKindName, activityKindValue);
         signatureParams.put(deviceIdentifierName, deviceIdentifier);
+
+        if (sourceValue != null) {
+            signatureParams.put(sourceName, sourceValue);
+        }
+
+        if (payloadValue != null) {
+            signatureParams.put(payloadName, payloadValue);
+        }
 
         String fields = "";
         String clearSignature = "";

@@ -3,6 +3,8 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
+import org.json.JSONObject;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -385,6 +387,19 @@ public class AdjustInstance {
                 activityHandler.gdprForgetMe();
             }
         }
+    }
+
+    /**
+     * Track ad revenue from a source provider
+     *
+     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
+     * @param adRevenueJson JsonObject content of the ad revenue information
+     */
+    public void trackAdRevenue(String source, JSONObject adRevenueJson) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+        activityHandler.trackAdRevenue(source, adRevenueJson);
     }
 
     /**

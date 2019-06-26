@@ -10,8 +10,10 @@ import com.adjust.test.TestLibrary;
 
 public class MainActivity extends AppCompatActivity {
     public static TestLibrary testLibrary;
-    public static final String baseUrl = "https://10.0.2.2:8443";
-    public static final String gdprUrl = "https://10.0.2.2:8443";
+    private static final String baseIp = "10.0.2.2";
+    public static final String baseUrl = "https://" + baseIp + ":8443";
+    public static final String gdprUrl = "https://" + baseIp + ":8443";
+    public static final String controlUrl = "ws://" + baseIp + ":1987";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        testLibrary = new TestLibrary(baseUrl, new CommandListener(this.getApplicationContext()));
+        testLibrary = new TestLibrary(baseUrl, controlUrl, new CommandListener(this.getApplicationContext()));
         // testLibrary.doNotExitAfterEnd();
 
         startTestSession();

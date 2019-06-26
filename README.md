@@ -58,6 +58,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
+   * [Ad revenue tracking](#af-ad-revenue)
    * [Session and event callbacks](#af-session-event-callbacks)
    * [User attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
@@ -95,7 +96,7 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.17.0'
+implementation 'com.adjust.sdk:adjust-android:4.18.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
@@ -1220,7 +1221,7 @@ In this example, this will prevent the Adjust SDK from sending the initial insta
 
 Once you have integrated the Adjust SDK into your project, you can take advantage of the following features:
 
-### <a id="af-push-token"></a>Push tokens (uninstall tracking)
+### <a id="af-push-token"></a>Push token (uninstall tracking)
 
 Push tokens are used for Audience Builder and client callbacks; they are also required for uninstall and reinstall tracking.
 
@@ -1320,6 +1321,38 @@ The listener function is called after the SDK receives the final attribution dat
 - `creative` the creative grouping level string of the current attribution.
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
+
+### <a id="af-ad-revenue"></a>Ad revenue tracking
+
+**Note**: This feature is available only in the native SDK v4.18.0 and above.
+
+You can track ad revenue information with Adjust SDK by invoking the following method:
+
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackAdRevenue(source, payload);
+```
+</td>
+</tr>
+</table>
+
+Parameters of the method which you need to pass are:
+
+- `source` - `String` object which indicates the source of ad revenue info.
+- `payload` - `JSONObject` object which contains ad revenue JSON.
+
+Currently we support the below `source` parameter values:
+
+- `AD_REVENUE_MOPUB` - representing MoPub mediation platform (for more information, check [integration guide][sdk2sdk-mopub])
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
@@ -1605,7 +1638,7 @@ If you want to use the Adjust SDK to recognize users whose devices came with you
   </tr>
   </table>
 
-- Replace `{TrackerToken}` with the tracker token you created in step one. Please note that the dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six-character token and not the entire URL.
+- Replace `{TrackerToken}` with the tracker token you created in step one. Please note that the dashboard displays a tracker URL (including `http://app.adjust.com/`). In your source code, you should specify only the six or seven-character token and not the entire URL.
 
 - Build and run your app. You should see a line like the following in your LogCat:
 
@@ -1909,6 +1942,8 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 [testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+
+[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>License
 

@@ -12,7 +12,9 @@ public class TestLibraryBridge {
     public static WebView webView;
     private static TestLibrary testLibrary;
     private static int order;
-    private static final String baseUrl = "https://10.0.2.2:8443";
+    private static final String baseIp = "10.0.2.2";
+    private static final String baseUrl = "https://" + baseIp + ":8443";
+    public static final String controlUrl = "ws://" + baseIp + ":1987";
 
     public TestLibraryBridge(final WebView webView) {
         TestLibraryBridge.webView = webView;
@@ -26,7 +28,7 @@ public class TestLibraryBridge {
     }
 
     private static void initTestLibrary() {
-        TestLibraryBridge.testLibrary = new TestLibrary(baseUrl, new ICommandRawJsonListener() {
+        TestLibraryBridge.testLibrary = new TestLibrary(baseUrl, controlUrl, new ICommandRawJsonListener() {
             @Override
             public void executeCommand(String json) {
                 Log.d("testappwebbridge", String.format("execRawTestCommandCallback %s, %d", json, order));

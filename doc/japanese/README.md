@@ -92,7 +92,7 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
  
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.17.0'
+implementation 'com.adjust.sdk:adjust-android:4.18.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
