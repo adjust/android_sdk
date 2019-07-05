@@ -58,6 +58,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
  
    * [推送标签（Push token）—— 卸载跟踪](#af-push-token)
    * [归因回传](#af-attribution-callback)
+   * [广告收入跟踪](#af-ad-revenue)
    * [会话和事件回传](#af-session-event-callbacks)
    * [用户归因](#af-user-attribution)
    * [设备ID](#af-device-ids)
@@ -1328,6 +1329,35 @@ Adjust.onCreate(adjustConfig);
 - `clickLabel` 目前归因的点击标签字符串
 - `adid` Adjust设备ID字符串
 
+### <a id="af-ad-revenue"></a>广告收入跟踪
+
+**注意**：此功能仅适用于原生 SDK 4.18.0 及以上版本。
+
+您可以通过调用以下方法，使用 Adjust SDK 对广告收入进行跟踪：
+
+<table> 
+<tr> 
+<td> 
+<b>原生应用 SDK</b>
+</td> 
+</tr> 
+<tr> 
+<td> 
+
+```java
+Adjust.trackAdRevenue(source, payload);
+```
+</td> 
+</tr> 
+</table> 
+
+您需要传递的方法参数包括：
+- `source` - 表明广告收入来源信息的` String` 对象。
+- `payload` - 包含广告收入 JSON 的` JSONObject` 对象。
+
+目前，我们支持以下 `source` 参数值：
+- `AD_REVENUE_MOPUB` - 代表 MoPub 广告聚合平台（更多相关信息，请查看 [集成指南][sdk2sdk-mopub]）
+
 ### <a id="af-session-event-callbacks"></a>会话和事件回传
 
 您可以注册一个监听器(listener)，以在事件或者会话被跟踪时获取通知。共有四个监听器：一个是用来跟踪成功事件，一个跟踪失败事件，一个跟踪成功会话，一个跟踪失败会话。您可以在创建配置对象后添加任意数量的监听器：
@@ -1916,6 +1946,8 @@ public void onFireIntentClick(View v) {
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 [testing_console]:                https://docs.adjust.com/zh/testing-console/#part-2
 [dev_api]:                        https://docs.adjust.com/zh/adjust-for-developers/
+
+[sdk2sdk-mopub]:                  ../chinese/sdk-to-sdk/mopub.md
 
 
 ## <a id="license"></a>许可
