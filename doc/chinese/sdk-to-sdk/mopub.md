@@ -21,4 +21,4 @@ public void onImpression(@NonNull final String adUnitId, @Nullable final Impress
 如果您对 MoPub 广告收入跟踪有任何疑问，请联系您的专属客户经理，或发送邮件至 support@adjust.com。
 
 [mopub-docs]:        https://developers.mopub.com/publishers/android/impression-data/
-[android-readme]:    ../../doc/chinese/README.md
+[android-readme]:    ../../chinese/README.md
