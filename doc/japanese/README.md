@@ -100,7 +100,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 アプリの WebView内で Adjust SDK を使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.0'
 ```
 
 Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、Adjust [リリースページ][releases]からダウンロードすることもできます。
@@ -137,7 +137,7 @@ implementation 'com.google.android.gms:play-services-analytics:16.0.4'
 Proguardをお使いの場合は、以下をProguardファイルに追加してください。
 
 ```
--keep public class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
