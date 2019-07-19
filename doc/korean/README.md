@@ -58,6 +58,7 @@
 
    * [푸시 토큰(push token) - uninstall tracking](#af-push-token)
    * [어트리뷰션 콜백](#af-attribution-callback)
+   * [광고 매출 트래킹](#af-ad-revenue)
    * [세션 및 이벤트 콜백](#af-session-event-callbacks)
    * [사용자 어트리뷰션](#af-user-attribution)
    * [기기 ID](#af-device-ids)
@@ -101,7 +102,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 앱의 웹뷰 내에 있는 Adjust SDK를 사용하려면 다음과 같은 추가 종속성도 포함시키십시오.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.0'
 ```
 
 또한 Adjust SDK 및 웹뷰 확장자를 JAR 파일로 추가할 수 있으며, 이 파일은 [릴리스 페이지][releases]에서 다운로드할 수 있습니다.
@@ -137,7 +138,7 @@ Google Play Store가 대상이 **아닌** 경우 다음 권한을 추가합니�
 Proguard를 사용 중인 경우 다음 행을 Proguard 파일에 추가합니다.
 
 ```
--keep public class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
@@ -1327,6 +1328,35 @@ Adjust.onCreate(adjustConfig);
 - `clickLabel` 현재 설치된 클릭 레이블.
 - `adid` Adjust 기기 식별자.
 
+### <a id="af-ad-revenue"></a>광고 매출 트래킹
+
+**참고**: 이 기능은 네이티브 SDK v4.18.0 이상에서만 사용할 수 있습니다.
+
+다음 메서드를 호출하여 Adjust SDK로 광고 매출 정보를 트래킹할 수 있습니다.
+
+<table> 
+<tr> 
+<td> 
+<b>네이티브 앱 SDK</b>
+</td> 
+</tr> 
+<tr> 
+<td> 
+
+```java
+Adjust.trackAdRevenue(source, payload);
+```
+</td> 
+</tr> 
+</table> 
+
+전달해야 하는 메서드 파라미터는 다음과 같습니다.
+- `source` - 광고 매출 정보의 소스를 나타내는 `String` 객체
+- `payload` - 광고 매출 JSON을 포함하는 `JSONObject` 객체
+
+애드저스트는 현재 다음의 `source` 파라미터 값을 지원합니다.
+- `AD_REVENUE_MOPUB` - MoPub 미디에이션 플랫폼을 나타냄(자세한 정보는 [연동 가이드][sdk2sdk-mopub] 확인)
+
 ### <a id="af-session-event-callbacks"></a>세션 및 이벤트 콜백
 
 리스너를 등록하여 이벤트나 세션 추적 시 알림을 받을 수 있습니다. 리스너에는 4가지가 있습니다. 이벤트 추적 성공, 이벤트 추적 실패, 세션 추적 성공, 그리고 세션 추적 실패입니다. 아래와 같은 config 개체를 생성한 다음 필요한 만큼 리스너를 추가하십시오.
@@ -1916,6 +1946,8 @@ Adjust SDK는 이 때 초기화가 준비되지만 실제로 시작되지는 않
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk/tree/master/doc/korean
 [testing_console]:                https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]:                        https://docs.adjust.com/en/adjust-for-developers/
+
+[sdk2sdk-mopub]:                  ../korean/sdk-to-sdk/mopub.md
 
 
 ## <a id="license"></a>라이선스

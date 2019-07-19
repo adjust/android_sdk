@@ -55,6 +55,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
    * [Push トークン (uninstall tracking)](#af-push-token)
    * [アトリビューションコールバック](#af-attribution-callback)
+   * [広告収益の計測](#af-ad-revenue)
    * [イベントとセッションのコールバック](#af-session-event-callbacks)
    * [ユーザーアトリビューション](#af-user-attribution)
    * [デバイス ID](#af-device-ids)
@@ -99,7 +100,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 アプリの WebView内で Adjust SDK を使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.0'
 ```
 
 Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、Adjust [リリースページ][releases]からダウンロードすることもできます。
@@ -136,7 +137,7 @@ implementation 'com.google.android.gms:play-services-analytics:16.0.4'
 Proguardをお使いの場合は、以下をProguardファイルに追加してください。
 
 ```
--keep public class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
@@ -1327,7 +1328,36 @@ Adjust.onCreate(adjustConfig);
 - `creative` 最新アトリビューションのクリエイティブ名
 - `clickLabel` 最新アトリビューションのクリックラベル
 - `adid` AdjustユニークID（Adjust Device ID）
- 
+
+### <a id="af-ad-revenue"></a>広告収益の計測
+
+**注**：この機能はネイティブのSDK v4.18.0以降のみ利用可能です。
+
+Adjust SDKを利用して、以下のメソッドを呼び出し広告収益情報を計測することができます。
+
+<table> 
+<tr> 
+<td> 
+<b>ネイティブアプリSDK</b>
+</td> 
+</tr> 
+<tr> 
+<td> 
+
+```java
+Adjust.trackAdRevenue(source, payload);
+```
+</td> 
+</tr> 
+</table> 
+
+Adjust SDKにパスするメソッドの引数は以下の通りです。
+- `source` - 広告収益情報のソースを指定する`String`オブジェクト
+- `payload` - `広告収益のJSONを格納する`JSONObject`オブジェクト
+
+現在、弊社は以下の`source`パラメータの値のみ対応しています。
+- `AD_REVENUE_MOPUB` - メディエーションプラットフォームのMoPubを示します。（詳細は、[統合ガイド][sdk2sdk-mopub]を参照ください）
+
 ### <a id="af-session-event-callbacks"></a>イベントとセッションのコールバック
 
 イベントとセッションの双方もしくはどちらかをトラッキングし、成功か失敗かの通知を受け取れるようリスナを登録することができます。リスナには４種類あります。それらは、トラッキングに成功したイベント、トラッキングに失敗したイベント、トラッキングに成功したセッション、トラッキングに失敗したイベントです。 Configオブジェクトを生成すると、リスナをいくつでも追加することができます。
@@ -1912,6 +1942,7 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [testing_console]:                https://docs.adjust.com/ja/testing-console/#part-2
 [dev_api]:                        https://docs.adjust.com/ja/adjust-for-developers/
 
+[sdk2sdk-mopub]:                  ../japanese/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>ライセンス
 

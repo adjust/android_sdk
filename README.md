@@ -103,7 +103,7 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.17.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
@@ -138,7 +138,7 @@ If you are **not targeting the Google Play Store**, you must also add the follow
 If you are using Proguard, add these lines to your Proguard file:
 
 ```
--keep public class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.** { *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
