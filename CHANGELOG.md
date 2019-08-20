@@ -1,3 +1,9 @@
+### Version 4.18.1 (20th August 2019)
+#### Fixed
+- Improved checks for presence of real Facebook app needed to read `fb_id` (thanks to @StanKocken).
+
+---
+
 ### Version 4.18.0 (26th June 2019)
 #### Added
 - Added `trackAdRevenue(String, JSONObject)` method to `Adjust` interface to allow tracking of ad revenue. With this release added support for `MoPub` ad revenue tracking.

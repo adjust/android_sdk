@@ -1,9 +1,11 @@
 package com.adjust.sdk;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -27,6 +29,26 @@ import static com.adjust.sdk.Constants.XLARGE;
  * Created by pfms on 06/11/14.
  */
 class DeviceInfo {
+
+    private static final String OFFICIAL_FACEBOOK_SIGNATURE =
+            "30820268308201d102044a9c4610300d06092a864886f70d0101040500307a310b3009060355040613" +
+                    "025553310b3009060355040813024341311230100603550407130950616c6f20416c746f31" +
+                    "183016060355040a130f46616365626f6f6b204d6f62696c653111300f060355040b130846" +
+                    "616365626f6f6b311d301b0603550403131446616365626f6f6b20436f72706f726174696f" +
+                    "6e3020170d3039303833313231353231365a180f32303530303932353231353231365a307a" +
+                    "310b3009060355040613025553310b30090603550408130243413112301006035504071309" +
+                    "50616c6f20416c746f31183016060355040a130f46616365626f6f6b204d6f62696c653111" +
+                    "300f060355040b130846616365626f6f6b311d301b0603550403131446616365626f6f6b20" +
+                    "436f72706f726174696f6e30819f300d06092a864886f70d010101050003818d0030818902" +
+                    "818100c207d51df8eb8c97d93ba0c8c1002c928fab00dc1b42fca5e66e99cc3023ed2d214d" +
+                    "822bc59e8e35ddcf5f44c7ae8ade50d7e0c434f500e6c131f4a2834f987fc46406115de201" +
+                    "8ebbb0d5a3c261bd97581ccfef76afc7135a6d59e8855ecd7eacc8f8737e794c60a761c536" +
+                    "b72b11fac8e603f5da1a2d54aa103b8a13c0dbc10203010001300d06092a864886f70d0101" +
+                    "040500038181005ee9be8bcbb250648d3b741290a82a1c9dc2e76a0af2f2228f1d9f9c4007" +
+                    "529c446a70175c5a900d5141812866db46be6559e2141616483998211f4a673149fb2232a1" +
+                    "0d247663b26a9031e15f84bc1c74d141ff98a02d76f85b2c8ab2571b6469b232d8e768a7f7" +
+                    "ca04f7abe4a775615916c07940656b58717457b42bd928a2";
+
     String playAdId;
     String playAdIdSource;
     Boolean isTrackingEnabled;
@@ -294,6 +316,20 @@ class DeviceInfo {
 
     private String getFacebookAttributionId(final Context context) {
         try {
+            @SuppressLint("PackageManagerGetSignatures")
+            Signature[] signatures = context.getPackageManager().getPackageInfo(
+                    "com.facebook.katana",
+                    PackageManager.GET_SIGNATURES).signatures;
+            if (signatures == null || signatures.length != 1) {
+                // Unable to find the correct signatures for this APK
+                return null;
+            }
+            Signature facebookApkSignature = signatures[0];
+            if (!OFFICIAL_FACEBOOK_SIGNATURE.equals(facebookApkSignature.toCharsString())) {
+                // not the official Facebook application
+                return null;
+            }
+
             final ContentResolver contentResolver = context.getContentResolver();
             final Uri uri = Uri.parse("content://com.facebook.katana.provider.AttributionIdProvider");
             final String columnName = "aid";
