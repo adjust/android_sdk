@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -500,8 +501,30 @@ public class Util {
 
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            connectivityType = activeNetwork.getType();
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                connectivityType = activeNetwork.getType();
+            } else {
+
+                NetworkCapabilities activeNetwork = cm.getNetworkCapabilities(cm.getActiveNetwork());
+
+                if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+                    connectivityType = NetworkCapabilities.TRANSPORT_WIFI;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
+                    connectivityType = NetworkCapabilities.TRANSPORT_CELLULAR;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET))
+                    connectivityType = NetworkCapabilities.TRANSPORT_ETHERNET;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE))
+                    connectivityType = NetworkCapabilities.TRANSPORT_WIFI_AWARE;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_VPN))
+                    connectivityType = NetworkCapabilities.TRANSPORT_VPN;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_LOWPAN))
+                    connectivityType = NetworkCapabilities.TRANSPORT_LOWPAN;
+                else if (activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH))
+                    connectivityType = NetworkCapabilities.TRANSPORT_BLUETOOTH;
+            }
         } catch (Exception e) {
             getLogger().warn("Couldn't read connectivity type (%s)", e.getMessage());
         }
