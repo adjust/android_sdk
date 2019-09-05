@@ -40,4 +40,5 @@ dependencies {
 
     // Add new referrer API support.
     implementation 'com.android.installreferrer:installreferrer:1.0'
+    implementation project(path: ':sdk-plugin-oaid')
 }

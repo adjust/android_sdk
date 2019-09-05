@@ -30,6 +30,19 @@ public class Reflection {
         return null;
     }
 
+    static Map<String, String> getOaidParameters(Context context, ILogger logger) {
+        Object oaidParameters = null;
+        try {
+            oaidParameters = invokeStaticMethod("com.adjust.sdk.oaid.Util", "getOaidParameters", new Class[]{Context.class, ILogger.class}, context, logger);
+            Class<Map<String, String>> stringStringMapClass = (Class<Map<String, String>>) (Class) Map.class;
+            if (oaidParameters != null && stringStringMapClass.isInstance(oaidParameters)) {
+                return (Map<String, String>) oaidParameters;
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
     public static String getPlayAdId(Context context) {
         try {
             Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
