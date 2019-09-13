@@ -540,10 +540,8 @@ public class Util {
                     }
                 }
             }
-
-
-            // if for any reason connectivityType is still unknown, lets try retrieving using old way
-            if (connectivityType == -1) {
+            // for older versions
+            else {
                 NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
                 connectivityType = activeNetwork.getType();
             }
