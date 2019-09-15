@@ -1,6 +1,6 @@
 ### Version 4.18.1 (20th August 2019)
 #### Fixed
-- Fixed low vulnerability issue by adding checks for FB app authenticity when requesting `fb_id` (thanks to @StanKocken).
+- Improved checks for presence of real Facebook app needed to read `fb_id` (thanks to @StanKocken).
 
 ---
 
