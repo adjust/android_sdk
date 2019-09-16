@@ -21,7 +21,6 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.oaid.AdjustOaid;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -151,8 +150,6 @@ public class GlobalApplication extends Application {
         // - IMEI plugin is added to your app.
         // - Your app is NOT distributed in Google Play Store.
         // AdjustImei.readImei();
-
-        AdjustOaid.readOaid(this);
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
