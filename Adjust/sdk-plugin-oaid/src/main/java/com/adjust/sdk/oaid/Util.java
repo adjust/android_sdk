@@ -17,7 +17,7 @@ public class Util {
             if (oaidInfo != null) {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
-                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isOaidTrackLimited());
+                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
                 return parameters;
             }
         }
