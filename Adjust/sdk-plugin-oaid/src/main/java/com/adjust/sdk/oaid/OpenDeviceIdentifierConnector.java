@@ -20,7 +20,7 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
     private ILogger logger;
 
     private OpenDeviceIdentifierConnector(Context context, ILogger logger) {
-        binders = new LinkedBlockingDeque();
+        binders = new LinkedBlockingQueue<IBinder>(1);
         this.context = context;
         this.logger = logger;
     }
