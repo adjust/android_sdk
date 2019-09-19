@@ -6,7 +6,6 @@ import android.os.RemoteException;
 
 import com.adjust.sdk.ILogger;
 
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class OpenDeviceIdentifierClient {
@@ -16,13 +15,15 @@ public class OpenDeviceIdentifierClient {
 
     private Context context;
     private long maxWaitTime;
+    private ILogger logger;
 
     public static Info getOaidInfo(Context context, ILogger logger, long maxWaitTimeInMilli) {
         Info oaidInfo = null;
         try {
-            OpenDeviceIdentifierClient openDeviceIdentifierClient = new OpenDeviceIdentifierClient(context, maxWaitTimeInMilli);
+            OpenDeviceIdentifierClient openDeviceIdentifierClient =
+                    new OpenDeviceIdentifierClient(context, logger, maxWaitTimeInMilli);
             oaidInfo = openDeviceIdentifierClient.getOaidInfo();
-        } catch (IOException e) {
+        } catch (Throwable e) {
             logger.error("Fail to read oaid, %s", e.getMessage());
         }
         return oaidInfo;
@@ -54,62 +55,55 @@ public class OpenDeviceIdentifierClient {
         }
     }
 
-    private OpenDeviceIdentifierClient(Context context, long maxWaitTime) {
+    private OpenDeviceIdentifierClient(Context context, ILogger logger, long maxWaitTime) {
         this.context = context;
+        this.logger = logger;
         this.maxWaitTime = maxWaitTime;
     }
 
-    private Info getOaidInfo() throws IOException {
-        Info oaidInfo;
-        try {
-            OpenDeviceIdentifierService service = getOpenDeviceIdentifierService();
-            oaidInfo = new Info(service.getOaid(), service.isOaidTrackLimited());
-        } catch (RemoteException e) {
-            throw new IOException("OpenDeviceIdentifierService remote exception " + e.getMessage());
+    private synchronized Info getOaidInfo()
+            throws RemoteException
+    {
+        OpenDeviceIdentifierConnector serviceConnector = getServiceConnector(this.context);
+        if (serviceConnector == null) {
+            return null;
         }
-        return oaidInfo;
+        OpenDeviceIdentifierService service =
+                serviceConnector.getOpenDeviceIdentifierService(maxWaitTime, TimeUnit.MILLISECONDS);
+        if (service == null) {
+            return null;
+        }
+
+        return new Info(service.getOaid(), service.isOaidTrackLimited());
     }
 
-    private OpenDeviceIdentifierService getOpenDeviceIdentifierService() throws IOException {
-        synchronized (this) {
-            OpenDeviceIdentifierConnector serviceConnector = getServiceConnector(this.context);
-            return getOpenDeviceIdentifierService(serviceConnector);
-        }
-    }
+    private OpenDeviceIdentifierConnector getServiceConnector(Context context) {
+        OpenDeviceIdentifierConnector connector =
+                OpenDeviceIdentifierConnector.getInstance(context, logger);
 
-    private OpenDeviceIdentifierConnector getServiceConnector(Context context) throws IOException {
-
-        OpenDeviceIdentifierConnector connector = OpenDeviceIdentifierConnector.getInstance(context);
-
+        // see if we still have a connected service, and return it
         if (connector.isServiceConnected()) {
             return connector;
         }
 
+        // try to bind to the service and return it
+        Intent intentForOaidService = new Intent(OAID_INTENT_ACTION);
+        intentForOaidService.setPackage(HUAWEI_PACKAGE_NAME);
+        boolean couldBind = false;
+
         try {
-            if (context.bindService(getIntentForOaidService(), connector, Context.BIND_AUTO_CREATE)) {
+            couldBind = context.bindService(intentForOaidService, connector, Context.BIND_AUTO_CREATE);
+
+            if (couldBind) {
                 return connector;
             }
-        } catch (Throwable localThrowable) {
-            connector.unbindAndReset();
+        } finally {
+            if (!couldBind) {
+                connector.unbindAndReset();
+            }
         }
 
-        throw new IOException("OpenDeviceIdentifierService is not available to bind");
+        logger.warn("OpenDeviceIdentifierService is not available to bind");
+        return null;
     }
-
-    private Intent getIntentForOaidService() {
-        Intent intent = new Intent(OAID_INTENT_ACTION);
-        intent.setPackage(HUAWEI_PACKAGE_NAME);
-        return intent;
-    }
-
-    private OpenDeviceIdentifierService getOpenDeviceIdentifierService(OpenDeviceIdentifierConnector serviceConnector) throws IOException {
-        try {
-            return serviceConnector.getOpenDeviceIdentifierService(maxWaitTime, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException ex) {
-            throw new IOException("Interrupted exception");
-        } catch (Throwable throwable) {
-            throw new IOException(throwable);
-        }
-    }
-
 }

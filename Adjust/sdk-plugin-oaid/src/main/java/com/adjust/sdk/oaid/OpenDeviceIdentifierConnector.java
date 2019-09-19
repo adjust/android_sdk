@@ -5,10 +5,11 @@ import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import com.adjust.sdk.ILogger;
+
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder.DeathRecipient {
 
@@ -16,17 +17,20 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
     private static final Object lockObject = new Object();
     private BlockingQueue<IBinder> binders = null;
     private Context context;
+    private ILogger logger;
 
-    private OpenDeviceIdentifierConnector(Context context) {
+    private OpenDeviceIdentifierConnector(Context context, ILogger logger) {
         binders = new LinkedBlockingDeque();
         this.context = context;
+        this.logger = logger;
     }
 
-    public static OpenDeviceIdentifierConnector getInstance(Context context) {
+    // Lazy-initialized singleton
+    public static OpenDeviceIdentifierConnector getInstance(Context context, ILogger logger) {
         if (instance == null) {
             synchronized (OpenDeviceIdentifierConnector.class) {
                 if (instance == null) {
-                    instance = new OpenDeviceIdentifierConnector(context);
+                    instance = new OpenDeviceIdentifierConnector(context, logger);
                 }
             }
         }
@@ -37,13 +41,21 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
         return !binders.isEmpty();
     }
 
-    public OpenDeviceIdentifierService getOpenDeviceIdentifierService(long timeOut, TimeUnit timeUnit)
-            throws InterruptedException, TimeoutException {
-
+    public OpenDeviceIdentifierService getOpenDeviceIdentifierService(long timeOut,
+                                                                      TimeUnit timeUnit)
+    {
         // poll in order to wait & retrieve the service
-        IBinder service = binders.poll(timeOut, timeUnit);
+        IBinder service;
+        try {
+            service = binders.poll(timeOut, timeUnit);
+        } catch (InterruptedException e) {
+            logger.error("Waiting for OpenDeviceIdentifier Service interrupted: %s",
+                    e.getMessage());
+            return null;
+        }
         if (service == null) {
-            throw new TimeoutException("Timed out waiting for the service connection");
+            logger.warn("Timed out waiting for OpenDeviceIdentifier service connection");
+            return null;
         }
 
         // set back for next poll
