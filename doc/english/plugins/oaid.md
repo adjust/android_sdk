@@ -4,8 +4,6 @@ For specific markets, OAID can be used for attribution on Android. In order to u
 
 This OAID plugin respects the behavior of the Adjust Android SDK in terms of device ID reading **while additionally** allowing the Adjust SDK to read the OAID values of a device.
 
-**Important:** This Adjust plugin is meant to be used only in apps that are **NOT being published to the Google Play Store**.
-
 Before using this plugin, please make sure that you have read official [Android SDK README][readme] and successfully completed Adjust SDK integration into your app. After that, please make sure to perform these additional steps if you want to enable Adjust SDK to collect and track OAID identifier.
 
 ### Add OAID plugin to your app
