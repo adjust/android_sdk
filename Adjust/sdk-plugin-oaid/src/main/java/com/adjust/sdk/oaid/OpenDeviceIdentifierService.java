@@ -1,6 +1,5 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /Users/shashanksuhane/Development/adjust/sdk/android_sdk_dev/Adjust/sdk-plugin-oaid/src/main/aidl/com/uodis/opendevice/aidl/OpenDeviceIdentifierService.aidl
  */
 package com.adjust.sdk.oaid;
 
