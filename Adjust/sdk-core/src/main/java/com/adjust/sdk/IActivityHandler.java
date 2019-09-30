@@ -69,6 +69,8 @@ public interface IActivityHandler {
 
     void gotOptOutResponse();
 
+    void gotOptOutFromMarketingResponse();
+
     Context getContext();
 
     String getAdid();

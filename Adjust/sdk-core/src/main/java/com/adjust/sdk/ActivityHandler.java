@@ -641,6 +641,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void gotOptOutFromMarketingResponse() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                gotOptOutFromMarketingResponseI();
+            }
+        });
+    }
+
+    @Override
     public Context getContext() {
         return adjustConfig.context;
     }
@@ -1907,7 +1917,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
         PackageBuilder optOutPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
 
-        ActivityPackage optOutPackage = optOutPackageBuilder.buildGdprPackage();
+        ActivityPackage optOutPackage = optOutPackageBuilder.buildOptOutFromMarketingPackage();
         packageHandler.addPackage(optOutPackage);
 
         // If Opt out from marketing choice was cached, remove it.
@@ -1941,6 +1951,11 @@ public class ActivityHandler implements IActivityHandler {
 
         packageHandler.flush();
         setEnabledI(false);
+    }
+
+    private void gotOptOutFromMarketingResponseI() {
+        activityState.isOptOutFromMarketing = true;
+        writeActivityStateI();
     }
 
     private void readActivityStateI(Context context) {
