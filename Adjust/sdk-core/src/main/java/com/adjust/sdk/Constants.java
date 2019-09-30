@@ -28,6 +28,7 @@ public interface Constants {
 
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
+    String OPT_OUT_MARKETING_URL = ""; //TODO
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.18.4";

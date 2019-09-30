@@ -25,5 +25,7 @@ public interface IPackageHandler {
 
     String getGdprPath();
 
+    String getOptOutMarketingPath();
+
     void teardown();
 }

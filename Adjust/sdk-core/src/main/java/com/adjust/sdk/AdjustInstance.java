@@ -51,6 +51,11 @@ public class AdjustInstance {
     private String gdprPath;
 
     /**
+     * Path for Opt out marketing package.
+     */
+    private String optOutMarketingPath;
+
+    /**
      * Called upon SDK initialisation.
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
@@ -75,6 +80,7 @@ public class AdjustInstance {
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
         adjustConfig.gdprPath = this.gdprPath;
+        adjustConfig.optOutMarketingPath = this.optOutMarketingPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -390,6 +396,20 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to allow the user to opt out from marketing.
+     *
+     * @param context Application context
+     */
+    public void optOutFromMarketing(final Context context) {
+        saveOptOutFromMarketing(context);
+        if (checkActivityHandler("opt out from marketing")) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.optOutFromMarketing();
+            }
+        }
+    }
+
+    /**
      * Track ad revenue from a source provider
      *
      * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
@@ -533,6 +553,22 @@ public class AdjustInstance {
     }
 
     /**
+     * Save Opt-out from marketing choice to shared preferences.
+     *
+     * @param context Application context
+     */
+    private void saveOptOutFromMarketing(final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.setOptOutFromMarketing();
+            }
+        };
+        Util.runInBackground(command);
+    }
+
+    /**
      * Flag stored referrers as still not sent.
      *
      * @param context Application context
@@ -570,11 +606,17 @@ public class AdjustInstance {
         if (testOptions.gdprPath != null) {
             this.gdprPath = testOptions.gdprPath;
         }
+        if (testOptions.optOutMarketingPath != null) {
+            this.optOutMarketingPath = testOptions.optOutMarketingPath;
+        }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
         }
         if (testOptions.gdprUrl != null) {
             AdjustFactory.setGdprUrl(testOptions.gdprUrl);
+        }
+        if (testOptions.optOutMarketingUrl != null) {
+            AdjustFactory.setOptOutMarketingUrl(testOptions.optOutMarketingUrl);
         }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();

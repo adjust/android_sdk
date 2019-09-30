@@ -240,6 +240,16 @@ public class Adjust {
     }
 
     /**
+     * Called to allow the user to opt out from marketing.
+     *
+     * @param context Application context
+     */
+    public static void optOutFromMarketing(final Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.optOutFromMarketing(context);
+    }
+
+    /**
      * Track ad revenue from a source provider
      *
      * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources

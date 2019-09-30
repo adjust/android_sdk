@@ -24,6 +24,7 @@ public class RequestHandler implements IRequestHandler {
     private ILogger logger;
     private String basePath;
     private String gdprPath;
+    private String optOutMarketingPath;
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
@@ -31,6 +32,7 @@ public class RequestHandler implements IRequestHandler {
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();
+        this.optOutMarketingPath = packageHandler.getOptOutMarketingPath();
     }
 
     @Override
@@ -70,15 +72,20 @@ public class RequestHandler implements IRequestHandler {
     private void sendI(ActivityPackage activityPackage, int queueSize) {
         String url;
 
-        if (activityPackage.getActivityKind() != ActivityKind.GDPR) {
-            url = AdjustFactory.getBaseUrl();
-            if (basePath != null) {
-                url += basePath;
-            }
-        } else {
+        if (activityPackage.getActivityKind() == ActivityKind.GDPR) {
             url = AdjustFactory.getGdprUrl();
             if (gdprPath != null) {
                 url += gdprPath;
+            }
+        } else if (activityPackage.getActivityKind() == ActivityKind.OPT_OUT_MARKETING) {
+            url = AdjustFactory.getOptOutMarketingUrl();
+            if (optOutMarketingPath != null) {
+                url += optOutMarketingPath;
+            }
+        } else {
+            url = AdjustFactory.getBaseUrl();
+            if (basePath != null) {
+                url += basePath;
             }
         }
 

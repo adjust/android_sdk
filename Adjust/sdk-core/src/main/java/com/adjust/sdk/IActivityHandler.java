@@ -63,6 +63,8 @@ public interface IActivityHandler {
 
     void gdprForgetMe();
 
+    void optOutFromMarketing();
+
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
     void gotOptOutResponse();
@@ -84,4 +86,6 @@ public interface IActivityHandler {
     String getBasePath();
 
     String getGdprPath();
+
+    String getOptOutMarketingPath();
 }

@@ -35,6 +35,7 @@ public class AdjustFactory {
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
     private static String gdprUrl = Constants.GDPR_URL;
+    private static String optOutMarketingUrl = Constants.OPT_OUT_MARKETING_URL;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -171,6 +172,13 @@ public class AdjustFactory {
         return AdjustFactory.gdprUrl;
     }
 
+    public static String getOptOutMarketingUrl() {
+        if (AdjustFactory.optOutMarketingUrl == null) {
+            return Constants.OPT_OUT_MARKETING_URL;
+        }
+        return AdjustFactory.optOutMarketingUrl;
+    }
+
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
             return new UtilNetworking.ConnectionOptions();
@@ -240,6 +248,10 @@ public class AdjustFactory {
 
     public static void setGdprUrl(String gdprUrl) {
         AdjustFactory.gdprUrl = gdprUrl;
+    }
+
+    public static void setOptOutMarketingUrl(String optOutMarketingUrl) {
+        AdjustFactory.optOutMarketingUrl = optOutMarketingUrl;
     }
 
     public static void useTestConnectionOptions() {
@@ -349,6 +361,7 @@ public class AdjustFactory {
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
+        optOutMarketingUrl = Constants.OPT_OUT_MARKETING_URL;
         connectionOptions = null;
         tryInstallReferrer = true;
     }

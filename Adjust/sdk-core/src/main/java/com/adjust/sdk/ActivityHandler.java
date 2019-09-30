@@ -62,6 +62,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
+    private String optOutMarketingPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -609,6 +610,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void optOutFromMarketing() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                optOutFromMarketingI();
+            }
+        });
+    }
+
+    @Override
     public void trackAdRevenue(final String source, final JSONObject adRevenueJson) {
         executor.submit(new Runnable() {
             @Override
@@ -673,6 +684,11 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public String getGdprPath() {
         return this.gdprPath;
+    }
+
+    @Override
+    public String getOptOutMarketingPath() {
+        return this.optOutMarketingPath;
     }
 
     public InternalState getInternalState() {
@@ -1874,6 +1890,32 @@ public class ActivityHandler implements IActivityHandler {
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", gdprPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+    }
+
+    private void optOutFromMarketingI() {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+        if (activityState.isOptOutFromMarketing) { return; }
+
+        activityState.isOptOutFromMarketing = true;
+        writeActivityStateI();
+
+        long now = System.currentTimeMillis();
+        PackageBuilder optOutPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage optOutPackage = optOutPackageBuilder.buildGdprPackage();
+        packageHandler.addPackage(optOutPackage);
+
+        // If Opt out from marketing choice was cached, remove it.
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        sharedPreferencesManager.removeOptOutFromMarketing();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", optOutPackage.getSuffix());
         } else {
             packageHandler.sendFirstPackage();
         }
