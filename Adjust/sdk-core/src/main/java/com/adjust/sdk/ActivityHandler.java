@@ -835,6 +835,7 @@ public class ActivityHandler implements IActivityHandler {
 
         this.basePath = adjustConfig.basePath;
         this.gdprPath = adjustConfig.gdprPath;
+        this.optOutMarketingPath = adjustConfig.optOutMarketingPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
@@ -943,6 +944,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
         sharedPreferencesManager.removeGdprForgetMe();
+        sharedPreferencesManager.removeOptOutFromMarketing();
 
         // check for cached deep links
         processCachedDeeplinkI();
