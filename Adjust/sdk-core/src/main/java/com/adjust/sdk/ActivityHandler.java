@@ -791,6 +791,8 @@ public class ActivityHandler implements IActivityHandler {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMe();
+            } else if (sharedPreferencesManager.getOptOutFromMarketing()) {
+                optOutFromMarketing();
             }
         }
 
@@ -921,12 +923,16 @@ public class ActivityHandler implements IActivityHandler {
 
         // track the first session package only if it's enabled
         if (internalState.isEnabled()) {
-            if (!sharedPreferencesManager.getGdprForgetMe()) {
+            if (sharedPreferencesManager.getGdprForgetMe()) {
+                gdprForgetMeI();
+            } else {
                 activityState.sessionCount = 1; // this is the first session
                 transferSessionPackageI(now);
                 checkAfterNewStartI(sharedPreferencesManager);
-            } else {
-                gdprForgetMeI();
+
+                if (sharedPreferencesManager.getOptOutFromMarketing()) {
+                    optOutFromMarketing();
+                }
             }
         }
 
@@ -1348,6 +1354,8 @@ public class ActivityHandler implements IActivityHandler {
 
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
+            } else if (sharedPreferencesManager.getOptOutFromMarketing()) {
+                optOutFromMarketing();
             }
 
             // check if install was tracked
