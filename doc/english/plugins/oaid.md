@@ -46,4 +46,4 @@ To stop the SDK from reading OAID values, call `AdjustOaid.doNotReadOaid()`.
 
 [readme]:    ../../../README.md
 [releases]:  https://github.com/adjust/android_sdk/releases
-[readme proguard]: https://github.com/adjust/android_sdk#proguard-settings
+[readme proguard]: https://github.com/adjust/android_sdk#qs-proguard
