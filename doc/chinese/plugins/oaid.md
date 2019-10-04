@@ -44,6 +44,6 @@ Adjust.onCreate(config);
 如欲阻止 SDK 读取 OAID 值，请调用 `AdjustOaid.doNotReadOaid()`.
 
 
-[readme]:  ../../doc/chinese/README.md
+[readme]:  ../../chinese/README.md
 [releases]: https://github.com/adjust/android_sdk/releases
-[readme proguard]:  ../../doc/chinese/README.md#qs-proguard
+[readme proguard]:  ../../chinese/README.md#qs-proguard
