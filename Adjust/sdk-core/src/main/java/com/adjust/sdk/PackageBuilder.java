@@ -155,6 +155,12 @@ public class PackageBuilder {
             parameters.putAll(imeiParameters);
         }
 
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
         // Callback and partner parameters.
         if (!isInDelay) {
             PackageBuilder.addMapJson(parameters, "callback_params", this.sessionParameters.callbackParameters);
@@ -233,6 +239,12 @@ public class PackageBuilder {
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
             parameters.putAll(imeiParameters);
+        }
+
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
         }
 
         // Callback and partner parameters.
@@ -316,6 +328,12 @@ public class PackageBuilder {
             parameters.putAll(imeiParameters);
         }
 
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -358,6 +376,12 @@ public class PackageBuilder {
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
             parameters.putAll(imeiParameters);
+        }
+
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
@@ -452,6 +476,12 @@ public class PackageBuilder {
             parameters.putAll(imeiParameters);
         }
 
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -503,6 +533,12 @@ public class PackageBuilder {
             parameters.putAll(imeiParameters);
         }
 
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -551,6 +587,12 @@ public class PackageBuilder {
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
             parameters.putAll(imeiParameters);
+        }
+
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.

@@ -21,26 +21,31 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.18.2'
 }
 
-task adjustCriteoAndroidAar (type: Copy) {
+task adjustOaidAndroidAar (type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
-    include 'sdk-plugin-criteo-release.aar'
+    include 'sdk-plugin-oaid-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-plugin-criteo-release.aar', "${project.name}.aar"
+    rename 'sdk-plugin-oaid-release.aar', "${project.name}.aar"
 
 }
 
-task adjustCriteoAndroidJar(type: Jar) {
+task adjustOaidAndroidJar(type: Jar) {
+    dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
+
+    from('build/intermediates/library_assets/release/packageReleaseAssets/out/') {
+        into('assets')
+    }
     from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+
     archiveName "${project.name}.jar"
 }
 
@@ -53,34 +58,34 @@ task androidJavadocs(type: Javadoc) {
     }
 }
 
-task adjustCriteoAndroidJavadocsJar(type: Jar) {
+task adjustOaidAndroidJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
     classifier = 'javadoc'
     from androidJavadocs.destinationDir
 }
 
-task adjustCriteoAndroidSourcesJar(type: Jar) {
+task adjustOaidAndroidSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives adjustCriteoAndroidJar
-    archives adjustCriteoAndroidJavadocsJar
-    archives adjustCriteoAndroidSourcesJar
+    archives adjustOaidAndroidJar
+    archives adjustOaidAndroidJavadocsJar
+    archives adjustOaidAndroidSourcesJar
 }
 
 publishing {
     publications {
-        mavenAndroidCriteo(MavenPublication) {
+        mavenAndroidOaid(MavenPublication) {
             customizePom(pom)
             groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-criteo'
+            artifactId 'adjust-android-oaid'
             version rootProject.ext.coreVersionName
 
-            artifact adjustCriteoAndroidJar
-            artifact adjustCriteoAndroidJavadocsJar
-            artifact adjustCriteoAndroidSourcesJar
+            artifact adjustOaidAndroidJar
+            artifact adjustOaidAndroidJavadocsJar
+            artifact adjustOaidAndroidSourcesJar
         }
     }
 
@@ -101,11 +106,11 @@ def customizePom(pom) {
     pom.withXml {
         def root = asNode()
 
-        // Add all items necessary for maven central publication
+        // Add all items necessary for maven central publication.
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
-            description 'The Criteo plugin for Adjust SDK for Android'
-            name 'Adjust Android SDK Criteo plugin'
+            description 'The Oaid plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Oaid plugin'
             url 'https://github.com/adjust/android_sdk'
 
             organization {
@@ -138,19 +143,19 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidCriteoPublication {
+    tasks.generatePomFileForMavenAndroidOaidPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
     /* TODO check if/how to replace this tasks
-    tasks.publishMavenAndroidCriteoPublicationToMavenLocal {
+    tasks.publishMavenAndroidOaidPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
-    tasks.publishMavenAndroidCriteoPublicationToMavenRepository {
+    tasks.publishMavenAndroidOaidPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
     */
 }
 
 signing {
-    sign publishing.publications.mavenAndroidCriteo
+    sign publishing.publications.mavenAndroidOaid
 }

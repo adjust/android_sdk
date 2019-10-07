@@ -97,7 +97,12 @@ class GlobalApplication : Application() {
         // Enable IMEI reading ONLY IF:
         // - IMEI plugin is added to your app.
         // - Your app is NOT distributed in Google Play Store.
-        // AdjustImei.readImei();
+        // AdjustImei.readImei()
+
+        // Enable OAID reading ONLY IF:
+        // - OAID plugin is added to your app.
+        // - Your app is NOT distributed in Google Play Store & supports OAID.
+        // AdjustOaid.readOaid()
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config)

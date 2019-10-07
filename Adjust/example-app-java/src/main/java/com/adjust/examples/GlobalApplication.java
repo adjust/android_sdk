@@ -151,6 +151,11 @@ public class GlobalApplication extends Application {
         // - Your app is NOT distributed in Google Play Store.
         // AdjustImei.readImei();
 
+        // Enable OAID reading ONLY IF:
+        // - OAID plugin is added to your app.
+        // - Your app is NOT distributed in Google Play Store & supports OAID.
+        // AdjustOaid.readOaid();
+
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
 

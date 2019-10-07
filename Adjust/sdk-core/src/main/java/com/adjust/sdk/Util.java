@@ -14,6 +14,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -496,17 +498,69 @@ public class Util {
     }
 
     public static int getConnectivityType(Context context) {
-        int connectivityType = -1; // default value that will not be send
-
         try {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-            connectivityType = activeNetwork.getType();
+
+            if (cm == null) {
+                return -1;
+            }
+
+            // for api 22 or lower, still need to get raw type
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                return activeNetwork.getType();
+            }
+
+            // .getActiveNetwork() is only available from api 23
+            Network activeNetwork = cm.getActiveNetwork();
+            if (activeNetwork == null) {
+                return -1;
+            }
+
+            NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+            if (activeNetworkCapabilities == null) {
+                return -1;
+            }
+
+            // check each network capability available from api 23
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                return NetworkCapabilities.TRANSPORT_WIFI;
+            }
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                return NetworkCapabilities.TRANSPORT_CELLULAR;
+            }
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                return NetworkCapabilities.TRANSPORT_ETHERNET;
+            }
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                return NetworkCapabilities.TRANSPORT_VPN;
+            }
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
+                return NetworkCapabilities.TRANSPORT_BLUETOOTH;
+            }
+
+            // only after api 26, that more transport capabilities were added
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                return -1;
+            }
+
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) {
+                return NetworkCapabilities.TRANSPORT_WIFI_AWARE;
+            }
+
+            // and then after api 27, that more transport capabilities were added
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+                return -1;
+            }
+
+            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_LOWPAN)) {
+                return NetworkCapabilities.TRANSPORT_LOWPAN;
+            }
         } catch (Exception e) {
             getLogger().warn("Couldn't read connectivity type (%s)", e.getMessage());
         }
 
-        return connectivityType;
+        return -1;
     }
 
     public static int getNetworkType(Context context) {
