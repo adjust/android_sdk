@@ -95,14 +95,14 @@
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.18.1'
+implementation 'com.adjust.sdk:adjust-android:4.18.2'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 앱의 웹뷰 내에 있는 Adjust SDK를 사용하려면 다음과 같은 추가 종속성도 포함시키십시오.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.1'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.2'
 ```
 
 또한 Adjust SDK 및 웹뷰 확장자를 JAR 파일로 추가할 수 있으며, 이 파일은 [릴리스 페이지][releases]에서 다운로드할 수 있습니다.
