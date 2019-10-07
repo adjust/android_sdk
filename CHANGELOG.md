@@ -1,3 +1,9 @@
+### Version 4.18.2 (7th October 2019)
+#### Added
+- Added `adjust-android-oaid` plugin and support for reading Huawei Advertising Identifier (OAID).
+
+---
+
 ### Version 4.18.1 (20th August 2019)
 #### Fixed
 - Fixed low vulnerability issue by adding checks for FB app authenticity when requesting `fb_id` (thanks to @StanKocken).
