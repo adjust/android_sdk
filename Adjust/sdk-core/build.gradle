@@ -46,13 +46,13 @@ task adjustCoreAarDebug(type: Copy) {
 
 task adjustCoreJarRelease(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+    from('build/intermediates/javac/release/classes/')
     archiveName "adjust-sdk-release.jar"
 }
 
 task adjustCoreJarDebug(type: Jar) {
     dependsOn 'compileDebugJavaWithJavac'
-    from('build/intermediates/javac/debug/compileDebugJavaWithJavac/classes/')
+    from('build/intermediates/javac/debug/classes/')
     archiveName "adjust-sdk-debug.jar"
 }
 
