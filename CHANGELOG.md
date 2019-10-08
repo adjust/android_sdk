@@ -6,7 +6,7 @@
 - Added Korean localisation for OAID plugin document.
 
 #### Changed
-- Updated gradle tasks because of path changes in Android Studio 3.5.1.
+- Updated Gradle tasks because of path changes in Android Studio and Gradle 3.5.1.
 
 ---
 
