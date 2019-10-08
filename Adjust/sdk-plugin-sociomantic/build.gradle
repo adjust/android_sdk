@@ -39,7 +39,7 @@ task adjustSociomanticAndroidAar (type: Copy) {
 
 task adjustSociomanticAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+    from('build/intermediates/javac/release/classes/')
     archiveName "${project.name}.jar"
 }
 

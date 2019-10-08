@@ -44,7 +44,7 @@ task adjustWebBridgeAndroidJar(type: Jar) {
     from('build/intermediates/library_assets/release/packageReleaseAssets/out/') {
         into('assets')
     }
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+    from('build/intermediates/javac/release/classes/')
 
     archiveName "${project.name}.jar"
 }
