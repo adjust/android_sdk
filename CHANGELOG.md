@@ -1,4 +1,17 @@
+### Version 4.18.3 (8th October 2019)
+#### Fixed
+- Fixed issue in v4.18.2 where released JAR in Maven was empty (thanks to @calvarez-ov).
+
+#### Added
+- Added Korean localisation for OAID plugin document.
+
+#### Changed
+- Updated gradle tasks because of path changes in Android Studio 3.5.1.
+
+---
+
 ### Version 4.18.2 (7th October 2019)
+⚠️ **Please skip using this version and update SDK to v4.18.3 or higher (release contains empty JAR).**
 #### Added
 - Added `adjust-android-oaid` plugin and support for reading Huawei Advertising Identifier (OAID).
 
