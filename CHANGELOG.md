@@ -1,4 +1,4 @@
-### Version 4.18.3 (8th October 2019)
+### Version 4.18.3 (9th October 2019)
 #### Fixed
 - Fixed issue in v4.18.2 where released JAR in Maven was empty (thanks to @calvarez-ov).
 
