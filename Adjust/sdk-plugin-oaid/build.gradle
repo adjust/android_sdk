@@ -24,7 +24,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.18.2'
+    // implementation 'com.adjust.sdk:adjust-android:4.18.3'
 }
 
 task adjustOaidAndroidAar (type: Copy) {
@@ -44,7 +44,7 @@ task adjustOaidAndroidJar(type: Jar) {
     from('build/intermediates/library_assets/release/packageReleaseAssets/out/') {
         into('assets')
     }
-    from('build/intermediates/javac/release/compileReleaseJavaWithJavac/classes/')
+    from('build/intermediates/javac/release/classes/')
 
     archiveName "${project.name}.jar"
 }
