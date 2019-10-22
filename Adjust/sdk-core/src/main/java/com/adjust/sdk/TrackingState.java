@@ -1,7 +1,8 @@
 package com.adjust.sdk;
 
 public enum TrackingState {
-    OPTED_OUT(1);
+    OPTED_OUT(1),
+    THIRD_PARTY_SHARING_DISABLED(2);
 
     private int value;
 

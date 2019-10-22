@@ -108,6 +108,11 @@ public class RequestHandler implements IRequestHandler {
                 return;
             }
 
+            if (responseData.trackingState == TrackingState.THIRD_PARTY_SHARING_DISABLED) {
+                activityHandler.gotDisableThirdPartySharingResponse();
+                return;
+            }
+
             if (responseData.jsonResponse == null) {
                 packageHandler.closeFirstPackage(responseData, activityPackage);
                 return;

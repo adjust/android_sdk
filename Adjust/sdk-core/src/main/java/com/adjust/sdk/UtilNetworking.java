@@ -175,8 +175,12 @@ public class UtilNetworking {
         responseData.timestamp = jsonResponse.optString("timestamp", null);
         responseData.adid = jsonResponse.optString("adid", null);
         String trackingState = jsonResponse.optString("tracking_state", null);
-        if (trackingState != null && trackingState.equals("opted_out")) {
-            responseData.trackingState = TrackingState.OPTED_OUT;
+        if (trackingState != null) {
+            if (trackingState.equals("opted_out")) {
+                responseData.trackingState = TrackingState.OPTED_OUT;
+            } else if (trackingState.equals("third_party_sharing_disabled")) { // TODO: verify this with backend
+                responseData.trackingState = TrackingState.THIRD_PARTY_SHARING_DISABLED;
+            }
         }
 
         if (message == null) {

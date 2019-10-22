@@ -41,7 +41,7 @@ public enum ActivityKind {
             case GDPR:
                 return "gdpr";
             case THIRD_PARTY_SHARING:
-                return "third_party_sharing";
+                return "third_party_sharing";  //TODO: verify name with backend
             case AD_REVENUE:
                 return "ad_revenue";
             default:

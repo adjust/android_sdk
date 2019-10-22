@@ -1921,9 +1921,6 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState.isGdprForgotten) { return; }
         if (activityState.isThirdPartySharingDisabled) { return; }
 
-        activityState.isThirdPartySharingDisabled = true;
-        writeActivityStateI();
-
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
 

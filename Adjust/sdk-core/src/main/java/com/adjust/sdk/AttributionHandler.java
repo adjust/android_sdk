@@ -231,6 +231,10 @@ public class AttributionHandler implements IAttributionHandler {
                 activityHandlerWeakRef.get().gotOptOutResponse();
                 return;
             }
+            if (responseData.trackingState == TrackingState.THIRD_PARTY_SHARING_DISABLED) {
+                activityHandlerWeakRef.get().gotDisableThirdPartySharingResponse();
+                return;
+            }
             checkAttributionResponse((AttributionResponseData)responseData);
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
