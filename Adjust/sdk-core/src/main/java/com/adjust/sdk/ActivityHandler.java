@@ -62,7 +62,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
-    private String optOutMarketingPath;
+    private String disableThirdPartySharingPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -610,11 +610,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void optOutFromMarketing() {
+    public void disableThirdPartySharing() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                optOutFromMarketingI();
+                disableThirdPartySharingI();
             }
         });
     }
@@ -641,11 +641,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void gotOptOutFromMarketingResponse() {
+    public void gotDisableThirdPartySharingResponse() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                gotOptOutFromMarketingResponseI();
+                gotDisableThirdPartySharingResponseI();
             }
         });
     }
@@ -697,8 +697,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public String getOptOutMarketingPath() {
-        return this.optOutMarketingPath;
+    public String getDisableThirdPartySharingPath() {
+        return this.disableThirdPartySharingPath;
     }
 
     public InternalState getInternalState() {
@@ -791,8 +791,8 @@ public class ActivityHandler implements IActivityHandler {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMe();
-            } else if (sharedPreferencesManager.getOptOutFromMarketing()) {
-                optOutFromMarketing();
+            } else if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                disableThirdPartySharing();
             }
         }
 
@@ -835,7 +835,7 @@ public class ActivityHandler implements IActivityHandler {
 
         this.basePath = adjustConfig.basePath;
         this.gdprPath = adjustConfig.gdprPath;
-        this.optOutMarketingPath = adjustConfig.optOutMarketingPath;
+        this.disableThirdPartySharingPath = adjustConfig.disableThirdPartySharingPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
@@ -931,8 +931,8 @@ public class ActivityHandler implements IActivityHandler {
                 transferSessionPackageI(now);
                 checkAfterNewStartI(sharedPreferencesManager);
 
-                if (sharedPreferencesManager.getOptOutFromMarketing()) {
-                    optOutFromMarketing();
+                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                    disableThirdPartySharing();
                 }
             }
         }
@@ -944,7 +944,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
         sharedPreferencesManager.removeGdprForgetMe();
-        sharedPreferencesManager.removeOptOutFromMarketing();
+        sharedPreferencesManager.removeDisableThirdPartySharing();
 
         // check for cached deep links
         processCachedDeeplinkI();
@@ -1356,8 +1356,8 @@ public class ActivityHandler implements IActivityHandler {
 
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
-            } else if (sharedPreferencesManager.getOptOutFromMarketing()) {
-                optOutFromMarketing();
+            } else if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                disableThirdPartySharing();
             }
 
             // check if install was tracked
@@ -1915,27 +1915,27 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void optOutFromMarketingI() {
+    private void disableThirdPartySharingI() {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
-        if (activityState.isOptOutFromMarketing) { return; }
+        if (activityState.isThirdPartySharingDisabled) { return; }
 
-        activityState.isOptOutFromMarketing = true;
+        activityState.isThirdPartySharingDisabled = true;
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder optOutPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
 
-        ActivityPackage optOutPackage = optOutPackageBuilder.buildOptOutFromMarketingPackage();
-        packageHandler.addPackage(optOutPackage);
+        ActivityPackage activityPackage = packageBuilder.buildDisableThirdPartySharingPackage();
+        packageHandler.addPackage(activityPackage);
 
-        // If Opt out from marketing choice was cached, remove it.
+        // If disable third party sharing flag was cached, remove it.
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-        sharedPreferencesManager.removeOptOutFromMarketing();
+        sharedPreferencesManager.removeDisableThirdPartySharing();
 
         if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", optOutPackage.getSuffix());
+            logger.info("Buffered event %s", activityPackage.getSuffix());
         } else {
             packageHandler.sendFirstPackage();
         }
@@ -1963,8 +1963,8 @@ public class ActivityHandler implements IActivityHandler {
         setEnabledI(false);
     }
 
-    private void gotOptOutFromMarketingResponseI() {
-        activityState.isOptOutFromMarketing = true;
+    private void gotDisableThirdPartySharingResponseI() {
+        activityState.isThirdPartySharingDisabled = true;
         writeActivityStateI();
     }
 

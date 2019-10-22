@@ -17,7 +17,6 @@ import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.LinkedList;
-import java.util.Locale;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
@@ -27,7 +26,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
             new ObjectStreamField("isGdprForgotten", boolean.class),
-            new ObjectStreamField("isOptOutFromMarketing", boolean.class),
+            new ObjectStreamField("isThirdPartySharingDisabled", boolean.class),
             new ObjectStreamField("askingAttribution", boolean.class),
             new ObjectStreamField("eventCount", int.class),
             new ObjectStreamField("sessionCount", int.class),
@@ -49,7 +48,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected String uuid;
     protected boolean enabled;
     protected boolean isGdprForgotten;
-    protected boolean isOptOutFromMarketing;
+    protected boolean isThirdPartySharingDisabled;
     protected boolean askingAttribution;
 
     // global counters
@@ -81,7 +80,7 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.createUuid();
         enabled = true;
         isGdprForgotten = false;
-        isOptOutFromMarketing = false;
+        isThirdPartySharingDisabled = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -143,7 +142,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalString(uuid, otherActivityState.uuid)) return false;
         if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
         if (!Util.equalBoolean(isGdprForgotten, otherActivityState.isGdprForgotten)) return false;
-        if (!Util.equalBoolean(isOptOutFromMarketing, otherActivityState.isOptOutFromMarketing)) return false;
+        if (!Util.equalBoolean(isThirdPartySharingDisabled, otherActivityState.isThirdPartySharingDisabled)) return false;
         if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
         if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
         if (!Util.equalInt(sessionCount, otherActivityState.sessionCount)) return false;
@@ -167,7 +166,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashString(uuid);
         hashCode = 37 * hashCode + Util.hashBoolean(enabled);
         hashCode = 37 * hashCode + Util.hashBoolean(isGdprForgotten);
-        hashCode = 37 * hashCode + Util.hashBoolean(isOptOutFromMarketing);
+        hashCode = 37 * hashCode + Util.hashBoolean(isThirdPartySharingDisabled);
         hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution);
         hashCode = 37 * hashCode + eventCount;
         hashCode = 37 * hashCode + sessionCount;
@@ -200,7 +199,7 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.readStringField(fields, "uuid", null);
         enabled = Util.readBooleanField(fields, "enabled", true);
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
-        isOptOutFromMarketing = Util.readBooleanField(fields, "isOptOutFromMarketing", false);
+        isThirdPartySharingDisabled = Util.readBooleanField(fields, "isThirdPartySharingDisabled", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);

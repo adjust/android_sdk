@@ -24,7 +24,7 @@ public class RequestHandler implements IRequestHandler {
     private ILogger logger;
     private String basePath;
     private String gdprPath;
-    private String optOutMarketingPath;
+    private String disableThirdPartySharingPath;
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
@@ -32,7 +32,7 @@ public class RequestHandler implements IRequestHandler {
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();
-        this.optOutMarketingPath = packageHandler.getOptOutMarketingPath();
+        this.disableThirdPartySharingPath = packageHandler.getDisableThirdPartySharingPath();
     }
 
     @Override
@@ -77,10 +77,10 @@ public class RequestHandler implements IRequestHandler {
             if (gdprPath != null) {
                 url += gdprPath;
             }
-        } else if (activityPackage.getActivityKind() == ActivityKind.OPT_OUT_MARKETING) {
-            url = AdjustFactory.getOptOutMarketingUrl();
-            if (optOutMarketingPath != null) {
-                url += optOutMarketingPath;
+        } else if (activityPackage.getActivityKind() == ActivityKind.THIRD_PARTY_SHARING) {
+            url = AdjustFactory.getDisableThirdPartySharingUrl();
+            if (disableThirdPartySharingPath != null) {
+                url += disableThirdPartySharingPath;
             }
         } else {
             url = AdjustFactory.getBaseUrl();

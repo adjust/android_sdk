@@ -135,13 +135,13 @@ public class PackageBuilder {
         return gdprPackage;
     }
 
-    ActivityPackage buildOptOutFromMarketingPackage() {
-        Map<String, String> parameters = getOptOutMarketingParameters();
-        ActivityPackage optOutPackage = getDefaultActivityPackage(ActivityKind.OPT_OUT_MARKETING);
-        optOutPackage.setPath(""); // TODO - update
-        optOutPackage.setSuffix("");
-        optOutPackage.setParameters(parameters);
-        return optOutPackage;
+    ActivityPackage buildDisableThirdPartySharingPackage() {
+        Map<String, String> parameters = getDisableThirdPartySharingParameters();
+        ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.THIRD_PARTY_SHARING);
+        activityPackage.setPath("/disable_third_party_sharing");
+        activityPackage.setSuffix("");
+        activityPackage.setParameters(parameters);
+        return activityPackage;
     }
 
     ActivityPackage buildAdRevenuePackage(String source, JSONObject adRevenueJson) {
@@ -588,7 +588,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getOptOutMarketingParameters() {
+    private Map<String, String> getDisableThirdPartySharingParameters() {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);

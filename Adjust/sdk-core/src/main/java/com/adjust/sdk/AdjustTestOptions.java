@@ -10,10 +10,10 @@ public class AdjustTestOptions {
     public Context context;
     public String baseUrl;
     public String gdprUrl;
-    public String optOutMarketingUrl;
+    public String disableThirdPartySharingUrl;
     public String basePath;
     public String gdprPath;
-    public String optOutMarketingPath;
+    public String disableThirdPartySharingPath;
     public Boolean useTestConnectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;

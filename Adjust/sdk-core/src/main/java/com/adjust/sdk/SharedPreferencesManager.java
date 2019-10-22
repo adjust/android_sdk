@@ -37,7 +37,7 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
 
-    private static final String PREFS_KEY_OPT_OUT_FROM_MARKETING = "opt_out_from_marketing";
+    private static final String PREFS_KEY_DISABLE_THIRD_PARTY_SHARING = "disable_third_party_sharing";
 
     private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
 
@@ -316,16 +316,16 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void setOptOutFromMarketing() {
-        saveBoolean(PREFS_KEY_OPT_OUT_FROM_MARKETING, true);
+    public synchronized void setDisableThirdPartySharing() {
+        saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true);
     }
 
-    public synchronized boolean getOptOutFromMarketing() {
-        return getBoolean(PREFS_KEY_OPT_OUT_FROM_MARKETING, false);
+    public synchronized boolean getDisableThirdPartySharing() {
+        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false);
     }
 
-    public synchronized void removeOptOutFromMarketing() {
-        remove(PREFS_KEY_OPT_OUT_FROM_MARKETING);
+    public synchronized void removeDisableThirdPartySharing() {
+        remove(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING);
     }
 
     public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {

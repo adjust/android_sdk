@@ -35,7 +35,7 @@ public class AdjustFactory {
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
     private static String gdprUrl = Constants.GDPR_URL;
-    private static String optOutMarketingUrl = Constants.OPT_OUT_MARKETING_URL;
+    private static String disableThirdPartySharingUrl = Constants.DISABLE_THIRD_PARTY_SHARING_URL;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -172,11 +172,11 @@ public class AdjustFactory {
         return AdjustFactory.gdprUrl;
     }
 
-    public static String getOptOutMarketingUrl() {
-        if (AdjustFactory.optOutMarketingUrl == null) {
-            return Constants.OPT_OUT_MARKETING_URL;
+    public static String getDisableThirdPartySharingUrl() {
+        if (AdjustFactory.disableThirdPartySharingUrl == null) {
+            return Constants.DISABLE_THIRD_PARTY_SHARING_URL;
         }
-        return AdjustFactory.optOutMarketingUrl;
+        return AdjustFactory.disableThirdPartySharingUrl;
     }
 
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
@@ -250,8 +250,8 @@ public class AdjustFactory {
         AdjustFactory.gdprUrl = gdprUrl;
     }
 
-    public static void setOptOutMarketingUrl(String optOutMarketingUrl) {
-        AdjustFactory.optOutMarketingUrl = optOutMarketingUrl;
+    public static void setDisableThirdPartySharingUrl(String disableThirdPartySharingUrl) {
+        AdjustFactory.disableThirdPartySharingUrl = disableThirdPartySharingUrl;
     }
 
     public static void useTestConnectionOptions() {
@@ -361,7 +361,7 @@ public class AdjustFactory {
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
-        optOutMarketingUrl = Constants.OPT_OUT_MARKETING_URL;
+        disableThirdPartySharingUrl = Constants.DISABLE_THIRD_PARTY_SHARING_URL;
         connectionOptions = null;
         tryInstallReferrer = true;
     }

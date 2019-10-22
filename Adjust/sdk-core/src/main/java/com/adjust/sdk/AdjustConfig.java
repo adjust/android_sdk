@@ -10,7 +10,7 @@ import java.util.List;
 public class AdjustConfig {
     String basePath;
     String gdprPath;
-    String optOutMarketingPath;
+    String disableThirdPartySharingPath;
     Context context;
     String appToken;
     String environment;

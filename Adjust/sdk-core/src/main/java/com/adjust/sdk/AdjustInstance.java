@@ -51,9 +51,9 @@ public class AdjustInstance {
     private String gdprPath;
 
     /**
-     * Path for Opt out marketing package.
+     * Path for disable third party sharing package.
      */
-    private String optOutMarketingPath;
+    private String disableThirdPartySharingPath;
 
     /**
      * Called upon SDK initialisation.
@@ -80,7 +80,7 @@ public class AdjustInstance {
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
         adjustConfig.gdprPath = this.gdprPath;
-        adjustConfig.optOutMarketingPath = this.optOutMarketingPath;
+        adjustConfig.disableThirdPartySharingPath = this.disableThirdPartySharingPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -396,15 +396,15 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to allow the user to opt out from marketing.
+     * Called to disable the third party sharing.
      *
      * @param context Application context
      */
-    public void optOutFromMarketing(final Context context) {
-        saveOptOutFromMarketing(context);
-        if (checkActivityHandler("opt out from marketing")) {
+    public void disableThirdPartySharing(final Context context) {
+        saveDisableThirdPartySharing(context);
+        if (checkActivityHandler("disable third party sharing")) {
             if (activityHandler.isEnabled()) {
-                activityHandler.optOutFromMarketing();
+                activityHandler.disableThirdPartySharing();
             }
         }
     }
@@ -553,16 +553,16 @@ public class AdjustInstance {
     }
 
     /**
-     * Save Opt-out from marketing choice to shared preferences.
+     * Save disable third party sharing choice to shared preferences.
      *
      * @param context Application context
      */
-    private void saveOptOutFromMarketing(final Context context) {
+    private void saveDisableThirdPartySharing(final Context context) {
         Runnable command = new Runnable() {
             @Override
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setOptOutFromMarketing();
+                sharedPreferencesManager.setDisableThirdPartySharing();
             }
         };
         Util.runInBackground(command);
@@ -606,8 +606,8 @@ public class AdjustInstance {
         if (testOptions.gdprPath != null) {
             this.gdprPath = testOptions.gdprPath;
         }
-        if (testOptions.optOutMarketingPath != null) {
-            this.optOutMarketingPath = testOptions.optOutMarketingPath;
+        if (testOptions.disableThirdPartySharingPath != null) {
+            this.disableThirdPartySharingPath = testOptions.disableThirdPartySharingPath;
         }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
@@ -615,8 +615,8 @@ public class AdjustInstance {
         if (testOptions.gdprUrl != null) {
             AdjustFactory.setGdprUrl(testOptions.gdprUrl);
         }
-        if (testOptions.optOutMarketingUrl != null) {
-            AdjustFactory.setOptOutMarketingUrl(testOptions.optOutMarketingUrl);
+        if (testOptions.disableThirdPartySharingUrl != null) {
+            AdjustFactory.setDisableThirdPartySharingUrl(testOptions.disableThirdPartySharingUrl);
         }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();

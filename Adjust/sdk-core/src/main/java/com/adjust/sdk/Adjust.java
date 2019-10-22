@@ -240,13 +240,13 @@ public class Adjust {
     }
 
     /**
-     * Called to allow the user to opt out from marketing.
+     * Called to disable the third party sharing.
      *
      * @param context Application context
      */
-    public static void optOutFromMarketing(final Context context) {
+    public static void disableThirdPartySharing(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.optOutFromMarketing(context);
+        adjustInstance.disableThirdPartySharing(context);
     }
 
     /**
