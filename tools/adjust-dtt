@@ -30,7 +30,7 @@ def sign_apk(apk_path, store_name, keystore_path, keystore_pass, keystore_alias)
                      "SIGN_KEYSTORE_FILE" => keystore_path,
                      "SIGN_KEYSTORE_PASS" => keystore_pass,
                      "SIGN_KEYSTORE_ALIAS" => keystore_alias},
-                     "jarsigner -keystore $SIGN_KEYSTORE_FILE -storepass $SIGN_KEYSTORE_PASS ${APK_FILE}_${STORE_NAME}.apk $SIGN_KEYSTORE_ALIAS")
+                     "jarsigner -keystore $SIGN_KEYSTORE_FILE -storepass $SIGN_KEYSTORE_PASS ${APK_FILE}_${STORE_NAME}.apk \"$SIGN_KEYSTORE_ALIAS\"")
 
     if status == false
         abort "\n[adjust-dtt][e]: Aborting...\n\n"
