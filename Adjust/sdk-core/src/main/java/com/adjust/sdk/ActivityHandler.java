@@ -927,13 +927,13 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                    disableThirdPartySharingI();
+                }
+
                 activityState.sessionCount = 1; // this is the first session
                 transferSessionPackageI(now);
                 checkAfterNewStartI(sharedPreferencesManager);
-
-                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                    disableThirdPartySharing();
-                }
             }
         }
 
@@ -1357,7 +1357,7 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                disableThirdPartySharing();
+                disableThirdPartySharingI();
             }
 
             // check if install was tracked
