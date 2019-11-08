@@ -338,11 +338,6 @@ public class SdkClickHandler implements ISdkClickHandler {
                 return;
             }
 
-            if (responseData.trackingState == TrackingState.THIRD_PARTY_SHARING_DISABLED) {
-                activityHandler.gotDisableThirdPartySharingResponse();
-                return;
-            }
-
             if (isReftag) {
                 // Remove referrer from shared preferences after sdk_click is sent.
                 SharedPreferencesManager sharedPreferencesManager

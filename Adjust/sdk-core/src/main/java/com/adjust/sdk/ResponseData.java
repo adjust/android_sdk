@@ -17,6 +17,7 @@ public class ResponseData {
     public ActivityKind activityKind;
     public TrackingState trackingState;
     public AdjustAttribution attribution;
+    public boolean thirdPartySharingDisabled;
 
     protected ResponseData() {}
 
