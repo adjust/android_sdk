@@ -178,8 +178,6 @@ public class UtilNetworking {
         if (trackingState != null) {
             if (trackingState.equals("opted_out")) {
                 responseData.trackingState = TrackingState.OPTED_OUT;
-            } else if (trackingState.equals("third_party_sharing_disabled")) { // TODO: verify this with backend
-                responseData.trackingState = TrackingState.THIRD_PARTY_SHARING_DISABLED;
             }
         }
 

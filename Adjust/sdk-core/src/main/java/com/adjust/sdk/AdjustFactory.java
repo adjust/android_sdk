@@ -35,7 +35,6 @@ public class AdjustFactory {
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
     private static String gdprUrl = Constants.GDPR_URL;
-    private static String disableThirdPartySharingUrl = Constants.DISABLE_THIRD_PARTY_SHARING_URL;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -172,13 +171,6 @@ public class AdjustFactory {
         return AdjustFactory.gdprUrl;
     }
 
-    public static String getDisableThirdPartySharingUrl() {
-        if (AdjustFactory.disableThirdPartySharingUrl == null) {
-            return Constants.DISABLE_THIRD_PARTY_SHARING_URL;
-        }
-        return AdjustFactory.disableThirdPartySharingUrl;
-    }
-
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
             return new UtilNetworking.ConnectionOptions();
@@ -248,10 +240,6 @@ public class AdjustFactory {
 
     public static void setGdprUrl(String gdprUrl) {
         AdjustFactory.gdprUrl = gdprUrl;
-    }
-
-    public static void setDisableThirdPartySharingUrl(String disableThirdPartySharingUrl) {
-        AdjustFactory.disableThirdPartySharingUrl = disableThirdPartySharingUrl;
     }
 
     public static void useTestConnectionOptions() {
@@ -361,7 +349,6 @@ public class AdjustFactory {
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
-        disableThirdPartySharingUrl = Constants.DISABLE_THIRD_PARTY_SHARING_URL;
         connectionOptions = null;
         tryInstallReferrer = true;
     }

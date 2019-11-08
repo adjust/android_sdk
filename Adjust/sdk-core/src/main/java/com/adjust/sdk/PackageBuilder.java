@@ -137,7 +137,7 @@ public class PackageBuilder {
 
     ActivityPackage buildDisableThirdPartySharingPackage() {
         Map<String, String> parameters = getDisableThirdPartySharingParameters();
-        ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.THIRD_PARTY_SHARING);
+        ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
         activityPackage.setPath("/disable_third_party_sharing");
         activityPackage.setSuffix("");
         activityPackage.setParameters(parameters);

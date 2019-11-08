@@ -615,9 +615,6 @@ public class AdjustInstance {
         if (testOptions.gdprUrl != null) {
             AdjustFactory.setGdprUrl(testOptions.gdprUrl);
         }
-        if (testOptions.disableThirdPartySharingUrl != null) {
-            AdjustFactory.setDisableThirdPartySharingUrl(testOptions.disableThirdPartySharingUrl);
-        }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();
         }

@@ -77,11 +77,6 @@ public class RequestHandler implements IRequestHandler {
             if (gdprPath != null) {
                 url += gdprPath;
             }
-        } else if (activityPackage.getActivityKind() == ActivityKind.THIRD_PARTY_SHARING) {
-            url = AdjustFactory.getDisableThirdPartySharingUrl();
-            if (disableThirdPartySharingPath != null) {
-                url += disableThirdPartySharingPath;
-            }
         } else {
             url = AdjustFactory.getBaseUrl();
             if (basePath != null) {
