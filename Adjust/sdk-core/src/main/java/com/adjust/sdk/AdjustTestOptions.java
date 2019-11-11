@@ -10,7 +10,6 @@ public class AdjustTestOptions {
     public Context context;
     public String baseUrl;
     public String gdprUrl;
-    public String disableThirdPartySharingUrl;
     public String basePath;
     public String gdprPath;
     public String disableThirdPartySharingPath;
