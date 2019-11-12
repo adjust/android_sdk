@@ -391,6 +391,14 @@ public class ActivityHandler implements IActivityHandler {
         return isEnabledI();
     }
 
+    @Override
+    public boolean isInForeground() {
+        if (internalState == null) {
+            return false;
+        }
+        return internalState.isInForeground();
+    }
+
     private boolean isEnabledI() {
         if (activityState != null) {
             return activityState.enabled;
@@ -927,7 +935,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                // send disable third party sharing before session if it came first
+                if (sharedPreferencesManager.getDisableThirdPartySharingBeforeSession()) {
                     disableThirdPartySharingI();
                 }
 

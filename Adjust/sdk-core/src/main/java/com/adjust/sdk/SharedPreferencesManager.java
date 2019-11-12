@@ -64,6 +64,16 @@ public class SharedPreferencesManager {
     private static final int REFERRERS_COUNT = 10;
 
     /**
+     * Indicates that disable third party sharing to be called before session.
+     */
+    private static final int SEND_BEFORE_SESSION = 1;
+
+    /**
+     * Indicates that disable third party sharing to be called after session.
+     */
+    private static final int SEND_AFTER_SESSION = 2;
+
+    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -316,12 +326,28 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void setDisableThirdPartySharing() {
-        saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true);
+    public synchronized void setDisableThirdPartySharing(final boolean sendAfterSession) {
+        if (sendAfterSession) {
+            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, SEND_AFTER_SESSION);
+        } else {
+            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, SEND_BEFORE_SESSION);
+        }
+    }
+
+    public synchronized boolean getDisableThirdPartySharingBeforeSession() {
+        int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
+        if (value == SEND_BEFORE_SESSION) {
+            return true;
+        }
+        return false;
     }
 
     public synchronized boolean getDisableThirdPartySharing() {
-        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false);
+        int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
+        if (value == SEND_BEFORE_SESSION || value == SEND_AFTER_SESSION) {
+            return true;
+        }
+        return false;
     }
 
     public synchronized void removeDisableThirdPartySharing() {
@@ -388,6 +414,16 @@ public class SharedPreferencesManager {
     }
 
     /**
+     * Write a integer value to shared preferences.
+     *
+     * @param key   Key to be written to shared preferences
+     * @param value Value to be written to shared preferences
+     */
+    private synchronized void saveInteger(final String key, final int value) {
+        this.sharedPreferences.edit().putInt(key, value).apply();
+    }
+
+    /**
      * Get a string value from shared preferences.
      *
      * @param key Key for which string value should be retrieved
@@ -431,6 +467,21 @@ public class SharedPreferencesManager {
     private synchronized long getLong(final String key, final long defaultValue) {
         try {
             return this.sharedPreferences.getLong(key, defaultValue);
+        } catch (ClassCastException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Get a integer value from shared preferences.
+     *
+     * @param key          Key for which integer value should be retrieved
+     * @param defaultValue Default value to be returned if nothing found in shared preferences
+     * @return Integer value for given key saved in shared preferences
+     */
+    private synchronized int getInteger(final String key, final int defaultValue) {
+        try {
+            return this.sharedPreferences.getInt(key, defaultValue);
         } catch (ClassCastException e) {
             return defaultValue;
         }

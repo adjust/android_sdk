@@ -23,6 +23,8 @@ public interface IActivityHandler {
 
     boolean isEnabled();
 
+    boolean isInForeground();
+
     void readOpenUrl(Uri url, long clickTime);
 
     boolean updateAttributionI(AdjustAttribution attribution);
