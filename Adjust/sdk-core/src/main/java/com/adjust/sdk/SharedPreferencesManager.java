@@ -64,14 +64,14 @@ public class SharedPreferencesManager {
     private static final int REFERRERS_COUNT = 10;
 
     /**
-     * Indicates that disable third party sharing to be called before session.
+     * Indicates that disable third party sharing was called before start.
      */
-    private static final int SEND_BEFORE_SESSION = 1;
+    private static final int BEFORE_START = 1;
 
     /**
-     * Indicates that disable third party sharing to be called after session.
+     * Indicates that disable third party sharing was called after start.
      */
-    private static final int SEND_AFTER_SESSION = 2;
+    private static final int AFTER_START = 2;
 
     /**
      * Shared preferences of the app.
@@ -326,17 +326,17 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void setDisableThirdPartySharing(final boolean sendAfterSession) {
-        if (sendAfterSession) {
-            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, SEND_AFTER_SESSION);
+    public synchronized void setDisableThirdPartySharing(final boolean started) {
+        if (started) {
+            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, AFTER_START);
         } else {
-            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, SEND_BEFORE_SESSION);
+            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, BEFORE_START);
         }
     }
 
-    public synchronized boolean getDisableThirdPartySharingBeforeSession() {
+    public synchronized boolean getDisableThirdPartySharingBeforeStart() {
         int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
-        if (value == SEND_BEFORE_SESSION) {
+        if (value == BEFORE_START) {
             return true;
         }
         return false;
@@ -344,7 +344,7 @@ public class SharedPreferencesManager {
 
     public synchronized boolean getDisableThirdPartySharing() {
         int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
-        if (value == SEND_BEFORE_SESSION || value == SEND_AFTER_SESSION) {
+        if (value == BEFORE_START || value == AFTER_START) {
             return true;
         }
         return false;

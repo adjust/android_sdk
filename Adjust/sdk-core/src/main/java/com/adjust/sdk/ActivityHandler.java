@@ -935,8 +935,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                // send disable third party sharing before session if it came first
-                if (sharedPreferencesManager.getDisableThirdPartySharingBeforeSession()) {
+                // if disable third party sharing request came first, then send it first
+                if (sharedPreferencesManager.getDisableThirdPartySharingBeforeStart()) {
                     disableThirdPartySharingI();
                 }
 
