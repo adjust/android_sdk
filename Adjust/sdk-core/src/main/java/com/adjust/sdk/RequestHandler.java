@@ -24,7 +24,6 @@ public class RequestHandler implements IRequestHandler {
     private ILogger logger;
     private String basePath;
     private String gdprPath;
-    private String disableThirdPartySharingPath;
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
@@ -32,7 +31,6 @@ public class RequestHandler implements IRequestHandler {
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();
-        this.disableThirdPartySharingPath = packageHandler.getDisableThirdPartySharingPath();
     }
 
     @Override

@@ -25,7 +25,5 @@ public interface IPackageHandler {
 
     String getGdprPath();
 
-    String getDisableThirdPartySharingPath();
-
     void teardown();
 }

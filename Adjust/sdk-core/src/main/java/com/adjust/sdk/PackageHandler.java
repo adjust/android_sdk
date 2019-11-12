@@ -39,7 +39,6 @@ public class PackageHandler implements IPackageHandler {
     private BackoffStrategy backoffStrategy;
     private String basePath;
     private String gdprPath;
-    private String disableThirdPartySharingPath;
 
     @Override
     public void teardown() {
@@ -94,7 +93,6 @@ public class PackageHandler implements IPackageHandler {
         this.paused = !startsSending;
         this.basePath = activityHandler.getBasePath();
         this.gdprPath = activityHandler.getGdprPath();
-        this.disableThirdPartySharingPath = activityHandler.getDisableThirdPartySharingPath();
     }
 
     // add a package to the queue
@@ -219,11 +217,6 @@ public class PackageHandler implements IPackageHandler {
     @Override
     public String getGdprPath() {
         return this.gdprPath;
-    }
-
-    @Override
-    public String getDisableThirdPartySharingPath() {
-        return this.disableThirdPartySharingPath;
     }
 
     // internal methods run in dedicated queue thread

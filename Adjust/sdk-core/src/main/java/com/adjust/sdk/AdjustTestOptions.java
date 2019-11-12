@@ -12,7 +12,6 @@ public class AdjustTestOptions {
     public String gdprUrl;
     public String basePath;
     public String gdprPath;
-    public String disableThirdPartySharingPath;
     public Boolean useTestConnectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;

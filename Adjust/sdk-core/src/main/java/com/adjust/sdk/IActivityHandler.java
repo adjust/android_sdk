@@ -90,6 +90,4 @@ public interface IActivityHandler {
     String getBasePath();
 
     String getGdprPath();
-
-    String getDisableThirdPartySharingPath();
 }

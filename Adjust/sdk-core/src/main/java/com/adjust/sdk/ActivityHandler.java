@@ -704,11 +704,6 @@ public class ActivityHandler implements IActivityHandler {
         return this.gdprPath;
     }
 
-    @Override
-    public String getDisableThirdPartySharingPath() {
-        return this.disableThirdPartySharingPath;
-    }
-
     public InternalState getInternalState() {
         return internalState;
     }
@@ -843,7 +838,6 @@ public class ActivityHandler implements IActivityHandler {
 
         this.basePath = adjustConfig.basePath;
         this.gdprPath = adjustConfig.gdprPath;
-        this.disableThirdPartySharingPath = adjustConfig.disableThirdPartySharingPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 

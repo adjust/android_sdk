@@ -51,11 +51,6 @@ public class AdjustInstance {
     private String gdprPath;
 
     /**
-     * Path for disable third party sharing package.
-     */
-    private String disableThirdPartySharingPath;
-
-    /**
      * Called upon SDK initialisation.
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
@@ -80,7 +75,6 @@ public class AdjustInstance {
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
         adjustConfig.gdprPath = this.gdprPath;
-        adjustConfig.disableThirdPartySharingPath = this.disableThirdPartySharingPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -613,9 +607,6 @@ public class AdjustInstance {
         }
         if (testOptions.gdprPath != null) {
             this.gdprPath = testOptions.gdprPath;
-        }
-        if (testOptions.disableThirdPartySharingPath != null) {
-            this.disableThirdPartySharingPath = testOptions.disableThirdPartySharingPath;
         }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
