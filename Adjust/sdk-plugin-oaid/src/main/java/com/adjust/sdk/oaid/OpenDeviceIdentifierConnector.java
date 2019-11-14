@@ -95,12 +95,12 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
         if (shouldUnbind) {
             try {
                 shouldUnbind = false;
+                reset();
                 context.unbindService(this);
             } catch (Exception e) {
                 logger.error("Fail to unbind %s", e.getMessage());
             }
         }
-        reset();
     }
 
     public void shouldUnbind() {
@@ -108,15 +108,23 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
     }
 
     private void reset() {
-        synchronized (lockObject) {
-            binders.clear();
+        try {
+            synchronized (lockObject) {
+                binders.clear();
+            }
+        } catch (Exception e) {
+            logger.debug("Fail to reset queue %s", e.getMessage());
         }
     }
 
     private void set(IBinder service) {
-        synchronized (lockObject) {
-            binders.clear();
-            binders.add(service);
+        try {
+            synchronized (lockObject) {
+                binders.clear();
+                binders.add(service);
+            }
+        } catch (Exception e) {
+            logger.debug("Fail to add in queue %s", e.getMessage());
         }
     }
 }
