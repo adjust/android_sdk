@@ -18,6 +18,7 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
     private BlockingQueue<IBinder> binders = null;
     private Context context;
     private ILogger logger;
+    private boolean shouldUnbind = false;
 
     private OpenDeviceIdentifierConnector(Context context, ILogger logger) {
         binders = new LinkedBlockingQueue<IBinder>(1);
@@ -91,8 +92,19 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
     }
 
     public void unbindAndReset() {
-        context.unbindService(this);
+        if (shouldUnbind) {
+            try {
+                shouldUnbind = false;
+                context.unbindService(this);
+            } catch (Exception e) {
+                logger.error("Fail to unbind %s", e.getMessage());
+            }
+        }
         reset();
+    }
+
+    public void shouldUnbind() {
+        shouldUnbind = true;
     }
 
     private void reset() {
