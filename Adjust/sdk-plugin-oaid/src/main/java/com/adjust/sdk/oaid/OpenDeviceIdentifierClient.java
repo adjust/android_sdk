@@ -71,6 +71,9 @@ public class OpenDeviceIdentifierClient {
         OpenDeviceIdentifierService service =
                 serviceConnector.getOpenDeviceIdentifierService(maxWaitTime, TimeUnit.MILLISECONDS);
         if (service == null) {
+            // since service bind fails due to any reason (even timeout), its reasonable to
+            // unbind it rather than keeping it open
+            serviceConnector.unbindAndReset();
             return null;
         }
 
@@ -92,11 +95,17 @@ public class OpenDeviceIdentifierClient {
         boolean couldBind = false;
 
         try {
+            // letting the connector know that it should unbind in all possible failure cases
+            // also it should attempt to unbind only once after each bind attempt
+            connector.shouldUnbind();
+
             couldBind = context.bindService(intentForOaidService, connector, Context.BIND_AUTO_CREATE);
 
             if (couldBind) {
                 return connector;
             }
+        } catch(Exception e) {
+            logger.error("Fail to bind service %s", e.getMessage());
         } finally {
             if (!couldBind) {
                 connector.unbindAndReset();

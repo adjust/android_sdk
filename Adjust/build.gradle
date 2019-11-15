@@ -9,7 +9,7 @@ ext {
     coreMinSdkVersion = 9
     coreCompileSdkVersion = 28
     coreTargetSdkVersion = 28
-    coreVersionName = '4.18.3'  //append -SNAPSHOT for snapshot version
+    coreVersionName = '4.18.4'  //append -SNAPSHOT for snapshot version
     defaultVersionCode = 1
 
     // POM.

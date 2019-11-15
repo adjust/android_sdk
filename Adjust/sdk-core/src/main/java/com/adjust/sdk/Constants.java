@@ -30,7 +30,7 @@ public interface Constants {
     String GDPR_URL = "https://gdpr.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.18.3";
+    String CLIENT_SDK = "android4.18.4";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
