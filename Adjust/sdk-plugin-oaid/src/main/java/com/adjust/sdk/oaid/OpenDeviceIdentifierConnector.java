@@ -91,7 +91,7 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
         unbindAndReset();
     }
 
-    public void unbindAndReset() {
+    public synchronized void unbindAndReset() {
         if (shouldUnbind) {
             try {
                 shouldUnbind = false;
