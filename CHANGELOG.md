@@ -1,3 +1,9 @@
+### Version 4.18.4 (15th November 2019)
+#### Fixed
+- Fixed occasional crash when attempting to unbind from OAID service (relevant only for OAID plugin users).
+
+---
+
 ### Version 4.18.3 (9th October 2019)
 #### Fixed
 - Fixed issue in v4.18.2 where released JAR in Maven was empty (thanks to @calvarez-ov).
