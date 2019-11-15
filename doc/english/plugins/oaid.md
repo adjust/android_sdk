@@ -13,8 +13,8 @@ To enable the Adjust SDK to collect and track OAID, follow these steps.
 If you are using Maven, add the following OAID plugin dependency to your `build.gradle` file next to the existing Adjust SDK dependency:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.18.3'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.18.3'
+implementation 'com.adjust.sdk:adjust-android:4.18.4'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.18.4'
 ```
 
 You can also add the Adjust OAID plugin as JAR file, which you can download from our [releases page][releases].
