@@ -23,7 +23,12 @@ public class MsaSdkClient {
                 @Override
                 public void OnSupport(boolean b, IdSupplier idSupplier) {
                     try {
-                        oaidHolder.add(idSupplier.getOAID());
+                        if (idSupplier == null) {
+                            // so to avoid waiting for timeout
+                            oaidHolder.add(null);
+                        } else {
+                            oaidHolder.add(idSupplier.getOAID());
+                        }
                     } catch (Exception e) {
                         logger.error("Fail to add %s", e.getMessage());
                     }
