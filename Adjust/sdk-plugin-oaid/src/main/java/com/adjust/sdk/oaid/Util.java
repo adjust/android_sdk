@@ -18,7 +18,7 @@ public class Util {
             // which has the capability to return both oaid and limit tracking status
             // And as a fallback, use the msa sdk approach, which currently only gives the oaid
 
-            Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 5000);
+            Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 1000);
             if (oaidInfo != null) {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
