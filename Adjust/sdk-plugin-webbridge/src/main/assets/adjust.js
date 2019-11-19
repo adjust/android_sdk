@@ -19,6 +19,12 @@ var Adjust = {
         }
     },
 
+    trackAdRevenue: function(source, payload) {
+        if (AdjustBridge) {
+            AdjustBridge.trackAdRevenue(source, payload);
+        }
+    },
+
     onResume: function () {
         if (AdjustBridge) {
             AdjustBridge.onResume();
@@ -132,6 +138,12 @@ var Adjust = {
     gdprForgetMe: function() {
         if (AdjustBridge) {
             AdjustBridge.gdprForgetMe();
+        }
+    },
+
+    disableThirdPartySharing: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disableThirdPartySharing();
         }
     },
 

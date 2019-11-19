@@ -129,6 +129,9 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "openDeeplink"                   : this.openDeeplink(command.params); break;
         case "sendReferrer"                   : this.sendReferrer(command.params); break;
         case "gdprForgetMe"                   : this.gdprForgetMe(command.params); break;
+        case "disableThirdPartySharing"       : this.disableThirdPartySharing(command.params); break;
+        case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
+        break;
     }
 
     this.nextToSendCounter++;
@@ -478,6 +481,16 @@ AdjustCommandExecutor.prototype.trackEvent = function(params) {
     delete this.savedEvents[0];
 };
 
+AdjustCommandExecutor.prototype.trackAdRevenue = function(params) {
+    var source = getFirstParameterValue(params, "adRevenueSource");
+    var payload = getFirstParameterValue(params, "adRevenueJsonString");
+    if (payload === null) {
+        Adjust.trackAdRevenue(source, "");
+    } else {
+        Adjust.trackAdRevenue(source, payload);
+    }
+};
+
 AdjustCommandExecutor.prototype.setReferrer = function(params) {
     var referrer = getFirstParameterValue(params, 'referrer');
     Adjust.setReferrer(referrer);
@@ -507,6 +520,10 @@ AdjustCommandExecutor.prototype.sendFirstPackages = function(params) {
 
 AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {
     Adjust.gdprForgetMe();
+}
+
+AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
+    Adjust.disableThirdPartySharing();
 }
 
 AdjustCommandExecutor.prototype.addSessionCallbackParameter = function(params) {
