@@ -8,8 +8,12 @@ import com.bun.miitmdid.core.JLibrary;
 public class AdjustOaid {
     static boolean isOaidToBeRead = false;
 
-    public static void readOaid(Context base) {
+    public static void readOaid() {
         AdjustOaid.isOaidToBeRead = true;
+    }
+
+    public static void readOaid(Context base) {
+        readOaid();
 
         try {
             JLibrary.InitEntry(base);
