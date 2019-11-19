@@ -64,16 +64,6 @@ public class SharedPreferencesManager {
     private static final int REFERRERS_COUNT = 10;
 
     /**
-     * Indicates that disable third party sharing was called before start.
-     */
-    private static final int BEFORE_START = 1;
-
-    /**
-     * Indicates that disable third party sharing was called after start.
-     */
-    private static final int AFTER_START = 2;
-
-    /**
      * Shared preferences of the app.
      */
     private final SharedPreferences sharedPreferences;
@@ -326,28 +316,12 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void setDisableThirdPartySharing(final boolean started) {
-        if (started) {
-            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, AFTER_START);
-        } else {
-            saveInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, BEFORE_START);
-        }
-    }
-
-    public synchronized boolean getDisableThirdPartySharingBeforeStart() {
-        int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
-        if (value == BEFORE_START) {
-            return true;
-        }
-        return false;
+    public synchronized void setDisableThirdPartySharing() {
+        saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true);
     }
 
     public synchronized boolean getDisableThirdPartySharing() {
-        int value = getInteger(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, 0);
-        if (value == BEFORE_START || value == AFTER_START) {
-            return true;
-        }
-        return false;
+        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false);
     }
 
     public synchronized void removeDisableThirdPartySharing() {
@@ -467,21 +441,6 @@ public class SharedPreferencesManager {
     private synchronized long getLong(final String key, final long defaultValue) {
         try {
             return this.sharedPreferences.getLong(key, defaultValue);
-        } catch (ClassCastException e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Get a integer value from shared preferences.
-     *
-     * @param key          Key for which integer value should be retrieved
-     * @param defaultValue Default value to be returned if nothing found in shared preferences
-     * @return Integer value for given key saved in shared preferences
-     */
-    private synchronized int getInteger(final String key, final int defaultValue) {
-        try {
-            return this.sharedPreferences.getInt(key, defaultValue);
         } catch (ClassCastException e) {
             return defaultValue;
         }

@@ -391,14 +391,6 @@ public class ActivityHandler implements IActivityHandler {
         return isEnabledI();
     }
 
-    @Override
-    public boolean isInForeground() {
-        if (internalState == null) {
-            return false;
-        }
-        return internalState.isInForeground();
-    }
-
     private boolean isEnabledI() {
         if (activityState != null) {
             return activityState.enabled;
@@ -929,8 +921,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                // if disable third party sharing request came first, then send it first
-                if (sharedPreferencesManager.getDisableThirdPartySharingBeforeStart()) {
+                // check if disable third party sharing request came, then send it first
+                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
                 }
 
@@ -1919,6 +1911,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void disableThirdPartySharingI() {
+        // cache the disable third party sharing request, so that the request order maintains
+        // even this call returns before making server request
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        sharedPreferencesManager.setDisableThirdPartySharing();
+
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
@@ -1933,8 +1930,7 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage activityPackage = packageBuilder.buildDisableThirdPartySharingPackage();
         packageHandler.addPackage(activityPackage);
 
-        // If disable third party sharing flag was cached, remove it.
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        // Removed the cached disable third party sharing flag.
         sharedPreferencesManager.removeDisableThirdPartySharing();
 
         if (adjustConfig.eventBufferingEnabled) {

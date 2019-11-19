@@ -395,19 +395,12 @@ public class AdjustInstance {
      * @param context Application context
      */
     public void disableThirdPartySharing(final Context context) {
-        if (checkActivityHandler("disable third party sharing")) {
-            // if in foreground, indicates that sdk has been started
-            // but if disable third party request comes before sdk starts
-            // it should go before the first session
-            boolean started = activityHandler.isInForeground();
-            saveDisableThirdPartySharing(context, started);
-
-            if (activityHandler.isEnabled()) {
-                activityHandler.disableThirdPartySharing();
-            }
-        } else {
-            saveDisableThirdPartySharing(context, false);
+        if (!checkActivityHandler("disable third party sharing")) {
+            saveDisableThirdPartySharing(context);
+            return;
         }
+
+        activityHandler.disableThirdPartySharing();
     }
 
     /**
@@ -557,14 +550,13 @@ public class AdjustInstance {
      * Save disable third party sharing choice to shared preferences.
      *
      * @param context Application context
-     * @param started Indicates whether sdk is in foreground and running
      */
-    private void saveDisableThirdPartySharing(final Context context, final boolean started) {
+    private void saveDisableThirdPartySharing(final Context context) {
         Runnable command = new Runnable() {
             @Override
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setDisableThirdPartySharing(started);
+                sharedPreferencesManager.setDisableThirdPartySharing();
             }
         };
         Util.runInBackground(command);
