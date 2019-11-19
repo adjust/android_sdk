@@ -106,10 +106,6 @@ public class RequestHandler implements IRequestHandler {
                 return;
             }
 
-            if (responseData.thirdPartySharingDisabled) {
-                activityHandler.gotDisableThirdPartySharingResponse();
-            }
-
             packageHandler.sendNextPackage(responseData);
         } catch (UnsupportedEncodingException e) {
             sendNextPackageI(activityPackage, "Failed to encode parameters", e);

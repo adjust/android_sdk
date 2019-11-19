@@ -181,11 +181,6 @@ public class UtilNetworking {
             }
         }
 
-        String thirdPartySharingState = jsonResponse.optString("third_party_sharing_state", "enabled");
-        if (thirdPartySharingState.equalsIgnoreCase("disabled")) {
-            responseData.thirdPartySharingDisabled = true;
-        }
-
         if (message == null) {
             message = "No message found";
         }

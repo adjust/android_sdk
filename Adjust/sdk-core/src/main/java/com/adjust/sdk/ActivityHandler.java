@@ -641,16 +641,6 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void gotDisableThirdPartySharingResponse() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                gotDisableThirdPartySharingResponseI();
-            }
-        });
-    }
-
-    @Override
     public Context getContext() {
         return adjustConfig.context;
     }
@@ -1960,11 +1950,6 @@ public class ActivityHandler implements IActivityHandler {
 
         packageHandler.flush();
         setEnabledI(false);
-    }
-
-    private void gotDisableThirdPartySharingResponseI() {
-        activityState.isThirdPartySharingDisabled = true;
-        writeActivityStateI();
     }
 
     private void readActivityStateI(Context context) {

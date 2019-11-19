@@ -69,8 +69,6 @@ public interface IActivityHandler {
 
     void gotOptOutResponse();
 
-    void gotDisableThirdPartySharingResponse();
-
     Context getContext();
 
     String getAdid();
