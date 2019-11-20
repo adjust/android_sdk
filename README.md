@@ -1860,8 +1860,6 @@ Adjust.disableThirdPartySharing();
 
 Upon receiving this information, Adjust will block the sharing of user's data to the partners and the Adjust SDK will continue to work as usual.
 
-Please note that it **is not** reversible.
-
 ## Testing and troubleshooting
 
 ### <a id="tt-session-failed"></a>I'm seeing the "Session failed (Ignoring too frequent session. ...)" error.
