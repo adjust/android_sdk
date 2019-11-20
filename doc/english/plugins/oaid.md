@@ -13,13 +13,15 @@ To enable the Adjust SDK to collect and track OAID, follow these steps.
 If you are using Maven, add the following OAID plugin dependency to your `build.gradle` file next to the existing Adjust SDK dependency:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.18.5'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.18.5'
+implementation 'com.adjust.sdk:adjust-android:4.19.0'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.19.0'
 ```
 
 You can also add the Adjust OAID plugin as JAR file, which you can download from our [releases page][releases].
 
 ### Add the MSA sdk to your app
+
+You can find [here][msasdk] the official instructions how to integrate the MSA sdk.  Below are just the consolidated steps.  But please note that the official instructions might be updated in the meanwhile.
 
 If you want OAID plugin to read oaid using MSA sdk, copy the MSA sdk (AAR file) to the libs directory of your project and set the dependency.
 
@@ -42,28 +44,9 @@ You also need to copy the supplierconfig.json to the assets directory of your pr
   }
 }
 ```
-Please note, in order to get the appId, you need to register your app into corresponding supplier's app store.
+Here, in order to get the appId, you need to register your app into corresponding supplier's app store.
 
-
-### Proguard settings
-
-If you’re using Proguard and will not publish your app in the Google Play Store, you can remove all of the rules related to Google Play Services and install referrer libraries in the [SDK README][readme proguard].
-
-Use all `com.adjust.sdk` package rules like this:
-
-```
--keep public class com.adjust.sdk.** { *; }
-```
-
-Also, if you are adding the msa sdk AAR as dependency, then add the following rules:
-
-```
--keep class com.bun.miitmdid.core.** { *; }
-```
-
-### Additional / optional settings
-
-If you’re adding MSA sdk AAR, since it includes native SO files:
+Additionally, since MSA sdk AAR includes the native SO files, 
 
 1. You can add ABI filters to the build gradle.
 ```
@@ -83,19 +66,25 @@ doNotStrip "armeabi.so"
 }
 ```
 
-### Use the plugin
+### Proguard settings
 
-To read OAID values using just HMS (Huawei Mobile Service), call `AdjustOaid.readOaid()` before starting the SDK:
+If you’re using Proguard and will not publish your app in the Google Play Store, you can remove all of the rules related to Google Play Services and install referrer libraries in the [SDK README][readme proguard].
 
-```java
-AdjustOaid.readOaid();
+Use all `com.adjust.sdk` package rules like this:
 
-// ...
-
-Adjust.onCreate(config);
+```
+-keep public class com.adjust.sdk.** { *; }
 ```
 
-In case you want to read the OAID values using MSA sdk, call `AdjustOaid.readOaid(applicationContext)` before starting the SDK: 
+Also, if you are adding the msa sdk AAR as dependency, then add the following rules:
+
+```
+-keep class com.bun.miitmdid.core.** { *; }
+```
+
+### Use the plugin
+
+To read OAID values, call `AdjustOaid.readOaid(applicationContext)` before starting the SDK:
 
 ```java
 AdjustOaid.readOaid(applicationContext);
@@ -111,3 +100,4 @@ To stop the SDK from reading OAID values, call `AdjustOaid.doNotReadOaid()`.
 [readme]:    ../../../README.md
 [releases]:  https://github.com/adjust/android_sdk/releases
 [readme proguard]: https://github.com/adjust/android_sdk#qs-proguard
+[msasdk]:  https://dev.vivo.com.cn/documentCenter/doc/253
