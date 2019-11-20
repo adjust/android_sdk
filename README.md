@@ -71,6 +71,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
+   * [Disable third-party sharing](#af-disable-third-party-sharing)
 
 ### Testing and troubleshooting
 
@@ -1823,6 +1824,43 @@ Adjust.gdprForgetMe();
 Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
 
 Please note that even when testing, this decision is permanent. It **is not** reversible.
+
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing
+
+In accordance with EU's General Data Protection Regulation (GDPR), you can notify Adjust when a user has exercised their right to disable sharing of their data to any third-party. Calling the following method will instruct the Adjust SDK to communicate the user's choice to disable third-party sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.disableThirdPartySharing(context);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.disableThirdPartySharing();
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will block the sharing of user's data to the partners and the Adjust SDK will continue to work as usual.
+
+Please note that it **is not** reversible.
 
 ## Testing and troubleshooting
 
