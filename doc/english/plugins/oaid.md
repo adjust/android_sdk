@@ -25,7 +25,7 @@ You can find [here][msasdk] the official instructions how to integrate the MSA s
 
 If you want OAID plugin to read oaid using MSA sdk, copy the MSA sdk (AAR file) to the libs directory of your project and set the dependency.
 
-You also need to copy the supplierconfig.json to the assets directory of your project.  In the supplierconfig.json, you need to set the appId for each of the supplier.  Example below:
+You also need to copy the supplierconfig.json to the assets directory of your project.  In the supplierconfig.json, you need to add each of the supplier details who you allow to read the oaid.  You can set the appId for these supplier.  In order to get the appId, you need to register your app into corresponding supplier's app store.  Sample supplierconfig.json:
 ```
 {
   "supplier":{
@@ -33,18 +33,14 @@ You also need to copy the supplierconfig.json to the assets directory of your pr
       "appid":"<value>"
     },
     "xiaomi":{
-      "appid":"<value>"
     },
     "huawei":{
-      "appid":"<value>"
     },
     "oppo":{
-      "appid":"<value>"
     }
   }
 }
 ```
-Here, in order to get the appId, you need to register your app into corresponding supplier's app store.
 
 Additionally, since MSA sdk AAR includes the native SO files, 
 
