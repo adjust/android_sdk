@@ -1827,7 +1827,7 @@ Please note that even when testing, this decision is permanent. It **is not** re
 
 ### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing
 
-In accordance with EU's General Data Protection Regulation (GDPR), you can notify Adjust when a user has exercised their right to disable sharing of their data to any third-party. Calling the following method will instruct the Adjust SDK to communicate the user's choice to disable third-party sharing to the Adjust backend:
+In accordance with the EU's General Data Protection Regulation (GDPR), you can notify Adjust when a user has exercised their right to disable sharing of their data to any third-party. Call the following method to instruct the Adjust SDK to communicate the user's choice to disable third-party sharing to the Adjust backend:
 
 <table>
 <tr>
