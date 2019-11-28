@@ -6,9 +6,6 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/staging/"
     }
-    flatDir {
-        dirs 'libs'
-    }
 }
 
 android {
