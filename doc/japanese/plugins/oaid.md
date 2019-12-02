@@ -13,8 +13,8 @@ Adjust SDKがOAIDを収集、および計測できるようにするために、
 Mavenを使用している場合は、以下のOAIDプラグイン dependencyを、既存のAdjust SDKのdependencyの隣にあるbuild.gradle` file に追加します：
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.18.4'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.18.4'
+implementation 'com.adjust.sdk:adjust-android:4.19.0'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.19.0'
 ```
 
 Adjust OAIDプラグインを JARファイルとして追加することもできます。JARファイルは、[releases page][releases] からダウンロードすることができます。
