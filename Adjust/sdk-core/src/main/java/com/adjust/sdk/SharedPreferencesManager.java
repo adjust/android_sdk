@@ -37,6 +37,8 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
 
+    private static final String PREFS_KEY_DISABLE_THIRD_PARTY_SHARING = "disable_third_party_sharing";
+
     private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
 
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
@@ -314,6 +316,18 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
+    public synchronized void setDisableThirdPartySharing() {
+        saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true);
+    }
+
+    public synchronized boolean getDisableThirdPartySharing() {
+        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false);
+    }
+
+    public synchronized void removeDisableThirdPartySharing() {
+        remove(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING);
+    }
+
     public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {
         if (deeplink == null) {
             return;
@@ -371,6 +385,16 @@ public class SharedPreferencesManager {
      */
     private synchronized void saveLong(final String key, final long value) {
         this.sharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    /**
+     * Write a integer value to shared preferences.
+     *
+     * @param key   Key to be written to shared preferences
+     * @param value Value to be written to shared preferences
+     */
+    private synchronized void saveInteger(final String key, final int value) {
+        this.sharedPreferences.edit().putInt(key, value).apply();
     }
 
     /**

@@ -29,7 +29,11 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 /**
  * Created by uerceg on 22/07/16.
@@ -425,6 +429,20 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public void trackAdRevenue(final String source, final String payload) {
+        try {
+            // payload JSON string is URL encoded
+            String decodedPayload = URLDecoder.decode(payload, "UTF-8");
+            JSONObject jsonPayload = new JSONObject(decodedPayload);
+            Adjust.trackAdRevenue(source, jsonPayload);
+        } catch (JSONException je) {
+            AdjustFactory.getLogger().debug("Ad revenue payload does not seem to be a valid JSON string");
+        } catch (UnsupportedEncodingException ue) {
+            AdjustFactory.getLogger().debug("Unable to URL decode given JSON string");
+        }
+    }
+
+    @JavascriptInterface
     public void onResume() {
         if (!isInitialized()) {
             return;
@@ -571,6 +589,15 @@ public class AdjustBridgeInstance {
         }
         Adjust.gdprForgetMe(application.getApplicationContext());
     }
+
+    @JavascriptInterface
+    public void disableThirdPartySharing() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.disableThirdPartySharing(application.getApplicationContext());
+    }
+
     @JavascriptInterface
     public void getGoogleAdId(final String callback) {
         if (!isInitialized()) {

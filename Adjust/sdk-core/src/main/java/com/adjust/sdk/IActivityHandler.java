@@ -63,6 +63,8 @@ public interface IActivityHandler {
 
     void gdprForgetMe();
 
+    void disableThirdPartySharing();
+
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
     void gotOptOutResponse();

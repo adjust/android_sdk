@@ -70,15 +70,15 @@ public class RequestHandler implements IRequestHandler {
     private void sendI(ActivityPackage activityPackage, int queueSize) {
         String url;
 
-        if (activityPackage.getActivityKind() != ActivityKind.GDPR) {
-            url = AdjustFactory.getBaseUrl();
-            if (basePath != null) {
-                url += basePath;
-            }
-        } else {
+        if (activityPackage.getActivityKind() == ActivityKind.GDPR) {
             url = AdjustFactory.getGdprUrl();
             if (gdprPath != null) {
                 url += gdprPath;
+            }
+        } else {
+            url = AdjustFactory.getBaseUrl();
+            if (basePath != null) {
+                url += basePath;
             }
         }
 

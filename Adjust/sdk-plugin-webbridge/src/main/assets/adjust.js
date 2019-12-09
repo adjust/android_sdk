@@ -19,6 +19,12 @@ var Adjust = {
         }
     },
 
+    trackAdRevenue: function(source, payload) {
+        if (AdjustBridge) {
+            AdjustBridge.trackAdRevenue(source, payload);
+        }
+    },
+
     onResume: function () {
         if (AdjustBridge) {
             AdjustBridge.onResume();
@@ -135,6 +141,12 @@ var Adjust = {
         }
     },
 
+    disableThirdPartySharing: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disableThirdPartySharing();
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
@@ -187,7 +199,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge4.18.4';
+            return 'web-bridge4.19.0';
         }
     },
 

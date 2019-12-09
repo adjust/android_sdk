@@ -175,8 +175,10 @@ public class UtilNetworking {
         responseData.timestamp = jsonResponse.optString("timestamp", null);
         responseData.adid = jsonResponse.optString("adid", null);
         String trackingState = jsonResponse.optString("tracking_state", null);
-        if (trackingState != null && trackingState.equals("opted_out")) {
-            responseData.trackingState = TrackingState.OPTED_OUT;
+        if (trackingState != null) {
+            if (trackingState.equals("opted_out")) {
+                responseData.trackingState = TrackingState.OPTED_OUT;
+            }
         }
 
         if (message == null) {

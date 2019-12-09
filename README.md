@@ -71,6 +71,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
+   * [Disable third-party sharing](#af-disable-third-party-sharing)
 
 ### Testing and troubleshooting
 
@@ -96,14 +97,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.18.4'
+implementation 'com.adjust.sdk:adjust-android:4.19.0'
 implementation 'com.android.installreferrer:installreferrer:1.0'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.18.4'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.19.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
@@ -1823,6 +1824,43 @@ Adjust.gdprForgetMe();
 Upon receiving this information, Adjust will erase the user's data and the Adjust SDK will stop tracking the user. No requests from this device will be sent to Adjust in the future.
 
 Please note that even when testing, this decision is permanent. It **is not** reversible.
+
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
+
+You can now notify Adjust when a user has exercised their right to stop sharing their data with partners for marketing partners, but has allowed it to be shared for statistics purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to disable data sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.disableThirdPartySharing(context);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.disableThirdPartySharing();
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
 ## Testing and troubleshooting
 

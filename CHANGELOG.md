@@ -1,3 +1,9 @@
+### Version 4.19.0 (9th December 2019)
+#### Added
+- Added `disableThirdPartySharing(Context)` method to `Adjust` interface to allow disabling of data sharing with third parties outside of Adjust ecosystem.
+
+---
+
 ### Version 4.18.4 (15th November 2019)
 #### Fixed
 - Fixed occasional crash when attempting to unbind from OAID service (relevant only for OAID plugin users).

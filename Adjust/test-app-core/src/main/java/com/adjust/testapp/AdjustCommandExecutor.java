@@ -73,6 +73,7 @@ public class AdjustCommandExecutor {
             case "openDeeplink": openDeeplink(); break;
             case "sendReferrer": sendReferrer(); break;
             case "gdprForgetMe": gdprForgetMe(); break;
+            case "disableThirdPartySharing": disableThirdPartySharing(); break;
             case "trackAdRevenue": trackAdRevenue(); break;
             //case "testBegin": testBegin(); break;
             // case "testEnd": testEnd(); break;
@@ -604,6 +605,10 @@ public class AdjustCommandExecutor {
 
     private void gdprForgetMe() {
         Adjust.gdprForgetMe(this.context);
+    }
+
+    private void disableThirdPartySharing() {
+        Adjust.disableThirdPartySharing(this.context);
     }
 
     private void trackAdRevenue() {
