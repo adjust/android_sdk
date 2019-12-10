@@ -17,7 +17,7 @@ public class Adjust {
     /**
      * Singleton Adjust SDK instance.
      */
-    private static AdjustInstance defaultInstance;
+    private static AdjustInstance defaultInstance = new AdjustIntance();
 
     /**
      * Private constructor.
@@ -30,13 +30,10 @@ public class Adjust {
      *
      * @return Adjust SDK singleton instance.
      */
-    public static synchronized AdjustInstance getDefaultInstance() {
+    public static AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
         String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.19.0";
 
-        if (defaultInstance == null) {
-            defaultInstance = new AdjustInstance();
-        }
         return defaultInstance;
     }
 
