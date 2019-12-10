@@ -15,7 +15,7 @@ import org.json.JSONObject;
  */
 public class Adjust {
     /**
-     * Singleton Adjust SDK instance.
+     * eagerly create singleton Adjust SDK instance immediately when the class is loaded or initialized by Android ClassLoader
      */
     private static AdjustInstance defaultInstance = new AdjustIntance();
 
