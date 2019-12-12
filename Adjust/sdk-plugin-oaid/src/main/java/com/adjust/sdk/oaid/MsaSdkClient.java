@@ -23,9 +23,9 @@ public class MsaSdkClient {
                 @Override
                 public void OnSupport(boolean b, IdSupplier idSupplier) {
                     try {
-                        if (idSupplier == null) {
+                        if (idSupplier == null || idSupplier.getOAID() == null) {
                             // so to avoid waiting for timeout
-                            oaidHolder.offer(null);
+                            oaidHolder.offer("");
                         } else {
                             oaidHolder.offer(idSupplier.getOAID());
                         }

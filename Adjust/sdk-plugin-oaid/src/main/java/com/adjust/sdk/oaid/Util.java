@@ -29,7 +29,7 @@ public class Util {
             logger.debug("Fail to read the OAID using hms, now try reading it using msa");
 
             String oaid = MsaSdkClient.getOaid(context, logger, 1000);
-            if (oaid != null) {
+            if (oaid != null && !oaid.isEmpty()) {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaid);
                 return parameters;
