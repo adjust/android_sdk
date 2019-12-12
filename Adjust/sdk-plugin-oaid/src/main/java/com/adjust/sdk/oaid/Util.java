@@ -14,31 +14,66 @@ public class Util {
 
         if (AdjustOaid.isOaidToBeRead) {
 
-            // IMPORTANT: current logic is to first try reading the oaid with hms (huawei mobile service) approach
-            // which has the capability to return both oaid and limit tracking status
-            // And as a fallback, use the msa sdk approach, which currently only gives the oaid
+            // IMPORTANT:
+            // if manufacturer is huawei then try reading the oaid with hms (huawei mobile service)
+            // approach first, as it can read both oaid and limit tracking status
+            // otherwise use the msa sdk which only gives the oaid currently
 
-            Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 1000);
-            if (oaidInfo != null) {
-                Map<String, String> parameters = new HashMap<String, String>();
-                PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
-                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
-                return parameters;
-            }
+            Map<String, String> oaidParameters;
 
-            logger.debug("Fail to read the OAID using hms, now try reading it using msa");
+             if (isManufacturerHuawei(logger)) {
+                 oaidParameters = getOaidParametersUsingHMS(context, logger);
+                 if (oaidParameters != null) {
+                     return oaidParameters;
+                 }
 
-            String oaid = MsaSdkClient.getOaid(context, logger, 1000);
-            if (oaid != null && !oaid.isEmpty()) {
-                Map<String, String> parameters = new HashMap<String, String>();
-                PackageBuilder.addString(parameters, "oaid", oaid);
-                return parameters;
-            }
+                 return getOaidParametersUsingMSA(context, logger);
 
-            logger.error("Fail to read the OAID completely");
+             } else {
+                 oaidParameters = getOaidParametersUsingMSA(context, logger);
+                 if (oaidParameters != null) {
+                     return oaidParameters;
+                 }
 
+                 return getOaidParametersUsingHMS(context, logger);
+             }
         }
 
+        return null;
+    }
+
+    private static boolean isManufacturerHuawei(ILogger logger) {
+        try {
+            String manufacturer = android.os.Build.MANUFACTURER;
+            if (manufacturer != null && manufacturer.equalsIgnoreCase("huawei")) {
+                return true;
+            }
+        } catch (Exception e) {
+            logger.debug("Manufacturer not available");
+        }
+        return false;
+    }
+
+    private static Map<String, String> getOaidParametersUsingHMS(Context context, ILogger logger) {
+        Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 1000);
+        if (oaidInfo != null) {
+            Map<String, String> parameters = new HashMap<String, String>();
+            PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
+            PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
+            return parameters;
+        }
+        logger.debug("Fail to read the OAID using HMS");
+        return null;
+    }
+
+    private static Map<String, String> getOaidParametersUsingMSA(Context context, ILogger logger) {
+        String oaid = MsaSdkClient.getOaid(context, logger, 1000);
+        if (oaid != null && !oaid.isEmpty()) {
+            Map<String, String> parameters = new HashMap<String, String>();
+            PackageBuilder.addString(parameters, "oaid", oaid);
+            return parameters;
+        }
+        logger.debug("Fail to read the OAID using MSA");
         return null;
     }
 }
