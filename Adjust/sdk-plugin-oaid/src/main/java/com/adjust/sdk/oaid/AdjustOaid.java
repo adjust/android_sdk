@@ -7,6 +7,7 @@ import com.bun.miitmdid.core.JLibrary;
 
 public class AdjustOaid {
     static boolean isOaidToBeRead = false;
+    static boolean isMsaSdkAvailable = false;
 
     public static void readOaid() {
         AdjustOaid.isOaidToBeRead = true;
@@ -17,6 +18,7 @@ public class AdjustOaid {
 
         try {
             JLibrary.InitEntry(base);
+            isMsaSdkAvailable = true;
         } catch (NoClassDefFoundError ex) {
             Log.d("Adjust", "Couldn't find msa sdk " + ex.getMessage());
         }

@@ -12,34 +12,33 @@ import java.util.Map;
 public class Util {
     public static Map<String, String> getOaidParameters(Context context, ILogger logger) {
 
-        if (AdjustOaid.isOaidToBeRead) {
-
-            // IMPORTANT:
-            // if manufacturer is huawei then try reading the oaid with hms (huawei mobile service)
-            // approach first, as it can read both oaid and limit tracking status
-            // otherwise use the msa sdk which only gives the oaid currently
-
-            Map<String, String> oaidParameters;
-
-             if (isManufacturerHuawei(logger)) {
-                 oaidParameters = getOaidParametersUsingHMS(context, logger);
-                 if (oaidParameters != null) {
-                     return oaidParameters;
-                 }
-
-                 return getOaidParametersUsingMSA(context, logger);
-
-             } else {
-                 oaidParameters = getOaidParametersUsingMSA(context, logger);
-                 if (oaidParameters != null) {
-                     return oaidParameters;
-                 }
-
-                 return getOaidParametersUsingHMS(context, logger);
-             }
+        if (!AdjustOaid.isOaidToBeRead) {
+            return null;
         }
 
-        return null;
+        Map<String, String> oaidParameters;
+
+        // IMPORTANT:
+        // if manufacturer is huawei then try reading the oaid with hms (huawei mobile service)
+        // approach first, as it can read both oaid and limit tracking status
+        // otherwise use the msa sdk which only gives the oaid currently
+
+        if (isManufacturerHuawei(logger)) {
+            oaidParameters = getOaidParametersUsingHMS(context, logger);
+            if (oaidParameters != null) {
+                return oaidParameters;
+            }
+
+            return getOaidParametersUsingMSA(context, logger);
+
+        } else {
+            oaidParameters = getOaidParametersUsingMSA(context, logger);
+            if (oaidParameters != null) {
+                return oaidParameters;
+            }
+
+            return getOaidParametersUsingHMS(context, logger);
+        }
     }
 
     private static boolean isManufacturerHuawei(ILogger logger) {
@@ -67,6 +66,10 @@ public class Util {
     }
 
     private static Map<String, String> getOaidParametersUsingMSA(Context context, ILogger logger) {
+        if (!AdjustOaid.isMsaSdkAvailable) {
+            return null;
+        }
+
         String oaid = MsaSdkClient.getOaid(context, logger, 1000);
         if (oaid != null && !oaid.isEmpty()) {
             Map<String, String> parameters = new HashMap<String, String>();
