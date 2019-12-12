@@ -1,6 +1,6 @@
 ## OAID plugin
 
-OAID is a new advertising ID available in devices either with HMS (Huawei Mobile Service) version 2.6.2 (& later) or which are compatible to MSA (Mobile Security Alliance) sdk. You can use it to attribute and track Android devices in markets where Google Play Services is not available. 
+OAID is an advertising ID available in devices supporting the MSA (Mobile Security Alliance) SDK. You can use it to attribute and track Android devices in markets where Google Play Services is not available. 
 
 The OAID plugin enables the Adjust Android SDK to read a device’s OAID value *in addition* to the other device IDs it searches for by default. 
 
@@ -19,11 +19,12 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.19.0'
 
 You can also add the Adjust OAID plugin as JAR file, which you can download from our [releases page][releases].
 
-### Add the MSA sdk to your app
+### Add the MSA SDK to your app
 
-If you want OAID plugin to read oaid using MSA sdk, copy the MSA sdk (AAR file) to the libs directory of your project and set the dependency.  You also need to copy the supplierconfig.json to the assets directory of your project.  
 
-You can find the MSA sdk and detailed instructions [here][msasdk].  
+To enable the OAID plugin to read OAID values using the MSA SDK, copy the MSA SDK (AAR file) to the libs directory of your project and set the dependency.  You also need to copy the supplierconfig.json to the assets directory of your project.  
+
+You can find the MSA SDK and detailed instructions [here][msasdk].  
 
 ### Proguard settings
 
@@ -35,7 +36,7 @@ Use all `com.adjust.sdk` package rules like this:
 -keep public class com.adjust.sdk.** { *; }
 ```
 
-Also, if you are adding the msa sdk AAR as dependency, then add the following rules:
+If you are adding the MSA SDK AAR as a dependency, then add the following rules:
 
 ```
 -keep class com.bun.miitmdid.core.** { *; }
