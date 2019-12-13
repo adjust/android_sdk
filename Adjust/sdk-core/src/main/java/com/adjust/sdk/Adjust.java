@@ -17,8 +17,7 @@ public class Adjust {
     /**
      * eagerly create singleton Adjust SDK instance immediately when the class is loaded or initialized by Android ClassLoader
      */
-    private static AdjustInstance defaultInstance = new AdjustIntance();
-
+    private volatile AdjustInstance defaultInstance;
     /**
      * Private constructor.
      */
@@ -34,6 +33,13 @@ public class Adjust {
         @SuppressWarnings("unused")
         String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.19.0";
 
+        if (defaultInstance == null) {
+            synchronized (Adjust.class) {
+                if (defaultInstance == null) {
+                    defaultInstance = new AdjustInstance();
+                }
+            }
+        }
         return defaultInstance;
     }
 
