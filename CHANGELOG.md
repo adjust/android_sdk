@@ -1,3 +1,9 @@
+### Version 4.19.1 (13th December 2019)
+#### Added
+- Added support to Adjust OAID plugin for reading `OAID` identifier with usage of MSA SDK if present in app and supported on device.
+
+---
+
 ### Version 4.19.0 (9th December 2019)
 #### Added
 - Added `disableThirdPartySharing(Context)` method to `Adjust` interface to allow disabling of data sharing with third parties outside of Adjust ecosystem.
