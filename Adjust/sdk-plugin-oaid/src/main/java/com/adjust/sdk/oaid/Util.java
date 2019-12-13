@@ -11,7 +11,6 @@ import java.util.Map;
 
 public class Util {
     public static Map<String, String> getOaidParameters(Context context, ILogger logger) {
-
         if (!AdjustOaid.isOaidToBeRead) {
             return null;
         }
@@ -30,7 +29,6 @@ public class Util {
             }
 
             return getOaidParametersUsingMSA(context, logger);
-
         } else {
             oaidParameters = getOaidParametersUsingMSA(context, logger);
             if (oaidParameters != null) {
@@ -76,6 +74,7 @@ public class Util {
             PackageBuilder.addString(parameters, "oaid", oaid);
             return parameters;
         }
+
         logger.debug("Fail to read the OAID using MSA");
         return null;
     }
