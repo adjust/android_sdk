@@ -13,7 +13,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class MsaSdkClient {
-
     public static String getOaid(Context context, final ILogger logger, long maxWaitTimeInMilli) {
         final BlockingQueue<String> oaidHolder = new LinkedBlockingQueue<String>(1);
 
@@ -38,7 +37,6 @@ public class MsaSdkClient {
             if (!isError(result, logger)) {
                 return oaidHolder.poll(maxWaitTimeInMilli, TimeUnit.MILLISECONDS);
             }
-
         } catch (NoClassDefFoundError ex) {
           logger.error("Couldn't find msa sdk " + ex.getMessage());
         } catch (InterruptedException e) {
@@ -72,6 +70,4 @@ public class MsaSdkClient {
                 return false;
         }
     }
-
-
 }
