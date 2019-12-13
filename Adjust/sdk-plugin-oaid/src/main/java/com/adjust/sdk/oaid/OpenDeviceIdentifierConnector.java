@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder.DeathRecipient {
-
     private static volatile OpenDeviceIdentifierConnector instance = null;
     private static final Object lockObject = new Object();
     private BlockingQueue<IBinder> binders = null;
@@ -42,9 +41,7 @@ public class OpenDeviceIdentifierConnector implements ServiceConnection, IBinder
         return !binders.isEmpty();
     }
 
-    public OpenDeviceIdentifierService getOpenDeviceIdentifierService(long timeOut,
-                                                                      TimeUnit timeUnit)
-    {
+    public OpenDeviceIdentifierService getOpenDeviceIdentifierService(long timeOut, TimeUnit timeUnit) {
         // poll in order to wait & retrieve the service
         IBinder service;
         try {

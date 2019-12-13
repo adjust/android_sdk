@@ -9,7 +9,6 @@ import com.adjust.sdk.ILogger;
 import java.util.concurrent.TimeUnit;
 
 public class OpenDeviceIdentifierClient {
-
     private static final String OAID_INTENT_ACTION = "com.uodis.opendevice.OPENIDS_SERVICE";
     private static final String HUAWEI_PACKAGE_NAME = "com.huawei.hwid";
 
@@ -61,13 +60,12 @@ public class OpenDeviceIdentifierClient {
         this.maxWaitTime = maxWaitTime;
     }
 
-    private synchronized Info getOaidInfo()
-            throws RemoteException
-    {
+    private synchronized Info getOaidInfo() throws RemoteException {
         OpenDeviceIdentifierConnector serviceConnector = getServiceConnector(this.context);
         if (serviceConnector == null) {
             return null;
         }
+
         OpenDeviceIdentifierService service =
                 serviceConnector.getOpenDeviceIdentifierService(maxWaitTime, TimeUnit.MILLISECONDS);
         if (service == null) {
