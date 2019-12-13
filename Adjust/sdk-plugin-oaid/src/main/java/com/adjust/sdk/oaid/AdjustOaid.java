@@ -19,9 +19,9 @@ public class AdjustOaid {
         try {
             JLibrary.InitEntry(base);
             isMsaSdkAvailable = true;
-        } catch (NoClassDefFoundError ex) {
+        } catch (Throwable t) {
             isMsaSdkAvailable = false;
-            Log.d("Adjust", "Couldn't find msa sdk " + ex.getMessage());
+            Log.d("Adjust", "Error during msa sdk initialization " + t.getMessage());
         }
     }
 
