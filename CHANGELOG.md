@@ -1,3 +1,8 @@
+### Version 4.19.1 (10th December 2019)
+#### Added
+- removed locking from singleton instance creation
+
+
 ### Version 4.19.0 (9th December 2019)
 #### Added
 - Added `disableThirdPartySharing(Context)` method to `Adjust` interface to allow disabling of data sharing with third parties outside of Adjust ecosystem.

@@ -15,10 +15,9 @@ import org.json.JSONObject;
  */
 public class Adjust {
     /**
-     * Singleton Adjust SDK instance.
+     * eagerly create singleton Adjust SDK instance immediately when the class is loaded or initialized by Android ClassLoader
      */
-    private static AdjustInstance defaultInstance;
-
+    private volatile AdjustInstance defaultInstance;
     /**
      * Private constructor.
      */
@@ -30,12 +29,16 @@ public class Adjust {
      *
      * @return Adjust SDK singleton instance.
      */
-    public static synchronized AdjustInstance getDefaultInstance() {
+    public static AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
         String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.19.0";
 
         if (defaultInstance == null) {
-            defaultInstance = new AdjustInstance();
+            synchronized (Adjust.class) {
+                if (defaultInstance == null) {
+                    defaultInstance = new AdjustInstance();
+                }
+            }
         }
         return defaultInstance;
     }
