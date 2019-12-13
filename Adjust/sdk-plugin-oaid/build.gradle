@@ -6,6 +6,9 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/staging/"
     }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 android {
@@ -24,7 +27,9 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.19.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.19.1'
+
+    implementation(name:'miit_mdid_1.0.10', ext:'aar')
 }
 
 task adjustOaidAndroidAar (type: Copy) {
