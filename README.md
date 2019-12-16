@@ -1827,7 +1827,7 @@ Please note that even when testing, this decision is permanent. It **is not** re
 
 ### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
 
-You can now notify Adjust when a user has exercised their right to stop sharing their data with partners for marketing partners, but has allowed it to be shared for statistics purposes. 
+You can now notify Adjust when a user has exercised their right to stop sharing their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
 
 Call the following method to instruct the Adjust SDK to communicate the user's choice to disable data sharing to the Adjust backend:
 
