@@ -13,6 +13,7 @@ import android.os.RemoteException;
 
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class GooglePlayServicesClient {
     public static final class GooglePlayServicesInfo {
@@ -80,7 +81,7 @@ public class GooglePlayServicesClient {
                 throw new IllegalStateException();
             }
             this.retrieved = true;
-            return (IBinder)this.queue.take();
+            return (IBinder)this.queue.poll(Constants.ONE_SECOND, TimeUnit.MILLISECONDS);
         }
     }
 

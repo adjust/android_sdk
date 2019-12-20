@@ -4,8 +4,10 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.Util;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by pfms on 08/05/15.
@@ -41,6 +43,20 @@ public class TimerOnce {
                 waitingTask = null;
             }
         }, fireIn);
+    }
+
+    public void startAndWait(long timeOut, TimeUnit timeUnit) {
+        startIn(0);
+
+        try {
+            waitingTask.get(timeOut, timeUnit);
+        } catch (ExecutionException e) {
+            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
+        } catch (InterruptedException e) {
+            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
+        } catch (TimeoutException e) {
+            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
+        }
     }
 
     public long getFireIn() {
