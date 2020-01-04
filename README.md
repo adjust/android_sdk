@@ -183,6 +183,8 @@ This feature is supported if you are using **Adjust SDK v4.12.0 or above**.
 
 #### <a id="qs-gps-intent"></a>Google Play Store intent
 
+**Note**: Google has [announced](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html) deprecation of `INSTALL_REFERRER` intent usage to deliver referrer information as of March 1st 2020. If you are using this way of accessing referrer information, please migrate to [Google Play Referrer API](#qs-gpr-api) approach.
+
 You should capture the Google Play Store `INSTALL_REFERRER` intent with a broadcast receiver. If you are **not using your own broadcast receiver** to receive the `INSTALL_REFERRER` intent, add the following `receiver` tag inside the `application` tag in your `AndroidManifest.xml`.
 
 ```xml
