@@ -45,20 +45,6 @@ public class TimerOnce {
         }, fireIn);
     }
 
-    public void startAndWait(long timeOut, TimeUnit timeUnit) {
-        startIn(0);
-
-        try {
-            waitingTask.get(timeOut, timeUnit);
-        } catch (ExecutionException e) {
-            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
-        } catch (InterruptedException e) {
-            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
-        } catch (TimeoutException e) {
-            logger.debug("Get failed for %s with exception %s", name, e.getMessage());
-        }
-    }
-
     public long getFireIn() {
         if (waitingTask == null) {
             return 0;
