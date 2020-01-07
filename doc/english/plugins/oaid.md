@@ -1,6 +1,6 @@
 ## OAID plugin
 
-OAID is an advertising ID available in devices supporting the MSA (Mobile Security Alliance) SDK. You can use it to attribute and track Android devices in markets where Google Play Services is not available. 
+OAID is an advertising ID that the MSA (Mobile Security Alliance) announced all Chinese-manufactured devices should provide. It is readable using the MSA SDK. You can use it to attribute and track Android devices in many markets where Google Play Services is not available. 
 
 The OAID plugin enables the Adjust Android SDK to read a device’s OAID value *in addition* to the other device IDs it searches for by default. 
 
