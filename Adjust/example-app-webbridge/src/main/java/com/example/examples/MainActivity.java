@@ -1,13 +1,13 @@
 package com.example.examples;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.adjust.sdk.webbridge.AdjustBridge;
-import com.adjust.sdk.webbridge.AdjustBridgeInstance;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
 
-        AdjustBridgeInstance defaultInstance = AdjustBridge.registerAndGetInstance(getApplication(), webView);
+        AdjustBridge.registerAndGetInstance(getApplication(), webView);
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
         } catch (Exception e) {
