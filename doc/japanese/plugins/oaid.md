@@ -1,12 +1,12 @@
 ## OAIDプラグイン
 
-OAIDは、HMS（Huawei Mobile Service）バージョン2.6.2以降を搭載した端末で利用可能な新しい広告IDです。このIDを使用することで、Google Play Servicesが利用できない市場でもAndroid端末の流入元を計測することができます。 
+OAIDは、MSA (Mobile Security Alliance) SDKを実装した端末で利用できる広告IDです。このIDを利用すると、Google Play Servicesが利用できない市場でもAndroid端末の流入元を計測することができます。 
 
-OAIDプラグインにより、AdjustのAndroid SDKは、デフォルトで取得する他のデバイスIDに加えて、デバイスのOAID値*を読み取ることができるようになります。 
+OAIDプラグインにより、AdjustのAndroid SDKはデフォルトで取得する他のデバイスIDに加えて、デバイスのOAID値を読み取ることができるようになります。 
 
-この対応を始める前に、公式の [Android SDK README][readme]を一読し、Adjust SDKがアプリに正常に統合されていることを確認してください。
+始めに、公式の[Android SDK README] [readme]をご一読いただき、Adjust SDKがアプリに正常に実装されていることを確認してください。
 
-Adjust SDKがOAIDを収集、および計測できるようにするために、以下の手順に従ってください。
+Adjust SDKがOAID値を収集し計測するための設定手順は、以下のとおりです。
 
 ### OAIDプラグインをアプリに追加する
 
