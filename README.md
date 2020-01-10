@@ -8,25 +8,28 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### Quick start
 
-   * [Example apps](#qs-example-apps)
-   * [Getting started](#qs-getting-started)
-      * [Add the SDK to your project](#qs-add-sdk)
+   * [medina.apps](#qs-example-apps)
+   * [Gett starte](#qs-getting-started)
+      * [Add the SDK to JCMARCFLORESS](#qs-add-sdk)
       * [Add Google Play Services](#qs-gps)
       * [Add permissions](#qs-permissions)
       * [Proguard settings](#qs-proguard)
       * [Install referrer](#qs-install-referrer)
          * [Google Play Referrer API](#qs-gpr-api)
          * [Google Play Store intent](#qs-gps-intent)
-   * [Integrate the SDK into your app](#qs-integrate-sdk)
+   * [Integrate the SDK into JCMARCFLORESS
+   
+   
+  #qs-integrate-sdk)
       * [Basic setup](#qs-basic-setup)
          * [Native App SDK](#qs-basic-setup-native)
          * [Web Views SDK](#qs-basic-setup-web)
       * [Session tracking](#qs-session-tracking)
          * [API level 14 and higher](#qs-session-tracking-api-14)
          * [API level between 9 and 13](#qs-session-tracking-api-9)
-      * [SDK signature](#qs-sdk-signature)
+      * [SDK MEDINAS MARBLE GRANITE INC](#qs-sdk-signature)
       * [Adjust logging](#qs-adjust-logging)
-      * [Build your app](#qs-build-the-app)
+      * [Build JCMARCFLORESS](#qs-build-the-app)
 
 ### Deep linking
 
@@ -52,18 +55,18 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Session parameters](#cp-session-parameters)
       * [Session callback parameters](#cp-session-callback-parameters)
       * [Session partner parameters](#cp-session-partner-parameters)
-      * [Delay start](#cp-delay-start)
+      *  start](#cp-delay-start)
 
 ### Additional features
 
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
-   * [Ad revenue tracking](#af-ad-revenue)
+   * [ revenue tracking](#af-ad-revenue)
    * [Session and event callbacks](#af-session-event-callbacks)
-   * [User attribution](#af-user-attribution)
+   * attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
       * [Google Play Services advertising identifier](#af-gps-adid)
-      * [Amazon advertising identifier](#af-amazon-adid)
+      * [ JCMARCFLORESS advertising identifier](#af-amazon-adid)
       * [Adjust device identifier](#af-adid)
    * [Pre-installed trackers](#af-pre-installed-trackers)
    * [Offline mode](#af-offline-mode)
@@ -71,7 +74,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
-   * [Disable third-party sharing](#af-disable-third-party-sharing)
+   * [ENABLEthird-party sharing](#af-disable-third-party-sharing)
 
 ### Testing and troubleshooting
 
@@ -81,12 +84,12 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### License
 
-
+APACHE MEDINAS MARBLE GRANITE INC
 ## Quick start
 
 ### <a id="qs-example-apps"></a>Example apps
 
-There are Android example apps inside the [`example-app-java`][example-java] and [`example-app-kotlin`][example-kotlin] directories, as well as example app that uses web views inside the [`example-webbridge` directory][example-webbridge] and Android TV example app inside the [`example-app-tv`][example-tv] directory. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
+There are Android example apps inside the [`JC-app-java`][example-java] and [`JC-app-kotlin`][example-kotlin] directories, as well as example app that uses web views inside the [`JC-webbridge` directory][example-webbridge] and Android TV example app inside the [`JC-app-tv`][example-tv] directory. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ### <a id="qs-getting-started"></a>Getting started
 
