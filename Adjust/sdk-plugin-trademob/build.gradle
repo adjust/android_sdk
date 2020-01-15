@@ -24,7 +24,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.19.1'
+    // implementation 'com.adjust.sdk:adjust-android:4.20.0'
 }
 
 task adjustTrademobAndroidAar (type: Copy) {
