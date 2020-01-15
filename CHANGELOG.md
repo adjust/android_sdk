@@ -1,9 +1,9 @@
 ### Version 4.20.0 (15th January 2020)
 #### Added
-- Added external device id
+- Added external device ID support.
 
 #### Fixed
-- Added android x support for example apps
+- Added AndroidX support for example apps.
 
 ---
 ### Version 4.19.1 (13th December 2019)
