@@ -1,3 +1,11 @@
+### Version 4.20.0 (15th January 2020)
+#### Added
+- Added external device ID support.
+
+#### Fixed
+- Added AndroidX support for example apps.
+
+---
 ### Version 4.19.1 (13th December 2019)
 #### Added
 - Added support to Adjust OAID plugin for reading `OAID` identifier with usage of MSA SDK if present in app and supported on device.
