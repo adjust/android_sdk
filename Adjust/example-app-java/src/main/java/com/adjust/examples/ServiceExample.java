@@ -14,7 +14,7 @@ import com.adjust.sdk.AdjustEvent;
  * Created by pfms on 16/03/16.
  */
 public class ServiceExample extends Service {
-    private static final String EVENT_TOKEN_BACKGROUND  = "pkd28h";
+    private static final String EVENT_TOKEN_BACKGROUND = "pkd28h";
 
     private static boolean flip = true;
 
@@ -49,7 +49,7 @@ public class ServiceExample extends Service {
             flip = true;
         }
 
-        new AsyncTask<Void,Void,Void>() {
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
                 Log.d("example", "ServiceExample background sleeping");

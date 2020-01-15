@@ -38,7 +38,7 @@
                 <data android:scheme="adjust-example" />
             </intent-filter>
         </activity>
-        <activity android:name=".ServiceActivity"></activity>
+        <activity android:name=".ServiceActivity"/>
 
         <service
             android:name=".ServiceExample"

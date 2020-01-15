@@ -7,9 +7,9 @@ subprojects {
 ext {
     // Android config.
     coreMinSdkVersion = 9
-    coreCompileSdkVersion = 28
-    coreTargetSdkVersion = 28
-    coreVersionName = '4.19.1'  //append -SNAPSHOT for snapshot version
+    coreCompileSdkVersion = 29
+    coreTargetSdkVersion = 29
+    coreVersionName = '4.20.0'  //append -SNAPSHOT for snapshot version
     defaultVersionCode = 1
 
     // POM.
@@ -17,7 +17,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.3.10'
+    ext.kotlin_version = '1.3.50'
 
     repositories {
         jcenter()

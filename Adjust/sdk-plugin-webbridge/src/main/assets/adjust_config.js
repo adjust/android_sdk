@@ -25,6 +25,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.sdkPrefix = null;
     this.processName = null;
     this.defaultTracker = null;
+    this.externalDeviceId = null;
     this.attributionCallbackName = null;
     this.attributionCallbackFunction = null;
     this.deviceKnown = null;
@@ -91,6 +92,10 @@ AdjustConfig.prototype.setProcessName = function(processName) {
 
 AdjustConfig.prototype.setDefaultTracker = function(defaultTracker) {
     this.defaultTracker = defaultTracker;
+};
+
+AdjustConfig.prototype.setExternalDeviceId = function(externalDeviceId) {
+    this.externalDeviceId = externalDeviceId;
 };
 
 AdjustConfig.prototype.setAttributionCallback = function(callback) {
