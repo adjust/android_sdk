@@ -289,6 +289,11 @@ public class AdjustCommandExecutor {
             adjustConfig.setUserAgent(userAgent);
         }
 
+        if (command.containsParameter("externalDeviceId")) {
+            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
+            adjustConfig.setExternalDeviceId(externalDeviceId);
+        }
+
         if(command.containsParameter("deferredDeeplinkCallback")) {
             adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                 @Override
