@@ -279,6 +279,11 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setDefaultTracker(defaultTracker);
     }
 
+    if ('externalDeviceId' in params) {
+            var externalDeviceId = getFirstParameterValue(params, 'externalDeviceId');
+            adjustConfig.setExternalDeviceId(externalDeviceId);
+        }
+
     if ('appSecret' in params) {
         var appSecretArray = getValueFromKey(params, 'appSecret');
         var secretId = appSecretArray[0].toString();

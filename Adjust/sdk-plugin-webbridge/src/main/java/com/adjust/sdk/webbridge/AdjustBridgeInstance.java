@@ -142,6 +142,7 @@ public class AdjustBridgeInstance {
             Object sdkPrefixField = jsonAdjustConfig.get("sdkPrefix");
             Object processNameField = jsonAdjustConfig.get("processName");
             Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
+            Object externalDeviceIdField = jsonAdjustConfig.get("externalDeviceId");
             Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
             Object deviceKnownField = jsonAdjustConfig.get("deviceKnown");
             Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
@@ -207,7 +208,7 @@ public class AdjustBridgeInstance {
                 }
             }
 
-            // Sdk prefix
+            // SDK prefix
             String sdkPrefix = AdjustBridgeUtil.fieldToString(sdkPrefixField);
             if (sdkPrefix != null) {
                 adjustConfig.setSdkPrefix(sdkPrefix);
@@ -223,6 +224,12 @@ public class AdjustBridgeInstance {
             String defaultTracker = AdjustBridgeUtil.fieldToString(defaultTrackerField);
             if (defaultTracker != null) {
                 adjustConfig.setDefaultTracker(defaultTracker);
+            }
+
+            // External device ID
+            String externalDeviceId = AdjustBridgeUtil.fieldToString(externalDeviceIdField);
+            if (externalDeviceId != null) {
+                adjustConfig.setExternalDeviceId(externalDeviceId);
             }
 
             // Attribution callback name
