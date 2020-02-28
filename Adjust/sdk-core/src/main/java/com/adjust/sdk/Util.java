@@ -26,6 +26,9 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
+import com.adjust.sdk.scheduler.TimerOnce;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -37,19 +40,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,6 +71,9 @@ public class Util {
     private static final String fieldReadErrorMessage = "Unable to read '%s' field in migration device with message (%s)";
     public static final DecimalFormat SecondsDisplayFormat = newLocalDecimalFormat();
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+
+    // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+    private static volatile SingleThreadFutureScheduler playAdIdScheduler = null;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -94,8 +102,29 @@ public class Util {
         return Util.formatString("'%s'", string);
     }
 
-    public static String getPlayAdId(Context context) {
-        return Reflection.getPlayAdId(context);
+    public static String getPlayAdId(final Context context) {
+        if (playAdIdScheduler == null) {
+            synchronized (Util.class) {
+                if (playAdIdScheduler == null) {
+                    playAdIdScheduler = new SingleThreadFutureScheduler("PlayAdIdLibrary", true);
+                }
+            }
+        }
+        ScheduledFuture<String> playAdIdFuture = playAdIdScheduler.scheduleFutureWithReturn(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return Reflection.getPlayAdId(context);
+            }
+        }, 0);
+
+        try {
+            return playAdIdFuture.get(Constants.ONE_SECOND, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+        } catch (InterruptedException e) {
+        } catch (TimeoutException e) {
+        }
+
+        return null;
     }
 
     public static void runInBackground(Runnable command) {

@@ -2,6 +2,7 @@ package com.adjust.sdk.scheduler;
 
 import com.adjust.sdk.AdjustFactory;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -33,6 +34,22 @@ public class SingleThreadFutureScheduler implements FutureScheduler {
     @Override
     public ScheduledFuture<?> scheduleFuture(Runnable command, long millisecondDelay) {
         return scheduledThreadPoolExecutor.schedule(new RunnableWrapper(command), millisecondDelay, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public <V> ScheduledFuture<V> scheduleFutureWithReturn(final Callable<V> callable, long millisecondDelay) {
+        return scheduledThreadPoolExecutor.schedule(new Callable<V>() {
+            @Override
+            public V call() throws Exception {
+                try {
+                    return callable.call();
+                } catch (Throwable t) {
+                    AdjustFactory.getLogger().error("Callable error [%s] of type [%s]",
+                            t.getMessage(), t.getClass().getCanonicalName());
+                    return null;
+                }
+            }
+        }, millisecondDelay, TimeUnit.MILLISECONDS);
     }
 
     @Override
