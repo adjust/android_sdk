@@ -181,6 +181,8 @@ implementation 'com.android.installreferrer:installreferrer:1.0'
 
 #### <a id="qs-gps-intent"></a>Google Playストアのインテント
 
+**注意**： Googleは、2020年3月1日の時点でリファラー情報を配信するための[INSTALL_REFERRERインテント使用の廃止を発表しました。](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html)リファラー情報にアクセスするこの方法を使用している場合は、[Google Play Referrer API](#qs-gpr-api) でのアプローチに移行してください。
+
 Google Play ストアの`INSTALL_REFERRER`インテントは、ブロードキャストレシーバーを使用して受信することをおすすめします。ブロードキャストレシーバーを使用せずに`INSTALL_REFERRER`インテントを取得したい場合、以下の`receiver`タグを`AndroidManifest.xml`の`application`タグ内に追加してください。
 
 ```xml
