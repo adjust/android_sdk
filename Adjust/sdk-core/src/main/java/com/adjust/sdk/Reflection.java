@@ -75,6 +75,10 @@ public class Reflection {
 
     public static Object createDefaultInstance(String className) {
         Class classObject = forName(className);
+        if (classObject == null) {
+            return null;
+        }
+
         Object instance = createDefaultInstance(classObject);
         return instance;
     }
