@@ -875,6 +875,7 @@ public class ActivityHandler implements IActivityHandler {
     private void startI() {
         // check if it's the first sdk start
         if (internalState.hasFirstSdkStartNotOcurred()) {
+            AdjustSigner.onResume(adjustConfig.logger);
             startFirstSessionI();
             return;
         }
@@ -883,6 +884,8 @@ public class ActivityHandler implements IActivityHandler {
         if (!activityState.enabled) {
             return;
         }
+
+        AdjustSigner.onResume(adjustConfig.logger);
 
         updateHandlersStatusAndSendI();
 

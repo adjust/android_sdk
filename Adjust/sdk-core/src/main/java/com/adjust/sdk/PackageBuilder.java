@@ -77,6 +77,10 @@ public class PackageBuilder {
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.SESSION.toString(),
+                sessionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         sessionPackage.setParameters(parameters);
         return sessionPackage;
     }
@@ -86,6 +90,10 @@ public class PackageBuilder {
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
+
+        AdjustSigner.sign(parameters, ActivityKind.EVENT.toString(),
+                eventPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         eventPackage.setParameters(parameters);
 
         if (isInDelay) {
@@ -98,11 +106,15 @@ public class PackageBuilder {
 
     ActivityPackage buildInfoPackage(String source) {
         Map<String, String> parameters = getInfoParameters(source);
-        ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
-        clickPackage.setPath("/sdk_info");
-        clickPackage.setSuffix("");
-        clickPackage.setParameters(parameters);
-        return clickPackage;
+        ActivityPackage infoPackage = getDefaultActivityPackage(ActivityKind.INFO);
+        infoPackage.setPath("/sdk_info");
+        infoPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.INFO.toString(),
+                infoPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
+        infoPackage.setParameters(parameters);
+        return infoPackage;
     }
 
     ActivityPackage buildClickPackage(String source) {
@@ -113,6 +125,10 @@ public class PackageBuilder {
         clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
         clickPackage.setClickTimeInSeconds(clickTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
+
+        AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
+                clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         clickPackage.setParameters(parameters);
         return clickPackage;
     }
@@ -122,6 +138,10 @@ public class PackageBuilder {
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.ATTRIBUTION.toString(),
+                attributionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         attributionPackage.setParameters(parameters);
         return attributionPackage;
     }
@@ -131,6 +151,10 @@ public class PackageBuilder {
         ActivityPackage gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR);
         gdprPackage.setPath("/gdpr_forget_device");
         gdprPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.GDPR.toString(),
+                gdprPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         gdprPackage.setParameters(parameters);
         return gdprPackage;
     }
@@ -140,6 +164,10 @@ public class PackageBuilder {
         ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
         activityPackage.setPath("/disable_third_party_sharing");
         activityPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(),
+                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         activityPackage.setParameters(parameters);
         return activityPackage;
     }
@@ -149,6 +177,10 @@ public class PackageBuilder {
         ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(),
+                adRevenuePackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         adRevenuePackage.setParameters(parameters);
         return adRevenuePackage;
 
