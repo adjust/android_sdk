@@ -44,11 +44,10 @@ public class UtilNetworking {
             IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
-            String appSecret = extractAppSecret(parameters);
-            String secretId = extractSecretId(parameters);
             extractEventCallbackId(parameters);
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters,
+                    activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -80,8 +79,6 @@ public class UtilNetworking {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
-            String appSecret = extractAppSecret(parameters);
-            String secretId = extractSecretId(parameters);
             extractEventCallbackId(parameters);
 
             Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
@@ -91,7 +88,7 @@ public class UtilNetworking {
             IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -275,11 +272,33 @@ public class UtilNetworking {
         return parameters.remove("secret_id");
     }
 
+    private static String extractSignature(Map<String, String> parameters) {
+        return parameters.remove("signature");
+    }
+
+    private static String extractHeadersId(Map<String, String> parameters) {
+        return parameters.remove("headers_id");
+    }
+
     private static void extractEventCallbackId(Map<String, String> parameters) {
         parameters.remove("event_callback_id");
     }
 
-    private static String buildAuthorizationHeader(Map<String, String> parameters,
+    private static String buildAuthorizationHeader(Map<String, String> parameters, String activityKind) {
+        String secretId = extractSecretId(parameters);
+        String signature = extractSignature(parameters);
+        String headersId = extractHeadersId(parameters);
+        String authorizationHeader =  buildAuthorizationHeaderV2(signature, secretId, headersId);
+
+        if (authorizationHeader != null) {
+            return authorizationHeader;
+        }
+
+        String appSecret = extractAppSecret(parameters);
+        return buildAuthorizationHeaderV1(parameters, appSecret, secretId, activityKind);
+    }
+
+    private static String buildAuthorizationHeaderV1(Map<String, String> parameters,
                                                    String appSecret,
                                                    String secretId,
                                                    String activityKind) {
@@ -300,7 +319,27 @@ public class UtilNetworking {
         String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm);
         String fieldsHeader = Util.formatString("headers=\"%s\"", fields);
 
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
+                secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
+        getLogger().verbose("authorizationHeader: %s", authorizationHeader);
+
+        return authorizationHeader;
+    }
+
+    private static String buildAuthorizationHeaderV2(String signature,
+                                                   String secretId,
+                                                   String headersId) {
+        if (secretId == null || signature == null || headersId == null) {
+            return null;
+        }
+
+        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
+        String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
+        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
+        String algorithmHeader = Util.formatString("algorithm=\"adj1\"");
+
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
+                signatureHeader, secretIdHeader, algorithmHeader, idHeader);
         getLogger().verbose("authorizationHeader: %s", authorizationHeader);
 
         return authorizationHeader;
