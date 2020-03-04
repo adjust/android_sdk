@@ -288,13 +288,14 @@ public class UtilNetworking {
         String secretId = extractSecretId(parameters);
         String signature = extractSignature(parameters);
         String headersId = extractHeadersId(parameters);
+        String appSecret = extractAppSecret(parameters);
+
         String authorizationHeader =  buildAuthorizationHeaderV2(signature, secretId, headersId);
 
         if (authorizationHeader != null) {
             return authorizationHeader;
         }
 
-        String appSecret = extractAppSecret(parameters);
         return buildAuthorizationHeaderV1(parameters, appSecret, secretId, activityKind);
     }
 
