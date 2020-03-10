@@ -264,45 +264,44 @@ public class UtilNetworking {
         return uriBuilder.build();
     }
 
-    private static String extractAppSecret(Map<String, String> parameters) {
+    private static String extractAppSecret(final Map<String, String> parameters) {
         return parameters.remove("app_secret");
     }
 
-    private static String extractSecretId(Map<String, String> parameters) {
+    private static String extractSecretId(final Map<String, String> parameters) {
         return parameters.remove("secret_id");
     }
 
-    private static String extractSignature(Map<String, String> parameters) {
+    private static String extractSignature(final Map<String, String> parameters) {
         return parameters.remove("signature");
     }
 
-    private static String extractHeadersId(Map<String, String> parameters) {
+    private static String extractHeadersId(final Map<String, String> parameters) {
         return parameters.remove("headers_id");
     }
 
-    private static void extractEventCallbackId(Map<String, String> parameters) {
+    private static void extractEventCallbackId(final Map<String, String> parameters) {
         parameters.remove("event_callback_id");
     }
 
-    private static String buildAuthorizationHeader(Map<String, String> parameters, String activityKind) {
+    private static String buildAuthorizationHeader(final Map<String, String> parameters,
+                                                   final String activityKind) {
         String secretId = extractSecretId(parameters);
-        String signature = extractSignature(parameters);
         String headersId = extractHeadersId(parameters);
-        String appSecret = extractAppSecret(parameters);
-
-        String authorizationHeader =  buildAuthorizationHeaderV2(signature, secretId, headersId);
-
+        String signature = extractSignature(parameters);
+        String authorizationHeader = buildAuthorizationHeaderV2(signature, secretId, headersId);
         if (authorizationHeader != null) {
             return authorizationHeader;
         }
 
+        String appSecret = extractAppSecret(parameters);
         return buildAuthorizationHeaderV1(parameters, appSecret, secretId, activityKind);
     }
 
-    private static String buildAuthorizationHeaderV1(Map<String, String> parameters,
-                                                   String appSecret,
-                                                   String secretId,
-                                                   String activityKind) {
+    private static String buildAuthorizationHeaderV1(final Map<String, String> parameters,
+                                                     final String appSecret,
+                                                     final String secretId,
+                                                     final String activityKind) {
         // check if the secret exists and it's not empty
         if (appSecret == null || appSecret.length() == 0) {
             return null;
@@ -327,9 +326,9 @@ public class UtilNetworking {
         return authorizationHeader;
     }
 
-    private static String buildAuthorizationHeaderV2(String signature,
-                                                   String secretId,
-                                                   String headersId) {
+    private static String buildAuthorizationHeaderV2(final String signature,
+                                                     final String secretId,
+                                                     final String headersId) {
         if (secretId == null || signature == null || headersId == null) {
             return null;
         }
@@ -346,10 +345,9 @@ public class UtilNetworking {
         return authorizationHeader;
     }
 
-    private static Map<String, String> getSignature(
-            final Map<String, String> parameters,
-            final String activityKind,
-            final String appSecret)
+    private static Map<String, String> getSignature(final Map<String, String> parameters,
+                                                    final String activityKind,
+                                                    final String appSecret)
     {
         String activityKindName = "activity_kind";
         String activityKindValue = activityKind;
