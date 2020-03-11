@@ -62,7 +62,6 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
-    private String disableThirdPartySharingPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
