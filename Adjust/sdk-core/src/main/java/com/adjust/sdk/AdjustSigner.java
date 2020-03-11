@@ -7,7 +7,8 @@ import java.util.Map;
 public class AdjustSigner {
 
     // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
-    private static volatile Object signer = null;
+    private static volatile Object signerInstance = null;
+    private static boolean failedToGetSignerInstance = false;
 
     private AdjustSigner() {
     }
@@ -15,12 +16,12 @@ public class AdjustSigner {
     public static void enableSigning(ILogger logger) {
         getSignerInstance();
 
-        if (signer == null) {
+        if (signerInstance == null) {
             return;
         }
 
         try {
-            Reflection.invokeInstanceMethod(signer, "enableSigning", null);
+            Reflection.invokeInstanceMethod(signerInstance, "enableSigning", null);
         } catch (Exception e) {
             logger.warn("Invoking Signer enableSigning() received an error [%s]", e.getMessage());
         }
@@ -29,12 +30,12 @@ public class AdjustSigner {
     public static void disableSigning(ILogger logger) {
         getSignerInstance();
 
-        if (signer == null) {
+        if (signerInstance == null) {
             return;
         }
 
         try {
-            Reflection.invokeInstanceMethod(signer, "disableSigning", null);
+            Reflection.invokeInstanceMethod(signerInstance, "disableSigning", null);
         } catch (Exception e) {
             logger.warn("Invoking Signer disableSigning() received an error [%s]", e.getMessage());
         }
@@ -43,12 +44,12 @@ public class AdjustSigner {
     public static void onResume(ILogger logger){
         getSignerInstance();
 
-        if (signer == null) {
+        if (signerInstance == null) {
             return;
         }
 
         try {
-            Reflection.invokeInstanceMethod(signer, "onResume", null);
+            Reflection.invokeInstanceMethod(signerInstance, "onResume", null);
         } catch (Exception e) {
             logger.warn("Invoking Signer onResume() received an error [%s]", e.getMessage());
         }
@@ -58,12 +59,12 @@ public class AdjustSigner {
                       Context context, ILogger logger) {
         getSignerInstance();
 
-        if (signer == null) {
+        if (signerInstance == null) {
             return;
         }
 
         try {
-            Reflection.invokeInstanceMethod(signer, "sign",
+            Reflection.invokeInstanceMethod(signerInstance, "sign",
                             new Class[]{Context.class, Map.class, String.class, String.class},
                             context, parameters, activityKind, clientSdk);
 
@@ -73,14 +74,18 @@ public class AdjustSigner {
     }
 
     private static void getSignerInstance() {
-        if (signer == null) {
+        if (failedToGetSignerInstance) {
+            return;
+        }
+        if (signerInstance == null) {
             synchronized (AdjustSigner.class) {
-                if (signer == null) {
-                    signer = Reflection.createDefaultInstance("com.adjust.sdk.sig.Signer");
+                if (signerInstance == null) {
+                    signerInstance = Reflection.createDefaultInstance("com.adjust.sdk.sig.Signer");
+                }
+                if (signerInstance == null) {
+                    failedToGetSignerInstance = true;
                 }
             }
         }
     }
-
-
 }
