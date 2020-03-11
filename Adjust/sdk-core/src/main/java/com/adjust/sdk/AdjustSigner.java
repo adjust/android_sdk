@@ -6,10 +6,15 @@ import java.util.Map;
 
 public class AdjustSigner {
 
-    private static Object signer = null;
+    // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
+    private static volatile Object signer = null;
+
+    private AdjustSigner() {
+    }
 
     public static void enableSigning(ILogger logger) {
-        Object signer = getSigner();
+        getSignerInstance();
+
         if (signer == null) {
             return;
         }
@@ -17,12 +22,13 @@ public class AdjustSigner {
         try {
             Reflection.invokeInstanceMethod(signer, "enableSigning", null);
         } catch (Exception e) {
-            logger.warn("Invoking SigV2 enableSigning() received an error [%s]", e.getMessage());
+            logger.warn("Invoking Signer enableSigning() received an error [%s]", e.getMessage());
         }
     }
 
     public static void disableSigning(ILogger logger) {
-        Object signer = getSigner();
+        getSignerInstance();
+
         if (signer == null) {
             return;
         }
@@ -30,12 +36,13 @@ public class AdjustSigner {
         try {
             Reflection.invokeInstanceMethod(signer, "disableSigning", null);
         } catch (Exception e) {
-            logger.warn("Invoking SigV2 disableSigning() received an error [%s]", e.getMessage());
+            logger.warn("Invoking Signer disableSigning() received an error [%s]", e.getMessage());
         }
     }
 
     public static void onResume(ILogger logger){
-        Object signer = getSigner();
+        getSignerInstance();
+
         if (signer == null) {
             return;
         }
@@ -43,13 +50,14 @@ public class AdjustSigner {
         try {
             Reflection.invokeInstanceMethod(signer, "onResume", null);
         } catch (Exception e) {
-            logger.warn("Invoking SigV2 onResume() received an error [%s]", e.getMessage());
+            logger.warn("Invoking Signer onResume() received an error [%s]", e.getMessage());
         }
     }
 
     public static void sign(Map<String, String> parameters, String activityKind, String clientSdk,
                       Context context, ILogger logger) {
-        Object signer = getSigner();
+        getSignerInstance();
+
         if (signer == null) {
             return;
         }
@@ -60,16 +68,18 @@ public class AdjustSigner {
                             context, parameters, activityKind, clientSdk);
 
         } catch (Exception e) {
-            logger.warn("Invoking SigV2 sign() for %s received an error [%s]", activityKind, e.getMessage());
+            logger.warn("Invoking Signer sign() for %s received an error [%s]", activityKind, e.getMessage());
         }
     }
 
-    private static Object getSigner() {
+    private static void getSignerInstance() {
         if (signer == null) {
-            signer = Reflection.createDefaultInstance("com.adjust.sdk.sigv2.Signer");
+            synchronized (AdjustSigner.class) {
+                if (signer == null) {
+                    signer = Reflection.createDefaultInstance("com.adjust.sdk.sig.Signer");
+                }
+            }
         }
-
-        return signer;
     }
 
 
