@@ -313,6 +313,14 @@ public class AdjustFactory {
         AdjustFactory.tryInstallReferrer = tryInstallReferrer;
     }
 
+    public static void enableSigning() {
+        AdjustSigner.enableSigning(getLogger());
+    }
+
+    public static void disableSigning() {
+        AdjustSigner.disableSigning(getLogger());
+    }
+
     private static String byte2HexFormatted(byte[] arr) {
         StringBuilder str = new StringBuilder(arr.length * 2);
 
