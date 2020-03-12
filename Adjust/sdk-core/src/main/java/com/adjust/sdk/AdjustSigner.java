@@ -8,7 +8,6 @@ public class AdjustSigner {
 
     // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
     private static volatile Object signerInstance = null;
-    private static boolean failedToGetSignerInstance = false;
 
     private AdjustSigner() {
     }
@@ -74,16 +73,10 @@ public class AdjustSigner {
     }
 
     private static void getSignerInstance() {
-        if (failedToGetSignerInstance) {
-            return;
-        }
         if (signerInstance == null) {
             synchronized (AdjustSigner.class) {
                 if (signerInstance == null) {
                     signerInstance = Reflection.createDefaultInstance("com.adjust.sdk.sig.Signer");
-                }
-                if (signerInstance == null) {
-                    failedToGetSignerInstance = true;
                 }
             }
         }
