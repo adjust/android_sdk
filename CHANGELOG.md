@@ -2,6 +2,7 @@
 #### Added
 - Added support for signature library as a plugin.
 - Added more aggressive sending retry logic for install session package.
+- Added additional parameters to `ad_revenue` package payload.
 
 #### Fixed
 - Added timeout when reading Google Play Advertising Identifier.
