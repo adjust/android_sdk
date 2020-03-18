@@ -70,6 +70,7 @@ public class ActivityHandler implements IActivityHandler {
     private ISdkClickHandler sdkClickHandler;
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
+    private ReferrerProvider referrerProvider;
 
     @Override
     public void teardown() {
@@ -836,6 +837,14 @@ public class ActivityHandler implements IActivityHandler {
                 sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
             }
         });
+
+        referrerProvider = new ReferrerProvider(adjustConfig.context, new InstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
+                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+            }
+        });
+
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
         sendReftagReferrerI();
     }
@@ -974,6 +983,7 @@ public class ActivityHandler implements IActivityHandler {
 
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
+            referrerProvider.readReferrer();
 
             return;
         }
@@ -1385,6 +1395,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // try to read and send the install referrer
         installReferrer.startConnection();
+        referrerProvider.readReferrer();
     }
 
     private void setOfflineModeI(boolean offline) {
