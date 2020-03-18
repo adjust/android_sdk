@@ -32,6 +32,7 @@ public class PackageBuilder {
     String deeplink;
     String referrer;
     String rawReferrer;
+    String referrerApi;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
 
@@ -495,6 +496,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
         PackageBuilder.addString(parameters, "referrer", referrer);
+        PackageBuilder.addString(parameters, "referrer_api", referrerApi);
         PackageBuilder.addString(parameters, "reftag", reftag);
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
