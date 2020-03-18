@@ -39,11 +39,9 @@ public class ReferrerProvider {
         this.logger = AdjustFactory.getLogger();
         this.context = context;
         this.referrerCallback = referrerCallback;
-
-        readReferrer();
     }
 
-    private void readReferrer() {
+    public void readReferrer() {
         Cursor cursor = null;
         Uri uri = Uri.parse(REFERRER_PROVIDER_URI);
         ContentResolver contentResolver = context.getContentResolver();
@@ -51,18 +49,14 @@ public class ReferrerProvider {
         String packageName[] = new String[] { context.getPackageName() };
         try {
             cursor = contentResolver.query(uri, null, null, packageName, null);
-            if (cursor == null) {
-                logger.debug("No such content provider for Uri [%s]", uri.toString());
-                return;
-            }
 
-            if (cursor.moveToFirst()) {
+            if (cursor != null && cursor.moveToFirst()) {
 
                 String installReferrer = cursor.getString(0);
                 String clickTime = cursor.getString(1);
                 String installTime = cursor.getString(2);
 
-                logger.debug("ReferrerProvider reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
+                logger.debug("Install Referrer provider reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
 
                 long clickTimeInMilliseconds = Long.parseLong(clickTime);
                 long installTimeInMilliseconds = Long.parseLong(installTime);
@@ -73,10 +67,10 @@ public class ReferrerProvider {
                 referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
 
             } else {
-                logger.debug("No install referrer info available for package [%s] content uri[%s]", context.getPackageName(), uri.toString());
+                logger.debug("Install Referrer provider fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());
             }
         } catch (Exception e) {
-                logger.debug("Referrer provider error [%s]", e.getMessage());
+                logger.debug("Install referrer provider error [%s]", e.getMessage());
         } finally {
             if (cursor != null) {
                 cursor.close();
