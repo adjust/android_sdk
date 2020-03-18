@@ -459,11 +459,15 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendInstallReferrer(final String installReferrer, final long referrerClickTimestampSeconds, final long installBeginTimestampSeconds) {
+    public void sendInstallReferrer(final String installReferrer,
+                                    final long referrerClickTimestampSeconds,
+                                    final long installBeginTimestampSeconds,
+                                    final String referrerApi) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInstallReferrerI(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                sendInstallReferrerI(installReferrer, referrerClickTimestampSeconds,
+                        installBeginTimestampSeconds, referrerApi);
             }
         });
     }
@@ -834,14 +838,14 @@ public class ActivityHandler implements IActivityHandler {
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_GOOGLE);
             }
         });
 
         referrerProvider = new ReferrerProvider(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_HUAWEI);
             }
         });
 
@@ -1479,7 +1483,8 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendReftagReferrers();
     }
 
-    private void sendInstallReferrerI(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
+    private void sendInstallReferrerI(String installReferrer, long referrerClickTimestampSeconds,
+                                      long installBeginTimestampSeconds, String referrerApi) {
         if (!isEnabledI()) {
             return;
         }
@@ -1500,6 +1505,7 @@ public class ActivityHandler implements IActivityHandler {
                 installReferrer,
                 referrerClickTimestampSeconds,
                 installBeginTimestampSeconds,
+                referrerApi,
                 activityState,
                 adjustConfig,
                 deviceInfo,
