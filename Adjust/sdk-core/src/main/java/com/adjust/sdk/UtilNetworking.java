@@ -44,11 +44,10 @@ public class UtilNetworking {
             IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
-            String appSecret = extractAppSecret(parameters);
-            String secretId = extractSecretId(parameters);
             extractEventCallbackId(parameters);
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters,
+                    activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -80,8 +79,6 @@ public class UtilNetworking {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
-            String appSecret = extractAppSecret(parameters);
-            String secretId = extractSecretId(parameters);
             extractEventCallbackId(parameters);
 
             Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
@@ -91,7 +88,7 @@ public class UtilNetworking {
             IConnectionOptions connectionOptions = AdjustFactory.getConnectionOptions();
             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
-            String authorizationHeader = buildAuthorizationHeader(parameters, appSecret, secretId, activityPackage.getActivityKind().toString());
+            String authorizationHeader = buildAuthorizationHeader(parameters, activityPackage.getActivityKind().toString());
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -267,22 +264,44 @@ public class UtilNetworking {
         return uriBuilder.build();
     }
 
-    private static String extractAppSecret(Map<String, String> parameters) {
+    private static String extractAppSecret(final Map<String, String> parameters) {
         return parameters.remove("app_secret");
     }
 
-    private static String extractSecretId(Map<String, String> parameters) {
+    private static String extractSecretId(final Map<String, String> parameters) {
         return parameters.remove("secret_id");
     }
 
-    private static void extractEventCallbackId(Map<String, String> parameters) {
+    private static String extractSignature(final Map<String, String> parameters) {
+        return parameters.remove("signature");
+    }
+
+    private static String extractHeadersId(final Map<String, String> parameters) {
+        return parameters.remove("headers_id");
+    }
+
+    private static void extractEventCallbackId(final Map<String, String> parameters) {
         parameters.remove("event_callback_id");
     }
 
-    private static String buildAuthorizationHeader(Map<String, String> parameters,
-                                                   String appSecret,
-                                                   String secretId,
-                                                   String activityKind) {
+    private static String buildAuthorizationHeader(final Map<String, String> parameters,
+                                                   final String activityKind) {
+        String secretId = extractSecretId(parameters);
+        String headersId = extractHeadersId(parameters);
+        String signature = extractSignature(parameters);
+        String authorizationHeader = buildAuthorizationHeaderV2(signature, secretId, headersId);
+        if (authorizationHeader != null) {
+            return authorizationHeader;
+        }
+
+        String appSecret = extractAppSecret(parameters);
+        return buildAuthorizationHeaderV1(parameters, appSecret, secretId, activityKind);
+    }
+
+    private static String buildAuthorizationHeaderV1(final Map<String, String> parameters,
+                                                     final String appSecret,
+                                                     final String secretId,
+                                                     final String activityKind) {
         // check if the secret exists and it's not empty
         if (appSecret == null || appSecret.length() == 0) {
             return null;
@@ -300,16 +319,35 @@ public class UtilNetworking {
         String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm);
         String fieldsHeader = Util.formatString("headers=\"%s\"", fields);
 
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s", secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
+                secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
         getLogger().verbose("authorizationHeader: %s", authorizationHeader);
 
         return authorizationHeader;
     }
 
-    private static Map<String, String> getSignature(
-            final Map<String, String> parameters,
-            final String activityKind,
-            final String appSecret)
+    private static String buildAuthorizationHeaderV2(final String signature,
+                                                     final String secretId,
+                                                     final String headersId) {
+        if (secretId == null || signature == null || headersId == null) {
+            return null;
+        }
+
+        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
+        String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
+        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
+        String algorithmHeader = Util.formatString("algorithm=\"adj1\"");
+
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
+                signatureHeader, secretIdHeader, algorithmHeader, idHeader);
+        getLogger().verbose("authorizationHeader: %s", authorizationHeader);
+
+        return authorizationHeader;
+    }
+
+    private static Map<String, String> getSignature(final Map<String, String> parameters,
+                                                    final String activityKind,
+                                                    final String appSecret)
     {
         String activityKindName = "activity_kind";
         String activityKindValue = activityKind;

@@ -77,6 +77,10 @@ public class PackageBuilder {
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.SESSION.toString(),
+                sessionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         sessionPackage.setParameters(parameters);
         return sessionPackage;
     }
@@ -86,6 +90,10 @@ public class PackageBuilder {
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
+
+        AdjustSigner.sign(parameters, ActivityKind.EVENT.toString(),
+                eventPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         eventPackage.setParameters(parameters);
 
         if (isInDelay) {
@@ -98,11 +106,15 @@ public class PackageBuilder {
 
     ActivityPackage buildInfoPackage(String source) {
         Map<String, String> parameters = getInfoParameters(source);
-        ActivityPackage clickPackage = getDefaultActivityPackage(ActivityKind.INFO);
-        clickPackage.setPath("/sdk_info");
-        clickPackage.setSuffix("");
-        clickPackage.setParameters(parameters);
-        return clickPackage;
+        ActivityPackage infoPackage = getDefaultActivityPackage(ActivityKind.INFO);
+        infoPackage.setPath("/sdk_info");
+        infoPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.INFO.toString(),
+                infoPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
+        infoPackage.setParameters(parameters);
+        return infoPackage;
     }
 
     ActivityPackage buildClickPackage(String source) {
@@ -113,6 +125,10 @@ public class PackageBuilder {
         clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
         clickPackage.setClickTimeInSeconds(clickTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
+
+        AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
+                clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         clickPackage.setParameters(parameters);
         return clickPackage;
     }
@@ -122,6 +138,10 @@ public class PackageBuilder {
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.ATTRIBUTION.toString(),
+                attributionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         attributionPackage.setParameters(parameters);
         return attributionPackage;
     }
@@ -131,6 +151,10 @@ public class PackageBuilder {
         ActivityPackage gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR);
         gdprPackage.setPath("/gdpr_forget_device");
         gdprPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.GDPR.toString(),
+                gdprPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         gdprPackage.setParameters(parameters);
         return gdprPackage;
     }
@@ -140,6 +164,10 @@ public class PackageBuilder {
         ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
         activityPackage.setPath("/disable_third_party_sharing");
         activityPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(),
+                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         activityPackage.setParameters(parameters);
         return activityPackage;
     }
@@ -149,6 +177,10 @@ public class PackageBuilder {
         ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(),
+                adRevenuePackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
         adRevenuePackage.setParameters(parameters);
         return adRevenuePackage;
 
@@ -683,21 +715,54 @@ public class PackageBuilder {
         }
 
         // Rest of the parameters.
+        PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
         PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
+        PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
+        PackageBuilder.addString(parameters, "country", deviceInfo.country);
+        PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
+        PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
+        PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
+        PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
+        PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
+        PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
+        PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
+        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addString(parameters, "language", deviceInfo.language);
+        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
+        PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
+        PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
+        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
+        PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
+        PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
+        PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
+        PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
+        PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
+        PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
+        PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
         PackageBuilder.addJsonObject(parameters, "payload", adRevenueJson);
+        PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
+        PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
+        PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
+        PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
+        PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+
 
         checkDeviceIds(parameters);
         return parameters;

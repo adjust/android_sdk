@@ -1,6 +1,6 @@
 ## OAID 플러그인
 
-OAID는 HMS(Huawei 모바일 서비스) 버전 2.6.2 이상이 설치된 기기에서 사용할 수 있는 새로운 광고 ID입니다. Google Play 서비스를 사용할 수 없는 시장에서 이 ID를 사용하여 Android 기기를 어트리뷰션 및 트래킹할 수 있습니다. 
+OAID는 MSA(Mobile Security Alliance) SDK를 지원하는 기기에서 사용할 수있는 광고 ID입니다. Google Play Services를 사용할 수 없는 국가에서 이 ID를 사용하여 Android 기기를 어트리뷰션하거나 트래킹할 수 있습니다.
 
 OAID 플러그인을 사용하면 Adjust Android SDK가 기기의 OAID 값을 읽을 수 있을 *뿐만 아니라* 검색하는 다른 기기 ID도 기본적으로 읽을 수 있습니다. 
 
@@ -13,8 +13,8 @@ Adjust SDK가 OAID를 수집하고 트래킹할 수 있게 하려면 다음 단�
 Maven을 사용하고 있는 경우, 기존 Adjust SDK dependency 옆에 있는 `build.gradle` 파일에 다음의 OAID plugin dependency을 추가하세요.
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.20.0'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.20.0'
+implementation 'com.adjust.sdk:adjust-android:4.21.0'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.21.0'
 ```
 
 Adjust OAID 플러그인을 JAR 파일로 추가할 수도 있습니다. Adjust [릴리스 페이지][releases]에서 다운로드하세요.

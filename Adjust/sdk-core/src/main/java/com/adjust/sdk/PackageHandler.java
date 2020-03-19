@@ -37,6 +37,7 @@ public class PackageHandler implements IPackageHandler {
     private Context context;
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
+    private BackoffStrategy backoffStrategyForInstallSession;
     private String basePath;
     private String gdprPath;
 
@@ -75,6 +76,7 @@ public class PackageHandler implements IPackageHandler {
         this.scheduler = new SingleThreadCachedScheduler("PackageHandler");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
+        this.backoffStrategyForInstallSession = AdjustFactory.getInstallSessionBackoffStrategy();
 
         init(activityHandler, context, startsSending);
 
@@ -161,8 +163,15 @@ public class PackageHandler implements IPackageHandler {
         }
 
         int retries = activityPackage.increaseRetries();
+        long waitTimeMilliSeconds;
 
-        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+
+        if (activityPackage.getActivityKind() == ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()) {
+            waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
+        } else {
+            waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+        }
 
         double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);

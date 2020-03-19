@@ -32,6 +32,7 @@ public class AdjustFactory {
     private static long subsessionInterval = -1;
     private static BackoffStrategy sdkClickBackoffStrategy = null;
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
+    private static BackoffStrategy installSessionBackoffStrategy = null;
     private static long maxDelayStart = -1;
     private static String baseUrl = Constants.BASE_URL;
     private static String gdprUrl = Constants.GDPR_URL;
@@ -114,6 +115,13 @@ public class AdjustFactory {
             return BackoffStrategy.LONG_WAIT;
         }
         return packageHandlerBackoffStrategy;
+    }
+
+    public static BackoffStrategy getInstallSessionBackoffStrategy() {
+        if (installSessionBackoffStrategy == null) {
+            return BackoffStrategy.SHORT_WAIT;
+        }
+        return installSessionBackoffStrategy;
     }
 
     public static IActivityHandler getActivityHandler(AdjustConfig config) {
@@ -303,6 +311,14 @@ public class AdjustFactory {
 
     public static void setTryInstallReferrer(boolean tryInstallReferrer) {
         AdjustFactory.tryInstallReferrer = tryInstallReferrer;
+    }
+
+    public static void enableSigning() {
+        AdjustSigner.enableSigning(getLogger());
+    }
+
+    public static void disableSigning() {
+        AdjustSigner.disableSigning(getLogger());
     }
 
     private static String byte2HexFormatted(byte[] arr) {
