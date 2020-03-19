@@ -1,3 +1,14 @@
+### Version 4.21.0 (19th March 2020)
+#### Added
+- Added support for signature library as a plugin.
+- Added more aggressive sending retry logic for install session package.
+- Added additional parameters to `ad_revenue` package payload.
+
+#### Fixed
+- Added timeout when reading Google Play Advertising Identifier.
+
+---
+
 ### Version 4.20.0 (15th January 2020)
 #### Added
 - Added external device ID support.
