@@ -58,11 +58,8 @@ public class ReferrerProvider {
 
                 logger.debug("Install Referrer provider reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
 
-                long clickTimeInMilliseconds = Long.parseLong(clickTime);
-                long installTimeInMilliseconds = Long.parseLong(installTime);
-
-                long referrerClickTimestampSeconds = TimeUnit.MILLISECONDS.toSeconds(clickTimeInMilliseconds);
-                long installBeginTimestampSeconds = TimeUnit.MILLISECONDS.toSeconds(installTimeInMilliseconds);
+                long referrerClickTimestampSeconds = Long.parseLong(clickTime);
+                long installBeginTimestampSeconds = Long.parseLong(installTime);
 
                 referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
 
