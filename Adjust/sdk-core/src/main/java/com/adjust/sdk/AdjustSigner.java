@@ -54,6 +54,22 @@ public class AdjustSigner {
         }
     }
 
+    public static String getVersion(ILogger logger){
+        getSignerInstance();
+
+        if (signerInstance == null) {
+            return null;
+        }
+
+        try {
+            return (String) Reflection.invokeInstanceMethod(signerInstance, "getVersion", null);
+        } catch (Exception e) {
+            logger.warn("Invoking Signer getVersion() received an error [%s]", e.getMessage());
+        }
+
+        return null;
+    }
+
     public static void sign(Map<String, String> parameters, String activityKind, String clientSdk,
                       Context context, ILogger logger) {
         getSignerInstance();
