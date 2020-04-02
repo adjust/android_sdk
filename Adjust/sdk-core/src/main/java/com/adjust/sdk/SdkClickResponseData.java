@@ -9,4 +9,5 @@ public class SdkClickResponseData extends ResponseData {
     long clickTime;
     long installBegin;
     String installReferrer;
+    String referrerApi;
 }

@@ -300,6 +300,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         long clickTime = -1;
         long installBegin = -1;
         String installReferrer = null;
+        String referrerApi = null;
 
         if (isInstallReferrer) {
             // Check if install referrer information is saved to activity state.
@@ -308,6 +309,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             clickTime = sdkClickPackage.getClickTimeInSeconds();
             installBegin = sdkClickPackage.getInstallBeginTimeInSeconds();
             installReferrer = sdkClickPackage.getParameters().get("referrer");
+            referrerApi = sdkClickPackage.getParameters().get("referrer_api");
         }
 
         String url = AdjustFactory.getBaseUrl();
@@ -353,6 +355,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                 responseData.clickTime = clickTime;
                 responseData.installBegin = installBegin;
                 responseData.installReferrer = installReferrer;
+                responseData.referrerApi = referrerApi;
                 responseData.isInstallReferrer = true;
             }
 
