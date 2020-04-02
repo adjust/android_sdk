@@ -6,8 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ReferrerProvider {
+public class InstallReferrerHuawei {
 
     /**
      * Huawei install referrer provider content uri.
@@ -30,18 +31,29 @@ public class ReferrerProvider {
     private final InstallReferrerReadListener referrerCallback;
 
     /**
+     * Boolean indicating whether install referrer information has already been read from provider
+     */
+    private final AtomicBoolean hasInstallReferrerBeenRead;
+
+    /**
      * Default constructor.
      *
      * @param context         Application context
      * @param referrerCallback Callback for referrer information
      */
-    public ReferrerProvider(final Context context, final InstallReferrerReadListener referrerCallback) {
+    public InstallReferrerHuawei(final Context context, final InstallReferrerReadListener referrerCallback) {
         this.logger = AdjustFactory.getLogger();
         this.context = context;
         this.referrerCallback = referrerCallback;
+        this.hasInstallReferrerBeenRead = new AtomicBoolean(false);
     }
 
     public void readReferrer() {
+        if (hasInstallReferrerBeenRead.get()) {
+            logger.debug("InstallReferrerHuawei has already been read");
+            return;
+        }
+
         Cursor cursor = null;
         Uri uri = Uri.parse(REFERRER_PROVIDER_URI);
         ContentResolver contentResolver = context.getContentResolver();
@@ -56,18 +68,20 @@ public class ReferrerProvider {
                 String clickTime = cursor.getString(1);
                 String installTime = cursor.getString(2);
 
-                logger.debug("Install Referrer provider reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
+                logger.debug("InstallReferrerHuawei reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
 
                 long referrerClickTimestampSeconds = Long.parseLong(clickTime);
                 long installBeginTimestampSeconds = Long.parseLong(installTime);
 
                 referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
 
+                hasInstallReferrerBeenRead.set(true);
+
             } else {
-                logger.debug("Install Referrer provider fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());
+                logger.debug("InstallReferrerHuawei fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());
             }
         } catch (Exception e) {
-                logger.debug("Install referrer provider error [%s]", e.getMessage());
+                logger.debug("InstallReferrerHuawei error [%s]", e.getMessage());
         } finally {
             if (cursor != null) {
                 cursor.close();
