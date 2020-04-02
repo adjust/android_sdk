@@ -344,17 +344,10 @@ public class UtilNetworking {
         String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
         String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
         String algorithmHeader = Util.formatString("algorithm=\"adj1\"");
+        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
 
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
-                signatureHeader, secretIdHeader, algorithmHeader, idHeader);
-
-        if (nativeVersion == null) {
-            getLogger().verbose("authorizationHeader: %s", authorizationHeader);
-            return authorizationHeader;
-        }
-
-        String nativeVersionHeader = Util.formatString(",native_version=\"%s\"", nativeVersion);
-        authorizationHeader = authorizationHeader.concat(nativeVersionHeader);
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
+                signatureHeader, secretIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
 
         getLogger().verbose("authorizationHeader: %s", authorizationHeader);
 
