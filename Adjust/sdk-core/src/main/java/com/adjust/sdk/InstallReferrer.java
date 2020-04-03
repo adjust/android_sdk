@@ -60,9 +60,12 @@ public class InstallReferrer implements InvocationHandler {
     private int retries;
 
     /**
-     * Boolean indicating whether service responded with install referrer information.
+     * Boolean indicating whether service should be tried to read.
+     * Either because it has not yet tried,
+     *  or it did and it was successful
+     *  or it did, was not successful, but it should not retry
      */
-    private final AtomicBoolean hasInstallReferrerBeenRead;
+    private final AtomicBoolean shouldTryToRead;
 
     /**
      * Adjust logger instance.
@@ -101,7 +104,7 @@ public class InstallReferrer implements InvocationHandler {
         this.logger = AdjustFactory.getLogger();
         this.playInstallReferrer = createInstallReferrer(context, referrerCallback, logger);
         this.context = context;
-        this.hasInstallReferrerBeenRead = new AtomicBoolean(false);
+        this.shouldTryToRead = new AtomicBoolean(true);
         this.retries = 0;
         this.retryTimer = new TimerOnce(new Runnable() {
             @Override
@@ -136,8 +139,8 @@ public class InstallReferrer implements InvocationHandler {
         }
         closeReferrerClient();
 
-        if (hasInstallReferrerBeenRead.get()) {
-            logger.debug("Install referrer has already been read");
+        if (!shouldTryToRead.get()) {
+            logger.debug("Should not try to read Install referrer");
             return;
         }
 
@@ -327,8 +330,6 @@ public class InstallReferrer implements InvocationHandler {
 
                     // Stuff successfully read, try to send it.
                     referrerCallback.onInstallReferrerRead(installReferrer, clickTime, installBegin);
-
-                    hasInstallReferrerBeenRead.set(true);
                 } catch (Exception e) {
                     logger.warn("Couldn't get install referrer from client (%s). Retrying...", e.getMessage());
                     retryAtEnd = true;
@@ -370,6 +371,7 @@ public class InstallReferrer implements InvocationHandler {
         if (retryAtEnd) {
             retry();
         } else {
+            shouldTryToRead.set(false);
             closeReferrerClient();
         }
     }
@@ -464,8 +466,8 @@ public class InstallReferrer implements InvocationHandler {
      * Retry connection to install referrer service.
      */
     private void retry() {
-        if (hasInstallReferrerBeenRead.get()) {
-            logger.debug("Install referrer has already been read");
+        if (!shouldTryToRead.get()) {
+            logger.debug("Should not try to read Install referrer");
             closeReferrerClient();
             return;
         }
