@@ -1332,7 +1332,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (enabled) {
-            if (activityState.isGdprForgotten) {
+            if (activityState != null && activityState.isGdprForgotten) {
                 logger.error("Re-enabling SDK not possible for forgotten user");
                 return;
             }
