@@ -31,9 +31,12 @@ public class InstallReferrerHuawei {
     private final InstallReferrerReadListener referrerCallback;
 
     /**
-     * Boolean indicating whether install referrer information has already been read from provider
+     * Boolean indicating whether service should be tried to read.
+     * Either because it has not yet tried,
+     *  or it did and it was successful
+     *  or it did, was not successful, but it should not retry
      */
-    private final AtomicBoolean hasInstallReferrerBeenRead;
+    private final AtomicBoolean shouldTryToRead;
 
     /**
      * Default constructor.
@@ -45,12 +48,12 @@ public class InstallReferrerHuawei {
         this.logger = AdjustFactory.getLogger();
         this.context = context;
         this.referrerCallback = referrerCallback;
-        this.hasInstallReferrerBeenRead = new AtomicBoolean(false);
+        this.shouldTryToRead = new AtomicBoolean(true);
     }
 
     public void readReferrer() {
-        if (hasInstallReferrerBeenRead.get()) {
-            logger.debug("InstallReferrerHuawei has already been read");
+        if (!shouldTryToRead.get()) {
+            logger.debug("Should not try to read Install referrer Huawei");
             return;
         }
 
@@ -75,8 +78,6 @@ public class InstallReferrerHuawei {
 
                 referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
 
-                hasInstallReferrerBeenRead.set(true);
-
             } else {
                 logger.debug("InstallReferrerHuawei fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());
             }
@@ -87,6 +88,8 @@ public class InstallReferrerHuawei {
                 cursor.close();
             }
         }
+
+        shouldTryToRead.set(false);
     }
 
 }
