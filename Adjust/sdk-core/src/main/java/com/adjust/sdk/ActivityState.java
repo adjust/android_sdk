@@ -74,6 +74,10 @@ public class ActivityState implements Serializable, Cloneable {
     protected long installBegin;
     protected String installReferrer;
 
+    protected long clickTimeHuawei;
+    protected long installBeginHuawei;
+    protected String installReferrerHuawei;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -96,6 +100,9 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = 0;
         installBegin = 0;
         installReferrer = null;
+        clickTimeHuawei = 0;
+        installBeginHuawei = 0;
+        installReferrerHuawei = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -157,6 +164,9 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(clickTime, otherActivityState.clickTime)) return false;
         if (!Util.equalLong(installBegin, otherActivityState.installBegin)) return false;
         if (!Util.equalString(installReferrer, otherActivityState.installReferrer)) return false;
+        if (!Util.equalLong(clickTimeHuawei, otherActivityState.clickTimeHuawei)) return false;
+        if (!Util.equalLong(installBeginHuawei, otherActivityState.installBeginHuawei)) return false;
+        if (!Util.equalString(installReferrerHuawei, otherActivityState.installReferrerHuawei)) return false;
         return true;
     }
 
@@ -181,6 +191,9 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(clickTime);
         hashCode = 37 * hashCode + Util.hashLong(installBegin);
         hashCode = 37 * hashCode + Util.hashString(installReferrer);
+        hashCode = 37 * hashCode + Util.hashLong(clickTimeHuawei);
+        hashCode = 37 * hashCode + Util.hashLong(installBeginHuawei);
+        hashCode = 37 * hashCode + Util.hashString(installReferrerHuawei);
         return hashCode;
     }
 
@@ -210,6 +223,10 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = Util.readLongField(fields, "clickTime", -1l);
         installBegin = Util.readLongField(fields, "installBegin", -1l);
         installReferrer = Util.readStringField(fields, "installReferrer", null);
+
+        clickTimeHuawei = Util.readLongField(fields, "clickTimeHuawei", -1l);
+        installBeginHuawei = Util.readLongField(fields, "installBeginHuawei", -1l);
+        installReferrerHuawei = Util.readStringField(fields, "installReferrerHuawei", null);
 
         // create UUID for migrating devices
         if (uuid == null) {
