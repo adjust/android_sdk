@@ -96,7 +96,7 @@ Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합
 
 ```gradle
 implementation 'com.adjust.sdk:adjust-android:4.21.1'
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 앱의 웹뷰 내에 있는 Adjust SDK를 사용하려면 다음과 같은 추가 종속성도 포함시키십시오.
@@ -169,7 +169,7 @@ Adjust는 앱 설치를 소스에 제대로 어트리뷰트하기 위해 **설�
 앱에서 Google Play Referrer API를 지원하려면, [프로젝트에 SDK 추가](#qs-add-sdk)에 설명한 대로 확실하게 실행한 다음 `build.gradle` 파일에 다음 라인을 추가했는지 확인합니다.
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 그리고 [Proguard 설정](#qs-proguard)에서 언급한 내용을 살펴보세요. 특히 이 기능에 필요한 부분이 확실히 추가되었는지도 살펴보세요.
