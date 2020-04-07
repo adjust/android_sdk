@@ -99,7 +99,7 @@ If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
 implementation 'com.adjust.sdk:adjust-android:4.21.1'
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
@@ -171,7 +171,7 @@ In order to correctly attribute an app install to its source, Adjust needs infor
 In order to support the Google Play Referrer API in your app, please make sure that you have followed our chapter on [adding the SDK to your project](#qs-add-sdk) correctly and that you have following line added to your `build.gradle` file:
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 Please follow the directions for your [Proguard settings](#qs-proguard) carefully. Confirm that you have added all the rules mentioned in it, especially the one needed for this feature:
