@@ -17,6 +17,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Install referrer](#qs-install-referrer)
          * [Google Play Referrer API](#qs-gpr-api)
          * [Google Play Store intent](#qs-gps-intent)
+         * [Huawei Referrer API](#qs-huawei-referrer-api)
    * [Integrate the SDK into your app](#qs-integrate-sdk)
       * [Basic setup](#qs-basic-setup)
          * [Native App SDK](#qs-basic-setup-native)
@@ -201,6 +202,10 @@ You should capture the Google Play Store `INSTALL_REFERRER` intent with a broadc
 We use this broadcast receiver to retrieve the install referrer and pass it to our backend.
 
 If you are using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to properly ping the Adjust broadcast receiver.
+
+#### <a id="huawei-referrer-api"></a>Huawei Referrer API
+
+SDK v4.21.1 supports install tracking on Huawei devices with Huawei App Gallery version 10.4 and higher. You don't need to do anything to start using the Huawei Referrer API. 
 
 ### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
 
