@@ -205,7 +205,7 @@ If you are using a different broadcast receiver for the `INSTALL_REFERRER` inten
 
 #### <a id="huawei-referrer-api"></a>Huawei Referrer API
 
-SDK v4.21.1 supports install tracking on Huawei devices with Huawei App Gallery version 10.4 and higher. You don't need to do anything to start using the Huawei Referrer API. 
+As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices with Huawei App Gallery version 10.4 and higher. No additional integration steps are needed to start using the Huawei Referrer API.
 
 ### <a id="qs-integrate-sdk"></a>Integrate the SDK into your app
 
