@@ -112,7 +112,7 @@ Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、A
 - アプリの`build.gradle`ファイルを開き、`dependencies`ブロックに次の行を追加してください。
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
 **注意：** Adjust SDKは、Google Playサービスの一つである`play-services-analytics`ライブラリの特定のバージョンとは紐付いていませんので、必要に応じて最新バージョンをご使用ください。
