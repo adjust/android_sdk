@@ -13,8 +13,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
-    implementation 'com.android.installreferrer:installreferrer:1.1'
+    implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
+    implementation 'com.android.installreferrer:installreferrer:1.1.2'
 
     compileOnly project(':sdk-core')
 }
