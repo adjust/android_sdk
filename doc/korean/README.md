@@ -112,7 +112,7 @@ implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.1'
 2014년 8월 1일 자로 Google Play Store의 앱은 [Google 광고 ID][google-ad-id]를 사용하여 장치를 고유하게 식별해야 합니다. Adjust SDK에서 Google 광고 ID를 사용할 수 있게 하려면 [Google Play 서비스][google-play-services]를 연동해야 합니다. 이를 아직 수행하지 않은 경우, 앱의 `build.gradle` 파일의 종속성 블록에 다음 종속성을 추가하여 Google Play 서비스 라이브러리에 종속성을 추가하십시오.
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
 **참고:** Adjust SDK는 Google Play 서비스 라이브러리 내 `play-services-analytics` 부분의 어떤 특정 버전에도 연결되어 있지 않습니다. 가장 최신 또는 필요한 버전을 사용하면 됩니다.
