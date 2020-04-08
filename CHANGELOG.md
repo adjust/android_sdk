@@ -1,3 +1,9 @@
+### Version 4.21.1 (8th April 2020)
+#### Added
+- Added support for Huawei App Gallery install referrer.
+
+---
+
 ### Version 4.21.0 (19th March 2020)
 #### Added
 - Added support for signature library as a plugin.
