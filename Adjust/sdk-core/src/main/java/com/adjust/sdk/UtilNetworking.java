@@ -276,6 +276,10 @@ public class UtilNetworking {
         return parameters.remove("signature");
     }
 
+    private static String extractAlgorithm(final Map<String, String> parameters) {
+        return parameters.remove("algorithm");
+    }
+
     private static String extractNativeVersion(final Map<String, String> parameters) {
         return parameters.remove("native_version");
     }
@@ -293,9 +297,11 @@ public class UtilNetworking {
         String secretId = extractSecretId(parameters);
         String headersId = extractHeadersId(parameters);
         String signature = extractSignature(parameters);
+        String algorithm = extractAlgorithm(parameters);
         String nativeVersion = extractNativeVersion(parameters);
 
-        String authorizationHeader = buildAuthorizationHeaderV2(signature, secretId, headersId, nativeVersion);
+        String authorizationHeader = buildAuthorizationHeaderV2(signature, secretId,
+                headersId, algorithm, nativeVersion);
         if (authorizationHeader != null) {
             return authorizationHeader;
         }
@@ -335,6 +341,7 @@ public class UtilNetworking {
     private static String buildAuthorizationHeaderV2(final String signature,
                                                      final String secretId,
                                                      final String headersId,
+                                                     final String algorithm,
                                                      final String nativeVersion) {
         if (secretId == null || signature == null || headersId == null) {
             return null;
@@ -343,7 +350,7 @@ public class UtilNetworking {
         String signatureHeader = Util.formatString("signature=\"%s\"", signature);
         String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
         String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
-        String algorithmHeader = Util.formatString("algorithm=\"adj1\"");
+        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
         String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
 
         String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
