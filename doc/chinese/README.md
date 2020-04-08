@@ -95,14 +95,14 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.21.0'
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.adjust.sdk:adjust-android:4.21.1'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 如果您希望在应用的web view中使用Adjust SDK，请同时包含以下附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.1'
 ```
 
 您还可以将Adjust SDK和web view扩展名作为JAR文件来添加，这可从我们的[发布页面][releases]中下载。
@@ -112,7 +112,7 @@ implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.0'
 自2014年8月1日起，在Google Play商店中的应用必须使用[Google广告ID][google_ad_id]以唯一标识每个设备。为了让Adjust SDK能够使用Google广告ID,您必须集成[Google Play服务][google_play_services]。如果您还未完成该集成，请将以下依赖项添加到应用`build.gradle`文件的`dependencies`块中，以便添加对Google Play服务库的依赖：
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
 **注意**:Adjust SDK未与Google Play服务库中`play-services-analytics`的任何特定版本绑定，因此您可自由选择使用最新版本（或您需要的任何版本）。
@@ -168,7 +168,7 @@ implementation 'com.google.android.gms:play-services-analytics:16.0.4'
 为了让您的应用支持Google Play Referrer API，请确保已经遵循[添加SDK至您的项目](#qs-add-sdk)章节进行了正确设置，并在`build.gradle`文件中添加了如下代码行：
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 请仔细遵循[Proguard设置](#qs-proguard)说明。请确保您已经添加了说明中所提及的全部规则，尤其是本功能必需的规则：

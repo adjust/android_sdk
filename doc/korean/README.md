@@ -95,14 +95,14 @@
 Maven을 사용하는 경우 `build.gradle` 파일에 다음 라인을 추가합니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.21.0'
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.adjust.sdk:adjust-android:4.21.1'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 앱의 웹뷰 내에 있는 Adjust SDK를 사용하려면 다음과 같은 추가 종속성도 포함시키십시오.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.1'
 ```
 
 또한 Adjust SDK 및 웹뷰 확장자를 JAR 파일로 추가할 수 있으며, 이 파일은 [릴리스 페이지][releases]에서 다운로드할 수 있습니다.
@@ -112,7 +112,7 @@ implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.0'
 2014년 8월 1일 자로 Google Play Store의 앱은 [Google 광고 ID][google-ad-id]를 사용하여 장치를 고유하게 식별해야 합니다. Adjust SDK에서 Google 광고 ID를 사용할 수 있게 하려면 [Google Play 서비스][google-play-services]를 연동해야 합니다. 이를 아직 수행하지 않은 경우, 앱의 `build.gradle` 파일의 종속성 블록에 다음 종속성을 추가하여 Google Play 서비스 라이브러리에 종속성을 추가하십시오.
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
 **참고:** Adjust SDK는 Google Play 서비스 라이브러리 내 `play-services-analytics` 부분의 어떤 특정 버전에도 연결되어 있지 않습니다. 가장 최신 또는 필요한 버전을 사용하면 됩니다.
@@ -169,7 +169,7 @@ Adjust는 앱 설치를 소스에 제대로 어트리뷰트하기 위해 **설�
 앱에서 Google Play Referrer API를 지원하려면, [프로젝트에 SDK 추가](#qs-add-sdk)에 설명한 대로 확실하게 실행한 다음 `build.gradle` 파일에 다음 라인을 추가했는지 확인합니다.
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 그리고 [Proguard 설정](#qs-proguard)에서 언급한 내용을 살펴보세요. 특히 이 기능에 필요한 부분이 확실히 추가되었는지도 살펴보세요.

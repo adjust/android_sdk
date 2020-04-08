@@ -116,6 +116,7 @@ public class PackageFactory {
     public static ActivityPackage buildInstallReferrerSdkClickPackage(final String installReferrer,
                                                                       final long clickTimeInSeconds,
                                                                       final long installBeginInSeconds,
+                                                                      final String referrerApi,
                                                                       final ActivityState activityState,
                                                                       final AdjustConfig adjustConfig,
                                                                       final DeviceInfo deviceInfo,
@@ -140,6 +141,7 @@ public class PackageFactory {
         clickPackageBuilder.referrer = installReferrer;
         clickPackageBuilder.clickTimeInSeconds = clickTimeInSeconds;
         clickPackageBuilder.installBeginTimeInSeconds = installBeginInSeconds;
+        clickPackageBuilder.referrerApi = referrerApi;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.INSTALL_REFERRER);
 

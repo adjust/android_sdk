@@ -30,10 +30,12 @@ public interface Constants {
     String GDPR_URL = "https://gdpr.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.21.0";
+    String CLIENT_SDK = "android4.21.1";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
+    String REFERRER_API_GOOGLE = "google";
+    String REFERRER_API_HUAWEI = "huawei";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";

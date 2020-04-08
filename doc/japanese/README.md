@@ -93,14 +93,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
  
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.21.0'
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.adjust.sdk:adjust-android:4.21.1'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 アプリの WebView内で Adjust SDK を使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.1'
 ```
 
 Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、Adjust [リリースページ][releases]からダウンロードすることもできます。
@@ -112,7 +112,7 @@ Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、A
 - アプリの`build.gradle`ファイルを開き、`dependencies`ブロックに次の行を追加してください。
 
 ```gradle
-implementation 'com.google.android.gms:play-services-analytics:16.0.4'
+implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
 **注意：** Adjust SDKは、Google Playサービスの一つである`play-services-analytics`ライブラリの特定のバージョンとは紐付いていませんので、必要に応じて最新バージョンをご使用ください。
@@ -168,7 +168,7 @@ Proguardをお使いの場合は、以下をProguardファイルに追加して�
 アプリでこのAPIをサポートするには、[SDKをプロジェクトに追加する](#qs-add-sdk) の章の手順に適切に従って、以下の行を`build.gradle`ファイルに追加していることを確認してください。
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.0'
+implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 また、[Proguardの設定](#qs-proguard)の章をよく読んで、記載されているすべてのルール、特に、この機能に必要なルールが追加されていることを確認してください。
