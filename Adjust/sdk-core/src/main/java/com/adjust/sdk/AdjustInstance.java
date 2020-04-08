@@ -417,6 +417,18 @@ public class AdjustInstance {
     }
 
     /**
+     * Track subscription from Google Play.
+     *
+     * @param subscription AdjustSubscription object to be tracked
+     */
+    public void trackSubscription(AdjustSubscription subscription) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+        activityHandler.trackSubscription(subscription);
+    }
+
+    /**
      * Called to get value of unique Adjust device identifier.
      *
      * @return Unique Adjust device indetifier

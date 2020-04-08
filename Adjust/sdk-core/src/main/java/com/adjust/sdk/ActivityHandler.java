@@ -633,6 +633,15 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
+    public void trackSubscription(final AdjustSubscription subscription) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                trackSubscriptionI(subscription);
+            }
+        });
+    }
 
     @Override
     public void gotOptOutResponse() {
@@ -1969,6 +1978,20 @@ public class ActivityHandler implements IActivityHandler {
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(source, adRevenueJson);
         packageHandler.addPackage(adRevenuePackage);
+        packageHandler.sendFirstPackage();
+    }
+
+    private void trackSubscriptionI(final AdjustSubscription subscription) {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        long now = System.currentTimeMillis();
+
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
+        packageHandler.addPackage(subscriptionPackage);
         packageHandler.sendFirstPackage();
     }
 
