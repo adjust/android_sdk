@@ -67,6 +67,8 @@ public interface IActivityHandler {
 
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
+    void trackSubscription(AdjustSubscription subscription);
+
     void gotOptOutResponse();
 
     Context getContext();

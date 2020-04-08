@@ -261,6 +261,16 @@ public class Adjust {
     }
 
     /**
+     * Track subscription from Google Play.
+     *
+     * @param subscription AdjustSubscription object to be tracked
+     */
+    public static void trackSubscription(final AdjustSubscription subscription) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.trackSubscription(subscription);
+    }
+
+    /**
      * Called to get value of Google Play Advertising Identifier.
      *
      * @param context        Application context
