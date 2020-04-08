@@ -203,7 +203,7 @@ We use this broadcast receiver to retrieve the install referrer and pass it to o
 
 If you are using a different broadcast receiver for the `INSTALL_REFERRER` intent, follow [these instructions][referrer] to properly ping the Adjust broadcast receiver.
 
-#### <a id="huawei-referrer-api"></a>Huawei Referrer API
+#### <a id="qs-huawei-referrer-api"></a>Huawei Referrer API
 
 As of v4.21.1, the Adjust SDK supports install tracking on Huawei devices with Huawei App Gallery version 10.4 and higher. No additional integration steps are needed to start using the Huawei Referrer API.
 
