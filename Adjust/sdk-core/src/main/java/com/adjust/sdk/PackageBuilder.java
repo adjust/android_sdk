@@ -877,7 +877,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "product_id", subscription.getSku());
         PackageBuilder.addString(parameters, "receipt", subscription.getSignature());
         PackageBuilder.addString(parameters, "purchase_token", subscription.getPurchaseToken());
-        PackageBuilder.addString(parameters, "platform", subscription.getPlatform());
+        PackageBuilder.addString(parameters, "billing_store", subscription.getBillingStore());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
         PackageBuilder.addString(parameters, "sales_region", subscription.getSalesRegion());
 
