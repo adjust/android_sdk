@@ -11,7 +11,7 @@ public class AdjustSubscription {
     private String sku;             // [M] product_id
     private String signature;       // [M] receipt
     private String purchaseToken;   // [M] purchase_token
-    private String platform;        // [M] platform
+    private String billingStore;    // [M] billing_store
     private String orderId;         // [O] transaction_id
     private String salesRegion;     // [O] sales_region
     private Map<String, String> callbackParameters; // [O] callback_params
@@ -31,7 +31,7 @@ public class AdjustSubscription {
         this.sku = sku;
         this.signature = signature;
         this.purchaseToken = purchaseToken;
-        this.platform = "GooglePlay";
+        this.billingStore = "GooglePlay";
     }
 
     Double getRevenue() {
@@ -58,8 +58,8 @@ public class AdjustSubscription {
         return signature;
     }
 
-    String getPlatform() {
-        return platform;
+    String getBillingStore() {
+        return billingStore;
     }
 
     String getPurchaseToken() {
