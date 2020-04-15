@@ -17,6 +17,7 @@
       * [설치 referrer](#qs-install-referrer)
          * [Google Play referrer API](#qs-gpr-api)
          * [Google Play Store 인텐트](#qs-gps-intent)
+         * [Huawei Referrer API](#qs-huawei-referrer-api)
    * [앱에 SDK 연동](#qs-integrate-sdk)
       * [기본 설정](#qs-basic-setup)
          * [네이티브 앱 SDK](#qs-basic-setup-native)
@@ -198,6 +199,10 @@ implementation 'com.android.installreferrer:installreferrer:1.1.2'
 Adjust는 이 브로드캐스트 리시버를 사용하여 설치 referrer를 검색 후 백엔드에 전달합니다.
 
 `INSTALL_REFERRER` 인텐트 수신을 위해 다른 브로드캐스트 리시버를 사용 중이라면 [이 지침][referrer]에 따라 브로드캐스트 리시버를 추가하세요.
+
+#### <a id="qs-huawei-referrer-api"></a>Huawei Referrer API 
+
+v4.21.1부터 Adjust SDK는 Huawei App Gallery 버전 10.4 이상이 설치된 화웨이 기기에 설치 트래킹을 지원합니다. Huawei Referrer API 사용을 시작하기 위해 추가적인 연동 단계가 필요하지 않습니다.
 
 ### <a id="qs-integrate-sdk"></a>앱에 SDK 연동
 
