@@ -662,8 +662,10 @@ public class AdjustBridgeInstance {
 
             Object baseUrlField = jsonAdjustTestOptions.get("baseUrl");
             Object gdprUrlField = jsonAdjustTestOptions.get("gdprUrl");
+            Object subscriptionUrlField = jsonAdjustTestOptions.get("subscriptionUrl");
             Object basePathField = jsonAdjustTestOptions.get("basePath");
             Object gdprPathField = jsonAdjustTestOptions.get("gdprPath");
+            Object subscriptionPathField = jsonAdjustTestOptions.get("subscriptionPath");
             Object useTestConnectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
             Object timerIntervalInMillisecondsField = jsonAdjustTestOptions.get("timerIntervalInMilliseconds");
             Object timerStartInMillisecondsField = jsonAdjustTestOptions.get("timerStartInMilliseconds");
@@ -684,6 +686,11 @@ public class AdjustBridgeInstance {
                 adjustTestOptions.baseUrl = baseUrl;
             }
 
+            String subscriptionUrl = AdjustBridgeUtil.fieldToString(subscriptionUrlField);
+            if (subscriptionUrl != null) {
+                adjustTestOptions.subscriptionUrl = subscriptionUrl;
+            }
+
             String basePath = AdjustBridgeUtil.fieldToString(basePathField);
             if (basePath != null) {
                 adjustTestOptions.basePath = basePath;
@@ -692,6 +699,11 @@ public class AdjustBridgeInstance {
             String gdprPath = AdjustBridgeUtil.fieldToString(gdprPathField);
             if (gdprPath != null) {
                 adjustTestOptions.gdprPath = gdprPath;
+            }
+
+            String subscriptionPath = AdjustBridgeUtil.fieldToString(subscriptionPathField);
+            if (subscriptionPath != null) {
+                adjustTestOptions.subscriptionPath = subscriptionPath;
             }
 
             Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);

@@ -25,8 +25,10 @@ function AdjustTestOptions() {
     this.hasContext                       = false;
     this.baseUrl                          = null;
     this.gdprUrl                          = null;
+    this.subscriptionUrl                  = null;
     this.basePath                         = null;
     this.gdprPath                         = null;
+    this.subscriptionPath                 = null;
     this.useTestConnectionOptions         = null;
     this.timerIntervalInMilliseconds      = null;
     this.timerStartInMilliseconds         = null;
@@ -61,8 +63,10 @@ CommandExecutor.prototype.scheduleCommand = function(className, functionName, pa
 function AdjustCommandExecutor(baseUrl, gdprUrl) {
     this.baseUrl           = baseUrl;
     this.gdprUrl           = gdprUrl;
+    this.subscriptionUrl   = baseUrl; // TODO: for now, consider making it separate
     this.basePath          = null;
     this.gdprPath          = null;
+    this.subscriptionPath  = null;
     this.savedEvents       = {};
     this.savedConfigs      = {};
     this.savedCommands     = [];
@@ -149,9 +153,11 @@ AdjustCommandExecutor.prototype.testOptions = function(params) {
     var testOptions = new AdjustTestOptions();
     testOptions.baseUrl = this.baseUrl;
     testOptions.gdprUrl = this.gdprUrl;
+    testOptions.subscriptionUrl = this.baseUrl; // TODO: for now, consider making it separate
     if ('basePath' in params) {
         this.basePath = getFirstParameterValue(params, 'basePath');
         this.gdprPath = getFirstParameterValue(params, 'basePath');
+        this.subscriptionPath = getFirstParameterValue(params, 'basePath');
     }
     if ('timerInterval' in params) {
         testOptions.timerIntervalInMilliseconds = getFirstParameterValue(params, 'timerInterval').toString();
@@ -180,6 +186,7 @@ AdjustCommandExecutor.prototype.testOptions = function(params) {
                 testOptions.teardown                 = true;
                 testOptions.basePath                 = this.basePath;
                 testOptions.gdprPath                 = this.gdprPath;
+                testOptions.subscriptionPath         = this.basePath; // TODO: for now, consider making it separate
                 testOptions.useTestConnectionOptions = true;
                 Adjust.teardown();
             }
@@ -200,6 +207,7 @@ AdjustCommandExecutor.prototype.testOptions = function(params) {
                 testOptions.teardown                 = true;
                 testOptions.basePath                 = null;
                 testOptions.gdprPath                 = null;
+                testOptions.subscriptionPath         = null;
                 testOptions.useTestConnectionOptions = false;
                 Adjust.teardown();
             }

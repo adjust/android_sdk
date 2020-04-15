@@ -189,7 +189,9 @@ public class PackageBuilder {
     ActivityPackage buildSubscriptionPackage(AdjustSubscription subscription, boolean isInDelay) {
         Map<String, String> parameters = getSubscriptionParameters(subscription, isInDelay);
         ActivityPackage subscriptionPackage = getDefaultActivityPackage(ActivityKind.SUBSCRIPTION);
-        subscriptionPackage.setPath("/ad_revenue"); // TODO: temporary for now, change later
+        // TODO: temporary for now, change later
+        // TODO: needs to be changed to "/subscription" for testing, change later
+        subscriptionPackage.setPath("/v2/purchase");
         subscriptionPackage.setSuffix("");
 
         AdjustSigner.sign(parameters, ActivityKind.SUBSCRIPTION.toString(),
