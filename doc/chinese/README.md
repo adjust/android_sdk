@@ -17,6 +17,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
      * [Install referrer](#qs-install-referrer)
         * [Google Play Referrer API](#qs-gpr-api)
         * [Google Play Store intent](#qs-gps-intent)
+        * [华为 Referrer API](#qs-huawei-referrer-api)
      * [集成SDK至您的应用](#qs-integrate-sdk)
      * [基本设置](#qs-basic-setup)
          * [原生应用SDK](#qs-basic-setup-native)
@@ -197,6 +198,10 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 我们使用这个广播接收器来检索install referrer，并将其传送给后端。
 
 如果您已经为`INSTALL_REFERRER`intent使用了不同的广播接收器，请遵循[此说明][referrer]来添加Adjust广播接收器。
+
+#### <a id="qs-huawei-referrer-api"></a>华为 Referrer API
+
+从 v4.21.1 版本开始，Adjust SDK 将可以针对华为 AppGallery 10.4 或更高版本的华为设备进行安装跟踪。无需进行额外集成步骤，即可开始使用华为 Referrer API。
 
 ### <a id="qs-integrate-sdk"></a>集成SDK至您的应用
 
