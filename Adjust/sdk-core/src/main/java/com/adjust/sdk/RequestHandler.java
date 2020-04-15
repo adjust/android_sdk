@@ -24,6 +24,7 @@ public class RequestHandler implements IRequestHandler {
     private ILogger logger;
     private String basePath;
     private String gdprPath;
+    private String subscriptionPath;
 
     public RequestHandler(IActivityHandler activityHandler, IPackageHandler packageHandler) {
         this.logger = AdjustFactory.getLogger();
@@ -31,6 +32,7 @@ public class RequestHandler implements IRequestHandler {
         init(activityHandler, packageHandler);
         this.basePath = packageHandler.getBasePath();
         this.gdprPath = packageHandler.getGdprPath();
+        this.subscriptionPath = packageHandler.getSubscriptionPath();
     }
 
     @Override
@@ -74,6 +76,11 @@ public class RequestHandler implements IRequestHandler {
             url = AdjustFactory.getGdprUrl();
             if (gdprPath != null) {
                 url += gdprPath;
+            }
+        } else if (activityPackage.getActivityKind() == ActivityKind.SUBSCRIPTION) {
+            url = AdjustFactory.getSubscriptionUrl();
+            if (subscriptionPath != null) {
+                url += subscriptionPath;
             }
         } else {
             url = AdjustFactory.getBaseUrl();

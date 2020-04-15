@@ -62,6 +62,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
+    private String subscriptionPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -699,6 +700,11 @@ public class ActivityHandler implements IActivityHandler {
         return this.gdprPath;
     }
 
+    @Override
+    public String getSubscriptionPath() {
+        return this.subscriptionPath;
+    }
+
     public InternalState getInternalState() {
         return internalState;
     }
@@ -833,6 +839,7 @@ public class ActivityHandler implements IActivityHandler {
 
         this.basePath = adjustConfig.basePath;
         this.gdprPath = adjustConfig.gdprPath;
+        this.subscriptionPath = adjustConfig.subscriptionPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
