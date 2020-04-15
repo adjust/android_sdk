@@ -14,6 +14,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [インストールリファラ](#qs-install-referrer)
          * [Google Play Referrer API](#qs-gpr-api)
          * [Google Play Store のインテント](#qs-gps-intent)
+         * [Huawei リファラAPI](#qs-huawei-referrer-api)
    * [SDK をアプリに実装する](#qs-integrate-sdk)
       * [基本設定](#qs-basic-setup)
          * [Native App SDK](#qs-basic-setup-native)
@@ -197,6 +198,10 @@ Google Play ストアの`INSTALL_REFERRER`インテントは、ブロードキ�
 Adjustはこのブロードキャストレシーバーを使用して、インストールのリファラ情報を取得し、バックエンドに転送します。
 
 `INSTALL_REFERRER`インテントに対して既に他のブロードキャストレシーバーを使用している場合、[こちらの説明][referrer]に従って、Adjust ブロードキャストレシーバーを追加してください。
+
+#### <a id="#qs-huawei-referrer-api"></a>Huawei リファラAPI
+
+Adjust SDKv4.21.1以降、Huawei端末におけるインストール計測のサポートは、バージョン10.4かそれ以降のAppGalleryがインストールされたHuawei端末のみに可能です。アプリでHuawei リファラAPIをサポートするのに必要な追加作業はありません。 
 
 ### <a id="qs-integrate-sdk"></a>SDKをアプリに実装する
  
