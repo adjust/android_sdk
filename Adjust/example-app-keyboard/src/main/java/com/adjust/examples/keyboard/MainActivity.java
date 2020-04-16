@@ -6,23 +6,17 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
 
 public class MainActivity extends AppCompatActivity {
-    private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
             builder.setMessage(R.string.keyboard_not_enbabled);
             builder.setPositiveButton("Enable", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
+
+                    // track an event
+                    onTrackSimpleEventClick();
+
                     Intent intent = new Intent(android.provider.Settings.ACTION_INPUT_METHOD_SETTINGS);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
@@ -79,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    public void onTrackSimpleEventClick(View v) {
-        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
+    public void onTrackSimpleEventClick() {
+        AdjustEvent event = new AdjustEvent("g3mfiw");
 
         // Assign custom identifier to event which will be reported in success/failure callbacks.
         event.setCallbackId("PrettyRandomIdentifier");
