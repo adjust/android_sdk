@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                     dialog.dismiss();
+
+                    finish();
                 }
             });
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
