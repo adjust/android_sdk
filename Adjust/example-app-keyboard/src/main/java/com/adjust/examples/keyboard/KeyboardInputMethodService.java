@@ -8,6 +8,9 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
 
+import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustEvent;
+
 public class KeyboardInputMethodService extends InputMethodService implements KeyboardView.OnKeyboardActionListener {
 
     private KeyboardView keyboardView;
@@ -22,6 +25,25 @@ public class KeyboardInputMethodService extends InputMethodService implements Ke
         keyboardView.setKeyboard(keyboard);
         keyboardView.setOnKeyboardActionListener(this);
         return keyboardView;
+    }
+
+    @Override
+    public void onWindowShown() {
+        super.onWindowShown();
+
+        // notify Adjust sdk to resume on keyboard open
+        Adjust.onResume();
+
+        // track an event
+        onTrackSimpleEventClick();
+    }
+
+    @Override
+    public void onWindowHidden() {
+        super.onWindowHidden();
+
+        // notify Adjust sdk to pause on keyboard close
+        Adjust.onPause();
     }
 
     @Override
@@ -90,5 +112,14 @@ public class KeyboardInputMethodService extends InputMethodService implements Ke
     @Override
     public void swipeUp() {
 
+    }
+
+    public void onTrackSimpleEventClick() {
+        AdjustEvent event = new AdjustEvent("g3mfiw");
+
+        // Assign custom identifier to event which will be reported in success/failure callbacks.
+        event.setCallbackId("PrettyRandomIdentifier");
+
+        Adjust.trackEvent(event);
     }
 }
