@@ -9,4 +9,11 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/keyboard_tip"
+        android:layout_marginHorizontal="@dimen/activity_horizontal_margin" />
+
 </LinearLayout>
