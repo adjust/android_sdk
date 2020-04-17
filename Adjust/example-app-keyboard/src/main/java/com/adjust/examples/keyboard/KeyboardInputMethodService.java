@@ -33,9 +33,6 @@ public class KeyboardInputMethodService extends InputMethodService implements Ke
 
         // notify Adjust sdk to resume on keyboard open
         Adjust.onResume();
-
-        // track an event
-        onTrackSimpleEventClick();
     }
 
     @Override
@@ -69,6 +66,11 @@ public class KeyboardInputMethodService extends InputMethodService implements Ke
                     } else {
                         inputConnection.commitText("", 1);
                     }
+
+                    // track an event
+                    onTrackSimpleEventClick();
+
+                    break;
                 case Keyboard.KEYCODE_SHIFT:
                     caps = !caps;
                     keyboard.setShifted(caps);
