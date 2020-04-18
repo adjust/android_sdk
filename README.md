@@ -87,7 +87,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### <a id="qs-example-apps"></a>Example apps
 
-There are Android example apps inside the [`example-app-java`][example-java] and [`example-app-kotlin`][example-kotlin] directories, as well as example app that uses web views inside the [`example-webbridge` directory][example-webbridge] and Android TV example app inside the [`example-app-tv`][example-tv] directory. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
+There are Android example apps inside the [`example-app-java`][example-java], [`example-app-kotlin`][example-kotlin] and [`example-app-keyboard`][example-keyboard] directories, as well as example app that uses web views inside the [`example-webbridge` directory][example-webbridge] and Android TV example app inside the [`example-app-tv`][example-tv] directory. You can open the Android project to see these examples on how the Adjust SDK can be integrated.
 
 ### <a id="qs-getting-started"></a>Getting started
 
@@ -1966,6 +1966,7 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 
 [example-java]:       Adjust/example-app-java
 [example-kotlin]:     Adjust/example-app-kotlin
+[example-keyboard]:     Adjust/example-app-keyboard
 [example-tv]:         Adjust/example-app-tv
 [example-webbridge]:  Adjust/example-app-webbridge
 
