@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Keyboard xmlns:android="http://schemas.android.com/apk/res/android"
+    android:keyWidth="10%p"
+    android:horizontalGap="3px"
+    android:verticalGap="3px"
+    android:keyHeight="60dp"
+    android:keyTextColor="@color/colorAccent"
+    android:keyBackground="@color/colorPrimaryDark"
+    >
+    <Row>
+        <Key android:codes="97" android:keyLabel="a" android:keyEdgeFlags="left"/>
+        <Key android:codes="100" android:keyLabel="d"/>
+        <Key android:codes="106" android:keyLabel="j"/>
+        <Key android:codes="117" android:keyLabel="u"/>
+        <Key android:codes="115" android:keyLabel="s"/>
+        <Key android:codes="116" android:keyLabel="t"/>
+        <Key android:codes="46" android:keyLabel="."/>
+        <Key android:codes="99" android:keyLabel="c"/>
+        <Key android:codes="111" android:keyLabel="o"/>
+        <Key android:codes="109" android:keyLabel="m"/>
+        <Key android:codes="-5" android:keyLabel="DEL" android:keyWidth="20%p" android:isRepeatable="true" android:keyEdgeFlags="right"/>
+    </Row>
+    <Row android:rowEdgeFlags="bottom">
+        <Key android:codes="-1" android:keyLabel="CAPS" android:keyWidth="20%p" android:keyEdgeFlags="left"/>
+        <Key android:codes="32" android:keyLabel="SPACE" android:keyWidth="60%p" android:isRepeatable="true"/>
+        <Key android:codes="-4" android:keyBackground="@color/colorPrimary" android:keyLabel="DONE" android:keyWidth="20%p" android:keyEdgeFlags="right"/>
+    </Row>
+</Keyboard>

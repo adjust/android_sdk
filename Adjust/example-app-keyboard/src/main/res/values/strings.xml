@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Adjust Keyboard Example</string>
+    <string name="keyboard_not_enbabled">Adjust Keyboard is not enabled. Click Enable to open settings. Select Adjust Keyboard Example.</string>
+    <string name="keyboard_tip">Tip: To use keyboard open any text input field and switch the keyboard to Adjust Keyboard.</string>
+
+</resources>
