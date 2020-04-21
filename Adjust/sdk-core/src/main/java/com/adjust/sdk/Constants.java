@@ -28,7 +28,7 @@ public interface Constants {
 
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
-    String SUBSCRIPTION_URL = "https://staging-api-sub.adjust.com";
+    String SUBSCRIPTION_URL = "https://subscription.adjust.com";
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.21.2";
