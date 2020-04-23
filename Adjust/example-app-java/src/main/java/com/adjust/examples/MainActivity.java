@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.AdjustSubscription;
+import com.adjust.sdk.AdjustPlayStoreSubscription;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 //
 //
 //        Adjust.trackEvent(event);
-        AdjustSubscription subscription = new AdjustSubscription(
+        AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
                 6.0,
                 (long) 1234567890,
                 "EUR",

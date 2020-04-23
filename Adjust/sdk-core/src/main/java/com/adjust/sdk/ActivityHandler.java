@@ -635,7 +635,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackSubscription(final AdjustSubscription subscription) {
+    public void trackSubscription(final AdjustPlayStoreSubscription subscription) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -1988,7 +1988,7 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.sendFirstPackage();
     }
 
-    private void trackSubscriptionI(final AdjustSubscription subscription) {
+    private void trackSubscriptionI(final AdjustPlayStoreSubscription subscription) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }

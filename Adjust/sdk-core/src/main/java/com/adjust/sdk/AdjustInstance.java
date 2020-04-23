@@ -425,9 +425,9 @@ public class AdjustInstance {
     /**
      * Track subscription from Google Play.
      *
-     * @param subscription AdjustSubscription object to be tracked
+     * @param subscription AdjustPlayStoreSubscription object to be tracked
      */
-    public void trackSubscription(AdjustSubscription subscription) {
+    public void trackSubscription(AdjustPlayStoreSubscription subscription) {
         if (!checkActivityHandler()) {
             return;
         }
