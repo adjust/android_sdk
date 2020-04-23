@@ -186,7 +186,7 @@ public class PackageBuilder {
         return adRevenuePackage;
     }
 
-    ActivityPackage buildSubscriptionPackage(AdjustSubscription subscription, boolean isInDelay) {
+    ActivityPackage buildSubscriptionPackage(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
         Map<String, String> parameters = getSubscriptionParameters(subscription, isInDelay);
         ActivityPackage subscriptionPackage = getDefaultActivityPackage(ActivityKind.SUBSCRIPTION);
         // TODO: temporary for now, change later
@@ -790,7 +790,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getSubscriptionParameters(AdjustSubscription subscription, boolean isInDelay) {
+    private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);

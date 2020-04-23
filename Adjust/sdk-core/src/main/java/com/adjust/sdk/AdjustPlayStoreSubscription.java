@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class AdjustSubscription {
+public class AdjustPlayStoreSubscription {
     private Double revenue;         // [M] revenue
     private Long purchaseTime;      // [M] transaction_date
     private String currency;        // [M] currency
@@ -19,12 +19,12 @@ public class AdjustSubscription {
 
     private static ILogger logger = AdjustFactory.getLogger();
 
-    public AdjustSubscription(final Double revenue,
-                              final Long purchaseTime,
-                              final String currency,
-                              final String sku,
-                              final String signature,
-                              final String purchaseToken) {
+    public AdjustPlayStoreSubscription(final Double revenue,
+                                       final Long purchaseTime,
+                                       final String currency,
+                                       final String sku,
+                                       final String signature,
+                                       final String purchaseToken) {
         this.revenue = revenue;
         this.purchaseTime = purchaseTime;
         this.currency = currency;

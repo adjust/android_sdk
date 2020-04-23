@@ -11,10 +11,9 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
-import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.AdjustSubscription;
+import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -646,7 +645,7 @@ public class AdjustCommandExecutor {
         String transactionId = command.getFirstParameterValue("transactionId");
         String salesRegion = command.getFirstParameterValue("salesRegion");
 
-        AdjustSubscription subscription = new AdjustSubscription(
+        AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
                 revenue,
                 transactionDate,
                 currency,
