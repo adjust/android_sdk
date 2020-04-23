@@ -377,6 +377,7 @@ public class AdjustFactory {
         maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
+        subscriptionUrl = Constants.SUBSCRIPTION_URL;
         connectionOptions = null;
         tryInstallReferrer = true;
     }
