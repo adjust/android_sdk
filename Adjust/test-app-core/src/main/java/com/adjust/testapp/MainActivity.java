@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTestSession() {
         // testLibrary.addTestDirectory("current/gdpr");
-         testLibrary.addTest("Test_Subscription_subscription");
 
         testLibrary.startTestSession(Adjust.getSdkVersion());
     }
