@@ -427,11 +427,11 @@ public class AdjustInstance {
      *
      * @param subscription AdjustPlayStoreSubscription object to be tracked
      */
-    public void trackSubscription(AdjustPlayStoreSubscription subscription) {
+    public void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription) {
         if (!checkActivityHandler()) {
             return;
         }
-        activityHandler.trackSubscription(subscription);
+        activityHandler.trackPlayStoreSubscription(subscription);
     }
 
     /**

@@ -635,7 +635,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackSubscription(final AdjustPlayStoreSubscription subscription) {
+    public void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
         executor.submit(new Runnable() {
             @Override
             public void run() {

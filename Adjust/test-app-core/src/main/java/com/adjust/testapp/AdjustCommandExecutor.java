@@ -636,7 +636,7 @@ public class AdjustCommandExecutor {
     }
 
     private void trackSubscription() {
-        Double revenue = Double.parseDouble(command.getFirstParameterValue("revenue"));
+        Long price = Long.parseLong(command.getFirstParameterValue("revenue"));
         String currency = command.getFirstParameterValue("currency");
         Long transactionDate = Long.parseLong(command.getFirstParameterValue("transactionDate"));
         String productId = command.getFirstParameterValue("productId");
@@ -646,7 +646,7 @@ public class AdjustCommandExecutor {
         String salesRegion = command.getFirstParameterValue("salesRegion");
 
         AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-                revenue,
+                price,
                 transactionDate,
                 currency,
                 productId,
@@ -672,7 +672,7 @@ public class AdjustCommandExecutor {
             }
         }
 
-        Adjust.trackSubscription(subscription);
+        Adjust.trackPlayStoreSubscription(subscription);
     }
 /*
     private void testBegin() {

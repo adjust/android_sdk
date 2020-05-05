@@ -189,8 +189,6 @@ public class PackageBuilder {
     ActivityPackage buildSubscriptionPackage(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
         Map<String, String> parameters = getSubscriptionParameters(subscription, isInDelay);
         ActivityPackage subscriptionPackage = getDefaultActivityPackage(ActivityKind.SUBSCRIPTION);
-        // TODO: temporary for now, change later
-        // TODO: needs to be changed to "/subscription" for testing, change later
         subscriptionPackage.setPath("/v2/purchase");
         subscriptionPackage.setSuffix("");
 
@@ -873,7 +871,7 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
-        PackageBuilder.addDouble(parameters, "revenue", subscription.getRevenue());
+        PackageBuilder.addLong(parameters, "revenue", subscription.getPrice());
         PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "currency", subscription.getCurrency());
         PackageBuilder.addString(parameters, "product_id", subscription.getSku());
