@@ -70,27 +70,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
-//        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
-//
-//        // Assign custom identifier to event which will be reported in success/failure callbacks.
-//        event.setCallbackId("PrettyRandomIdentifier");
-//
-//
-//        Adjust.trackEvent(event);
-        AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
-                6.0,
-                (long) 1234567890,
-                "EUR",
-                "com.adjust.ps4",
-                "no-receipt-bought-on-flohmarkt",
-                "stolen-token");
-        subscription.setOrderId("random-order-id");
-        subscription.setSalesRegion("CA");
-        subscription.addCallbackParameter("param1", "value1");
-        subscription.addCallbackParameter("param2", "value2");
-        subscription.addPartnerParameter("param3", "value3");
-        subscription.addPartnerParameter("param4", "value4");
-        Adjust.trackSubscription(subscription);
+        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
+
+        // Assign custom identifier to event which will be reported in success/failure callbacks.
+        event.setCallbackId("PrettyRandomIdentifier");
+
+        Adjust.trackEvent(event);
     }
 
     public void onTrackRevenueEventClick(View v) {
