@@ -265,9 +265,9 @@ public class Adjust {
      *
      * @param subscription AdjustPlayStoreSubscription object to be tracked
      */
-    public static void trackSubscription(final AdjustPlayStoreSubscription subscription) {
+    public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.trackSubscription(subscription);
+        adjustInstance.trackPlayStoreSubscription(subscription);
     }
 
     /**
