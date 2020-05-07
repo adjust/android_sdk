@@ -215,6 +215,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -302,6 +303,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -384,6 +386,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -435,6 +438,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -535,6 +539,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -593,6 +598,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -650,6 +656,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
@@ -707,6 +714,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
 
         if (!containsPlayIds(parameters)) {
             logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
