@@ -51,6 +51,7 @@ class DeviceInfo {
 
     String playAdId;
     String playAdIdSource;
+    Integer playAdIdAttempt;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     String macSha1;
@@ -113,31 +114,32 @@ class DeviceInfo {
 
     void reloadPlayIds(Context context) {
         playAdIdSource = null;
-        for (int i = 0; i < 3; i += 1) {
+        playAdIdAttempt = null;
+
+        // attempt connecting to Google Play Service by own
+        for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
             try {
-                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
+                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
+                        GooglePlayServicesClient.getGooglePlayServicesInfo(context,
+                                Util.getGooglePlayServiceConnectionTimeoutMilliSec(serviceAttempt));
                 playAdId = gpsInfo.getGpsAdid();
-                if (playAdId != null) {
-                    playAdIdSource = "service";
-                    break;
-                }
-            } catch (Exception e) {}
-            playAdId = Util.getPlayAdId(context);
-            if (playAdId != null) {
-                playAdIdSource = "library";
-                break;
-            }
-        }
-        for (int i = 0; i < 3; i += 1) {
-            try {
-                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
                 isTrackingEnabled = gpsInfo.isTrackingEnabled();
-                if (isTrackingEnabled != null) {
-                    break;
+
+                if (playAdId != null && isTrackingEnabled != null) {
+                    playAdIdSource = "service";
+                    playAdIdAttempt = serviceAttempt;
+                    return;
                 }
             } catch (Exception e) {}
+        }
+
+        // as fallback attempt connecting to Google Play Service using library
+        for (int libAttempt = 1; libAttempt <= 3; libAttempt += 1) {
+            playAdId = Util.getPlayAdId(context);
             isTrackingEnabled = Util.isPlayTrackingEnabled(context);
-            if (isTrackingEnabled != null) {
+            if (playAdId != null && isTrackingEnabled != null) {
+                playAdIdSource = "library";
+                playAdIdAttempt = libAttempt;
                 break;
             }
         }
