@@ -51,7 +51,7 @@ class DeviceInfo {
 
     String playAdId;
     String playAdIdSource;
-    String playAdIdAttempt;
+    int playAdIdAttempt;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     String macSha1;
@@ -114,7 +114,7 @@ class DeviceInfo {
 
     void reloadPlayIds(Context context) {
         playAdIdSource = null;
-        playAdIdAttempt = null;
+        playAdIdAttempt = -1;
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
@@ -127,7 +127,7 @@ class DeviceInfo {
 
                 if (playAdId != null && isTrackingEnabled != null) {
                     playAdIdSource = "service";
-                    playAdIdAttempt = String.valueOf(serviceAttempt);
+                    playAdIdAttempt = serviceAttempt;
                     return;
                 }
             } catch (Exception e) {}
@@ -137,9 +137,10 @@ class DeviceInfo {
         for (int libAttempt = 1; libAttempt <= 3; libAttempt += 1) {
             playAdId = Util.getPlayAdId(context);
             isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+
             if (playAdId != null && isTrackingEnabled != null) {
                 playAdIdSource = "library";
-                playAdIdAttempt = String.valueOf(libAttempt);
+                playAdIdAttempt = libAttempt;
                 break;
             }
         }
