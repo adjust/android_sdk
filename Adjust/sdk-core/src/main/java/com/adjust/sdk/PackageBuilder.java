@@ -864,14 +864,15 @@ public class PackageBuilder {
         if (parameters == null) {
             return false;
         }
-        return parameters.containsKey("tracking_enabled") || parameters.containsKey("gps_adid");
+        return parameters.containsKey("gps_adid");
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {
         if (parameters != null && !parameters.containsKey("mac_sha1")
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
-                && !parameters.containsKey("gps_adid")) {
+                && !parameters.containsKey("gps_adid")
+                && !parameters.containsKey("oaid")) {
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
         }
     }
