@@ -880,7 +880,13 @@ public class PackageBuilder {
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")
-                && !parameters.containsKey("oaid")) {
+                && !parameters.containsKey("oaid")
+                && !parameters.containsKey("imei")
+                && !parameters.containsKey("meid")
+                && !parameters.containsKey("device_id")
+                && !parameters.containsKey("imeis")
+                && !parameters.containsKey("meids")
+                && !parameters.containsKey("device_ids")) {
             logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
         }
     }
