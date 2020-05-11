@@ -727,9 +727,9 @@ public class Util {
 
     public static long getGooglePlayServiceConnectionTimeoutMilliSec(int attempt) {
         switch (attempt) {
-            case 1 : return Constants.ONE_SECOND * 5;
-            case 2 : return Constants.ONE_SECOND * 10;
-            default: return Constants.ONE_SECOND * 30;
+            case 1 : return Constants.ONE_SECOND * 3;
+            case 2 : return Constants.ONE_SECOND * 5;
+            default: return Constants.ONE_SECOND * 10;
         }
     }
 }
