@@ -6,7 +6,7 @@ OAID 是由移动安全联盟 (MSA) 推出的广告 ID。所有中国国内的�
 
 在开始之前，请确保您已阅读官方的 [安卓 SDK 自述文件][自述文件]，并已成功将 Adjust SDK 集成到您的应用中。
 
-如欲启用 Adjust SDK 以收集和跟踪 OAID，请按以下步骤操作。如只需使用插件读取华为设备的 OAID，则您可以跳过[将MSA SDK 集成至应用](add-msa-sdk) 的步骤。
+如欲启用 Adjust SDK 以收集和跟踪 OAID，请按以下步骤操作。如只需使用插件读取华为设备的 OAID，则您可以跳过将 MSA SDK 集成至应用 的步骤。
 
 ### 将 OAID 插件添加至您的应用
 
@@ -19,7 +19,7 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.21.2'
 
 您还可以将 Adjust OAID 插件作为 JAR 文件进行添加，该文件可从我们的 [版本页面][releases] 下载。
 
-### <a id="add-msa-sdk"></a>将 MSA SDK 添加至您的应用
+### 将 MSA SDK 添加至您的应用
 
 注意：对于华为设备，您无需通过添加 MSA SDK 来读取 OAID。OAID 插件可直接调用华为移动服务来读取该值。
 
