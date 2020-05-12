@@ -25,7 +25,7 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.21.1'
 
 如需启用 OAID 插件读取使用 MSA SDK 的 OAID 值，请将 MSA SDK (AAR 文件) 复制到项目的 libs 目录中并设置依赖。您还需要将 Supplierconfig.json 复制到项目的assets目录中。
 
-您可以在[此处][msasdk]找到 MSA SDK 和相关详细说明。
+您可以在 [此处][msasdk] 找到 MSA SDK 和相关详细说明。
 
 
 ### ProGuard 设置
