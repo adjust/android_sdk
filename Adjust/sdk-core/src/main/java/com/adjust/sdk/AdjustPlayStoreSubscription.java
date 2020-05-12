@@ -5,8 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class AdjustPlayStoreSubscription {
-    private Long price;             // [M] revenue
-    private Long purchaseTime;      // [M] transaction_date
+    private long price;             // [M] revenue
+    private long purchaseTime;      // [M] transaction_date
     private String currency;        // [M] currency
     private String sku;             // [M] product_id
     private String signature;       // [M] receipt
@@ -19,8 +19,8 @@ public class AdjustPlayStoreSubscription {
 
     private static ILogger logger = AdjustFactory.getLogger();
 
-    public AdjustPlayStoreSubscription(final Long price,
-                                       final Long purchaseTime,
+    public AdjustPlayStoreSubscription(final long price,
+                                       final long purchaseTime,
                                        final String currency,
                                        final String sku,
                                        final String signature,
@@ -34,11 +34,11 @@ public class AdjustPlayStoreSubscription {
         this.billingStore = "GooglePlay";
     }
 
-    Long getPrice() {
+    long getPrice() {
         return price;
     }
 
-    Long getPurchaseTime() {
+    long getPurchaseTime() {
         return purchaseTime;
     }
 
