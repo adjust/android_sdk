@@ -21,7 +21,7 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.21.2'
 Adjust OAID 플러그인을 JAR 파일로 추가할 수도 있습니다. Adjust [릴리스 페이지][releases]에서 다운로드하세요.
 
 
-### <a id="add-msa-sdk"></a>앱에 MSA SDK 추가하기
+### 앱에 MSA SDK 추가하기
 
 참고: 화웨이 기기에서 OAID를 읽기위해 MSA SDK를 추가할 필요는 없습니다. 이를 위해 OAID 플러그인은 Huawei Mobile Service (버전 2.6.2 이상)를 사용할 수 있습니다.
 
