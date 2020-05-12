@@ -6,7 +6,7 @@ OAIDプラグインをAdjustのAndroid SDKに追加することで、デフォ�
 
 始めに、公式の[Android SDK README][readme] をご一読いただき、Adjust SDKがアプリに正常に実装されていることを確認してください。
 
-Adjust SDKがOAID値を収集し計測するための設定手順は、以下のとおりです。HuaweiデバイスのOAIDを読み取る目的のためだけにプラグインを使用する場合は、[「アプリにMSA SDKを追加する」](add-msa-sdk) のステップを省略できます。
+Adjust SDKがOAID値を収集し計測するための設定手順は、以下のとおりです。HuaweiデバイスのOAIDを読み取る目的のためだけにプラグインを使用する場合は、「アプリにMSA SDKを追加する」のステップを省略できます。
 
 ### OAIDプラグインをアプリに追加する
 
@@ -19,7 +19,7 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.21.2'
 
 Adjust OAIDプラグインを JARファイルとして追加することもできます。JARファイルは、[releases page][releases] からダウンロードすることができます。
 
-### <a id="add-msa-sdk"></a>アプリにMSA SDKを追加する
+### アプリにMSA SDKを追加する
 
 注：Huawei端末からOAIDを読み取る場合は、MSA SDKを追加する必要はありません。この場合、OAIDプラグインはHuawei Mobile Service（バージョン2.6.2以降）を使用します。
 
