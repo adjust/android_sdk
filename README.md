@@ -60,6 +60,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
    * [Ad revenue tracking](#af-ad-revenue)
+   * [Subscriptions tracking](#af-subscriptions)
    * [Session and event callbacks](#af-session-event-callbacks)
    * [User attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
@@ -1330,12 +1331,49 @@ The listener function is called after the SDK receives the final attribution dat
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
 
+### <a id="af-subscriptions"></a>Subscriptions tracking
+
+**Note**: This feature is available only in the native SDK v4.22.0 and above.
+
+You can track Play Store subscriptions and verify their validity with Adjust SDK. After subscription has been successfully purchased, you need to make following call to Adjust SDK:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    purchaseTime,
+    currency,
+    sku,
+    signature,
+    purchaseToken);
+Adjust.trackPlayStoreSubscription(subscription);
+```
+</td>
+</tr>
+</table>
+
+Subscription parameters you need to pass to the method are:
+
+- [price](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpriceamountmicros)
+- [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
+- [currency](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpricecurrencycode)
+- [sku](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsku)
+- [signature](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsignature)
+- [purchaseToken](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetoken)
+
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
 **Note**: This feature is available only in the native SDK v4.18.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
-
 
 <table>
 <tr>
