@@ -6,7 +6,7 @@ OAID 플로그인을 사용하면 Adjust Android SDK를 가지고 기기의 OAID
 
 시작하려면 먼저 공식 [Android SDK README][readme]의 내용을 읽고 Adjust SDK를 앱에 연동 해야 합니다.
 
-Adjust SDK가 OAID를 수집하고 트래킹할 수 있게 하기 위해서는 다음 단계를 따르세요. 플러그인만 사용하여 화웨이 기기의 OAID를 읽으려면 [앱에 MSA SDK를 추가하기](add-msa-sdk) 단계를 건너뛸 수 있습니다.
+Adjust SDK가 OAID를 수집하고 트래킹할 수 있게 하기 위해서는 다음 단계를 따르세요. 플러그인만 사용하여 화웨이 기기의 OAID를 읽으려면 앱에 MSA SDK를 추가하기 단계를 건너뛸 수 있습니다.
 
 
 ### 앱에 OAID 플러그인 추가
