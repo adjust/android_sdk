@@ -1349,25 +1349,51 @@ You can track Play Store subscriptions and verify their validity with Adjust SDK
 ```java
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
     price,
-    purchaseTime,
     currency,
     sku,
+    orderId,
     signature,
     purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
 Adjust.trackPlayStoreSubscription(subscription);
 ```
 </td>
 </tr>
 </table>
 
-Subscription parameters you need to pass to the method are:
+Subscription tracking parameters:
 
 - [price](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpriceamountmicros)
-- [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
 - [currency](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpricecurrencycode)
 - [sku](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsku)
+- [orderId](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getorderid)
 - [signature](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsignature)
 - [purchaseToken](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetoken)
+- [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
+
+In same fashion like with event tracking, you can attach callback and partner parameters to subscription object as well:
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
+// add callback parameters
+subscription.addCallbackParameter("key", "value");
+subscription.addCallbackParameter("foo", "bar");
+
+// add partner parameters
+subscription.addPartnerParameter("key", "value");
+subscription.addPartnerParameter("foo", "bar");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
