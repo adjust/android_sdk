@@ -643,7 +643,6 @@ public class AdjustCommandExecutor {
         String signature = command.getFirstParameterValue("receipt");
         String purchaseToken = command.getFirstParameterValue("purchaseToken");
         String orderId = command.getFirstParameterValue("transactionId");
-        String salesRegion = command.getFirstParameterValue("salesRegion");
 
         AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
                 price,
@@ -652,7 +651,6 @@ public class AdjustCommandExecutor {
                 orderId,
                 signature,
                 purchaseToken);
-        subscription.setSalesRegion(salesRegion);
         subscription.setPurchaseTime(purchaseTime);
 
         if (command.parameters.containsKey("callbackParams")) {
