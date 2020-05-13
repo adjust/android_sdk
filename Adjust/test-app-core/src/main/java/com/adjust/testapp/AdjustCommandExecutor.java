@@ -636,24 +636,24 @@ public class AdjustCommandExecutor {
     }
 
     private void trackSubscription() {
-        Long price = Long.parseLong(command.getFirstParameterValue("revenue"));
+        long price = Long.parseLong(command.getFirstParameterValue("revenue"));
         String currency = command.getFirstParameterValue("currency");
-        Long transactionDate = Long.parseLong(command.getFirstParameterValue("transactionDate"));
-        String productId = command.getFirstParameterValue("productId");
-        String receipt = command.getFirstParameterValue("receipt");
+        long purchaseTime = Long.parseLong(command.getFirstParameterValue("transactionDate"));
+        String sku = command.getFirstParameterValue("productId");
+        String signature = command.getFirstParameterValue("receipt");
         String purchaseToken = command.getFirstParameterValue("purchaseToken");
-        String transactionId = command.getFirstParameterValue("transactionId");
+        String orderId = command.getFirstParameterValue("transactionId");
         String salesRegion = command.getFirstParameterValue("salesRegion");
 
         AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
                 price,
-                transactionDate,
                 currency,
-                productId,
-                receipt,
+                sku,
+                orderId,
+                signature,
                 purchaseToken);
         subscription.setSalesRegion(salesRegion);
-        subscription.setOrderId(transactionId);
+        subscription.setPurchaseTime(purchaseTime);
 
         if (command.parameters.containsKey("callbackParams")) {
             List<String> callbackParams = command.parameters.get("callbackParams");
