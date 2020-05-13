@@ -13,7 +13,6 @@ public class AdjustPlayStoreSubscription {
     private String purchaseToken;   // [M] purchase_token
     private String billingStore;    // [M] billing_store
     private long purchaseTime;      // [O] transaction_date
-    private String salesRegion;     // [O] sales_region
     private Map<String, String> callbackParameters; // [O] callback_params
     private Map<String, String> partnerParameters;  // [O] partner_params
 
@@ -69,10 +68,6 @@ public class AdjustPlayStoreSubscription {
         return purchaseToken;
     }
 
-    String getSalesRegion() {
-        return salesRegion;
-    }
-
     Map<String, String> getCallbackParameters() {
         return callbackParameters;
     }
@@ -83,10 +78,6 @@ public class AdjustPlayStoreSubscription {
 
     public void setPurchaseTime(final long purchaseTime) {
         this.purchaseTime = purchaseTime;
-    }
-
-    public void setSalesRegion(final String salesRegion) {
-        this.salesRegion = salesRegion;
     }
 
     public void addCallbackParameter(String key, String value) {
