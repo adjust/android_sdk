@@ -119,9 +119,12 @@ class DeviceInfo {
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
             try {
+                // timeout is a multiplier of the attempt number with 3 seconds
+                // so first 3 seconds, second 6 seconds and third and last 9 seconds
+                long timeoutMilliSec = Constants.ONE_SECOND * 3 * serviceAttempt;
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
                         GooglePlayServicesClient.getGooglePlayServicesInfo(context,
-                                Util.getGooglePlayServiceConnectionTimeoutMilliSec(serviceAttempt));
+                                timeoutMilliSec);
                 playAdId = gpsInfo.getGpsAdid();
                 isTrackingEnabled = gpsInfo.isTrackingEnabled();
 
