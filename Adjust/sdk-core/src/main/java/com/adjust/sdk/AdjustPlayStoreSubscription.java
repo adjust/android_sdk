@@ -6,13 +6,13 @@ import java.util.Map;
 
 public class AdjustPlayStoreSubscription {
     private long price;             // [M] revenue
-    private long purchaseTime;      // [M] transaction_date
     private String currency;        // [M] currency
     private String sku;             // [M] product_id
+    private String orderId;         // [M] transaction_id
     private String signature;       // [M] receipt
     private String purchaseToken;   // [M] purchase_token
     private String billingStore;    // [M] billing_store
-    private String orderId;         // [O] transaction_id
+    private long purchaseTime;      // [O] transaction_date
     private String salesRegion;     // [O] sales_region
     private Map<String, String> callbackParameters; // [O] callback_params
     private Map<String, String> partnerParameters;  // [O] partner_params
@@ -20,17 +20,20 @@ public class AdjustPlayStoreSubscription {
     private static ILogger logger = AdjustFactory.getLogger();
 
     public AdjustPlayStoreSubscription(final long price,
-                                       final long purchaseTime,
                                        final String currency,
                                        final String sku,
+                                       final String orderId,
                                        final String signature,
                                        final String purchaseToken) {
         this.price = price;
-        this.purchaseTime = purchaseTime;
         this.currency = currency;
         this.sku = sku;
+        this.orderId = orderId;
         this.signature = signature;
         this.purchaseToken = purchaseToken;
+
+        // default values
+        this.purchaseTime = -1;
         this.billingStore = "GooglePlay";
     }
 
@@ -78,8 +81,8 @@ public class AdjustPlayStoreSubscription {
         return partnerParameters;
     }
 
-    public void setOrderId(final String orderId) {
-        this.orderId = orderId;
+    public void setPurchaseTime(final long purchaseTime) {
+        this.purchaseTime = purchaseTime;
     }
 
     public void setSalesRegion(final String salesRegion) {
