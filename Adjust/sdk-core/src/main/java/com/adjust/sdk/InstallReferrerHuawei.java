@@ -11,9 +11,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class InstallReferrerHuawei {
 
     /**
+     * Huawei install referrer provider content authority.
+     */
+    private static final String REFERRER_PROVIDER_AUTHORITY = "com.huawei.appmarket.commondata";
+
+    /**
      * Huawei install referrer provider content uri.
      */
-    private static final String REFERRER_PROVIDER_URI = "content://com.huawei.appmarket.commondata/item/5";
+    private static final String REFERRER_PROVIDER_URI = "content://" + REFERRER_PROVIDER_AUTHORITY + "/item/5";
 
     /**
      * Adjust logger instance.
@@ -54,6 +59,10 @@ public class InstallReferrerHuawei {
     public void readReferrer() {
         if (!shouldTryToRead.get()) {
             logger.debug("Should not try to read Install referrer Huawei");
+            return;
+        }
+
+        if (!Util.resolveContentProvider(context, REFERRER_PROVIDER_AUTHORITY)) {
             return;
         }
 
