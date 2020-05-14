@@ -42,6 +42,9 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("clickTime", long.class),
             new ObjectStreamField("installBegin", long.class),
             new ObjectStreamField("installReferrer", String.class),
+            new ObjectStreamField("clickTimeHuawei", long.class),
+            new ObjectStreamField("installBeginHuawei", long.class),
+            new ObjectStreamField("installReferrerHuawei", String.class),
     };
 
     // persistent data

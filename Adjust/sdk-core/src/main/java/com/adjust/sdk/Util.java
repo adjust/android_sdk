@@ -776,4 +776,16 @@ public class Util {
     public static String getSdkVersion() {
         return Constants.CLIENT_SDK;
     }
+
+    public static boolean resolveContentProvider(final Context applicationContext,
+                                                 final String authority) {
+        try {
+            return (applicationContext.getPackageManager()
+                    .resolveContentProvider(authority, 0) != null);
+
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
 }
