@@ -102,7 +102,43 @@ public class Util {
         return Util.formatString("'%s'", string);
     }
 
-    public static String getPlayAdId(final Context context) {
+    public static Object getAdvertisingInfoObject(final Context context, long timeoutMilli) {
+        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                return Reflection.getAdvertisingInfoObject(context);
+            }
+        }, timeoutMilli);
+    }
+
+    public static String getPlayAdId(final Context context,
+                                     final Object advertisingInfoObject,
+                                     long timeoutMilli)
+    {
+        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return Reflection.getPlayAdId(context, advertisingInfoObject);
+            }
+        }, timeoutMilli);
+    }
+
+    public static Boolean isPlayTrackingEnabled(final Context context,
+                                               final Object advertisingInfoObject,
+                                               long timeoutMilli)
+    {
+        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                return Reflection.isPlayTrackingEnabled(context, advertisingInfoObject);
+            }
+        }, timeoutMilli);
+    }
+
+    private static <R> R runSyncInPlayAdIdSchedulerWithTimeout(final Context context,
+                                                               Callable<R> callable,
+                                                               long timeoutMilli)
+    {
         if (playAdIdScheduler == null) {
             synchronized (Util.class) {
                 if (playAdIdScheduler == null) {
@@ -110,15 +146,11 @@ public class Util {
                 }
             }
         }
-        ScheduledFuture<String> playAdIdFuture = playAdIdScheduler.scheduleFutureWithReturn(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return Reflection.getPlayAdId(context);
-            }
-        }, 0);
+
+        ScheduledFuture<R> playAdIdFuture = playAdIdScheduler.scheduleFutureWithReturn(callable, 0);
 
         try {
-            return playAdIdFuture.get(Constants.ONE_SECOND, TimeUnit.MILLISECONDS);
+            return playAdIdFuture.get(timeoutMilli, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
         } catch (InterruptedException e) {
         } catch (TimeoutException e) {
@@ -146,7 +178,8 @@ public class Util {
         ILogger logger = AdjustFactory.getLogger();
         if (Looper.myLooper() != Looper.getMainLooper()) {
             logger.debug("GoogleAdId being read in the background");
-            String GoogleAdId = Util.getPlayAdId(context);
+
+            String GoogleAdId = Util.getGoogleAdId(context);
 
             logger.debug("GoogleAdId read " + GoogleAdId);
             onDeviceIdRead.onGoogleAdIdRead(GoogleAdId);
@@ -159,7 +192,7 @@ public class Util {
             protected String doInBackground(Context... params) {
                 ILogger logger = AdjustFactory.getLogger();
                 Context innerContext = params[0];
-                String innerResult = Util.getPlayAdId(innerContext);
+                String innerResult = Util.getGoogleAdId(innerContext);
                 logger.debug("GoogleAdId read " + innerResult);
                 return innerResult;
             }
@@ -172,8 +205,27 @@ public class Util {
         }.execute(context);
     }
 
-    public static Boolean isPlayTrackingEnabled(Context context) {
-        return Reflection.isPlayTrackingEnabled(context);
+    private static String getGoogleAdId(Context context) {
+        String googleAdId = null;
+        try {
+            GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
+                    GooglePlayServicesClient.getGooglePlayServicesInfo(context,
+                            Constants.ONE_SECOND * 11);
+            if (gpsInfo != null) {
+                googleAdId = gpsInfo.getGpsAdid();
+            }
+        } catch (Exception e) {
+        }
+        if (googleAdId == null) {
+            Object advertisingInfoObject = Util.getAdvertisingInfoObject(
+                    context, Constants.ONE_SECOND * 11);
+
+            if (advertisingInfoObject != null) {
+                googleAdId = Util.getPlayAdId(context, advertisingInfoObject, Constants.ONE_SECOND);
+            }
+        }
+
+        return googleAdId;
     }
 
     public static String getMacAddress(Context context) {

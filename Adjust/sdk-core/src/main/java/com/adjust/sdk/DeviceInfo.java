@@ -113,20 +113,30 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(Context context) {
+        String previousPlayAdId = playAdId;
+        Boolean previousIsTrackingEnabled = isTrackingEnabled;
+
+        playAdId = null;
+        isTrackingEnabled = null;
         playAdIdSource = null;
         playAdIdAttempt = -1;
+
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
             try {
                 // timeout is a multiplier of the attempt number with 3 seconds
                 // so first 3 seconds, second 6 seconds and third and last 9 seconds
-                long timeoutMilliSec = Constants.ONE_SECOND * 3 * serviceAttempt;
+                long timeoutServiceMilli = Constants.ONE_SECOND * 3 * serviceAttempt;
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
                         GooglePlayServicesClient.getGooglePlayServicesInfo(context,
-                                timeoutMilliSec);
-                playAdId = gpsInfo.getGpsAdid();
-                isTrackingEnabled = gpsInfo.isTrackingEnabled();
+                                timeoutServiceMilli);
+                if (playAdId == null) {
+                    playAdId = gpsInfo.getGpsAdid();
+                }
+                if (isTrackingEnabled == null) {
+                    isTrackingEnabled = gpsInfo.isTrackingEnabled();
+                }
 
                 if (playAdId != null && isTrackingEnabled != null) {
                     playAdIdSource = "service";
@@ -138,14 +148,38 @@ class DeviceInfo {
 
         // as fallback attempt connecting to Google Play Service using library
         for (int libAttempt = 1; libAttempt <= 3; libAttempt += 1) {
-            playAdId = Util.getPlayAdId(context);
-            isTrackingEnabled = Util.isPlayTrackingEnabled(context);
+            // timeout inside library is 10 seconds, so 10 + 1 seconds are given
+            Object advertisingInfoObject = Util.getAdvertisingInfoObject(
+                    context, Constants.ONE_SECOND * 11);
+
+            if (advertisingInfoObject == null) {
+                continue;
+            }
+
+            if (playAdId == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                playAdId = Util.getPlayAdId(
+                        context, advertisingInfoObject, Constants.ONE_SECOND);
+            }
+            if (isTrackingEnabled == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                isTrackingEnabled = Util.isPlayTrackingEnabled(
+                        context, advertisingInfoObject, Constants.ONE_SECOND);
+            }
 
             if (playAdId != null && isTrackingEnabled != null) {
                 playAdIdSource = "library";
                 playAdIdAttempt = libAttempt;
-                break;
+                return;
             }
+        }
+
+        // if both weren't found, use previous values
+        if (playAdId == null) {
+            playAdId = previousPlayAdId;
+        }
+        if (isTrackingEnabled == null) {
+            isTrackingEnabled = previousIsTrackingEnabled;
         }
     }
 
