@@ -13,7 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class Reflection {
-    private static Object getAdvertisingInfoObject(Context context) throws Exception {
+    public static Object getAdvertisingInfoObject(Context context) throws Exception {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
     }
 
@@ -43,9 +43,8 @@ public class Reflection {
         return null;
     }
 
-    public static String getPlayAdId(Context context) {
+    public static String getPlayAdId(Context context, Object AdvertisingInfoObject) {
         try {
-            Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
             String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
             return playAdid;
         } catch (Throwable t) {
@@ -53,9 +52,8 @@ public class Reflection {
         }
     }
 
-    public static Boolean isPlayTrackingEnabled(Context context) {
+    public static Boolean isPlayTrackingEnabled(Context context, Object AdvertisingInfoObject) {
         try {
-            Object AdvertisingInfoObject = getAdvertisingInfoObject(context);
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
             Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
             return isPlayTrackingEnabled;

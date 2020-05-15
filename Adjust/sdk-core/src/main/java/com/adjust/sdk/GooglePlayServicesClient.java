@@ -34,7 +34,7 @@ public class GooglePlayServicesClient {
         }
     }
 
-    public static GooglePlayServicesInfo getGooglePlayServicesInfo(Context context) throws Exception {
+    public static GooglePlayServicesInfo getGooglePlayServicesInfo(Context context, long timeoutMilliSec) throws Exception {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             throw new IllegalStateException("Google Play Services info can't be accessed from the main thread");
         }
@@ -46,7 +46,7 @@ public class GooglePlayServicesClient {
             throw e;
         }
 
-        GooglePlayServicesConnection connection = new GooglePlayServicesConnection();
+        GooglePlayServicesConnection connection = new GooglePlayServicesConnection(timeoutMilliSec);
         Intent intent = new Intent("com.google.android.gms.ads.identifier.service.START");
         intent.setPackage("com.google.android.gms");
         if (context.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
@@ -64,8 +64,13 @@ public class GooglePlayServicesClient {
     }
 
     private static final class GooglePlayServicesConnection implements ServiceConnection {
+        long timeoutMilliSec;
         boolean retrieved = false;
         private final LinkedBlockingQueue<IBinder> queue = new LinkedBlockingQueue<IBinder>(1);
+
+        public GooglePlayServicesConnection(long timeoutMilliSec) {
+            this.timeoutMilliSec = timeoutMilliSec;
+        }
 
         public void onServiceConnected(ComponentName name, IBinder service) {
             try {
@@ -81,7 +86,7 @@ public class GooglePlayServicesClient {
                 throw new IllegalStateException();
             }
             this.retrieved = true;
-            return (IBinder)this.queue.poll(Constants.ONE_SECOND, TimeUnit.MILLISECONDS);
+            return (IBinder)this.queue.poll(this.timeoutMilliSec, TimeUnit.MILLISECONDS);
         }
     }
 
