@@ -1,3 +1,13 @@
+### Version 4.21.2 (15th May 2020)
+#### Added
+- Added check for presence of Huawei content provider.
+- Added persistence of Huawei referrer information.
+
+#### Changed
+- Updated Google Play Advertising Id reading logic.
+
+---
+
 ### Version 4.21.1 (8th April 2020)
 #### Added
 - Added support for Huawei App Gallery install referrer.
