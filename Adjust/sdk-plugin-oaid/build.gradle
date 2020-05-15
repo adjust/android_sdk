@@ -27,7 +27,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.21.1'
+    // implementation 'com.adjust.sdk:adjust-android:4.21.2'
 
     implementation(name:'miit_mdid_1.0.10', ext:'aar')
 }

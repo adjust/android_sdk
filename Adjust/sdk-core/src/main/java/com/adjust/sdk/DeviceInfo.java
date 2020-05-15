@@ -51,6 +51,7 @@ class DeviceInfo {
 
     String playAdId;
     String playAdIdSource;
+    int playAdIdAttempt;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     String macSha1;
@@ -112,34 +113,73 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(Context context) {
+        String previousPlayAdId = playAdId;
+        Boolean previousIsTrackingEnabled = isTrackingEnabled;
+
+        playAdId = null;
+        isTrackingEnabled = null;
         playAdIdSource = null;
-        for (int i = 0; i < 3; i += 1) {
+        playAdIdAttempt = -1;
+
+
+        // attempt connecting to Google Play Service by own
+        for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
             try {
-                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
-                playAdId = gpsInfo.getGpsAdid();
-                if (playAdId != null) {
+                // timeout is a multiplier of the attempt number with 3 seconds
+                // so first 3 seconds, second 6 seconds and third and last 9 seconds
+                long timeoutServiceMilli = Constants.ONE_SECOND * 3 * serviceAttempt;
+                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
+                        GooglePlayServicesClient.getGooglePlayServicesInfo(context,
+                                timeoutServiceMilli);
+                if (playAdId == null) {
+                    playAdId = gpsInfo.getGpsAdid();
+                }
+                if (isTrackingEnabled == null) {
+                    isTrackingEnabled = gpsInfo.isTrackingEnabled();
+                }
+
+                if (playAdId != null && isTrackingEnabled != null) {
                     playAdIdSource = "service";
-                    break;
+                    playAdIdAttempt = serviceAttempt;
+                    return;
                 }
             } catch (Exception e) {}
-            playAdId = Util.getPlayAdId(context);
-            if (playAdId != null) {
+        }
+
+        // as fallback attempt connecting to Google Play Service using library
+        for (int libAttempt = 1; libAttempt <= 3; libAttempt += 1) {
+            // timeout inside library is 10 seconds, so 10 + 1 seconds are given
+            Object advertisingInfoObject = Util.getAdvertisingInfoObject(
+                    context, Constants.ONE_SECOND * 11);
+
+            if (advertisingInfoObject == null) {
+                continue;
+            }
+
+            if (playAdId == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                playAdId = Util.getPlayAdId(
+                        context, advertisingInfoObject, Constants.ONE_SECOND);
+            }
+            if (isTrackingEnabled == null) {
+                // just needs a short timeout since it should be just accessing a POJO
+                isTrackingEnabled = Util.isPlayTrackingEnabled(
+                        context, advertisingInfoObject, Constants.ONE_SECOND);
+            }
+
+            if (playAdId != null && isTrackingEnabled != null) {
                 playAdIdSource = "library";
-                break;
+                playAdIdAttempt = libAttempt;
+                return;
             }
         }
-        for (int i = 0; i < 3; i += 1) {
-            try {
-                GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo = GooglePlayServicesClient.getGooglePlayServicesInfo(context);
-                isTrackingEnabled = gpsInfo.isTrackingEnabled();
-                if (isTrackingEnabled != null) {
-                    break;
-                }
-            } catch (Exception e) {}
-            isTrackingEnabled = Util.isPlayTrackingEnabled(context);
-            if (isTrackingEnabled != null) {
-                break;
-            }
+
+        // if both weren't found, use previous values
+        if (playAdId == null) {
+            playAdId = previousPlayAdId;
+        }
+        if (isTrackingEnabled == null) {
+            isTrackingEnabled = previousIsTrackingEnabled;
         }
     }
 
