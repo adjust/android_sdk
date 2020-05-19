@@ -1,12 +1,12 @@
 ## OAIDプラグイン
 
-OAIDは、MSA (Mobile Security Alliance) SDKを実装した端末で利用できる広告IDです。このIDを利用すると、Google Play Servicesが利用できない市場でもAndroid端末の流入元を計測することができます。 
+MSA (Mobile Security Alliance) は、中国で製造される全ての端末が、広告IDであるOAIDを提供するよう推奨しています。OAIDを利用することで、Google Play Servicesが提供されていない市場でも、Android端末の流入元を計測することが可能です。
 
-OAIDプラグインにより、AdjustのAndroid SDKはデフォルトで取得する他のデバイスIDに加えて、デバイスのOAID値を読み取ることができるようになります。 
+OAIDプラグインをAdjustのAndroid SDKに追加することで、デフォルトで取得する他のデバイスIDに加えて、端末のOAID値を読み取ることができるようになります。MSA SDKを使用している全ての端末、またはHuaweiの端末でHSM（Huawei Mobile Service）を使用している場合にOAIDの読み取りが可能です。
 
-始めに、公式の[Android SDK README] [readme]をご一読いただき、Adjust SDKがアプリに正常に実装されていることを確認してください。
+始めに、公式の[Android SDK README][readme] をご一読いただき、Adjust SDKがアプリに正常に実装されていることを確認してください。
 
-Adjust SDKがOAID値を収集し計測するための設定手順は、以下のとおりです。
+Adjust SDKがOAID値を収集し計測するための設定手順は、以下のとおりです。HuaweiデバイスのOAIDを読み取る目的のためだけにプラグインを使用する場合は、「アプリにMSA SDKを追加する」のステップを省略できます。
 
 ### OAIDプラグインをアプリに追加する
 
@@ -18,6 +18,15 @@ implementation 'com.adjust.sdk:adjust-android-oaid:4.21.2'
 ```
 
 Adjust OAIDプラグインを JARファイルとして追加することもできます。JARファイルは、[releases page][releases] からダウンロードすることができます。
+
+### アプリにMSA SDKを追加する
+
+注：Huawei端末からOAIDを読み取る場合は、MSA SDKを追加する必要はありません。この場合、OAIDプラグインはHuawei Mobile Service（バージョン2.6.2以降）を使用します。
+
+OAIDプラグインによりMSA SDKでOAID値を読み取ることができるようにするには、MSA SDK（AARファイル）をプロジェクトのlibsディレクトリにコピーし、dependencyを設定します。また、supplierconfig.jsonをプロジェクトのassetsディレクトリにコピーする必要があります。
+
+MSA SDKと詳細な手順については[こちら](msasdk)をご覧ください。
+
 
 ### Proguardの設定
 
@@ -47,3 +56,4 @@ SDKがOAID値を読み取らないようにするためには、 `AdjustOaid.doN
 [readme]:    ../../japanese/README.md
 [releases]:  https://github.com/adjust/android_sdk/releases
 [readme proguard]: ../../japanese/README.md#qs-proguard
+[msasdk]:  http://www.msa-alliance.cn/col.jsp?id=120
