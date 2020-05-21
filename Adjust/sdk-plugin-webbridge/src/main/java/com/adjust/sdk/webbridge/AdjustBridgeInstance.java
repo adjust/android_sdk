@@ -47,6 +47,9 @@ public class AdjustBridgeInstance {
     private static final String LOG_LEVEL_ASSERT = "ASSERT";
     private static final String LOG_LEVEL_SUPPRESS = "SUPPRESS";
 
+    private static final String JAVASCRIPT_INTERFACE_NAME = "AdjustBridge";
+    private static final String FB_JAVASCRIPT_INTERFACE_NAME_PREFIX = "fbmq_";
+
     private WebView webView;
     private Application application;
     private boolean isInitialized = false;
@@ -57,8 +60,7 @@ public class AdjustBridgeInstance {
 
     AdjustBridgeInstance(Application application, WebView webView) {
         this.application = application;
-        this.webView = webView;
-        webView.addJavascriptInterface(this, "AdjustBridge");
+        setWebView(webView);
     }
 
     // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
@@ -115,7 +117,7 @@ public class AdjustBridgeInstance {
         this.facebookSDKJSInterface = new FacebookSDKJSInterface();
 
         // Add FB pixel to JS interface.
-        this.webView.addJavascriptInterface(facebookSDKJSInterface, "fbmq_" + fbApplicationId);
+        this.webView.addJavascriptInterface(facebookSDKJSInterface, FB_JAVASCRIPT_INTERFACE_NAME_PREFIX + fbApplicationId);
     }
 
     @JavascriptInterface
@@ -770,9 +772,46 @@ public class AdjustBridgeInstance {
 
     public void setWebView(WebView webView) {
         this.webView = webView;
+        webView.addJavascriptInterface(this, JAVASCRIPT_INTERFACE_NAME);
     }
 
     public void setApplicationContext(Application application) {
         this.application = application;
+    }
+
+    public void unregister() {
+        if (!isInitialized()) {
+            return;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            this.webView.removeJavascriptInterface(JAVASCRIPT_INTERFACE_NAME);
+        }
+
+        unregisterFacebookSDKJSInterface();
+
+        application = null;
+        webView = null;
+        isInitialized = false;
+    }
+
+    public void unregisterFacebookSDKJSInterface() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        if (this.facebookSDKJSInterface == null) {
+            return;
+        }
+
+        String fbApplicationId = FacebookSDKJSInterface.getApplicationId(application.getApplicationContext());
+        if (fbApplicationId == null) {
+            return;
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            this.webView.removeJavascriptInterface(FB_JAVASCRIPT_INTERFACE_NAME_PREFIX + fbApplicationId);
+        }
+
+        this.facebookSDKJSInterface = null;
     }
 }
