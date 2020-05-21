@@ -31,4 +31,11 @@ public class AdjustBridge {
     public static void setApplicationContext(Application application) {
         AdjustBridge.getDefaultInstance().setApplicationContext(application);
     }
+
+    public static synchronized void unregister() {
+        if (defaultInstance != null) {
+            defaultInstance.unregister();
+        }
+        defaultInstance = null;
+    }
 }
