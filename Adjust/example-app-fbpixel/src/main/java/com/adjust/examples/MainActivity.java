@@ -40,4 +40,11 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        AdjustBridge.unregister();
+
+        super.onDestroy();
+    }
 }
