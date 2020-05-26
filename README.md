@@ -60,7 +60,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
    * [Ad revenue tracking](#af-ad-revenue)
-   * [Subscriptions tracking](#af-subscriptions)
+   * [Subscription tracking](#af-subscriptions)
    * [Session and event callbacks](#af-session-event-callbacks)
    * [User attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
@@ -1331,11 +1331,11 @@ The listener function is called after the SDK receives the final attribution dat
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
 
-### <a id="af-subscriptions"></a>Subscriptions tracking
+### <a id="af-subscriptions"></a>Subscription tracking
 
-**Note**: This feature is available only in the native SDK v4.22.0 and above.
+**Note**: This feature is only available in the native SDK v4.22.0 and above.
 
-You can track Play Store subscriptions and verify their validity with Adjust SDK. After subscription has been successfully purchased, you need to make following call to Adjust SDK:
+You can track Play Store subscriptions and verify their validity with the Adjust SDK. After a subscription has been successfully purchased, make the following call to the Adjust SDK:
 
 <table>
 <tr>
@@ -1372,7 +1372,7 @@ Subscription tracking parameters:
 - [purchaseToken](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetoken)
 - [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
 
-In same fashion like with event tracking, you can attach callback and partner parameters to subscription object as well:
+Just like with event tracking, you can attach callback and partner parameters to the subscription object as well:
 
 ```java
 AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
