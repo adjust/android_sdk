@@ -270,6 +270,8 @@ After you have obtained the reference to your `WebView` object:
 - Call `webView.getSettings().setJavaScriptEnabled(true)`, to enable Javascript in the web view
 - Start the default instance of `AdjustBridgeInstance` by calling `AdjustBridge.registerAndGetInstance(getApplication(), webview)`
 - This will also register the Adjust bridge as a Javascript Interface to the web view
+- Call `AdjustBridge.setWebView()` to set new `WebView` if needed.  
+- Call `AdjustBridge.unregister()` to uregister the `AdjustBridgeInstance` and `WebView`.  
 
 After these steps, your activity should look like this:
 
@@ -291,6 +293,13 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        AdjustBridge.unregister();
+
+        super.onDestroy();
     }
 }
 ```
