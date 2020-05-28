@@ -58,7 +58,7 @@ public class Util {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
                 PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
-                PackageBuilder.addString(parameters, "oaid_src", "Huawei Mobile Service");
+                PackageBuilder.addString(parameters, "oaid_src", "hms");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
                 return parameters;
             }
@@ -77,7 +77,7 @@ public class Util {
             if (oaid != null && !oaid.isEmpty()) {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaid);
-                PackageBuilder.addString(parameters, "oaid_src", "MSA Sdk");
+                PackageBuilder.addString(parameters, "oaid_src", "msa");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
                 return parameters;
             }
