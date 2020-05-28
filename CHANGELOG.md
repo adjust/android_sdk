@@ -1,3 +1,15 @@
+### Version 4.22.0 (28th May 2020)
+#### Added
+- Added subscription tracking feature.
+
+#### Changed
+- Updated OAID reading logic by adding retry mechanism.
+
+#### Fixed
+- Fixed memory leak issue caused by holding reference to web view object inside of web bridge (thanks to @evgentset).
+
+---
+
 ### Version 4.21.2 (15th May 2020)
 #### Added
 - Added check for presence of Huawei content provider.
