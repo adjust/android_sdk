@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Util {
-    public static Map<String, String> getOaidParameters(Context context, ILogger logger) {
+    public synchronized static Map<String, String> getOaidParameters(Context context, ILogger logger) {
         if (!AdjustOaid.isOaidToBeRead) {
             return null;
         }
@@ -52,12 +52,14 @@ public class Util {
     }
 
     private static Map<String, String> getOaidParametersUsingHMS(Context context, ILogger logger) {
-        Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 1000);
-        if (oaidInfo != null) {
-            Map<String, String> parameters = new HashMap<String, String>();
-            PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
-            PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
-            return parameters;
+        for (int attempt = 1; attempt <= 3; attempt += 1) {
+            Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 3000 * attempt);
+            if (oaidInfo != null) {
+                Map<String, String> parameters = new HashMap<String, String>();
+                PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
+                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
+                return parameters;
+            }
         }
         logger.debug("Fail to read the OAID using HMS");
         return null;
@@ -68,11 +70,13 @@ public class Util {
             return null;
         }
 
-        String oaid = MsaSdkClient.getOaid(context, logger, 1000);
-        if (oaid != null && !oaid.isEmpty()) {
-            Map<String, String> parameters = new HashMap<String, String>();
-            PackageBuilder.addString(parameters, "oaid", oaid);
-            return parameters;
+        for (int attempt = 1; attempt <= 3; attempt += 1) {
+            String oaid = MsaSdkClient.getOaid(context, logger, 3000 * attempt);
+            if (oaid != null && !oaid.isEmpty()) {
+                Map<String, String> parameters = new HashMap<String, String>();
+                PackageBuilder.addString(parameters, "oaid", oaid);
+                return parameters;
+            }
         }
 
         logger.debug("Fail to read the OAID using MSA");
