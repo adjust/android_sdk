@@ -40,7 +40,7 @@ public class SingleThreadFutureScheduler implements FutureScheduler {
     public <V> ScheduledFuture<V> scheduleFutureWithReturn(final Callable<V> callable, long millisecondDelay) {
         return scheduledThreadPoolExecutor.schedule(new Callable<V>() {
             @Override
-            public V call() throws Exception {
+            public V call() {
                 try {
                     return callable.call();
                 } catch (Throwable t) {
