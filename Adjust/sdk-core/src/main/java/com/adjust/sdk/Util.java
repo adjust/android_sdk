@@ -105,8 +105,12 @@ public class Util {
     public static Object getAdvertisingInfoObject(final Context context, long timeoutMilli) {
         return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Object>() {
             @Override
-            public Object call() throws Exception {
-                return Reflection.getAdvertisingInfoObject(context);
+            public Object call() {
+                try {
+                    return Reflection.getAdvertisingInfoObject(context);
+                } catch (Exception e) {
+                    return null;
+                }
             }
         }, timeoutMilli);
     }
@@ -117,7 +121,7 @@ public class Util {
     {
         return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<String>() {
             @Override
-            public String call() throws Exception {
+            public String call() {
                 return Reflection.getPlayAdId(context, advertisingInfoObject);
             }
         }, timeoutMilli);
@@ -129,7 +133,7 @@ public class Util {
     {
         return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Boolean>() {
             @Override
-            public Boolean call() throws Exception {
+            public Boolean call() {
                 return Reflection.isPlayTrackingEnabled(context, advertisingInfoObject);
             }
         }, timeoutMilli);
