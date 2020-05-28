@@ -234,10 +234,16 @@ public class SdkClickHandler implements ISdkClickHandler {
      * Send next sdk_click package from the queue (runs within scheduled executor).
      */
     private void sendNextSdkClickI() {
+        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+        if (activityHandler.getActivityState() == null) {
+            return;
+        }
+        if (activityHandler.getActivityState().isGdprForgotten) {
+            return;
+        }
         if (paused) {
             return;
         }
-
         if (packageQueue.isEmpty()) {
             return;
         }
@@ -274,11 +280,6 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
-        if (activityHandler.getActivityState() == null ||
-                activityHandler.getActivityState().isGdprForgotten) {
-            return;
-        }
-
         String source = sdkClickPackage.getParameters().get("source");
         boolean isReftag = source != null && source.equals(SOURCE_REFTAG);
         String rawReferrerString = sdkClickPackage.getParameters().get("raw_referrer");
