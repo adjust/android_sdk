@@ -274,7 +274,8 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
-        if (activityHandler.getActivityState().isGdprForgotten) {
+        if (activityHandler.getActivityState() == null ||
+                activityHandler.getActivityState().isGdprForgotten) {
             return;
         }
 
