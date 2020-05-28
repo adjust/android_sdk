@@ -925,11 +925,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void startFirstSessionI() {
-        // still update handlers status
-        updateHandlersStatusAndSendI();
-
         activityState = new ActivityState();
         internalState.firstSdkStart = true;
+
+        // still update handlers status
+        updateHandlersStatusAndSendI();
 
         long now = System.currentTimeMillis();
 
