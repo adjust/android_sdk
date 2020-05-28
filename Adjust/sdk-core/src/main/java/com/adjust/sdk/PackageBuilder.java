@@ -820,7 +820,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, key, jsonString);
     }
 
-    private static void addLong(Map<String, String> parameters, String key, long value) {
+    public static void addLong(Map<String, String> parameters, String key, long value) {
         if (value < 0) {
             return;
         }
