@@ -60,6 +60,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Push token (uninstall tracking)](#af-push-token)
    * [Attribution callback](#af-attribution-callback)
    * [Ad revenue tracking](#af-ad-revenue)
+   * [Subscription tracking](#af-subscriptions)
    * [Session and event callbacks](#af-session-event-callbacks)
    * [User attribution](#af-user-attribution)
    * [Device IDs](#af-device-ids)
@@ -98,14 +99,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.21.2'
+implementation 'com.adjust.sdk:adjust-android:4.22.0'
 implementation 'com.android.installreferrer:installreferrer:1.1.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.21.2'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.22.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
@@ -1339,12 +1340,75 @@ The listener function is called after the SDK receives the final attribution dat
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
 
+### <a id="af-subscriptions"></a>Subscription tracking
+
+**Note**: This feature is only available in the native SDK v4.22.0 and above.
+
+You can track Play Store subscriptions and verify their validity with the Adjust SDK. After a subscription has been successfully purchased, make the following call to the Adjust SDK:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+</td>
+</tr>
+</table>
+
+Subscription tracking parameters:
+
+- [price](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpriceamountmicros)
+- [currency](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpricecurrencycode)
+- [sku](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsku)
+- [orderId](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getorderid)
+- [signature](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsignature)
+- [purchaseToken](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetoken)
+- [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
+
+Just like with event tracking, you can attach callback and partner parameters to the subscription object as well:
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
+// add callback parameters
+subscription.addCallbackParameter("key", "value");
+subscription.addCallbackParameter("foo", "bar");
+
+// add partner parameters
+subscription.addPartnerParameter("key", "value");
+subscription.addPartnerParameter("foo", "bar");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
 **Note**: This feature is available only in the native SDK v4.18.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
-
 
 <table>
 <tr>

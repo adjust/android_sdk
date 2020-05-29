@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTestSession() {
         // testLibrary.addTestDirectory("current/gdpr");
-        // testLibrary.addTest("current/gdpr/Test_GdprForgetMe_after_install_kill_before_install");
 
         testLibrary.startTestSession(Adjust.getSdkVersion());
     }

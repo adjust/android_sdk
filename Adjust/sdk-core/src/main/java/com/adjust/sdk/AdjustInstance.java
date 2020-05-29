@@ -51,6 +51,11 @@ public class AdjustInstance {
     private String gdprPath;
 
     /**
+     * Path for subscription package.
+     */
+    private String subscriptionPath;
+
+    /**
      * Called upon SDK initialisation.
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
@@ -75,6 +80,7 @@ public class AdjustInstance {
         adjustConfig.startOffline = startOffline;
         adjustConfig.basePath = this.basePath;
         adjustConfig.gdprPath = this.gdprPath;
+        adjustConfig.subscriptionPath = this.subscriptionPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -417,6 +423,18 @@ public class AdjustInstance {
     }
 
     /**
+     * Track subscription from Google Play.
+     *
+     * @param subscription AdjustPlayStoreSubscription object to be tracked
+     */
+    public void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+        activityHandler.trackPlayStoreSubscription(subscription);
+    }
+
+    /**
      * Called to get value of unique Adjust device identifier.
      *
      * @return Unique Adjust device indetifier
@@ -600,11 +618,17 @@ public class AdjustInstance {
         if (testOptions.gdprPath != null) {
             this.gdprPath = testOptions.gdprPath;
         }
+        if (testOptions.subscriptionPath != null) {
+            this.subscriptionPath = testOptions.subscriptionPath;
+        }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
         }
         if (testOptions.gdprUrl != null) {
             AdjustFactory.setGdprUrl(testOptions.gdprUrl);
+        }
+        if (testOptions.subscriptionUrl != null) {
+            AdjustFactory.setSubscriptionUrl(testOptions.subscriptionUrl);
         }
         if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
             AdjustFactory.useTestConnectionOptions();

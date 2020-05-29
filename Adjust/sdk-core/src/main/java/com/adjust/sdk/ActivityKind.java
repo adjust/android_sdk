@@ -1,7 +1,18 @@
 package com.adjust.sdk;
 
 public enum ActivityKind {
-    UNKNOWN, SESSION, EVENT, CLICK, ATTRIBUTION, REVENUE, REATTRIBUTION, INFO, GDPR, AD_REVENUE, DISABLE_THIRD_PARTY_SHARING;
+    UNKNOWN,
+    SESSION,
+    EVENT,
+    CLICK,
+    ATTRIBUTION,
+    REVENUE,
+    REATTRIBUTION,
+    INFO,
+    GDPR,
+    AD_REVENUE,
+    DISABLE_THIRD_PARTY_SHARING,
+    SUBSCRIPTION;
 
     public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {
@@ -20,6 +31,8 @@ public enum ActivityKind {
             return DISABLE_THIRD_PARTY_SHARING;
         } else if ("ad_revenue".equals(string)) {
             return AD_REVENUE;
+        } else if ("subscription".equals(string)) {
+            return SUBSCRIPTION;
         } else {
             return UNKNOWN;
         }
@@ -44,6 +57,8 @@ public enum ActivityKind {
                 return "disable_third_party_sharing";
             case AD_REVENUE:
                 return "ad_revenue";
+            case SUBSCRIPTION:
+                return "subscription";
             default:
                 return "unknown";
         }
