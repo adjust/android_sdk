@@ -55,7 +55,7 @@ Adjust.onCreate(config);
 
 **请务必注意** IMEI 和 MEID 是持久识别符（persistent identifier），这将是您的责任确保从您终端用户处收集和处理该项个人信息是合法的。
 
-[readme]:  ../../README.md
+[readme]:  ../README.md
 [releases]: https://github.com/adjust/adjust_android_sdk/releases
 [imei_doc]: https://docs.adjust.com/zh/imei-and-meid-attribution-for-android
 [gps_adid]: https://github.com/adjust/android_sdk/blob/master/doc/english/gps_adid.md

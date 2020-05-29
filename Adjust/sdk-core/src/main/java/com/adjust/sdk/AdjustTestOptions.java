@@ -10,8 +10,10 @@ public class AdjustTestOptions {
     public Context context;
     public String baseUrl;
     public String gdprUrl;
+    public String subscriptionUrl;
     public String basePath;
     public String gdprPath;
+    public String subscriptionPath;
     public Boolean useTestConnectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;

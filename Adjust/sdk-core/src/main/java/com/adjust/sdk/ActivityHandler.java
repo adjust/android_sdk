@@ -62,6 +62,7 @@ public class ActivityHandler implements IActivityHandler {
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
+    private String subscriptionPath;
 
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig; // always valid after construction
@@ -633,6 +634,15 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
+    public void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                trackSubscriptionI(subscription);
+            }
+        });
+    }
 
     @Override
     public void gotOptOutResponse() {
@@ -688,6 +698,11 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public String getGdprPath() {
         return this.gdprPath;
+    }
+
+    @Override
+    public String getSubscriptionPath() {
+        return this.subscriptionPath;
     }
 
     public InternalState getInternalState() {
@@ -824,6 +839,7 @@ public class ActivityHandler implements IActivityHandler {
 
         this.basePath = adjustConfig.basePath;
         this.gdprPath = adjustConfig.gdprPath;
+        this.subscriptionPath = adjustConfig.subscriptionPath;
 
         packageHandler = AdjustFactory.getPackageHandler(this, adjustConfig.context, toSendI(false));
 
@@ -909,11 +925,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void startFirstSessionI() {
-        // still update handlers status
-        updateHandlersStatusAndSendI();
-
         activityState = new ActivityState();
         internalState.firstSdkStart = true;
+
+        // still update handlers status
+        updateHandlersStatusAndSendI();
 
         long now = System.currentTimeMillis();
 
@@ -1969,6 +1985,20 @@ public class ActivityHandler implements IActivityHandler {
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(source, adRevenueJson);
         packageHandler.addPackage(adRevenuePackage);
+        packageHandler.sendFirstPackage();
+    }
+
+    private void trackSubscriptionI(final AdjustPlayStoreSubscription subscription) {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        long now = System.currentTimeMillis();
+
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
+        packageHandler.addPackage(subscriptionPackage);
         packageHandler.sendFirstPackage();
     }
 

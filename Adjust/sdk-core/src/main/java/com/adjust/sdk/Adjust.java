@@ -32,7 +32,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.21.2";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.22.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -258,6 +258,16 @@ public class Adjust {
     public static void trackAdRevenue(final String source, final JSONObject payload) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.trackAdRevenue(source, payload);
+    }
+
+    /**
+     * Track subscription from Google Play.
+     *
+     * @param subscription AdjustPlayStoreSubscription object to be tracked
+     */
+    public static void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.trackPlayStoreSubscription(subscription);
     }
 
     /**

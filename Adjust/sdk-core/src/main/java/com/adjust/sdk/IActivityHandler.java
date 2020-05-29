@@ -67,6 +67,8 @@ public interface IActivityHandler {
 
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
+    void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
+
     void gotOptOutResponse();
 
     Context getContext();
@@ -86,4 +88,6 @@ public interface IActivityHandler {
     String getBasePath();
 
     String getGdprPath();
+
+    String getSubscriptionPath();
 }

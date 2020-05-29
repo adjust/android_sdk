@@ -13,6 +13,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
@@ -39,6 +40,7 @@ public class AdjustCommandExecutor {
     private Context context;
     private String basePath;
     private String gdprPath;
+    private String subscriptionPath;
     private SparseArray<AdjustEvent> savedEvents = new SparseArray<>();
     private SparseArray<AdjustConfig> savedConfigs = new SparseArray<>();
     private Command command;
@@ -75,6 +77,7 @@ public class AdjustCommandExecutor {
             case "gdprForgetMe": gdprForgetMe(); break;
             case "disableThirdPartySharing": disableThirdPartySharing(); break;
             case "trackAdRevenue": trackAdRevenue(); break;
+            case "trackSubscription": trackSubscription(); break;
             //case "testBegin": testBegin(); break;
             // case "testEnd": testEnd(); break;
         }
@@ -107,9 +110,11 @@ public class AdjustCommandExecutor {
         AdjustTestOptions testOptions = new AdjustTestOptions();
         testOptions.baseUrl = baseUrl;
         testOptions.gdprUrl = gdprUrl;
+        testOptions.subscriptionUrl = baseUrl; // TODO: for now, consider making it separate
         if (command.containsParameter("basePath")) {
             basePath = command.getFirstParameterValue("basePath");
             gdprPath = command.getFirstParameterValue("basePath");
+            subscriptionPath = command.getFirstParameterValue("basePath");
         }
         if (command.containsParameter("timerInterval")) {
             long timerInterval = Long.parseLong(command.getFirstParameterValue("timerInterval"));
@@ -148,6 +153,7 @@ public class AdjustCommandExecutor {
                     testOptions.teardown = true;
                     testOptions.basePath = basePath;
                     testOptions.gdprPath = gdprPath;
+                    testOptions.subscriptionPath = subscriptionPath;
                     testOptions.useTestConnectionOptions = true;
                     testOptions.tryInstallReferrer = false;
                 }
@@ -166,6 +172,7 @@ public class AdjustCommandExecutor {
                     testOptions.teardown = true;
                     testOptions.basePath = null;
                     testOptions.gdprPath = null;
+                    testOptions.subscriptionPath = null;
                     testOptions.useTestConnectionOptions = false;
                 }
                 if (teardownOption.equals("test")) {
@@ -626,6 +633,44 @@ public class AdjustCommandExecutor {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void trackSubscription() {
+        long price = Long.parseLong(command.getFirstParameterValue("revenue"));
+        String currency = command.getFirstParameterValue("currency");
+        long purchaseTime = Long.parseLong(command.getFirstParameterValue("transactionDate"));
+        String sku = command.getFirstParameterValue("productId");
+        String signature = command.getFirstParameterValue("receipt");
+        String purchaseToken = command.getFirstParameterValue("purchaseToken");
+        String orderId = command.getFirstParameterValue("transactionId");
+
+        AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+                price,
+                currency,
+                sku,
+                orderId,
+                signature,
+                purchaseToken);
+        subscription.setPurchaseTime(purchaseTime);
+
+        if (command.parameters.containsKey("callbackParams")) {
+            List<String> callbackParams = command.parameters.get("callbackParams");
+            for (int i = 0; i < callbackParams.size(); i = i + 2) {
+                String key = callbackParams.get(i);
+                String value = callbackParams.get(i + 1);
+                subscription.addCallbackParameter(key, value);
+            }
+        }
+        if (command.parameters.containsKey("partnerParams")) {
+            List<String> partnerParams = command.parameters.get("partnerParams");
+            for (int i = 0; i < partnerParams.size(); i = i + 2) {
+                String key = partnerParams.get(i);
+                String value = partnerParams.get(i + 1);
+                subscription.addPartnerParameter(key, value);
+            }
+        }
+
+        Adjust.trackPlayStoreSubscription(subscription);
     }
 /*
     private void testBegin() {
