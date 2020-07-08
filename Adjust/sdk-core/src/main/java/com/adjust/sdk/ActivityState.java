@@ -42,6 +42,10 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("clickTime", long.class),
             new ObjectStreamField("installBegin", long.class),
             new ObjectStreamField("installReferrer", String.class),
+            new ObjectStreamField("googlePlayInstant", boolean.class),
+            new ObjectStreamField("clickTimeServer", long.class),
+            new ObjectStreamField("installBeginServer", long.class),
+            new ObjectStreamField("installVersion", String.class),
             new ObjectStreamField("clickTimeHuawei", long.class),
             new ObjectStreamField("installBeginHuawei", long.class),
             new ObjectStreamField("installReferrerHuawei", String.class),
@@ -76,6 +80,10 @@ public class ActivityState implements Serializable, Cloneable {
     protected long clickTime;
     protected long installBegin;
     protected String installReferrer;
+    protected boolean googlePlayInstant;
+    protected long clickTimeServer;
+    protected long installBeginServer;
+    protected String installVersion;
 
     protected long clickTimeHuawei;
     protected long installBeginHuawei;
@@ -103,6 +111,10 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = 0;
         installBegin = 0;
         installReferrer = null;
+        googlePlayInstant = false;
+        clickTimeServer = 0;
+        installBeginServer = 0;
+        installVersion = null;
         clickTimeHuawei = 0;
         installBeginHuawei = 0;
         installReferrerHuawei = null;
@@ -167,6 +179,10 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(clickTime, otherActivityState.clickTime)) return false;
         if (!Util.equalLong(installBegin, otherActivityState.installBegin)) return false;
         if (!Util.equalString(installReferrer, otherActivityState.installReferrer)) return false;
+        if (!Util.equalBoolean(googlePlayInstant, otherActivityState.googlePlayInstant)) return false;
+        if (!Util.equalLong(clickTimeServer, otherActivityState.clickTimeServer)) return false;
+        if (!Util.equalLong(installBeginServer, otherActivityState.installBeginServer)) return false;
+        if (!Util.equalString(installVersion, otherActivityState.installVersion)) return false;
         if (!Util.equalLong(clickTimeHuawei, otherActivityState.clickTimeHuawei)) return false;
         if (!Util.equalLong(installBeginHuawei, otherActivityState.installBeginHuawei)) return false;
         if (!Util.equalString(installReferrerHuawei, otherActivityState.installReferrerHuawei)) return false;
@@ -194,6 +210,10 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(clickTime);
         hashCode = 37 * hashCode + Util.hashLong(installBegin);
         hashCode = 37 * hashCode + Util.hashString(installReferrer);
+        hashCode = 37 * hashCode + Util.hashBoolean(googlePlayInstant);
+        hashCode = 37 * hashCode + Util.hashLong(clickTimeServer);
+        hashCode = 37 * hashCode + Util.hashLong(installBeginServer);
+        hashCode = 37 * hashCode + Util.hashString(installVersion);
         hashCode = 37 * hashCode + Util.hashLong(clickTimeHuawei);
         hashCode = 37 * hashCode + Util.hashLong(installBeginHuawei);
         hashCode = 37 * hashCode + Util.hashString(installReferrerHuawei);
@@ -226,6 +246,10 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = Util.readLongField(fields, "clickTime", -1l);
         installBegin = Util.readLongField(fields, "installBegin", -1l);
         installReferrer = Util.readStringField(fields, "installReferrer", null);
+        googlePlayInstant = Util.readBooleanField(fields, "googlePlayInstant", false);
+        clickTimeServer = Util.readLongField(fields, "clickTimeServer", -1l);
+        installBeginServer = Util.readLongField(fields, "installBeginServer", -1l);
+        installVersion = Util.readStringField(fields, "installVersion", null);
 
         clickTimeHuawei = Util.readLongField(fields, "clickTimeHuawei", -1l);
         installBeginHuawei = Util.readLongField(fields, "installBeginHuawei", -1l);
