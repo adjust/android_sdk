@@ -97,7 +97,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ```gradle
 implementation 'com.adjust.sdk:adjust-android:4.22.0'
-implementation 'com.android.installreferrer:installreferrer:1.1.2'
+implementation 'com.android.installreferrer:installreferrer:2.1'
 ```
 
 如果您希望在应用的web view中使用Adjust SDK，请同时包含以下附加依赖项：
@@ -169,7 +169,7 @@ implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 为了让您的应用支持Google Play Referrer API，请确保已经遵循[添加SDK至您的项目](#qs-add-sdk)章节进行了正确设置，并在`build.gradle`文件中添加了如下代码行：
 
 ```
-implementation 'com.android.installreferrer:installreferrer:1.1.2'
+implementation 'com.android.installreferrer:installreferrer:2.1'
 ```
 
 请仔细遵循[Proguard设置](#qs-proguard)说明。请确保您已经添加了说明中所提及的全部规则，尤其是本功能必需的规则：
