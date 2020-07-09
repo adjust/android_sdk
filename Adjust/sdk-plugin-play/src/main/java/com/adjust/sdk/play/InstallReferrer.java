@@ -92,7 +92,16 @@ public class InstallReferrer implements InstallReferrerStateListener {
                     String installReferrer = installReferrerDetails.getInstallReferrer();
                     long referrerClickTimestampSeconds = installReferrerDetails.getReferrerClickTimestampSeconds();
                     long installBeginTimestampSeconds = installReferrerDetails.getInstallBeginTimestampSeconds();
-                    referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                    String installVersion = installReferrerDetails.getInstallVersion();
+                    long referrerClickTimestampServerSeconds = installReferrerDetails.getReferrerClickTimestampServerSeconds();
+                    long installBeginTimestampServerSeconds = installReferrerDetails.getInstallBeginTimestampServerSeconds();
+                    Boolean googlePlayInstantParam = installReferrerDetails.getGooglePlayInstantParam();
+
+                    referrerCallback.onInstallReferrerRead(
+                            new com.adjust.sdk.ReferrerDetails(installReferrer,
+                                    referrerClickTimestampSeconds, installBeginTimestampSeconds,
+                                    referrerClickTimestampServerSeconds, installBeginTimestampServerSeconds,
+                                    installVersion, googlePlayInstantParam));
 
                     hasInstallReferrerBeenRead.set(true);
                     logger.debug("Install Referrer read successfully. Closing connection");
