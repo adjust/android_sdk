@@ -1547,33 +1547,21 @@ public class ActivityHandler implements IActivityHandler {
     private boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                  final ActivityState activityState) {
 
-        if (referrerDetails.installReferrer != null
-                && !referrerDetails.installReferrer.equals(activityState.installReferrer)) {
-            return false;
-        }
-
-        if (referrerDetails.installVersion != null
-                && !referrerDetails.installVersion.equals(activityState.installVersion)) {
-            return false;
-        }
-
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
                 && referrerDetails.referrerClickServerTimestampSeconds == activityState.clickTimeServer
                 && referrerDetails.installBeginServerTimestampSeconds == activityState.installBeginServer
-                && referrerDetails.googlePlayInstant == activityState.googlePlayInstant;
+                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrer)
+                && Util.equalString(referrerDetails.installVersion, activityState.installVersion)
+                && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
     }
 
     private boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
                                                  final ActivityState activityState) {
 
-        if (referrerDetails.installReferrer != null
-                && !referrerDetails.installReferrer.equals(activityState.installReferrerHuawei)) {
-            return false;
-        }
-
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
-                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei;
+                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
+                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
