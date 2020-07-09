@@ -28,11 +28,15 @@ public class PackageBuilder {
     long clickTimeInSeconds = -1;
     long clickTimeInMilliseconds = -1;
     long installBeginTimeInSeconds = -1;
+    long clickTimeServerInSeconds = -1;
+    long installBeginTimeServerInSeconds = -1;
     String reftag;
     String deeplink;
     String referrer;
+    String installVersion;
     String rawReferrer;
     String referrerApi;
+    Boolean googlePlayInstant;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
 
@@ -126,6 +130,10 @@ public class PackageBuilder {
         clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
         clickPackage.setClickTimeInSeconds(clickTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
+        clickPackage.setClickTimeServerInSeconds(clickTimeServerInSeconds);
+        clickPackage.setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds);
+        clickPackage.setInstallVersion(installVersion);
+        clickPackage.setGooglePlayInstant(googlePlayInstant);
 
         AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
                 clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);

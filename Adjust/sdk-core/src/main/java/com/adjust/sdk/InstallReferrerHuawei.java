@@ -85,7 +85,10 @@ public class InstallReferrerHuawei {
                 long referrerClickTimestampSeconds = Long.parseLong(clickTime);
                 long installBeginTimestampSeconds = Long.parseLong(installTime);
 
-                referrerCallback.onInstallReferrerRead(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                ReferrerDetails referrerDetails = new ReferrerDetails(installReferrer,
+                        referrerClickTimestampSeconds, installBeginTimestampSeconds);
+
+                referrerCallback.onInstallReferrerRead(referrerDetails);
 
             } else {
                 logger.debug("InstallReferrerHuawei fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());

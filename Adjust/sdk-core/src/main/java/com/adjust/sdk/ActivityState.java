@@ -42,7 +42,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("clickTime", long.class),
             new ObjectStreamField("installBegin", long.class),
             new ObjectStreamField("installReferrer", String.class),
-            new ObjectStreamField("googlePlayInstant", boolean.class),
+            new ObjectStreamField("googlePlayInstant", Boolean.class),
             new ObjectStreamField("clickTimeServer", long.class),
             new ObjectStreamField("installBeginServer", long.class),
             new ObjectStreamField("installVersion", String.class),
@@ -80,7 +80,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected long clickTime;
     protected long installBegin;
     protected String installReferrer;
-    protected boolean googlePlayInstant;
+    protected Boolean googlePlayInstant;
     protected long clickTimeServer;
     protected long installBeginServer;
     protected String installVersion;
@@ -111,7 +111,7 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = 0;
         installBegin = 0;
         installReferrer = null;
-        googlePlayInstant = false;
+        googlePlayInstant = null;
         clickTimeServer = 0;
         installBeginServer = 0;
         installVersion = null;
@@ -246,7 +246,7 @@ public class ActivityState implements Serializable, Cloneable {
         clickTime = Util.readLongField(fields, "clickTime", -1l);
         installBegin = Util.readLongField(fields, "installBegin", -1l);
         installReferrer = Util.readStringField(fields, "installReferrer", null);
-        googlePlayInstant = Util.readBooleanField(fields, "googlePlayInstant", false);
+        googlePlayInstant = Util.readObjectField(fields, "googlePlayInstant", null);
         clickTimeServer = Util.readLongField(fields, "clickTimeServer", -1l);
         installBeginServer = Util.readLongField(fields, "installBeginServer", -1l);
         installVersion = Util.readStringField(fields, "installVersion", null);
