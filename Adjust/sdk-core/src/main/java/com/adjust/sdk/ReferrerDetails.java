@@ -1,6 +1,6 @@
 package com.adjust.sdk;
 
-class ReferrerDetails {
+public class ReferrerDetails {
     public String installReferrer;
     public long referrerClickTimestampSeconds;
     public long installBeginTimestampSeconds;
