@@ -460,15 +460,12 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendInstallReferrer(final String installReferrer,
-                                    final long referrerClickTimestampSeconds,
-                                    final long installBeginTimestampSeconds,
+    public void sendInstallReferrer(final ReferrerDetails referrerDetails,
                                     final String referrerApi) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInstallReferrerI(installReferrer, referrerClickTimestampSeconds,
-                        installBeginTimestampSeconds, referrerApi);
+                sendInstallReferrerI(referrerDetails, referrerApi);
             }
         });
     }
@@ -853,15 +850,15 @@ public class ActivityHandler implements IActivityHandler {
 
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_GOOGLE);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
+                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_GOOGLE);
             }
         });
 
         installReferrerHuawei = new InstallReferrerHuawei(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_HUAWEI);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
+                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_HUAWEI);
             }
         });
 
@@ -1499,37 +1496,23 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendReftagReferrers();
     }
 
-    private void sendInstallReferrerI(String installReferrer, long referrerClickTimestampSeconds,
-                                      long installBeginTimestampSeconds, String referrerApi) {
+    private void sendInstallReferrerI(ReferrerDetails referrerDetails, String referrerApi) {
         if (!isEnabledI()) {
             return;
         }
 
-        if (installReferrer == null) {
+        if (!isValidReferrerDetails(referrerDetails)) {
             return;
         }
 
-        if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
-            if (referrerClickTimestampSeconds == activityState.clickTime
-                    && installBeginTimestampSeconds == activityState.installBegin
-                    && installReferrer.equals(activityState.installReferrer)) {
-                // Same click already sent before for google referrer, nothing to be done.
-                return;
-            }
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
-            if (referrerClickTimestampSeconds == activityState.clickTimeHuawei
-                    && installBeginTimestampSeconds == activityState.installBeginHuawei
-                    && installReferrer.equals(activityState.installReferrerHuawei)) {
-                // Same click already sent before huawei referrer, nothing to be done.
-                return;
-            }
+        if (isEqualReferrerDetails(referrerDetails, referrerApi)) {
+            // Same click already sent before, nothing to be done.
+            return;
         }
 
         // Create sdk click
         ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
-                installReferrer,
-                referrerClickTimestampSeconds,
-                installBeginTimestampSeconds,
+                referrerDetails,
                 referrerApi,
                 activityState,
                 adjustConfig,
@@ -1537,6 +1520,60 @@ public class ActivityHandler implements IActivityHandler {
                 sessionParameters);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
+    }
+
+    private boolean isValidReferrerDetails(final ReferrerDetails referrerDetails) {
+        if (referrerDetails == null) {
+            return false;
+        }
+
+        if (referrerDetails.installReferrer == null) {
+            return false;
+        }
+
+        return referrerDetails.installReferrer.length() != 0;
+    }
+
+    private boolean isEqualReferrerDetails(ReferrerDetails referrerDetails, String referrerApi) {
+        if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
+            return isEqualGoogleReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
+            return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
+        }
+
+        return false;
+    }
+
+    private boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
+                                                 final ActivityState activityState) {
+
+        if (referrerDetails.installReferrer != null
+                && !referrerDetails.installReferrer.equals(activityState.installReferrer)) {
+            return false;
+        }
+
+        if (referrerDetails.installVersion != null
+                && !referrerDetails.installVersion.equals(activityState.installVersion)) {
+            return false;
+        }
+
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
+                && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
+                && referrerDetails.referrerClickServerTimestampSeconds == activityState.clickTimeServer
+                && referrerDetails.installBeginServerTimestampSeconds == activityState.installBeginServer
+                && referrerDetails.googlePlayInstant == activityState.googlePlayInstant;
+    }
+
+    private boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
+                                                 final ActivityState activityState) {
+
+        if (referrerDetails.installReferrer != null
+                && !referrerDetails.installReferrer.equals(activityState.installReferrerHuawei)) {
+            return false;
+        }
+
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
+                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei;
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
@@ -2202,6 +2239,10 @@ public class ActivityHandler implements IActivityHandler {
             activityState.clickTime = responseData.clickTime;
             activityState.installBegin = responseData.installBegin;
             activityState.installReferrer = responseData.installReferrer;
+            activityState.clickTimeServer = responseData.clickTimeServer;
+            activityState.installBeginServer = responseData.installBeginServer;
+            activityState.installVersion = responseData.installVersion;
+            activityState.googlePlayInstant = responseData.googlePlayInstant;
         } else {
             activityState.clickTimeHuawei = responseData.clickTime;
             activityState.installBeginHuawei = responseData.installBegin;
