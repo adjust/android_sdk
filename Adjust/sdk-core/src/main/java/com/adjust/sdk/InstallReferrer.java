@@ -327,8 +327,8 @@ public class InstallReferrer implements InvocationHandler {
                             installReferrer, clickTime, installBegin);
 
                     String installVersion = getStringInstallVersion(referrerDetails);
-                    long clickTimeServer = getReferrerClickServerTimestampSeconds(referrerDetails);
-                    long installBeginServer = getInstallBeginServerTimestampSeconds(referrerDetails);
+                    long clickTimeServer = getReferrerClickTimestampServerSeconds(referrerDetails);
+                    long installBeginServer = getInstallBeginTimestampServerSeconds(referrerDetails);
                     Boolean googlePlayInstant = getBooleanGooglePlayInstantParam(referrerDetails);
                     logger.debug("installVersion: %s, clickTimeServer: %d, " +
                                     "installBeginServer: %d, googlePlayInstant: %b",
@@ -500,7 +500,7 @@ public class InstallReferrer implements InvocationHandler {
      * @param referrerDetails ReferrerDetails object
      * @return Redirect URL click timestamp server.
      */
-    private long getReferrerClickServerTimestampSeconds(final Object referrerDetails) {
+    private long getReferrerClickTimestampServerSeconds(final Object referrerDetails) {
         if (referrerDetails == null) {
             return -1;
         }
@@ -520,7 +520,7 @@ public class InstallReferrer implements InvocationHandler {
      * @param referrerDetails ReferrerDetails object
      * @return Play Store app INSTALL button click timestamp server.
      */
-    private long getInstallBeginServerTimestampSeconds(final Object referrerDetails) {
+    private long getInstallBeginTimestampServerSeconds(final Object referrerDetails) {
         if (referrerDetails == null) {
             return -1;
         }

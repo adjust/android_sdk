@@ -1549,8 +1549,8 @@ public class ActivityHandler implements IActivityHandler {
 
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
-                && referrerDetails.referrerClickServerTimestampSeconds == activityState.clickTimeServer
-                && referrerDetails.installBeginServerTimestampSeconds == activityState.installBeginServer
+                && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServer
+                && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServer
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrer)
                 && Util.equalString(referrerDetails.installVersion, activityState.installVersion)
                 && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
