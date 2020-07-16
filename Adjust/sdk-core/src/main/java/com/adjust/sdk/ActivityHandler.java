@@ -1505,7 +1505,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (isEqualReferrerDetails(referrerDetails, referrerApi)) {
+        if (Util.isEqualReferrerDetails(referrerDetails, referrerApi, activityState)) {
             // Same click already sent before, nothing to be done.
             return;
         }
@@ -1532,36 +1532,6 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         return referrerDetails.installReferrer.length() != 0;
-    }
-
-    private boolean isEqualReferrerDetails(ReferrerDetails referrerDetails, String referrerApi) {
-        if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
-            return isEqualGoogleReferrerDetails(referrerDetails, activityState);
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
-            return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
-        }
-
-        return false;
-    }
-
-    private boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
-                                                 final ActivityState activityState) {
-
-        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
-                && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
-                && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServer
-                && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServer
-                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrer)
-                && Util.equalString(referrerDetails.installVersion, activityState.installVersion)
-                && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
-    }
-
-    private boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
-                                                 final ActivityState activityState) {
-
-        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
-                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
-                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
