@@ -22,7 +22,7 @@ You can also add the Adjust OAID plugin as JAR file, which you can download from
 
 **Note:** It is not necessary to add the MSA SDK to read the OAID from Huawei devices. The OAID plugin can use the Huawei Mobile Service (version 2.6.2 or later) for this.
 
-To enable the OAID plugin to read OAID values using the MSA SDK, copy the MSA SDK (AAR file) to the libs directory of your project and set the dependency.  You also need to copy the supplierconfig.json to the assets directory of your project.  
+To enable the OAID plugin to read OAID values using the MSA SDK, copy the MSA SDK (AAR file) to the libs directory of your project and set the dependency.  You also need to copy the supplierconfig.json to the assets directory of your project.  Supported MSA SDK version 1.0.13 onwards.
 
 You can find the MSA SDK and detailed instructions [here][msasdk].  
 
