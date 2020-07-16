@@ -326,10 +326,22 @@ public class InstallReferrer implements InvocationHandler {
                     logger.debug("installReferrer: %s, clickTime: %d, installBeginTime: %d",
                             installReferrer, clickTime, installBegin);
 
+                    String installVersion = getStringInstallVersion(referrerDetails);
+                    long clickTimeServer = getReferrerClickTimestampServerSeconds(referrerDetails);
+                    long installBeginServer = getInstallBeginTimestampServerSeconds(referrerDetails);
+                    Boolean googlePlayInstant = getBooleanGooglePlayInstantParam(referrerDetails);
+                    logger.debug("installVersion: %s, clickTimeServer: %d, " +
+                                    "installBeginServer: %d, googlePlayInstant: %b",
+                            installVersion, clickTimeServer, installBeginServer, googlePlayInstant);
+
                     logger.debug("Install Referrer read successfully. Closing connection");
 
+                    ReferrerDetails installReferrerDetails = new ReferrerDetails(installReferrer,
+                            clickTime, installBegin, clickTimeServer, installBeginServer,
+                            installVersion, googlePlayInstant);
+
                     // Stuff successfully read, try to send it.
-                    referrerCallback.onInstallReferrerRead(installReferrer, clickTime, installBegin);
+                    referrerCallback.onInstallReferrerRead(installReferrerDetails);
                 } catch (Exception e) {
                     logger.warn("Couldn't get install referrer from client (%s). Retrying...", e.getMessage());
                     retryAtEnd = true;
@@ -460,6 +472,86 @@ public class InstallReferrer implements InvocationHandler {
                     e.getClass().getCanonicalName());
         }
         return -1;
+    }
+
+    /**
+     * Get install version string value.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Install version string value.
+     */
+    private String getStringInstallVersion(final Object referrerDetails) {
+        if (referrerDetails == null) {
+            return null;
+        }
+        try {
+            String stringInstallVersion = (String) Reflection.invokeInstanceMethod(
+                    referrerDetails, "getInstallVersion", null);
+            return stringInstallVersion;
+        } catch (Exception e) {
+            // not logging the error as this is expected to happen below v2.0
+        }
+        return null;
+    }
+
+    /**
+     * Get redirect URL click timestamp server.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Redirect URL click timestamp server.
+     */
+    private long getReferrerClickTimestampServerSeconds(final Object referrerDetails) {
+        if (referrerDetails == null) {
+            return -1;
+        }
+        try {
+            Long clickTimeServer = (Long) Reflection.invokeInstanceMethod(
+                    referrerDetails, "getReferrerClickTimestampServerSeconds", null);
+            return clickTimeServer;
+        } catch (Exception e) {
+            // not logging the error as this is expected to happen below v2.0
+        }
+        return -1;
+    }
+
+    /**
+     * Get Play Store app INSTALL button click timestamp server.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Play Store app INSTALL button click timestamp server.
+     */
+    private long getInstallBeginTimestampServerSeconds(final Object referrerDetails) {
+        if (referrerDetails == null) {
+            return -1;
+        }
+        try {
+            Long installBeginTime = (Long) Reflection.invokeInstanceMethod(
+                    referrerDetails, "getInstallBeginTimestampServerSeconds", null);
+            return installBeginTime;
+        } catch (Exception e) {
+            // not logging the error as this is expected to happen below v2.0
+        }
+        return -1;
+    }
+
+    /**
+     * Get google play instant boolean value.
+     *
+     * @param referrerDetails ReferrerDetails object
+     * @return Google play instant boolean value.
+     */
+    private Boolean getBooleanGooglePlayInstantParam(final Object referrerDetails) {
+        if (referrerDetails == null) {
+            return null;
+        }
+        try {
+            boolean booleanGooglePlayInstantParam = (boolean) Reflection.invokeInstanceMethod(
+                    referrerDetails, "getGooglePlayInstantParam", null);
+            return booleanGooglePlayInstantParam;
+        } catch (Exception e) {
+            // not logging the error as this is expected to happen below v2.0
+        }
+        return null;
     }
 
     /**

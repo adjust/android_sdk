@@ -28,11 +28,15 @@ public class PackageBuilder {
     long clickTimeInSeconds = -1;
     long clickTimeInMilliseconds = -1;
     long installBeginTimeInSeconds = -1;
+    long clickTimeServerInSeconds = -1;
+    long installBeginTimeServerInSeconds = -1;
     String reftag;
     String deeplink;
     String referrer;
+    String installVersion;
     String rawReferrer;
     String referrerApi;
+    Boolean googlePlayInstant;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
 
@@ -126,6 +130,10 @@ public class PackageBuilder {
         clickPackage.setClickTimeInMilliseconds(clickTimeInMilliseconds);
         clickPackage.setClickTimeInSeconds(clickTimeInSeconds);
         clickPackage.setInstallBeginTimeInSeconds(installBeginTimeInSeconds);
+        clickPackage.setClickTimeServerInSeconds(clickTimeServerInSeconds);
+        clickPackage.setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds);
+        clickPackage.setInstallVersion(installVersion);
+        clickPackage.setGooglePlayInstant(googlePlayInstant);
 
         AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
                 clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
@@ -477,6 +485,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "callback_params", this.sessionParameters.callbackParameters);
         PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
         PackageBuilder.addDateInSeconds(parameters, "click_time", clickTimeInSeconds);
+        PackageBuilder.addDateInSeconds(parameters, "click_time_server", clickTimeServerInSeconds);
         PackageBuilder.addLong(parameters, "connectivity_type", Util.getConnectivityType(adjustConfig.context));
         PackageBuilder.addString(parameters, "country", deviceInfo.country);
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
@@ -494,8 +503,11 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "google_play_instant", googlePlayInstant);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
+        PackageBuilder.addDateInSeconds(parameters, "install_begin_time_server", installBeginTimeServerInSeconds);
+        PackageBuilder.addString(parameters, "install_version", installVersion);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);

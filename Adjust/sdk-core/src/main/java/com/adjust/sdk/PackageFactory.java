@@ -113,18 +113,12 @@ public class PackageFactory {
         return clickPackage;
     }
 
-    public static ActivityPackage buildInstallReferrerSdkClickPackage(final String installReferrer,
-                                                                      final long clickTimeInSeconds,
-                                                                      final long installBeginInSeconds,
+    public static ActivityPackage buildInstallReferrerSdkClickPackage(final ReferrerDetails referrerDetails,
                                                                       final String referrerApi,
                                                                       final ActivityState activityState,
                                                                       final AdjustConfig adjustConfig,
                                                                       final DeviceInfo deviceInfo,
                                                                       final SessionParameters sessionParameters) {
-        if (installReferrer == null || installReferrer.length() == 0) {
-            return null;
-        }
-
         long now = System.currentTimeMillis();
 
         PackageBuilder clickPackageBuilder = new PackageBuilder(
@@ -134,13 +128,13 @@ public class PackageFactory {
                 sessionParameters,
                 now);
 
-        if (clickPackageBuilder == null) {
-            return null;
-        }
-
-        clickPackageBuilder.referrer = installReferrer;
-        clickPackageBuilder.clickTimeInSeconds = clickTimeInSeconds;
-        clickPackageBuilder.installBeginTimeInSeconds = installBeginInSeconds;
+        clickPackageBuilder.referrer = referrerDetails.installReferrer;
+        clickPackageBuilder.clickTimeInSeconds = referrerDetails.referrerClickTimestampSeconds;
+        clickPackageBuilder.installBeginTimeInSeconds = referrerDetails.installBeginTimestampSeconds;
+        clickPackageBuilder.clickTimeServerInSeconds = referrerDetails.referrerClickTimestampServerSeconds;
+        clickPackageBuilder.installBeginTimeServerInSeconds = referrerDetails.installBeginTimestampServerSeconds;
+        clickPackageBuilder.installVersion = referrerDetails.installVersion;
+        clickPackageBuilder.googlePlayInstant = referrerDetails.googlePlayInstant;
         clickPackageBuilder.referrerApi = referrerApi;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.INSTALL_REFERRER);
