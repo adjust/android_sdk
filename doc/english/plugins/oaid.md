@@ -24,7 +24,7 @@ You can also add the Adjust OAID plugin as JAR file, which you can download from
 
 To enable the OAID plugin to read OAID values using the MSA SDK, copy the MSA SDK (AAR file) to the libs directory of your project and set the dependency.  You also need to copy the supplierconfig.json to the assets directory of your project.
 
-**Note**: MSA SDK version 1.0.13 and later is supported by Adjust OAID plugin v4.22.1 and later. MSA SDK versions of plugin prior to version 1.0.13 are supported by Adjust OAID plugin v4.22.0 and earlier.
+**Note**: MSA SDK version 1.0.13 and later is supported by Adjust OAID plugin v4.23.0 and later. MSA SDK versions of plugin prior to version 1.0.13 are supported by Adjust OAID plugin v4.22.0 and earlier.
 
 You can find the MSA SDK and detailed instructions [here][msasdk].  
 
