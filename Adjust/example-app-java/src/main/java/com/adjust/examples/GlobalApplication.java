@@ -109,6 +109,9 @@ public class GlobalApplication extends Application {
         // Delay first session.
         // config.setDelayStart(7);
 
+        // Allow tracking preinstall
+        // config.setPreinstallTrackingEnabled(true);
+
         // Add session callback parameters.
         Adjust.addSessionCallbackParameter("sc_foo", "sc_bar");
         Adjust.addSessionCallbackParameter("sc_key", "sc_value");
