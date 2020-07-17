@@ -7,6 +7,9 @@
     <!-- Use ONLY IF you are using plugin-imei and if your app is NOT DISTRIBUTED in Play Store -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+    <!-- Use ONLY IF you are supporting preinstall tracker via content provider -->
+    <uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
+
     <application
         android:name=".GlobalApplication"
         android:allowBackup="true"

@@ -197,6 +197,35 @@ public class SdkClickHandler implements ISdkClickHandler {
      * {@inheritDoc}
      */
     @Override
+    public void sendPreinstallPayload(final String preinstallPayload, final String preinstallLocation) {
+        scheduler.submit(new Runnable() {
+
+            @Override
+            public void run() {
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+
+                // Create sdk click
+                ActivityPackage sdkClickPackage = PackageFactory.buildPreinstallSdkClickPackage(
+                        preinstallPayload,
+                        preinstallLocation,
+                        activityHandler.getActivityState(),
+                        activityHandler.getAdjustConfig(),
+                        activityHandler.getDeviceInfo(),
+                        activityHandler.getSessionParameters());
+
+                // Send preinstall info sdk_click package.
+                sendSdkClick(sdkClickPackage);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
 
@@ -322,6 +351,8 @@ public class SdkClickHandler implements ISdkClickHandler {
             referrerApi = sdkClickPackage.getParameters().get("referrer_api");
         }
 
+        boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
+
         String url = AdjustFactory.getBaseUrl();
 
         if (basePath != null) {
@@ -371,6 +402,19 @@ public class SdkClickHandler implements ISdkClickHandler {
                 responseData.googlePlayInstant = googlePlayInstant;
                 responseData.referrerApi = referrerApi;
                 responseData.isInstallReferrer = true;
+            }
+
+            if (isPreinstall) {
+                String payloadLocation = sdkClickPackage.getParameters().get("found_location");
+                if (payloadLocation != null && !payloadLocation.isEmpty()) {
+                    // update preinstall flag in shared preferences after sdk_click is sent.
+                    SharedPreferencesManager sharedPreferencesManager
+                            = new SharedPreferencesManager(activityHandler.getContext());
+
+                    long currentStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
+                    long updatedStatus = PreinstallUtil.markAsRead(payloadLocation, currentStatus);
+                    sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus);
+                }
             }
 
             activityHandler.finishedTrackingActivity(responseData);

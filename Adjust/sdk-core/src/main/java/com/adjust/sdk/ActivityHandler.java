@@ -142,6 +142,7 @@ public class ActivityHandler implements IActivityHandler {
         boolean firstLaunch;
         boolean sessionResponseProcessed;
         boolean firstSdkStart;
+        boolean preinstallHasBeenRead;
 
         public boolean isEnabled() {
             return enabled;
@@ -198,6 +199,10 @@ public class ActivityHandler implements IActivityHandler {
         public boolean hasFirstSdkStartNotOcurred() {
             return !firstSdkStart;
         }
+
+        public boolean hasPreinstallBeenRead() {
+            return preinstallHasBeenRead;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -225,6 +230,8 @@ public class ActivityHandler implements IActivityHandler {
         internalState.sessionResponseProcessed = false;
         // does not have first start by default
         internalState.firstSdkStart = false;
+        // preinstall has not been read by default
+        internalState.preinstallHasBeenRead = false;
 
         executor.submit(new Runnable() {
             @Override
@@ -866,6 +873,127 @@ public class ActivityHandler implements IActivityHandler {
         sendReftagReferrerI();
     }
 
+    private void checkForPreinstallI() {
+        if (activityState == null) return;
+        if (!activityState.enabled) return;
+        if (activityState.isGdprForgotten) return;
+        if (!adjustConfig.preinstallTrackingEnabled) return;
+        if (internalState.hasPreinstallBeenRead()) return;
+
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (deviceInfo.packageName == null || deviceInfo.packageName.isEmpty()) {
+                    logger.debug("Can't read preinstall payload, invalid package name");
+                    return;
+                }
+
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+                long readStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
+
+                if (PreinstallUtil.hasAllLocationsBeenRead(readStatus)) {
+                    internalState.preinstallHasBeenRead = true;
+                    return;
+                }
+
+                // 1. try reading preinstall payload from standard system property
+                if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES, readStatus)) {
+                    String payloadSystemProperty = PreinstallUtil.getPayloadFromSystemProperty(
+                            deviceInfo.packageName, logger);
+
+                    if (payloadSystemProperty != null && !payloadSystemProperty.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadSystemProperty, Constants.SYSTEM_PROPERTIES);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES, readStatus);
+                    }
+                }
+
+                // 2. try reading preinstall payload from system property using reflection
+                if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_REFLECTION, readStatus)) {
+                    String payloadSystemPropertyReflection = PreinstallUtil.getPayloadFromSystemPropertyReflection(
+                            deviceInfo.packageName, logger);
+
+                    if (payloadSystemPropertyReflection != null && !payloadSystemPropertyReflection.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyReflection, Constants.SYSTEM_PROPERTIES_REFLECTION);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_REFLECTION, readStatus);
+                    }
+                }
+
+                // 3. try reading preinstall payload from system property file path
+                if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_PATH, readStatus)) {
+                    String payloadSystemPropertyFilePath = PreinstallUtil.getPayloadFromSystemPropertyFilePath(
+                            deviceInfo.packageName, logger);
+
+                    if (payloadSystemPropertyFilePath != null && !payloadSystemPropertyFilePath.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyFilePath, Constants.SYSTEM_PROPERTIES_PATH);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_PATH, readStatus);
+                    }
+                }
+
+                // 4. try reading preinstall payload from system property file path using reflection
+                if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_PATH_REFLECTION, readStatus)) {
+                    String payloadSystemPropertyFilePathReflection = PreinstallUtil.getPayloadFromSystemPropertyFilePathReflection(
+                            deviceInfo.packageName, logger);
+
+                    if (payloadSystemPropertyFilePathReflection != null && !payloadSystemPropertyFilePathReflection.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyFilePathReflection, Constants.SYSTEM_PROPERTIES_PATH_REFLECTION);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_PATH_REFLECTION, readStatus);
+                    }
+                }
+
+                // 5. try reading preinstall payload from default content uri
+                if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER, readStatus)) {
+                    String payloadContentProviderDefault = PreinstallUtil.getPayloadFromContentProviderDefault(
+                            adjustConfig.context,
+                            deviceInfo.packageName,
+                            logger);
+
+                    if (payloadContentProviderDefault != null && !payloadContentProviderDefault.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadContentProviderDefault, Constants.CONTENT_PROVIDER);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER, readStatus);
+                    }
+                }
+
+                // 6. try reading preinstall payload from all content provider with intent action
+                if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_INTENT_ACTION, readStatus)) {
+                    List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderIntentAction(
+                            adjustConfig.context,
+                            deviceInfo.packageName,
+                            logger);
+
+                    if (payloadListContentProviderIntentAction != null && !payloadListContentProviderIntentAction.isEmpty()) {
+                        for (String payload : payloadListContentProviderIntentAction) {
+                            sdkClickHandler.sendPreinstallPayload(payload, Constants.CONTENT_PROVIDER_INTENT_ACTION);
+                        }
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER_INTENT_ACTION, readStatus);
+                    }
+                }
+
+                // 7. try reading preinstall payload from file system (world readable)
+                if (PreinstallUtil.hasNotBeenRead(Constants.FILE_SYSTEM, readStatus)) {
+                    String payloadFileSystem = PreinstallUtil.getPayloadFromFileSystem(
+                            deviceInfo.packageName,
+                            logger);
+
+                    if (payloadFileSystem != null && !payloadFileSystem.isEmpty()) {
+                        sdkClickHandler.sendPreinstallPayload(payloadFileSystem, Constants.FILE_SYSTEM);
+                    } else {
+                        readStatus = PreinstallUtil.markAsRead(Constants.FILE_SYSTEM, readStatus);
+                    }
+                }
+
+                sharedPreferencesManager.setPreinstallPayloadReadStatus(readStatus);
+
+                internalState.preinstallHasBeenRead = true;
+            }
+        });
+    }
+
     private void readConfigFile(Context context) {
         Properties properties;
 
@@ -1409,6 +1537,8 @@ public class ActivityHandler implements IActivityHandler {
             // queue send referrer tag
             sendReftagReferrer();
         }
+
+        checkForPreinstallI();
 
         // try to read and send the install referrer
         installReferrer.startConnection();

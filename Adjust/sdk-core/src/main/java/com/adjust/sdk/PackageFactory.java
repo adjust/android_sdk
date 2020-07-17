@@ -142,6 +142,33 @@ public class PackageFactory {
         return clickPackage;
     }
 
+    public static ActivityPackage buildPreinstallSdkClickPackage(final String preinstallPayload,
+                                                                 final String preinstallLocation,
+                                                                 final ActivityState activityState,
+                                                                 final AdjustConfig adjustConfig,
+                                                                 final DeviceInfo deviceInfo,
+                                                                 final SessionParameters sessionParameters) {
+        if (preinstallPayload == null || preinstallPayload.length() == 0) {
+            return null;
+        }
+
+        long now = System.currentTimeMillis();
+
+        PackageBuilder clickPackageBuilder = new PackageBuilder(
+                adjustConfig,
+                deviceInfo,
+                activityState,
+                sessionParameters,
+                now);
+
+        clickPackageBuilder.preinstallPayload = preinstallPayload;
+        clickPackageBuilder.preinstallLocation = preinstallLocation;
+
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.PREINSTALL);
+
+        return clickPackage;
+    }
+
     private static PackageBuilder queryStringClickPackageBuilder(
             final List<UrlQuerySanitizer.ParameterValuePair> queryList,
             final ActivityState activityState,

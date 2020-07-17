@@ -68,4 +68,20 @@ public interface Constants {
     int MAX_INSTALL_REFERRER_RETRIES = 2;
 
     String FB_AUTH_REGEX = "^(fb|vk)[0-9]{5,}[^:]*://authorize.*access_token=.*";
+
+    String PREINSTALL = "preinstall";
+    String SYSTEM_PROPERTIES = "system_properties";
+    String SYSTEM_PROPERTIES_REFLECTION = "system_properties_reflection";
+    String SYSTEM_PROPERTIES_PATH = "system_properties_path";
+    String SYSTEM_PROPERTIES_PATH_REFLECTION = "system_properties_path_reflection";
+    String CONTENT_PROVIDER = "content_provider";
+    String CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action";
+    String FILE_SYSTEM = "file_system";
+
+    String ADJUST_PREINSTALL_SYSTEM_PROPERTY_PREFIX = "adjust.preinstall.";
+    String ADJUST_PREINSTALL_SYSTEM_PROPERTY_PATH = "adjust.preinstall.path";
+    String ADJUST_PREINSTALL_CONTENT_URI_AUTHORITY = "com.adjust.preinstall";
+    String ADJUST_PREINSTALL_CONTENT_URI_PATH = "trackers";
+    String ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION = "com.attribution.REFERRAL_PROVIDER";
+    String ADJUST_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/adjust.preinstall";
 }
