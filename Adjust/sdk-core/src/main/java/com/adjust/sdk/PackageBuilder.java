@@ -36,6 +36,8 @@ public class PackageBuilder {
     String installVersion;
     String rawReferrer;
     String referrerApi;
+    String preinstallPayload;
+    String preinstallLocation;
     Boolean googlePlayInstant;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
@@ -536,6 +538,8 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+        PackageBuilder.addString(parameters, "payload", preinstallPayload);
+        PackageBuilder.addString(parameters, "found_location", preinstallLocation);
 
         checkDeviceIds(parameters);
         return parameters;

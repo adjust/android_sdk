@@ -37,6 +37,7 @@ public class AdjustConfig {
     String secretId;
     String appSecret;
     String externalDeviceId;
+    boolean preinstallTrackingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -90,6 +91,7 @@ public class AdjustConfig {
         // default values
         this.eventBufferingEnabled = false;
         this.sendInBackground = false;
+        this.preinstallTrackingEnabled = false;
     }
 
     public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
@@ -170,6 +172,10 @@ public class AdjustConfig {
 
     public void setExternalDeviceId(String externalDeviceId) {
         this.externalDeviceId = externalDeviceId;
+    }
+
+    public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
+        this.preinstallTrackingEnabled = preinstallTrackingEnabled;
     }
 
     public boolean isValid() {
