@@ -99,14 +99,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.22.0'
+implementation 'com.adjust.sdk:adjust-android:4.23.0'
 implementation 'com.android.installreferrer:installreferrer:2.1'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.22.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.23.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
