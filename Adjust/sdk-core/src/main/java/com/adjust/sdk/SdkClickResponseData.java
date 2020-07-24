@@ -9,5 +9,9 @@ public class SdkClickResponseData extends ResponseData {
     long clickTime;
     long installBegin;
     String installReferrer;
+    long clickTimeServer;
+    long installBeginServer;
+    String installVersion;
+    Boolean googlePlayInstant;
     String referrerApi;
 }

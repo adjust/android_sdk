@@ -39,6 +39,11 @@ public interface ISdkClickHandler {
     void sendReftagReferrers();
 
     /**
+     * Send sdk_click package carrying preinstall info.
+     */
+    void sendPreinstallPayload(String payload, String location);
+
+    /**
      * Teardown SdkClickHandler instance.
      */
     void teardown();

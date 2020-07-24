@@ -790,6 +790,35 @@ public class Util {
         } catch (Exception e) {
             return false;
         }
+    }
 
+    public static boolean isEqualReferrerDetails(final ReferrerDetails referrerDetails,
+                                                 final String referrerApi,
+                                                 final ActivityState activityState) {
+        if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
+            return isEqualGoogleReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
+            return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
+        }
+
+        return false;
+    }
+
+    private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
+                                                       final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
+                && referrerDetails.installBeginTimestampSeconds == activityState.installBegin
+                && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServer
+                && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServer
+                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrer)
+                && Util.equalString(referrerDetails.installVersion, activityState.installVersion)
+                && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
+    }
+
+    private static boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
+                                                       final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
+                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
+                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
     }
 }

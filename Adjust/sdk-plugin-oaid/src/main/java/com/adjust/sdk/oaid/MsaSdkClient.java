@@ -4,9 +4,9 @@ import android.content.Context;
 
 import com.adjust.sdk.ILogger;
 import com.bun.miitmdid.core.ErrorCode;
-import com.bun.miitmdid.core.IIdentifierListener;
 import com.bun.miitmdid.core.MdidSdkHelper;
-import com.bun.miitmdid.supplier.IdSupplier;
+import com.bun.supplier.IIdentifierListener;
+import com.bun.supplier.IdSupplier;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

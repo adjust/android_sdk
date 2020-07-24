@@ -15,7 +15,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.google.code.gson:gson:2.8.6'
     // Add web sockets
-    implementation 'org.java-websocket:Java-WebSocket:1.4.0'
+    implementation 'org.java-websocket:Java-WebSocket:1.5.1'
 }
 
 task adjustTestLibraryJarCleanDebug(type: Delete) {

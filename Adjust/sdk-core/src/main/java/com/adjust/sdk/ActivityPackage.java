@@ -53,6 +53,10 @@ public class ActivityPackage implements Serializable {
     private long clickTimeInMilliseconds;
     private long clickTimeInSeconds;
     private long installBeginTimeInSeconds;
+    private long clickTimeServerInSeconds;
+    private long installBeginTimeServerInSeconds;
+    private String installVersion;
+    private Boolean googlePlayInstant;
 
     public String getPath() {
         return path;
@@ -128,6 +132,38 @@ public class ActivityPackage implements Serializable {
 
     public void setInstallBeginTimeInSeconds(long installBeginTimeInSeconds) {
         this.installBeginTimeInSeconds = installBeginTimeInSeconds;
+    }
+
+    public long getClickTimeServerInSeconds() {
+        return this.clickTimeServerInSeconds;
+    }
+
+    public void setClickTimeServerInSeconds(long clickTimeServerInSeconds) {
+        this.clickTimeServerInSeconds = clickTimeServerInSeconds;
+    }
+
+    public long getInstallBeginTimeServerInSeconds() {
+        return this.installBeginTimeServerInSeconds;
+    }
+
+    public void setInstallBeginTimeServerInSeconds(long installBeginTimeServerInSeconds) {
+        this.installBeginTimeServerInSeconds = installBeginTimeServerInSeconds;
+    }
+
+    public String getInstallVersion() {
+        return this.installVersion;
+    }
+
+    public void setInstallVersion(String installVersion) {
+        this.installVersion = installVersion;
+    }
+
+    public Boolean getGooglePlayInstant() {
+        return this.googlePlayInstant;
+    }
+
+    public void setGooglePlayInstant(Boolean googlePlayInstant) {
+        this.googlePlayInstant = googlePlayInstant;
     }
 
     public Map<String, String> getCallbackParameters() {

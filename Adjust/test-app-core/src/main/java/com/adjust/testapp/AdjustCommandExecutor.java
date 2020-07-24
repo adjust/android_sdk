@@ -609,7 +609,7 @@ public class AdjustCommandExecutor {
         Adjust.appWillOpenUrl(Uri.parse(deeplink), this.context);
     }
 
-    private void  sendReferrer() {
+    private void sendReferrer() {
         String referrer = command.getFirstParameterValue("referrer");
 
         Adjust.setReferrer(referrer, this.context);

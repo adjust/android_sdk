@@ -197,6 +197,35 @@ public class SdkClickHandler implements ISdkClickHandler {
      * {@inheritDoc}
      */
     @Override
+    public void sendPreinstallPayload(final String preinstallPayload, final String preinstallLocation) {
+        scheduler.submit(new Runnable() {
+
+            @Override
+            public void run() {
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+
+                // Create sdk click
+                ActivityPackage sdkClickPackage = PackageFactory.buildPreinstallSdkClickPackage(
+                        preinstallPayload,
+                        preinstallLocation,
+                        activityHandler.getActivityState(),
+                        activityHandler.getAdjustConfig(),
+                        activityHandler.getDeviceInfo(),
+                        activityHandler.getSessionParameters());
+
+                // Send preinstall info sdk_click package.
+                sendSdkClick(sdkClickPackage);
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void teardown() {
         logger.verbose("SdkClickHandler teardown");
 
@@ -302,6 +331,10 @@ public class SdkClickHandler implements ISdkClickHandler {
         long clickTime = -1;
         long installBegin = -1;
         String installReferrer = null;
+        long clickTimeServer = -1;
+        long installBeginServer = -1;
+        String installVersion = null;
+        Boolean googlePlayInstant = null;
         String referrerApi = null;
 
         if (isInstallReferrer) {
@@ -311,8 +344,14 @@ public class SdkClickHandler implements ISdkClickHandler {
             clickTime = sdkClickPackage.getClickTimeInSeconds();
             installBegin = sdkClickPackage.getInstallBeginTimeInSeconds();
             installReferrer = sdkClickPackage.getParameters().get("referrer");
+            clickTimeServer = sdkClickPackage.getClickTimeServerInSeconds();
+            installBeginServer = sdkClickPackage.getInstallBeginTimeServerInSeconds();
+            installVersion = sdkClickPackage.getInstallVersion();
+            googlePlayInstant = sdkClickPackage.getGooglePlayInstant();
             referrerApi = sdkClickPackage.getParameters().get("referrer_api");
         }
+
+        boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
 
         String url = AdjustFactory.getBaseUrl();
 
@@ -357,8 +396,25 @@ public class SdkClickHandler implements ISdkClickHandler {
                 responseData.clickTime = clickTime;
                 responseData.installBegin = installBegin;
                 responseData.installReferrer = installReferrer;
+                responseData.clickTimeServer = clickTimeServer;
+                responseData.installBeginServer = installBeginServer;
+                responseData.installVersion = installVersion;
+                responseData.googlePlayInstant = googlePlayInstant;
                 responseData.referrerApi = referrerApi;
                 responseData.isInstallReferrer = true;
+            }
+
+            if (isPreinstall) {
+                String payloadLocation = sdkClickPackage.getParameters().get("found_location");
+                if (payloadLocation != null && !payloadLocation.isEmpty()) {
+                    // update preinstall flag in shared preferences after sdk_click is sent.
+                    SharedPreferencesManager sharedPreferencesManager
+                            = new SharedPreferencesManager(activityHandler.getContext());
+
+                    long currentStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
+                    long updatedStatus = PreinstallUtil.markAsRead(payloadLocation, currentStatus);
+                    sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus);
+                }
             }
 
             activityHandler.finishedTrackingActivity(responseData);

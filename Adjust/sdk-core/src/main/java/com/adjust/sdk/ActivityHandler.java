@@ -142,6 +142,7 @@ public class ActivityHandler implements IActivityHandler {
         boolean firstLaunch;
         boolean sessionResponseProcessed;
         boolean firstSdkStart;
+        boolean preinstallHasBeenRead;
 
         public boolean isEnabled() {
             return enabled;
@@ -198,6 +199,10 @@ public class ActivityHandler implements IActivityHandler {
         public boolean hasFirstSdkStartNotOcurred() {
             return !firstSdkStart;
         }
+
+        public boolean hasPreinstallBeenRead() {
+            return preinstallHasBeenRead;
+        }
     }
 
     private ActivityHandler(AdjustConfig adjustConfig) {
@@ -225,6 +230,8 @@ public class ActivityHandler implements IActivityHandler {
         internalState.sessionResponseProcessed = false;
         // does not have first start by default
         internalState.firstSdkStart = false;
+        // preinstall has not been read by default
+        internalState.preinstallHasBeenRead = false;
 
         executor.submit(new Runnable() {
             @Override
@@ -460,15 +467,12 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void sendInstallReferrer(final String installReferrer,
-                                    final long referrerClickTimestampSeconds,
-                                    final long installBeginTimestampSeconds,
+    public void sendInstallReferrer(final ReferrerDetails referrerDetails,
                                     final String referrerApi) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendInstallReferrerI(installReferrer, referrerClickTimestampSeconds,
-                        installBeginTimestampSeconds, referrerApi);
+                sendInstallReferrerI(referrerDetails, referrerApi);
             }
         });
     }
@@ -853,20 +857,136 @@ public class ActivityHandler implements IActivityHandler {
 
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_GOOGLE);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
+                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_GOOGLE);
             }
         });
 
         installReferrerHuawei = new InstallReferrerHuawei(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
-                sendInstallReferrer(installReferrer, referrerClickTimestampSeconds, installBeginTimestampSeconds, Constants.REFERRER_API_HUAWEI);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
+                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_HUAWEI);
             }
         });
 
         preLaunchActionsI(adjustConfig.preLaunchActionsArray);
         sendReftagReferrerI();
+    }
+
+    private void checkForPreinstallI() {
+        if (activityState == null) return;
+        if (!activityState.enabled) return;
+        if (activityState.isGdprForgotten) return;
+        if (!adjustConfig.preinstallTrackingEnabled) return;
+        if (internalState.hasPreinstallBeenRead()) return;
+
+        if (deviceInfo.packageName == null || deviceInfo.packageName.isEmpty()) {
+            logger.debug("Can't read preinstall payload, invalid package name");
+            return;
+        }
+
+        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        long readStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
+
+        if (PreinstallUtil.hasAllLocationsBeenRead(readStatus)) {
+            internalState.preinstallHasBeenRead = true;
+            return;
+        }
+
+        // 1. try reading preinstall payload from standard system property
+        if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES, readStatus)) {
+            String payloadSystemProperty = PreinstallUtil.getPayloadFromSystemProperty(
+                    deviceInfo.packageName, logger);
+
+            if (payloadSystemProperty != null && !payloadSystemProperty.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadSystemProperty, Constants.SYSTEM_PROPERTIES);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES, readStatus);
+            }
+        }
+
+        // 2. try reading preinstall payload from system property using reflection
+        if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_REFLECTION, readStatus)) {
+            String payloadSystemPropertyReflection = PreinstallUtil.getPayloadFromSystemPropertyReflection(
+                    deviceInfo.packageName, logger);
+
+            if (payloadSystemPropertyReflection != null && !payloadSystemPropertyReflection.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyReflection, Constants.SYSTEM_PROPERTIES_REFLECTION);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_REFLECTION, readStatus);
+            }
+        }
+
+        // 3. try reading preinstall payload from system property file path
+        if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_PATH, readStatus)) {
+            String payloadSystemPropertyFilePath = PreinstallUtil.getPayloadFromSystemPropertyFilePath(
+                    deviceInfo.packageName, logger);
+
+            if (payloadSystemPropertyFilePath != null && !payloadSystemPropertyFilePath.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyFilePath, Constants.SYSTEM_PROPERTIES_PATH);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_PATH, readStatus);
+            }
+        }
+
+        // 4. try reading preinstall payload from system property file path using reflection
+        if (PreinstallUtil.hasNotBeenRead(Constants.SYSTEM_PROPERTIES_PATH_REFLECTION, readStatus)) {
+            String payloadSystemPropertyFilePathReflection = PreinstallUtil.getPayloadFromSystemPropertyFilePathReflection(
+                    deviceInfo.packageName, logger);
+
+            if (payloadSystemPropertyFilePathReflection != null && !payloadSystemPropertyFilePathReflection.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadSystemPropertyFilePathReflection, Constants.SYSTEM_PROPERTIES_PATH_REFLECTION);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.SYSTEM_PROPERTIES_PATH_REFLECTION, readStatus);
+            }
+        }
+
+        // 5. try reading preinstall payload from default content uri
+        if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER, readStatus)) {
+            String payloadContentProviderDefault = PreinstallUtil.getPayloadFromContentProviderDefault(
+                    adjustConfig.context,
+                    deviceInfo.packageName,
+                    logger);
+
+            if (payloadContentProviderDefault != null && !payloadContentProviderDefault.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadContentProviderDefault, Constants.CONTENT_PROVIDER);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER, readStatus);
+            }
+        }
+
+        // 6. try reading preinstall payload from all content provider with intent action
+        if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_INTENT_ACTION, readStatus)) {
+            List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderIntentAction(
+                    adjustConfig.context,
+                    deviceInfo.packageName,
+                    logger);
+
+            if (payloadListContentProviderIntentAction != null && !payloadListContentProviderIntentAction.isEmpty()) {
+                for (String payload : payloadListContentProviderIntentAction) {
+                    sdkClickHandler.sendPreinstallPayload(payload, Constants.CONTENT_PROVIDER_INTENT_ACTION);
+                }
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER_INTENT_ACTION, readStatus);
+            }
+        }
+
+        // 7. try reading preinstall payload from file system (world readable)
+        if (PreinstallUtil.hasNotBeenRead(Constants.FILE_SYSTEM, readStatus)) {
+            String payloadFileSystem = PreinstallUtil.getPayloadFromFileSystem(
+                    deviceInfo.packageName,
+                    logger);
+
+            if (payloadFileSystem != null && !payloadFileSystem.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadFileSystem, Constants.FILE_SYSTEM);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.FILE_SYSTEM, readStatus);
+            }
+        }
+
+        sharedPreferencesManager.setPreinstallPayloadReadStatus(readStatus);
+
+        internalState.preinstallHasBeenRead = true;
     }
 
     private void readConfigFile(Context context) {
@@ -1413,6 +1533,8 @@ public class ActivityHandler implements IActivityHandler {
             sendReftagReferrer();
         }
 
+        checkForPreinstallI();
+
         // try to read and send the install referrer
         installReferrer.startConnection();
         installReferrerHuawei.readReferrer();
@@ -1499,37 +1621,23 @@ public class ActivityHandler implements IActivityHandler {
         sdkClickHandler.sendReftagReferrers();
     }
 
-    private void sendInstallReferrerI(String installReferrer, long referrerClickTimestampSeconds,
-                                      long installBeginTimestampSeconds, String referrerApi) {
+    private void sendInstallReferrerI(ReferrerDetails referrerDetails, String referrerApi) {
         if (!isEnabledI()) {
             return;
         }
 
-        if (installReferrer == null) {
+        if (!isValidReferrerDetails(referrerDetails)) {
             return;
         }
 
-        if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
-            if (referrerClickTimestampSeconds == activityState.clickTime
-                    && installBeginTimestampSeconds == activityState.installBegin
-                    && installReferrer.equals(activityState.installReferrer)) {
-                // Same click already sent before for google referrer, nothing to be done.
-                return;
-            }
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
-            if (referrerClickTimestampSeconds == activityState.clickTimeHuawei
-                    && installBeginTimestampSeconds == activityState.installBeginHuawei
-                    && installReferrer.equals(activityState.installReferrerHuawei)) {
-                // Same click already sent before huawei referrer, nothing to be done.
-                return;
-            }
+        if (Util.isEqualReferrerDetails(referrerDetails, referrerApi, activityState)) {
+            // Same click already sent before, nothing to be done.
+            return;
         }
 
         // Create sdk click
         ActivityPackage sdkClickPackage = PackageFactory.buildInstallReferrerSdkClickPackage(
-                installReferrer,
-                referrerClickTimestampSeconds,
-                installBeginTimestampSeconds,
+                referrerDetails,
                 referrerApi,
                 activityState,
                 adjustConfig,
@@ -1537,6 +1645,18 @@ public class ActivityHandler implements IActivityHandler {
                 sessionParameters);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
+    }
+
+    private boolean isValidReferrerDetails(final ReferrerDetails referrerDetails) {
+        if (referrerDetails == null) {
+            return false;
+        }
+
+        if (referrerDetails.installReferrer == null) {
+            return false;
+        }
+
+        return referrerDetails.installReferrer.length() != 0;
     }
 
     private void readOpenUrlI(Uri url, long clickTime) {
@@ -2202,6 +2322,10 @@ public class ActivityHandler implements IActivityHandler {
             activityState.clickTime = responseData.clickTime;
             activityState.installBegin = responseData.installBegin;
             activityState.installReferrer = responseData.installReferrer;
+            activityState.clickTimeServer = responseData.clickTimeServer;
+            activityState.installBeginServer = responseData.installBeginServer;
+            activityState.installVersion = responseData.installVersion;
+            activityState.googlePlayInstant = responseData.googlePlayInstant;
         } else {
             activityState.clickTimeHuawei = responseData.clickTime;
             activityState.installBeginHuawei = responseData.installBegin;

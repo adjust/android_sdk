@@ -43,6 +43,8 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
 
+    private static final String PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS = "preinstall_payload_read_status";
+
     /**
      * Index for raw referrer string content in saved JSONArray object.
      */
@@ -348,6 +350,23 @@ public class SharedPreferencesManager {
     public synchronized void removeDeeplink() {
         remove(PREFS_KEY_DEEPLINK_URL);
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
+    }
+
+    /**
+     * Save information that preinstall tracker has been tracked to shared preferences.
+     */
+    public synchronized void setPreinstallPayloadReadStatus(long status) {
+        saveLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, status);
+    }
+
+    /**
+     * Get information if preinstall tracker has been tracked from shared preferences. If no info, default to 0.
+     *
+     * @return long returning current read status of each Preinstall location.
+     * Default value in binary is `00.....00000000` indicating none of the locations are yet read.
+     */
+    public synchronized long getPreinstallPayloadReadStatus() {
+        return getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0);
     }
 
     /**
