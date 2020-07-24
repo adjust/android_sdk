@@ -24,7 +24,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.22.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.23.0'
 }
 
 task adjustSociomanticAndroidAar (type: Copy) {

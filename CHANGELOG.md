@@ -1,3 +1,11 @@
+### Version 4.23.0 (24th July 2020)
+#### Added
+- Added new ways of handling preinstall campaigns.
+- Added reading of additional fields which [Play Install Referrer API](https://developer.android.com/google/play/installreferrer/igetinstallreferrerservice) introduced in v2.0.
+- Added support to OAID plugin for MSA SDK v1.0.13.
+
+---
+
 ### Version 4.22.0 (29th May 2020)
 #### Added
 - Added subscription tracking feature.
