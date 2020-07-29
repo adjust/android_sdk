@@ -37,6 +37,10 @@ public class AdjustFactory {
     private static String baseUrl = Constants.BASE_URL;
     private static String gdprUrl = Constants.GDPR_URL;
     private static String subscriptionUrl = Constants.SUBSCRIPTION_URL;
+    private static String fallbackBaseUrl = Constants.FALLBACK_BASE_URL;
+    private static String fallbackGdprUrl = Constants.FALLBACK_GDPR_URL;
+    private static String fallbackSubscriptionUrl = Constants.FALLBACK_SUBSCRIPTION_URL;
+    private static String fallbackIp = null;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -187,6 +191,34 @@ public class AdjustFactory {
         return AdjustFactory.subscriptionUrl;
     }
 
+    public static String getFallbackBaseUrl() {
+        if (AdjustFactory.fallbackBaseUrl == null) {
+            return Constants.FALLBACK_BASE_URL;
+        }
+        return AdjustFactory.fallbackBaseUrl;
+    }
+
+    public static String getFallbackGdprUrl() {
+        if (AdjustFactory.fallbackGdprUrl == null) {
+            return Constants.FALLBACK_GDPR_URL;
+        }
+        return AdjustFactory.fallbackGdprUrl;
+    }
+
+    public static String getFallbackSubscriptionUrl() {
+        if (AdjustFactory.fallbackSubscriptionUrl == null) {
+            return Constants.FALLBACK_SUBSCRIPTION_URL;
+        }
+        return AdjustFactory.fallbackSubscriptionUrl;
+    }
+
+    public static String getFallbackIp() {
+        if (AdjustFactory.fallbackIp == null) {
+            return IpUtil.getIpUrl();
+        }
+        return AdjustFactory.fallbackIp;
+    }
+
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
             return new UtilNetworking.ConnectionOptions();
@@ -260,6 +292,22 @@ public class AdjustFactory {
 
     public static void setSubscriptionUrl(String subscriptionUrl) {
         AdjustFactory.subscriptionUrl = subscriptionUrl;
+    }
+
+    public static void setFallbackBaseUrl(String fallbackBaseUrl) {
+        AdjustFactory.fallbackBaseUrl = fallbackBaseUrl;
+    }
+
+    public static void setFallbackGdprUrl(String fallbackGdprUrl) {
+        AdjustFactory.fallbackGdprUrl = fallbackGdprUrl;
+    }
+
+    public static void setFallbackSubscriptionUrl(String fallbackSubscriptionUrl) {
+        AdjustFactory.fallbackSubscriptionUrl = fallbackSubscriptionUrl;
+    }
+
+    public static void setFallbackIp(String fallbackIp) {
+        AdjustFactory.fallbackIp = fallbackIp;
     }
 
     public static void useTestConnectionOptions() {
