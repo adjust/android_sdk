@@ -27,7 +27,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
-import com.adjust.sdk.scheduler.TimerOnce;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -820,5 +819,29 @@ public class Util {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
+    }
+
+    public static String getGdprBaseUrl(UrlStrategy urlStrategy) {
+        switch (urlStrategy) {
+            case FALLBACK_URL: return AdjustFactory.getFallbackGdprUrl();
+            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
+            default: return AdjustFactory.getGdprUrl();
+        }
+    }
+
+    public static String getSubscriptionBaseUrl(UrlStrategy urlStrategy) {
+        switch (urlStrategy) {
+            case FALLBACK_URL: return AdjustFactory.getFallbackSubscriptionUrl();
+            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
+            default: return AdjustFactory.getSubscriptionUrl();
+        }
+    }
+
+    public static String getBaseUrl(UrlStrategy urlStrategy) {
+        switch (urlStrategy) {
+            case FALLBACK_URL: return AdjustFactory.getFallbackBaseUrl();
+            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
+            default: return AdjustFactory.getBaseUrl();
+        }
     }
 }

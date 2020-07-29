@@ -16,7 +16,9 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSession;
 
 /**
  * Created by uerceg on 03/04/2017.
@@ -57,6 +59,16 @@ public class UtilNetworking {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
+            // for ip address bypass ssl verification by just approving it
+            if (IpUtil.containsIp(url.getHost())) {
+                connection.setHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+            }
+
             wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(getPostDataString(parameters, queueSize));
 
@@ -75,13 +87,14 @@ public class UtilNetworking {
         }
     }
 
-    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath) throws Exception {
+    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath, UrlStrategy urlStrategy) throws Exception {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             extractEventCallbackId(parameters);
 
-            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
+            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath, urlStrategy);
+
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
@@ -94,6 +107,16 @@ public class UtilNetworking {
             }
 
             connection.setRequestMethod("GET");
+
+            // for ip address bypass ssl verification by just approving it
+            if (IpUtil.containsIp(uri.getHost())) {
+                connection.setHostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                });
+            }
 
             ResponseData responseData = readHttpResponse(connection, activityPackage);
 
@@ -227,7 +250,7 @@ public class UtilNetworking {
         return result.toString();
     }
 
-    private static Uri buildUri(String path, Map<String, String> parameters, String basePath) {
+    private static Uri buildUri(String path, Map<String, String> parameters, String basePath, UrlStrategy urlStrategy) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         String scheme = Constants.SCHEME;
@@ -235,7 +258,9 @@ public class UtilNetworking {
         String initialPath = "";
 
         try {
-            String url = AdjustFactory.getBaseUrl();
+            String url = Util.getBaseUrl(urlStrategy);
+            getLogger().info("GET url: %s", url);
+
             if (basePath != null) {
                 url += basePath;
             }

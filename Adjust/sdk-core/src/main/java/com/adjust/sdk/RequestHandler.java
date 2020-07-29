@@ -17,6 +17,8 @@ import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
 
+import static com.adjust.sdk.Constants.PACKAGE_SENDING_MAX_ATTEMPT;
+
 public class RequestHandler implements IRequestHandler {
     private ThreadExecutor executor;
     private WeakReference<IPackageHandler> packageHandlerWeakRef;
@@ -46,7 +48,10 @@ public class RequestHandler implements IRequestHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                sendI(activityPackage, queueSize);
+                boolean packageSent = false;
+                for (int attemptCount = 1; !packageSent && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
+                    packageSent = sendI(activityPackage, queueSize, UrlStrategy.get(attemptCount));
+                }
             }
         });
     }
@@ -69,21 +74,21 @@ public class RequestHandler implements IRequestHandler {
         logger = null;
     }
 
-    private void sendI(ActivityPackage activityPackage, int queueSize) {
+    private boolean sendI(ActivityPackage activityPackage, int queueSize, UrlStrategy urlStrategy) {
         String url;
 
         if (activityPackage.getActivityKind() == ActivityKind.GDPR) {
-            url = AdjustFactory.getGdprUrl();
+            url = Util.getGdprBaseUrl(urlStrategy);
             if (gdprPath != null) {
                 url += gdprPath;
             }
         } else if (activityPackage.getActivityKind() == ActivityKind.SUBSCRIPTION) {
-            url = AdjustFactory.getSubscriptionUrl();
+            url = Util.getSubscriptionBaseUrl(urlStrategy);
             if (subscriptionPath != null) {
                 url += subscriptionPath;
             }
         } else {
-            url = AdjustFactory.getBaseUrl();
+            url = Util.getBaseUrl(urlStrategy);
             if (basePath != null) {
                 url += basePath;
             }
@@ -91,38 +96,53 @@ public class RequestHandler implements IRequestHandler {
 
         String targetURL = url + activityPackage.getPath();
 
+        logger.info("POST url: %s", targetURL);
+
         try {
             ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, activityPackage, queueSize);
 
             IPackageHandler packageHandler = packageHandlerWeakRef.get();
             if (packageHandler == null) {
-                return;
+                return true;
             }
             IActivityHandler activityHandler = activityHandlerWeakRef.get();
             if (activityHandler == null) {
-                return;
+                return true;
             }
 
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandler.gotOptOutResponse();
-                return;
+                return true;
             }
 
             if (responseData.jsonResponse == null) {
                 packageHandler.closeFirstPackage(responseData, activityPackage);
-                return;
+                return true;
             }
 
             packageHandler.sendNextPackage(responseData);
+            return true;
         } catch (UnsupportedEncodingException e) {
             sendNextPackageI(activityPackage, "Failed to encode parameters", e);
+            return true;
         } catch (SocketTimeoutException e) {
-            closePackageI(activityPackage, "Request timed out", e);
+            return handlePackageSendFailure(activityPackage, "Request timed out", e, urlStrategy);
         } catch (IOException e) {
-            closePackageI(activityPackage, "Request failed", e);
+            return handlePackageSendFailure(activityPackage, "Request failed", e, urlStrategy);
         } catch (Throwable e) {
             sendNextPackageI(activityPackage, "Runtime exception", e);
+            return true;
         }
+    }
+
+    private boolean handlePackageSendFailure(ActivityPackage activityPackage, String message,
+                                             Throwable throwable, UrlStrategy urlStrategy) {
+        if (urlStrategy == UrlStrategy.FALLBACK_IP) {
+            closePackageI(activityPackage, message, throwable);
+            return true;
+        }
+
+        return false;
     }
 
     // close current package because it failed
