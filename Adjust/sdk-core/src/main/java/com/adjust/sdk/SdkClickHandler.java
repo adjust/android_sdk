@@ -285,9 +285,9 @@ public class SdkClickHandler implements ISdkClickHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                boolean packageSent = false;
-                for (int attemptCount = 1; !packageSent && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageSent = sendSdkClickI(sdkClickPackage, UrlStrategy.get(attemptCount));
+                boolean packageProcessed = false;
+                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
+                    packageProcessed = sendSdkClickI(sdkClickPackage, UrlStrategy.get(attemptCount));
                 }
                 sendNextSdkClick();
             }

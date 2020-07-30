@@ -48,9 +48,9 @@ public class RequestHandler implements IRequestHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                boolean packageSent = false;
-                for (int attemptCount = 1; !packageSent && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageSent = sendI(activityPackage, queueSize, UrlStrategy.get(attemptCount));
+                boolean packageProcessed = false;
+                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
+                    packageProcessed = sendI(activityPackage, queueSize, UrlStrategy.get(attemptCount));
                 }
             }
         });

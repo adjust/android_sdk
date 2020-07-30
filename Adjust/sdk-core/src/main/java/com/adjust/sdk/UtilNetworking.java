@@ -59,8 +59,8 @@ public class UtilNetworking {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // for ip address bypass ssl verification by just approving it
-            if (IpUtil.containsIp(url.getHost())) {
+            // for certain ip addresses bypass ssl verification by just approving it
+            if (Util.matchesIp(url.getHost())) {
                 connection.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -108,8 +108,8 @@ public class UtilNetworking {
 
             connection.setRequestMethod("GET");
 
-            // for ip address bypass ssl verification by just approving it
-            if (IpUtil.containsIp(uri.getHost())) {
+            // for certain ip addresses bypass ssl verification by just approving it
+            if (Util.matchesIp(uri.getHost())) {
                 connection.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {

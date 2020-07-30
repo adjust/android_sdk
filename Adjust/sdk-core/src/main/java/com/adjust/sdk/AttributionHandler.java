@@ -138,9 +138,9 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                boolean packageSent = false;
-                for (int attemptCount = 1; !packageSent && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageSent = sendAttributionRequestI(UrlStrategy.get(attemptCount));
+                boolean packageProcessed = false;
+                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
+                    packageProcessed = sendAttributionRequestI(UrlStrategy.get(attemptCount));
                 }
             }
         });
