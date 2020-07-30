@@ -844,4 +844,12 @@ public class Util {
             default: return AdjustFactory.getBaseUrl();
         }
     }
+
+    public static boolean matchesIp(String host) {
+        if (AdjustFactory.getFallbackIp().contains(host)) {
+            return true;
+        }
+
+        return IpUtil.containsIp(host);
+    }
 }
