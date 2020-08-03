@@ -29,9 +29,9 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
-    String FALLBACK_BASE_URL = "https://adjust.net.in";
-    String FALLBACK_GDPR_URL = "https://adjust.net.in";
-    String FALLBACK_SUBSCRIPTION_URL = "https://adjust.net.in";
+    String FALLBACK_BASE_URL = "https://app.adjust.net.in";
+    String FALLBACK_GDPR_URL = "https://gdpr.adjust.net.in";
+    String FALLBACK_SUBSCRIPTION_URL = "https://subscription.adjust.net.in";
 
     int PACKAGE_SENDING_MAX_ATTEMPT = 3;
 
