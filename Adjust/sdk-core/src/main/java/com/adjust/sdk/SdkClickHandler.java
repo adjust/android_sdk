@@ -287,7 +287,12 @@ public class SdkClickHandler implements ISdkClickHandler {
             public void run() {
                 boolean packageProcessed = false;
                 for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageProcessed = sendSdkClickI(sdkClickPackage, UrlStrategy.get(attemptCount));
+                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
+                    packageProcessed = sendSdkClickI(sdkClickPackage, urlStrategy);
+                    // update strategy when changed
+                    if (packageProcessed && attemptCount > 1) {
+                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+                    }
                 }
                 sendNextSdkClick();
             }

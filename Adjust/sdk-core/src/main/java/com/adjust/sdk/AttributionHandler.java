@@ -140,7 +140,12 @@ public class AttributionHandler implements IAttributionHandler {
             public void run() {
                 boolean packageProcessed = false;
                 for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageProcessed = sendAttributionRequestI(UrlStrategy.get(attemptCount));
+                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
+                    packageProcessed = sendAttributionRequestI(urlStrategy);
+                    // update strategy when changed
+                    if (packageProcessed && attemptCount > 1) {
+                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+                    }
                 }
             }
         });
