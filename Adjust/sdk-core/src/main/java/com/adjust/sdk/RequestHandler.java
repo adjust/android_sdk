@@ -50,7 +50,12 @@ public class RequestHandler implements IRequestHandler {
             public void run() {
                 boolean packageProcessed = false;
                 for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    packageProcessed = sendI(activityPackage, queueSize, UrlStrategy.get(attemptCount));
+                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
+                    packageProcessed = sendI(activityPackage, queueSize, urlStrategy);
+                    // update strategy when changed
+                    if (packageProcessed && attemptCount > 1) {
+                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+                    }
                 }
             }
         });
