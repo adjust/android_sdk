@@ -2,7 +2,6 @@ package com.adjust.sdk;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class UrlFactory {
 
@@ -15,7 +14,10 @@ public class UrlFactory {
             baseUrls = new ArrayList<String>();
             baseUrls.add(AdjustFactory.getBaseUrl());
             baseUrls.addAll(AdjustFactory.getFallbackBaseUrls());
-            baseUrls.add(getIpUrl());
+
+            for (String ip : AdjustFactory.getFallbackIps()) {
+                baseUrls.add(getUrlForIp(ip));
+            }
         }
 
         return baseUrls;
@@ -26,7 +28,10 @@ public class UrlFactory {
             gdprUrls = new ArrayList<String>();
             gdprUrls.add(AdjustFactory.getGdprUrl());
             gdprUrls.addAll(AdjustFactory.getFallbackGdprUrls());
-            gdprUrls.add(getIpUrl());
+
+            for (String ip : AdjustFactory.getFallbackIps()) {
+                gdprUrls.add(getUrlForIp(ip));
+            }
         }
 
         return gdprUrls;
@@ -37,7 +42,10 @@ public class UrlFactory {
             subscriptionUrls = new ArrayList<String>();
             subscriptionUrls.add(AdjustFactory.getSubscriptionUrl());
             subscriptionUrls.addAll(AdjustFactory.getFallbackSubscriptionUrls());
-            subscriptionUrls.add(getIpUrl());
+
+            for (String ip : AdjustFactory.getFallbackIps()) {
+                subscriptionUrls.add(getUrlForIp(ip));
+            }
         }
 
         return subscriptionUrls;
@@ -68,14 +76,7 @@ public class UrlFactory {
         return AdjustFactory.getFallbackIps().contains(host);
     }
 
-    private static String getIpUrl() {
-        List<String> ips = AdjustFactory.getFallbackIps();
-        int min = 0;
-        int max = ips.size()-1;
-
-        Random random = new Random();
-        int ipIndex = random.nextInt((max - min) + 1) + min;
-
-        return "https://" + ips.get(ipIndex);
+    private static String getUrlForIp(String ip) {
+        return "https://" + ip;
     }
 }
