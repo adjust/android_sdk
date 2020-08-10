@@ -45,6 +45,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -789,6 +790,16 @@ public class Util {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static String getRandomIp(String[] ips) {
+        int min = 0;
+        int max = ips.length-1;
+
+        Random random = new Random();
+        int ipIndex = random.nextInt((max - min) + 1) + min;
+
+        return ips[ipIndex];
     }
 
     public static boolean isEqualReferrerDetails(final ReferrerDetails referrerDetails,

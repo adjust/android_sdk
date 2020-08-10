@@ -3,6 +3,7 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.adjust.sdk.Constants.BASE_URL_IN;
@@ -54,7 +55,7 @@ public class AdjustConfig {
     String appSecret;
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
-    
+
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
@@ -208,6 +209,7 @@ public class AdjustConfig {
     public void forMarket(String region) {
         if (region == null || region.isEmpty()) {
             logger.error("Invalid region");
+            return;
         }
 
         switch (region) {
@@ -218,7 +220,7 @@ public class AdjustConfig {
                 AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_IN));
                 AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_IN));
                 AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_IN));
-                AdjustFactory.setFallbackIps(Arrays.asList(FALLBACK_IPS_IN));
+                AdjustFactory.setFallbackIps(Collections.singletonList(Util.getRandomIp(FALLBACK_IPS_IN)));
                 break;
 
             case CHINA :
@@ -228,7 +230,7 @@ public class AdjustConfig {
                 AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_CN));
                 AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_CN));
                 AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_CN));
-                AdjustFactory.setFallbackIps(Arrays.asList(FALLBACK_IPS_CN));
+                AdjustFactory.setFallbackIps(Collections.singletonList(Util.getRandomIp(FALLBACK_IPS_CN)));
                 break;
 
             default:
