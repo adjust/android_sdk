@@ -49,6 +49,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.info4 = null;
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
+    this.region = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -221,4 +222,8 @@ AdjustConfig.prototype.setFbPixelDefaultEventToken = function(fbPixelDefaultEven
 AdjustConfig.prototype.addFbPixelMapping = function(fbEventNameKey, adjEventTokenValue) {
     this.fbPixelMapping.push(fbEventNameKey);
     this.fbPixelMapping.push(adjEventTokenValue);
+};
+
+AdjustConfig.prototype.forMarket = function(region) {
+    this.region = region;
 };
