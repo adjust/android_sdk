@@ -16,8 +16,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-
-import static com.adjust.sdk.Constants.PACKAGE_SENDING_MAX_ATTEMPT;
+import java.util.List;
 
 public class RequestHandler implements IRequestHandler {
     private ThreadExecutor executor;
@@ -48,13 +47,47 @@ public class RequestHandler implements IRequestHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                boolean packageProcessed = false;
-                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
-                    packageProcessed = sendI(activityPackage, queueSize, urlStrategy);
-                    // update strategy when changed
-                    if (packageProcessed && attemptCount > 1) {
-                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+
+                List<String> urls;
+                boolean requestProcessed = false;
+                if (activityPackage.getActivityKind() == ActivityKind.GDPR) {
+                    urls = UrlFactory.getGdprUrls();
+                    for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                        String gdprUrl = urls.get(i);
+                        if (gdprPath != null) {
+                            gdprUrl += gdprPath;
+                        }
+                        gdprUrl += activityPackage.getPath();
+                        requestProcessed = sendI(activityPackage, queueSize, gdprUrl, (i == urls.size()-1));
+                        if (requestProcessed && i > 0) {
+                            UrlFactory.prioritiseGdprUrl(urls.get(i));
+                        }
+                    }
+                } else if (activityPackage.getActivityKind() == ActivityKind.SUBSCRIPTION) {
+                    urls = UrlFactory.getSubscriptionUrls();
+                    for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                        String subscriptionUrl = urls.get(i);
+                        if (subscriptionPath != null) {
+                            subscriptionUrl += subscriptionPath;
+                        }
+                        subscriptionUrl += activityPackage.getPath();
+                        requestProcessed = sendI(activityPackage, queueSize, subscriptionUrl, (i == urls.size()-1));
+                        if (requestProcessed && i > 0) {
+                            UrlFactory.prioritiseSubscriptionUrl(urls.get(i));
+                        }
+                    }
+                } else {
+                    urls = UrlFactory.getBaseUrls();
+                    for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                        String baseUrl = urls.get(i);
+                        if (basePath != null) {
+                            baseUrl += basePath;
+                        }
+                        baseUrl += activityPackage.getPath();
+                        requestProcessed = sendI(activityPackage, queueSize, baseUrl, (i == urls.size()-1));
+                        if (requestProcessed && i > 0) {
+                            UrlFactory.prioritiseBaseUrl(urls.get(i));
+                        }
                     }
                 }
             }
@@ -79,27 +112,7 @@ public class RequestHandler implements IRequestHandler {
         logger = null;
     }
 
-    private boolean sendI(ActivityPackage activityPackage, int queueSize, UrlStrategy urlStrategy) {
-        String url;
-
-        if (activityPackage.getActivityKind() == ActivityKind.GDPR) {
-            url = Util.getGdprBaseUrl(urlStrategy);
-            if (gdprPath != null) {
-                url += gdprPath;
-            }
-        } else if (activityPackage.getActivityKind() == ActivityKind.SUBSCRIPTION) {
-            url = Util.getSubscriptionBaseUrl(urlStrategy);
-            if (subscriptionPath != null) {
-                url += subscriptionPath;
-            }
-        } else {
-            url = Util.getBaseUrl(urlStrategy);
-            if (basePath != null) {
-                url += basePath;
-            }
-        }
-
-        String targetURL = url + activityPackage.getPath();
+    private boolean sendI(ActivityPackage activityPackage, int queueSize, String targetURL, boolean isLastUrl) {
 
         logger.info("POST url: %s", targetURL);
 
@@ -131,18 +144,18 @@ public class RequestHandler implements IRequestHandler {
             sendNextPackageI(activityPackage, "Failed to encode parameters", e);
             return true;
         } catch (SocketTimeoutException e) {
-            return handlePackageSendFailure(activityPackage, "Request timed out", e, urlStrategy);
+            return handlePackageSendFailureI(activityPackage, "Request timed out", e, isLastUrl);
         } catch (IOException e) {
-            return handlePackageSendFailure(activityPackage, "Request failed", e, urlStrategy);
+            return handlePackageSendFailureI(activityPackage, "Request failed", e, isLastUrl);
         } catch (Throwable e) {
             sendNextPackageI(activityPackage, "Runtime exception", e);
             return true;
         }
     }
 
-    private boolean handlePackageSendFailure(ActivityPackage activityPackage, String message,
-                                             Throwable throwable, UrlStrategy urlStrategy) {
-        if (urlStrategy == UrlStrategy.FALLBACK_IP) {
+    private boolean handlePackageSendFailureI(ActivityPackage activityPackage, String message,
+                                              Throwable throwable, boolean isLastUrl) {
+        if (isLastUrl) {
             closePackageI(activityPackage, message, throwable);
             return true;
         }

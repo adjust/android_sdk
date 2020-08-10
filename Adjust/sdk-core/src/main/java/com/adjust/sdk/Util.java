@@ -820,36 +820,4 @@ public class Util {
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
     }
-
-    public static String getGdprBaseUrl(UrlStrategy urlStrategy) {
-        switch (urlStrategy) {
-            case FALLBACK_URL: return AdjustFactory.getFallbackGdprUrl();
-            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
-            default: return AdjustFactory.getGdprUrl();
-        }
-    }
-
-    public static String getSubscriptionBaseUrl(UrlStrategy urlStrategy) {
-        switch (urlStrategy) {
-            case FALLBACK_URL: return AdjustFactory.getFallbackSubscriptionUrl();
-            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
-            default: return AdjustFactory.getSubscriptionUrl();
-        }
-    }
-
-    public static String getBaseUrl(UrlStrategy urlStrategy) {
-        switch (urlStrategy) {
-            case FALLBACK_URL: return AdjustFactory.getFallbackBaseUrl();
-            case FALLBACK_IP: return AdjustFactory.getFallbackIp();
-            default: return AdjustFactory.getBaseUrl();
-        }
-    }
-
-    public static boolean matchesIp(String host) {
-        if (AdjustFactory.getFallbackIp().contains(host)) {
-            return true;
-        }
-
-        return IpUtil.containsIp(host);
-    }
 }
