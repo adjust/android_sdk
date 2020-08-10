@@ -2,7 +2,23 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.Arrays;
 import java.util.List;
+
+import static com.adjust.sdk.Constants.BASE_URL_IN;
+import static com.adjust.sdk.Constants.GDPR_URL_IN;
+import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_IN;
+import static com.adjust.sdk.Constants.BASE_URL_CN;
+import static com.adjust.sdk.Constants.GDPR_URL_CN;
+import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_CN;
+import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_IN;
+import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_IN;
+import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_IN;
+import static com.adjust.sdk.Constants.FALLBACK_IPS_IN;
+import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_IPS_CN;
 
 /**
  * Created by pfms on 06/11/14.
@@ -38,9 +54,12 @@ public class AdjustConfig {
     String appSecret;
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
-
+    
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
+
+    public static final String INDIA = "INDIA";
+    public static final String CHINA = "CHINA";
 
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob";
@@ -184,6 +203,37 @@ public class AdjustConfig {
         if (!checkContext(context)) return false;
 
         return true;
+    }
+
+    public void forMarket(String region) {
+        if (region == null || region.isEmpty()) {
+            logger.error("Invalid region");
+        }
+
+        switch (region) {
+            case INDIA :
+                AdjustFactory.setBaseUrl(BASE_URL_IN);
+                AdjustFactory.setGdprUrl(GDPR_URL_IN);
+                AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_IN);
+                AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_IN));
+                AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_IN));
+                AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_IN));
+                AdjustFactory.setFallbackIps(Arrays.asList(FALLBACK_IPS_IN));
+                break;
+
+            case CHINA :
+                AdjustFactory.setBaseUrl(BASE_URL_CN);
+                AdjustFactory.setGdprUrl(GDPR_URL_CN);
+                AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_CN);
+                AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_CN));
+                AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_CN));
+                AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_CN));
+                AdjustFactory.setFallbackIps(Arrays.asList(FALLBACK_IPS_CN));
+                break;
+
+            default:
+                logger.warn("Unrecognised region %s", region);
+        }
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {

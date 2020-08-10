@@ -60,7 +60,7 @@ public class UtilNetworking {
             connection.setDoOutput(true);
 
             // for certain ip addresses bypass ssl verification by just approving it
-            if (Util.matchesIp(url.getHost())) {
+            if (UrlFactory.matchesFallbackIp(url.getHost())) {
                 connection.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -87,13 +87,13 @@ public class UtilNetworking {
         }
     }
 
-    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath, UrlStrategy urlStrategy) throws Exception {
+    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath, String baseUrl) throws Exception {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             extractEventCallbackId(parameters);
 
-            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath, urlStrategy);
+            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath, baseUrl);
 
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
@@ -109,7 +109,7 @@ public class UtilNetworking {
             connection.setRequestMethod("GET");
 
             // for certain ip addresses bypass ssl verification by just approving it
-            if (Util.matchesIp(uri.getHost())) {
+            if (UrlFactory.matchesFallbackIp(uri.getHost())) {
                 connection.setHostnameVerifier(new HostnameVerifier() {
                     @Override
                     public boolean verify(String hostname, SSLSession session) {
@@ -250,7 +250,7 @@ public class UtilNetworking {
         return result.toString();
     }
 
-    private static Uri buildUri(String path, Map<String, String> parameters, String basePath, UrlStrategy urlStrategy) {
+    private static Uri buildUri(String path, Map<String, String> parameters, String basePath, String url) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         String scheme = Constants.SCHEME;
@@ -258,7 +258,6 @@ public class UtilNetworking {
         String initialPath = "";
 
         try {
-            String url = Util.getBaseUrl(urlStrategy);
             getLogger().info("GET url: %s", url);
 
             if (basePath != null) {

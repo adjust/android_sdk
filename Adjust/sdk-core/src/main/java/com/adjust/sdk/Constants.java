@@ -29,11 +29,41 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
-    String FALLBACK_BASE_URL = "https://app.adjust.net.in";
-    String FALLBACK_GDPR_URL = "https://gdpr.adjust.net.in";
-    String FALLBACK_SUBSCRIPTION_URL = "https://subscription.adjust.net.in";
+    String BASE_URL_IN = "https://app.adjust.net.in";
+    String GDPR_URL_IN = "https://gdpr.adjust.net.in";
+    String SUBSCRIPTION_URL_IN = "https://subscription.adjust.net.in";
+    String BASE_URL_CN = "https://app.adjust.world";
+    String GDPR_URL_CN = "https://gdpr.adjust.world";
+    String SUBSCRIPTION_URL_CN = "https://subscription.adjust.world";
 
-    int PACKAGE_SENDING_MAX_ATTEMPT = 3;
+    String[] FALLBACK_BASE_URLS = {BASE_URL_IN, BASE_URL_CN};
+    String[] FALLBACK_GDPR_URLS = {GDPR_URL_IN, GDPR_URL_CN};
+    String[] FALLBACK_SUBSCRIPTION_URLS = {SUBSCRIPTION_URL_IN, SUBSCRIPTION_URL_CN};
+    String[] FALLBACK_BASE_URLS_IN = {BASE_URL};
+    String[] FALLBACK_GDPR_URLS_IN = {GDPR_URL};
+    String[] FALLBACK_SUBSCRIPTION_URLS_IN = {SUBSCRIPTION_URL};
+    String[] FALLBACK_BASE_URLS_CN = {BASE_URL};
+    String[] FALLBACK_GDPR_URLS_CN = {GDPR_URL};
+    String[] FALLBACK_SUBSCRIPTION_URLS_CN = {SUBSCRIPTION_URL};
+
+    String[] FALLBACK_IPS_IN = {
+            "185.151.204.6",
+            "185.151.204.7",
+            "185.151.204.8",
+            "185.151.204.9",
+            "185.151.204.10",
+            "185.151.204.11",
+            "185.151.204.12",
+            "185.151.204.13",
+            "185.151.204.14",
+            "185.151.204.15" };
+
+    String[] FALLBACK_IPS_CN = {
+            "185.151.204.40",
+            "185.151.204.41",
+            "185.151.204.42",
+            "185.151.204.43"
+    };
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";

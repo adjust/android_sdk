@@ -8,14 +8,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
-
-import static com.adjust.sdk.Constants.PACKAGE_SENDING_MAX_ATTEMPT;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SdkClickHandler class.
@@ -285,13 +281,17 @@ public class SdkClickHandler implements ISdkClickHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                boolean packageProcessed = false;
-                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
-                    packageProcessed = sendSdkClickI(sdkClickPackage, urlStrategy);
-                    // update strategy when changed
-                    if (packageProcessed && attemptCount > 1) {
-                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+                List<String> urls = UrlFactory.getBaseUrls();
+                boolean requestProcessed = false;
+                for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                    String baseUrl = urls.get(i);
+                    if (basePath != null) {
+                        baseUrl += basePath;
+                    }
+                    baseUrl += sdkClickPackage.getPath();
+                    requestProcessed = sendSdkClickI(sdkClickPackage, baseUrl, (i == urls.size()-1));
+                    if (requestProcessed && i > 0) {
+                        UrlFactory.prioritiseBaseUrl(urls.get(i));
                     }
                 }
                 sendNextSdkClick();
@@ -317,7 +317,7 @@ public class SdkClickHandler implements ISdkClickHandler {
      *
      * @param sdkClickPackage sdk_click package to be sent.
      */
-    private boolean sendSdkClickI(final ActivityPackage sdkClickPackage, final UrlStrategy urlStrategy) {
+    private boolean sendSdkClickI(final ActivityPackage sdkClickPackage, final String targetURL, final boolean isLastUrl) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
         String source = sdkClickPackage.getParameters().get("source");
         boolean isReftag = source != null && source.equals(SOURCE_REFTAG);
@@ -362,14 +362,6 @@ public class SdkClickHandler implements ISdkClickHandler {
         }
 
         boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
-
-        String url = Util.getBaseUrl(urlStrategy);
-
-        if (basePath != null) {
-            url += basePath;
-        }
-
-        String targetURL = url + sdkClickPackage.getPath();
 
         logger.info("POST url: %s", targetURL);
 
@@ -436,18 +428,18 @@ public class SdkClickHandler implements ISdkClickHandler {
             return true;
         } catch (SocketTimeoutException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request timed out. Will retry later", e);
-            return handlePackageSendFailure(sdkClickPackage, urlStrategy);
+            return handlePackageSendFailureI(sdkClickPackage, isLastUrl);
         } catch (IOException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request failed. Will retry later", e);
-            return handlePackageSendFailure(sdkClickPackage, urlStrategy);
+            return handlePackageSendFailureI(sdkClickPackage, isLastUrl);
         } catch (Throwable e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click runtime exception", e);
             return true;
         }
     }
 
-    private boolean handlePackageSendFailure(ActivityPackage sdkClickPackage, UrlStrategy urlStrategy) {
-        if (urlStrategy == UrlStrategy.FALLBACK_IP) {
+    private boolean handlePackageSendFailureI(ActivityPackage sdkClickPackage, boolean isLastUrl) {
+        if (isLastUrl) {
             retrySendingI(sdkClickPackage);
             return true;
         }

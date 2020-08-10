@@ -17,8 +17,7 @@ import com.adjust.sdk.scheduler.TimerOnce;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
-
-import static com.adjust.sdk.Constants.PACKAGE_SENDING_MAX_ATTEMPT;
+import java.util.List;
 
 public class AttributionHandler implements IAttributionHandler {
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
@@ -138,13 +137,12 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                boolean packageProcessed = false;
-                for (int attemptCount = 1; !packageProcessed && (attemptCount <= PACKAGE_SENDING_MAX_ATTEMPT); attemptCount++) {
-                    UrlStrategy urlStrategy = UrlStrategy.getStrategy(attemptCount);
-                    packageProcessed = sendAttributionRequestI(urlStrategy);
-                    // update strategy when changed
-                    if (packageProcessed && attemptCount > 1) {
-                        UrlStrategy.updateWorkingStrategy(urlStrategy);
+                List<String> urls = UrlFactory.getBaseUrls();
+                boolean requestProcessed = false;
+                for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                    requestProcessed = sendAttributionRequestI(urls.get(i));
+                    if (requestProcessed && i > 0) {
+                        UrlFactory.prioritiseBaseUrl(urls.get(i));
                     }
                 }
             }
@@ -219,7 +217,7 @@ public class AttributionHandler implements IAttributionHandler {
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
-    private boolean sendAttributionRequestI(UrlStrategy urlStrategy) {
+    private boolean sendAttributionRequestI(String baseUrl) {
         if (activityHandlerWeakRef.get().getActivityState().isGdprForgotten) {
             return true;
         }
@@ -233,7 +231,7 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath, urlStrategy);
+            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath, baseUrl);
             if (!(responseData instanceof AttributionResponseData)) {
                 return true;
             }
