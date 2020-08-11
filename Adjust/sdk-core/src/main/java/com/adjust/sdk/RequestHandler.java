@@ -145,23 +145,19 @@ public class RequestHandler implements IRequestHandler {
             sendNextPackageI(activityPackage, "Failed to encode parameters", e);
             return true;
         } catch (SocketTimeoutException e) {
-            return handlePackageSendFailureI(activityPackage, "Request timed out", e, isLastUrl);
+            if (isLastUrl) {
+                closePackageI(activityPackage, "Request timed out", e);
+            }
+            return false;
         } catch (IOException e) {
-            return handlePackageSendFailureI(activityPackage, "Request failed", e, isLastUrl);
+            if (isLastUrl) {
+                closePackageI(activityPackage, "Request failed", e);
+            }
+            return false;
         } catch (Throwable e) {
             sendNextPackageI(activityPackage, "Runtime exception", e);
             return true;
         }
-    }
-
-    private boolean handlePackageSendFailureI(ActivityPackage activityPackage, String message,
-                                              Throwable throwable, boolean isLastUrl) {
-        if (isLastUrl) {
-            closePackageI(activityPackage, message, throwable);
-            return true;
-        }
-
-        return false;
     }
 
     // close current package because it failed
