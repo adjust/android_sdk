@@ -58,7 +58,8 @@ public class RequestHandler implements IRequestHandler {
                             gdprUrl += gdprPath;
                         }
                         gdprUrl += activityPackage.getPath();
-                        requestProcessed = sendI(activityPackage, queueSize, gdprUrl, (i == urls.size()-1));
+                        boolean isLastUrl = i == urls.size()-1;
+                        requestProcessed = sendI(activityPackage, queueSize, gdprUrl, isLastUrl);
                         if (requestProcessed && i > 0) {
                             UrlFactory.prioritiseGdprUrl(urls.get(i));
                         }
@@ -71,7 +72,8 @@ public class RequestHandler implements IRequestHandler {
                             subscriptionUrl += subscriptionPath;
                         }
                         subscriptionUrl += activityPackage.getPath();
-                        requestProcessed = sendI(activityPackage, queueSize, subscriptionUrl, (i == urls.size()-1));
+                        boolean isLastUrl = i == urls.size()-1;
+                        requestProcessed = sendI(activityPackage, queueSize, subscriptionUrl, isLastUrl);
                         if (requestProcessed && i > 0) {
                             UrlFactory.prioritiseSubscriptionUrl(urls.get(i));
                         }
@@ -84,7 +86,8 @@ public class RequestHandler implements IRequestHandler {
                             baseUrl += basePath;
                         }
                         baseUrl += activityPackage.getPath();
-                        requestProcessed = sendI(activityPackage, queueSize, baseUrl, (i == urls.size()-1));
+                        boolean isLastUrl = i == urls.size()-1;
+                        requestProcessed = sendI(activityPackage, queueSize, baseUrl, isLastUrl);
                         if (requestProcessed && i > 0) {
                             UrlFactory.prioritiseBaseUrl(urls.get(i));
                         }
