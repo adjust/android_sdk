@@ -224,6 +224,6 @@ AdjustConfig.prototype.addFbPixelMapping = function(fbEventNameKey, adjEventToke
     this.fbPixelMapping.push(adjEventTokenValue);
 };
 
-AdjustConfig.prototype.forMarket = function(region) {
+AdjustConfig.prototype.setUrlStrategyForRegion = function(region) {
     this.region = region;
 };
