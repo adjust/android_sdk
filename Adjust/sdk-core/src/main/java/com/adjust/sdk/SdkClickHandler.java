@@ -316,6 +316,8 @@ public class SdkClickHandler implements ISdkClickHandler {
      * Send sdk_click package passed as the parameter (runs within scheduled executor).
      *
      * @param sdkClickPackage sdk_click package to be sent.
+     * @param targetURL end point where sdk_click package to be sent.
+     * @param isLastUrl indicates if it is last in the fallback.
      */
     private boolean sendSdkClickI(final ActivityPackage sdkClickPackage, final String targetURL, final boolean isLastUrl) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
@@ -362,8 +364,6 @@ public class SdkClickHandler implements ISdkClickHandler {
         }
 
         boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
-
-        logger.info("POST url: %s", targetURL);
 
         try {
             SdkClickResponseData responseData = (SdkClickResponseData) UtilNetworking.createPOSTHttpsURLConnection(

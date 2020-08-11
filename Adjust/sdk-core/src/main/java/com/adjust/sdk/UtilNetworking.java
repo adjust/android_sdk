@@ -258,8 +258,6 @@ public class UtilNetworking {
         String initialPath = "";
 
         try {
-            getLogger().info("GET url: %s", url);
-
             if (basePath != null) {
                 url += basePath;
             }

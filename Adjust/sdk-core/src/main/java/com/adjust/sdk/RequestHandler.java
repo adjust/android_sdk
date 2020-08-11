@@ -114,8 +114,6 @@ public class RequestHandler implements IRequestHandler {
 
     private boolean sendI(ActivityPackage activityPackage, int queueSize, String targetURL, boolean isLastUrl) {
 
-        logger.info("POST url: %s", targetURL);
-
         try {
             ResponseData responseData = UtilNetworking.createPOSTHttpsURLConnection(targetURL, activityPackage, queueSize);
 
