@@ -289,7 +289,8 @@ public class SdkClickHandler implements ISdkClickHandler {
                         baseUrl += basePath;
                     }
                     baseUrl += sdkClickPackage.getPath();
-                    requestProcessed = sendSdkClickI(sdkClickPackage, baseUrl, (i == urls.size()-1));
+                    boolean isLastUrl = i == urls.size()-1;
+                    requestProcessed = sendSdkClickI(sdkClickPackage, baseUrl, isLastUrl);
                     if (requestProcessed && i > 0) {
                         UrlFactory.prioritiseBaseUrl(urls.get(i));
                     }
@@ -428,23 +429,20 @@ public class SdkClickHandler implements ISdkClickHandler {
             return true;
         } catch (SocketTimeoutException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request timed out. Will retry later", e);
-            return handlePackageSendFailureI(sdkClickPackage, isLastUrl);
+            if (isLastUrl) {
+                retrySendingI(sdkClickPackage);
+            }
+            return false;
         } catch (IOException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request failed. Will retry later", e);
-            return handlePackageSendFailureI(sdkClickPackage, isLastUrl);
+            if (isLastUrl) {
+                retrySendingI(sdkClickPackage);
+            }
+            return false;
         } catch (Throwable e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click runtime exception", e);
             return true;
         }
-    }
-
-    private boolean handlePackageSendFailureI(ActivityPackage sdkClickPackage, boolean isLastUrl) {
-        if (isLastUrl) {
-            retrySendingI(sdkClickPackage);
-            return true;
-        }
-
-        return false;
     }
 
     /**
