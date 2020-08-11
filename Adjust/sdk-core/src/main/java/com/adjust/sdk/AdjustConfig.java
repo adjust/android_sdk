@@ -59,8 +59,8 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
-    public static final String INDIA = "INDIA";
-    public static final String CHINA = "CHINA";
+    public static final String URL_STRATEGY_INDIA = "india";
+    public static final String URL_STRATEGY_CHINA = "china";
 
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob";
@@ -206,14 +206,14 @@ public class AdjustConfig {
         return true;
     }
 
-    public void forMarket(String region) {
+    public void setUrlStrategyForRegion(String region) {
         if (region == null || region.isEmpty()) {
             logger.error("Invalid region");
             return;
         }
 
         switch (region) {
-            case INDIA :
+            case URL_STRATEGY_INDIA:
                 AdjustFactory.setBaseUrl(BASE_URL_IN);
                 AdjustFactory.setGdprUrl(GDPR_URL_IN);
                 AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_IN);
@@ -223,7 +223,7 @@ public class AdjustConfig {
                 AdjustFactory.setFallbackIps(Collections.singletonList(Util.getRandomIp(FALLBACK_IPS_IN)));
                 break;
 
-            case CHINA :
+            case URL_STRATEGY_CHINA:
                 AdjustFactory.setBaseUrl(BASE_URL_CN);
                 AdjustFactory.setGdprUrl(GDPR_URL_CN);
                 AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_CN);

@@ -357,7 +357,7 @@ public class AdjustBridgeInstance {
             // add market
             String region = AdjustBridgeUtil.fieldToString(regionField);
             if (region != null) {
-                adjustConfig.forMarket(region);
+                adjustConfig.setUrlStrategyForRegion(region);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
