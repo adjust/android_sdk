@@ -59,8 +59,8 @@ public class AdjustConfig {
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
 
-    public static final String URL_STRATEGY_INDIA = "india";
-    public static final String URL_STRATEGY_CHINA = "china";
+    public static final String URL_STRATEGY_INDIA = "url_strategy_india";
+    public static final String URL_STRATEGY_CHINA = "url_strategy_china";
 
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob";
@@ -206,13 +206,13 @@ public class AdjustConfig {
         return true;
     }
 
-    public void setUrlStrategyForRegion(String region) {
-        if (region == null || region.isEmpty()) {
-            logger.error("Invalid region");
+    public void setUrlStrategy(String urlStrategy) {
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            logger.error("Invalid url strategy");
             return;
         }
 
-        switch (region) {
+        switch (urlStrategy) {
             case URL_STRATEGY_INDIA:
                 AdjustFactory.setBaseUrl(BASE_URL_IN);
                 AdjustFactory.setGdprUrl(GDPR_URL_IN);
@@ -234,7 +234,7 @@ public class AdjustConfig {
                 break;
 
             default:
-                logger.warn("Unrecognised region %s", region);
+                logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
     }
 
