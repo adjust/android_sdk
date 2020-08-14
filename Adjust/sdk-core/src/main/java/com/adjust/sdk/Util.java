@@ -792,16 +792,6 @@ public class Util {
         }
     }
 
-    public static String getRandomIp(String[] ips) {
-        int min = 0;
-        int max = ips.length-1;
-
-        Random random = new Random();
-        int ipIndex = random.nextInt((max - min) + 1) + min;
-
-        return ips[ipIndex];
-    }
-
     public static boolean isEqualReferrerDetails(final ReferrerDetails referrerDetails,
                                                  final String referrerApi,
                                                  final ActivityState activityState) {

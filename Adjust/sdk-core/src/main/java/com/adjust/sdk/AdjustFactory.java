@@ -42,7 +42,6 @@ public class AdjustFactory {
     private static List<String> fallbackBaseUrls = Arrays.asList(Constants.FALLBACK_BASE_URLS);
     private static List<String> fallbackGdprUrls = Arrays.asList(Constants.FALLBACK_GDPR_URLS);
     private static List<String> fallbackSubscriptionUrls = Arrays.asList(Constants.FALLBACK_SUBSCRIPTION_URLS);
-    private static List<String> fallbackIps = Arrays.asList(Util.getRandomIp(Constants.FALLBACK_IPS_IN), Util.getRandomIp(Constants.FALLBACK_IPS_CN));
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
 
@@ -214,13 +213,6 @@ public class AdjustFactory {
         return AdjustFactory.fallbackSubscriptionUrls;
     }
 
-    public static List<String> getFallbackIps() {
-        if (AdjustFactory.fallbackIps == null) {
-            return Arrays.asList(Util.getRandomIp(Constants.FALLBACK_IPS_IN), Util.getRandomIp(Constants.FALLBACK_IPS_CN));
-        }
-        return AdjustFactory.fallbackIps;
-    }
-
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
             return new UtilNetworking.ConnectionOptions();
@@ -306,10 +298,6 @@ public class AdjustFactory {
 
     public static void setFallbackSubscriptionUrls(List<String> fallbackSubscriptionUrls) {
         AdjustFactory.fallbackSubscriptionUrls = fallbackSubscriptionUrls;
-    }
-
-    public static void setFallbackIps(List<String> fallbackIps) {
-        AdjustFactory.fallbackIps = fallbackIps;
     }
 
     public static void useTestConnectionOptions() {
