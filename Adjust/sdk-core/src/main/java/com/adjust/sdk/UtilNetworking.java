@@ -16,9 +16,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSession;
 
 /**
  * Created by uerceg on 03/04/2017.
@@ -59,16 +57,6 @@ public class UtilNetworking {
             connection.setDoInput(true);
             connection.setDoOutput(true);
 
-            // for certain ip addresses bypass ssl verification by just approving it
-            if (UrlFactory.matchesFallbackIp(url.getHost())) {
-                connection.setHostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                });
-            }
-
             wr = new DataOutputStream(connection.getOutputStream());
             wr.writeBytes(getPostDataString(parameters, queueSize));
 
@@ -107,16 +95,6 @@ public class UtilNetworking {
             }
 
             connection.setRequestMethod("GET");
-
-            // for certain ip addresses bypass ssl verification by just approving it
-            if (UrlFactory.matchesFallbackIp(uri.getHost())) {
-                connection.setHostnameVerifier(new HostnameVerifier() {
-                    @Override
-                    public boolean verify(String hostname, SSLSession session) {
-                        return true;
-                    }
-                });
-            }
 
             ResponseData responseData = readHttpResponse(connection, activityPackage);
 

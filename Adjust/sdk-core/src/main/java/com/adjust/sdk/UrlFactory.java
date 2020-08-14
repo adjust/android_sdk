@@ -14,10 +14,6 @@ public class UrlFactory {
             baseUrls = new ArrayList<String>();
             baseUrls.add(AdjustFactory.getBaseUrl());
             baseUrls.addAll(AdjustFactory.getFallbackBaseUrls());
-
-            for (String ip : AdjustFactory.getFallbackIps()) {
-                baseUrls.add(getUrlForIp(ip));
-            }
         }
 
         return baseUrls;
@@ -28,10 +24,6 @@ public class UrlFactory {
             gdprUrls = new ArrayList<String>();
             gdprUrls.add(AdjustFactory.getGdprUrl());
             gdprUrls.addAll(AdjustFactory.getFallbackGdprUrls());
-
-            for (String ip : AdjustFactory.getFallbackIps()) {
-                gdprUrls.add(getUrlForIp(ip));
-            }
         }
 
         return gdprUrls;
@@ -42,10 +34,6 @@ public class UrlFactory {
             subscriptionUrls = new ArrayList<String>();
             subscriptionUrls.add(AdjustFactory.getSubscriptionUrl());
             subscriptionUrls.addAll(AdjustFactory.getFallbackSubscriptionUrls());
-
-            for (String ip : AdjustFactory.getFallbackIps()) {
-                subscriptionUrls.add(getUrlForIp(ip));
-            }
         }
 
         return subscriptionUrls;
@@ -70,13 +58,5 @@ public class UrlFactory {
             subscriptionUrls.remove(subscriptionUrl);
             subscriptionUrls.add(0, subscriptionUrl);
         }
-    }
-
-    public static boolean matchesFallbackIp(String host) {
-        return AdjustFactory.getFallbackIps().contains(host);
-    }
-
-    private static String getUrlForIp(String ip) {
-        return "https://" + ip;
     }
 }

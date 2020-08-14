@@ -3,23 +3,20 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static com.adjust.sdk.Constants.BASE_URL_IN;
-import static com.adjust.sdk.Constants.GDPR_URL_IN;
-import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_IN;
 import static com.adjust.sdk.Constants.BASE_URL_CN;
-import static com.adjust.sdk.Constants.GDPR_URL_CN;
-import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_CN;
-import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_IN;
-import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_IN;
-import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_IN;
-import static com.adjust.sdk.Constants.FALLBACK_IPS_IN;
+import static com.adjust.sdk.Constants.BASE_URL_IN;
 import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_IN;
 import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_IN;
 import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_CN;
-import static com.adjust.sdk.Constants.FALLBACK_IPS_CN;
+import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_IN;
+import static com.adjust.sdk.Constants.GDPR_URL_CN;
+import static com.adjust.sdk.Constants.GDPR_URL_IN;
+import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_CN;
+import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_IN;
 
 /**
  * Created by pfms on 06/11/14.
@@ -220,7 +217,6 @@ public class AdjustConfig {
                 AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_IN));
                 AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_IN));
                 AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_IN));
-                AdjustFactory.setFallbackIps(Collections.singletonList(Util.getRandomIp(FALLBACK_IPS_IN)));
                 break;
 
             case URL_STRATEGY_CHINA:
@@ -230,7 +226,6 @@ public class AdjustConfig {
                 AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_CN));
                 AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_CN));
                 AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_CN));
-                AdjustFactory.setFallbackIps(Collections.singletonList(Util.getRandomIp(FALLBACK_IPS_CN)));
                 break;
 
             default:

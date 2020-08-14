@@ -9,9 +9,6 @@
 
 package com.adjust.sdk;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author keyboardsurfer
  * @since 8.11.13
@@ -45,25 +42,6 @@ public interface Constants {
     String[] FALLBACK_BASE_URLS_CN = {BASE_URL};
     String[] FALLBACK_GDPR_URLS_CN = {GDPR_URL};
     String[] FALLBACK_SUBSCRIPTION_URLS_CN = {SUBSCRIPTION_URL};
-
-    String[] FALLBACK_IPS_IN = {
-            "185.151.204.6",
-            "185.151.204.7",
-            "185.151.204.8",
-            "185.151.204.9",
-            "185.151.204.10",
-            "185.151.204.11",
-            "185.151.204.12",
-            "185.151.204.13",
-            "185.151.204.14",
-            "185.151.204.15" };
-
-    String[] FALLBACK_IPS_CN = {
-            "185.151.204.40",
-            "185.151.204.41",
-            "185.151.204.42",
-            "185.151.204.43"
-    };
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
