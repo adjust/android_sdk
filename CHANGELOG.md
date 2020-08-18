@@ -1,3 +1,9 @@
+### Version 4.24.0 (19th August 2020)
+#### Added
+- Added `setUrlStrategy(String)` method in `AdjustConfig` class to allow setting of URL strategy for specific market.
+
+---
+
 ### Version 4.23.0 (24th July 2020)
 #### Added
 - Added new ways of handling preinstall campaigns.
