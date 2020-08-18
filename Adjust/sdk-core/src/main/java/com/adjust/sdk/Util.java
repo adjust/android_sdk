@@ -27,7 +27,6 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
-import com.adjust.sdk.scheduler.TimerOnce;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -46,6 +45,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;

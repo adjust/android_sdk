@@ -162,6 +162,7 @@ public class AdjustBridgeInstance {
             Object info4Field = jsonAdjustConfig.get("info4");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
+            Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -351,6 +352,12 @@ public class AdjustBridgeInstance {
                 }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance.configureFbPixel: %s", e.getMessage());
+            }
+
+            // Set url strategy
+            String urlStrategy = AdjustBridgeUtil.fieldToString(urlStrategyField);
+            if (urlStrategy != null) {
+                adjustConfig.setUrlStrategy(urlStrategy);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.

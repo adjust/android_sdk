@@ -8,12 +8,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import java.util.List;
-import java.util.ArrayList;
-
 import java.lang.ref.WeakReference;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SdkClickHandler class.
@@ -283,7 +281,20 @@ public class SdkClickHandler implements ISdkClickHandler {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                sendSdkClickI(sdkClickPackage);
+                List<String> urls = UrlFactory.getBaseUrls();
+                boolean requestProcessed = false;
+                for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                    String baseUrl = urls.get(i);
+                    if (basePath != null) {
+                        baseUrl += basePath;
+                    }
+                    baseUrl += sdkClickPackage.getPath();
+                    boolean isLastUrl = i == urls.size()-1;
+                    requestProcessed = sendSdkClickI(sdkClickPackage, baseUrl, isLastUrl);
+                    if (requestProcessed && i > 0) {
+                        UrlFactory.prioritiseBaseUrl(urls.get(i));
+                    }
+                }
                 sendNextSdkClick();
             }
         };
@@ -306,8 +317,10 @@ public class SdkClickHandler implements ISdkClickHandler {
      * Send sdk_click package passed as the parameter (runs within scheduled executor).
      *
      * @param sdkClickPackage sdk_click package to be sent.
+     * @param targetURL end point where sdk_click package to be sent.
+     * @param isLastUrl indicates if it is last in the fallback.
      */
-    private void sendSdkClickI(final ActivityPackage sdkClickPackage) {
+    private boolean sendSdkClickI(final ActivityPackage sdkClickPackage, final String targetURL, final boolean isLastUrl) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
         String source = sdkClickPackage.getParameters().get("source");
         boolean isReftag = source != null && source.equals(SOURCE_REFTAG);
@@ -323,7 +336,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                     sdkClickPackage.getClickTimeInMilliseconds());
 
             if (rawReferrer == null) {
-                return;
+                return true;
             }
         }
 
@@ -353,14 +366,6 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
 
-        String url = AdjustFactory.getBaseUrl();
-
-        if (basePath != null) {
-            url += basePath;
-        }
-
-        String targetURL = url + sdkClickPackage.getPath();
-
         try {
             SdkClickResponseData responseData = (SdkClickResponseData) UtilNetworking.createPOSTHttpsURLConnection(
                     targetURL,
@@ -369,16 +374,16 @@ public class SdkClickHandler implements ISdkClickHandler {
 
             if (responseData.jsonResponse == null) {
                 retrySendingI(sdkClickPackage);
-                return;
+                return true;
             }
 
             if (activityHandler == null) {
-                return;
+                return true;
             }
 
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandler.gotOptOutResponse();
-                return;
+                return true;
             }
 
             if (isReftag) {
@@ -418,16 +423,25 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
 
             activityHandler.finishedTrackingActivity(responseData);
+            return true;
         } catch (UnsupportedEncodingException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click failed to encode parameters", e);
+            return true;
         } catch (SocketTimeoutException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request timed out. Will retry later", e);
-            retrySendingI(sdkClickPackage);
+            if (isLastUrl) {
+                retrySendingI(sdkClickPackage);
+            }
+            return false;
         } catch (IOException e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click request failed. Will retry later", e);
-            retrySendingI(sdkClickPackage);
+            if (isLastUrl) {
+                retrySendingI(sdkClickPackage);
+            }
+            return false;
         } catch (Throwable e) {
             logErrorMessageI(sdkClickPackage, "Sdk_click runtime exception", e);
+            return true;
         }
     }
 

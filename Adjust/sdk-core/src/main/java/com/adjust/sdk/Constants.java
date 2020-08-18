@@ -9,9 +9,6 @@
 
 package com.adjust.sdk;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * @author keyboardsurfer
  * @since 8.11.13
@@ -29,6 +26,23 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
+    String BASE_URL_IN = "https://app.adjust.net.in";
+    String GDPR_URL_IN = "https://gdpr.adjust.net.in";
+    String SUBSCRIPTION_URL_IN = "https://subscription.adjust.net.in";
+    String BASE_URL_CN = "https://app.adjust.world";
+    String GDPR_URL_CN = "https://gdpr.adjust.world";
+    String SUBSCRIPTION_URL_CN = "https://subscription.adjust.world";
+
+    String[] FALLBACK_BASE_URLS = {BASE_URL_IN, BASE_URL_CN};
+    String[] FALLBACK_GDPR_URLS = {GDPR_URL_IN, GDPR_URL_CN};
+    String[] FALLBACK_SUBSCRIPTION_URLS = {SUBSCRIPTION_URL_IN, SUBSCRIPTION_URL_CN};
+    String[] FALLBACK_BASE_URLS_IN = {BASE_URL};
+    String[] FALLBACK_GDPR_URLS_IN = {GDPR_URL};
+    String[] FALLBACK_SUBSCRIPTION_URLS_IN = {SUBSCRIPTION_URL};
+    String[] FALLBACK_BASE_URLS_CN = {BASE_URL};
+    String[] FALLBACK_GDPR_URLS_CN = {GDPR_URL};
+    String[] FALLBACK_SUBSCRIPTION_URLS_CN = {SUBSCRIPTION_URL};
+
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android4.23.0";
