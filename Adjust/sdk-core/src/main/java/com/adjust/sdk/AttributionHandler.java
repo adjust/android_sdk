@@ -17,6 +17,7 @@ import com.adjust.sdk.scheduler.TimerOnce;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class AttributionHandler implements IAttributionHandler {
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
@@ -136,7 +137,14 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                sendAttributionRequestI();
+                List<String> urls = UrlFactory.getBaseUrls();
+                boolean requestProcessed = false;
+                for (int i=0; i<urls.size() && !requestProcessed; i++) {
+                    requestProcessed = sendAttributionRequestI(urls.get(i));
+                    if (requestProcessed && i > 0) {
+                        UrlFactory.prioritiseBaseUrl(urls.get(i));
+                    }
+                }
             }
         });
     }
@@ -209,13 +217,13 @@ public class AttributionHandler implements IAttributionHandler {
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
-    private void sendAttributionRequestI() {
+    private boolean sendAttributionRequestI(String baseUrl) {
         if (activityHandlerWeakRef.get().getActivityState().isGdprForgotten) {
-            return;
+            return true;
         }
         if (paused) {
             logger.debug("Attribution handler is paused");
-            return;
+            return true;
         }
 
         // Create attribution package before sending attribution request.
@@ -223,17 +231,19 @@ public class AttributionHandler implements IAttributionHandler {
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         try {
-            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath);
+            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath, baseUrl);
             if (!(responseData instanceof AttributionResponseData)) {
-                return;
+                return true;
             }
             if (responseData.trackingState == TrackingState.OPTED_OUT) {
                 activityHandlerWeakRef.get().gotOptOutResponse();
-                return;
+                return true;
             }
             checkAttributionResponse((AttributionResponseData)responseData);
+            return true;
         } catch (Exception e) {
             logger.error("Failed to get attribution (%s)", e.getMessage());
+            return false;
         }
     }
 

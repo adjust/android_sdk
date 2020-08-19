@@ -75,13 +75,14 @@ public class UtilNetworking {
         }
     }
 
-    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath) throws Exception {
+    public static ResponseData createGETHttpsURLConnection(ActivityPackage activityPackage, String basePath, String baseUrl) throws Exception {
         try {
             Map<String, String> parameters = new HashMap<String, String>(activityPackage.getParameters());
 
             extractEventCallbackId(parameters);
 
-            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath);
+            Uri uri = buildUri(activityPackage.getPath(), parameters, basePath, baseUrl);
+
             URL url = new URL(uri.toString());
             HttpsURLConnection connection = AdjustFactory.getHttpsURLConnection(url);
 
@@ -227,7 +228,7 @@ public class UtilNetworking {
         return result.toString();
     }
 
-    private static Uri buildUri(String path, Map<String, String> parameters, String basePath) {
+    private static Uri buildUri(String path, Map<String, String> parameters, String basePath, String url) {
         Uri.Builder uriBuilder = new Uri.Builder();
 
         String scheme = Constants.SCHEME;
@@ -235,7 +236,6 @@ public class UtilNetworking {
         String initialPath = "";
 
         try {
-            String url = AdjustFactory.getBaseUrl();
             if (basePath != null) {
                 url += basePath;
             }
