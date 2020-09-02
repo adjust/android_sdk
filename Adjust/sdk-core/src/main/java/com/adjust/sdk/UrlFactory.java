@@ -13,7 +13,9 @@ public class UrlFactory {
         if (baseUrls == null) {
             baseUrls = new ArrayList<String>();
             baseUrls.add(AdjustFactory.getBaseUrl());
-            baseUrls.addAll(AdjustFactory.getFallbackBaseUrls());
+            if (AdjustFactory.customUrlHasNotBeenSet()) {
+                baseUrls.addAll(AdjustFactory.getFallbackBaseUrls());
+            }
         }
 
         return baseUrls;
@@ -23,7 +25,9 @@ public class UrlFactory {
         if (gdprUrls == null) {
             gdprUrls = new ArrayList<String>();
             gdprUrls.add(AdjustFactory.getGdprUrl());
-            gdprUrls.addAll(AdjustFactory.getFallbackGdprUrls());
+            if (AdjustFactory.customUrlHasNotBeenSet()) {
+                gdprUrls.addAll(AdjustFactory.getFallbackGdprUrls());
+            }
         }
 
         return gdprUrls;
@@ -33,10 +37,18 @@ public class UrlFactory {
         if (subscriptionUrls == null) {
             subscriptionUrls = new ArrayList<String>();
             subscriptionUrls.add(AdjustFactory.getSubscriptionUrl());
-            subscriptionUrls.addAll(AdjustFactory.getFallbackSubscriptionUrls());
+            if (AdjustFactory.customUrlHasNotBeenSet()) {
+                subscriptionUrls.addAll(AdjustFactory.getFallbackSubscriptionUrls());
+            }
         }
 
         return subscriptionUrls;
+    }
+
+    public static void reset() {
+        baseUrls = null;
+        gdprUrls = null;
+        subscriptionUrls = null;
     }
 
     public synchronized static void prioritiseBaseUrl(String baseUrl) {

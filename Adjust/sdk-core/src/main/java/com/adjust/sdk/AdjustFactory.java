@@ -44,6 +44,7 @@ public class AdjustFactory {
     private static List<String> fallbackSubscriptionUrls = Arrays.asList(Constants.FALLBACK_SUBSCRIPTION_URLS);
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
+    private static boolean customUrlHasNotBeenSet = true;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -224,6 +225,10 @@ public class AdjustFactory {
         return tryInstallReferrer;
     }
 
+    public static boolean customUrlHasNotBeenSet() {
+        return customUrlHasNotBeenSet;
+    }
+
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
     }
@@ -278,14 +283,29 @@ public class AdjustFactory {
 
     public static void setBaseUrl(String baseUrl) {
         AdjustFactory.baseUrl = baseUrl;
+
+        customUrlHasNotBeenSet = Util.equalString(baseUrl, Constants.BASE_URL) ||
+                Util.equalString(baseUrl, Constants.BASE_URL_CN) ||
+                Util.equalString(baseUrl, Constants.BASE_URL_IN);
+        UrlFactory.reset();
     }
 
     public static void setGdprUrl(String gdprUrl) {
         AdjustFactory.gdprUrl = gdprUrl;
+
+        customUrlHasNotBeenSet = Util.equalString(gdprUrl, Constants.GDPR_URL) ||
+                Util.equalString(gdprUrl, Constants.GDPR_URL_CN) ||
+                Util.equalString(gdprUrl, Constants.GDPR_URL_IN);
+        UrlFactory.reset();
     }
 
     public static void setSubscriptionUrl(String subscriptionUrl) {
         AdjustFactory.subscriptionUrl = subscriptionUrl;
+
+        customUrlHasNotBeenSet = Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL) ||
+                Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_CN) ||
+                Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_IN);
+        UrlFactory.reset();
     }
 
     public static void setFallbackBaseUrls(List<String> fallbackBaseUrls) {
