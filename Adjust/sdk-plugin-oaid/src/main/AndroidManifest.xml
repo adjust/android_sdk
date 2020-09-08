@@ -1,3 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.adjust.sdk.oaid" >
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.adjust.sdk.oaid">
+
+    <uses-sdk tools:overrideLibrary="com.bun.miitmdid"/>
 </manifest>
