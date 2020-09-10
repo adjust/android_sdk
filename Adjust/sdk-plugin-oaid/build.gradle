@@ -23,7 +23,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+    compileOnly files('libs/oaid_sdk_1.0.23.aar')
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
