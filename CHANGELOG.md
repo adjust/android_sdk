@@ -1,3 +1,9 @@
+### Version 4.24.1 (10th September 2020)
+#### Added
+- Changed host name verifier used for testing purposes to allow only localhost addresses.
+
+---
+
 ### Version 4.24.0 (19th August 2020)
 #### Added
 - Added `setUrlStrategy(String)` method in `AdjustConfig` class to allow setting of URL strategy for specific market.
