@@ -26,6 +26,8 @@ To enable the OAID plugin to read OAID values using the MSA SDK, copy the MSA SD
 
 **Note**: MSA SDK version 1.0.13 and later is supported by Adjust OAID plugin v4.23.0 and later. MSA SDK versions of plugin prior to version 1.0.13 are supported by Adjust OAID plugin v4.22.0 and earlier.
 
+**Note**: MSA SDK version 1.0.23 and later is supported by Adjust OAID plugin v4.24.1 and later.
+
 You can find the MSA SDK and detailed instructions [here][msasdk].  
 
 ### Proguard settings
