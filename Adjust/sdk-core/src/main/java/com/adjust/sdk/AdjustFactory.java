@@ -348,7 +348,14 @@ public class AdjustFactory {
                         @Override
                         public boolean verify(String hostname, SSLSession session) {
                             getLogger().verbose("verify hostname ");
-                            return true;
+                            return isTestIp(hostname);
+                        }
+
+                        private boolean isTestIp(String hostname) {
+                            if (hostname.equals("10.0.2.2")) {
+                                return true;
+                            }
+                            return hostname.startsWith("192.168.");
                         }
                     });
                 } catch (Exception e) {

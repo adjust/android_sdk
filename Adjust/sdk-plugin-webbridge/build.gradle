@@ -24,7 +24,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.24.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.24.1'
 }
 
 task adjustWebBridgeAndroidAar (type: Copy) {
