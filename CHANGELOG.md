@@ -1,5 +1,8 @@
 ### Version 4.24.1 (10th September 2020)
 #### Added
+- Added support to OAID plugin for MSA SDK v1.0.24.
+
+#### Changed
 - Changed host name verifier used for testing purposes to allow only localhost addresses.
 
 ---
