@@ -13,7 +13,7 @@ public class UrlFactory {
         if (baseUrls == null) {
             baseUrls = new ArrayList<String>();
             baseUrls.add(AdjustFactory.getBaseUrl());
-            if (AdjustFactory.customUrlHasNotBeenSet()) {
+            if (!AdjustFactory.customUrlHasBeenSet()) {
                 baseUrls.addAll(AdjustFactory.getFallbackBaseUrls());
             }
         }
@@ -25,7 +25,7 @@ public class UrlFactory {
         if (gdprUrls == null) {
             gdprUrls = new ArrayList<String>();
             gdprUrls.add(AdjustFactory.getGdprUrl());
-            if (AdjustFactory.customUrlHasNotBeenSet()) {
+            if (!AdjustFactory.customUrlHasBeenSet()) {
                 gdprUrls.addAll(AdjustFactory.getFallbackGdprUrls());
             }
         }
@@ -37,7 +37,7 @@ public class UrlFactory {
         if (subscriptionUrls == null) {
             subscriptionUrls = new ArrayList<String>();
             subscriptionUrls.add(AdjustFactory.getSubscriptionUrl());
-            if (AdjustFactory.customUrlHasNotBeenSet()) {
+            if (!AdjustFactory.customUrlHasBeenSet()) {
                 subscriptionUrls.addAll(AdjustFactory.getFallbackSubscriptionUrls());
             }
         }

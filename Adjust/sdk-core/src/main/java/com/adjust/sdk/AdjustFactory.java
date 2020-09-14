@@ -44,7 +44,7 @@ public class AdjustFactory {
     private static List<String> fallbackSubscriptionUrls = Arrays.asList(Constants.FALLBACK_SUBSCRIPTION_URLS);
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static boolean tryInstallReferrer = true;
-    private static boolean customUrlHasNotBeenSet = true;
+    private static boolean customUrlHasBeenSet = false;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -225,8 +225,8 @@ public class AdjustFactory {
         return tryInstallReferrer;
     }
 
-    public static boolean customUrlHasNotBeenSet() {
-        return customUrlHasNotBeenSet;
+    public static boolean customUrlHasBeenSet() {
+        return customUrlHasBeenSet;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
@@ -284,27 +284,30 @@ public class AdjustFactory {
     public static void setBaseUrl(String baseUrl) {
         AdjustFactory.baseUrl = baseUrl;
 
-        customUrlHasNotBeenSet = Util.equalString(baseUrl, Constants.BASE_URL) ||
-                Util.equalString(baseUrl, Constants.BASE_URL_CN) ||
-                Util.equalString(baseUrl, Constants.BASE_URL_IN);
+        customUrlHasBeenSet = !Util.equalString(baseUrl, Constants.BASE_URL) &&
+                !Util.equalString(baseUrl, Constants.BASE_URL_CN) &&
+                !Util.equalString(baseUrl, Constants.BASE_URL_IN);
+
         UrlFactory.reset();
     }
 
     public static void setGdprUrl(String gdprUrl) {
         AdjustFactory.gdprUrl = gdprUrl;
 
-        customUrlHasNotBeenSet = Util.equalString(gdprUrl, Constants.GDPR_URL) ||
-                Util.equalString(gdprUrl, Constants.GDPR_URL_CN) ||
-                Util.equalString(gdprUrl, Constants.GDPR_URL_IN);
+        customUrlHasBeenSet = !Util.equalString(gdprUrl, Constants.GDPR_URL) &&
+                !Util.equalString(gdprUrl, Constants.GDPR_URL_CN) &&
+                !Util.equalString(gdprUrl, Constants.GDPR_URL_IN);
+
         UrlFactory.reset();
     }
 
     public static void setSubscriptionUrl(String subscriptionUrl) {
         AdjustFactory.subscriptionUrl = subscriptionUrl;
 
-        customUrlHasNotBeenSet = Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL) ||
-                Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_CN) ||
-                Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_IN);
+        customUrlHasBeenSet = !Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL) &&
+                !Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_CN) &&
+                !Util.equalString(subscriptionUrl, Constants.SUBSCRIPTION_URL_IN);
+
         UrlFactory.reset();
     }
 
