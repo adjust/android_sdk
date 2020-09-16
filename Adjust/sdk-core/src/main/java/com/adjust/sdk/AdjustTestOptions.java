@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.network.UtilNetworking;
+
 /**
  * Created by nonelse on 08.01.2018
  */
@@ -14,7 +16,7 @@ public class AdjustTestOptions {
     public String basePath;
     public String gdprPath;
     public String subscriptionPath;
-    public Boolean useTestConnectionOptions;
+    public UtilNetworking.IConnectionOptions connectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;
     public Long sessionIntervalInMilliseconds;

@@ -2,21 +2,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.util.Arrays;
 import java.util.List;
-
-import static com.adjust.sdk.Constants.BASE_URL_CN;
-import static com.adjust.sdk.Constants.BASE_URL_IN;
-import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_CN;
-import static com.adjust.sdk.Constants.FALLBACK_BASE_URLS_IN;
-import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_CN;
-import static com.adjust.sdk.Constants.FALLBACK_GDPR_URLS_IN;
-import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_CN;
-import static com.adjust.sdk.Constants.FALLBACK_SUBSCRIPTION_URLS_IN;
-import static com.adjust.sdk.Constants.GDPR_URL_CN;
-import static com.adjust.sdk.Constants.GDPR_URL_IN;
-import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_CN;
-import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_IN;
 
 /**
  * Created by pfms on 06/11/14.
@@ -53,6 +39,7 @@ public class AdjustConfig {
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
+    String urlStrategy;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -213,29 +200,12 @@ public class AdjustConfig {
             logger.error("Invalid url strategy");
             return;
         }
-
-        switch (urlStrategy) {
-            case URL_STRATEGY_INDIA:
-                AdjustFactory.setBaseUrl(BASE_URL_IN);
-                AdjustFactory.setGdprUrl(GDPR_URL_IN);
-                AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_IN);
-                AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_IN));
-                AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_IN));
-                AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_IN));
-                break;
-
-            case URL_STRATEGY_CHINA:
-                AdjustFactory.setBaseUrl(BASE_URL_CN);
-                AdjustFactory.setGdprUrl(GDPR_URL_CN);
-                AdjustFactory.setSubscriptionUrl(SUBSCRIPTION_URL_CN);
-                AdjustFactory.setFallbackBaseUrls(Arrays.asList(FALLBACK_BASE_URLS_CN));
-                AdjustFactory.setFallbackGdprUrls(Arrays.asList(FALLBACK_GDPR_URLS_CN));
-                AdjustFactory.setFallbackSubscriptionUrls(Arrays.asList(FALLBACK_SUBSCRIPTION_URLS_CN));
-                break;
-
-            default:
-                logger.warn("Unrecognised url strategy %s", urlStrategy);
+        if (!urlStrategy.equals(URL_STRATEGY_INDIA)
+                && !urlStrategy.equals(URL_STRATEGY_CHINA))
+        {
+            logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
+        this.urlStrategy = urlStrategy;
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {

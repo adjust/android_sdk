@@ -202,7 +202,7 @@ public class ActivityPackage implements Serializable {
         return builder.toString();
     }
 
-    protected String getFailureMessage() {
+    public String getFailureMessage() {
         return Util.formatString("Failed to track %s%s", activityKind.toString(), suffix);
     }
 

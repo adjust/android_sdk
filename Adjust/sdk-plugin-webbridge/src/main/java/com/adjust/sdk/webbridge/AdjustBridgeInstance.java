@@ -690,6 +690,7 @@ public class AdjustBridgeInstance {
             Object gdprPathField = jsonAdjustTestOptions.get("gdprPath");
             Object subscriptionPathField = jsonAdjustTestOptions.get("subscriptionPath");
             Object useTestConnectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
+            Object connectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
             Object timerIntervalInMillisecondsField = jsonAdjustTestOptions.get("timerIntervalInMilliseconds");
             Object timerStartInMillisecondsField = jsonAdjustTestOptions.get("timerStartInMilliseconds");
             Object sessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("sessionIntervalInMilliseconds");
@@ -731,7 +732,7 @@ public class AdjustBridgeInstance {
 
             Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
             if (useTestConnectionOptions != null) {
-                adjustTestOptions.useTestConnectionOptions = useTestConnectionOptions;
+                adjustTestOptions.connectionOptions = AdjustBridgeUtil.testConnectionOptions();
             }
 
             Long timerIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(timerIntervalInMillisecondsField);

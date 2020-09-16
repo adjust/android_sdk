@@ -154,7 +154,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = basePath;
                     testOptions.gdprPath = gdprPath;
                     testOptions.subscriptionPath = subscriptionPath;
-                    testOptions.useTestConnectionOptions = true;
+                    testOptions.connectionOptions = Util.testConnectionOptions();
                     testOptions.tryInstallReferrer = false;
                 }
                 if (teardownOption.equals("deleteState")) {
@@ -173,7 +173,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = null;
                     testOptions.gdprPath = null;
                     testOptions.subscriptionPath = null;
-                    testOptions.useTestConnectionOptions = false;
+                    testOptions.connectionOptions = null;
                 }
                 if (teardownOption.equals("test")) {
                     savedEvents = null;

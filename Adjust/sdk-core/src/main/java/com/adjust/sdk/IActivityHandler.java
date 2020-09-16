@@ -84,10 +84,4 @@ public interface IActivityHandler {
     ActivityState getActivityState();
 
     SessionParameters getSessionParameters();
-
-    String getBasePath();
-
-    String getGdprPath();
-
-    String getSubscriptionPath();
 }

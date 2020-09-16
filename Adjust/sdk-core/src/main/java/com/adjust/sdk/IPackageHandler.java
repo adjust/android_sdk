@@ -2,16 +2,17 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.network.IActivityPackageSender;
+
 public interface IPackageHandler {
-    void init(IActivityHandler activityHandler, Context context, boolean startsSending);
+    void init(IActivityHandler activityHandler,
+              Context context,
+              boolean startsSending,
+              IActivityPackageSender packageHandlerActivityPackageSender);
 
     void addPackage(ActivityPackage activityPackage);
 
     void sendFirstPackage();
-
-    void sendNextPackage(ResponseData responseData);
-
-    void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage);
 
     void pauseSending();
 
@@ -20,12 +21,6 @@ public interface IPackageHandler {
     void updatePackages(SessionParameters sessionParameters);
 
     void flush();
-
-    String getBasePath();
-
-    String getGdprPath();
-
-    String getSubscriptionPath();
 
     void teardown();
 }

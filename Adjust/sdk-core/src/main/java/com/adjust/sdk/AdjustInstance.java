@@ -630,8 +630,8 @@ public class AdjustInstance {
         if (testOptions.subscriptionUrl != null) {
             AdjustFactory.setSubscriptionUrl(testOptions.subscriptionUrl);
         }
-        if (testOptions.useTestConnectionOptions != null && testOptions.useTestConnectionOptions.booleanValue()) {
-            AdjustFactory.useTestConnectionOptions();
+        if (testOptions.connectionOptions != null) {
+            AdjustFactory.setConnectionOptions(testOptions.connectionOptions);
         }
         if (testOptions.timerIntervalInMilliseconds != null) {
             AdjustFactory.setTimerInterval(testOptions.timerIntervalInMilliseconds);
