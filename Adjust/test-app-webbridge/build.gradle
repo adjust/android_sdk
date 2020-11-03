@@ -29,5 +29,6 @@ dependencies {
 
     implementation project(':sdk-core')
     implementation project(':sdk-plugin-webbridge')
+    implementation project(':test-options')
     implementation project(':test-library')
 }

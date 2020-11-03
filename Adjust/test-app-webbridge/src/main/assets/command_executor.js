@@ -224,7 +224,7 @@ AdjustCommandExecutor.prototype.testOptions = function(params) {
 
     console.log(`AdjustCommandExecutor testOptions: ${JSON.stringify(testOptions)}`);
 
-    Adjust.setTestOptions(testOptions);
+    TestLibrary.setTestOptions(testOptions);
 };
 
 AdjustCommandExecutor.prototype.config = function(params) {

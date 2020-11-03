@@ -203,13 +203,6 @@ var Adjust = {
         }
     },
 
-    setTestOptions: function (testOptions) {
-        var testOptionsString = JSON.stringify(testOptions);
-        if (AdjustBridge) {
-            AdjustBridge.setTestOptions(testOptionsString);
-        }
-    },
-
     teardown: function() {
         if (AdjustBridge) {
             AdjustBridge.teardown();

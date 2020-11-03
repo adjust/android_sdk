@@ -37,4 +37,10 @@ var TestLibrary = {
         TestLibrary.commandExecutor.scheduleCommand(className, methodName, jsonParameters, order);
     },
 
+    setTestOptions: function (testOptions) {
+        var testOptionsString = JSON.stringify(testOptions);
+        if (TestLibraryBridge) {
+            TestLibraryBridge.setTestOptions(testOptionsString);
+        }
+    },
 };
