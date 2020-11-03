@@ -16,7 +16,6 @@ public class AdjustTestOptions {
     public String basePath;
     public String gdprPath;
     public String subscriptionPath;
-    public UtilNetworking.IConnectionOptions connectionOptions;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;
     public Long sessionIntervalInMilliseconds;

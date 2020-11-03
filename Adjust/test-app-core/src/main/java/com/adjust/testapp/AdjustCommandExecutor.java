@@ -22,6 +22,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.example.test_options.TestConnectionOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -146,6 +147,7 @@ public class AdjustCommandExecutor {
                 testOptions.noBackoffWait = noBackoffWaitBoolean;
             }
         }
+        boolean useTestConnectionOptions = false;
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
             for (String teardownOption : teardownOptions) {
@@ -154,7 +156,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = basePath;
                     testOptions.gdprPath = gdprPath;
                     testOptions.subscriptionPath = subscriptionPath;
-                    testOptions.connectionOptions = Util.testConnectionOptions();
+                    useTestConnectionOptions = true;
                     testOptions.tryInstallReferrer = false;
                 }
                 if (teardownOption.equals("deleteState")) {
@@ -173,7 +175,6 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = null;
                     testOptions.gdprPath = null;
                     testOptions.subscriptionPath = null;
-                    testOptions.connectionOptions = null;
                 }
                 if (teardownOption.equals("test")) {
                     savedEvents = null;
@@ -186,6 +187,9 @@ public class AdjustCommandExecutor {
             }
         }
         Adjust.setTestOptions(testOptions);
+        if (useTestConnectionOptions) {
+            TestConnectionOptions.setTestConnectionOptions();
+        }
     }
 
     private void config() {
