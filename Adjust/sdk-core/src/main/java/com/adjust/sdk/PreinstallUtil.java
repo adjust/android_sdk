@@ -28,13 +28,14 @@ import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_CONTENT_URI_PATH;
 
 public class PreinstallUtil {
 
-    private static final long SYSTEM_PROPERTY_BITMASK = 1;                  //00...00000001
-    private static final long SYSTEM_PROPERTY_REFLECTION_BITMASK = 2;       //00...00000010
-    private static final long SYSTEM_PROPERTY_PATH_BITMASK = 4;             //00...00000100
-    private static final long SYSTEM_PROPERTY_PATH_REFLECTION_BITMASK = 8;  //00...00001000
-    private static final long CONTENT_PROVIDER_BITMASK = 16;                //00...00010000
-    private static final long CONTENT_PROVIDER_INTENT_ACTION_BITMASK = 32;  //00...00100000
-    private static final long FILE_SYSTEM_BITMASK = 64;                     //00...01000000
+    private static final long SYSTEM_PROPERTY_BITMASK = 1;                  //00...000000001
+    private static final long SYSTEM_PROPERTY_REFLECTION_BITMASK = 2;       //00...000000010
+    private static final long SYSTEM_PROPERTY_PATH_BITMASK = 4;             //00...000000100
+    private static final long SYSTEM_PROPERTY_PATH_REFLECTION_BITMASK = 8;  //00...000001000
+    private static final long CONTENT_PROVIDER_BITMASK = 16;                //00...000010000
+    private static final long CONTENT_PROVIDER_INTENT_ACTION_BITMASK = 32;  //00...000100000
+    private static final long FILE_SYSTEM_BITMASK = 64;                     //00...001000000
+    private static final long CONTENT_PROVIDER_NO_PERMISSION_BITMASK = 128; //00...010000000
 
     // bitwise OR (|) of all above locations
     private static final long ALL_LOCATION_BITMASK = (SYSTEM_PROPERTY_BITMASK |
@@ -43,7 +44,8 @@ public class PreinstallUtil {
             SYSTEM_PROPERTY_PATH_REFLECTION_BITMASK |
             CONTENT_PROVIDER_BITMASK |
             CONTENT_PROVIDER_INTENT_ACTION_BITMASK |
-            FILE_SYSTEM_BITMASK);                                           //00...01111111
+            FILE_SYSTEM_BITMASK |
+            CONTENT_PROVIDER_NO_PERMISSION_BITMASK);                        //00...011111111
 
     public static boolean hasAllLocationsBeenRead(long status) {
         // Check if the given status has none of the valid location with bit `0`, indicating it has
@@ -68,6 +70,8 @@ public class PreinstallUtil {
                 return (status & CONTENT_PROVIDER_INTENT_ACTION_BITMASK) != CONTENT_PROVIDER_INTENT_ACTION_BITMASK;
             case Constants.FILE_SYSTEM :
                 return (status & FILE_SYSTEM_BITMASK) != FILE_SYSTEM_BITMASK;
+            case Constants.CONTENT_PROVIDER_NO_PERMISSION:
+                return (status & CONTENT_PROVIDER_NO_PERMISSION_BITMASK) != CONTENT_PROVIDER_NO_PERMISSION_BITMASK;
         }
         return false;
     }
@@ -89,6 +93,8 @@ public class PreinstallUtil {
                 return (status | CONTENT_PROVIDER_INTENT_ACTION_BITMASK);
             case Constants.FILE_SYSTEM :
                 return (status | FILE_SYSTEM_BITMASK);
+            case Constants.CONTENT_PROVIDER_NO_PERMISSION:
+                return (status | CONTENT_PROVIDER_NO_PERMISSION_BITMASK);
         }
         return status;
     }
@@ -155,37 +161,26 @@ public class PreinstallUtil {
         return readContentProvider(context, defaultContentUri, packageName, logger);
     }
 
-    public static List<String> getPayloadsFromContentProviderIntentAction(final Context context,
-                                                                          final String packageName,
-                                                                          final ILogger logger)
+    public static List<String> getPayloadsFromContentProviderIntentAction(
+            final Context context,
+            final String packageName,
+            final ILogger logger)
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            List<ResolveInfo> providers = context.getPackageManager()
-                    .queryIntentContentProviders(
-                            new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
-            List<String> payloads = new ArrayList<String>();
-            for (ResolveInfo provider : providers) {
-                int result = context.getPackageManager().checkPermission(
-                        Manifest.permission.INSTALL_PACKAGES, provider.providerInfo.packageName);
-                if (result == PackageManager.PERMISSION_GRANTED) {
-                    String authority = provider.providerInfo.authority;
-                    if (authority != null && !authority.isEmpty()) {
-                        String contentUri = Util.formatString("content://%s/%s",
-                                authority, ADJUST_PREINSTALL_CONTENT_URI_PATH);
-                        String payload = readContentProvider(context, contentUri, packageName, logger);
-                        if (payload != null && !payload.isEmpty()) {
-                            payloads.add(payload);
-                        }
-                    }
-                }
-            }
+        return getPayloadsFromContentProviderIntentAction(context,
+                                                          packageName,
+                                                          Manifest.permission.INSTALL_PACKAGES,
+                                                          logger);
+    }
 
-            if (!payloads.isEmpty()) {
-                return payloads;
-            }
-        }
-
-        return null;
+    public static List<String> getPayloadsFromContentProviderIntentActionOpen(
+            final Context context,
+            final String packageName,
+            final ILogger logger)
+    {
+        return getPayloadsFromContentProviderIntentAction(context,
+                                                          packageName,
+                                                          null, // no permission
+                                                          logger);
     }
 
     public static String getPayloadFromFileSystem(final String packageName,
@@ -257,6 +252,46 @@ public class PreinstallUtil {
         }
     }
 
+    private static List<String> getPayloadsFromContentProviderIntentAction(final Context context,
+                                                                           final String packageName,
+                                                                           final String permission,
+                                                                           final ILogger logger)
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            List<ResolveInfo> providers = context.getPackageManager()
+                                                 .queryIntentContentProviders(
+                                                         new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
+            List<String> payloads = new ArrayList<String>();
+            for (ResolveInfo provider : providers) {
+                boolean permissionGranted = true;
+                if (permission != null) {
+                    int result = context.getPackageManager().checkPermission(
+                            permission, provider.providerInfo.packageName);
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        permissionGranted = false;
+                    }
+                }
+
+                if (permissionGranted) {
+                    String authority = provider.providerInfo.authority;
+                    if (authority != null && !authority.isEmpty()) {
+                        String contentUri = Util.formatString("content://%s/%s",
+                                                              authority, ADJUST_PREINSTALL_CONTENT_URI_PATH);
+                        String payload = readContentProvider(context, contentUri, packageName, logger);
+                        if (payload != null && !payload.isEmpty()) {
+                            payloads.add(payload);
+                        }
+                    }
+                }
+            }
+
+            if (!payloads.isEmpty()) {
+                return payloads;
+            }
+        }
+
+        return null;
+    }
 
     private static String readFileContent(final String filePath, final ILogger logger) {
         File file = new File(filePath);

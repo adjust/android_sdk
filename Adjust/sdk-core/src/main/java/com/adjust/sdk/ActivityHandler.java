@@ -955,7 +955,7 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
-        // 6. try reading preinstall payload from all content provider with intent action
+        // 6. try reading preinstall payload from all content provider with intent action and with install permission
         if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_INTENT_ACTION, readStatus)) {
             List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderIntentAction(
                     adjustConfig.context,
@@ -971,7 +971,23 @@ public class ActivityHandler implements IActivityHandler {
             }
         }
 
-        // 7. try reading preinstall payload from file system (world readable)
+        // 7. try reading preinstall payload from all content provider with intent action and without install permission
+        if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_NO_PERMISSION, readStatus)) {
+            List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderIntentActionOpen(
+                    adjustConfig.context,
+                    deviceInfo.packageName,
+                    logger);
+
+            if (payloadListContentProviderIntentAction != null && !payloadListContentProviderIntentAction.isEmpty()) {
+                for (String payload : payloadListContentProviderIntentAction) {
+                    sdkClickHandler.sendPreinstallPayload(payload, Constants.CONTENT_PROVIDER_NO_PERMISSION);
+                }
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER_NO_PERMISSION, readStatus);
+            }
+        }
+
+        // 8. try reading preinstall payload from file system (world readable)
         if (PreinstallUtil.hasNotBeenRead(Constants.FILE_SYSTEM, readStatus)) {
             String payloadFileSystem = PreinstallUtil.getPayloadFromFileSystem(
                     deviceInfo.packageName,
