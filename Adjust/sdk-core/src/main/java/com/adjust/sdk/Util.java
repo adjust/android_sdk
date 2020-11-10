@@ -654,7 +654,11 @@ public class Util {
         try {
             TelephonyManager teleMan =
                     (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            networkType = teleMan.getNetworkType();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                networkType = teleMan.getDataNetworkType();
+            } else {
+                networkType = teleMan.getNetworkType();
+            }
         } catch (Exception e) {
             getLogger().warn("Couldn't read network type (%s)", e.getMessage());
         }
