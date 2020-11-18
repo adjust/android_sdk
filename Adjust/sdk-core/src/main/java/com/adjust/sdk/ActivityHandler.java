@@ -973,7 +973,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // 7. try reading preinstall payload from all content provider with intent action and without install permission
         if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_NO_PERMISSION, readStatus)) {
-            List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderIntentActionOpen(
+            List<String> payloadListContentProviderIntentAction = PreinstallUtil.getPayloadsFromContentProviderNoPermission(
                     adjustConfig.context,
                     deviceInfo.packageName,
                     logger);
