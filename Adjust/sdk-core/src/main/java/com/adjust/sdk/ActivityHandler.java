@@ -1137,6 +1137,8 @@ public class ActivityHandler implements IActivityHandler {
                     activityState.sessionCount);
             writeActivityStateI();
 
+            checkForPreinstallI();
+
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
             installReferrerHuawei.readReferrer();
