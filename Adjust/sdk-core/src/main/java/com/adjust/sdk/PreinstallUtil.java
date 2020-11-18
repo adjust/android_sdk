@@ -166,21 +166,21 @@ public class PreinstallUtil {
             final String packageName,
             final ILogger logger)
     {
-        return getPayloadsFromContentProviderIntentAction(context,
-                                                          packageName,
-                                                          Manifest.permission.INSTALL_PACKAGES,
-                                                          logger);
+        return readContentProviderIntentAction(context,
+                                               packageName,
+                                               Manifest.permission.INSTALL_PACKAGES,
+                                               logger);
     }
 
-    public static List<String> getPayloadsFromContentProviderIntentActionOpen(
+    public static List<String> getPayloadsFromContentProviderNoPermission(
             final Context context,
             final String packageName,
             final ILogger logger)
     {
-        return getPayloadsFromContentProviderIntentAction(context,
-                                                          packageName,
-                                                          null, // no permission
-                                                          logger);
+        return readContentProviderIntentAction(context,
+                                               packageName,
+                                               null,// no permission
+                                               logger);
     }
 
     public static String getPayloadFromFileSystem(final String packageName,
@@ -252,10 +252,10 @@ public class PreinstallUtil {
         }
     }
 
-    private static List<String> getPayloadsFromContentProviderIntentAction(final Context context,
-                                                                           final String packageName,
-                                                                           final String permission,
-                                                                           final ILogger logger)
+    private static List<String> readContentProviderIntentAction(final Context context,
+                                                                final String packageName,
+                                                                final String permission,
+                                                                final ILogger logger)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             List<ResolveInfo> providers = context.getPackageManager()
