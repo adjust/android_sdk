@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
+import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -77,6 +78,8 @@ public class AdjustCommandExecutor {
             case "sendReferrer": sendReferrer(); break;
             case "gdprForgetMe": gdprForgetMe(); break;
             case "disableThirdPartySharing": disableThirdPartySharing(); break;
+            case "thirdPartySharing" : thirdPartySharing(); break;
+            case "measurementConsent" : measurementConsent(); break;
             case "trackAdRevenue": trackAdRevenue(); break;
             case "trackSubscription": trackSubscription(); break;
             //case "testBegin": testBegin(); break;
@@ -636,6 +639,37 @@ public class AdjustCommandExecutor {
 
     private void disableThirdPartySharing() {
         Adjust.disableThirdPartySharing(this.context);
+    }
+
+    private void thirdPartySharing() {
+        String enableOrElseDisableString =
+                command.getFirstParameterValue("enableOrElseDisable");
+        Boolean enableOrElseDisableBoolean =
+                Util.strictParseStringToBoolean(enableOrElseDisableString);
+
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(enableOrElseDisableBoolean);
+
+        if (command.parameters.containsKey("granularOptions")) {
+            List<String> granularOptions = command.parameters.get("granularOptions");
+            for (int i = 0; i < granularOptions.size(); i = i + 3) {
+                String partnerName = granularOptions.get(i);
+                String key = granularOptions.get(i + 1);
+                String value = granularOptions.get(i + 2);
+                adjustThirdPartySharing.addGranularOption(
+                        partnerName, key, value);
+            }
+        }
+
+        Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+    }
+
+    private void measurementConsent() {
+        String measurementConsentString =
+                command.getFirstParameterValue("enableOrElseDisable");
+        boolean measurementConsent = "true".equals(measurementConsentString);
+
+        Adjust.trackMeasurementConsent(measurementConsent);
     }
 
     private void trackAdRevenue() {
