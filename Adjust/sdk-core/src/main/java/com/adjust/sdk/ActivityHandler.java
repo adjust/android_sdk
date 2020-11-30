@@ -643,6 +643,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void trackMeasurementConsent(final boolean consentMeasurement) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                trackMeasurementConsentI(consentMeasurement);
+            }
+        });
+    }
+
+    @Override
     public void trackAdRevenue(final String source, final JSONObject adRevenueJson) {
         executor.submit(new Runnable() {
             @Override
@@ -2150,6 +2160,22 @@ public class ActivityHandler implements IActivityHandler {
 
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+    }
+
+    private void trackMeasurementConsentI(final boolean consentMeasurement) {
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildMeasurementConsent(consentMeasurement);
         packageHandler.addPackage(activityPackage);
 
         if (adjustConfig.eventBufferingEnabled) {

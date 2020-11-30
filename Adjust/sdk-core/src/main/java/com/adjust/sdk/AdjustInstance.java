@@ -417,6 +417,14 @@ public class AdjustInstance {
         activityHandler.trackThirdPartySharing(adjustThirdPartySharing);
     }
 
+    public void trackMeasurementConsent(final boolean consentMeasurement) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+
+        activityHandler.trackMeasurementConsent(consentMeasurement);
+    }
+
     /**
      * Track ad revenue from a source provider
      *

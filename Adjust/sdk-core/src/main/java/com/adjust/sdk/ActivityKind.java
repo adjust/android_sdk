@@ -13,7 +13,8 @@ public enum ActivityKind {
     AD_REVENUE,
     DISABLE_THIRD_PARTY_SHARING,
     SUBSCRIPTION,
-    THIRD_PARTY_SHARING;
+    THIRD_PARTY_SHARING,
+    MEASUREMENT_CONSENT;
 
     public static ActivityKind fromString(String string) {
         if ("session".equals(string)) {
@@ -36,6 +37,8 @@ public enum ActivityKind {
             return SUBSCRIPTION;
         } else if ("third_party_sharing".equals(string)) {
             return THIRD_PARTY_SHARING;
+        } else if ("measurement_consent".equals(string)) {
+            return MEASUREMENT_CONSENT;
         } else {
             return UNKNOWN;
         }
@@ -64,6 +67,8 @@ public enum ActivityKind {
                 return "subscription";
             case THIRD_PARTY_SHARING:
                 return "third_party_sharing";
+            case MEASUREMENT_CONSENT:
+                return "measurement_consent";
             default:
                 return "unknown";
         }

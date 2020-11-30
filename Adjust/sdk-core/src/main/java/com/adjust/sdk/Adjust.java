@@ -256,6 +256,11 @@ public class Adjust {
         adjustInstance.trackThirdPartySharing(adjustThirdPartySharing);
     }
 
+    public static void trackMeasurementConsent(final boolean consentMeasurement) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.trackMeasurementConsent(consentMeasurement);
+    }
+
     /**
      * Track ad revenue from a source provider
      *
