@@ -249,6 +249,13 @@ public class Adjust {
         adjustInstance.disableThirdPartySharing(context);
     }
 
+    public static void trackThirdPartySharing(
+            final AdjustThirdPartySharing adjustThirdPartySharing)
+    {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.trackThirdPartySharing(adjustThirdPartySharing);
+    }
+
     /**
      * Track ad revenue from a source provider
      *

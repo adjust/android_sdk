@@ -65,6 +65,8 @@ public interface IActivityHandler {
 
     void disableThirdPartySharing();
 
+    void trackThirdPartySharing(AdjustThirdPartySharing adjustThirdPartySharing);
+
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);

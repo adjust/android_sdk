@@ -633,6 +633,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                trackThirdPartySharingI(adjustThirdPartySharing);
+            }
+        });
+    }
+
+    @Override
     public void trackAdRevenue(final String source, final JSONObject adRevenueJson) {
         executor.submit(new Runnable() {
             @Override
@@ -2125,6 +2135,22 @@ public class ActivityHandler implements IActivityHandler {
 
         // Removed the cached disable third party sharing flag.
         sharedPreferencesManager.removeDisableThirdPartySharing();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+    }
+
+    private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", activityPackage.getSuffix());

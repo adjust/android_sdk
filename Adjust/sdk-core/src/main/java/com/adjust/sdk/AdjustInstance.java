@@ -409,6 +409,14 @@ public class AdjustInstance {
         activityHandler.disableThirdPartySharing();
     }
 
+    public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+
+        activityHandler.trackThirdPartySharing(adjustThirdPartySharing);
+    }
+
     /**
      * Track ad revenue from a source provider
      *
