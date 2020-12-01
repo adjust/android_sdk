@@ -29,6 +29,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.attributionCallbackName = null;
     this.attributionCallbackFunction = null;
     this.deviceKnown = null;
+    this.needsCost = null;
     this.eventSuccessCallbackName = null;
     this.eventSuccessCallbackFunction = null;
     this.eventFailureCallbackName = null;
@@ -50,6 +51,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
     this.urlStrategy = null;
+    this.preinstallTrackingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -116,6 +118,10 @@ AdjustConfig.prototype.adjust_attributionCallback = function(attribution) {
 
 AdjustConfig.prototype.setDeviceKnown = function(deviceKnown) {
     this.deviceKnown = deviceKnown;
+};
+
+AdjustConfig.prototype.setNeedsCost = function(needsCost) {
+    this.needsCost = needsCost;
 };
 
 AdjustConfig.prototype.setEventSuccessCallback = function(callback) {
@@ -226,4 +232,8 @@ AdjustConfig.prototype.addFbPixelMapping = function(fbEventNameKey, adjEventToke
 
 AdjustConfig.prototype.setUrlStrategy = function(urlStrategy) {
     this.urlStrategy = urlStrategy;
+};
+
+AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackingEnabled) {
+    this.preinstallTrackingEnabled = preinstallTrackingEnabled;
 };

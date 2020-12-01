@@ -408,6 +408,13 @@ public class Util {
         return value.hashCode();
     }
 
+    public static int hashDouble(Double value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
     public static int hashString(String value) {
         if (value == null) {
             return 0;

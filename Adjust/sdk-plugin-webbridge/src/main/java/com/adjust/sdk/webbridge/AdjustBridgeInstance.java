@@ -147,6 +147,7 @@ public class AdjustBridgeInstance {
             Object externalDeviceIdField = jsonAdjustConfig.get("externalDeviceId");
             Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
             Object deviceKnownField = jsonAdjustConfig.get("deviceKnown");
+            Object needsCostField = jsonAdjustConfig.get("needsCost");
             Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
             Object eventFailureCallbackNameField = jsonAdjustConfig.get("eventFailureCallbackName");
             Object sessionSuccessCallbackNameField = jsonAdjustConfig.get("sessionSuccessCallbackName");
@@ -163,6 +164,7 @@ public class AdjustBridgeInstance {
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
+            Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -250,6 +252,12 @@ public class AdjustBridgeInstance {
             Boolean deviceKnown = AdjustBridgeUtil.fieldToBoolean(deviceKnownField);
             if (deviceKnown != null) {
                 adjustConfig.setDeviceKnown(deviceKnown);
+            }
+
+            // Needs cost
+            Boolean needsCost = AdjustBridgeUtil.fieldToBoolean(needsCostField);
+            if (needsCost != null) {
+                adjustConfig.setNeedsCost(needsCost);
             }
 
             // Event success callback
@@ -358,6 +366,12 @@ public class AdjustBridgeInstance {
             String urlStrategy = AdjustBridgeUtil.fieldToString(urlStrategyField);
             if (urlStrategy != null) {
                 adjustConfig.setUrlStrategy(urlStrategy);
+            }
+
+            // Preinstall tracking
+            Boolean preinstallTrackingEnabled = AdjustBridgeUtil.fieldToBoolean(preinstallTrackingEnabledField);
+            if (preinstallTrackingEnabled != null) {
+                adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
