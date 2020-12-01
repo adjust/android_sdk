@@ -40,6 +40,7 @@ public class AdjustConfig {
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
     String urlStrategy;
+    Boolean needsCost;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
