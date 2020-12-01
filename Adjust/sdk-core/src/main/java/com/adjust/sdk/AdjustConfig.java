@@ -28,7 +28,7 @@ public class AdjustConfig {
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
     Double delayStart;
-    List<IRunActivityHandler> preLaunchActionsArray;
+    AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
     String userAgent;
     String pushToken;

@@ -739,10 +739,7 @@ public class ActivityHandler implements IActivityHandler {
         readSessionPartnerParametersI(adjustConfig.context);
 
         if (adjustConfig.startEnabled != null) {
-            if (adjustConfig.preLaunchActionsArray == null) {
-                adjustConfig.preLaunchActionsArray = new ArrayList<IRunActivityHandler>();
-            }
-            adjustConfig.preLaunchActionsArray.add(new IRunActivityHandler() {
+            adjustConfig.preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
                 @Override
                 public void run(ActivityHandler activityHandler) {
                     activityHandler.setEnabledI(adjustConfig.startEnabled);
@@ -808,8 +805,24 @@ public class ActivityHandler implements IActivityHandler {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMe();
-            } else if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                disableThirdPartySharing();
+            } else {
+                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                    disableThirdPartySharing();
+                }
+                for (AdjustThirdPartySharing adjustThirdPartySharing :
+                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+                {
+                    trackThirdPartySharing(adjustThirdPartySharing);
+                }
+                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
+                    trackMeasurementConsent(
+                            adjustConfig.preLaunchActions.
+                                    lastMeasurementConsentTracked.booleanValue());
+                }
+
+                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
+                        new ArrayList<>();
+                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
             }
         }
 
@@ -907,7 +920,7 @@ public class ActivityHandler implements IActivityHandler {
             }
         });
 
-        preLaunchActionsI(adjustConfig.preLaunchActionsArray);
+        preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
         sendReftagReferrerI();
     }
 
@@ -1120,6 +1133,21 @@ public class ActivityHandler implements IActivityHandler {
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
                 }
+                for (AdjustThirdPartySharing adjustThirdPartySharing :
+                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+                {
+                    trackThirdPartySharingI(adjustThirdPartySharing);
+                }
+                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
+                    trackMeasurementConsentI(
+                            adjustConfig.preLaunchActions.
+                                    lastMeasurementConsentTracked.booleanValue());
+                }
+
+                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
+                        new ArrayList<>();
+                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
+
 
                 activityState.sessionCount = 1; // this is the first session
                 transferSessionPackageI(now);
@@ -1551,8 +1579,24 @@ public class ActivityHandler implements IActivityHandler {
 
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
-            } else if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                disableThirdPartySharingI();
+            } else {
+                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                    disableThirdPartySharingI();
+                }
+                for (AdjustThirdPartySharing adjustThirdPartySharing :
+                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+                {
+                    trackThirdPartySharingI(adjustThirdPartySharing);
+                }
+                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
+                    trackMeasurementConsentI(
+                            adjustConfig.preLaunchActions.
+                                    lastMeasurementConsentTracked.booleanValue());
+                }
+
+                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
+                        new ArrayList<>();
+                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
             }
 
             // check if install was tracked
@@ -2154,6 +2198,14 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
+        if (!checkActivityStateI(activityState)) {
+            adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(
+                    adjustThirdPartySharing);
+            return;
+        }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
@@ -2170,6 +2222,13 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void trackMeasurementConsentI(final boolean consentMeasurement) {
+        if (!checkActivityStateI(activityState)) {
+            adjustConfig.preLaunchActions.lastMeasurementConsentTracked = consentMeasurement;
+            return;
+        }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
