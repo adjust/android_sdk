@@ -52,6 +52,7 @@ public class AdjustConfig {
     String appSecret;
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
+    Boolean needsCost;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -193,6 +194,10 @@ public class AdjustConfig {
 
     public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
         this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+    }
+
+    public void setNeedsCost(boolean needsCost) {
+        this.needsCost = needsCost;
     }
 
     public boolean isValid() {

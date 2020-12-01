@@ -279,6 +279,12 @@ public class AdjustCommandExecutor {
             adjustConfig.setDeviceKnown(deviceKnown);
         }
 
+        if (command.containsParameter("needsCost")) {
+            String needsCostS = command.getFirstParameterValue("needsCost");
+            boolean needsCost = "true".equals(needsCostS);
+            adjustConfig.setNeedsCost(needsCost);
+        }
+
         if (command.containsParameter("eventBufferingEnabled")) {
             String eventBufferingEnabledS = command.getFirstParameterValue("eventBufferingEnabled");
             boolean eventBufferingEnabled = "true".equals(eventBufferingEnabledS);
@@ -332,6 +338,11 @@ public class AdjustCommandExecutor {
                     MainActivity.testLibrary.addInfoToSend("creative", attribution.creative);
                     MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
                     MainActivity.testLibrary.addInfoToSend("adid", attribution.adid);
+                    MainActivity.testLibrary.addInfoToSend("costType", attribution.costType);
+                    if (attribution.costAmount != null) {
+                        MainActivity.testLibrary.addInfoToSend("costAmount", attribution.costAmount.toString());
+                    }
+                    MainActivity.testLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
