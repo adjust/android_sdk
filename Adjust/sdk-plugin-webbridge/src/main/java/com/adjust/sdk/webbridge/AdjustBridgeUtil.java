@@ -107,6 +107,9 @@ public class AdjustBridgeUtil {
                     jsonAttribution.put("adgroup", attribution.adgroup == null ? JSONObject.NULL : attribution.adgroup);
                     jsonAttribution.put("clickLabel", attribution.clickLabel == null ? JSONObject.NULL : attribution.clickLabel);
                     jsonAttribution.put("adid", attribution.adid == null ? JSONObject.NULL : attribution.adid);
+                    jsonAttribution.put("costType", attribution.costType == null ? JSONObject.NULL : attribution.costType);
+                    jsonAttribution.put("costAmount", attribution.costAmount == null ? JSONObject.NULL : attribution.costAmount);
+                    jsonAttribution.put("costCurrency", attribution.costCurrency == null ? JSONObject.NULL : attribution.costCurrency);
 
                     String command = "javascript:" + commandName + "(" + jsonAttribution.toString() + ");";
                     webView.loadUrl(command);

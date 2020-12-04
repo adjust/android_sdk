@@ -315,6 +315,12 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setDeviceKnown(deviceKnown);
     }
 
+    if ('needsCost' in params) {
+        var needsCostS = getFirstParameterValue(params, 'needsCost');
+        var needsCost = needsCostS == 'true';
+        adjustConfig.setNeedsCost(needsCost);
+    }
+
     if ('eventBufferingEnabled' in params) {
         var eventBufferingEnabledS = getFirstParameterValue(params, 'eventBufferingEnabled');
         var eventBufferingEnabled = eventBufferingEnabledS == 'true';
@@ -343,6 +349,9 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("creative", attribution.creative);
             TestLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
             TestLibrary.addInfoToSend("adid", attribution.adid);
+            TestLibrary.addInfoToSend("costType", attribution.costType);
+            TestLibrary.addInfoToSend("costAmount", attribution.costAmount);
+            TestLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
 
             TestLibrary.sendInfoToServer(basePath);
         });

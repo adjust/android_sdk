@@ -99,14 +99,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.24.1'
+implementation 'com.adjust.sdk:adjust-android:4.25.0'
 implementation 'com.android.installreferrer:installreferrer:2.1'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.24.1'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.25.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
@@ -1339,6 +1339,11 @@ The listener function is called after the SDK receives the final attribution dat
 - `creative` the creative grouping level string of the current attribution.
 - `clickLabel` the click label string of the current attribution.
 - `adid` the Adjust device identifier string.
+- `costType` the cost type string.
+- `costAmount` the cost amount.
+- `costCurrency` the cost currency string.
+
+**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by calling `setNeedsCost` method. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.25.0 and above.
 
 ### <a id="af-subscriptions"></a>Subscription tracking
 

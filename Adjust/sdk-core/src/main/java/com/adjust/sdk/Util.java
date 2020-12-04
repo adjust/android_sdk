@@ -312,7 +312,7 @@ public class Util {
 
     public static boolean checkPermission(Context context, String permission) {
         try {
-            int result = context.checkCallingOrSelfPermission(permission);
+            int result = context.checkCallingPermission(permission);
             return result == PackageManager.PERMISSION_GRANTED;
         } catch (Exception e) {
             getLogger().debug("Unable to check permission '%s' with message (%s)", permission, e.getMessage());
@@ -402,6 +402,13 @@ public class Util {
     }
 
     public static int hashLong(Long value) {
+        if (value == null) {
+            return 0;
+        }
+        return value.hashCode();
+    }
+
+    public static int hashDouble(Double value) {
         if (value == null) {
             return 0;
         }
