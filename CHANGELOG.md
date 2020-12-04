@@ -1,8 +1,8 @@
 ### Version 4.25.0 (XX December 2020)
 #### Added
 - Added cost data to attribution callback.
-- Added `setNeedsCost(boolean)` method in `AdjustConfig` class to allow setting whether cost data is needed in attribution callback.
-- Added `setPreinstallTrackingEnabled` method in `adjust_config.js` to allow setting of preintall tracking from webbridge plugin.
+- Added `setNeedsCost(boolean)` method in `AdjustConfig` class to allow setting whether cost data is needed in attribution callback or not.
+- Added `setPreinstallTrackingEnabled` method in `adjust_config.js` to allow setting of preintall tracking from web bridge plugin.
 
 ---
 
