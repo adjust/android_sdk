@@ -1343,7 +1343,7 @@ The listener function is called after the SDK receives the final attribution dat
 - `costAmount` the cost amount.
 - `costCurrency` the cost currency string.
 
-**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when it is configured in `AdjustConfig` using `setNeedsCost` method.  It is available in the SDK v4.25.0 and above.
+**Note**: The cost data - `costType`, `costAmount` & `costCurrency` are only available when configured in `AdjustConfig` by calling `setNeedsCost` method. If not configured or configured, but not being part of the attribution, these fields will have value `null`. This feature is available in SDK v4.25.0 and above.
 
 ### <a id="af-subscriptions"></a>Subscription tracking
 
