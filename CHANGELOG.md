@@ -1,3 +1,11 @@
+### Version 4.25.0 (XX December 2020)
+#### Added
+- Added cost data to attribution callback.
+- Added `setNeedsCost(boolean)` method in `AdjustConfig` class to allow setting whether cost data is needed in attribution callback.
+- Added `setPreinstallTrackingEnabled` method in `adjust_config.js` to allow setting of preintall tracking from webbridge plugin.
+
+---
+
 ### Version 4.24.1 (10th September 2020)
 #### Added
 - Added support to OAID plugin for MSA SDK v1.0.23.
