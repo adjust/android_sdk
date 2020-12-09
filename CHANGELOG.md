@@ -5,7 +5,6 @@
 - Added `setPreinstallTrackingEnabled` method to `adjust_config.js` to allow enabling of preintall tracking from web bridge plugin.
 
 #### Changed
-- Updated permission check API from `checkCallingOrSelfPermission` to more secure `checkCallingPermission` method.
 - Switched from usage of deprecated [`getNetworkType()`](https://developer.android.com/reference/android/telephony/TelephonyManager#getNetworkType()) method to [`getDataNetworkType()`](https://developer.android.com/reference/android/telephony/TelephonyManager#getDataNetworkType()) on devices running Android 11 or later.
 
 ---

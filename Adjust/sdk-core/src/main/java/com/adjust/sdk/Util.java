@@ -312,7 +312,7 @@ public class Util {
 
     public static boolean checkPermission(Context context, String permission) {
         try {
-            int result = context.checkCallingPermission(permission);
+            int result = context.checkCallingOrSelfPermission(permission);
             return result == PackageManager.PERMISSION_GRANTED;
         } catch (Exception e) {
             getLogger().debug("Unable to check permission '%s' with message (%s)", permission, e.getMessage());
