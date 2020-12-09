@@ -45,7 +45,7 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.24.1";
+    String CLIENT_SDK = "android4.25.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -90,6 +90,7 @@ public interface Constants {
     String SYSTEM_PROPERTIES_PATH_REFLECTION = "system_properties_path_reflection";
     String CONTENT_PROVIDER = "content_provider";
     String CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action";
+    String CONTENT_PROVIDER_NO_PERMISSION = "content_provider_no_permission";
     String FILE_SYSTEM = "file_system";
 
     String ADJUST_PREINSTALL_SYSTEM_PROPERTY_PREFIX = "adjust.preinstall.";

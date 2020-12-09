@@ -7,9 +7,9 @@ subprojects {
 ext {
     // Android config.
     coreMinSdkVersion = 9
-    coreCompileSdkVersion = 29
-    coreTargetSdkVersion = 29
-    coreVersionName = '4.24.1'  //append -SNAPSHOT for snapshot version
+    coreCompileSdkVersion = 30
+    coreTargetSdkVersion = 30
+    coreVersionName = '4.25.0'
     defaultVersionCode = 1
 
     // POM.
@@ -17,14 +17,14 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.3.72'
+    ext.kotlin_version = '1.4.0'
 
     repositories {
         jcenter()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath 'com.android.tools.build:gradle:4.1.1'
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files.

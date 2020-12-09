@@ -1,3 +1,14 @@
+### Version 4.25.0 (9th December 2020)
+#### Added
+- Added possibility to get cost data information in attribution callback.
+- Added `setNeedsCost(boolean)` method to `AdjustConfig` to indicate if cost data is needed in attribution callback (by default cost data will not be part of attribution callback if not enabled with this setter method).
+- Added `setPreinstallTrackingEnabled` method to `adjust_config.js` to allow enabling of preintall tracking from web bridge plugin.
+
+#### Changed
+- Switched from usage of deprecated [`getNetworkType()`](https://developer.android.com/reference/android/telephony/TelephonyManager#getNetworkType()) method to [`getDataNetworkType()`](https://developer.android.com/reference/android/telephony/TelephonyManager#getDataNetworkType()) on devices running Android 11 or later.
+
+---
+
 ### Version 4.24.1 (10th September 2020)
 #### Added
 - Added support to OAID plugin for MSA SDK v1.0.23.
