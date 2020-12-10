@@ -67,7 +67,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Google Play Services advertising identifier](#af-gps-adid)
       * [Amazon advertising identifier](#af-amazon-adid)
       * [Adjust device identifier](#af-adid)
-   * [Pre-installed trackers](#af-pre-installed-trackers)
+   * [Preinstalled apps](#af-preinstalled-apps)
    * [Offline mode](#af-offline-mode)
    * [Disable tracking](#af-disable-tracking)
    * [Event buffering](#af-event-buffering)
@@ -1688,7 +1688,7 @@ let adid = Adjust.getAdid();
 
 **Note**: Information about the **adid** is only available after our backend tracks the app instal. **It is not possible** to access the **adid** value before the SDK has been initialized and the installation of your app has been successfully tracked.
 
-### <a id="af-pre-installed-trackers"></a>Preinstalled apps
+### <a id="af-preinstalled-apps"></a>Preinstalled apps
 
 You can use the Adjust SDK to recognize users whose devices came with your app preinstalled. Adjust offers two solutions: one which uses the app payload, and one which uses a tracker. 
 
