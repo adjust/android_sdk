@@ -1688,9 +1688,25 @@ let adid = Adjust.getAdid();
 
 **Note**: Information about the **adid** is only available after our backend tracks the app instal. **It is not possible** to access the **adid** value before the SDK has been initialized and the installation of your app has been successfully tracked.
 
-### <a id="af-pre-installed-trackers"></a>Pre-installed trackers
+### <a id="af-pre-installed-trackers"></a>Preinstalled apps
 
-If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps:
+You can use the Adjust SDK to recognize users whose devices came with your app preinstalled. Adjust offers two solutions: one which uses the app payload, and one which uses a tracker. 
+
+We generally recommend using the app payload solution. However, there are certain use cases which may require the tracker. If you are unsure which solution to implement, reach out to integration@adjust.com
+
+#### Use the app payload
+
+This solution is supported from **SDK v4.23.0 & above**.
+
+Enable the Adjust SDK to recognise preinstalled apps by making this call on your config instance: 
+
+```
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPreinstallTrackingEnabled(true);
+Adjust.onCreate(config);
+```
+
+#### Use a tracker
 
 - Create a new tracker in your [dashboard].
 - Open your app delegate and set the default tracker of your config:
