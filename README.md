@@ -1698,7 +1698,7 @@ We generally recommend using the app payload solution. However, there are certai
 
 This solution is supported from **SDK v4.23.0 & above**.
 
-Enable the Adjust SDK to recognise preinstalled apps by making this call on your config instance: 
+Enable the Adjust SDK to recognise preinstalled apps by calling `setPreinstallTrackingEnabled` with the parameter `true` after creating the config object:
 
 ```
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
