@@ -1710,9 +1710,7 @@ Enable the Adjust SDK to recognise preinstalled apps by calling `setPreinstallTr
 <td>
 
 ```java
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-config.setPreinstallTrackingEnabled(true);
-Adjust.onCreate(config);
+adjustConfig.setPreinstallTrackingEnabled(true);
 ```
 </td>
 </tr>
@@ -1725,9 +1723,7 @@ Adjust.onCreate(config);
 <td>
 
 ```js
-AdjustConfig config = new AdjustConfig(this, appToken, environment);
-config.setPreinstallTrackingEnabled(true);
-Adjust.onCreate(config);
+adjustConfig.setPreinstallTrackingEnabled(true);
 ```
 </td>
 </tr>
