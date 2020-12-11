@@ -1692,7 +1692,7 @@ let adid = Adjust.getAdid();
 
 You can use the Adjust SDK to recognize users whose devices had your app preinstalled during manufacturing. Adjust offers two solutions: one which uses the app payload, and one which uses a tracker. 
 
-In general, we recommend using the app payload solution. However, there are certain use cases which may require the tracker. If you are unsure which solution to implement, reach out to integration@adjust.com
+In general, we recommend using the app payload solution. However, there are certain use cases which may require the tracker. [Visit our Help Center](https://help.adjust.com/en/article/pre-install-tracking) to find out about Adjust's preinstall partners and their integrations. If you are unsure which solution to implement, reach out to integration@adjust.com
 
 #### Use the app payload
 
