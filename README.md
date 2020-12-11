@@ -1700,11 +1700,38 @@ This solution is supported from **SDK v4.23.0 & above**.
 
 Enable the Adjust SDK to recognise preinstalled apps by calling `setPreinstallTrackingEnabled` with the parameter `true` after creating the config object:
 
-```
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 config.setPreinstallTrackingEnabled(true);
 Adjust.onCreate(config);
 ```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+AdjustConfig config = new AdjustConfig(this, appToken, environment);
+config.setPreinstallTrackingEnabled(true);
+Adjust.onCreate(config);
+```
+</td>
+</tr>
+</table>
 
 #### Use a tracker
 
