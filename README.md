@@ -67,7 +67,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Google Play Services advertising identifier](#af-gps-adid)
       * [Amazon advertising identifier](#af-amazon-adid)
       * [Adjust device identifier](#af-adid)
-   * [Pre-installed trackers](#af-pre-installed-trackers)
+   * [Preinstalled apps](#af-preinstalled-apps)
    * [Offline mode](#af-offline-mode)
    * [Disable tracking](#af-disable-tracking)
    * [Event buffering](#af-event-buffering)
@@ -1688,9 +1688,48 @@ let adid = Adjust.getAdid();
 
 **Note**: Information about the **adid** is only available after our backend tracks the app instal. **It is not possible** to access the **adid** value before the SDK has been initialized and the installation of your app has been successfully tracked.
 
-### <a id="af-pre-installed-trackers"></a>Pre-installed trackers
+### <a id="af-preinstalled-apps"></a>Preinstalled apps
 
-If you want to use the Adjust SDK to recognize users whose devices came with your app pre-installed, follow these steps:
+You can use the Adjust SDK to recognize users whose devices had your app preinstalled during manufacturing. Adjust offers two solutions: one which uses the system payload, and one which uses a default tracker. 
+
+In general, we recommend using the system payload solution. However, there are certain use cases which may require the tracker. [Visit our Help Center](https://help.adjust.com/en/article/pre-install-tracking) to find out about Adjust's preinstall partners and their integrations. If you are unsure which solution to implement, reach out to integration@adjust.com
+
+#### Use the system payload
+
+This solution is supported from **SDK v4.23.0 & above**.
+
+Enable the Adjust SDK to recognise preinstalled apps by calling `setPreinstallTrackingEnabled` with the parameter `true` after creating the config object:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+#### Use a default tracker
 
 - Create a new tracker in your [dashboard].
 - Open your app delegate and set the default tracker of your config:
