@@ -57,6 +57,9 @@ function AdjustConfig(appToken, environment, legacy) {
 AdjustConfig.EnvironmentSandbox = 'sandbox';
 AdjustConfig.EnvironmentProduction = 'production';
 
+AdjustConfig.UrlStrategyIndia = "url_strategy_india";
+AdjustConfig.UrlStrategyChina = "url_strategy_china";
+
 AdjustConfig.LogLevelVerbose = 'VERBOSE',
 AdjustConfig.LogLevelDebug = 'DEBUG',
 AdjustConfig.LogLevelInfo = 'INFO',
