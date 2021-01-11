@@ -266,6 +266,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         uriBuilder.path(urlObject.getPath());
         uriBuilder.appendPath(activityPackage.getPath());
 
+        logger.debug("Making request to url: %s", uriBuilder.toString());
+
         for (final Map.Entry<String, String> entry : activityPackage.getParameters().entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
@@ -291,7 +293,11 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         // 'targetUrl' does not end with '/', but activity package paths that are sent by POST
         //  do start with '/', so it's not added om between
-        return Util.formatString("%s%s", urlWithPath, activityPackage.getPath());
+        String urlString = Util.formatString("%s%s", urlWithPath, activityPackage.getPath());
+
+        logger.debug("Making request to url : %s", urlString);
+
+        return urlString;
     }
 
     private String urlWithExtraPathByActivityKind(final ActivityKind activityKind,
