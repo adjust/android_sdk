@@ -30,7 +30,6 @@ public class AdjustFactory {
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
     private static boolean tryInstallReferrer = true;
-    private static boolean customUrlHasBeenSet = false;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -191,10 +190,6 @@ public class AdjustFactory {
 
     public static boolean getTryInstallReferrer() {
         return tryInstallReferrer;
-    }
-
-    public static boolean customUrlHasBeenSet() {
-        return customUrlHasBeenSet;
     }
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
