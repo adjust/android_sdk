@@ -1,29 +1,13 @@
 package com.adjust.sdk.network;
 
-import android.net.Uri;
-
-import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.ILogger;
-import com.adjust.sdk.ResponseData;
-import com.adjust.sdk.TrackingState;
-import com.adjust.sdk.Util;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 

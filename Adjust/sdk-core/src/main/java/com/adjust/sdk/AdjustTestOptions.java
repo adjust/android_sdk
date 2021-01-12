@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import com.adjust.sdk.network.UtilNetworking;
-
 /**
  * Created by nonelse on 08.01.2018
  */

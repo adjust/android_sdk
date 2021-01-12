@@ -12,7 +12,6 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import com.adjust.sdk.network.IActivityPackageSender;
-import com.adjust.sdk.network.ActivityPackageSender;
 import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 
