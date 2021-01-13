@@ -66,7 +66,7 @@
       * [Google Play 서비스 광고 식별자](#af-gps-adid)
       * [Amazon 광고 식별자](#af-amazon-adid)
       * [Adjust 기기 식별자](#af-adid)
-   * [사전 설치 트래커(pre-installed trackers)](#af-pre-installed-trackers)
+   * [사전 설치 트래커(preinstalled apps)](#af-preinstalled-apps)
    * [오프라인 모드](#af-offline-mode)
    * [추적 사용 중지](#af-disable-tracking)
    * [이벤트 버퍼링(buffering)](#af-event-buffering)
@@ -1611,15 +1611,53 @@ let adid = Adjust.getAdid();
 **참고**: adid 관련 정보는 Adjust 백엔드가 앱 설치를 추적한 후에만 얻을 수 있습니다. 따라서 SDK가 초기화되고 앱 설치 추적이 성공적으로 이루어지기 전에는 adid 액세스가 불가능합니다.
 
 
-### <a id="af-pre-installed-trackers"></a>사전 설치 트래커
+### <a id="af-preinstalled-apps"></a>사전 설치된 앱
 
-Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를 인식하고 싶다면 다음 절차를 따르세요.
+애드저스트 SDK를 사용하여 기기 제조 과정에서 앱이 사전 설치되었던 유저를 파악할 수 있습니다. 시스템 페이로드 또는 기본 트래커를 사용하는 두 가지 방법으로 사전 설치 여부를 확인할 수 있습니다.
 
-- [대시보드][dashboard]에 새 트래커를 생성합니다.
+일반적으로는 시스템 페이로드를 사용하는 방식을 권장합니다. 그러나 일부 상황에서는 트래커를 사용해야 될 수 있습니다. 애드저스트 [헬프 센터를](https://help.adjust.com/ko/article/pre-install-tracking) 방문하셔서 애드저스트의 사전 설치 파트너와 연동에 대해 확인하시기 바랍니다. 어느 방법을 사용해야 될지 모르겠다면 integration@adjust.com에 문의주십시오.
 
-- 앱 델리게이트를 열고 config 인스턴스의 기본값 트래커를 다음과 같이 설정합니다.
+#### 시스템 페이로드 사용하기
 
-  <table>
+이 방법은 **SDK v4.23.0 이상**에서만 지원됩니다.
+
+애드저스트 SDK가 사전 설치된 앱을 인식할 수 있도록 하려면 구성 객체를 생성한 후 `setPreinstallTrackingEnabled`를`true`파라미터와 함께 요청하십시오.
+
+ <table>
+<tr>
+<td>
+<b>네이티브 앱 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+#### 기본 트래커 사용하기
+
+- 대시보드에서 새 트래커를 생성합니다.
+- 앱 델리게이트를 열고 구성의 기본 트래커를 설정합니다.
+
+<table>
   <tr>
   <td>
   <b>네이티브 앱 SDK</b>
@@ -1635,7 +1673,7 @@ Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를
   </tr>
   <tr>
   <td>
-  <b>웹뷰 SDK</b>
+  <b>Web View SDK</b>
   </td>
   </tr>
   <tr>
@@ -1647,14 +1685,13 @@ Adjust SDK를 사용하여 앱이 사전 설치된 장치를 지닌 사용자를
   </td>
   </tr>
   </table>
-
-- `{TrackerToken}`을 2에서 생성한 트래커 토큰으로 대체합니다. 대시보드에는 트래커 URL(`http://app.adjust.com/` 포함)이 표시된다는 사실을 명심하시기 바랍니다. 소스코드에서는 전체 URL을 표시할 수 없으며 6자로 이루어진 토큰만을 명시해야 합니다.
-
-- 앱 빌드를 실행하세요. LogCat에서 다음 라인을 볼 수 있을 것입니다.
-
-``` 
-Default tracker: 'abc123'
-```
+  
+  - `{TrackerToken}`에 1단계에서 생성한 트래커 토큰을 입력합니다. 대시보드에는 트래커 URL이 표시된다는 점에 유의하십시오(`http://app.adjust.com/` 포함). 소스 코드에는 전체 URL이 아닌 6~7글자의 토큰만 입력해야 합니다.
+  
+  - 앱을 빌드하고 실행합니다. 로그 내역에서 다음과 같은 내용이 표시됩니다.
+  ```
+  Default tracker: 'abc123'
+  ```
 
 ### <a id="af-offline-mode"></a>오프라인 모드
 
