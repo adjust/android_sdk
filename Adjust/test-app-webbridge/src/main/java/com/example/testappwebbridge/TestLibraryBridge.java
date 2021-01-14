@@ -87,7 +87,6 @@ public class TestLibraryBridge {
             Object gdprPathField = jsonAdjustTestOptions.get("gdprPath");
             Object subscriptionPathField = jsonAdjustTestOptions.get("subscriptionPath");
             Object useTestConnectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
-            Object connectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
             Object timerIntervalInMillisecondsField = jsonAdjustTestOptions.get("timerIntervalInMilliseconds");
             Object timerStartInMillisecondsField = jsonAdjustTestOptions.get("timerStartInMilliseconds");
             Object sessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("sessionIntervalInMilliseconds");
@@ -125,11 +124,6 @@ public class TestLibraryBridge {
             String subscriptionPath = AdjustBridgeUtil.fieldToString(subscriptionPathField);
             if (subscriptionPath != null) {
                 adjustTestOptions.subscriptionPath = subscriptionPath;
-            }
-
-            Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
-            if (useTestConnectionOptions != null) {
-                TestConnectionOptions.setTestConnectionOptions();
             }
 
             Long timerIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(timerIntervalInMillisecondsField);
@@ -173,6 +167,11 @@ public class TestLibraryBridge {
             }
 
             Adjust.setTestOptions(adjustTestOptions);
+
+            Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
+            if (useTestConnectionOptions != null) {
+                TestConnectionOptions.setTestConnectionOptions();
+            }
         } catch (Exception e) {
             AdjustFactory.getLogger().error("AdjustBridgeInstance setTestOptions: %s", e.getMessage());
         }
