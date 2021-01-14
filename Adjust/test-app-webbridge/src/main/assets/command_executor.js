@@ -134,6 +134,8 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "sendReferrer"                   : this.sendReferrer(command.params); break;
         case "gdprForgetMe"                   : this.gdprForgetMe(command.params); break;
         case "disableThirdPartySharing"       : this.disableThirdPartySharing(command.params); break;
+        case "thirdPartySharing"              : this.thirdPartySharing(command.params); break;
+        case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
         break;
     }
@@ -546,6 +548,29 @@ AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {
 
 AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
     Adjust.disableThirdPartySharing();
+}
+
+AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
+    var enableOrElseDisable = getFirstParameterValue(params, "enableOrElseDisable") == 'true';
+
+    var adjustThirdPartySharing = new AdjustThirdPartySharing(enableOrElseDisable);
+
+    if ('granularOptions' in params) {
+        var granularOptions = getValueFromKey(params, "granularOptions");
+        for (var i = 0; i < granularOptions.length; i = i + 3) {
+            var partnerName = granularOptions[i];
+            var key = granularOptions[i + 1];
+            var value = granularOptions[i + 2];
+            adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+        }
+    }
+
+    Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+}
+
+AdjustCommandExecutor.prototype.measurementConsent = function(params) {
+    var enableOrElseDisable = getFirstParameterValue(params, "enableOrElseDisable") == 'true';
+    Adjust.trackMeasurementConsent(enableOrElseDisable);
 }
 
 AdjustCommandExecutor.prototype.addSessionCallbackParameter = function(params) {

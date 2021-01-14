@@ -19,6 +19,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustTestOptions;
+import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -626,6 +627,55 @@ public class AdjustBridgeInstance {
             return;
         }
         Adjust.disableThirdPartySharing(application.getApplicationContext());
+    }
+
+    @JavascriptInterface
+    public void trackThirdPartySharing(String adjustThirdPartySharingString) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        try {
+            JSONObject jsonAdjustThirdPartySharing = new JSONObject(adjustThirdPartySharingString);
+
+            Object enableOrElseDisableField =
+                    jsonAdjustThirdPartySharing.get("enableOrElseDisable");
+            Object granularOptionsField = jsonAdjustThirdPartySharing.get("granularOptions");
+
+            Boolean enableOrElseDisable = AdjustBridgeUtil.fieldToBoolean(enableOrElseDisableField);
+
+            AdjustThirdPartySharing adjustThirdPartySharing =
+                    new AdjustThirdPartySharing(enableOrElseDisable);
+
+            // Callback parameters
+            String[] granularOptions =
+                    AdjustBridgeUtil.jsonArrayToArray((JSONArray)granularOptionsField);
+            if (granularOptions != null) {
+                for (int i = 0; i < granularOptions.length; i += 3) {
+                    String partnerName = granularOptions[i];
+                    String key = granularOptions[i + 1];
+                    String value = granularOptions[i + 2];
+                    adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+                }
+            }
+
+            // Track ThirdPartySharing
+            Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+        } catch (Exception e) {
+            AdjustFactory.getLogger().error(
+                    "AdjustBridgeInstance trackThirdPartySharing: %s", e.getMessage());
+        }
+    }
+
+    @JavascriptInterface
+    public void trackMeasurementConsent(String consentMeasurementString) {
+        if (!isInitialized()) {
+            return;
+        }
+        Boolean consentMeasurement = AdjustBridgeUtil.fieldToBoolean(consentMeasurementString);
+        if (consentMeasurement != null) {
+            Adjust.trackMeasurementConsent(consentMeasurement);
+        }
     }
 
     @JavascriptInterface

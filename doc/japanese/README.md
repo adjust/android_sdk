@@ -299,6 +299,7 @@ HTMLファイルに、アセットのルートフォルダにある Adjust JavaS
 ```html
 <script type="text/javascript" src="adjust.js"></script>
 <script type="text/javascript" src="adjust_event.js"></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js"></script>
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 

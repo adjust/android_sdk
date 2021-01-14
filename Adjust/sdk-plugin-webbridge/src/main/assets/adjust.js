@@ -147,6 +147,18 @@ var Adjust = {
         }
     },
 
+    trackThirdPartySharing: function(adjustThirdPartySharing) {
+        if (AdjustBridge) {
+            AdjustBridge.trackThirdPartySharing(JSON.stringify(adjustThirdPartySharing));
+        }
+    },
+
+    trackMeasurementConsent: function(consentMeasurement) {
+        if (AdjustBridge) {
+            AdjustBridge.trackMeasurementConsent(consentMeasurementString);
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
