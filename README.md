@@ -2027,6 +2027,41 @@ Adjust.trackThirdPartySharing(adjustEvent);
 
 Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
+Call the following method to instruct the Adjust SDK to send the granular options to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustEvent);
+```
+</td>
+</tr>
+</table>
+
 ### <a id="af-measurement-consent"></a>Measurement consent for specific users
 
 You can now notify Adjust when a user has exercised their right to change measurement consent their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
