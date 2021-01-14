@@ -74,6 +74,8 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
    * [Disable third-party sharing](#af-disable-third-party-sharing)
+   * [Third-party sharing](#af-third-party-sharing)
+   * [Measurement consent](#af-measurement-consent)
 
 ### Testing and troubleshooting
 
@@ -1985,6 +1987,82 @@ Adjust.disableThirdPartySharing();
 </table>
 
 Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+
+### <a id="af-third-party-sharing"></a>Third-party sharing for specific users
+
+You can now notify Adjust when a user has exercised their right to change sharing their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustEvent);
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+
+### <a id="af-measurement-consent"></a>Measurement consent for specific users
+
+You can now notify Adjust when a user has exercised their right to change measurement consent their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackMeasurementConsent(false);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.trackMeasurementConsent(false);
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
 ## Testing and troubleshooting
 
