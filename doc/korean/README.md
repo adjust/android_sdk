@@ -66,7 +66,7 @@
       * [Google Play 서비스 광고 식별자](#af-gps-adid)
       * [Amazon 광고 식별자](#af-amazon-adid)
       * [Adjust 기기 식별자](#af-adid)
-   * [사전 설치 트래커(preinstalled apps)](#af-preinstalled-apps)
+   * [사전 설치된 앱(preinstalled apps)](#af-preinstalled-apps)
    * [오프라인 모드](#af-offline-mode)
    * [추적 사용 중지](#af-disable-tracking)
    * [이벤트 버퍼링(buffering)](#af-event-buffering)
