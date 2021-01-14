@@ -1,4 +1,4 @@
-package com.example.test_options;
+package com.adjust.test_options;
 
 import java.io.IOException;
 import java.net.InetAddress;

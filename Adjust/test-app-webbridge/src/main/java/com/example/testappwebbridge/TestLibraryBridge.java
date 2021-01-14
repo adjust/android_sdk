@@ -11,7 +11,7 @@ import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.webbridge.AdjustBridgeUtil;
 import com.adjust.test.ICommandRawJsonListener;
 import com.adjust.test.TestLibrary;
-import com.example.test_options.TestConnectionOptions;
+import com.adjust.test_options.TestConnectionOptions;
 
 import org.json.JSONObject;
 

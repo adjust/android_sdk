@@ -22,7 +22,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.example.test_options.TestConnectionOptions;
+import com.adjust.test_options.TestConnectionOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
