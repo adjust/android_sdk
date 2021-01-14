@@ -18,7 +18,9 @@ import com.adjust.sdk.scheduler.TimerOnce;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AttributionHandler implements IAttributionHandler,
         IActivityPackageSender.ResponseDataCallbackSubscriber
@@ -233,10 +235,23 @@ public class AttributionHandler implements IAttributionHandler,
         ActivityPackage attributionPackage = buildAndGetAttributionPackage();
         logger.verbose("%s", attributionPackage.getExtendedString());
 
+        Map<String, String> sendingParameters = generateSendingParametersI();
+
         activityPackageSender.sendActivityPackage(
                 attributionPackage,
-                null,
+                sendingParameters,
                 this);
+    }
+
+    private Map<String, String> generateSendingParametersI() {
+        HashMap<String, String> sendingParameters = new HashMap<>();
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+
+        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
+
+        return sendingParameters;
     }
 
     private ActivityPackage buildAndGetAttributionPackage() {
