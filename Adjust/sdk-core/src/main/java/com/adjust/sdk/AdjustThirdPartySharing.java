@@ -17,6 +17,12 @@ public class AdjustThirdPartySharing {
                                   final String key,
                                   final String value)
     {
+        if (partnerName == null || key == null || value == null) {
+            ILogger logger = AdjustFactory.getLogger();
+            logger.error("Cannot add granular option with any null value");
+            return;
+        }
+
         Map<String, String> partnerOptions = granularOptions.get(partnerName);
         if (partnerOptions == null) {
             partnerOptions = new HashMap<>();
