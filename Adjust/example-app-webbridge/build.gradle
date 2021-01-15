@@ -23,7 +23,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
-    implementation 'com.android.installreferrer:installreferrer:2.1'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
 
     implementation project(':sdk-core')
     implementation project(':sdk-plugin-webbridge')
