@@ -551,7 +551,10 @@ AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
 }
 
 AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
-    var isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    var isEnabled = null;
+    if ('isEnabled' in params) {
+        isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    }
     var adjustThirdPartySharing = new AdjustThirdPartySharing(isEnabled);
 
     if ('granularOptions' in params) {
