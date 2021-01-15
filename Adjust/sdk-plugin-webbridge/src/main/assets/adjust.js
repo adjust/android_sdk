@@ -155,7 +155,7 @@ var Adjust = {
 
     trackMeasurementConsent: function(consentMeasurement) {
         if (AdjustBridge) {
-            AdjustBridge.trackMeasurementConsent(consentMeasurementString);
+            AdjustBridge.trackMeasurementConsent(consentMeasurement);
         }
     },
 
