@@ -118,7 +118,12 @@ public class AdjustBridgeInstance {
         this.facebookSDKJSInterface = new FacebookSDKJSInterface();
 
         // Add FB pixel to JS interface.
-        this.webView.addJavascriptInterface(facebookSDKJSInterface, FB_JAVASCRIPT_INTERFACE_NAME_PREFIX + fbApplicationId);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            this.webView.addJavascriptInterface(facebookSDKJSInterface,
+                                                FB_JAVASCRIPT_INTERFACE_NAME_PREFIX
+                                                + fbApplicationId
+                                               );
+        }
     }
 
     @JavascriptInterface
@@ -734,7 +739,9 @@ public class AdjustBridgeInstance {
 
     public void setWebView(WebView webView) {
         this.webView = webView;
-        webView.addJavascriptInterface(this, JAVASCRIPT_INTERFACE_NAME);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            webView.addJavascriptInterface(this, JAVASCRIPT_INTERFACE_NAME);
+        }
     }
 
     public void setApplicationContext(Application application) {

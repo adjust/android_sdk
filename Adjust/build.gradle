@@ -11,6 +11,7 @@ ext {
     coreTargetSdkVersion = 30
     coreVersionName = '4.26.0'
     defaultVersionCode = 1
+    webbridgeMinSdkVersion = 17
 
     // POM.
     adjustGroupId = 'com.adjust.sdk'
