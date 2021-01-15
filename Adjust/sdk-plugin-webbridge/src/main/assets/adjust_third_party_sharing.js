@@ -3,7 +3,7 @@ function AdjustThirdPartySharing(isEnabled) {
     this.granularOptions = [];
 }
 
-AdjustEvent.prototype.addGranularOption = function(partnerName, key, value) {
+AdjustThirdPartySharing.prototype.addGranularOption = function(partnerName, key, value) {
     this.granularOptions.push(partnerName);
     this.granularOptions.push(key);
     this.granularOptions.push(value);
