@@ -205,7 +205,7 @@ public class PackageBuilder {
         activityPackage.setPath("/measurement_consent");
         activityPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.THIRD_PARTY_SHARING.toString(),
+        AdjustSigner.sign(parameters, ActivityKind.MEASUREMENT_CONSENT.toString(),
                 activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         activityPackage.setParameters(parameters);
