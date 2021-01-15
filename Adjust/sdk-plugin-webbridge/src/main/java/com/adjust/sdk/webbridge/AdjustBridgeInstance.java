@@ -19,6 +19,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustTestOptions;
+import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -629,6 +630,55 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public void trackThirdPartySharing(String adjustThirdPartySharingString) {
+        if (!isInitialized()) {
+            return;
+        }
+
+        try {
+            JSONObject jsonAdjustThirdPartySharing = new JSONObject(adjustThirdPartySharingString);
+
+            Object isEnabledField =
+                    jsonAdjustThirdPartySharing.get("isEnabled");
+            Object granularOptionsField = jsonAdjustThirdPartySharing.get("granularOptions");
+
+            Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledField);
+
+            AdjustThirdPartySharing adjustThirdPartySharing =
+                    new AdjustThirdPartySharing(isEnabled);
+
+            // Callback parameters
+            String[] granularOptions =
+                    AdjustBridgeUtil.jsonArrayToArray((JSONArray)granularOptionsField);
+            if (granularOptions != null) {
+                for (int i = 0; i < granularOptions.length; i += 3) {
+                    String partnerName = granularOptions[i];
+                    String key = granularOptions[i + 1];
+                    String value = granularOptions[i + 2];
+                    adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+                }
+            }
+
+            // Track ThirdPartySharing
+            Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+        } catch (Exception e) {
+            AdjustFactory.getLogger().error(
+                    "AdjustBridgeInstance trackThirdPartySharing: %s", e.getMessage());
+        }
+    }
+
+    @JavascriptInterface
+    public void trackMeasurementConsent(String consentMeasurementString) {
+        if (!isInitialized()) {
+            return;
+        }
+        Boolean consentMeasurement = AdjustBridgeUtil.fieldToBoolean(consentMeasurementString);
+        if (consentMeasurement != null) {
+            Adjust.trackMeasurementConsent(consentMeasurement);
+        }
+    }
+
+    @JavascriptInterface
     public void getGoogleAdId(final String callback) {
         if (!isInitialized()) {
             return;
@@ -669,115 +719,6 @@ public class AdjustBridgeInstance {
     @JavascriptInterface
     public String getSdkVersion() {
         return Adjust.getSdkVersion();
-    }
-
-    @JavascriptInterface
-    public void setTestOptions(final String testOptionsString) {
-        AdjustFactory.getLogger().verbose("AdjustBridgeInstance setTestOptions: %s", testOptionsString);
-
-        if (!isInitialized()) {
-            return;
-        }
-
-        try {
-            AdjustTestOptions adjustTestOptions = new AdjustTestOptions();
-            JSONObject jsonAdjustTestOptions = new JSONObject(testOptionsString);
-
-            Object baseUrlField = jsonAdjustTestOptions.get("baseUrl");
-            Object gdprUrlField = jsonAdjustTestOptions.get("gdprUrl");
-            Object subscriptionUrlField = jsonAdjustTestOptions.get("subscriptionUrl");
-            Object basePathField = jsonAdjustTestOptions.get("basePath");
-            Object gdprPathField = jsonAdjustTestOptions.get("gdprPath");
-            Object subscriptionPathField = jsonAdjustTestOptions.get("subscriptionPath");
-            Object useTestConnectionOptionsField = jsonAdjustTestOptions.get("useTestConnectionOptions");
-            Object timerIntervalInMillisecondsField = jsonAdjustTestOptions.get("timerIntervalInMilliseconds");
-            Object timerStartInMillisecondsField = jsonAdjustTestOptions.get("timerStartInMilliseconds");
-            Object sessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("sessionIntervalInMilliseconds");
-            Object subsessionIntervalInMillisecondsField = jsonAdjustTestOptions.get("subsessionIntervalInMilliseconds");
-            Object teardownField = jsonAdjustTestOptions.get("teardown");
-            Object tryInstallReferrerField = jsonAdjustTestOptions.get("tryInstallReferrer");
-            Object noBackoffWaitField = jsonAdjustTestOptions.get("noBackoffWait");
-            Object hasContextField = jsonAdjustTestOptions.get("hasContext");
-
-            String gdprUrl = AdjustBridgeUtil.fieldToString(gdprUrlField);
-            if (gdprUrl != null) {
-                adjustTestOptions.gdprUrl = gdprUrl;
-            }
-
-            String baseUrl = AdjustBridgeUtil.fieldToString(baseUrlField);
-            if (baseUrl != null) {
-                adjustTestOptions.baseUrl = baseUrl;
-            }
-
-            String subscriptionUrl = AdjustBridgeUtil.fieldToString(subscriptionUrlField);
-            if (subscriptionUrl != null) {
-                adjustTestOptions.subscriptionUrl = subscriptionUrl;
-            }
-
-            String basePath = AdjustBridgeUtil.fieldToString(basePathField);
-            if (basePath != null) {
-                adjustTestOptions.basePath = basePath;
-            }
-
-            String gdprPath = AdjustBridgeUtil.fieldToString(gdprPathField);
-            if (gdprPath != null) {
-                adjustTestOptions.gdprPath = gdprPath;
-            }
-
-            String subscriptionPath = AdjustBridgeUtil.fieldToString(subscriptionPathField);
-            if (subscriptionPath != null) {
-                adjustTestOptions.subscriptionPath = subscriptionPath;
-            }
-
-            Boolean useTestConnectionOptions = AdjustBridgeUtil.fieldToBoolean(useTestConnectionOptionsField);
-            if (useTestConnectionOptions != null) {
-                adjustTestOptions.useTestConnectionOptions = useTestConnectionOptions;
-            }
-
-            Long timerIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(timerIntervalInMillisecondsField);
-            if (timerIntervalInMilliseconds != null) {
-                adjustTestOptions.timerIntervalInMilliseconds = timerIntervalInMilliseconds;
-            }
-
-            Long timerStartInMilliseconds = AdjustBridgeUtil.fieldToLong(timerStartInMillisecondsField);
-            if (timerStartInMilliseconds != null) {
-                adjustTestOptions.timerStartInMilliseconds = timerStartInMilliseconds;
-            }
-
-            Long sessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(sessionIntervalInMillisecondsField);
-            if (sessionIntervalInMilliseconds != null) {
-                adjustTestOptions.sessionIntervalInMilliseconds = sessionIntervalInMilliseconds;
-            }
-
-            Long subsessionIntervalInMilliseconds = AdjustBridgeUtil.fieldToLong(subsessionIntervalInMillisecondsField);
-            if (subsessionIntervalInMilliseconds != null) {
-                adjustTestOptions.subsessionIntervalInMilliseconds = subsessionIntervalInMilliseconds;
-            }
-
-            Boolean teardown = AdjustBridgeUtil.fieldToBoolean(teardownField);
-            if (teardown != null) {
-                adjustTestOptions.teardown = teardown;
-            }
-
-            Boolean tryInstallReferrer = AdjustBridgeUtil.fieldToBoolean(tryInstallReferrerField);
-            if (tryInstallReferrer != null) {
-                adjustTestOptions.tryInstallReferrer = tryInstallReferrer;
-            }
-
-            Boolean noBackoffWait = AdjustBridgeUtil.fieldToBoolean(noBackoffWaitField);
-            if (noBackoffWait != null) {
-                adjustTestOptions.noBackoffWait = noBackoffWait;
-            }
-
-            Boolean hasContext = AdjustBridgeUtil.fieldToBoolean(hasContextField);
-            if (hasContext != null && hasContext.booleanValue()) {
-                adjustTestOptions.context = application.getApplicationContext();
-            }
-
-            Adjust.setTestOptions(adjustTestOptions);
-        } catch (Exception e) {
-            AdjustFactory.getLogger().error("AdjustBridgeInstance setTestOptions: %s", e.getMessage());
-        }
     }
 
     @JavascriptInterface

@@ -16,7 +16,6 @@ import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -202,7 +201,7 @@ public class ActivityPackage implements Serializable {
         return builder.toString();
     }
 
-    protected String getFailureMessage() {
+    public String getFailureMessage() {
         return Util.formatString("Failed to track %s%s", activityKind.toString(), suffix);
     }
 

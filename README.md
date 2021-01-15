@@ -74,6 +74,8 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
    * [Disable third-party sharing](#af-disable-third-party-sharing)
+   * [Third-party sharing](#af-third-party-sharing)
+   * [Measurement consent](#af-measurement-consent)
 
 ### Testing and troubleshooting
 
@@ -99,14 +101,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.25.0'
-implementation 'com.android.installreferrer:installreferrer:2.1'
+implementation 'com.adjust.sdk:adjust-android:4.26.0'
+implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.25.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.26.0'
 ```
 
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
@@ -172,7 +174,7 @@ In order to correctly attribute an app install to its source, Adjust needs infor
 In order to support the Google Play Referrer API in your app, please make sure that you have followed our chapter on [adding the SDK to your project](#qs-add-sdk) correctly and that you have following line added to your `build.gradle` file:
 
 ```
-implementation 'com.android.installreferrer:installreferrer:2.1'
+implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 Please follow the directions for your [Proguard settings](#qs-proguard) carefully. Confirm that you have added all the rules mentioned in it, especially the one needed for this feature:
@@ -312,6 +314,7 @@ In your HTML file, import the Adjust Javascript files which are located in the r
 ```html
 <script type="text/javascript" src="adjust.js"></script>
 <script type="text/javascript" src="adjust_event.js"></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js"></script>
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 
@@ -1985,6 +1988,117 @@ Adjust.disableThirdPartySharing();
 </table>
 
 Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+
+### <a id="af-third-party-sharing"></a>Third-party sharing for specific users
+
+You can now notify Adjust when a user has exercised their right to change sharing their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustEvent);
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+
+Call the following method to instruct the Adjust SDK to send the granular options to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustEvent);
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-measurement-consent"></a>Measurement consent for specific users
+
+You can now notify Adjust when a user has exercised their right to change measurement consent their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackMeasurementConsent(false);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.trackMeasurementConsent(false);
+```
+</td>
+</tr>
+</table>
+
+Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
 ## Testing and troubleshooting
 

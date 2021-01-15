@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient());
         webView.addJavascriptInterface(AdjustBridge.getDefaultInstance(), "AdjustBridge");
 
-        TestLibraryBridge testLibraryBridge = new TestLibraryBridge(webView);
+        TestLibraryBridge testLibraryBridge = new TestLibraryBridge(getApplication(), webView);
         webView.addJavascriptInterface(testLibraryBridge, "TestLibraryBridge");
 
         webView.setWebChromeClient(new WebChromeClient() {

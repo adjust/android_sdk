@@ -26,26 +26,10 @@ public interface Constants {
     String BASE_URL = "https://app.adjust.com";
     String GDPR_URL = "https://gdpr.adjust.com";
     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
-    String BASE_URL_IN = "https://app.adjust.net.in";
-    String GDPR_URL_IN = "https://gdpr.adjust.net.in";
-    String SUBSCRIPTION_URL_IN = "https://subscription.adjust.net.in";
-    String BASE_URL_CN = "https://app.adjust.world";
-    String GDPR_URL_CN = "https://gdpr.adjust.world";
-    String SUBSCRIPTION_URL_CN = "https://subscription.adjust.world";
-
-    String[] FALLBACK_BASE_URLS = {BASE_URL_IN, BASE_URL_CN};
-    String[] FALLBACK_GDPR_URLS = {GDPR_URL_IN, GDPR_URL_CN};
-    String[] FALLBACK_SUBSCRIPTION_URLS = {SUBSCRIPTION_URL_IN, SUBSCRIPTION_URL_CN};
-    String[] FALLBACK_BASE_URLS_IN = {BASE_URL};
-    String[] FALLBACK_GDPR_URLS_IN = {GDPR_URL};
-    String[] FALLBACK_SUBSCRIPTION_URLS_IN = {SUBSCRIPTION_URL};
-    String[] FALLBACK_BASE_URLS_CN = {BASE_URL};
-    String[] FALLBACK_GDPR_URLS_CN = {GDPR_URL};
-    String[] FALLBACK_SUBSCRIPTION_URLS_CN = {SUBSCRIPTION_URL};
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.25.0";
+    String CLIENT_SDK = "android4.26.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -75,6 +59,7 @@ public interface Constants {
     String MD5 = "MD5";
     String SHA1 = "SHA-1";
     String SHA256 = "SHA-256";
+    int MINIMAL_ERROR_STATUS_CODE = 400;
 
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";

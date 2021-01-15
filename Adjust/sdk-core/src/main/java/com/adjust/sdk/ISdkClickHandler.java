@@ -1,5 +1,7 @@
 package com.adjust.sdk;
 
+import com.adjust.sdk.network.IActivityPackageSender;
+
 /**
  * SdkClickHandler interface.
  *
@@ -14,7 +16,9 @@ public interface ISdkClickHandler {
      * @param activityHandler Activity handler instance.
      * @param startsSending   Is sending paused?
      */
-    void init(IActivityHandler activityHandler, boolean startsSending);
+    void init(IActivityHandler activityHandler,
+              boolean startsSending,
+              IActivityPackageSender sdkClickHandlerActivityPackageSender);
 
     /**
      * Pause sending from SdkClickHandler.

@@ -134,6 +134,8 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "sendReferrer"                   : this.sendReferrer(command.params); break;
         case "gdprForgetMe"                   : this.gdprForgetMe(command.params); break;
         case "disableThirdPartySharing"       : this.disableThirdPartySharing(command.params); break;
+        case "thirdPartySharing"              : this.thirdPartySharing(command.params); break;
+        case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
         break;
     }
@@ -224,7 +226,7 @@ AdjustCommandExecutor.prototype.testOptions = function(params) {
 
     console.log(`AdjustCommandExecutor testOptions: ${JSON.stringify(testOptions)}`);
 
-    Adjust.setTestOptions(testOptions);
+    TestLibrary.setTestOptions(testOptions);
 };
 
 AdjustCommandExecutor.prototype.config = function(params) {
@@ -546,6 +548,31 @@ AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {
 
 AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
     Adjust.disableThirdPartySharing();
+}
+
+AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
+    var isEnabled = null;
+    if ('isEnabled' in params) {
+        isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    }
+    var adjustThirdPartySharing = new AdjustThirdPartySharing(isEnabled);
+
+    if ('granularOptions' in params) {
+        var granularOptions = getValueFromKey(params, "granularOptions");
+        for (var i = 0; i < granularOptions.length; i = i + 3) {
+            var partnerName = granularOptions[i];
+            var key = granularOptions[i + 1];
+            var value = granularOptions[i + 2];
+            adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+        }
+    }
+
+    Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+}
+
+AdjustCommandExecutor.prototype.measurementConsent = function(params) {
+    var isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    Adjust.trackMeasurementConsent(isEnabled);
 }
 
 AdjustCommandExecutor.prototype.addSessionCallbackParameter = function(params) {

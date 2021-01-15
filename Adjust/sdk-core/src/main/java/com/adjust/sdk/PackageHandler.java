@@ -11,11 +11,13 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.network.IActivityPackageSender;
 import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,12 +26,14 @@ import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
 import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
 // persistent
-public class PackageHandler implements IPackageHandler {
+public class PackageHandler implements IPackageHandler,
+        IActivityPackageSender.ResponseDataCallbackSubscriber
+{
     private static final String PACKAGE_QUEUE_FILENAME = "AdjustIoPackageQueue";
     private static final String PACKAGE_QUEUE_NAME = "Package queue";
 
     private ThreadScheduler scheduler;
-    private IRequestHandler requestHandler;
+    private IActivityPackageSender activityPackageSender;
     private WeakReference<IActivityHandler> activityHandlerWeakRef;
     private List<ActivityPackage> packageQueue;
     private AtomicBoolean isSending;
@@ -38,9 +42,6 @@ public class PackageHandler implements IPackageHandler {
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
     private BackoffStrategy backoffStrategyForInstallSession;
-    private String basePath;
-    private String gdprPath;
-    private String subscriptionPath;
 
     @Override
     public void teardown() {
@@ -51,14 +52,10 @@ public class PackageHandler implements IPackageHandler {
         if (activityHandlerWeakRef != null) {
             activityHandlerWeakRef.clear();
         }
-        if (requestHandler != null) {
-            requestHandler.teardown();
-        }
         if (packageQueue != null) {
             packageQueue.clear();
         }
         scheduler = null;
-        requestHandler = null;
         activityHandlerWeakRef = null;
         packageQueue = null;
         isSending = null;
@@ -73,13 +70,16 @@ public class PackageHandler implements IPackageHandler {
 
     public PackageHandler(IActivityHandler activityHandler,
                           Context context,
-                          boolean startsSending) {
+                          boolean startsSending,
+                          IActivityPackageSender packageHandlerActivityPackageSender)
+    {
         this.scheduler = new SingleThreadCachedScheduler("PackageHandler");
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
         this.backoffStrategyForInstallSession = AdjustFactory.getInstallSessionBackoffStrategy();
 
-        init(activityHandler, context, startsSending);
+
+        init(activityHandler, context, startsSending, packageHandlerActivityPackageSender);
 
         scheduler.submit(new Runnable() {
             @Override
@@ -90,13 +90,15 @@ public class PackageHandler implements IPackageHandler {
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, Context context, boolean startsSending) {
+    public void init(IActivityHandler activityHandler,
+                     Context context,
+                     boolean startsSending,
+                     IActivityPackageSender packageHandlerActivityPackageSender)
+    {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.context = context;
         this.paused = !startsSending;
-        this.basePath = activityHandler.getBasePath();
-        this.gdprPath = activityHandler.getGdprPath();
-        this.subscriptionPath = activityHandler.getSubscriptionPath();
+        this.activityPackageSender = packageHandlerActivityPackageSender;
     }
 
     // add a package to the queue
@@ -121,29 +123,29 @@ public class PackageHandler implements IPackageHandler {
         });
     }
 
-    // remove oldest package and try to send the next one
-    // (after success or possibly permanent failure)
     @Override
-    public void sendNextPackage(ResponseData responseData) {
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                sendNextI();
-            }
-        });
-
+    public void onResponseDataCallback(final ResponseData responseData) {
+        logger.debug("Got response in PackageHandler");
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
-        if (activityHandler != null) {
-            activityHandler.finishedTrackingActivity(responseData);
+        if (activityHandler != null &&
+                responseData.trackingState == TrackingState.OPTED_OUT) {
+            activityHandler.gotOptOutResponse();
         }
-    }
 
-    // close the package to retry in the future (after temporary failure)
-    @Override
-    public void closeFirstPackage(ResponseData responseData, ActivityPackage activityPackage) {
-        responseData.willRetry = true;
+        if (!responseData.willRetry) {
+            scheduler.submit(new Runnable() {
+                @Override
+                public void run() {
+                    sendNextI();
+                }
+            });
 
-        IActivityHandler activityHandler = activityHandlerWeakRef.get();
+            if (activityHandler != null) {
+                activityHandler.finishedTrackingActivity(responseData);
+            }
+            return;
+        }
+
         if (activityHandler != null) {
             activityHandler.finishedTrackingActivity(responseData);
         }
@@ -159,17 +161,19 @@ public class PackageHandler implements IPackageHandler {
             }
         };
 
-        if (activityPackage == null) {
+        if (responseData.activityPackage == null) {
             runnable.run();
             return;
         }
 
-        int retries = activityPackage.increaseRetries();
+        int retries = responseData.activityPackage.increaseRetries();
         long waitTimeMilliSeconds;
 
         SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
 
-        if (activityPackage.getActivityKind() == ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()) {
+        if (responseData.activityPackage.getActivityKind() ==
+                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked())
+        {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
         } else {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
@@ -220,26 +224,8 @@ public class PackageHandler implements IPackageHandler {
         });
     }
 
-    @Override
-    public String getBasePath() {
-        return this.basePath;
-    }
-
-    @Override
-    public String getGdprPath() {
-        return this.gdprPath;
-    }
-
-    @Override
-    public String getSubscriptionPath() {
-        return this.subscriptionPath;
-    }
-
     // internal methods run in dedicated queue thread
-
     private void initI() {
-        requestHandler = AdjustFactory.getRequestHandler(activityHandlerWeakRef.get(), this);
-
         isSending = new AtomicBoolean();
 
         readPackageQueueI();
@@ -267,8 +253,27 @@ public class PackageHandler implements IPackageHandler {
             return;
         }
 
+        Map<String, String> sendingParameters = generateSendingParametersI();
+
         ActivityPackage firstPackage = packageQueue.get(0);
-        requestHandler.sendPackage(firstPackage, packageQueue.size() - 1);
+        activityPackageSender.sendActivityPackage(firstPackage,
+                sendingParameters,
+                this);
+    }
+
+    private Map<String, String> generateSendingParametersI() {
+        HashMap<String, String> sendingParameters = new HashMap<>();
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+
+        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
+
+        int queueSize = packageQueue.size() - 1;
+        if (queueSize > 0) {
+            PackageBuilder.addLong(sendingParameters, "queue_size", queueSize);
+        }
+        return sendingParameters;
     }
 
     private void sendNextI() {

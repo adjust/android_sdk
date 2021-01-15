@@ -10,6 +10,7 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 
+import com.adjust.sdk.network.IActivityPackageSender;
 import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
 import com.adjust.sdk.scheduler.ThreadScheduler;
 import com.adjust.sdk.scheduler.TimerOnce;
@@ -17,14 +18,17 @@ import com.adjust.sdk.scheduler.TimerOnce;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class AttributionHandler implements IAttributionHandler {
+public class AttributionHandler implements IAttributionHandler,
+        IActivityPackageSender.ResponseDataCallbackSubscriber
+{
     private static final String ATTRIBUTION_TIMER_NAME = "Attribution timer";
     private boolean paused;
-    private String basePath;
-    private String clientSdk;
     private String lastInitiatedBy;
+    private IActivityPackageSender activityPackageSender;
 
     private ILogger logger;
     private TimerOnce timer;
@@ -51,7 +55,10 @@ public class AttributionHandler implements IAttributionHandler {
         activityHandlerWeakRef = null;
     }
 
-    public AttributionHandler(IActivityHandler activityHandler, boolean startsSending) {
+    public AttributionHandler(IActivityHandler activityHandler,
+                              boolean startsSending,
+                              IActivityPackageSender attributionHandlerActivityPackageSender)
+    {
         logger = AdjustFactory.getLogger();
         scheduler = new SingleThreadCachedScheduler("AttributionHandler");
         timer = new TimerOnce(new Runnable() {
@@ -60,15 +67,18 @@ public class AttributionHandler implements IAttributionHandler {
                 sendAttributionRequest();
             }
         }, ATTRIBUTION_TIMER_NAME);
-        basePath = activityHandler.getBasePath();
-        clientSdk = activityHandler.getDeviceInfo().clientSdk;
-        init(activityHandler, startsSending);
+
+        init(activityHandler, startsSending, attributionHandlerActivityPackageSender);
     }
 
     @Override
-    public void init(IActivityHandler activityHandler, boolean startsSending) {
+    public void init(IActivityHandler activityHandler,
+                     boolean startsSending,
+                     IActivityPackageSender attributionHandlerActivityPackageSender)
+    {
         this.activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         this.paused = !startsSending;
+        this.activityPackageSender = attributionHandlerActivityPackageSender;
     }
 
     @Override
@@ -137,14 +147,7 @@ public class AttributionHandler implements IAttributionHandler {
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                List<String> urls = UrlFactory.getBaseUrls();
-                boolean requestProcessed = false;
-                for (int i=0; i<urls.size() && !requestProcessed; i++) {
-                    requestProcessed = sendAttributionRequestI(urls.get(i));
-                    if (requestProcessed && i > 0) {
-                        UrlFactory.prioritiseBaseUrl(urls.get(i));
-                    }
-                }
+                sendAttributionRequestI();
             }
         });
     }
@@ -170,8 +173,8 @@ public class AttributionHandler implements IAttributionHandler {
             return;
         }
 
-        long timerMilliseconds = responseData.jsonResponse.optLong("ask_in", -1);
-        if (timerMilliseconds >= 0) {
+        Long timerMilliseconds = responseData.askIn; // responseData.jsonResponse.optLong("ask_in", -1);
+        if (timerMilliseconds != null && timerMilliseconds >= 0) {
             activityHandler.setAskingAttribution(true);
             lastInitiatedBy = "backend";
             getAttributionI(timerMilliseconds);
@@ -179,24 +182,25 @@ public class AttributionHandler implements IAttributionHandler {
         }
 
         activityHandler.setAskingAttribution(false);
-        JSONObject attributionJson = responseData.jsonResponse.optJSONObject("attribution");
-        responseData.attribution = AdjustAttribution.fromJson(
-                attributionJson,
-                responseData.adid,
-                Util.getSdkPrefixPlatform(clientSdk));
     }
 
-    private void checkSessionResponseI(IActivityHandler activityHandler, SessionResponseData sessionResponseData) {
+    private void checkSessionResponseI(IActivityHandler activityHandler,
+                                       SessionResponseData sessionResponseData)
+    {
         checkAttributionI(activityHandler, sessionResponseData);
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
-    private void checkSdkClickResponseI(IActivityHandler activityHandler, SdkClickResponseData sdkClickResponseData) {
+    private void checkSdkClickResponseI(IActivityHandler activityHandler,
+                                        SdkClickResponseData sdkClickResponseData)
+    {
         checkAttributionI(activityHandler, sdkClickResponseData);
         activityHandler.launchSdkClickResponseTasks(sdkClickResponseData);
     }
 
-    private void checkAttributionResponseI(IActivityHandler activityHandler, AttributionResponseData attributionResponseData) {
+    private void checkAttributionResponseI(IActivityHandler activityHandler,
+                                           AttributionResponseData attributionResponseData)
+    {
         checkAttributionI(activityHandler, attributionResponseData);
         checkDeeplinkI(attributionResponseData);
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
@@ -206,6 +210,7 @@ public class AttributionHandler implements IAttributionHandler {
         if (attributionResponseData.jsonResponse == null) {
             return;
         }
+
         JSONObject attributionJson = attributionResponseData.jsonResponse.optJSONObject("attribution");
         if (attributionJson == null) {
             return;
@@ -217,34 +222,36 @@ public class AttributionHandler implements IAttributionHandler {
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
-    private boolean sendAttributionRequestI(String baseUrl) {
+    private void sendAttributionRequestI() {
         if (activityHandlerWeakRef.get().getActivityState().isGdprForgotten) {
-            return true;
+            return;
         }
         if (paused) {
             logger.debug("Attribution handler is paused");
-            return true;
+            return;
         }
 
         // Create attribution package before sending attribution request.
         ActivityPackage attributionPackage = buildAndGetAttributionPackage();
         logger.verbose("%s", attributionPackage.getExtendedString());
 
-        try {
-            ResponseData responseData = UtilNetworking.createGETHttpsURLConnection(attributionPackage, basePath, baseUrl);
-            if (!(responseData instanceof AttributionResponseData)) {
-                return true;
-            }
-            if (responseData.trackingState == TrackingState.OPTED_OUT) {
-                activityHandlerWeakRef.get().gotOptOutResponse();
-                return true;
-            }
-            checkAttributionResponse((AttributionResponseData)responseData);
-            return true;
-        } catch (Exception e) {
-            logger.error("Failed to get attribution (%s)", e.getMessage());
-            return false;
-        }
+        Map<String, String> sendingParameters = generateSendingParametersI();
+
+        activityPackageSender.sendActivityPackage(
+                attributionPackage,
+                sendingParameters,
+                this);
+    }
+
+    private Map<String, String> generateSendingParametersI() {
+        HashMap<String, String> sendingParameters = new HashMap<>();
+
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+
+        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
+
+        return sendingParameters;
     }
 
     private ActivityPackage buildAndGetAttributionPackage() {
@@ -259,5 +266,29 @@ public class AttributionHandler implements IAttributionHandler {
         ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedBy);
         lastInitiatedBy = null;
         return activityPackage;
+    }
+
+    @Override
+    public void onResponseDataCallback(final ResponseData responseData) {
+        scheduler.submit(new Runnable() {
+            @Override
+            public void run() {
+                IActivityHandler activityHandler = activityHandlerWeakRef.get();
+                if (activityHandler == null) {
+                    return;
+                }
+
+                if (responseData.trackingState == TrackingState.OPTED_OUT) {
+                    activityHandler.gotOptOutResponse();
+                    return;
+                }
+
+                if (!(responseData instanceof AttributionResponseData)) {
+                    return;
+                }
+
+                checkAttributionResponseI(activityHandler, (AttributionResponseData)responseData);
+            }
+        });
     }
 }

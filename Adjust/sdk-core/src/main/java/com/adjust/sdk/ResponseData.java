@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import org.json.JSONObject;
 
+import java.util.Map;
+
 /**
  * Adjust SDK
  * Created by Pedro Silva (@nonelse) on 3rd December 2015.
@@ -17,10 +19,22 @@ public class ResponseData {
     public ActivityKind activityKind;
     public TrackingState trackingState;
     public AdjustAttribution attribution;
+    public Long askIn;
+    public Long retryIn;
+    public Long continueIn;
 
-    protected ResponseData() {}
+    public ActivityPackage activityPackage;
+    public Map<String, String> sendingParameters;
 
-    public static ResponseData buildResponseData(ActivityPackage activityPackage) {
+    protected ResponseData() {
+        success = false;
+        willRetry = false;
+    }
+
+    public static ResponseData buildResponseData(
+            ActivityPackage activityPackage,
+            Map<String, String> sendingParameters)
+    {
         ResponseData responseData;
         ActivityKind activityKind = activityPackage.getActivityKind();
         switch (activityKind) {
@@ -41,6 +55,8 @@ public class ResponseData {
                 break;
         }
         responseData.activityKind = activityKind;
+        responseData.activityPackage = activityPackage;
+        responseData.sendingParameters = sendingParameters;
 
         return responseData;
     }

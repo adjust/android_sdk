@@ -183,6 +183,35 @@ public class PackageBuilder {
         return activityPackage;
     }
 
+    ActivityPackage buildThirdPartySharingPackage(
+            final AdjustThirdPartySharing adjustThirdPartySharing)
+    {
+        Map<String, String> parameters = getThirdPartySharingParameters(adjustThirdPartySharing);
+        ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.THIRD_PARTY_SHARING);
+        activityPackage.setPath("/third_party_sharing");
+        activityPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.THIRD_PARTY_SHARING.toString(),
+                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
+        activityPackage.setParameters(parameters);
+        return activityPackage;
+    }
+
+    ActivityPackage buildMeasurementConsentPackage(final boolean consentMeasurement) {
+        Map<String, String> parameters = getMeasurementConsentParameters(consentMeasurement);
+        ActivityPackage activityPackage =
+                getDefaultActivityPackage(ActivityKind.MEASUREMENT_CONSENT);
+        activityPackage.setPath("/measurement_consent");
+        activityPackage.setSuffix("");
+
+        AdjustSigner.sign(parameters, ActivityKind.MEASUREMENT_CONSENT.toString(),
+                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+
+        activityPackage.setParameters(parameters);
+        return activityPackage;
+    }
+
     ActivityPackage buildAdRevenuePackage(String source, JSONObject adRevenueJson) {
         Map<String, String> parameters = getAdRevenueParameters(source, adRevenueJson);
         ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
@@ -727,6 +756,139 @@ public class PackageBuilder {
         return parameters;
     }
 
+    private Map<String, String> getThirdPartySharingParameters
+            (final AdjustThirdPartySharing adjustThirdPartySharing)
+    {
+        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+
+        // Check if plugin is used and if yes, add read parameters.
+        if (imeiParameters != null) {
+            parameters.putAll(imeiParameters);
+        }
+
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
+        // Third Party Sharing
+        if (adjustThirdPartySharing.isEnabled != null) {
+            PackageBuilder.addString(parameters, "sharing",
+                    adjustThirdPartySharing.isEnabled.booleanValue() ?
+                            "enable" : "disable");
+        }
+        PackageBuilder.addMapJson(parameters, "granular_third_party_sharing_options",
+                adjustThirdPartySharing.granularOptions);
+
+        // Device identifiers.
+        deviceInfo.reloadPlayIds(adjustConfig.context);
+        PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+
+        if (!containsPlayIds(parameters)) {
+            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
+
+        // Rest of the parameters.
+        PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
+        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+        PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
+        PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
+        PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
+        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
+        PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
+        PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
+        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
+        PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
+        PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
+        PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
+        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
+        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        checkDeviceIds(parameters);
+        return parameters;
+    }
+
+    private Map<String, String> getMeasurementConsentParameters(
+            final boolean consentMeasurement)
+    {
+        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
+        Map<String, String> parameters = new HashMap<String, String>();
+        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+
+        // Check if plugin is used and if yes, add read parameters.
+        if (imeiParameters != null) {
+            parameters.putAll(imeiParameters);
+        }
+
+        // Check if oaid plugin is used and if yes, add the parameter
+        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        if (oaidParameters != null) {
+            parameters.putAll(oaidParameters);
+        }
+
+        // Measurement Consent
+        PackageBuilder.addString(parameters, "sharing",
+                consentMeasurement ? "enable" : "disable");
+
+        // Device identifiers.
+        deviceInfo.reloadPlayIds(adjustConfig.context);
+        PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+
+        if (!containsPlayIds(parameters)) {
+            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+        }
+
+        // Rest of the parameters.
+        PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
+        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
+        PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
+        PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
+        PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
+        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
+        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
+        PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
+        PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
+        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
+        PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
+        PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
+        PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
+        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
+        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        checkDeviceIds(parameters);
+        return parameters;
+    }
+
     private Map<String, String> getAdRevenueParameters(String source, JSONObject adRevenueJson) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
@@ -939,7 +1101,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, key, jsonObject.toString());
     }
 
-    static void addMapJson(Map<String, String> parameters, String key, Map<String, String> map) {
+    static void addMapJson(Map<String, String> parameters, String key, Map map) {
         if (map == null) {
             return;
         }

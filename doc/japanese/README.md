@@ -94,14 +94,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
  
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.25.0'
-implementation 'com.android.installreferrer:installreferrer:2.1'
+implementation 'com.adjust.sdk:adjust-android:4.26.0'
+implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 アプリの WebView内で Adjust SDK を使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.25.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.26.0'
 ```
 
 Adjust SDK およびWebView拡張機能をJAR ファイルとして追加し、Adjust [リリースページ][releases]からダウンロードすることもできます。
@@ -169,7 +169,7 @@ Proguardをお使いの場合は、以下をProguardファイルに追加して�
 アプリでこのAPIをサポートするには、[SDKをプロジェクトに追加する](#qs-add-sdk) の章の手順に適切に従って、以下の行を`build.gradle`ファイルに追加していることを確認してください。
 
 ```
-implementation 'com.android.installreferrer:installreferrer:2.1'
+implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 また、[Proguardの設定](#qs-proguard)の章をよく読んで、記載されているすべてのルール、特に、この機能に必要なルールが追加されていることを確認してください。
@@ -299,6 +299,7 @@ HTMLファイルに、アセットのルートフォルダにある Adjust JavaS
 ```html
 <script type="text/javascript" src="adjust.js"></script>
 <script type="text/javascript" src="adjust_event.js"></script>
+<script type="text/javascript" src="adjust_third_party_sharing.js"></script>
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 

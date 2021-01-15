@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
+import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -22,6 +23,7 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.test_options.TestConnectionOptions;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,6 +78,8 @@ public class AdjustCommandExecutor {
             case "sendReferrer": sendReferrer(); break;
             case "gdprForgetMe": gdprForgetMe(); break;
             case "disableThirdPartySharing": disableThirdPartySharing(); break;
+            case "thirdPartySharing" : thirdPartySharing(); break;
+            case "measurementConsent" : measurementConsent(); break;
             case "trackAdRevenue": trackAdRevenue(); break;
             case "trackSubscription": trackSubscription(); break;
             //case "testBegin": testBegin(); break;
@@ -146,6 +150,7 @@ public class AdjustCommandExecutor {
                 testOptions.noBackoffWait = noBackoffWaitBoolean;
             }
         }
+        boolean useTestConnectionOptions = false;
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
             for (String teardownOption : teardownOptions) {
@@ -154,7 +159,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = basePath;
                     testOptions.gdprPath = gdprPath;
                     testOptions.subscriptionPath = subscriptionPath;
-                    testOptions.useTestConnectionOptions = true;
+                    useTestConnectionOptions = true;
                     testOptions.tryInstallReferrer = false;
                 }
                 if (teardownOption.equals("deleteState")) {
@@ -173,7 +178,6 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = null;
                     testOptions.gdprPath = null;
                     testOptions.subscriptionPath = null;
-                    testOptions.useTestConnectionOptions = false;
                 }
                 if (teardownOption.equals("test")) {
                     savedEvents = null;
@@ -186,6 +190,9 @@ public class AdjustCommandExecutor {
             }
         }
         Adjust.setTestOptions(testOptions);
+        if (useTestConnectionOptions) {
+            TestConnectionOptions.setTestConnectionOptions();
+        }
     }
 
     private void config() {
@@ -632,6 +639,36 @@ public class AdjustCommandExecutor {
 
     private void disableThirdPartySharing() {
         Adjust.disableThirdPartySharing(this.context);
+    }
+
+    private void thirdPartySharing() {
+        String isEnabledString =
+                command.getFirstParameterValue("isEnabled");
+        Boolean isEnabledBoolean =
+                Util.strictParseStringToBoolean(isEnabledString);
+
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(isEnabledBoolean);
+
+        if (command.parameters.containsKey("granularOptions")) {
+            List<String> granularOptions = command.parameters.get("granularOptions");
+            for (int i = 0; i < granularOptions.size(); i = i + 3) {
+                String partnerName = granularOptions.get(i);
+                String key = granularOptions.get(i + 1);
+                String value = granularOptions.get(i + 2);
+                adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+            }
+        }
+
+        Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+    }
+
+    private void measurementConsent() {
+        String measurementConsentString =
+                command.getFirstParameterValue("isEnabled");
+        boolean measurementConsent = "true".equals(measurementConsentString);
+
+        Adjust.trackMeasurementConsent(measurementConsent);
     }
 
     private void trackAdRevenue() {

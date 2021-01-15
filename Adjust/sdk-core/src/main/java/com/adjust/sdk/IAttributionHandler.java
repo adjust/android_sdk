@@ -8,8 +8,12 @@
 
 package com.adjust.sdk;
 
+import com.adjust.sdk.network.IActivityPackageSender;
+
 public interface IAttributionHandler {
-    void init(IActivityHandler activityHandler, boolean startsSending);
+    void init(IActivityHandler activityHandler,
+              boolean startsSending,
+              IActivityPackageSender attributionHandlerActivityPackageSender);
     void checkSessionResponse(SessionResponseData sessionResponseData);
     void checkSdkClickResponse(SdkClickResponseData sdkClickResponseData);
     void pauseSending();

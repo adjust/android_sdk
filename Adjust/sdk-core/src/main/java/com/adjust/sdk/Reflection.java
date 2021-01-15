@@ -1,15 +1,10 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.content.res.Configuration;
-import android.os.Build;
-import android.os.LocaleList;
-import android.telephony.TelephonyManager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Locale;
 import java.util.Map;
 
 public class Reflection {

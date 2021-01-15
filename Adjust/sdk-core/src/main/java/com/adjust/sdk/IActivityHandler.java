@@ -65,6 +65,10 @@ public interface IActivityHandler {
 
     void disableThirdPartySharing();
 
+    void trackThirdPartySharing(AdjustThirdPartySharing adjustThirdPartySharing);
+
+    void trackMeasurementConsent(boolean consentMeasurement);
+
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
@@ -84,10 +88,4 @@ public interface IActivityHandler {
     ActivityState getActivityState();
 
     SessionParameters getSessionParameters();
-
-    String getBasePath();
-
-    String getGdprPath();
-
-    String getSubscriptionPath();
 }

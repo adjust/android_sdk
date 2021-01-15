@@ -4,10 +4,8 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.Util;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by pfms on 08/05/15.

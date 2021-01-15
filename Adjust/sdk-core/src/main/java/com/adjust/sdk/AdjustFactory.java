@@ -2,30 +2,18 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.io.IOException;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
+import com.adjust.sdk.network.IActivityPackageSender;
+import com.adjust.sdk.network.UtilNetworking;
 
-import javax.net.ssl.HostnameVerifier;
+import java.net.URL;
+
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 public class AdjustFactory {
     private static IPackageHandler packageHandler = null;
-    private static IRequestHandler requestHandler = null;
     private static IAttributionHandler attributionHandler = null;
     private static IActivityHandler activityHandler = null;
     private static ILogger logger = null;
-    private static HttpsURLConnection httpsURLConnection = null;
     private static ISdkClickHandler sdkClickHandler = null;
 
     private static long timerInterval = -1;
@@ -36,13 +24,11 @@ public class AdjustFactory {
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static BackoffStrategy installSessionBackoffStrategy = null;
     private static long maxDelayStart = -1;
-    private static String baseUrl = Constants.BASE_URL;
-    private static String gdprUrl = Constants.GDPR_URL;
-    private static String subscriptionUrl = Constants.SUBSCRIPTION_URL;
-    private static List<String> fallbackBaseUrls = Arrays.asList(Constants.FALLBACK_BASE_URLS);
-    private static List<String> fallbackGdprUrls = Arrays.asList(Constants.FALLBACK_GDPR_URLS);
-    private static List<String> fallbackSubscriptionUrls = Arrays.asList(Constants.FALLBACK_SUBSCRIPTION_URLS);
+    private static String baseUrl = null;
+    private static String gdprUrl = null;
+    private static String subscriptionUrl = null;
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
+    private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
     private static boolean tryInstallReferrer = true;
 
     public static class URLGetConnection {
@@ -54,23 +40,23 @@ public class AdjustFactory {
         }
     }
 
-    public static IPackageHandler getPackageHandler(IActivityHandler activityHandler,
-                                                    Context context,
-                                                    boolean startsSending) {
+    public static IPackageHandler getPackageHandler(
+            IActivityHandler activityHandler,
+            Context context,
+            boolean startsSending,
+            IActivityPackageSender packageHandlerActivityPackageSender)
+    {
         if (packageHandler == null) {
-            return new PackageHandler(activityHandler, context, startsSending);
+            return new PackageHandler(activityHandler,
+                    context,
+                    startsSending,
+                    packageHandlerActivityPackageSender);
         }
-        packageHandler.init(activityHandler, context, startsSending);
+        packageHandler.init(activityHandler,
+                context,
+                startsSending,
+                packageHandlerActivityPackageSender);
         return packageHandler;
-    }
-
-    public static IRequestHandler getRequestHandler(IActivityHandler activityHandler,
-                                                    IPackageHandler packageHandler) {
-        if (requestHandler == null) {
-            return new RequestHandler(activityHandler, packageHandler);
-        }
-        requestHandler.init(activityHandler, packageHandler);
-        return requestHandler;
     }
 
     public static ILogger getLogger() {
@@ -138,29 +124,34 @@ public class AdjustFactory {
         return activityHandler;
     }
 
-    public static IAttributionHandler getAttributionHandler(IActivityHandler activityHandler,
-                                                            boolean startsSending) {
+    public static IAttributionHandler getAttributionHandler(
+            IActivityHandler activityHandler,
+            boolean startsSending,
+            IActivityPackageSender packageHandlerActivityPackageSender)
+    {
         if (attributionHandler == null) {
-            return new AttributionHandler(activityHandler, startsSending);
+            return new AttributionHandler(activityHandler,
+                    startsSending,
+                    packageHandlerActivityPackageSender);
         }
-        attributionHandler.init(activityHandler, startsSending);
+        attributionHandler.init(activityHandler,
+                startsSending,
+                packageHandlerActivityPackageSender);
         return attributionHandler;
     }
 
-    public static HttpsURLConnection getHttpsURLConnection(URL url) throws IOException {
-        if (AdjustFactory.httpsURLConnection == null) {
-            return (HttpsURLConnection)url.openConnection();
-        }
-
-        return AdjustFactory.httpsURLConnection;
-    }
-
-    public static ISdkClickHandler getSdkClickHandler(IActivityHandler activityHandler, boolean startsSending) {
+    public static ISdkClickHandler getSdkClickHandler(
+            IActivityHandler activityHandler,
+            boolean startsSending,
+            IActivityPackageSender packageHandlerActivityPackageSender)
+    {
         if (sdkClickHandler == null) {
-            return new SdkClickHandler(activityHandler, startsSending);
+            return new SdkClickHandler(activityHandler,
+                    startsSending,
+                    packageHandlerActivityPackageSender);
         }
 
-        sdkClickHandler.init(activityHandler, startsSending);
+        sdkClickHandler.init(activityHandler, startsSending, packageHandlerActivityPackageSender);
         return sdkClickHandler;
     }
 
@@ -172,52 +163,29 @@ public class AdjustFactory {
     }
 
     public static String getBaseUrl() {
-        if (AdjustFactory.baseUrl == null) {
-            return Constants.BASE_URL;
-        }
         return AdjustFactory.baseUrl;
     }
 
     public static String getGdprUrl() {
-        if (AdjustFactory.gdprUrl == null) {
-            return Constants.GDPR_URL;
-        }
         return AdjustFactory.gdprUrl;
     }
 
     public static String getSubscriptionUrl() {
-        if (AdjustFactory.subscriptionUrl == null) {
-            return Constants.SUBSCRIPTION_URL;
-        }
         return AdjustFactory.subscriptionUrl;
-    }
-
-    public static List<String> getFallbackBaseUrls() {
-        if (AdjustFactory.fallbackBaseUrls == null) {
-            return Arrays.asList(Constants.FALLBACK_BASE_URLS);
-        }
-        return AdjustFactory.fallbackBaseUrls;
-    }
-
-    public static List<String> getFallbackGdprUrls() {
-        if (AdjustFactory.fallbackGdprUrls == null) {
-            return Arrays.asList(Constants.FALLBACK_GDPR_URLS);
-        }
-        return AdjustFactory.fallbackGdprUrls;
-    }
-
-    public static List<String> getFallbackSubscriptionUrls() {
-        if (AdjustFactory.fallbackSubscriptionUrls == null) {
-            return Arrays.asList(Constants.FALLBACK_GDPR_URLS);
-        }
-        return AdjustFactory.fallbackSubscriptionUrls;
     }
 
     public static UtilNetworking.IConnectionOptions getConnectionOptions() {
         if (connectionOptions == null) {
-            return new UtilNetworking.ConnectionOptions();
+            return UtilNetworking.createDefaultConnectionOptions();
         }
         return connectionOptions;
+    }
+
+    public static UtilNetworking.IHttpsURLConnectionProvider getHttpsURLConnectionProvider() {
+        if (httpsURLConnectionProvider == null) {
+            return UtilNetworking.createDefaultHttpsURLConnectionProvider();
+        }
+        return httpsURLConnectionProvider;
     }
 
     public static boolean getTryInstallReferrer() {
@@ -226,10 +194,6 @@ public class AdjustFactory {
 
     public static void setPackageHandler(IPackageHandler packageHandler) {
         AdjustFactory.packageHandler = packageHandler;
-    }
-
-    public static void setRequestHandler(IRequestHandler requestHandler) {
-        AdjustFactory.requestHandler = requestHandler;
     }
 
     public static void setLogger(ILogger logger) {
@@ -268,10 +232,6 @@ public class AdjustFactory {
         AdjustFactory.attributionHandler = attributionHandler;
     }
 
-    public static void setHttpsURLConnection(HttpsURLConnection httpsURLConnection) {
-        AdjustFactory.httpsURLConnection = httpsURLConnection;
-    }
-
     public static void setSdkClickHandler(ISdkClickHandler sdkClickHandler) {
         AdjustFactory.sdkClickHandler = sdkClickHandler;
     }
@@ -288,82 +248,14 @@ public class AdjustFactory {
         AdjustFactory.subscriptionUrl = subscriptionUrl;
     }
 
-    public static void setFallbackBaseUrls(List<String> fallbackBaseUrls) {
-        AdjustFactory.fallbackBaseUrls = fallbackBaseUrls;
+    public static void setConnectionOptions(UtilNetworking.IConnectionOptions connectionOptions) {
+        AdjustFactory.connectionOptions = connectionOptions;
     }
 
-    public static void setFallbackGdprUrls(List<String> fallbackGdprUrls) {
-        AdjustFactory.fallbackGdprUrls = fallbackGdprUrls;
-    }
-
-    public static void setFallbackSubscriptionUrls(List<String> fallbackSubscriptionUrls) {
-        AdjustFactory.fallbackSubscriptionUrls = fallbackSubscriptionUrls;
-    }
-
-    public static void useTestConnectionOptions() {
-        AdjustFactory.connectionOptions = new UtilNetworking.IConnectionOptions() {
-            @Override
-            public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk) {
-                UtilNetworking.ConnectionOptions defaultConnectionOption = new UtilNetworking.ConnectionOptions();
-                defaultConnectionOption.applyConnectionOptions(connection, clientSdk);
-                try {
-                    SSLContext sc = SSLContext.getInstance("TLS");
-                    sc.init(null, new TrustManager[]{
-                            new X509TrustManager() {
-                                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                                    getLogger().verbose("getAcceptedIssuers");
-                                    return null;
-                                }
-                                public void checkClientTrusted(
-                                        X509Certificate[] certs, String authType) {
-                                    getLogger().verbose("checkClientTrusted ");
-                                }
-                                public void checkServerTrusted(
-                                        X509Certificate[] certs, String authType) throws CertificateException {
-                                    getLogger().verbose("checkServerTrusted ");
-
-                                    String serverThumbprint = "7BCFF44099A35BC093BB48C5A6B9A516CDFDA0D1";
-                                    X509Certificate certificate = certs[0];
-
-                                    MessageDigest md = null;
-                                    try {
-                                        md = MessageDigest.getInstance("SHA1");
-                                        byte[] publicKey = md.digest(certificate.getEncoded());
-                                        String hexString = byte2HexFormatted(publicKey);
-
-                                        if (!hexString.equalsIgnoreCase(serverThumbprint)) {
-                                            throw new CertificateException();
-                                        }
-                                    } catch (NoSuchAlgorithmException e) {
-                                        getLogger().error("testingMode error %s", e.getMessage());
-                                    } catch (CertificateEncodingException e) {
-                                        getLogger().error("testingMode error %s", e.getMessage());
-                                    }
-                                }
-                            }
-                    }, new java.security.SecureRandom());
-                    connection.setSSLSocketFactory(sc.getSocketFactory());
-
-                    connection.setHostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            getLogger().verbose("verify hostname ");
-                            return isTestIp(hostname);
-                        }
-
-                        private boolean isTestIp(String hostname) {
-                            if (hostname.equals("10.0.2.2")) {
-                                return true;
-                            }
-                            return hostname.startsWith("192.168.");
-                        }
-                    });
-                } catch (Exception e) {
-                    getLogger().error("testingMode error %s", e.getMessage());
-                }
-            }
-        };
-
+    public static void setHttpsURLConnectionProvider(
+            UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider)
+    {
+        AdjustFactory.httpsURLConnectionProvider = httpsURLConnectionProvider;
     }
 
     public static void setTryInstallReferrer(boolean tryInstallReferrer) {
@@ -406,11 +298,9 @@ public class AdjustFactory {
             PackageHandler.deleteState(context);
         }
         packageHandler = null;
-        requestHandler = null;
         attributionHandler = null;
         activityHandler = null;
         logger = null;
-        httpsURLConnection = null;
         sdkClickHandler = null;
 
         timerInterval = -1;
@@ -424,6 +314,7 @@ public class AdjustFactory {
         gdprUrl = Constants.GDPR_URL;
         subscriptionUrl = Constants.SUBSCRIPTION_URL;
         connectionOptions = null;
+        httpsURLConnectionProvider = null;
         tryInstallReferrer = true;
     }
 }

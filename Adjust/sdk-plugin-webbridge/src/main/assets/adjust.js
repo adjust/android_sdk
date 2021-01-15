@@ -147,6 +147,18 @@ var Adjust = {
         }
     },
 
+    trackThirdPartySharing: function(adjustThirdPartySharing) {
+        if (AdjustBridge) {
+            AdjustBridge.trackThirdPartySharing(JSON.stringify(adjustThirdPartySharing));
+        }
+    },
+
+    trackMeasurementConsent: function(consentMeasurement) {
+        if (AdjustBridge) {
+            AdjustBridge.trackMeasurementConsent(consentMeasurement);
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
@@ -199,14 +211,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge4.25.0';
-        }
-    },
-
-    setTestOptions: function (testOptions) {
-        var testOptionsString = JSON.stringify(testOptions);
-        if (AdjustBridge) {
-            AdjustBridge.setTestOptions(testOptionsString);
+            return 'web-bridge4.26.0';
         }
     },
 
