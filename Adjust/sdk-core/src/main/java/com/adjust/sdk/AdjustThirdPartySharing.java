@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AdjustThirdPartySharing {
-    Boolean enableOrElseDisable;
+    Boolean isEnabled;
     Map<String, Map<String, String>> granularOptions;
 
-    public AdjustThirdPartySharing(final Boolean enableOrElseDisable) {
-        this.enableOrElseDisable = enableOrElseDisable;
-
+    public AdjustThirdPartySharing(final Boolean isEnabled) {
+        this.isEnabled = isEnabled;
         granularOptions = new HashMap<>();
     }
 

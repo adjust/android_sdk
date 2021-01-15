@@ -638,14 +638,14 @@ public class AdjustBridgeInstance {
         try {
             JSONObject jsonAdjustThirdPartySharing = new JSONObject(adjustThirdPartySharingString);
 
-            Object enableOrElseDisableField =
-                    jsonAdjustThirdPartySharing.get("enableOrElseDisable");
+            Object isEnabledField =
+                    jsonAdjustThirdPartySharing.get("isEnabled");
             Object granularOptionsField = jsonAdjustThirdPartySharing.get("granularOptions");
 
-            Boolean enableOrElseDisable = AdjustBridgeUtil.fieldToBoolean(enableOrElseDisableField);
+            Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledField);
 
             AdjustThirdPartySharing adjustThirdPartySharing =
-                    new AdjustThirdPartySharing(enableOrElseDisable);
+                    new AdjustThirdPartySharing(isEnabled);
 
             // Callback parameters
             String[] granularOptions =

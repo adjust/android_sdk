@@ -775,9 +775,9 @@ public class PackageBuilder {
         }
 
         // Third Party Sharing
-        if (adjustThirdPartySharing.enableOrElseDisable != null) {
+        if (adjustThirdPartySharing.isEnabled != null) {
             PackageBuilder.addString(parameters, "sharing",
-                    adjustThirdPartySharing.enableOrElseDisable.booleanValue() ?
+                    adjustThirdPartySharing.isEnabled.booleanValue() ?
                             "enable" : "disable");
         }
         PackageBuilder.addMapJson(parameters, "granular_third_party_sharing_options",

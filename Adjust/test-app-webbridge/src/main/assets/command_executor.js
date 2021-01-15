@@ -551,9 +551,8 @@ AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
 }
 
 AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
-    var enableOrElseDisable = getFirstParameterValue(params, "enableOrElseDisable") == 'true';
-
-    var adjustThirdPartySharing = new AdjustThirdPartySharing(enableOrElseDisable);
+    var isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    var adjustThirdPartySharing = new AdjustThirdPartySharing(isEnabled);
 
     if ('granularOptions' in params) {
         var granularOptions = getValueFromKey(params, "granularOptions");
@@ -569,8 +568,8 @@ AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
 }
 
 AdjustCommandExecutor.prototype.measurementConsent = function(params) {
-    var enableOrElseDisable = getFirstParameterValue(params, "enableOrElseDisable") == 'true';
-    Adjust.trackMeasurementConsent(enableOrElseDisable);
+    var isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    Adjust.trackMeasurementConsent(isEnabled);
 }
 
 AdjustCommandExecutor.prototype.addSessionCallbackParameter = function(params) {

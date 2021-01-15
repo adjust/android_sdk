@@ -1,5 +1,5 @@
-function AdjustThirdPartySharing(enableOrElseDisable) {
-    this.enableOrElseDisable = enableOrElseDisable;
+function AdjustThirdPartySharing(isEnabled) {
+    this.isEnabled = isEnabled;
     this.granularOptions = [];
 }
 

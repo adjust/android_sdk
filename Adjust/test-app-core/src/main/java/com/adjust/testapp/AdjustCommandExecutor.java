@@ -642,13 +642,13 @@ public class AdjustCommandExecutor {
     }
 
     private void thirdPartySharing() {
-        String enableOrElseDisableString =
-                command.getFirstParameterValue("enableOrElseDisable");
-        Boolean enableOrElseDisableBoolean =
-                Util.strictParseStringToBoolean(enableOrElseDisableString);
+        String isEnabledString =
+                command.getFirstParameterValue("isEnabled");
+        Boolean isEnabledBoolean =
+                Util.strictParseStringToBoolean(isEnabledString);
 
         AdjustThirdPartySharing adjustThirdPartySharing =
-                new AdjustThirdPartySharing(enableOrElseDisableBoolean);
+                new AdjustThirdPartySharing(isEnabledBoolean);
 
         if (command.parameters.containsKey("granularOptions")) {
             List<String> granularOptions = command.parameters.get("granularOptions");
@@ -656,8 +656,7 @@ public class AdjustCommandExecutor {
                 String partnerName = granularOptions.get(i);
                 String key = granularOptions.get(i + 1);
                 String value = granularOptions.get(i + 2);
-                adjustThirdPartySharing.addGranularOption(
-                        partnerName, key, value);
+                adjustThirdPartySharing.addGranularOption(partnerName, key, value);
             }
         }
 
@@ -666,7 +665,7 @@ public class AdjustCommandExecutor {
 
     private void measurementConsent() {
         String measurementConsentString =
-                command.getFirstParameterValue("enableOrElseDisable");
+                command.getFirstParameterValue("isEnabled");
         boolean measurementConsent = "true".equals(measurementConsentString);
 
         Adjust.trackMeasurementConsent(measurementConsent);
