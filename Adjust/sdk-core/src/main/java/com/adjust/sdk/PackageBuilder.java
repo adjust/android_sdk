@@ -198,7 +198,7 @@ public class PackageBuilder {
         return activityPackage;
     }
 
-    ActivityPackage buildMeasurementConsent(final boolean consentMeasurement) {
+    ActivityPackage buildMeasurementConsentPackage(final boolean consentMeasurement) {
         Map<String, String> parameters = getMeasurementConsentParameters(consentMeasurement);
         ActivityPackage activityPackage =
                 getDefaultActivityPackage(ActivityKind.MEASUREMENT_CONSENT);

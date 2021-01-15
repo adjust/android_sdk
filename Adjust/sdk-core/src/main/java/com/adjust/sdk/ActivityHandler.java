@@ -2234,7 +2234,7 @@ public class ActivityHandler implements IActivityHandler {
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
 
         ActivityPackage activityPackage =
-                packageBuilder.buildMeasurementConsent(consentMeasurement);
+                packageBuilder.buildMeasurementConsentPackage(consentMeasurement);
         packageHandler.addPackage(activityPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
