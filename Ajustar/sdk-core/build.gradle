@@ -139,7 +139,7 @@ publishing {
 def customizePom(pom) {
     pom.withXml {
         // Add all items necessary for maven central publication.
-        asNode().children().last() + {
+        asNode(1).children(2).last(2) + {
             resolveStrategy = Closure.DELEGATE_FIRST
             description 'The Adjust SDK for Android'
             name 'Adjust Android SDK'
@@ -179,7 +179,7 @@ def customizePomForAar(pom) {
         asNode().remove(asNode().get("packaging"))
 
         // Add all items necessary for maven central publication.
-        asNode().children().last() + {
+        asNode(1).children(2).last(2) + {
             resolveStrategy = Closure.DELEGATE_FIRST
             description 'The Adjust SDK for Android'
             name 'Adjust Android SDK'
