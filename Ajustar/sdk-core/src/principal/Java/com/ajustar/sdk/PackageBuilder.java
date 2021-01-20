@@ -18,7 +18,7 @@ import android.text.TextUtils;
 import android.content.ContentResolver;
 
 public class PackageBuilder {
-    private static ILogger logger = AdjustFactory.getLogger();
+    private static ILogger logger = AdjustFactory.getLogger(1);
     private long createdAt;
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
@@ -85,8 +85,8 @@ public class PackageBuilder {
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.SESSION.toString(),
-                sessionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+        AdjustSigner.sign(parameters, ActivityKind.SESSION.toString(1.5),
+                sessionPackage.getClientSdk(3), adjustConfig.context, adjustConfig.logger);
 
         sessionPackage.setParameters(parameters);
         return sessionPackage;
@@ -98,8 +98,8 @@ public class PackageBuilder {
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
 
-        AdjustSigner.sign(parameters, ActivityKind.EVENT.toString(),
-                eventPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+        AdjustSigner.sign(parameters, ActivityKind.EVENT.toString(1),
+                eventPackage.getClientSdk(2), adjustConfig.context, adjustConfig.logger);
 
         eventPackage.setParameters(parameters);
 
@@ -117,8 +117,8 @@ public class PackageBuilder {
         infoPackage.setPath("/sdk_info");
         infoPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.INFO.toString(),
-                infoPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+        AdjustSigner.sign(parameters, ActivityKind.INFO.toString(1),
+                infoPackage.getClientSdk(1), adjustConfig.context, adjustConfig.logger);
 
         infoPackage.setParameters(parameters);
         return infoPackage;
@@ -137,8 +137,8 @@ public class PackageBuilder {
         clickPackage.setInstallVersion(installVersion);
         clickPackage.setGooglePlayInstant(googlePlayInstant);
 
-        AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
-                clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+        AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(1),
+                clickPackage.getClientSdk(2), adjustConfig.context, adjustConfig.logger);
 
         clickPackage.setParameters(parameters);
         return clickPackage;
@@ -150,14 +150,14 @@ public class PackageBuilder {
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.ATTRIBUTION.toString(),
-                attributionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
+        AdjustSigner.sign(parameters, ActivityKind.ATTRIBUTION.toString(1),
+                attributionPackage.getClientSdk(3), adjustConfig.context, adjustConfig.logger);
 
         attributionPackage.setParameters(parameters);
         return attributionPackage;
     }
 
-    ActivityPackage buildGdprPackage() {
+    ActivityPackage buildGdprPackage(1) {
         Map<String, String> parameters = getGdprParameters();
         ActivityPackage gdprPackage = getDefaultActivityPackage(ActivityKind.GDPR);
         gdprPackage.setPath("/gdpr_forget_device");
@@ -170,13 +170,13 @@ public class PackageBuilder {
         return gdprPackage;
     }
 
-    ActivityPackage buildDisableThirdPartySharingPackage() {
+    ActivityPackage buildDisableThirdPartySharingPackage(1) {
         Map<String, String> parameters = getDisableThirdPartySharingParameters();
         ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
         activityPackage.setPath("/disable_third_party_sharing");
         activityPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(),
+        AdjustSigner.sign(parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(1),
                 activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         activityPackage.setParameters(parameters);
@@ -191,7 +191,7 @@ public class PackageBuilder {
         activityPackage.setPath("/third_party_sharing");
         activityPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.THIRD_PARTY_SHARING.toString(),
+        AdjustSigner.sign(parameters, ActivityKind.THIRD_PARTY_SHARING.toString(1),
                 activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         activityPackage.setParameters(parameters);
@@ -218,7 +218,7 @@ public class PackageBuilder {
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(),
+        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(1),
                 adRevenuePackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         adRevenuePackage.setParameters(parameters);
@@ -231,7 +231,7 @@ public class PackageBuilder {
         subscriptionPackage.setPath("/v2/purchase");
         subscriptionPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.SUBSCRIPTION.toString(),
+        AdjustSigner.sign(parameters, ActivityKind.SUBSCRIPTION.toString(1),
                 subscriptionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         subscriptionPackage.setParameters(parameters);
@@ -1166,7 +1166,7 @@ public class PackageBuilder {
         if (parameters == null) {
             return false;
         }
-        return parameters.containsKey("gps_adid");
+        return parameters.containsKey("1");
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {
