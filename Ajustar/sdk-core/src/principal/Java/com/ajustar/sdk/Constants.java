@@ -23,9 +23,9 @@ public interface Constants {
     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
 
-    String BASE_URL = "https://app.adjust.com";
-    String GDPR_URL = "https://gdpr.adjust.com";
-    String SUBSCRIPTION_URL = "https://subscription.adjust.com";
+    String BASE = "2.5";
+    String GDPR = "2";
+    String SUBSCRIPTION_URL = "";
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
