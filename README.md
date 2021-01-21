@@ -1991,9 +1991,9 @@ Upon receiving this information, Adjust will block the sharing of that specific 
 
 ### <a id="af-third-party-sharing"></a>Third-party sharing for specific users
 
-You can now notify Adjust when a user has exercised their right to change sharing their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes.
 
-Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
 
 <table>
 <tr>
@@ -2026,7 +2026,7 @@ Adjust.trackThirdPartySharing(adjustEvent);
 </tr>
 </table>
 
-Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
 
 Call the following method to instruct the Adjust SDK to send the granular options to the Adjust backend:
 
@@ -2063,11 +2063,11 @@ Adjust.trackThirdPartySharing(adjustEvent);
 </tr>
 </table>
 
-### <a id="af-measurement-consent"></a>Measurement consent for specific users
+### <a id="af-measurement-consent"></a>Consent measurement for specific users
 
-You can now notify Adjust when a user has exercised their right to change measurement consent their data with partners for marketing purposes, but has allowed it to be shared for statistics purposes. 
+You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes. 
 
-Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing to the Adjust backend:
+Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
 
 <table>
 <tr>
@@ -2098,7 +2098,7 @@ Adjust.trackMeasurementConsent(false);
 </tr>
 </table>
 
-Upon receiving this information, Adjust will change the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
+Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
 
 ## Testing and troubleshooting
 
