@@ -111,6 +111,8 @@ If you would prefer to use the Adjust SDK inside web views in your app, please i
 implementation 'com.adjust.sdk:adjust-android-webbridge:4.26.0'
 ```
 
+**Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
+
 You can also add the Adjust SDK and web view extension as JAR files, which can be downloaded from our [releases page][releases].
 
 ### <a id="qs-gps"></a>Add Google Play Services
