@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
+import com.adjust.sdk.scheduler.ThreadExecutor;
 import com.adjust.sdk.scheduler.TimerOnce;
 
 import java.lang.reflect.InvocationHandler;
@@ -94,6 +96,8 @@ public class InstallReferrer implements InvocationHandler {
 
     private Object playInstallReferrer;
 
+    private ThreadExecutor executor;
+
     /**
      * Default constructor.
      *
@@ -113,6 +117,7 @@ public class InstallReferrer implements InvocationHandler {
             }
         }, "InstallReferrer");
         this.referrerCallback = referrerCallback;
+        this.executor = new SingleThreadCachedScheduler("InstallReferrer");
     }
 
     private Object createInstallReferrer(Context context, InstallReferrerReadListener referrerCallback, ILogger logger) {
@@ -312,6 +317,16 @@ public class InstallReferrer implements InvocationHandler {
      * @param responseCode Response code from install referrer service
      */
     private void onInstallReferrerSetupFinishedInt(final int responseCode) {
+        executor.submit(new Runnable() {
+            @Override
+            public
+            void run() {
+                onInstallReferrerSetupFinishedIntI(responseCode);
+            }
+        });
+    }
+
+    private void onInstallReferrerSetupFinishedIntI(final int responseCode) {
         boolean retryAtEnd = false;
         switch (responseCode) {
             /** Success. */
