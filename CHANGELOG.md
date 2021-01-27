@@ -1,7 +1,7 @@
-### Version 4.26.1 (XXth January 2021)
+### Version 4.26.1 (27th January 2021)
 #### Fixed
-- Changed minimum sdk version of webbridge plugin to API 17, to avoid insecure javascript injection in lower versions.
-- Updated reading of install referrer details to background thread after service connection establishes.
+- Changed minimum supported API version to 17 for `webbridge`, to avoid insecure JavaScript potential injections on lower API versions.
+- Moved reading of install referrer details to background thread after service connection establishes.
 
 ---
 
