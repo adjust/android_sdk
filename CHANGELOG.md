@@ -1,3 +1,10 @@
+### Version 4.26.1 (XXth January 2021)
+#### Fixed
+- Changed minimum sdk version of webbridge plugin to API 17, to avoid insecure javascript injection in lower versions.
+- Updated reading of install referrer details to background thread after service connection establishes.
+
+---
+
 ### Version 4.26.0 (16th January 2021)
 #### Added
 - Added improved measurement consent management and third party sharing system.
