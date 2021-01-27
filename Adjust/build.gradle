@@ -9,7 +9,7 @@ ext {
     coreMinSdkVersion = 9
     coreCompileSdkVersion = 30
     coreTargetSdkVersion = 30
-    coreVersionName = '4.26.0'
+    coreVersionName = '4.26.1'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 17
 
