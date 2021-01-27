@@ -1,3 +1,10 @@
+### Version 4.26.1 (27th January 2021)
+#### Fixed
+- Changed minimum supported API version to 17 for `webbridge`, to avoid insecure JavaScript potential injections on lower API versions.
+- Moved reading of install referrer details to background thread after service connection establishes.
+
+---
+
 ### Version 4.26.0 (16th January 2021)
 #### Added
 - Added improved measurement consent management and third party sharing system.

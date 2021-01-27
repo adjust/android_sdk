@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
+import com.adjust.sdk.scheduler.ThreadExecutor;
 import com.adjust.sdk.scheduler.TimerOnce;
 
 import java.lang.reflect.InvocationHandler;
@@ -94,6 +96,8 @@ public class InstallReferrer implements InvocationHandler {
 
     private Object playInstallReferrer;
 
+    private ThreadExecutor executor;
+
     /**
      * Default constructor.
      *
@@ -113,6 +117,7 @@ public class InstallReferrer implements InvocationHandler {
             }
         }, "InstallReferrer");
         this.referrerCallback = referrerCallback;
+        this.executor = new SingleThreadCachedScheduler("InstallReferrer");
     }
 
     private Object createInstallReferrer(Context context, InstallReferrerReadListener referrerCallback, ILogger logger) {
@@ -258,8 +263,29 @@ public class InstallReferrer implements InvocationHandler {
      * {@inheritDoc}
      */
     @Override
-    public Object invoke(final Object proxy, final Method method, Object[] args)
-            throws Throwable {
+    public Object invoke(final Object proxy, final Method method, final Object[] args)
+            throws Throwable
+    {
+        executor.submit(new Runnable() {
+            @Override
+            public
+            void run() {
+                try {
+                    invokeI(proxy, method, args);
+                } catch (Throwable throwable) {
+                    logger.error("invoke error (%s) thrown by (%s)",
+                            throwable.getMessage(),
+                            throwable.getClass().getCanonicalName());
+                }
+            }
+        });
+
+        return null;
+    }
+
+    private Object invokeI(final Object proxy, final Method method, Object[] args)
+            throws Throwable
+    {
         if (method == null) {
             logger.error("InstallReferrer invoke method null");
             return null;
@@ -298,10 +324,10 @@ public class InstallReferrer implements InvocationHandler {
                 return null;
             }
 
-            onInstallReferrerSetupFinishedInt(responseCode);
+            onInstallReferrerSetupFinishedIntI(responseCode);
         } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
             logger.debug("Connection to install referrer service was lost. Retrying ...");
-            retry();
+            retryI();
         }
         return null;
     }
@@ -311,7 +337,7 @@ public class InstallReferrer implements InvocationHandler {
      *
      * @param responseCode Response code from install referrer service
      */
-    private void onInstallReferrerSetupFinishedInt(final int responseCode) {
+    private void onInstallReferrerSetupFinishedIntI(final int responseCode) {
         boolean retryAtEnd = false;
         switch (responseCode) {
             /** Success. */
@@ -381,7 +407,7 @@ public class InstallReferrer implements InvocationHandler {
                 break;
         }
         if (retryAtEnd) {
-            retry();
+            retryI();
         } else {
             shouldTryToRead.set(false);
             closeReferrerClient();
@@ -557,7 +583,7 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Retry connection to install referrer service.
      */
-    private void retry() {
+    private void retryI() {
         if (!shouldTryToRead.get()) {
             logger.debug("Should not try to read Install referrer");
             closeReferrerClient();
