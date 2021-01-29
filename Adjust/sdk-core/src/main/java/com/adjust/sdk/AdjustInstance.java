@@ -204,6 +204,26 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to process preinstall payload information sent with SYSTEM_INSTALLER_REFERRER intent.
+     *
+     * @param referrer    Preinstall referrer content
+     * @param context     Application context
+     */
+    public void sendPreinstallReferrer(final String referrer, final Context context) {
+        // Check for referrer validity. If invalid, return.
+        if (referrer == null || referrer.length() == 0) {
+            return;
+        }
+
+        savePreinstallReferrer(referrer, context);
+        if (checkActivityHandler("preinstall referrer")) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.sendPreinstallReferrer();
+            }
+        }
+    }
+
+    /**
      * Called to set SDK to offline or online mode.
      *
      * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
@@ -536,6 +556,23 @@ public class AdjustInstance {
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
                 sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
+            }
+        };
+        Util.runInBackground(command);
+    }
+
+    /**
+     * Save preinstall referrer to shared preferences.
+     *
+     * @param referrer    Preinstall referrer content
+     * @param context     Application context
+     */
+    private void savePreinstallReferrer(final String referrer, final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.savePreinstallReferrer(referrer);
             }
         };
         Util.runInBackground(command);

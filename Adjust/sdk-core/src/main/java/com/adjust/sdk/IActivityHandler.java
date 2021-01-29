@@ -37,6 +37,8 @@ public interface IActivityHandler {
 
     void sendReftagReferrer();
 
+    void sendPreinstallReferrer();
+
     void sendInstallReferrer(ReferrerDetails referrerDetails, String referrerApi);
 
     void setOfflineMode(boolean enabled);

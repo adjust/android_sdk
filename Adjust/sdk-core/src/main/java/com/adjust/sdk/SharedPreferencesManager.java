@@ -37,13 +37,18 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
 
-    private static final String PREFS_KEY_DISABLE_THIRD_PARTY_SHARING = "disable_third_party_sharing";
+    private static final String PREFS_KEY_DISABLE_THIRD_PARTY_SHARING
+            = "disable_third_party_sharing";
 
     private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
 
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
 
-    private static final String PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS = "preinstall_payload_read_status";
+    private static final String PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS
+            = "preinstall_payload_read_status";
+
+    private static final String PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER
+            = "preinstall_system_installer_referrer";
 
     /**
      * Index for raw referrer string content in saved JSONArray object.
@@ -208,6 +213,33 @@ public class SharedPreferencesManager {
         }
 
         return new JSONArray();
+    }
+
+    /**
+     * Save preinstall referrer string into shared preferences.
+     *
+     * @param referrer Preinstall referrer string
+     */
+    public synchronized void savePreinstallReferrer(final String referrer) {
+        saveString(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER, referrer);
+    }
+
+    /**
+     * Get saved preinstall referrer string from shared preferences.
+     *
+     * @return referrer Preinstall referrer string
+     */
+    public synchronized String getPreinstallReferrer() {
+        return getString(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER);
+    }
+
+    /**
+     * Remove saved preinstall referrer string from shared preferences.
+     *
+     * @return referrer Preinstall referrer string
+     */
+    public synchronized void removePreinstallReferrer() {
+        remove(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER);
     }
 
     /**
