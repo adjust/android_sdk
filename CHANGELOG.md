@@ -1,6 +1,6 @@
-### Version 4.26.2 (XX February 2021)
+### Version 4.26.2 (1st February 2021)
 #### Added
-- Added Facebook audience network ad revenue source string
+- Added Facebook audience network ad revenue source string.
 
 ---
 
