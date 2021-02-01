@@ -1,3 +1,9 @@
+### Version 4.26.2 (1st February 2021)
+#### Added
+- Added Facebook audience network ad revenue source string.
+
+---
+
 ### Version 4.26.1 (27th January 2021)
 #### Fixed
 - Changed minimum supported API version to 17 for `webbridge`, to avoid insecure JavaScript potential injections on lower API versions.

@@ -50,6 +50,7 @@ public class AdjustConfig {
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob";
     public static final String AD_REVENUE_FB_NATIVE_AD = "facebook_native_ad";
+    public static final String AD_REVENUE_FB_AUDIENCE_NETWORK = "facebook_audience_network";
     public static final String AD_REVENUE_IRONSOURCE = "ironsource";
     public static final String AD_REVENUE_FYBER = "fyber";
     public static final String AD_REVENUE_AERSERV = "aerserv";
