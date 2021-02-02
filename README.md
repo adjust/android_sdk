@@ -1954,9 +1954,11 @@ Upon receiving this information, Adjust will erase the user's data and the Adjus
 
 Please note that even when testing, this decision is permanent. It **is not** reversible.
 
-### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
+## <a id="af-third-party-sharing"></a>Third-party sharing for specific users
 
-You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes. 
+You can notify Adjust when a user disables, enables, and re-enables data sharing with third-party partners.
+
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
 
 Call the following method to instruct the Adjust SDK to communicate the user's choice to disable data sharing to the Adjust backend:
 
@@ -1991,11 +1993,9 @@ Adjust.disableThirdPartySharing();
 
 Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
-### <a id="af-third-party-sharing"></a>Third-party sharing for specific users
+### <a id="af-enable-third-party-sharing"></a>Enable or re-enable third-party sharing for specific users
 
-You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes.
-
-Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
+Call the following method to instruct the Adjust SDK to communicate the user's choice to share data or change data sharing, to the Adjust backend:
 
 <table>
 <tr>
