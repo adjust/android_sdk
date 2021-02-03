@@ -2008,7 +2008,7 @@ Call the following method to instruct the Adjust SDK to communicate the user's c
 <td>
 
 ```java
-AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
@@ -2022,8 +2022,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 <td>
 
 ```js
-let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
-Adjust.trackThirdPartySharing(adjustEvent);
+let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
@@ -2060,7 +2060,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```js
 let adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
-Adjust.trackThirdPartySharing(adjustEvent);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
@@ -2082,7 +2082,7 @@ Call the following method to instruct the Adjust SDK to communicate the user's c
 <td>
 
 ```java
-Adjust.trackMeasurementConsent(false);
+Adjust.trackMeasurementConsent(true);
 ```
 </td>
 </tr>
@@ -2095,7 +2095,7 @@ Adjust.trackMeasurementConsent(false);
 <td>
 
 ```js
-Adjust.trackMeasurementConsent(false);
+Adjust.trackMeasurementConsent(true);
 ```
 </td>
 </tr>
