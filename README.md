@@ -73,8 +73,9 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
-   * [Disable third-party sharing](#af-disable-third-party-sharing)
    * [Third-party sharing](#af-third-party-sharing)
+   * [Disable third-party sharing](#af-disable-third-party-sharing)
+   * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
 
 ### Testing and troubleshooting
