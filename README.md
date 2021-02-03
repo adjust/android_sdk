@@ -73,8 +73,9 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Event buffering](#af-event-buffering)
    * [Background tracking](#af-background-tracking)
    * [GDPR right to be forgotten](#af-gdpr-forget-me)
-   * [Disable third-party sharing](#af-disable-third-party-sharing)
    * [Third-party sharing](#af-third-party-sharing)
+      * [Disable third-party sharing](#af-disable-third-party-sharing)
+      * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Measurement consent](#af-measurement-consent)
 
 ### Testing and troubleshooting
@@ -1954,9 +1955,11 @@ Upon receiving this information, Adjust will erase the user's data and the Adjus
 
 Please note that even when testing, this decision is permanent. It **is not** reversible.
 
-### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
+## <a id="af-third-party-sharing"></a>Third-party sharing for specific users
 
-You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes. 
+You can notify Adjust when a user disables, enables, and re-enables data sharing with third-party partners.
+
+### <a id="af-disable-third-party-sharing"></a>Disable third-party sharing for specific users
 
 Call the following method to instruct the Adjust SDK to communicate the user's choice to disable data sharing to the Adjust backend:
 
@@ -1991,11 +1994,9 @@ Adjust.disableThirdPartySharing();
 
 Upon receiving this information, Adjust will block the sharing of that specific user's data to partners and the Adjust SDK will continue to work as usual.
 
-### <a id="af-third-party-sharing"></a>Third-party sharing for specific users
+### <a id="af-enable-third-party-sharing"></a>Enable or re-enable third-party sharing for specific users
 
-You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes.
-
-Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
+Call the following method to instruct the Adjust SDK to communicate the user's choice to share data or change data sharing, to the Adjust backend:
 
 <table>
 <tr>
@@ -2007,7 +2008,7 @@ Call the following method to instruct the Adjust SDK to communicate the user's c
 <td>
 
 ```java
-AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
 Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
@@ -2021,8 +2022,8 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 <td>
 
 ```js
-let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
-Adjust.trackThirdPartySharing(adjustEvent);
+let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
@@ -2059,7 +2060,7 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```js
 let adjustThirdPartySharing = new AdjustThirdPartySharing(null);
 adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
-Adjust.trackThirdPartySharing(adjustEvent);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
@@ -2081,7 +2082,7 @@ Call the following method to instruct the Adjust SDK to communicate the user's c
 <td>
 
 ```java
-Adjust.trackMeasurementConsent(false);
+Adjust.trackMeasurementConsent(true);
 ```
 </td>
 </tr>
@@ -2094,7 +2095,7 @@ Adjust.trackMeasurementConsent(false);
 <td>
 
 ```js
-Adjust.trackMeasurementConsent(false);
+Adjust.trackMeasurementConsent(true);
 ```
 </td>
 </tr>
