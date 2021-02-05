@@ -76,7 +76,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Third-party sharing](#af-third-party-sharing)
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
-   * [Measurement consent](#af-measurement-consent)
+   * [Consent measurement](#af-measurement-consent)
 
 ### Testing and troubleshooting
 
@@ -2070,9 +2070,9 @@ Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 
 ### <a id="af-measurement-consent"></a>Consent measurement for specific users
 
-You can notify Adjust when a user exercises their right to change data sharing with partners for marketing purposes, but they allow data sharing for statistical purposes. 
+To enable or disable the Data Privacy settings in the Adjust Dashboard, including the consent expiry period and the user data retention period, you need to implement the below method.
 
-Call the following method to instruct the Adjust SDK to communicate the user's choice to change data sharing, to the Adjust backend:
+Call the following method to instruct the Adjust SDK to communicate the Data Privacy settings, to the Adjust backend:
 
 <table>
 <tr>
@@ -2103,7 +2103,7 @@ Adjust.trackMeasurementConsent(true);
 </tr>
 </table>
 
-Upon receiving this information, Adjust changes sharing the specific user's data to partners. The Adjust SDK will continue to work as expected.
+Upon receiving this information, Adjust enables or disables consent measurement. The Adjust SDK will continue to work as expected.
 
 ## Testing and troubleshooting
 
