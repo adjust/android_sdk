@@ -1973,7 +1973,8 @@ Call the following method to instruct the Adjust SDK to communicate the user's c
 <td>
 
 ```java
-Adjust.disableThirdPartySharing(context);
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
@@ -1986,7 +1987,8 @@ Adjust.disableThirdPartySharing(context);
 <td>
 
 ```js
-Adjust.disableThirdPartySharing();
+let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 ```
 </td>
 </tr>
