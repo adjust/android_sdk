@@ -271,7 +271,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -360,7 +361,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -444,7 +446,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -497,7 +500,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -605,7 +609,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -665,7 +670,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -724,7 +730,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -794,7 +801,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -858,7 +866,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -916,7 +925,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
@@ -1001,7 +1011,8 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, fallback to non Google Play and Fire identifiers will take place");
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
             PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
