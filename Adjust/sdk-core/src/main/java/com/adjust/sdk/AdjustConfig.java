@@ -40,6 +40,7 @@ public class AdjustConfig {
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
     String urlStrategy;
+    String preinstallFilePath;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -183,6 +184,10 @@ public class AdjustConfig {
 
     public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
         this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+    }
+
+    public void setPreinstallFilePath(String preinstallFilePath) {
+        this.preinstallFilePath = preinstallFilePath;
     }
 
     public void setNeedsCost(boolean needsCost) {

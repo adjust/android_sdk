@@ -184,11 +184,19 @@ public class PreinstallUtil {
     }
 
     public static String getPayloadFromFileSystem(final String packageName,
+                                                  final String filePath,
                                                   final ILogger logger)
     {
         String content = readFileContent(ADJUST_PREINSTALL_FILE_SYSTEM_PATH, logger);
+
         if (content == null || content.isEmpty()) {
-            return null;
+            if (filePath != null && !filePath.isEmpty()) {
+                content = readFileContent(filePath, logger);
+            }
+
+            if (content == null || content.isEmpty()) {
+                return null;
+            }
         }
 
         return readPayloadFromJsonString(content, packageName, logger);

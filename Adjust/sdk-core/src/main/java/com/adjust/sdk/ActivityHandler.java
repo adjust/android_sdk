@@ -1056,6 +1056,7 @@ public class ActivityHandler implements IActivityHandler {
         if (PreinstallUtil.hasNotBeenRead(Constants.FILE_SYSTEM, readStatus)) {
             String payloadFileSystem = PreinstallUtil.getPayloadFromFileSystem(
                     deviceInfo.packageName,
+                    adjustConfig.preinstallFilePath,
                     logger);
 
             if (payloadFileSystem != null && !payloadFileSystem.isEmpty()) {
