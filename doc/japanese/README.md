@@ -2210,20 +2210,20 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [referrer]:                       doc/english/misc/multiple-receivers.md
 [releases]:                       https://github.com/adjust/android_sdk/releases
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
-[event-tracking]:                 https://docs.adjust.com/en/event-tracking
-[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[event-tracking]:                 https://docs.adjust.com/ja/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/ja/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
-[special-partners]:               https://docs.adjust.com/en/special-partners
+[special-partners]:               https://docs.adjust.com/ja/special-partners
 [スペシャルパートナーガイド スペシャルパートナー]: https://help.adjust.com/ja/integrated-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
-[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[currency-conversion]:            https://docs.adjust.com/ja/event-tracking/#tracking-purchases-in-different-currencies
 [android-application]:            http://developer.android.com/reference/android/app/Application.html
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google-play-services]:           http://developer.android.com/google/play-services/setup.html
-[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[reattribution-with-deeplinks]:   https://docs.adjust.com/ja/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[testing_console]: https://docs.adjust.com/ja/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
 
 [sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
