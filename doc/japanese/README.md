@@ -25,7 +25,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [セッショントラッキング](#qs-session-tracking)
          * [APIレベルが14以降](#qs-session-tracking-api-14)
          * [APIレベルが9〜13](#qs-session-tracking-api-9)
-      * [SDKシグネチャー] (#qs-sdk-signature)
+      * [SDKシグネチャー](#qs-sdk-signature)
       * [Adjustログ](#qs-adjust-logging)
       * [アプリのビルド](#qs-build-the-app)
 
@@ -58,7 +58,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
    * [Pushトークン (uninstall tracking)](#af-push-token)
    * [アトリビューションコールバック](#af-attribution-callback)
-   * [広告収益のトラッキング]（#af-ad-revenue）
+   * [広告収益のトラッキング ](#af-ad-revenue）
    * [サブスクリプション計測](#af-subscriptions)
    * [イベントとセッションのコールバック](#af-session-event-callbacks)
    * [ユーザーアトリビューション](#af-user-attribution)
@@ -74,7 +74,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [GDPR消去する権利（忘れられる権利）](#af-gdpr-forget-me)
    * [サードパーティーとの共有](#af-third-party-sharing)
       * [サードパーティーとの共有を無効にする](#af-disable-third-party-sharing)
-      * [サードパーティーとの共有を有効にする](#af-enable-third-party-sharing)
+      * [サードパーティーとの共有を有効にする](#af-disable-third-party-sharing)
    * [ユーザー同意による計測](#af-measurement-consent)
 
 ### テストとトラブルシューティング
@@ -255,7 +255,7 @@ SDKの初期化には、Android[アプリケーション][android-application]�
     }
     ```
 
-`{YourAppToken}`をアプリトークンに差し替えてください。トークンは[管理画面]で確認できます。
+`{YourAppToken}`をアプリトークンに差し替えてください。トークンは [管理画面] で確認できます。
 
 アプリのビルドをテスト用（Sandbox）か本番用（Production）に分けるためには、SDK内の環境`environment`をいずれかにセットする必要があります。
 
@@ -540,7 +540,7 @@ Adjust.onCreate(adjustConfig);
 
 Androidアプリをビルドして実行します。`LogCat`viewerにて`tag:Adjust`フィルターを設定し、他のすべてのログを非表示にすることができます。アプリが起動された後、`Install tracked`のログが出力されるはずです。
 
-##ディープリンク
+## ディープリンク
 
 ### <a id="dl"></a>ディープリンク
 
@@ -955,7 +955,7 @@ Adjust.trackEvent(adjustEvent);
 </tr>
 </table>
 
-スペシャルパートナーとの連携方法の詳細については、[スペシャルパートナーガイド] [スペシャルパートナー]をご覧ください。
+スペシャルパートナーとの連携方法の詳細については、[スペシャルパートナーガイド スペシャルパートナー]をご覧ください。
 
 ### <a id="cp-event-callback-id"></a>イベントコールバックID
 
@@ -1240,7 +1240,7 @@ adjustConfig.setDelayStart(5.5);
 **Adjust SDKのディレイスタートは最大で10秒です**。
 
 
-##追加機能
+## 追加機能
 
 プロジェクトにAdjust SDKを連携させると、以下の機能をご利用できるようになります。
 
@@ -2191,8 +2191,9 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 
 アプリ起動時にイベントを作動させたい場合は、スタートするアクティビティの`onCreate`メソッドをご使用ください。
 
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  http://adjust.com/ja
+[管理画面]: http://adjust.com/ja
+[adjust.com]: http://adjust.com/ja
 
 [en-readme]:  README.md
 [zh-readme]:  doc/chinese/README.md
@@ -2213,6 +2214,7 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [callbacks-guide]:                https://docs.adjust.com/en/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
 [special-partners]:               https://docs.adjust.com/en/special-partners
+[スペシャルパートナーガイド スペシャルパートナー]: https://help.adjust.com/ja/integrated-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
 [currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
