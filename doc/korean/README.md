@@ -97,7 +97,7 @@ Adjust™의 Android SDK에 관한 문서입니다. Adjust™에 대한 자세�
 
 ### <a id="qs-getting-started"></a>시작하기
 
-다음은 Android 앱에 Adjust SDK를 연동하는 데 필요한 최소한의 단계입니다. 본 설명에서는 Android 앱 개발에 Android 스튜디오를 사용하고 있다고 가정하겠습니다. Adjust SDK 연동에 필요한 Android API의 최소 지원 레벨은 **9 (Gingerbread)**입니다.
+다음은 Android 앱에 Adjust SDK를 연동하는 데 필요한 최소한의 단계입니다. 본 설명에서는 Android 앱 개발에 Android 스튜디오를 사용하고 있다고 가정하겠습니다. Adjust SDK 연동에 필요한 Android API의 최소 지원 레벨은 **9 (Gingerbread)** 입니다.
 
 ### <a id="qs-add-sdk"></a>프로젝트에 SDK 추가하기
 
@@ -1661,7 +1661,7 @@ let amazonAdId = Adjust.getAmazonAdId();
 
 ### <a id="af-adid"></a>Adjust 기기 식별자
 
-앱이 설치된 각 기기에 대해 Adjust의 백엔드는 고유한 **Adjust 기기 식별자(adid)**를 생성합니다. 이 식별자를 획득하려면 다음의 메서드를 `Adjust` 인스턴스에서 호출하시기 바랍니다.
+앱이 설치된 각 기기에 대해 Adjust의 백엔드는 고유한 **Adjust 기기 식별자(adid)** 를 생성합니다. 이 식별자를 획득하려면 다음의 메서드를 `Adjust` 인스턴스에서 호출하시기 바랍니다.
 
 <table>
 <tr>
@@ -1821,7 +1821,7 @@ Adjust.setOfflineMode(true);
 
 ### <a id="af-disable-tracking"></a>트래킹 비활성화
 
-`false` 파라미터와 함께`setEnabled`를 호출하여 Adjust SDK가 현재 기기의 모든 활동을 트래킹하는 것을 비활성화 할 수 있습니다. (주의: 트래킹 중단을 원한때만 사용하시기 바랍니다.) **이 설정은 세션 간에 유지됩니다 **.
+`false` 파라미터와 함께`setEnabled`를 호출하여 Adjust SDK가 현재 기기의 모든 활동을 트래킹하는 것을 비활성화 할 수 있습니다. (주의: 트래킹 중단을 원한때만 사용하시기 바랍니다.) **이 설정은 세션 간에 유지됩니다**.
 
 <table>
 <tr>
