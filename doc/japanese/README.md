@@ -71,19 +71,19 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [トラッキングの無効化](#af-disable-tracking)
    * [イベントバッファリング](#af-event-buffering)
    * [バックグラウンドでのトラッキング](#af-background-tracking)
-   * [GDPR消去する権利（忘れられる権利）](#ad-gdpr-forget-me)
+   * [GDPR消去する権利（忘れられる権利）](#af-gdpr-forget-me)
    * [サードパーティーとの共有](#af-third-party-sharing)
       * [サードパーティーとの共有を無効にする](#af-disable-third-party-sharing)
       * [サードパーティーとの共有を有効にする](#af-enable-third-party-sharing)
    * [ユーザー同意による計測](#af-measurement-consent)
 
-###テストとトラブルシューティング
+### テストとトラブルシューティング
 
    * ["Session failed (Ignoring too frequent session...)"というエラーが出る](#tt-session-failed)
    * [ブロードキャストレシーバーがインストールリファラーを受信していない](#tt-broadcast-receiver)
    * [アプリ起動時にイベントを始動したい](#tt-event-at-launch)
 
-###ライセンス
+### ライセンス
 
 
 ## クイックスタート
@@ -94,7 +94,7 @@ Android サンプルアプリがexample ディレクトリ ([`example-app-java`]
 
 ### <a id="qs-getting-started"></a>基本的な導入方法
 
-Adjust SDKをAndroidプロジェクトに実装する手順を説明します。ここでは、Androidアプリケーションの開発にAndroid Studioが使用されていること、また、対象はAndroid APIレベル**9（Gingerbread）**以降であることを条件に説明します。
+Adjust SDKをAndroidプロジェクトに実装する手順を説明します。ここでは、Androidアプリケーションの開発にAndroid Studioが使用されていること、また、対象はAndroid APIレベル**9（Gingerbread)** 以降であることを条件に説明します。
 
 ### <a id="sdk-add"></a>SDKをプロジェクトに追加する
 
@@ -264,7 +264,7 @@ String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
 ```
 
-**重要：**リリース前のテスト段階では、`AdjustConfig.ENVIRONMENT_SANDBOX`に設定してください。アプリをストアに申請する前に、SDKの環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に変更してください。再度開発やテストを行う場合は、設定を`AdjustConfig.ENVIRONMENT_SANDBOX`に戻してください。
+**重要:** リリース前のテスト段階では、`AdjustConfig.ENVIRONMENT_SANDBOX`に設定してください。アプリをストアに申請する前に、SDKの環境を`AdjustConfig.ENVIRONMENT_PRODUCTION`に変更してください。再度開発やテストを行う場合は、設定を`AdjustConfig.ENVIRONMENT_SANDBOX`に戻してください。
 
 Adjustはこの環境設定を使用して、本番用の計測数値とテスト端末からのテスト計測を区別してレポート画面に表示します。この値の設定には常に注意が必要ですが、購入イベントを計測する場合は特に気をつけてください。
 
@@ -339,7 +339,7 @@ let environment = AdjustConfig.EnvironmentSandbox;
 let environment = AdjustConfig.EnvironmentProduction;
 ```
 
-**重要：**アプリのテスト中は（その場合に限り）、値を`AdjustConfig.EnvironmentSandbox`に設定してください。アプリをストアに申請する前に、対象環境が`AdjustConfig.EnvironmentProduction`と設定されていることを確認してください。開発やテストを再開する場合は、値を`AdjustConfig.EnvironmentSandbox`に戻してください。
+**重要:** アプリのテスト中は（その場合に限り）、値を`AdjustConfig.EnvironmentSandbox`に設定してください。アプリをストアに申請する前に、対象環境が`AdjustConfig.EnvironmentProduction`と設定されていることを確認してください。開発やテストを再開する場合は、値を`AdjustConfig.EnvironmentSandbox`に戻してください。
 
 Adjustはこの環境設定を使用して、本番用の計測数値とテスト端末からのテスト計測を区別してレポート画面に表示します。この値の設定は常にご注意ください。
 
@@ -2160,7 +2160,7 @@ V/Adjust: Path:      /sdk_click
 
 アプリの起動前にこのテストを行う場合、パッケージの送信は表示されません。パッケージはアプリの起動後に送信されます。
 
-**重要：**この機能をテストをするために`adb`ツールを利用することは推奨**していません**。すべてのリファラーコンテンツを`adb`でテストするためには（`&`で分けられた複数のパラメータがある場合）、ブロードキャストレシーバーで受信するためにコンテンツをエンコードすることが必要です。もしエンコードをしないと、`adb`はリファラーを最初の`&`サインで切り、誤ったコンテンツをブロードキャストレシーバーに伝えます。
+**重要:** この機能をテストをするために`adb`ツールを利用することは推奨**していません**。すべてのリファラーコンテンツを`adb`でテストするためには（`&`で分けられた複数のパラメータがある場合）、ブロードキャストレシーバーで受信するためにコンテンツをエンコードすることが必要です。もしエンコードをしないと、`adb`はリファラーを最初の`&`サインで切り、誤ったコンテンツをブロードキャストレシーバーに伝えます。
 
 アプリがどのようにエンコードされていないリファラーを受信しているかを確認したい場合は、Adjustのサンプルアプリを利用して、`MainActivity.java`ファイルの`onFireIntentClick`メソッドのインテント内に送信されたコンテンツを変更してください：file:
 
