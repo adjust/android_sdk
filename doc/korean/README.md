@@ -2194,6 +2194,41 @@ Adjust SDK는 이 시점에서 초기화에 준비되어있으나 실제로 시�
 
 앱이 실행될 때 이벤트를 트리거하고 싶다면, 해당 활동에 대해 `onCreate` 메서드를 사용하시기 바랍니다.
 
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
+
+[en-readme]:  README.md
+[zh-readme]:  doc/chinese/README.md
+[ja-readme]:  doc/japanese/README.md
+[ko-readme]:  doc/korean/README.md
+
+[example-java]:       Adjust/example-app-java
+[example-kotlin]:     Adjust/example-app-kotlin
+[example-keyboard]:     Adjust/example-app-keyboard
+[example-tv]:         Adjust/example-app-tv
+[example-webbridge]:  Adjust/example-app-webbridge
+
+[maven]:                          http://maven.org
+[referrer]:                       doc/english/misc/multiple-receivers.md
+[releases]:                       https://github.com/adjust/android_sdk/releases
+[google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/en/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
+[special-partners]:               https://docs.adjust.com/en/special-partners
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android-application]:            http://developer.android.com/reference/android/app/Application.html
+[android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
+[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
+[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+
+[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
+
 ## <a id="license"></a>라이선스
 
 Adjust SDK는 MIT 라이선스에 따라 사용이 허가되었습니다.
