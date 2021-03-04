@@ -118,7 +118,7 @@ implementation 'com.adjust.sdk:adjust-android-webbridge:4.26.2'
 
 ### <a id="qs-gps"></a>添加 Google Play 服务
 
-自 2014 年 8 月 1 日起，Google Play 商店中的应用必须使用 [Google 广告 ID][google_ad_id] 来对设备进行唯一标识。为了让 Adjust SDK 能使用 Google 广告 ID，请务必集成 [Google Play 服务][google_play_services]。如果您尚未完成该集成，请将 dependency 加入 Google Play 服务库中，具体请将以下依赖项添加到应用 `build.gradle` 文件的 `dependencies` 块中：
+自 2014 年 8 月 1 日起，Google Play 商店中的应用必须使用 [Google 广告 ID] 来对设备进行唯一标识。为了让 Adjust SDK 能使用 Google 广告 ID，请务必集成 [Google Play 服务]。如果您尚未完成该集成，请将 dependency 加入 Google Play 服务库中，具体请将以下依赖项添加到应用 `build.gradle` 文件的 `dependencies` 块中：
 
 ```gradle
 implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
@@ -2192,8 +2192,9 @@ public void onFireIntentClick(View v) {
 
 如果您想在应用激活时触发事件，请为指定 activity 使用 `onCreate` 方法。
 
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  http://adjust.com/zh
+[控制面板]:     http://adjust.com/zh
+[adjust.com]: http://adjust.com/zh
 
 [en-readme]:  README.md
 [zh-readme]:  doc/chinese/README.md
@@ -2210,20 +2211,22 @@ public void onFireIntentClick(View v) {
 [referrer]:                       doc/english/misc/multiple-receivers.md
 [releases]:                       https://github.com/adjust/android_sdk/releases
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
-[event-tracking]:                 https://docs.adjust.com/en/event-tracking
-[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[Google 广告 ID]:                  https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/zh/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/zh/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
-[special-partners]:               https://docs.adjust.com/en/special-partners
+[special-partners]:               https://docs.adjust.com/zh/special-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
-[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[currency-conversion]:            https://docs.adjust.com/zh/event-tracking/#tracking-purchases-in-different-currencies
 [android-application]:            http://developer.android.com/reference/android/app/Application.html
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google-play-services]:           http://developer.android.com/google/play-services/setup.html
-[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[Google Play 服务]:                http://developer.android.com/google/play-services/setup.html
+[reattribution-with-deeplinks]:   https://docs.adjust.com/zh/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
-[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+[testing_console]: https://docs.adjust.com/zh/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev_api]: https://docs.adjust.com/zh/adjust-for-developers/
 
 [sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
 
