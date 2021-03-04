@@ -209,7 +209,7 @@ implementation 'com.android.installreferrer:installreferrer:2.2'
 
 Adjust는 본 브로드캐스트 리시버를 사용하여 설치 리퍼러를 조회하고 백엔드로 전송합니다.
 
-`INSTALL_REFERRER` 인텐트에 다른 브로드캐스트 리시버를 사용하고 있다면, Adjust 브로드캐스트 리시버에 메시지를 적절하게 보낼 수 있도록 [본 ][리퍼러 가이드]를 참조하시기 바랍니다.
+`INSTALL_REFERRER` 인텐트에 다른 브로드캐스트 리시버를 사용하고 있다면, Adjust 브로드캐스트 리시버에 메시지를 적절하게 보낼 수 있도록 본 [리퍼러 가이드]를 참조하시기 바랍니다.
 
 #### <a id="qs-huawei-referrer-api"></a>Huawei 리퍼러 API
 
@@ -2133,7 +2133,7 @@ Adjust가 이 정보를 수신하면 동의 측정을 활성화 또는 비활성
 adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
 ```
 
-`INSTALL_REFERRER` 인텐트에 대해 이미 다른 브로드캐스트 리시버를 사용하고 본 [리퍼러][가이드]를 수행한 경우, `com.adjust.sdk.AdjustReferrerReceiver`를 브로드캐스트 리시버로 교체하시기 바랍니다.
+`INSTALL_REFERRER` 인텐트에 대해 이미 다른 브로드캐스트 리시버를 사용하고 본 [리퍼러 가이드]를 수행한 경우, `com.adjust.sdk.AdjustReferrerReceiver`를 브로드캐스트 리시버로 교체하시기 바랍니다.
 
 `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` 파라미터를 삭제하여 기기의 모든 앱이 `INSTALL_REFERRER` 인텐트를 수신하도록 설정할 수 있습니다.
 
@@ -2194,8 +2194,8 @@ Adjust SDK는 이 시점에서 초기화에 준비되어있으나 실제로 시�
 
 앱이 실행될 때 이벤트를 트리거하고 싶다면, 해당 활동에 대해 `onCreate` 메서드를 사용하시기 바랍니다.
 
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  http://adjust.com/ko
+[adjust.com]: http://adjust.com/ko
 
 [en-readme]:  README.md
 [zh-readme]:  doc/chinese/README.md
@@ -2210,19 +2210,21 @@ Adjust SDK는 이 시점에서 초기화에 준비되어있으나 실제로 시�
 
 [maven]:                          http://maven.org
 [referrer]:                       doc/english/misc/multiple-receivers.md
+[리퍼러 가이드]:                     https://github.com/adjust/android_sdk/blob/master/doc/english/misc/multiple-receivers.md
 [releases]:                       https://github.com/adjust/android_sdk/releases
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
-[event-tracking]:                 https://docs.adjust.com/en/event-tracking
-[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[event-tracking]:                 https://docs.adjust.com/ko/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/ko/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
-[special-partners]:               https://docs.adjust.com/en/special-partners
+[special-partners]:               https://docs.adjust.com/ko/special-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
-[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[대시보드]:                         http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/ko/event-tracking/#tracking-purchases-in-different-currencies
 [android-application]:            http://developer.android.com/reference/android/app/Application.html
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
 [google-play-services]:           http://developer.android.com/google/play-services/setup.html
-[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[reattribution-with-deeplinks]:   https://docs.adjust.com/ko/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
 [testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
