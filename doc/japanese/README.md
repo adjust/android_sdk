@@ -57,10 +57,10 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 ### 追加機能
 
    * [Pushトークン (uninstall tracking)](#af-push-token)
-   * [アトリビューションコールバック](#ad-attribution-callback)
+   * [アトリビューションコールバック](#af-attribution-callback)
    * [広告収益のトラッキング]（#af-ad-revenue）
    * [サブスクリプション計測](#af-subscriptions)
-   * [イベントとセッションのコールバック](#ad-session-event-callbacks)
+   * [イベントとセッションのコールバック](#af-session-event-callbacks)
    * [ユーザーアトリビューション](#af-user-attribution)
    * [デバイス ID](#af-device-ids)
       * [Google Play 開発者サービスの広告ID](#af-gps-adid)
@@ -90,7 +90,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
 ### <a id="qs-example-apps"></a>サンプルアプリ
 
-Android サンプルアプリがexample ディレクトリ ([`example-app-java`]) および ([`example-app-kotlin`] directories)にあります。Webviewに使用するサンプルアプリは([`example-webbridge`]) 、Android TVのサンプルは ([`example-app-tv`])をご覧ください。をご覧ください。SDK実装の際は、Androidプロジェクトを開き、このサンプルをご参照ください。Androidプロジェクトを開くと、Adjust SDKの導入方法の実例を確認できます。
+Android サンプルアプリがexample ディレクトリ [`example-app-java`][example-java] および [`example-app-kotlin`][example-kotlin] directories)にあります。Webviewに使用するサンプルアプリは[`example-webbridge` directory][example-webbridge] 、Android TVのサンプルは [`example-app-tv`][example-tv]をご覧ください。をご覧ください。SDK実装の際は、Androidプロジェクトを開き、このサンプルをご参照ください。Androidプロジェクトを開くと、Adjust SDKの導入方法の実例を確認できます。
 
 ### <a id="qs-getting-started"></a>基本的な導入方法
 
@@ -2190,6 +2190,41 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 インストール後にイベントを作動させたい場合は、[アトリビューション変更時用のリスナー](#attribution_changed_listener)をご利用ください。
 
 アプリ起動時にイベントを作動させたい場合は、スタートするアクティビティの`onCreate`メソッドをご使用ください。
+
+[dashboard]:  http://adjust.com
+[adjust.com]: http://adjust.com
+
+[en-readme]:  README.md
+[zh-readme]:  doc/chinese/README.md
+[ja-readme]:  doc/japanese/README.md
+[ko-readme]:  doc/korean/README.md
+
+[example-java]:       Adjust/example-app-java
+[example-kotlin]:     Adjust/example-app-kotlin
+[example-keyboard]:     Adjust/example-app-keyboard
+[example-tv]:         Adjust/example-app-tv
+[example-webbridge]:  Adjust/example-app-webbridge
+
+[maven]:                          http://maven.org
+[referrer]:                       doc/english/misc/multiple-receivers.md
+[releases]:                       https://github.com/adjust/android_sdk/releases
+[google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[event-tracking]:                 https://docs.adjust.com/en/event-tracking
+[callbacks-guide]:                https://docs.adjust.com/en/callbacks
+[new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
+[special-partners]:               https://docs.adjust.com/en/special-partners
+[attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
+[android-dashboard]:              http://developer.android.com/about/dashboards/index.html
+[currency-conversion]:            https://docs.adjust.com/en/event-tracking/#tracking-purchases-in-different-currencies
+[android-application]:            http://developer.android.com/reference/android/app/Application.html
+[android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
+[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[reattribution-with-deeplinks]:   https://docs.adjust.com/en/deeplinking/#manually-appending-attribution-data-to-a-deep-link
+[android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
+[testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+
+[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>ライセンス
 
