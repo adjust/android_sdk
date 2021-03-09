@@ -2196,10 +2196,10 @@ public void onFireIntentClick(View v) {
 [控制面板]:     http://adjust.com/zh
 [adjust.com]: http://adjust.com/zh
 
-[en-readme]:  README.md
-[zh-readme]:  doc/chinese/README.md
-[ja-readme]:  doc/japanese/README.md
-[ko-readme]:  doc/korean/README.md
+[en-readme]:  ../../README.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
 
 [example-java]:       Adjust/example-app-java
 [example-kotlin]:     Adjust/example-app-kotlin
@@ -2234,7 +2234,7 @@ public void onFireIntentClick(View v) {
 
 Adjust SDK 拥有MIT 许可证。
 
-版权所有(c) 2012-2019 Adjust GmbH，http://www.adjust.com
+版权所有(c) 2012-2021 Adjust GmbH，http://www.adjust.com
 
 特此免费授予获得本软件及相关文档文件（“软件”）副本的任何人，得以无限制地处理本软件，其范围包括但不限于使用、复制、修改、合并、发布、分发、再许可和/或销售本软件的副本；具备本软件上述权限之人员需遵守以下条件：
 
