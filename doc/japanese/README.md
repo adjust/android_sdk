@@ -2195,10 +2195,10 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [管理画面]: http://adjust.com/ja
 [adjust.com]: http://adjust.com/ja
 
-[en-readme]:  README.md
-[zh-readme]:  doc/chinese/README.md
-[ja-readme]:  doc/japanese/README.md
-[ko-readme]:  doc/korean/README.md
+[en-readme]:  ../../README.md
+[zh-readme]:  ../chinese/README.md
+[ja-readme]:  ../japanese/README.md
+[ko-readme]:  ../korean/README.md
 
 [example-java]:       Adjust/example-app-java
 [example-kotlin]:     Adjust/example-app-kotlin
@@ -2232,7 +2232,7 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 
 Adjust SDKはMITライセンスを適用しています。
 
-Copyright (c) 2012-2019 Adjust GmbH, http://www.adjust.com
+Copyright (c) 2012-2021 Adjust GmbH, http://www.adjust.com
 
 以下に定める条件に従い、本ソフトウェアおよび関連文書のファイル（以下「ソフトウェア」）の複製を取得するすべての人に対し、 ソフトウェアを無制限に扱うことを無償で許可します。これには、ソフトウェアの複製を使用、複写、変更、結合、掲載、頒布、サブライセンス、 および/または販売する権利、およびソフトウェアを提供する相手に同じことを許可する権利も無制限に含まれます。
 
