@@ -113,7 +113,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
             return false;
         }
 
-        if (urlStrategy.shouldRetryAfterFailure()) {
+        if (urlStrategy.shouldRetryAfterFailure(responseData.activityKind)) {
             logger.error("Failed with current url strategy, but it will retry with new");
             return true;
         } else {

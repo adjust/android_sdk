@@ -55,7 +55,7 @@ public class UrlStrategy {
     }
 
     @SuppressWarnings("UnnecessaryLocalVariable")
-    public boolean shouldRetryAfterFailure() {
+    public boolean shouldRetryAfterFailure(final ActivityKind activityKind) {
         wasLastAttemptSuccess = false;
 
         // does not need to "rotate" choice index
@@ -66,7 +66,17 @@ public class UrlStrategy {
             return false;
         }
 
-        final int nextChoiceIndex = (choiceIndex + 1) % baseUrlChoicesList.size();
+        int choiceListSize;
+
+        if (activityKind == ActivityKind.GDPR) {
+            choiceListSize = gdprUrlChoicesList.size();
+        } else if (activityKind == ActivityKind.SUBSCRIPTION) {
+            choiceListSize = subscriptionUrlChoicesList.size();
+        } else {
+            choiceListSize = baseUrlChoicesList.size();
+        }
+
+        final int nextChoiceIndex = (choiceIndex + 1) % choiceListSize;
         choiceIndex = nextChoiceIndex;
 
         final boolean nextChoiceHasNotReturnedToStartingChoice =
