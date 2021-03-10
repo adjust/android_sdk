@@ -2200,11 +2200,11 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-java]:       https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-java
-[example-kotlin]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-kotlin
-[example-keyboard]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-keyboard
-[example-tv]:         https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-tv
-[example-webbridge]:  https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-webbridge
+[example-java]:       ../../Adjust/example-app-java
+[example-kotlin]:     ../../Adjust/example-app-kotlin
+[example-keyboard]:     ../../Adjust/example-app-keyboard
+[example-tv]:         ../../Adjust/example-app-tv
+[example-webbridge]:  ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
 [referrer]:                       https://github.com/adjust/android_sdk/blob/master/doc/japanese/misc/multiple-receivers.md
