@@ -1444,7 +1444,7 @@ Adjust.trackAdRevenue(source, payload);
 
 目前，我们支持以下 `source` 参数值：
 
-- `AD_REVENUE_MOPUB` - 代表 MoPub 广告聚合平台（更多相关信息，请查看 [集成指南][集成指南])
+- `AD_REVENUE_MOPUB` - 代表 MoPub 广告聚合平台（更多相关信息，请查看 [集成指南][sdk2sdk-mopub])
 
 ### <a id="af-session-event-callbacks"></a>会话和事件回传
 
@@ -2201,11 +2201,11 @@ public void onFireIntentClick(View v) {
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-java]:       https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-java
-[example-kotlin]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-kotlin
-[example-keyboard]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-keyboard
-[example-tv]:         https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-tv
-[example-webbridge]:  https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-webbridge
+[example-java]:       ../../Adjust/example-app-java
+[example-kotlin]:     ../../Adjust/example-app-kotlin
+[example-keyboard]:     ../../Adjust/example-app-keyboard
+[example-tv]:         ../../Adjust/example-app-tv
+[example-webbridge]:  ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
 [referrer]:                       https://github.com/adjust/android_sdk/blob/master/doc/chinese/misc/multiple-receivers.md
@@ -2228,7 +2228,7 @@ public void onFireIntentClick(View v) {
 [testing_console]: https://docs.adjust.com/zh/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/zh/adjust-for-developers/
 
-[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
+[sdk2sdk-mopub]:    ../../doc/chinese/sdk-to-sdk/mopub.md
 [集成指南]:          https://github.com/adjust/android_sdk/tree/master/doc/chinese
 
 ## <a id="license"></a>许可
