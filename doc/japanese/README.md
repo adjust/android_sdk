@@ -1658,7 +1658,7 @@ let amazonAdId = Adjust.getAmazonAdId();
 
 ### <a id="af-adid"></a>AdjustのデバイスID (adid)
 
-アプリがインストールされている各デバイスに対して、Adjust は、バックエンドでユニークな**Adujust デバイス ID (**adid**)**を生成します。この ID を取得するためには、`Adjust`インスタンスで、以下のメソッドを呼び出してください：
+アプリがインストールされている各デバイスに対して、Adjust は、バックエンドでユニークな **Adjust デバイス ID (adid)** を生成します。この ID を取得するためには、`Adjust`インスタンスで、以下のメソッドを呼び出してください：
 
 <table>
 <tr>
@@ -2200,14 +2200,14 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-java]:       Adjust/example-app-java
-[example-kotlin]:     Adjust/example-app-kotlin
-[example-keyboard]:     Adjust/example-app-keyboard
-[example-tv]:         Adjust/example-app-tv
-[example-webbridge]:  Adjust/example-app-webbridge
+[example-java]:       https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-java
+[example-kotlin]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-kotlin
+[example-keyboard]:     https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-keyboard
+[example-tv]:         https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-tv
+[example-webbridge]:  https://github.com/adjust/android_sdk/tree/master/Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
-[referrer]:                       doc/english/misc/multiple-receivers.md
+[referrer]:                       https://github.com/adjust/android_sdk/blob/master/doc/japanese/misc/multiple-receivers.md
 [releases]:                       https://github.com/adjust/android_sdk/releases
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/ja/event-tracking
@@ -2226,7 +2226,7 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [testing_console]: https://docs.adjust.com/ja/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
 
-[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
+[sdk2sdk-mopub]:    https://github.com/adjust/android_sdk/blob/master/doc/japanese/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>ライセンス
 
