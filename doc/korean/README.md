@@ -870,7 +870,7 @@ Adjust SDK가 기본적으로 수집하는 데이터 포인트 외에도 Adjust 
 
 [대시보드]에서 이벤트를 위한 콜백 URL을 등록할 수 있습니다. Adjust는 이벤트가 트래킹될 때마다 해당 URL에 GET 요청을 보냅니다. 이벤트를 트래킹하기 전에 이벤트에서 'addCallbackParameter'를 호출하여 해당 이벤트에 콜백 파라미터를 추가 할 수 있습니다. 이후 Adjust는 해당 파라미터를 사용자의 콜백 URL에 추가합니다.
 
-예를 들어, 사용자가 이벤트를 위해 http://www.adjust.com/callback URL을 등록했으며 다음과 같은 이벤트를 추적한다고 가정해 보겠습니다.
+예를 들어, 사용자가 이벤트를 위해 `http://www.example.com/callback` URL을 등록했으며 다음과 같은 이벤트를 추적한다고 가정해 보겠습니다.
 
 <table>
 <tr>
@@ -1700,7 +1700,7 @@ let adid = Adjust.getAdid();
 
 애드저스트 SDK를 사용하여 기기 제조 과정에서 앱이 사전 설치되었던 유저를 파악할 수 있습니다. 시스템 페이로드 또는 기본 트래커를 사용하는 두 가지 방법으로 사전 설치 여부를 확인할 수 있습니다. 
 
-일반적으로 Adjust는 시스템 실 데이터 솔루션을 권고합니다. 그러나 트래커가 필요한 경우도 있습니다. Adjust의 사전설치 파트너와 연동에 관한 자세한 정보는 [Adjust 헬프 센터](https://help.adjust.com/en/article/pre-install-tracking)에서 확인하시기 바랍니다. 어떠한 솔루션을 사용해야 할지 모르겠다면 integration@adjust.com으로 연락주시기 바랍니다.
+일반적으로 Adjust는 시스템 실 데이터 솔루션을 권고합니다. 그러나 트래커가 필요한 경우도 있습니다. Adjust의 사전설치 파트너와 연동에 관한 자세한 정보는 [Adjust 헬프 센터](https://help.adjust.com/ko/article/pre-install-tracking)에서 확인하시기 바랍니다. 어떠한 솔루션을 사용해야 할지 모르겠다면 integration@adjust.com으로 연락주시기 바랍니다.
 
 #### 시스템 실 데이터 사용
 
@@ -2202,11 +2202,11 @@ Adjust SDK는 이 시점에서 초기화에 준비되어있으나 실제로 시�
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-java]:       Adjust/example-app-java
-[example-kotlin]:     Adjust/example-app-kotlin
-[example-keyboard]:   Adjust/example-app-keyboard
-[example-tv]:         Adjust/example-app-tv
-[example-webbridge]:  Adjust/example-app-webbridge
+[example-java]:       ../../Adjust/example-app-java
+[example-kotlin]:     ../../Adjust/example-app-kotlin
+[example-keyboard]:     ../../Adjust/example-app-keyboard
+[example-tv]:         ../../Adjust/example-app-tv
+[example-webbridge]:  ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
 [referrer]:                       doc/english/misc/multiple-receivers.md
@@ -2229,7 +2229,7 @@ Adjust SDK는 이 시점에서 초기화에 준비되어있으나 실제로 시�
 [testing_console]: https://docs.adjust.com/en/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
 [dev_api]: https://docs.adjust.com/en/adjust-for-developers/
 
-[sdk2sdk-mopub]:    doc/english/sdk-to-sdk/mopub.md
+[sdk2sdk-mopub]:    ../../doc/korean/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>라이선스
 
