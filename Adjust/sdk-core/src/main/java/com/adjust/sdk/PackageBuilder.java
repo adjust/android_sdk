@@ -852,7 +852,7 @@ public class PackageBuilder {
         }
 
         // Measurement Consent
-        PackageBuilder.addString(parameters, "sharing",
+        PackageBuilder.addString(parameters, "measurement",
                 consentMeasurement ? "enable" : "disable");
 
         // Device identifiers.
