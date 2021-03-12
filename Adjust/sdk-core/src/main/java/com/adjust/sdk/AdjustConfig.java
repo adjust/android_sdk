@@ -203,7 +203,8 @@ public class AdjustConfig {
             return;
         }
         if (!urlStrategy.equals(URL_STRATEGY_INDIA)
-                && !urlStrategy.equals(URL_STRATEGY_CHINA))
+                && !urlStrategy.equals(URL_STRATEGY_CHINA)
+                && !urlStrategy.equals(DATA_RESIDENCY_EU))
         {
             logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
