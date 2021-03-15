@@ -255,7 +255,7 @@ SDKの初期化には、Android[アプリケーション][android-application]�
     }
     ```
 
-`{YourAppToken}`をアプリトークンに差し替えてください。トークンは [管理画面] で確認できます。
+`{YourAppToken}`をアプリトークンに差し替えてください。トークンは [dashboard] で確認できます。
 
 アプリのビルドをテスト用（Sandbox）か本番用（Production）に分けるためには、SDK内の環境`environment`をいずれかにセットする必要があります。
 
@@ -955,7 +955,7 @@ Adjust.trackEvent(adjustEvent);
 </tr>
 </table>
 
-スペシャルパートナーとの連携方法の詳細については、[スペシャルパートナーガイド スペシャルパートナー]をご覧ください。
+スペシャルパートナーとの連携方法の詳細については、[integrated-partners]をご覧ください。
 
 ### <a id="cp-event-callback-id"></a>イベントコールバックID
 
@@ -2112,13 +2112,13 @@ Adjust.trackMeasurementConsent(true);
 
 この仕様はテスト中には厄介かもしれませんが、サンドボックスと本番用の挙動をできる限り近づけるために必要です。
 
-アプリに対して、編集者レベル（または管理人権限）のアクセス権を持っている場合には、どんなデバイスに対するアプリのセッションデータについても、[テストコンソール][testing_console]を使ってAdjust管理画面から直接リセットすることができます。 
+アプリに対して、編集者レベル（または管理人権限）のアクセス権を持っている場合には、どんなデバイスに対するアプリのセッションデータについても、[テストコンソール][testing-console]を使ってAdjust管理画面から直接リセットすることができます。 
 
 端末に関する記録が消去されると、テスティングコンソールは`Forgot device`と返します。もしその端末の記録がすでに消去されていたり、値が不正だった場合は、そのリンクは`Advertising ID not found`と返します。
 
 端末に関する記録を消去しても、GDPR 忘れられる権利のコールを元に戻すことはできません。
 
-現在ご契約のパッケージでアクセスが可能の場合は、[開発者用API][dev_api]で設定確認と端末記録の消去を行うことができます。
+現在ご契約のパッケージでアクセスが可能の場合は、[開発者用API][dev-api]で設定確認と端末記録の消去を行うことができます。
 
 ### <a id="tt-broadcast-receiver"></a>ブロードキャストレシーバーがインストールリファラーを受信していない
 
@@ -2192,7 +2192,6 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 アプリ起動時にイベントを作動させたい場合は、スタートするアクティビティの`onCreate`メソッドをご使用ください。
 
 [dashboard]:  http://adjust.com/ja
-[管理画面]: http://adjust.com/ja
 [adjust.com]: http://adjust.com/ja
 
 [en-readme]:  ../../README.md
@@ -2202,19 +2201,18 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 
 [example-java]:       ../../Adjust/example-app-java
 [example-kotlin]:     ../../Adjust/example-app-kotlin
-[example-keyboard]:     ../../Adjust/example-app-keyboard
+[example-keyboard]:   ../../Adjust/example-app-keyboard
 [example-tv]:         ../../Adjust/example-app-tv
 [example-webbridge]:  ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
-[referrer]:                       https://github.com/adjust/android_sdk/blob/master/doc/japanese/misc/multiple-receivers.md
+[referrer]:                       ../../doc/japanese/misc/multiple-receivers.md
 [releases]:                       https://github.com/adjust/android_sdk/releases
 [google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/ja/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/ja/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
-[special-partners]:               https://docs.adjust.com/ja/special-partners
-[スペシャルパートナーガイド スペシャルパートナー]: https://help.adjust.com/ja/integrated-partners
+[integrated-partners]:            https://help.adjust.com/ja/integrated-partners
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
 [currency-conversion]:            https://docs.adjust.com/ja/event-tracking/#tracking-purchases-in-different-currencies
@@ -2223,10 +2221,10 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [google-play-services]:           http://developer.android.com/google/play-services/setup.html
 [reattribution-with-deeplinks]:   https://docs.adjust.com/ja/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-[testing_console]: https://docs.adjust.com/ja/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
-[dev_api]: https://docs.adjust.com/en/adjust-for-developers/
+[testing-console]:                https://docs.adjust.com/ja/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev-api]:                        https://docs.adjust.com/en/adjust-for-developers/
 
-[sdk2sdk-mopub]:    https://github.com/adjust/android_sdk/blob/master/doc/japanese/sdk-to-sdk/mopub.md
+[sdk2sdk-mopub]:  ../../doc/japanese/sdk-to-sdk/mopub.md
 
 ## <a id="license"></a>ライセンス
 
