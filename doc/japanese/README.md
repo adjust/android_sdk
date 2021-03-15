@@ -58,7 +58,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
 
    * [Pushトークン (uninstall tracking)](#af-push-token)
    * [アトリビューションコールバック](#af-attribution-callback)
-   * [広告収益のトラッキング ](#af-ad-revenue）
+   * [広告収益のトラッキング](#af-ad-revenue)
    * [サブスクリプション計測](#af-subscriptions)
    * [イベントとセッションのコールバック](#af-session-event-callbacks)
    * [ユーザーアトリビューション](#af-user-attribution)
