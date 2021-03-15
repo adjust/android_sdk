@@ -955,7 +955,7 @@ Adjust.trackEvent(adjustEvent);
 </tr>
 </table>
 
-スペシャルパートナーとの連携方法の詳細については、[integrated-partners]をご覧ください。
+スペシャルパートナーとの連携方法の詳細については、[スペシャルパートナーガイド スペシャルパートナー][integrated-partners]をご覧ください。
 
 ### <a id="cp-event-callback-id"></a>イベントコールバックID
 
