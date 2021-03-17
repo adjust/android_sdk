@@ -1,11 +1,11 @@
-### Version 4.27.0 (xxth March 2021)
+### Version 4.27.0 (17th March 2021)
 #### Added
-- Added Data residency for EU region.
-- Added Preinstall tracking using system installer receiver.
-- Added support to OAID plugin for MSA SDK v1.0.25.
+- Added data residency feature. Support for EU data residency region is added. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_EU` parameter.
+- Added preinstall tracking with usage of system installer receiver.
+- Added support for MSA SDK v1.0.25 to OAID plugin.
 
 #### Changed
-- Changed `measurement_consent` parameter name
+- Changed the measurement consent parameter name from `sharing` to `measurement`.
 
 ---
 
