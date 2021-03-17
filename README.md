@@ -77,6 +77,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
+   * [Data residency](#af-data-residency)
 
 ### Testing and troubleshooting
 
@@ -2104,6 +2105,39 @@ Adjust.trackMeasurementConsent(true);
 </table>
 
 Upon receiving this information, Adjust enables or disables consent measurement. The Adjust SDK will continue to work as expected.
+
+### <a id="af-data-residency"></a>Data residency
+
+In order to enable data residency feature, make sure to make a call to `setUrlStrategy` method of the `AdjustConfig` instance with one of the following constants:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data residency region
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
+```
+</td>
+</tr>
+</table>
 
 ## Testing and troubleshooting
 
