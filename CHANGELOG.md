@@ -1,3 +1,14 @@
+### Version 4.27.0 (xxth March 2021)
+#### Added
+- Added Data residency for EU region.
+- Added Preinstall tracking using system installer receiver.
+- Added support to OAID plugin for MSA SDK v1.0.25.
+
+#### Changed
+- Changed `measurement_consent` parameter name
+
+---
+
 ### Version 4.26.2 (1st February 2021)
 #### Added
 - Added Facebook audience network ad revenue source string.
