@@ -263,17 +263,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -298,8 +301,6 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
@@ -352,17 +353,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -390,8 +394,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
@@ -436,17 +438,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -459,8 +464,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
@@ -489,17 +492,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Attribution parameters.
@@ -536,8 +542,6 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "google_play_instant", googlePlayInstant);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
@@ -597,17 +601,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -624,8 +631,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "initiated_by", initiatedBy);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
@@ -657,17 +662,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -684,8 +692,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -716,17 +722,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -743,8 +752,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -786,17 +793,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -812,8 +822,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -844,23 +852,26 @@ public class PackageBuilder {
         }
 
         // Measurement Consent
-        PackageBuilder.addString(parameters, "sharing",
+        PackageBuilder.addString(parameters, "measurement",
                 consentMeasurement ? "enable" : "disable");
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -876,8 +887,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -908,17 +917,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -943,8 +955,6 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
@@ -993,17 +1003,20 @@ public class PackageBuilder {
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig.context);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
-        if (!containsPlayIds(parameters)) {
-            logger.warn("Google Advertising ID not detected, fallback to non Google Play identifiers will take place");
+        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
+                    "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
+            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
+            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Callback and partner parameters.
@@ -1034,8 +1047,6 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
@@ -1059,13 +1070,14 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
-        PackageBuilder.addLong(parameters, "revenue", subscription.getPrice());
-        PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
+        // subscription specific parameters
+        PackageBuilder.addString(parameters, "billing_store", subscription.getBillingStore());
         PackageBuilder.addString(parameters, "currency", subscription.getCurrency());
         PackageBuilder.addString(parameters, "product_id", subscription.getSku());
-        PackageBuilder.addString(parameters, "receipt", subscription.getSignature());
         PackageBuilder.addString(parameters, "purchase_token", subscription.getPurchaseToken());
-        PackageBuilder.addString(parameters, "billing_store", subscription.getBillingStore());
+        PackageBuilder.addString(parameters, "receipt", subscription.getSignature());
+        PackageBuilder.addLong(parameters, "revenue", subscription.getPrice());
+        PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
 
         checkDeviceIds(parameters);
@@ -1167,6 +1179,13 @@ public class PackageBuilder {
             return false;
         }
         return parameters.containsKey("gps_adid");
+    }
+
+    private boolean containsFireIds(Map<String, String> parameters) {
+        if (parameters == null) {
+            return false;
+        }
+        return parameters.containsKey("fire_adid");
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {

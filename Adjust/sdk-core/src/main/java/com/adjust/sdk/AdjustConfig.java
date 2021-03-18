@@ -46,6 +46,7 @@ public class AdjustConfig {
 
     public static final String URL_STRATEGY_INDIA = "url_strategy_india";
     public static final String URL_STRATEGY_CHINA = "url_strategy_china";
+    public static final String DATA_RESIDENCY_EU = "data_residency_eu";
 
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob";
@@ -202,7 +203,8 @@ public class AdjustConfig {
             return;
         }
         if (!urlStrategy.equals(URL_STRATEGY_INDIA)
-                && !urlStrategy.equals(URL_STRATEGY_CHINA))
+                && !urlStrategy.equals(URL_STRATEGY_CHINA)
+                && !urlStrategy.equals(DATA_RESIDENCY_EU))
         {
             logger.warn("Unrecognised url strategy %s", urlStrategy);
         }

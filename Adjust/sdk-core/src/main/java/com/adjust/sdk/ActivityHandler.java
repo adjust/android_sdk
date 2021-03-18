@@ -471,6 +471,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void sendPreinstallReferrer() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendPreinstallReferrerI();
+            }
+        });
+    }
+
+    @Override
     public void sendInstallReferrer(final ReferrerDetails referrerDetails,
                                     final String referrerApi) {
         executor.submit(new Runnable() {
@@ -928,6 +938,10 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) return;
         if (!activityState.enabled) return;
         if (activityState.isGdprForgotten) return;
+
+        // sending preinstall referrer doesn't require preinstall tracking flag to be enabled
+        sendPreinstallReferrerI();
+
         if (!adjustConfig.preinstallTrackingEnabled) return;
         if (internalState.hasPreinstallBeenRead()) return;
 
@@ -1722,6 +1736,25 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         sdkClickHandler.sendReftagReferrers();
+    }
+
+    private void sendPreinstallReferrerI() {
+        if (!isEnabledI()) {
+            return;
+        }
+        if (internalState.hasFirstSdkStartNotOcurred()) {
+            return;
+        }
+
+        SharedPreferencesManager sharedPreferencesManager =
+                new SharedPreferencesManager(getContext());
+        String referrerPayload = sharedPreferencesManager.getPreinstallReferrer();
+
+        if (referrerPayload == null || referrerPayload.isEmpty()) {
+            return;
+        }
+
+        sdkClickHandler.sendPreinstallPayload(referrerPayload, Constants.SYSTEM_INSTALLER_REFERRER);
     }
 
     private void sendInstallReferrerI(ReferrerDetails referrerDetails, String referrerApi) {

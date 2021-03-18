@@ -29,7 +29,7 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.26.2";
+    String CLIENT_SDK = "android4.27.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -77,6 +77,7 @@ public interface Constants {
     String CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action";
     String CONTENT_PROVIDER_NO_PERMISSION = "content_provider_no_permission";
     String FILE_SYSTEM = "file_system";
+    String SYSTEM_INSTALLER_REFERRER = "system_installer_referrer";
 
     String ADJUST_PREINSTALL_SYSTEM_PROPERTY_PREFIX = "adjust.preinstall.";
     String ADJUST_PREINSTALL_SYSTEM_PROPERTY_PATH = "adjust.preinstall.path";
@@ -84,4 +85,5 @@ public interface Constants {
     String ADJUST_PREINSTALL_CONTENT_URI_PATH = "trackers";
     String ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION = "com.attribution.REFERRAL_PROVIDER";
     String ADJUST_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/adjust.preinstall";
+    String EXTRA_SYSTEM_INSTALLER_REFERRER = "com.attribution.EXTRA_SYSTEM_INSTALLER_REFERRER";
 }

@@ -1,144 +1,152 @@
 ## 摘要
 
-这是Adjust™的安卓SDK包。您可以访问[adjust.com]了解更多有关Adjust™的信息。
+这是 Adjust™ 的安卓 SDK 包。您可以在 [adjust.com] 了解更多有关 Adjust™ 的信息。
 
-Read this in other languages: [English][en-readme], [中文][zh-readme], [日本語][ja-readme], [한국어][ko-readme].
+阅读本文的其他语言版本：[English][en-readme]、[中文][zh-readme]、[日本語][ja-readme]、[한국어][ko-readme]。
 
 ## 目录
 
 ### 快速入门
 
-  * [应用示例](#qs-example-apps)
-  * [启用设置](#qs-getting-started)
-     * [添加SDK至您的项目](#qs-add-sdk)
-     * [添加Google Play服务](#qs-gps)
-     * [添加权限](#qs-permissions)
-     * [Proguard设置](#qs-proguard)
-     * [Install referrer](#qs-install-referrer)
-        * [Google Play Referrer API](#qs-gpr-api)
-        * [Google Play Store intent](#qs-gps-intent)
-        * [华为 Referrer API](#qs-huawei-referrer-api)
-     * [集成SDK至您的应用](#qs-integrate-sdk)
-     * [基本设置](#qs-basic-setup)
-         * [原生应用SDK](#qs-basic-setup-native)
+   * [应用示例](#qs-example-apps)
+   * [入门指南](#qs-getting-started)
+      * [添加 SDK 至您的项目](#qs-add-sdk)
+      * [添加 Google Play 服务](#qs-gps)
+      * [添加权限](#qs-permissions)
+      * [Proguard 设置](#qs-proguard)
+      * [Install referrer](#qs-install-referrer)
+         * [Google Play Referrer API](#qs-gpr-api)
+         * [Google Play Store intent](#qs-gps-intent)
+         * [华为 Referrer API](#qs-huawei-referrer-api)
+   * [集成 SDK 至您的应用](#qs-integrate-sdk)
+      * [基本设置](#qs-basic-setup)
+         * [原生应用 SDK](#qs-basic-setup-native)
          * [Web Views SDK](#qs-basic-setup-web)
-     * [会话跟踪](#qs-session-tracking)
-        * [API level 14及以上版本](#qs-session-tracking-api-14)
-        * [API level 9-13版本](#qs-session-tracking-api-9)
-     * [SDK签名](#qs-sdk-signature)
-     * [Adjust日志](#qs-adjust-logging)
-     * [构建您的应用](#qs-build-the-app)
+      * [会话跟踪](#qs-session-tracking)
+         * [API level 14 及以上版本](#qs-session-tracking-api-14)
+         * [API level 9 - 13 版本](#qs-session-tracking-api-9)
+      * [SDK 签名](#qs-sdk-signature)
+      * [Adjust 日志记录](#qs-adjust-logging)
+      * [构建您的应用](#qs-build-the-app)
 
 ### 深度链接
 
-   * [深度链接概述](#dl)
+   * [深度链接概览](#dl)
    * [标准深度链接场景](#dl-standard)
    * [延迟深度链接场景](#dl-deferred)
    * [通过深度链接的再归因](#dl-reattribution)
 
 ### 事件跟踪
 
-   * [事件跟踪](#et-tracking)
-   * [收入跟踪](#et-revenue)
+   * [跟踪事件](#et-tracking)
+   * [跟踪收入](#et-revenue)
    * [收入重复数据删除](#et-revenue-deduplication)
    * [应用收入验证](#et-purchase-verification)
 
 ### 自定义参数
 
-   * [自定义参数概述](#cp)
+   * [自定义参数概览](#cp)
    * [事件参数](#cp-event-parameters)
-      * [事件回调参数](#cp-event-callback-parameters)
+      * [事件回传参数](#cp-event-callback-parameters)
       * [事件合作伙伴参数](#cp-event-partner-parameters)
-      * [事件回调ID](#cp-event-callback-id)
+      * [事件回传标识符](#cp-event-callback-id)
    * [会话参数](#cp-session-parameters)
-      * [会话回调参数](#cp-session-callback-parameters)
+      * [会话回传参数](#cp-session-callback-parameters)
       * [会话合作伙伴参数](#cp-session-partner-parameters)
       * [延迟启动](#cp-delay-start)
- 
- ### 附加功能 
- 
-   * [推送标签（Push token）—— 卸载跟踪](#af-push-token)
+
+### 其他功能
+
+   * [推送标签 (卸载跟踪)](#af-push-token)
    * [归因回传](#af-attribution-callback)
    * [广告收入跟踪](#af-ad-revenue)
-   * [会话和事件回传](#af-session-event-callbacks)
+   * [订阅跟踪](#af-subscriptions)
+   * [会话与事件回传](#af-session-event-callbacks)
    * [用户归因](#af-user-attribution)
-   * [设备ID](#af-device-ids)
-      * [Google Play服务广告ID](#af-gps-adid)
-      * [Amazon广告ID](#af-amazon-adid)
-      * [Adjust设备ID](#af-adid)
-   * [预安装跟踪码](#af-pre-installed-trackers)
+   * [设备 ID](#af-device-ids)
+      * [Google Play 服务广告 ID](#af-gps-adid)
+      * [Amazon 广告 ID](#af-amazon-adid)
+      * [Adjust 设备 ID](#af-adid)
+   * [预安装应用](#af-preinstalled-apps)
    * [离线模式](#af-offline-mode)
    * [禁用跟踪](#af-disable-tracking)
    * [事件缓冲](#af-event-buffering)
    * [后台跟踪](#af-background-tracking)
-   * [GDPR 的被遗忘权](#af-gdpr-forget-me)
+   * [GDPR 被遗忘权](#af-gdpr-forget-me)
+   * [第三方分享](#af-third-party-sharing)
+      * [禁用第三方分享](#af-disable-third-party-sharing)
+      * [启用第三方分享](#af-enable-third-party-sharing)
+   * [许可监测](#af-measurement-consent)
 
-### 测试及故障排查
+### 测试与故障排查
 
-   * [显示 "Session failed (Ignoring too frequent session. ...)" 出错信息](#tt-session-failed)
-   * [我的广播接收器是否能成功获取install referrer?](#tt-broadcast-receiver)
-   * [我是否可以在应用激活时触发事件？](#tt-event-at-launch)
+   * [显示 "session failed (Ignoring too frequent session...)" 出错信息](#tt-session-failed)
+   * [我的广播接收器是否能成功获取 install referrer？](#tt-broadcast-receiver)
+   * [我能否在应用激活时触发事件？](#tt-event-at-launch)
 
 ### 许可
+
 
 ## 快速入门
 
 ### <a id="qs-example-apps"></a>应用示例
 
-[`example-app-java`][example-java] 及 [`example-app-kotlin`][example-kotlin] 目录内有原生安卓应用示例，您可查看[`example-webbridge`目录][example-webbridge]了解使用web view的原生应用示例，以及[`example-tv` 目录][example-tv]了解安卓 TV 应用示例。您还可打开安卓项目查看如何集成Adjust SDK的示例。
+在 [`example-app-java`][example-java]、[`example-app-kotlin`][example-kotlin] 和 [`example-app-keyboard`][example-keyboard] 目录中，您可以找到安卓示例应用；在 [`example-webbridge` ][example-webbridge] 目录中，您可以找到使用 web view 的示例应用；[`example-app-tv`][example-tv] 目录中，您可以找到安卓 TV 示例应用。您可以打开安卓项目查看这些示例，了解如何集成 Adjust SDK。
 
-### <a id="qs-getting-started"></a>基本集成
+### <a id="qs-getting-started"></a>快速入门
 
-我们将向您介绍把Adjust SDK集成到安卓项目的最基本步骤。我们假定您将Android Studio用于安卓开发。集成Adjust SDK所需最低的Android API级别为**9（Gingerbread）**。
+此处为将 Adjust SDK 集成进安卓应用时需进行的最低要求步骤。我们假定您使用 Android Studio 进行安卓开发。Adjust SDK 集成支持的最低安卓 API 级别为 **9 (Gingerbread)**。
 
-### <a id="qs-add-sdk"></a>添加SDK至您的项目
+### <a id="qs-add-sdk"></a>添加 SDK 至您的项目
 
-如果您正在使用Maven，请添加下行至您的`build.gradle`文件：
+如果您使用的是 Maven，请添加下行到您的 `build.gradle` 文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.26.2'
+implementation 'com.adjust.sdk:adjust-android:4.27.0'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
-如果您希望在应用的web view中使用Adjust SDK，请同时包含以下附加依赖项：
+如果您想在应用 web view 中使用 Adjust SDK，请也添加下列附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.26.2'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.27.0'
 ```
 
-您还可以将Adjust SDK和web view扩展名作为JAR文件来添加，这可从我们的[发布页面][releases]中下载。
+**请注意:** web view 扩展支持的最低安卓 API 级别为 17 (Jelly Bean)。
 
-### <a id="qs-gps"></a>添加Google Play服务
+您还可以将 Adjust SDK 和 web view 扩展作为 JAR 文件来添加，这可从我们的[发布页面][releases]中下载。
 
-自2014年8月1日起，在Google Play商店中的应用必须使用[Google广告ID][google_ad_id]以唯一标识每个设备。为了让Adjust SDK能够使用Google广告ID,您必须集成[Google Play服务][google_play_services]。如果您还未完成该集成，请将以下依赖项添加到应用`build.gradle`文件的`dependencies`块中，以便添加对Google Play服务库的依赖：
+### <a id="qs-gps"></a>添加 Google Play 服务
+
+自 2014 年 8 月 1 日起，Google Play 商店中的应用必须使用 [Google 广告 ID] 来对设备进行唯一标识。为了让 Adjust SDK 能使用 Google 广告 ID，请务必集成 [Google Play 服务]。如果您尚未完成该集成，请将 dependency 加入 Google Play 服务库中，具体请将以下依赖项添加到应用 `build.gradle` 文件的 `dependencies` 块中：
 
 ```gradle
 implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```
 
-**注意**:Adjust SDK未与Google Play服务库中`play-services-analytics`的任何特定版本绑定，因此您可自由选择使用最新版本（或您需要的任何版本）。
+**请注意**：Adjust SDK 未与 Google Play 服务库中 `play-services-analytics` 的任何特定版本绑定。您可以使用最新版本的库，也可以按需要使用任意其他版本。
 
 ### <a id="qs-permissions"></a>添加权限
 
-如果您还未在您的`AndroidManifest.xml`文件中添加AdjustSDK所需的以下权限，请进行添加：
+Adjust SDK 需要下列权限。如果尚未添加，请将权限加入您的 `AndroidManifest.xml` 文件中：
 
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-如果您的**发布目标非Google Play商店**, 请同时添加以下权限：
+如果您的**发布目标非 Google Play 商店**，请同时添加以下权限：
 
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
-### <a id="qs-proguard"></a>Proguard设置
+### <a id="qs-proguard"></a>Proguard 设置
 
-如果您正在使用Proguard,请添加如下代码行至您的Proguard文件:
+如果您使用的是 Proguard，请将如下代码行添加至您的 Proguard 文件：
 
 ```
--keep class com.adjust.sdk.** { *; }
+-keep class com.adjust.sdk.**{ *; }
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
 }
@@ -152,7 +160,7 @@ implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-如果您的**发布目标非Google Play商店**,请使用以下 `com.adjust.sdk` Package 规则。
+如果您的**发布目标非 Google Play 商店**，请使用下列 `com.adjust.sdk` 包规则：
 
 ```
 -keep public class com.adjust.sdk.** { *; }
@@ -160,29 +168,31 @@ implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 
 ### <a id="qs-install-referrer"></a>Install referrer
 
-为了将应用安装正确地归因到其来源，Adjust需要关于**install referrer（安装引荐来源）** 的信息。这可以通过 **Google Play Referrer API** 或使用广播接收器（broadcast receiver)捕捉 **Google Play Store intent** 来获得。
+为了将应用的安装归因到正确的来源，Adjust 需要获取有关 **install referrer** (安装引荐来源) 的信息。这可以通过 **Google Play Referrer API** 或使用广播接收器（broadcast receiver) 捕捉 **Google Play Store intent** 来获得。
 
-**重要**: Google推出Google Play Referrer API旨在提供更加可靠和安全地获取install referrer信息的方法，并帮助归因提供商更有效地对抗点击劫持（click injection)。我们**强烈建议**在您的应用中支持它。相比之下，通过Google Play Store intent获取install referrer的方法则安全性较低。目前该方式与新的Google Play Referrer API并行可用，但未来将被弃用。
+**重要提示**：Google 引入 Google Play Referrer API 是为了提供一种更可靠、更安全的方法，以获取 Install Referrer 信息并帮助归因服务商对抗点击劫持。我们**强烈建议**您的应用支持 Google Play Referrer API。相比之下，通过 Google Play Store intent 获取 install referrer 的方法则安全性较低。Google Play Store intent 暂时与新的 Google Play Referrer API 并行存在，但将来会被弃用。
 
 #### <a id="qs-gpr-api"></a>Google Play Referrer API
 
-为了让您的应用支持Google Play Referrer API，请确保已经遵循[添加SDK至您的项目](#qs-add-sdk)章节进行了正确设置，并在`build.gradle`文件中添加了如下代码行：
+要在应用中支持 Google Play Referrer API，请务必按照[添加 SDK 至您的项目](#qs-add-sdk)一节中的说明正确操作，并确保将下列代码行加入`build.gradle` 文件中：
 
 ```
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
-请仔细遵循[Proguard设置](#qs-proguard)说明。请确保您已经添加了说明中所提及的全部规则，尤其是本功能必需的规则：
+请仔细遵循[Proguard 设置](#qs-proguard)一节中的说明操作。请确保您已经添加了说明中所提及的全部规则，尤其是本功能必需的规则：
 
 ```
 -keep public class com.android.installreferrer.** { *; }
 ```
 
-**Adjust SDK 4.12.0或以上版本** 已支持该功能。
+要支持该功能，您需要采用 **Adjust SDK v4.12.0 或更新版本**。
 
 #### <a id="qs-gps-intent"></a>Google Play Store intent
 
-Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast receiver）来接收。如果您**未使用自己的广播接收器**来接收 `INSTALL_REFERRER` intent，请在`AndroidManifest.xml`的`application`标签中添加如下`receiver`标签：
+**请注意**：Google [宣布](https://android-developers.googleblog.com/2019/11/still-using-installbroadcast-switch-to.html)，2020 年 3 月 1 日起弃用通过 `INSTALL_REFERRER` intent 发送 referrer 信息的做法。如果您在使用上述方法访问 referrer 信息，请迁移至 [Google Play Referrer API](#qs-gpr-api)方法。
+
+您应当使用广播接收器捕捉 Google Play Store `INSTALL_REFERRER` intent。如果您**未使用自己的广播接收器**来接收 `INSTALL_REFERRER` intent ，那么请在 `AndroidManifest.xml` 的 `application` 标签中添加如下 `receiver` 标签。
 
 ```xml
 <receiver
@@ -195,41 +205,39 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
 </receiver>
 ```
 
-我们使用这个广播接收器来检索install referrer，并将其传送给后端。
+我们使用这个广播接收器来检索 install referrer，并将其传送给后端。
 
-如果您已经为`INSTALL_REFERRER`intent使用了不同的广播接收器，请遵循[此说明][referrer]来添加Adjust广播接收器。
+如果您使用不同的广播接收器接收 `INSTALL_REFERRER` intent，请按照[此说明][referrer]，以正确方式向 Adjust 广播接收器发送 ping 命令。
 
 #### <a id="qs-huawei-referrer-api"></a>华为 Referrer API
 
-从 v4.21.1 版本开始，Adjust SDK 将可以针对华为 AppGallery 10.4 或更高版本的华为设备进行安装跟踪。无需进行额外集成步骤，即可开始使用华为 Referrer API。
+从版本 4.21.1 开始，Adjust SDK 将支持对装有华为 App Gallery 10.4 或更新版本的设备进行安装跟踪。无需其他集成步骤，就可以开始使用华为 Referrer API。
 
-### <a id="qs-integrate-sdk"></a>集成SDK至您的应用
+### <a id="qs-integrate-sdk"></a>集成 SDK 至您的应用
 
 我们从设置基本会话跟踪开始。
 
 ### <a id="qs-basic-setup"></a>基本设置
 
-如果您希望将SDK集成到原生应用中，请遵照[原生应用SDK](#qs-basic-setup-native)的说明进行操作。如果您需要将SDK集成到使用Web view的应用中，请按照以下[Web Views SDK](#qs-basic-setup-web)说明进行操作。
+如果您要将 SDK 集成至原生应用，请按照[原生应用 SDK](#qs-basic-setup-native)一节中的说明操作。如果您要将 SDK 集成到使用 web view 的应用中，请按照下方 [Web view SDK](#qs-basic-setup-web) 中的说明操作。
 
-#### <a id="qs-basic-setup-native"></a>原生应用SDK
+#### <a id="qs-basic-setup-native"></a>原生应用 SDK
 
-我们推荐使用全局安卓[应用程序][android_application]类来初始化SDK。如果您的应用中还没有此类，请按照以下步骤设置：
+我们建议您使用全局安卓[应用程序][android-application]类进行 SDK 初始化。如果应用中还没有此类，请按照下列步骤操作：
 
-- 创建一个扩展`Application`的类。
-- 打开应用中的`AndroidManifest.xml`文件并找到 `<application>` 元素。
-- 添加`android:name`属性，将其设置为您的新应用程序类的名称。
+- 创建一个扩展 `Application` 的类。
+- 打开应用的 `AndroidManifest.xml` 文件，找到 `<application>` 元素。
+- 添加 `android:name` 属性，将其设置为您的新应用程序类的名称。
 
-    在此应用示例中，我们将`Application`类命名为`GlobalApplication`，因此manifest文件被设置为：
-
+    在示例应用中，我们将` Application` 类命名为 `GlobalApplication` 。因此，manifest 文件会被设置为：
     ```xml
      <application
        android:name=".GlobalApplication"
-       <!-- ...-->
- 
-    </application>
+       <!-- ... -->
+     </application>
     ```
 
-- 在您的`Application`类中找到或者创建`onCreate`方法，并添加如下代码来初始化Adjust SDK:
+- 在 `Application` 类中，找到或创建 `onCreate` 方法。添加下列代码，初始化 Adjust SDK：
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -240,7 +248,7 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
         public void onCreate() {
             super.onCreate();
 
-            String appToken = "{YourAppToken}";
+            string appToken = "{YourAppToken}";
             String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
             AdjustConfig config = new AdjustConfig(this, appToken, environment);
             Adjust.onCreate(config);
@@ -248,28 +256,30 @@ Google Play Store `INSTALL_REFERRER` intent应该由广播接收器（broadcast 
     }
     ```
 
-    将`{YourAppToken}`替换为您的应用识别码（app token）。您可以在[控制面板][dashboard]中找到该应用识别码。
+用您的应用识别码 (app token) 替换 `{YourAppToken}`。您可以在[控制面板]上找到该识别码。
 
-    然后，您必须将`environment`（环境模式）设置为Sandbox 或者生产模式：
+下一步，您必须将 `environment` (环境模式) 设为 sandbox 或生产模式：
 
-    ```java
-    String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
-    String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
-    ```
+```java
+String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
+String environment = AdjustConfig.ENVIRONMENT_PRODUCTION;
+```
 
-**重要:** 仅当您或其他人测试您的应用时，该值应设为 `AdjustConfig.ENVIRONMENT_SANDBOX`。在您发布应用之前，请确保将环境改设为 `AdjustConfig.ENVIRONMENT_PRODUCTION`。再次研发和测试时，请将其设回为 `AdjustConfig.ENVIRONMENT_SANDBOX`。
+**重要提示**只有在您或其他人正在测试您的应用时，才应将该值设为 `AdjustConfig.ENVIRONMENT_SANDBOX` 。在发布应用之前，请务必将环境改设为`AdjustConfig.ENVIRONMENT_PRODUCTION`。再次研发和测试时，请将其重新设置为`AdjustConfig.ENVIRONMENT_SANDBOX`。
 
 我们按照设置的环境来区分真实流量和来自测试设备的测试流量。非常重要的是，您必须始终根据您的目前状态更新环境！
 
 #### <a id="qs-basic-setup-web"></a>Web Views SDK
 
-在您获取WebView对象的引用后：
+在获得 `WebView` 对象的引用后：
 
-- 调用`webView.getSettings().setJavaScriptEnabled(true)`, 以便在web view中启用Javascript。
-- 调用`AdjustBridge.registerAndGetInstance(getApplication(), webview)`来启用`AdjustBridgeInstance`的默认实例。
-- 这也将Adjust bridge注册为web view的Javascript接口。
+- 调用 `webView.getSettings().setJavaScriptEnabled(true)`,以便在 web view 中启用 Javascript
+- 调用 `AdjustBridge.registerAndGetInstance(getApplication(), webview)`，来启动 `AdjustBridgeInstance` 默认实例。
+- 这也会将 Adjust 网桥注册为 web view 的 Javascript 接口
+- 如有必要，请调用 `AdjustBridge.setWebView()` 来设置新的`WebView`。  
+- 调用 `AdjustBridge.unregister()` ，以取消注册 `AdjustBridgeInstance` 和 `WebView`.  
 
-完成以上步骤后，您的activity应该如下所示：
+完成这些步骤后，您的 activity 应该以如下形式呈现：
 
 ```java
 public class MainActivity extends Activity {
@@ -283,19 +293,26 @@ public class MainActivity extends Activity {
         webView.setWebChromeClient(new WebChromeClient());
         webView.setWebViewClient(new WebViewClient());
 
-        AdjustBridge.registerAndGetInstance(getApplication(), webview);
+        AdjustBridge.registerAndGetInstance(getApplication(),webview);
         try {
             webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+    
+    @Override
+    protected void onDestroy() {
+        AdjustBridge.unregister();
+
+        super.onDestroy();
+    }
 }
 ```
 
-完成以上步骤后，您已成功地将Adjust bridge添加到您的应用中。Javascript bridge现在可以在Adjust原生安卓SDK和您的页面之间进行通信，它将被加载到Web view中。
+完成以上步骤后，您就成功将 Adjust bridge 添加进自己的应用了。Javascript bridge 现已启用，可在 Adjust 原生安卓 SDK 和您的页面间进行通讯，它会被加载进 web view 中。
 
-在您的HTML文件中，导入位于assets文件夹根目录中的Adjust javascript文件。如果您的HTML文件也存在，请按如下方式导入：
+在您的 HTML 文件中，导入位于 assets 文件夹根目录中的 Adjust Javascript 文件。如果您的 HTML 文件也存在，请按如下方式导入：
 
 ```html
 <script type="text/javascript" src="adjust.js"></script>
@@ -304,7 +321,7 @@ public class MainActivity extends Activity {
 <script type="text/javascript" src="adjust_config.js"></script>
 ```
 
-一旦您添加对Javascript文件的引用后，在HTML文件中使用它们来初始化Adjust SDK：
+一旦您添加对 Javascript 文件的引用后，在 HTML 文件中使用它们来初始化 Adjust SDK：
 
 ```js
 let yourAppToken = '{YourAppToken}';
@@ -314,28 +331,29 @@ let adjustConfig = new AdjustConfig(yourAppToken, environment);
 Adjust.onCreate(adjustConfig);
 ```
 
-将`{YourAppToken}`替换为您的应用识别码（app token）。您可以在[控制面板][dashboard]中找到该应用识别码。
- 
-然后，取决于您处于测试或是生产模式，您必须将`environment`（环境模式）设为以下对应值：
+用您的应用识别码 (app token) 替换 `{YourAppToken}`。您可以在[控制面板]上找到该应用识别码。
+
+然后，取决于您处于测试或是生产模式，请将 `environment` (环境模式)设为以下对应值：
 
 ```js
 let environment = AdjustConfig.EnvironmentSandbox;
 let environment = AdjustConfig.EnvironmentProduction;
 ```
 
-重要: 仅当您或其他人测试您的应用时，该值应设为`AdjustConfig.EnvironmentSandbox`。在您发布应用之前，请确保将环境改设为`AdjustConfig.EnvironmentProduction`。再次研发和测试时，请将其设回为`AdjustConfig.EnvironmentSandbox`。
+**重要提示:** 只有在您或其他人正在测试您的应用时，才应将该值设为 `AdjustConfig.EnvironmentSandbox` 。在发布应用之前，请务必将环境设置为``AdjustConfig.EnvironmentProduction` 。如果再次开始开发和测试，请将其重新设置为`AdjustConfig.EnvironmentSandbox` 。
 
 我们按照设置的环境来区分真实流量和来自测试设备的测试流量。非常重要的是，您必须始终根据您的目前状态更新环境！
 
 ### <a id="qs-session-tracking"></a>会话跟踪
 
-**注意**:此步骤**非常重要**，请**确保您在应用中正确设置它**。设置之后，Adjust SDK将对您的应用进行会话跟踪。
+**请注意**：这一步**非常重要**。请**确保您在应用中正确设置它**。正确完成本步骤，可确保 Adjust SDK 正确跟踪您应用中的会话。
 
-#### <a id="qs-session-tracking-api-14"></a>API level 14及以上版本
+#### <a id="qs-session-tracking-api-14"></a>API level 14 及以上版本
 
-- 添加一个私有类(private class)以实现`ActivityLifecycleCallbacks`接口。如果您不能访问该接口，则表示您的应用仅支持安卓API level 14以下版本。在此种情况下，请按照此[说明](#qs-session-tracking-api-9)手动更新每项Activity。如果您在之前已经对应用的每个Activity调用了`Adjust.onResume`和`Adjust.onPause`，请将其全部删除。
-- 编辑`onActivityResumed(Activity activity)`方法，添加对`Adjust.onResume()`的调用。编辑`onActivityPaused(Activity activity)`方法，添加对`Adjust.onPause()`的调用。
-- 在设置Adjust SDK的位置添加`onCreate()` 方法，并添加调用 `registerActivityLifecycleCallbacks`以及被创建的`ActivityLifecycleCallbacks`类实例。
+- 添加一个私有类 (private class) 以实现 `ActivityLifecycleCallbacks` 接口。如果您不能访问该接口，则表示您的应用仅支持安卓 API level 14 以下版本。在这种情况下，请按照此[说明](#qs-session-tracking-api-9)，手动更新每项 Activity。如果您在之前已经对应用的每个Activity调用了 `Adjust.onResume` 和 `Adjust.onPause` ，请将其全部移除。
+- 编辑 `onActivityResumed(Activity activity)` 方法，并添加 `Adjust.onResume()` 调用。编辑
+`onActivityPaused(Activity activity)` 方法，并添加对 `Adjust.onPause()` 的调用。
+- 在设置 Adjust SDK 的位置添加 `onCreate()` 方法，并添加调用 `registerActivityLifecycleCallbacks` 以及被创建的 `ActivityLifecycleCallbacks` 类实例。
 
     ```java
     import com.adjust.sdk.Adjust;
@@ -346,14 +364,12 @@ let environment = AdjustConfig.EnvironmentProduction;
         public void onCreate() {
             super.onCreate();
 
-            String appToken = "{YourAppToken}";
+            string appToken = "{YourAppToken}";
             String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
             AdjustConfig config = new AdjustConfig(this, appToken, environment);
             Adjust.onCreate(config);
 
             registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-
-            //...
         }
 
          private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
@@ -372,20 +388,20 @@ let environment = AdjustConfig.EnvironmentProduction;
       }
     ```
 
-#### <a id="qs-session-tracking-api-9"></a>API level 9-13版本
+#### <a id="qs-session-tracking-api-9"></a>API level 9 - 13 版本
 
-如果您的应用gradle中的`minSdkVersion`是在`9`至`13`版本之间，您应当考虑至少升级至版本14以简化集成流程。请咨询官方安卓[控制面板][android-dashboard]了解目前市场上广泛使用的主要版本。
+如果您的应用 gradle 中的 `minSdkVersion` 是在 `9` 至 `13` 版本之间，您应当考虑至少升级至版本 14 以简化集成流程。请查看官方安卓[控制面板][android-dashboard]，了解目前市场上各主要版本的占比。
 
-为了进行准确的会话跟踪，每当任一Activity重新开始或者暂停时都需要调用某个Adjust SDK方法。否则SDK可能会错过一个会话开始或者会话结束。请遵循以下步骤对您的应用中的**每个Activity**进行正确设置：
+为了进行准确的会话跟踪，每当任一 Activity 重新开始或者暂停时都需要调用某个 Adjust SDK 方法。否则 SDK 可能会错过一个会话开始或者会话结束。请遵循以下步骤对您的应用中的**每个 Activity**进行正确设置：
 
-- 在Activity的`onResume`方法中调用 `Adjust.onResume`。必要时创建该方法。
-- 在Activity的`onPause`方法中调用`Adjust.onPause`。必要时创建该方法。
+- 在 Activity 的 `onResume` 方法中调用 `Adjust.onResume()`。必要时创建该方法。
+- 在 Activity 的 `onPause` 方法中调用 `Adjust.onPause()`。必要时创建该方法。
 
-完成以上步骤后，您的Activity应如下：
+完成以上步骤后，您的 Activity 应如下：
 
 ```java
 import com.adjust.sdk.Adjust;
-// ...
+
 public class YourActivity extends Activity {
     protected void onResume() {
         super.onResume();
@@ -395,24 +411,23 @@ public class YourActivity extends Activity {
         super.onPause();
         Adjust.onPause();
     }
-    // ...
 }
 ```
 
-对您的应用中的**每个**Activity重复以上步骤。如果您在之后创建新的Activity，也请按照以上步骤设置。取决于您的编码方式，您也可通过设置所有Activitiy的通用超类来实现它。
+对您的应用中的**每个 Activity** 重复以上步骤。如果您在之后创建新的 Activity，也请按照以上步骤设置。取决于您的编码方式，您也可通过设置所有 Activitiy 的通用超类来实现它。
 
-### <a id="qs-sdk-signature"></a>SDK签名
+### <a id="qs-sdk-signature"></a>SDK 签名
 
-账户管理员必须启用SDK签名。如果您希望使用该功能，请联系Adjust技术支持(support@adjust.com)。
+账户管理员必须启用 SDK 签名。如果您希望使用该功能，请联系 Adjust 支持(support@adjust.com)。
 
-如果您已经在账户中启用了SDK签名，并可访问Adjust控制面板的应用密钥，请使用以下方法来集成SDK签名到您的应用。
+如果您已经在账户中启用了 SDK 签名，并可访问 Adjust 控制面板的应用密钥，请使用以下方法来集成 SDK 签名到您的应用。
 
-在您的config实例中调用`setAppSecret`来设置应用密钥:
+在您的 config 实例中调用 `setAppSecret` 来设置应用密钥：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -442,14 +457,14 @@ Adjust.onCreate(adjustConfig);
 </tr>
 </table>
 
-### <a id="qs-adjust-logging"></a>Adjust日志
+### <a id="qs-adjust-logging"></a>Adjust 日志
 
-您可以增加或减少在测试中看到的日志数量，方法是用以下参数之一来调用config实例上的`setLogLevel`：
+您可以增加或减少在测试中看到的日志数量，方法是用以下参数之一来调用 config 实例上的 `setLogLevel`：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -487,12 +502,12 @@ adjustConfig.setLogLevel(AdjustConfig.LogLevelSuppress); // disable all logs
 </tr>
 </table>
 
-如果您希望禁用所有日志输出，除了将日志级别设置为抑制以外，您还应该对配置对象使用构建函数，它将获取boolean参数来显示是否应该支持抑制日志级别：
+如果您希望禁用所有日志输出，除了将日志级别设置为抑制以外，您还应该对配置对象使用构建函数，它将获取 boolean 参数来显示是否应该支持抑制日志级别：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -524,17 +539,17 @@ Adjust.onCreate(adjustConfig);
 
 ### <a id="qs-build-the-app"></a>构建您的应用
 
-构建并运行您的安卓应用。在`LogCat`查看工具中，您可以设置筛选`tag:Adjust`来隐藏所有其他日志。应用启动后，您可看到以下Adjust日志：`Install tracked`（安装已跟踪）。
+创建并运行您的安卓应用。在 `LogCat` 查看工具中，设置筛选 `tag:Adjust` ，以隐藏所有其他日志记录。应用启动后，您应当可以看到下列 Adjust 日志：`Install tracked` (安装已跟踪)。
 
 ## 深度链接
 
 ### <a id="dl"></a>深度链接概述
 
-如果您使用的是已启用深度链接的Adjust跟踪链接，则可以接收有关深度链接URL及其内容的相关信息。不论用户的设备上已经安装了应用（标准深度链接场景），或者尚未安装应用（延迟深度链接场景），用户都可与URL交互。在标准深度链接场景中，安卓平台原生支持您获取关于深度链接内容的信息。但是，安卓平台不提供对延迟深度链接场景的支持。在此情况下，Adjust SDK可以帮助您获取有关深度链接内容的信息。
+如果您使用的是已启用深度链接的 Adjust 跟踪链接，则可以接收有关深度链接 URL 及其内容的相关信息。不论用户的设备上已经安装了应用 (标准深度链接场景)，或者尚未安装应用 (延迟深度链接场景)，用户都可与链接交互。在标准深度链接场景中，安卓平台自身会支持您获取关于深度链接内容的信息。但是，安卓平台不提供对延迟深度链接场景的支持。在此情况下，Adjust SDK 可以帮助您获取有关深度链接内容的信息。
 
 ### <a id="dl-standard"></a>标准深度链接场景
 
-如果用户已经安装了您的应用，您希望在用户点击带有`deep_link`（深度链接）参数的Adjust跟踪链接后打开应用，您必须在应用中启用深度链接。请定义**唯一方案名称（unique scheme name）**，并将其分配至您希望在用户点击链接后应用打开时启动的Activity中。这可以通过设置在深度链接被点击应用被打开后您希望启动的Activity类的某个属性来实现。您可在`AndroidManifest.xml`中设置它。请在manifest文件中添加`intent-filter`至您指定的Activity定义，并分配指定的方案名至`android:scheme`属性值：
+如果用户已经安装了您的应用，您希望在用户点击带有 `deep_link` (深度链接) 参数的 Adjust 跟踪链接后打开应用，则必须在应用中启用深度链接。请选择需要的**唯一方案名称** (unique scheme name)，并将其分配至您希望在用户点击链接后应用打开时启动的 Activity 中。您可以在 `AndroidManifest.xml` 文件中进行设置。请在 manifest 文件中添加 `intent-filter` 至您指定的 Activity 定义，并分配指定的方案名至 `android:scheme` 属性值：
 
 ```xml
 <activity
@@ -557,19 +572,19 @@ Adjust.onCreate(adjustConfig);
 </activity>
 ```
 
-如果您希望在跟踪链接被点击后打开应用，请在Adjust跟踪链接的`deep_link`参数中使用指定的Scheme名称。未添加任何深度链接信息的跟踪链接将如下所示：
+如果您希望在跟踪链接被点击后打开应用，请在 Adjust 跟踪链接的 `deep_link` 参数中使用指定的 Scheme 名称。未添加任何深度链接信息的跟踪链接将如下所示：
 
 ```
 https://app.adjust.com/abc123?deep_link=adjustExample%3A%2F%2F
 ```
 
-请记住，在URL中的`deep_link`参数值**必须采用URL编码形式**。
+请记住：链接中的 `deep_link` 参数值**必须采用 URL 编码形式**。
 
-如上所述完成应用设置，当用户点击跟踪链接时，您的应用将连带`MainActivity intent`打开。在`MainActivity`类中，您将自动获取关于`deep_link`参数的内容信息。虽然该内容在URL中已编码，但是它在发送给您后**不会被编码**。
+如上所述完成应用设置，当用户点击跟踪链接时，您的应用将连带 `MainActivity` intent 打开。在 `MainActivity` 类中，您将自动获取关于 `deep_link` 参数的内容信息。虽然该内容在链接中已编码，但是它在发送给您后**不会**被编码。
 
-`AndroidManifest.xml`文件中的`android:launchMode`Activity设置将决定Activity文件中`deep_link`参数内容的传递位置。请查看[官方安卓文档][android-launch-modes]了解有关`android:launchMode`属性值的更多信息。
+`AndroidManifest.xml` 文件中的 `android:launchMode` Activity 设置决定 Activity 文件中 `deep_link` 参数内容的传递位置。请查看安卓[官方文档][android-launch-modes]，了解有关 `android:launchMode` 可能属性值的更多信息。
 
-通过`Intent`对象发送至您指定的Activity的深度链接内容信息将可能被传递至两个位置—— Activity的`onCreate`或者`onNewIntent`方式。一旦应用被打开，方式被触发后，您将获得在点击URL中被传递至`deep_link`参数中的实际深度链接。您可以使用这些信息为应用增加一些附加逻辑。
+通过 `intent` 对象发送至您指定的 Activity 的深度链接内容信息将可能被传递至两个位置 — Activity 的 `onCreate` 或 `onNewIntent` 方法。一旦应用被打开，方法被触发后，您将获得在点击链接中被传递至 `deep_link` 参数中的实际深度链接。您可以使用这些信息为应用增加一些附加逻辑。
 
 您可以按以下两种方式提取深度链接内容：
 
@@ -581,7 +596,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
     Intent intent = getIntent();
     Uri data = intent.getData();
-    // data.toString() -> This is your deep_link parameter value.
+    // data.toString()-> This is your deep_link parameter value.
 }
 ```
 
@@ -591,24 +606,24 @@ protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
 
     Uri data = intent.getData();
-    // data.toString() -> This is your deep_link parameter value.
+    // data.toString()-> This is your deep_link parameter value.
 }
 ```
 
 ### <a id="dl-deferred"></a>延迟深度链接场景
 
-延迟深度链接场景发生在当用户点击了带有`deep_link`参数的Adjust跟踪链接，但用户在点击时还未在其设备中安装应用。点击链接后，用户将被重定向至Google Play商店下载和安装您的应用。用户首次打开该应用后，`deep_link`参数将被发送至应用。
+用户点击含有 `deep_link` 参数的 Adjust 跟踪链接，但在点击发生时用户设备上并未安装应用，就会发生延迟深度链接场景。用户点击链接时，会被重定向至 Play 应用商店来下载和安装应用。在首次应用打开后，`deep_link` 参数内容将被发送至您的应用。
 
 Adjust SDK 默认自动打开延迟深度链接，无须额外设置。
 
 #### 延迟深度链接回传
 
-如果您希望控制Adjust SDK是否打开延迟深度链接，您可以通过在配置对象中设置回传的方式实现。
+如果您希望控制 Adjust SDK 是否打开延迟深度链接，可以通过在配置对象中设置回传的方式实现。
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -618,7 +633,7 @@ Adjust SDK 默认自动打开延迟深度链接，无须额外设置。
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 // Evaluate the deeplink to be launched.
-config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+config.setOnDeeplinkResponseListener(newOnDeeplinkResponseListener() {
     @Override
     public boolean launchReceivedDeeplink(Uri deeplink) {
         // ...
@@ -633,10 +648,9 @@ config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
 Adjust.onCreate(config);
 ```
 
-Adjust SDK从后台接收到关于深度链接内容的信息后，将在监听器内向您传递相关内容信息，并等待您的`boolean`返回值。该返回值决定是否由Adjust SDK启动您从深度链接已分配方案名称的activity（如标准深度链接场景一样）。
+Adjust SDK 从后台接收到关于深度链接内容的信息后，将在监听器内向您传递相关内容信息，并等待您的 `boolean` 返回值。该返回值决定是否由 Adjust SDK 启动您从深度链接已分配方案名称的 activity (如标准深度链接场景一样)。
 
-如果您的返回值为`true`，我们将启动该activity, 触发在[标准深度链接场景](#dl-standard) 章节中所描述的场景。如果您不希望SDK启动Activity，您可以从监听器返回`false`值，并根据深度链接内容自行决定下一步动作。
-
+如果您的返回值为 `true`，我们将启动该 activity，触发在[标准深度链接场景](#dl-standard)一节中所描述的场景。如果您不希望 SDK 启动 Activity，您可以从监听器返回 `false` 值，并根据深度链接内容自行决定下一步应用中的动作。
 </td>
 </tr>
 <tr>
@@ -649,12 +663,12 @@ Adjust SDK从后台接收到关于深度链接内容的信息后，将在监听�
 
 ```js
 let adjustConfig = new AdjustConfig(yourAppToken, environment);
-adjustConfig.setDeferredDeeplinkCallback(function (deeplink) {});
+adjustConfig.setDeferredDeeplinkCallback(function(deeplink) {});
 
 Adjust.onCreate(adjustConfig);
 ```
 
-在延迟深度链接场景中，您可以对配置对象作一个额外设置。一旦Adjust SDK获取延迟深度链接信息，您可以选择是否由我们的SDK打开URL。这可通过在配置对象上调用`setOpenDeferredDeeplink`方式来设置：
+在延迟深度链接场景中，您可对配置对象进行一个额外设置。一旦 Adjust SDK 获得延迟深度链接信息，您便可选择我们的 SDK 是否应该打开链接。您可在配置对象上调用 `setOpenDeferredDeeplink` 方法进行设置：
 
 ```js
 // ...
@@ -669,21 +683,20 @@ Adjust.start(adjustConfig);
 
 ```
 
-请记住，如果您不设置回传，**在默认情况下Adjust SDK将始终尝试启动URL**。
+请记住，如果您不设置回传，**在默认情况下 Adjust SDK 将始终尝试启动链接**。
 </td>
 </tr>
 </table>
 
-
 ### <a id="dl-reattribution"></a>通过深度链接的再归因
 
-Adjust支持您使用深度链接运行再参与推广活动。您可查看我们的[官方文档][reattribution-with-deeplinks]，了解更多相关信息。
+Adjust 支持您使用深度链接开展再交互推广活动。请查看我们的[官方文档][reattribution-with-deeplinks]，了解更多信息。
 
-如果您正在使用该功能，为了准确地再归因您的用户，您需要在应用中作一个额外回传至Adjust SDK。
+如果您正在使用该功能，为了准确地再归因用户，您需要在应用中设置一个额外调用至 Adjust SDK。
 
-一旦您已经在应用中收到深度链接内容信息，请添加回传至`Adjust.appWillOpenUrl(Uri, Context)`方式。添加该回传后，Adjust SDK将尝试查找在深度链接中是否有任何新的归因信息，一旦找到，该信息将被发送至Adjust后台。如果您的用户因为点击带有深度链接内容的Adjust跟踪链接而应该被再归因，您将会看到应用中的[归因回传](#af-attribution-callback)被该用户的新归因信息触发。
+一旦您已经在应用中收到深度链接内容信息，请添加调用至 `Adjust.appWillOpenUrl(Uri, Context)` 方法。添加该调用后，Adjust SDK 将发送信息至 Adjust 后台，查看深度链接中是否有任何新的归因信息。如果您的用户因为点击带有深度链接内容的 Adjust 跟踪链接而被再归因，您将会看到应用中的[归因回传](#af-attribution-callback)被触发并附有该用户的新归因信息。
 
-请如下示添加至`Adjust.appWillOpenUrl(Uri, Context)`的回传：
+`Adjust.appWillOpenUrl(Uri,Context)` 调用应当以下列方式呈现：
 
 ```java
 @Override
@@ -707,9 +720,9 @@ protected void onNewIntent(Intent intent) {
 }
 ```
 
-**注意:** `Adjust.appWillOpenUrl(Uri)`方法从Android SDK v4.14.0 起已被标记为 **deprecated** (弃用)，请使用`Adjust.appWillOpenUrl(Uri, Context)`方法。
+**请注意**：安卓 SDK v4.14.0 发布后，`Adjust.appWillOpenUrl(Uri)` 方法已被标记为 **弃用**。请换用 `Adjust.appWillOpenUrl(Uri,Context)` 方法。
 
-**Web view特别提示：** 您还可如下所示在web view中使用Javascript中的`Adjust.appWillOpenUrl`函数进行调用：
+**Web view 特别提示**：您还可如下所示在 web view 中使用 Javascript 中的 `Adjust.appWillOpenUrl` 函数进行调用：
 
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
@@ -719,12 +732,12 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 
 ### <a id="et-tracking"></a>事件跟踪
 
-您可以使用Adjust来跟踪应用中的任何事件。假设您想要跟踪具体按钮的每次点击，您必须在[控制面板][dashboard]中创建一个新的事件识别码（Event Token）。例如事件识别码是`abc123`，在按钮的`onClick`方法中，您可以添加以下代码行来跟踪点击：
+您可以使用 Adjust 来跟踪应用中的任何事件。假设您想跟踪特定按钮的所有点击。要做到这一点，您需要在[控制面板]中创建新的事件识别码。假设事件识别码为 `abc123`。在按钮的 `onClick` 方法中，添加以下行来跟踪点击：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -752,14 +765,14 @@ Adjust.trackEvent(adjustEvent);
 </tr>
 </table>
 
-### <a id="et-revenue"></a>收入跟踪
+### <a id="et-revenue"></a>跟踪收入
 
-如果您的用户可以通过点击广告或应用内购为您带来收入，您可以按照事件来跟踪这些收入。假设一次点击值一欧分，那么您可以这样来跟踪收入事件：
+如果您的用户可通过点击广告或进行应用内购买的方式为您带来收入，您也可以通过事件来跟踪此类收入。假设一次点击能带来一欧分的收入。您可以这样来跟踪收入事件：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -782,29 +795,29 @@ Adjust.trackEvent(adjustEvent);
 
 ```js
 let adjustEvent = new AdjustEvent('abc123');
-adjustEvent.setRevenue(0.01, 'EUR');
+adjustEvent.setRevenue(0.01,'EUR');
 Adjust.trackEvent(adjustEvent);
 ```
 </td>
 </tr>
 </table>
 
-当然，这也可以和回调参数相结合。
+您可以将其与回传参数相结合。
 
-您设置货币类型后，Adjust将自动把收入转换为您选择的货币类型。阅读这里了解有关[货币转换][currency-conversion]的更多信息。
+设置货币识别码后，Adjust 会自动将收入转化为您所选的报告收入。[在这里][currency-conversion]了解更多货币换算信息。
 
-如果您希望跟踪应用内购，请确保仅在购买完成且商品被购买完后调用`trackEvent`。这一点对于避免跟踪实际上未产生的收入非常重要。
+如果您想要跟踪应用内购买，请确保仅在购买完成且商品已购买后才调用 `trackEvent`。要想避免跟踪实际未产生的收入，这点十分重要。
 
-您可以在[事件跟踪指南][event-tracking]中了解更多有关收入和事件跟踪的内容。
+要进一步了解 Adjust 收入和事件跟踪相关信息，请参阅[事件跟踪指南][event-tracking]。
 
-### <a id="et-revenue-deduplication"></a>收入重复数据删除
+### <a id="et-revenue-deduplication"></a>收入去重
 
-您也可以选择输入交易ID，以避免跟踪重复收入。输入后，最近的十个交易ID将被记录下来，重复交易ID的收入事件将被跳过。这对于应用内购跟踪尤其有用。参见以下例子。
+您也可以选择添加交易 ID，以避免跟踪重复收入。这样，最后 10 个交易 ID 将被记录下来，交易 ID 重复的收入事件则会被跳过。这对于跟踪应用内购买尤其有用。请在下方查看示例：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -828,7 +841,7 @@ Adjust.trackEvent(adjustEvent);
 
 ```js
 let adjustEvent = new AdjustEvent('abc123');
-adjustEvent.setRevenue(0.01, 'EUR');
+adjustEvent.setRevenue(0.01,'EUR');
 adjustEvent.setOrderId('{OrderId}');
 Adjust.trackEvent(event);
 ```
@@ -836,30 +849,31 @@ Adjust.trackEvent(event);
 </tr>
 </table>
 
-### <a id="et-purchase-verification"></a>应用收入验证
+### <a id="et-purchase-verification"></a>应用内收入验证
 
-如果您想要验证应用内购，您可以使用[Adjust的收入验证产品][android-purchase-verification]——我们的服务器端收据验证工具。点击链接了解更多信息。
+如果您想要验证应用内购买，可以使用 [Adjust 收入验证][android-purchase-verification]，这是一款服务器端收据验证工具。点击链接了解更多信息。   
 
 ## 自定义参数
 
 ### <a id="cp"></a>自定义参数概述
 
-除了Adjust SDK默认收集的数据点之外，您还可以使用Adjust SDK跟踪并根据需要添加任意数量的自定义值（用户ID、产品ID等）到事件或会话。自定义参数仅作为原始数据提供，且**不会**显示在Adjust控制面板中。
+除了 Adjust SDK 默认收集的数据点之外，您还可以使用 Adjust SDK 进行跟踪，并根据需要添加任意数量的自定义值（用户 ID、产品 ID 等）到事件或会话中。自定义参数仅作为原始数据提供，且 **不会** 出现在 Adjust 控制面板中。
 
-您可对内部使用收集的值使用**回调参数**，与外部合作伙伴共享的值使用**合作伙伴参数**。如果值（如产品ID）被同时用于内部和外部合作伙伴，我们建议您同时使用回传和合作伙伴参数来跟踪该值。
+针对内部使用而收集的值，请使用**回传参数**，并对与外部合作伙伴共享的值使用**合作伙伴参数**。如果某个值（如产品 ID）既会被用于内部，也会与外部合作伙伴分享，我们建议同时使用回传和合作伙伴参数来跟踪该值。
 
-### <a id="cp-event-parameters"></a> 事件参数
 
-### <a id="cp-event-callback-parameters"></a>事件回调参数
+### <a id="cp-event-parameters"></a>事件参数
 
-您可以在[控制面板][dashboard]中为您的事件登记回调URL。跟踪到事件时，我们会向该URL发送GET请求。您可以在跟踪事件之前调用事件实例的`addCallbackParameter`，向该事件添加回调参数。然后我们会将这些参数添加至您的回调URL。
+### <a id="cp-event-callback-parameters"></a>事件回传参数
 
-假设您已经登记URL为`http://www.example.com/callback`，然后如下行跟踪事件：
+您可以在 [控制面板] 中为事件输入回传 URL。这样，只要跟踪到事件，我们都会向该 URL 发送 GET 请求。您可以在跟踪前调用事件实例的 `addCallbackParameter` ，向该事件添加回传参数。然后我们会将这些参数附加至您的回传 URL。
+
+例如，如果您已注册 URL `http://www.example.com/callback`，则您将这样跟踪事件：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -883,8 +897,8 @@ Adjust.trackEvent(adjustEvent);
 
 ```js
 let adjustEvent = new AdjustEvent('abc123');
-adjustEvent.addCallbackParameter('key', 'value');
-adjustEvent.addCallbackParameter('foo', 'bar');
+adjustEvent.addCallbackParameter('key','value');
+adjustEvent.addCallbackParameter('foo','bar');
 Adjust.trackEvent(adjustEvent);
 ```
 </td>
@@ -897,21 +911,20 @@ Adjust.trackEvent(adjustEvent);
 http://www.example.com/callback?key=value&foo=bar
 ```
 
-Adjust支持多种可以用作参数值的占位符，例如 `{gps_adid}`。在接下来的回调中，该占位符将被当前设备的Google Play服务ID所替代。同时请注意，我们不保存您的任何定制参数，而只是将它们添加到您的回调中。如果您没有为事件输入回调地址，这些参数甚至不会被读取。
+Adjust 支持各种占位符，例如可以用作参数值的 `{gps_adid}`。我们会在产生的回传中将占位符 (在该情况下) 替换为当前设备的 Google Play 服务 ID。请注意，我们不会存储您的任何自定义参数。我们 **仅** 将这些参数附加到您的回传中。如果您尚未针对事件注册回传，这些参数甚至不会被读取。
 
-您可以在我们的[回调指南][callbacks-guide]中了解到有关使用URL回调的更多信息，包括可用值的完整列表。
+若想进一步了解 URL 回传，查看可用参数的完整列表，请参阅我们的 [回传指南][callbacks-guide]。
 
-### <a id="cp-event-partner-parameters"></a> 事件合作伙伴参数
+### <a id="cp-event-partner-parameters"></a>事件合作伙伴参数
 
-您还可以针对您已在Adjust控制面板中激活的渠道合作伙伴添加被发送至合作伙伴的参数。
+参数在控制面板中激活后，您可以将其发送至渠道合作伙伴。
 
-方式和上述提及的回调参数类似，可以通过调用您的事件实例上的`addPartnerParameter`方法来添加。
-
+方式和上述提及的回传参数类似，可以通过调用事件实例上的 `addPartnerParameter` 方法来添加。
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -935,24 +948,24 @@ Adjust.trackEvent(adjustEvent);
 
 ```js
 let adjustEvent = new AdjustEvent('abc123');
-adjustEvent.addPartnerParameter('key', 'value');
-adjustEvent.addPartnerParameter('foo', 'bar');
+adjustEvent.addPartnerParameter('key','value');
+adjustEvent.addPartnerParameter('foo','bar');
 Adjust.trackEvent(adjustEvent);
 ```
 </td>
 </tr>
 </table>
 
-您可在我们的[特殊合作伙伴指南][special-partners]中了解到有关特殊合作伙伴和集成的更多信息。
+您可以在我们的 [特殊合作伙伴指南][special-partners] 中了解更多有关特殊合作伙伴以及这些集成的信息。
 
-### <a id="cp-event-callback-id"></a>事件回调ID
+### <a id="cp-event-callback-id"></a>事件回传 ID
 
-您还可为想要跟踪的每个事件添加自定义字符串ID。此ID将在之后的事件成功和/或事件失败回调中被报告，以便您了解哪些事件跟踪成功或者失败。您可通过调用事件实例上的`setCallbackId`方法来设置此ID:
+您可以为想要跟踪的每个事件添加自定义字符串 ID。我们会在事件成功和/或失败回传中报告该标识符，以便您了解哪些事件已被成功跟踪。通过调用事件实例上的 `setCallbackId` 方法来设置此标识符：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -984,20 +997,20 @@ Adjust.trackEvent(adjustEvent);
 
 ### <a id="cp-session-parameters"></a>会话参数
 
-一些参数被保存发送到Adjust SDK的每一个**事件**和**会话**中。一旦您已经添加任一这些参数，您无需再每次添加它们，因为这些参数已经被保存至本地。如果您添加同样参数两次，也不会有任何影响。
+会话参数被保存在本地，并随每个 Adjust SDK **事件** 和 **会话** 一同发送。您添加这些参数找呢的任何一个后，下次就无需再度添加，因为这些参数已经被保存。添加同样的参数两次不会有任何影响。
 
-这些会话参数在Adjust SDK上线之前可以被调用，以确保它们即使在安装时也可被发送。如果您需要在安装同时发送参数，但只有在SDK上线后才能获取所需的值，您可以通过[延迟](#cp-delay-start) Adjust SDK第一次上线以允许该行为。
+这些会话参数在 Adjust SDK 启动之前可以被调用，以确保它们在安装时可被发送。如果您需要在安装同时发送参数，但只有在 SDK 启动后才能获取所需的值，您可以通过[延迟](#delay-start) Adjust SDK 第一次启动以允许该行为。
 
-### <a id="cp-session-callback-parameters">会话回调参数
+### <a id="cp-session-callback-parameters"></a>会话回传参数
 
-注册在[事件](#cp-event-callback-parameters)中的相同回调参数也可以被保存发送至Adjust SDK的每一个事件和会话中。
+注册在[事件](#event-callback-parameters)中的相同回传参数也可以被保存发送至 Adjust SDK 的每一个事件和会话中。
 
-会话回调参数拥有与事件回调参数类似的接口。该参数是通过调用`Adjust.addSessionCallbackParameter(String key, String value)`被添加，而不是通过添加Key和值至事件:
+会话回传参数的接口与事件回传参数的接口类似。该参数是通过调用 `Adjust.addSessionCallbackParameter(String key, String value)`: 被添加，而不是通过添加 Key 和值至事件:
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1023,14 +1036,14 @@ Adjust.addSessionCallbackParameter('foo', 'bar');
 </tr>
 </table>
 
-会话回调参数将与被添加至事件的回调参数合并。被添加至事件的回调参数拥有高于会话回调参数的优先级。这意味着，当被添加至事件的回调参数拥有与会话回调参数同样Key时，以被添加至事件的回调参数值为准。
+会话回传参数将与被添加至事件的回传参数合并。被添加至事件的回传参数拥有高于会话回传参数的优先级。这意味着，当被添加至事件的回传参数拥有与会话回传参数同样的 Key 时，以被添加至事件的回传参数值为准。
 
-您可以通过传递Key至`Adjust.removeSessionCallbackParameter(String key)`的方式来删除特定会话回调参数。
+您可以通过传递 Key 至 `Adjust.removeSessionCallbackParameter(String key)` 的方式来删除特定会话回传参数。
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1056,12 +1069,12 @@ Adjust.removeSessionCallbackParameter('foo');
 </tr>
 </table>
 
-如果您希望删除会话回调参数中所有的Key及相应值，您可以通过`Adjust.resetSessionCallbackParameters()` 方式重置：
+如果您希望删除会话回调参数中所有的 Key 及相应值，可以通过 `Adjust.resetSessionCallbackParameters(`) 方式重置：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1087,19 +1100,18 @@ Adjust.resetSessionCallbackParameters();
 </tr>
 </table>
 
-
 ### <a id="cp-session-partner-parameters"></a>会话合作伙伴参数
 
-与[会话回调参数](#cp-session-callback-parameters)的方式一样，会话合作伙伴参数也将被发送至Adjust SDK的每一个事件和会话中。
+与 [会话回传参数](#session-callback-parameters) 的方式一样，会话合作伙伴参数也会与 SDK 的每个事件或会话一同发送。
 
-它们将被传送至渠道合作伙伴，以集成您在Adjust[控制面板][dashboard]上已经激活的模块。
+这些参数会传送至在 Adjust [控制面板] 中已激活相关集成的渠道合作伙伴。
 
-会话合作伙伴参数具有与事件合作伙伴参数类似的接口。该参数是通过调用`Adjust.addSessionPartnerParameter(String key, String value)`被添加，而不是通过添加Key和值至事件:
+会话合作伙伴参数接口与事件合作伙伴参数接口类似。该参数是通过调用 `Adjust.addSessionPartnerParameter(String key, String value)` 被添加，而不是通过添加 Key 和值至事件:
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1125,14 +1137,14 @@ Adjust.addSessionPartnerParameter('foo', 'bar');
 </tr>
 </table>
 
-会话合作伙伴参数将与被添加至事件的合作伙伴参数合并。被添加至事件的合作伙伴参数具有高于会话合作伙伴参数的优先级。这意味着，当被添加至事件的合作伙伴参数拥有与会话合作伙伴参数同样Key时，以被添加至事件的合作伙伴参数值为准。
+会话合作伙伴参数将与被添加至事件的合作伙伴参数合并。被添加至事件的合作伙伴参数具有高于会话合作伙伴参数的优先级。这意味着，当被添加至事件的合作伙伴参数拥有与会话合作伙伴参数同样的 Key 时，以被添加至事件的合作伙伴参数值为准。
 
-您可以通过传递Key至`Adjust.removeSessionPartnerParameter(String key)`方式来删除特定的会话合作伙伴参数：
+您可以通过传递 Key 至 `Adjust.removeSessionPartnerParameter(String key)` 方法，删除特定的会话合作伙伴参数：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1158,13 +1170,12 @@ Adjust.removeSessionPartnerParameter('foo');
 </tr>
 </table>
 
-
-如果您希望删除会话合作伙伴参数中所有的Key及其相应值，您可以通过`Adjust.resetSessionPartnerParameters()`方式重置：
+如果您希望删除会话合作伙伴参数中所有的 Key 及其相应值，可以通过 `Adjust.resetSessionPartnerParameters()`. 方法重置。
 
 <table>
 <tr>
 <td>
-<b>Native App SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1192,14 +1203,14 @@ Adjust.resetSessionPartnerParameters();
 
 ### <a id="cp-delay-start"></a>延迟启动
 
-延迟Adjust的SDK启动可以给您的应用一些时间获取被发送至安装的会话参数，如唯一识别码（unique identifiers）等。
+延迟 Adjust SDK 的启动可以为您的应用提供更充裕的时间，来接收所有想要随安装发送的会话参数（例如：唯一标识符）。
 
-通过在config实例中的`setDelayStart`（设置延迟启动）方式以秒为单位设置初始延迟时间：
+利用 config 实例中的 `setDelayStart` 方法，以秒为单位设置初始延迟时间：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1225,25 +1236,25 @@ adjustConfig.setDelayStart(5.5);
 </tr>
 </table>
 
-在此种情况下，Adjust SDK不会在5.5秒内发送初始安装会话以及创建任何事件。在该时间过期后或您同时调用`Adjust.sendFirstPackages()`，每个会话参数将被添加至延迟安装的会话和事件中，Adjust SDK将恢复正常。
+在此示例中，Adjust SDK 不会在 5.5 秒内发送初始安装会话以及创建的任何事件。5.5 秒后 (或您在其此期间调用 `Adjust.sendFirstPackages()`)，每个会话参数会添加至延迟的安装会话和事件，并且 Adjust SDK 会继续照常运行。
 
-**Adjust SDK最长的延迟启动时间为10秒。**
+**您最多可以将 Adjust SDK 的启动时间延长 10 秒**。
 
 
-## 附加功能
+## 其他功能
 
-一旦您已经成功将Adjust SDK集成到您的项目中，您便可以使用以下功能。
+将 Adjust SDK 集成到项目中后，您即可利用以下功能：
 
-### <a id="af-push-token"></a> 推送标签（Push token）—— 卸载跟踪
+### <a id="af-push-token"></a>推送标签 (卸载跟踪)
 
-推送标签适用于Adjust受众分群工具（Audience Builder）和客户回传，是卸载跟踪功能的必需信息。
+推送标签用于受众分群工具和客户回传；也是跟踪卸载和重装所需的信息。
 
-每当您获取或更新识别码时，请添加以下调用至Adjust，以发送推送标签给我们：
+要向我们发送推送通知标签，请在获得标签 (或每当标签值变更) 时向 Adjust 添加下列调用：
 
 <table>
 <tr>
 <td>
-<b>原生SDK</b>
+<b>原生 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1253,9 +1264,9 @@ adjustConfig.setDelayStart(5.5);
 Adjust.setPushToken(pushNotificationsToken, context);
 ```
 
-以上添加了`context`的更新后签名让SDK可以涵盖更多的场景，以确保推送标签被发送。因此，我们建议您使用以上签名方式。
+更新后的签名加入了 `context`，可允许 SDK 涵盖更多场景，确保推送标签被发送。因此，我们建议您使用以上签名方式。
 
-尽管如此，我们仍支持之前没有`context`的签名方式。
+尽管如此，我们仍支持之前没有 `context` 的相同方法签名。
 
 </td>
 </tr>
@@ -1276,16 +1287,16 @@ Adjust.setPushToken(pushNotificationsToken);
 
 ### <a id="af-attribution-callback"></a>归因回传
 
-您可以注册一个监听器（listener），以获取跟踪链接归因变化的通知。由于考虑到归因的不同来源，归因信息无法被同步提供。最简单的方式是创建一个单一的匿名监听器：
+您可以注册一个监听器 (listener)，以获取跟踪链接归因变化的通知。考虑到归因的不同来源，归因信息无法被同步提供。
 
-请您务必考虑我们的[适用归因数据政策][attribution-data]。
+请查看我们的[归因数据政策][attribution-data]了解更多信息。
 
-使用Config实例，在启动SDK之前添加匿名监听器：
+使用 config 实例，在启动 SDK 之前添加归因回传：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1294,7 +1305,7 @@ Adjust.setPushToken(pushNotificationsToken);
 ```java
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
-config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+config.setOnAttributionChangedListener(newOnAttributionChangedListener() {
     @Override
     public void onAttributionChanged(AdjustAttribution attribution) {}
 });
@@ -1324,16 +1335,85 @@ Adjust.onCreate(adjustConfig);
 </tr>
 </table>
 
-监听器函数将在SDK接收到最终归因数据后被调用。在监听器函数中，您可以访问`attribution`(归因)参数。这里是其属性的快捷摘要：
+SDK 收到最终归因数据后，监听器函数会被调用。在监听器函数中，您可以访问 `attribution` 参数。以下是其属性的摘要：
 
-- `trackerToken`目前归因的跟踪码字符串
-- `trackerName`目前归因的跟踪链接名称字符串
-- `network` 目前归因的渠道分组层字符串
-- `campaign` 目前归因的推广分组层字符串
-- `adgroup` 目前归因的广告组分组层字符串
-- `creative` 目前归因的素材分组层字符串
-- `clickLabel` 目前归因的点击标签字符串
-- `adid` Adjust设备ID字符串
+- `trackerToken` 目前归因的跟踪码字符串。
+- `trackerName` 目前归因的跟踪链接名称字符串。
+- `network` 目前归因的渠道分组层字符串。
+- `campaign` 目前归因的推广分组层字符串。
+- `adgroup` 目前归因的广告组分组层字符串。
+- `creative` 目前归因的素材分组层字符串。
+- `clickLabel` 目前归因的点击标签字符串。
+- `adid` Adjust 设备标识符字符串。
+- `costType` 成本类型字符串。
+- `costAmount` 成本金额。
+- `costCurrency` 成本币种字符串。
+
+**请注意**：只有在`AdjustConfig` 中通过调用 `setNeedsCost` 方法来进行配置后，`costType`、 `costAmount` 和 `costCurrency` 成本数据才可用。如果未进行配置，或已配置但这些字段不属于归因的一部分，那么字段值就会为 `null`。此功能仅适用于 SDK 4.25.0 及以上版本。
+
+### <a id="af-subscriptions"></a>订阅跟踪
+
+**请注意**：此功能仅适用于原生 SDK 4.22.0 及以上版本。
+
+您可以用 Adjust SDK 跟踪 Play 应用商店的订阅，并验证这些订阅是否有效。订阅购买成功后，请向 Adjust SDK 进行如下调用：
+
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
+</td>
+</tr>
+</table>
+
+订阅跟踪参数：
+
+- [price](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpriceamountmicros)
+- [currency](https://developer.android.com/reference/com/android/billingclient/api/SkuDetails#getpricecurrencycode)
+- [sku](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsku)
+- [orderId](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getorderid)
+- [signature](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getsignature)
+- [purchaseToken](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetoken)
+- [purchaseTime](https://developer.android.com/reference/com/android/billingclient/api/Purchase#getpurchasetime)
+
+与事件跟踪一样，您也可以向订阅对象附加回传和合作伙伴参数：
+
+```java
+AdjustPlayStoreSubscription subscription = new AdjustPlayStoreSubscription(
+    price,
+    currency,
+    sku,
+    orderId,
+    signature,
+    purchaseToken);
+subscription.setPurchaseTime(purchaseTime);
+
+// add callback parameters
+subscription.addCallbackParameter("key","value");
+subscription.addCallbackParameter("foo","bar");
+
+// add partner parameters
+subscription.addPartnerParameter("key","value");
+subscription.addPartnerParameter("foo","bar");
+
+Adjust.trackPlayStoreSubscription(subscription);
+```
 
 ### <a id="af-ad-revenue"></a>广告收入跟踪
 
@@ -1341,37 +1421,39 @@ Adjust.onCreate(adjustConfig);
 
 您可以通过调用以下方法，使用 Adjust SDK 对广告收入进行跟踪：
 
-<table> 
-<tr> 
-<td> 
+<table>
+<tr>
+<td>
 <b>原生应用 SDK</b>
-</td> 
-</tr> 
-<tr> 
-<td> 
+</td>
+</tr>
+<tr>
+<td>
 
 ```java
 Adjust.trackAdRevenue(source, payload);
 ```
-</td> 
-</tr> 
-</table> 
+</td>
+</tr>
+</table>
 
 您需要传递的方法参数包括：
+
 - `source` - 表明广告收入来源信息的` String` 对象。
 - `payload` - 包含广告收入 JSON 的` JSONObject` 对象。
 
 目前，我们支持以下 `source` 参数值：
-- `AD_REVENUE_MOPUB` - 代表 MoPub 广告聚合平台（更多相关信息，请查看 [集成指南][sdk2sdk-mopub]）
+
+- `AD_REVENUE_MOPUB` - 代表 MoPub 广告聚合平台（更多相关信息，请查看 [集成指南][sdk2sdk-mopub])
 
 ### <a id="af-session-event-callbacks"></a>会话和事件回传
 
-您可以注册一个监听器(listener)，以在事件或者会话被跟踪时获取通知。共有四个监听器：一个是用来跟踪成功事件，一个跟踪失败事件，一个跟踪成功会话，一个跟踪失败会话。您可以在创建配置对象后添加任意数量的监听器：
+您可以注册一个监听器，以在事件或者会话被跟踪时获取通知。监听器共有 4 个：一个用来跟踪成功事件，一个跟踪失败事件，一个跟踪成功会话，一个跟踪失败会话。您可以在创建配置对象后添加任意数量的监听器：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1381,7 +1463,7 @@ Adjust.trackAdRevenue(source, payload);
 AdjustConfig config = new AdjustConfig(this, appToken, environment);
 
 // Set event success tracking delegate.
-config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+config.setOnEventTrackingSucceededListener(newOnEventTrackingSucceededListener() {
     @Override
     public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
         // ...
@@ -1389,7 +1471,7 @@ config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener(
 });
 
 // Set event failure tracking delegate.
-config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+config.setOnEventTrackingFailedListener(newOnEventTrackingFailedListener() {
     @Override
     public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
         // ...
@@ -1397,7 +1479,7 @@ config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
 });
 
 // Set session success tracking delegate.
-config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+config.setOnSessionTrackingSucceededListener(newOnSessionTrackingSucceededListener() {
     @Override
     public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
         // ...
@@ -1405,7 +1487,7 @@ config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListe
 });
 
 // Set session failure tracking delegate.
-config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+config.setOnSessionTrackingFailedListener(newOnSessionTrackingFailedListener() {
     @Override
     public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
         // ...
@@ -1443,30 +1525,30 @@ Adjust.onCreate(adjustConfig);
 </tr>
 </table>
 
-监听器函数将于SDK发送包（package）到服务器后调用。在监听器函数中，您可以访问专为监听器所设的响应数据对象。成功会话的响应数据对象字段摘要如下：
+SDK 尝试向服务器发送包 (package) 后，将会调用监听器函数。在监听器函数中，您可以访问专门用于监听器的响应数据对象。成功会话响应数据对象字段的摘要如下：
 
-- `message` 服务器信息字符串或者SDK纪录的错误信息
-- `timestamp` 服务器的时间戳字符串
-- `adid` Adjust提供的设备唯一识别码字符串
-- `jsonResponse` JSON对象及服务器响应
+- `message` 服务器信息字符串或者 SDK 记录的错误信息。
+- `Timestamp` 服务器时间戳字符串。
+- `Adid` 由 Adjust 提供的设备唯一标识符字符串。
+- `JsonResponse` JSON 对象及服务器响应。
 
-两个事件响应数据对象均包含：
+两个事件响应数据对象都包含：
 
-- 如果跟踪的包是一个事件，`eventToken` 代表事件识别码。
-- `callbackId` 为事件对象设置的自定义[回调ID](#cp-event-callback-id)。
+- 如果跟踪的包是一个事件，那么 `EventToken` 代表事件识别码字符串。
+- `CallbackId` 为事件对象设置的自定义[回传 ID](#cp-event-callback-id)字符串。
 
-事件和会话跟踪不成功的对象也均包含：
+事件和会话跟踪失败的对象也均包含：
 
-- `willRetry` Boolean表示稍后将再尝试发送数据包。
+- `willRetry` 布尔，表示稍后是否会尝试重新发送数据包。
 
 ### <a id="af-user-attribution"></a>用户归因
 
-正如我们在[归因回传](#af-attribution-callback)章节中所描述的，每当归因信息更改时都会触发此回调。如果您想要在任何其他时间访问用户当前归因值的信息，您可以通过对`Adjust`实例调用如下方式来实现：
+如同之前在[归因回传一节](#af-attribution-callback)阐述的那样，只要归因信息发生更改，就会触发此回传，想要随时访问用户当前的归因信息，您可通过调用 `Adjust` 实例的以下方法来实现：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1492,28 +1574,28 @@ let attribution = Adjust.getAttribution();
 </tr>
 </table>
 
-**注意**：此调用只能在Adjust SDK 4.11.0和以上版本中进行。
+**请注意**：Adjust SDK 版本必须为 v4.11.0 或**更高**，才能进行该调用。
 
-**注意**：只有在Adjust后台跟踪到应用安装以及归因回传被触发后，您才能获取有关当前归因的信息。因此，在SDK被初始化以及归因回传被触发之前，您将**无法**访问用户归因值。
+**注意**：只有在我们的后台跟踪到应用安装并触发归因回传后，您才能获取当前的归因信息。因此，在 SDK 初始化以及归因回传触发前，您**无法**访问用户的归因值。
 
-### <a id="af-device-ids"></a>设备ID
+### <a id="af-device-ids"></a>设备 ID
 
-Adjust SDK支持您获取一些设备ID。
+Adjust SDK 支持您接收设备标识符。
 
-### <a id="af-gps-adid"></a>Google Play服务广告ID
+### <a id="af-gps-adid"></a>Google Play 服务广告 ID
 
-某些服务（如Google Analytics）要求您协调设备及客户ID以避免重复报告。
+某些服务 (如 Google Analytics) 要求您协调广告 ID 及客户 ID 以避免重复报告。
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
 <td>
- 
-如果您需要获取Google广告ID，则存在一个限制，即仅限于在后台线程里读取。如您调用带有背景关系（context）的`getGoogleAdId`函数及`OnDeviceIdsRead`实例，则可在任何情况下都可成功获取ID：
+
+在获取 Google 广告 ID 时您会遇到限制：Google 广告 ID 只能在后台线程中读取。如果调用带上下文 (context) 的 `getGoogleAdId` 函数和 `OnDeviceIdsRead` 实例，那么在任何情况下都能成功：
 
 ```java
 Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
@@ -1530,8 +1612,8 @@ Adjust.getGoogleAdId(this, new OnDeviceIdsRead() {
 </tr>
 <tr>
 <td>
- 
-如需获取设备的Google广告设备ID，您必须传递一个回调函数到`Adjust.getGoogleAdId`，其将在参数中接收Google广告ID，如下所示：
+
+如需获取设备的 Google 广告设备 ID，您必须传递一个回传函数到 `Adjust.getGoogleAdId`，其将在参数中接收 Google 广告 ID，如下所示：
 
 ```js
 Adjust.getGoogleAdId(function(googleAdId) {
@@ -1542,14 +1624,14 @@ Adjust.getGoogleAdId(function(googleAdId) {
 </tr>
 </table>
 
-### <a id="af-amazon-adid"></a>Amazon广告ID
+### <a id="af-amazon-adid"></a>Amazon 广告 ID
 
-如果您需要获取Amazon广告ID，请在`Adjust`实例上调用以下方法：
+如果您需要获取 Amazon 广告 ID，请调用` Adjust` 实例的下列方法：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1575,14 +1657,14 @@ let amazonAdId = Adjust.getAmazonAdId();
 </tr>
 </table>
 
-### <a id="af-adid"></a>Adjust设备ID
+### <a id="af-adid"></a>Adjust 设备 ID
 
-Adjust后台将为每一台安装了您应用的设备生成一个唯一的**Adjust设备ID** (**adid**)。您可在`Adjust`实例上调用以下方法来获取该ID:
+我们的后端会为每个安装您应用的设备生成唯一的 **Adjust 设备标识符** (即 **adid**).为了获得此标识符，请调用 `Adjust` 实例的下列方法：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1608,21 +1690,60 @@ let adid = Adjust.getAdid();
 </tr>
 </table>
 
-**注意**: 此调用只能在Adjust SDK 4.11.0和以上版本中进行。
+**请注意**：Adjust SDK 版本必须为 v4.11.0 或**更高**，才能进行该调用。
 
-**注意**: 只有在Adjust后台跟踪到应用安装后，您才能获取**adid**的相关信息。自此之后，Adjust SDK已经拥有关于设备**adid**的信息，您可以使用此方法来访问它。因此，在SDK被初始化以及您的应用安装被成功跟踪之前，您将**无法访问adid**。
+**请注意**：只有在我们的后台跟踪到应用安装后，您才能获取有关 **adid** 的信息。因此，在 SDK 初始化以及成功跟踪到应用安装前，您**无法**访问 **adid** 值。
 
-### <a id="af-pre-installed-trackers"></a>预安装跟踪码
+### <a id="af-preinstalled-apps"></a>预安装应用
 
-如果您希望使用Adjust SDK来识别已在设备中预安装您的应用的用户，请执行以下步骤。
+您可以使用 Adjust SDK，识别设备上已在生产过程中预安装您应用的用户。Adjust 可提供两个解决方案，其中一个采用系统负载，另一个采用默认跟踪链接。 
 
-- 在[控制面板][dashboard]中创建一个新的跟踪码。
-- 打开应用委托，并在`AdjustConfig`实例中添加设置默认跟踪码:
+总体来说，我们推荐您使用 system payload 解决方案。但是，在有些使用情境下，可能需要用到跟踪链接。请访问我们的[帮助中心](https://help.adjust.com/zh/article/pre-install-tracking)，了解 Adjust 的预装合作伙伴与合作伙伴的集成。如果您不确定该采用哪种解决方案，请联系 integration@adjust.com。
+
+#### 使用 system payload
+
+**SDK v4.23.0 及更高版本**支持该x解决方案。
+
+创建设置对象后，请在参数为 true 的前提下，调用 `setPreinstallTrackingEnabled`：
+
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+#### 采用默认跟踪链接
+
+- 在 [控制面板] 中创建新的跟踪链接。
+- 打开应用委托，设置配置的默认跟踪链接：
 
   <table>
   <tr>
   <td>
-  <b>原生应用SDK</b>
+  <b>原生应用 SDK</b>
   </td>
   </tr>
   <tr>
@@ -1648,24 +1769,24 @@ let adid = Adjust.getAdid();
   </tr>
   </table>
 
-- 用您在步骤1中创建的跟踪码替换`{TrackerToken}`（跟踪码）。请注意，控制面板中显示的是跟踪URL(包括`http://app.adjust.com/`)。在源代码中，您应该仅指定六个字符的识别码，而不是整个URL。
- 
-- 创建并运行您的应用。您应该可以在应用日志输出中看到如下行：
+- 用您在步骤 1 中创建的跟踪码替换 `{TrackerToken}`。请注意，控制面板显示的是跟踪链接 (包括 `http://app.adjust.com/`)。而在源代码中，您应该仅输入 6 个或 7 个字符的识别码，而不是整个跟踪链接。
+
+- 创建并运行应用。您应该可以在 LogCat 中看到以下行：
 
   ```
-  Default tracker: 'abc123'
+  默认跟踪链接：'abc123'
   ```
 
 ### <a id="af-offline-mode"></a>离线模式
 
-您可以把Adjust SDK设置离线模式，以暂停发送数据到我们的服务器，但仍然继续跟踪及保存数据并在之后发送。当设为离线模式时，所有数据将存放于一个文件中，所以请注意不要于离线模式触发太多事件。
+您可以将 Adjust SDK 设为离线模式，暂停向我们的服务器传输数据 (但仍然保存跟踪数据用于之后发送)。Adjust SDK 处于离线模式时，所有信息都会保存在一个文件中。请注意不要在离线模式下触发太多事件。
 
-您可以调用`setOfflineMode`，启用参数为`true`，以激活离线模式。
+调用参数为 `true` 的 `setOfflineMode` 即可激活脱机模式。
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1691,18 +1812,19 @@ Adjust.setOfflineMode(true);
 </tr>
 </table>
 
-相反地，您可以调用`setOfflineMode`，启用参数为`false`，以终止离线模式。当Adjust SDK回到在线模式时，所有被保存的数据将被发送到我们的服务器，并保留正确的时间信息。
+相反地，您可以调用 `setOfflineMode`，启用参数为 `false`，以终止离线模式。当 Adjust SDK 调回在线模式后，保存的所有信息都会发送到我们的服务器，并保留正确的时间信息。
 
-跟禁用跟踪设置不同的是，此设置在会话之间将**不被保存**。这意味着，即使应用在离线模式时被终止，每当SDK启动时都必定处于在线模式。
+与禁用跟踪不同，此设置在会话之间将**不被保存**。也就是说，即使应用在处于离线模式时停用，SDK 每次启动时都必定处于在线模式。
+
 
 ### <a id="af-disable-tracking"></a>禁用跟踪
 
-您可以通过调用`setEnabled`，启用参数为`false`，来禁用Adjust SDK的跟踪功能。**该设置在会话间保存**。
+您可以通过调用 `setEnabled`，启用参数为 `false`，来禁用 Adjust SDK 对当前设备的一切跟踪功能。**该设置在会话间保存。**。
 
 <table>
 <tr>
 <td>
-<b>Native App SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1728,16 +1850,16 @@ Adjust.setEnabled(false);
 </tr>
 </table>
 
-您可以通过调用`isEnabled`函数来查看Adjust SDK目前是否被启用。您始终可以通过调用`setEnabled`，启用参数为`true`，来激活Adjust SDK。
+您可以调用 `isEnabled` 函数，查看 Adjust SDK 目前是否启用。您始终可以通过调用启用参数设置为 `true` 的 `setEnabled` 来激活 Adjust SDK。
 
 ### <a id="af-event-buffering"></a>事件缓冲
 
-如果您的应用大量使用事件跟踪，您可能想要延迟部分网络请求，以便按分钟成批发送这些请求。您可以通过配置实例启用事件缓冲：
+如果您的应用大量使用事件跟踪，您可能想要延迟部分网络请求，以便每分钟按批量发送。您可以利用配置实例来启用事件缓冲：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1765,12 +1887,12 @@ adjustConfig.setEventBufferingEnabled(true);
 
 ### <a id="af-background-tracking"></a>后台跟踪
 
-Adjust SDK的默认行为是当应用处于后台时暂停发送网络请求。您可以通过配置实例更改该设置：
+Adjust SDK 的默认行为是当应用处于后台时暂停发送网络请求。您可以在配置实例中更改此设置：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1796,14 +1918,14 @@ adjustConfig.setSendInBackground(true);
 </tr>
 </table>
 
-### <a id="af-gdpr-forget-me"></a>GDPR 的被遗忘权
+### <a id="af-gdpr-forget-me"></a>GDPR 被遗忘权
 
-根据欧盟的《一般数据保护条例》(GDPR) 第17条规定，用户行使被遗忘权时，您可以通知Adjust。调用以下方法，Adjust SDK将会收到指示向Adjust后端传达用户选择被遗忘的信息：
+根据欧盟的《一般数据保护条例》(GDPR) 第 17 条规定，用户行使被遗忘权时，您可以通知 Adjust。调用以下方法时，Adjust SDK 将会收到指示向 Adjust 后端传达用户选择被遗忘的信息：
 
 <table>
 <tr>
 <td>
-<b>原生应用SDK</b>
+<b>原生应用 SDK</b>
 </td>
 </tr>
 <tr>
@@ -1829,47 +1951,197 @@ Adjust.gdprForgetMe();
 </tr>
 </table>
 
-收到此信息后，Adjust将清除该用户数据，并且Adjust SDK将停止跟踪该用户。以后不会再向Adjust发送来自此设备的请求。
+收到此信息后，Adjust 将清除用户数据，并且 Adjust SDK 将停止跟踪该用户。以后不会再向 Adjust 发送来自此设备的请求。
 
-请注意，即便在测试环境中，该决定也是永久且不可逆转的。
+请注意，即便在测试环境中，此决定也是永久性的，**不可逆转**。
 
-## 测试及故障排查
+## <a id="af-third-party-sharing"></a>具体用户的第三方数据分享
 
-### <a id="tt-session-failed"></a>显示"Session failed (Ignoring too frequent session. ...)" 出错信息
+当有用户禁用、启用或重启第三方合作伙伴数据分享时，您可以通知 Adjust。
 
-该错误信息一般于测试安装时出现的。单单卸载然后再安装应用并不足以触发新的安装。由于我们服务器已经有该设备的纪录，服务器只会判断为SDK失去了本地的会话数据而忽视该错误信息。
+### <a id="af-disable-third-party-sharing"></a>为具体用户禁用第三方数据分享
 
-虽然该行为可能在测试阶段比较麻烦，但却是必须的，目的是为了让Sandbox尽量等同于生产行为。
+请调用以下方法，指示 Adjust SDK 将用户禁用数据分享的选择传递给 Adjust 后端：
 
-如果您拥有应用编辑级别（或更高级别）的访问权限，您可以使用我们的[测试控制台][testing_console]直接从Adjust控制面板重置任何设备的应用会话数据。
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
 
-一旦设备被正确遗忘，测试控制台将返回`Forgot device`。如果设备已经被遗忘（或者值不正确），链接将返回`Advertising ID not found`。
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
 
-遗忘设备将不会逆转GDPR遗忘调用。
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(false);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+</table>
 
-如果您当前的包允许访问，您还可以使用我们的[开发者API][dev_api]检查和忘记设备。
+收到此信息后，Adjust 会停止向合作伙伴分享该用户的数据，而 Adjust SDK 将会继续如常运行。
 
-### <a id="tt-broadcast-receiver"></a>我的广播接收器是否能成功获取install referrer？
+### <a id="af-enable-third-party-sharing"></a>为具体用户启用或重启第三方数据分享
 
-如果您按照[指南](#qs-gps-intent)描述的步骤来设置, 广播接收器就应该可以将install referrer发送到SDK以及我们的服务器。
+请调用以下方法，指示 Adjust SDK 将用户启用或变更数据分享的选择传递给 Adjust 后端：
 
-为了测试设置是否正确，您可以手动触发一个install referrer测试。用您的应用ID替换`com.your.appid`，然后使用Android Studio包括的[adb](http://developer.android.com/tools/help/adb.html)工具，执行以下命令。
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(true);
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+</table>
+
+收到此信息后，Adjust 会就是否与合作伙伴分享该用户的数据做出相应变更，而 Adjust SDK 将会继续如常运行。
+
+请调用以下方法，指示 Adjust SDK 向 Adjust 后端发送精细选项：
+
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+let adjustThirdPartySharing = new AdjustThirdPartySharing(null);
+adjustThirdPartySharing.addGranularOption("PartnerA", "foo", "bar");
+Adjust.trackThirdPartySharing(adjustThirdPartySharing);
+```
+</td>
+</tr>
+</table>
+
+### <a id="af-measurement-consent"></a>监测具体用户的许可
+
+要在 Adjust 控制面板中启用或禁用数据隐私设置，包括许可有效期和用户数据留存期，您需要安装以下方法。
+
+请调用以下方法，指示 Adjust SDK 将数据隐私设置传递给 Adjust 后端：
+
+<table>
+<tr>
+<td>
+<b>原生应用 SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackMeasurementConsent(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+Adjust.trackMeasurementConsent(true);
+```
+</td>
+</tr>
+</table>
+
+收到此信息后，Adjust 会启用或禁用许可监测。而 Adjust SDK 将会继续如常运行。
+
+## 测试与故障排查
+
+### <a id="tt-session-failed"></a>显示 "session failed (Ignoring too frequent session...)" 出错信息。
+
+该错误一般发生在安装测试时。单凭卸载和重装应用不足以触发新安装。由于我们服务器已经有该设备的纪录，服务器会认定该设备的 SDK 丢失了本地聚合的会话数据，并忽略该错误信息。
+
+虽然该行为可能在测试阶段比较麻烦，但却是必须的，目的是为了让 sandbox 环境的行为尽可能地符合生产环境的行为。
+
+如果您拥有应用编辑员级别 (或更高级别) 的权限，则可以使用我们的[测试控制台][testing_console]直接从 Adjust 控制面板重置任何设备的应用会话数据。 
+
+一旦设备被正确遗忘，测试控制台将返回 `Forgot device`。如果设备已经被遗忘 (或者值不正确)，链接将返回 `Advertising ID not found`。
+
+遗忘设备将不会逆转 GDPR 遗忘调用。
+
+如果您当前的包允许访问，您还可以使用我们的[开发者 API][dev_api] 检查和忘记设备。
+
+### <a id="tt-broadcast-receiver"></a>我的广播接收器是否能成功获取 Install Referrer？
+
+如果您按照[指南](#qs-gps-intent)描述的步骤来设置, 广播接收器就应该可以将 install referrer 发送到 SDK 以及我们的服务器。
+
+您可以手动触发测试 Install Referrer，检查设置情况。将 `com.your.appid` 替换为您的应用 ID，并使用 Android Studio 自带的 [adb](http://developer.android.com/tools/help/adb.html) 工具运行下列命令：
 
 ```
 adb shell am broadcast -a com.android.vending.INSTALL_REFERRER -n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver --es "referrer" "adjust_reftag%3Dabc1234%26tracking_id%3D123456789%26utm_source%3Dnetwork%26utm_medium%3Dbanner%26utm_campaign%3Dcampaign"
 ```
 
-如果您已经按照该[指南][referrer]设置了另一个广播接收器使用`INSTALL_REFERRER`intent，请用`com.adjust.sdk.AdjustReferrerReceiver`替换您设置的广播接收器。
+如果您已经按照该[指南][referrer]说明，设置了另一个广播接收器使用 `INSTALL_REFERRER` intent ，请用您的广播接收器替换 `com.adjust.sdk.AdjustReferrerReceiver` 。
 
-您也可以删除`-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver`参数，以让设备上的所有应用接收`INSTALL_REFERRER`intent。
+您也可以删除 `-n com.your.appid/com.adjust.sdk.AdjustReferrerReceiver` 参数，让设备上的所有应用接收 `INSTALL_REFERRER` intent。
 
-如果您将日志量设置为`verbose`，您应该可以通过读取referrer查看日志：
+如果您将日志级别设置为 `verbose`，就应该可以通过读取 referrer 查看日志：
 
 ```
-V/Adjust: Reading query string (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
+V/Adjust: Referrer to parse (adjust_reftag=abc1234&tracking_id=123456789&utm_source=network&utm_medium=banner&utm_campaign=campaign) from reftag
 ```
 
-以及添加点击包(click package）到SDK包处理器：
+以及添加点击包 (click package) 到 SDK 包处理器：
 
 ```
 V/Adjust: Path:      /sdk_click
@@ -1887,14 +2159,13 @@ V/Adjust: Path:      /sdk_click
       tracking_enabled 1
 ```
 
-如果您在启动应用前执行以上测试，数据包将不会被发送。以上数据包将于应用启动后被发送。
+如果您在启动应用前执行以上测试，数据包将不会被发送。数据包将于应用启动后被发送。
 
-**重要:** 我们建议您**不要**使用`adb`工具来测试该特定功能。为了测试完整的referrer内容（在由`&`分隔多个参数的情况下），如使用adb工具您需要对内容进行编码以便发送给广播接收器。如未编码，`adb`将在第一个`&`符号后剪切referrer，并向您的广播接收器发送错误内容。
+**重要提示**：我们建议您不要使用 `adb` 工具测试该功能。为了测试完整的 referrer 内容 (在由 `&` 分隔多个参数的情况下)，如果使用 `adb`，您就需要对内容进行编码以便发送给广播接收器。如未编码，`adb` 将在第一个 `&` 符号后切断 referrer，并向您的广播接收器发送错误内容。
 
-如果您希望查看应用如何接收未编码的referrer值，我们建议您使用我们的示例应用，并更改传递的内容，以便被`MainActivity.java`文件内`onFireIntentClick`方法中的意图触发：
+如果您希望查看应用如何接收未编码的 referrer 值，我们建议您使用我们的示例应用，并更改传递的内容，以便被 `MainActivity.java` 文件内的 `onFireIntentClick` 方法中的 intent 触发：
 
-
- ```java
+```java
 public void onFireIntentClick(View v) {
     Intent intent = new Intent("com.android.vending.INSTALL_REFERRER");
     intent.setPackage("com.adjust.examples");
@@ -1903,41 +2174,44 @@ public void onFireIntentClick(View v) {
 }
 ```
 
-您可随意使用自选内容更改`putExtra`方法的第二个参数。
+您可随意使用自选内容更改 `putExtra` 方法的第二个参数。
 
-### <a id="tt-event-at-launch"></a>我是否可以在应用激活时触发事件？
+### <a id="tt-event-at-launch"></a>我能否在应用激活时触发事件？
 
 此时触发事件可能无法达到您预期的效果。原因如下：
 
-全局`Application`类上的`onCreate`方式不仅在应用启动时调用，而且在应用记录到系统或应用事件时调用。
+全局 `Application` 类上的 `onCreate` 方法不仅在应用启动时调用，而且在应用捕捉到系统或应用事件时调用。
 
-此时，我们的SDK已经准备初始化了，但是还没有正式启动。只有当activity发生时，即当用户真正激活应用时，SDK才会正式启动。
+此时，我们的 SDK 已经准备初始化了，但是还没有正式启动。只有当 activity 发生时，比如当用户真正激活应用时，SDK 才会正式启动。
 
-即使用户没有激活应用，此时触发事件将启动Adjust SDK以及发送事件——具体时间取决于应用的外部因素。
+即使用户没有激活应用，此时触发事件将启动 Adjust SDK 并发送事件 — 具体时间取决于应用的外部因素。
 
-在应用激活时触发事件将会导致被跟踪的安装及会话数量报告不准确。
+在应用激活时触发事件会导致被跟踪的安装及会话数量报告不准确。
 
-如果您希望在安装后触发事件，请使用[归因回传](#af-attribution-callback)。
+如果您想在安装后触发事件，请使用[归因回传](#af-attribution-callback)。
 
-如果您希望在应用激活后触发事件，请使用被启动的Activity的`onCreate`方法。
+如果您想在应用激活时触发事件，请为指定 activity 使用 `onCreate` 方法。
 
-[dashboard]:  http://adjust.com
-[adjust.com]: http://adjust.com
+[dashboard]:  http://adjust.com/zh
+[控制面板]:     http://adjust.com/zh
+[adjust.com]: http://adjust.com/zh
 
 [en-readme]:  ../../README.md
 [zh-readme]:  ../chinese/README.md
 [ja-readme]:  ../japanese/README.md
 [ko-readme]:  ../korean/README.md
 
-[example-java]:                   ../../Adjust/example-app-java
-[example-kotlin]:                 ../../Adjust/example-app-kotlin
-[example-tv]:                     ../../Adjust/example-app-tv
-[example-webbridge]:              ../../Adjust/example-app-webbridge
+[example-java]:       ../../Adjust/example-app-java
+[example-kotlin]:     ../../Adjust/example-app-kotlin
+[example-keyboard]:     ../../Adjust/example-app-keyboard
+[example-tv]:         ../../Adjust/example-app-tv
+[example-webbridge]:  ../../Adjust/example-app-webbridge
 
 [maven]:                          http://maven.org
-[referrer]:                       ../chinese/multiple-receivers.md
-[releases]:                       https://github.com/adjust/adjust_android_sdk/releases
-[google_ad_id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[referrer]:                       https://github.com/adjust/android_sdk/blob/master/doc/chinese/misc/multiple-receivers.md
+[releases]:                       https://github.com/adjust/android_sdk/releases
+[google-ad-id]:                   https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
+[Google 广告 ID]:                  https://support.google.com/googleplay/android-developer/answer/6048248?hl=en
 [event-tracking]:                 https://docs.adjust.com/zh/event-tracking
 [callbacks-guide]:                https://docs.adjust.com/zh/callbacks
 [new-referrer-api]:               https://developer.android.com/google/play/installreferrer/library.html
@@ -1945,26 +2219,28 @@ public void onFireIntentClick(View v) {
 [attribution-data]:               https://github.com/adjust/sdks/blob/master/doc/attribution-data.md
 [android-dashboard]:              http://developer.android.com/about/dashboards/index.html
 [currency-conversion]:            https://docs.adjust.com/zh/event-tracking/#tracking-purchases-in-different-currencies
-[android_application]:            http://developer.android.com/reference/android/app/Application.html
+[android-application]:            http://developer.android.com/reference/android/app/Application.html
 [android-launch-modes]:           https://developer.android.com/guide/topics/manifest/activity-element.html
-[google_play_services]:           http://developer.android.com/google/play-services/setup.html
+[google-play-services]:           http://developer.android.com/google/play-services/setup.html
+[Google Play 服务]:                http://developer.android.com/google/play-services/setup.html
 [reattribution-with-deeplinks]:   https://docs.adjust.com/zh/deeplinking/#manually-appending-attribution-data-to-a-deep-link
 [android-purchase-verification]:  https://github.com/adjust/android_purchase_sdk
-[testing_console]:                https://docs.adjust.com/zh/testing-console/#part-2
-[dev_api]:                        https://docs.adjust.com/zh/adjust-for-developers/
+[testing_console]: https://docs.adjust.com/zh/testing-console/#how-to-clear-your-advertising-id-from-adjust-between-tests
+[dev_api]: https://docs.adjust.com/zh/adjust-for-developers/
 
-[sdk2sdk-mopub]:                  ../chinese/sdk-to-sdk/mopub.md
-
+[sdk2sdk-mopub]:    ../../doc/chinese/sdk-to-sdk/mopub.md
+[集成指南]:          https://github.com/adjust/android_sdk/tree/master/doc/chinese
 
 ## <a id="license"></a>许可
 
 Adjust SDK 拥有MIT 许可证。
 
-版权所有(c) 2012-2019 Adjust GmbH，http://www.adjust.com
+版权所有(c) 2012-2021 Adjust GmbH，http://www.adjust.com
 
 特此免费授予获得本软件及相关文档文件（“软件”）副本的任何人，得以无限制地处理本软件，其范围包括但不限于使用、复制、修改、合并、发布、分发、再许可和/或销售本软件的副本；具备本软件上述权限之人员需遵守以下条件：
 
 上述版权声明和本许可声明，应包含在本软件的所有副本或主要部分中。
 
 本软件“按原样”提供，不提供任何形式的明示或暗示保证，包括对适销性、适用于特定用途或非侵权性的保证。任何情况下，作者或版权所有者都不应承担任何索赔、损害赔偿或其他责任，无论是因软件或使用或其他软件处理引起的或与其相关的合同行为、侵权行为或其他行为。
+
 

@@ -409,9 +409,13 @@ public class SdkClickHandler implements ISdkClickHandler {
                 SharedPreferencesManager sharedPreferencesManager
                         = new SharedPreferencesManager(activityHandler.getContext());
 
-                long currentStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
-                long updatedStatus = PreinstallUtil.markAsRead(payloadLocation, currentStatus);
-                sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus);
+                if (Constants.SYSTEM_INSTALLER_REFERRER.equalsIgnoreCase(payloadLocation)) {
+                    sharedPreferencesManager.removePreinstallReferrer();
+                } else {
+                    long currentStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
+                    long updatedStatus = PreinstallUtil.markAsRead(payloadLocation, currentStatus);
+                    sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus);
+                }
             }
         }
 

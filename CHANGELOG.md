@@ -1,3 +1,14 @@
+### Version 4.27.0 (17th March 2021)
+#### Added
+- Added data residency feature. Support for EU data residency region is added. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_EU` parameter.
+- Added preinstall tracking with usage of system installer receiver.
+- Added support for MSA SDK v1.0.25 to OAID plugin.
+
+#### Changed
+- Changed the measurement consent parameter name from `sharing` to `measurement`.
+
+---
+
 ### Version 4.26.2 (1st February 2021)
 #### Added
 - Added Facebook audience network ad revenue source string.

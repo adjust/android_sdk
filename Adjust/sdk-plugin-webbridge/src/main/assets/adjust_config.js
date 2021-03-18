@@ -59,6 +59,7 @@ AdjustConfig.EnvironmentProduction = 'production';
 
 AdjustConfig.UrlStrategyIndia = "url_strategy_india";
 AdjustConfig.UrlStrategyChina = "url_strategy_china";
+AdjustConfig.DataResidencyEU = "data_residency_eu";
 
 AdjustConfig.LogLevelVerbose = 'VERBOSE',
 AdjustConfig.LogLevelDebug = 'DEBUG',
