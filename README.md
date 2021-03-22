@@ -1699,7 +1699,7 @@ let adid = Adjust.getAdid();
 
 You can use the Adjust SDK to recognize users whose devices had your app preinstalled during manufacturing. Adjust offers two solutions: one which uses the system payload, and one which uses a default tracker. 
 
-In general, we recommend using the system payload solution. However, there are certain use cases which may require the tracker. [Visit our Help Center](https://help.adjust.com/en/article/pre-install-tracking) to find out about Adjust's preinstall partners and their integrations. If you are unsure which solution to implement, reach out to integration@adjust.com
+In general, we recommend using the system payload solution. However, there are certain use cases which may require the tracker. First check the available [implementation methods](https://help.adjust.com/en/article/pre-install-tracking#Implementation_methods) and your preinstall partner’s preferred method. If you are unsure which solution to implement, reach out to integration@adjust.com
 
 #### Use the system payload
 
@@ -1731,6 +1731,41 @@ adjustConfig.setPreinstallTrackingEnabled(true);
 
 ```js
 adjustConfig.setPreinstallTrackingEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+Depending upon your implmentation method, you may need to make a change to your AndroidManifest.xml file. Find the required code change using the table below.
+
+<table>
+<tr>
+<td>
+  <b>Method</b>
+</td>
+<td>
+  <b>AndroidManifest.xml change</b>
+</td>
+</tr>
+<tr>
+<td>Content provider</td>
+<td>Add permission:</br>
+
+```
+<uses-permission android:name="com.adjust.preinstall.READ_PERMISSION"/>
+```
+</td>
+</tr>
+<tr>
+<td>System Installer Receiver</td>
+<td>Declare receiver:</br>
+
+```
+<receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver">
+    <intent-filter>
+        <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
+    </intent-filter>
+</receiver>
 ```
 </td>
 </tr>
