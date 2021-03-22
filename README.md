@@ -1748,7 +1748,7 @@ Depending upon your implmentation method, you may need to make a change to your 
 </td>
 </tr>
 <tr>
-<td>Content provider</td>
+<td>Content Provider</td>
 <td>Add permission:</br>
 
 ```
