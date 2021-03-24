@@ -1705,7 +1705,7 @@ In general, we recommend using the system payload solution. However, there are c
 
 - The Content Provider, System Properties, or File System method is supported from SDK v4.23.0 and above.
 
-- The System Installer Receiver method is supported from SDK v4.27... and above.
+- The System Installer Receiver method is supported from SDK v4.27.0 and above.
 
 Enable the Adjust SDK to recognise preinstalled apps by calling `setPreinstallTrackingEnabled` with the parameter `true` after creating the config object:
 
