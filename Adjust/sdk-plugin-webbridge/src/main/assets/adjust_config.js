@@ -52,6 +52,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.fbPixelMapping = [];
     this.urlStrategy = null;
     this.preinstallTrackingEnabled = null;
+    this.preinstallFilePath = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -240,4 +241,8 @@ AdjustConfig.prototype.setUrlStrategy = function(urlStrategy) {
 
 AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackingEnabled) {
     this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+};
+
+AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {
+    this.preinstallFilePath = preinstallFilePath;
 };

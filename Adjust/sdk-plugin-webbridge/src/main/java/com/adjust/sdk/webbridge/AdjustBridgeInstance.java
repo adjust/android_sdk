@@ -171,6 +171,7 @@ public class AdjustBridgeInstance {
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
+            Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -378,6 +379,12 @@ public class AdjustBridgeInstance {
             Boolean preinstallTrackingEnabled = AdjustBridgeUtil.fieldToBoolean(preinstallTrackingEnabledField);
             if (preinstallTrackingEnabled != null) {
                 adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
+            }
+
+            // Preinstall secondary file path
+            String preinstallFilePath = AdjustBridgeUtil.fieldToString(preinstallFilePathField);
+            if (preinstallFilePath != null) {
+                adjustConfig.setPreinstallFilePath(preinstallFilePath);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
