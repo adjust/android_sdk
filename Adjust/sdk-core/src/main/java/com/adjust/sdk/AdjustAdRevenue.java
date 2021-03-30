@@ -7,11 +7,12 @@ public class AdjustAdRevenue {
     String source;
     Double revenue;
     String currency;
+    Integer adImpressionsCount;
+    String adRevenueNetwork;
+    String adRevenueUnit;
+    String adRevenuePlacement;
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
-
-    private static final String KEY_REVENUE = "revenue";
-    private static final String KEY_CURRENCY = "currency";
 
     private static final ILogger logger = AdjustFactory.getLogger();
 
@@ -24,12 +25,24 @@ public class AdjustAdRevenue {
     }
 
     public void setRevenue(final Double revenue, final String currency) {
-        if (!isValidRevenue(revenue, currency)) {
-            return;
-        }
-
         this.revenue = revenue;
         this.currency = currency;
+    }
+
+    public void setAdImpressionsCount(final Integer adImpressionsCount) {
+        this.adImpressionsCount = adImpressionsCount;
+    }
+
+    public void setAdRevenueNetwork(final String adRevenueNetwork) {
+        this.adRevenueNetwork = adRevenueNetwork;
+    }
+
+    public void setAdRevenueUnit(final String adRevenueUnit) {
+        this.adRevenueUnit = adRevenueUnit;
+    }
+
+    public void setAdRevenuePlacement(final String adRevenuePlacement) {
+        this.adRevenuePlacement = adRevenuePlacement;
     }
 
     public void addCallbackParameter(final String key, final String value) {
@@ -63,42 +76,18 @@ public class AdjustAdRevenue {
     }
 
     public boolean isValid() {
-        return isValidSource(this.source) && isValidRevenue(this.revenue, this.currency);
+        return isValidSource(this.source);
     }
 
-    private boolean isValidSource(final String source) {
-        if (source == null) {
+    private boolean isValidSource(final String param) {
+        if (param == null) {
             logger.error("Missing source");
             return false;
         }
-        if (source.isEmpty()) {
+        if (param.isEmpty()) {
             logger.error("Source can't be empty");
             return false;
         }
-        return true;
-    }
-
-    private boolean isValidRevenue(final Double revenue, final String currency) {
-        if (revenue == null) {
-            logger.error("Missing revenue");
-            return false;
-        }
-
-        if (currency == null) {
-            logger.error("Missing currency");
-            return false;
-        }
-
-        if (revenue < 0.0) {
-            logger.error("Invalid amount %.5f", revenue);
-            return false;
-        }
-
-        if (currency.isEmpty()) {
-            logger.error("Currency is empty");
-            return false;
-        }
-
         return true;
     }
 }

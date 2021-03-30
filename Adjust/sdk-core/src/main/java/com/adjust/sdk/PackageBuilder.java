@@ -1086,6 +1086,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "source", adjustAdRevenue.source);
         PackageBuilder.addDouble(parameters, "revenue", adjustAdRevenue.revenue);
         PackageBuilder.addString(parameters, "currency", adjustAdRevenue.currency);
+        PackageBuilder.addInteger(parameters, "ad_impressions_count", adjustAdRevenue.adImpressionsCount);
+        PackageBuilder.addString(parameters, "ad_revenue_network", adjustAdRevenue.adRevenueNetwork);
+        PackageBuilder.addString(parameters, "ad_revenue_unit", adjustAdRevenue.adRevenueUnit);
+        PackageBuilder.addString(parameters, "ad_revenue_placement", adjustAdRevenue.adRevenuePlacement);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
@@ -1284,6 +1288,14 @@ public class PackageBuilder {
         }
         String doubleString = Util.formatString("%.5f", value);
         PackageBuilder.addString(parameters, key, doubleString);
+    }
+
+    private static void addInteger(Map<String, String> parameters, String key, Integer value) {
+        if (value == null) {
+            return;
+        }
+        String intString = Integer.toString(value);
+        PackageBuilder.addString(parameters, key, intString);
     }
 
     private boolean containsPlayIds(Map<String, String> parameters) {
