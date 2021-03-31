@@ -687,13 +687,34 @@ public class AdjustCommandExecutor {
 
     private void trackAdRevenueV2() {
         String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
-
         AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(adRevenueSource);
+
         if (command.parameters.containsKey("revenue")) {
             List<String> revenueParams = command.parameters.get("revenue");
             String currency = revenueParams.get(0);
             Double revenue = Double.valueOf(revenueParams.get(1));
             adjustAdRevenue.setRevenue(revenue, currency);
+        }
+
+        if (command.parameters.containsKey("adImpressionsCount")) {
+            Integer adImpressionsCount =
+                    Integer.valueOf(command.getFirstParameterValue("adImpressionsCount"));
+            adjustAdRevenue.setAdImpressionsCount(adImpressionsCount);
+        }
+
+        if (command.parameters.containsKey("adRevenueNetwork")) {
+            String adRevenueNetwork = command.getFirstParameterValue("adRevenueNetwork");
+            adjustAdRevenue.setAdRevenueNetwork(adRevenueNetwork);
+        }
+
+        if (command.parameters.containsKey("adRevenueUnit")) {
+            String adRevenueUnit = command.getFirstParameterValue("adRevenueUnit");
+            adjustAdRevenue.setAdRevenueUnit(adRevenueUnit);
+        }
+
+        if (command.parameters.containsKey("adRevenuePlacement")) {
+            String adRevenuePlacement = command.getFirstParameterValue("adRevenuePlacement");
+            adjustAdRevenue.setAdRevenuePlacement(adRevenuePlacement);
         }
 
         if (command.parameters.containsKey("callbackParams")) {
