@@ -88,14 +88,24 @@ public final class LinkResolution {
                                           final LinkResolutionCallback linkResolutionCallback)
     {
         URL resolvedURL = null;
+        HttpURLConnection ucon = null;
         try {
-            final HttpURLConnection ucon =
-                    (HttpURLConnection) urlToRequest.openConnection();
+            ucon = (HttpURLConnection) convertToHttps(urlToRequest).openConnection();
             ucon.setInstanceFollowRedirects(false);
-            resolvedURL = new URL(ucon.getHeaderField("Location"));
+
+            ucon.connect();
+
+            final String headerLocationField = ucon.getHeaderField("Location");
+            if (headerLocationField != null) {
+                resolvedURL = new URL(headerLocationField);
+            }
         }
-        catch (final Throwable ignored) { }
+        catch (final Throwable ignored) {}
         finally {
+            if (ucon != null) {
+                ucon.disconnect();
+            }
+
             resolveLink(resolvedURL,
                     urlToRequest,
                     recursionNumber + 1,
@@ -115,5 +125,32 @@ public final class LinkResolution {
         }
 
         return false;
+    }
+
+    private static URL convertToHttps(final URL urlToConvert) {
+        if (urlToConvert == null) {
+            return urlToConvert;
+        }
+
+        final String stringUrlToConvert = urlToConvert.toExternalForm();
+
+        if (stringUrlToConvert == null) {
+            return urlToConvert;
+        }
+
+        if (stringUrlToConvert.startsWith("https:")) {
+            return urlToConvert;
+        }
+
+        if (! stringUrlToConvert.startsWith("http:")) {
+            return urlToConvert;
+        }
+
+        URL convertedUrl = urlToConvert;
+        try {
+            convertedUrl = new URL("https:" + stringUrlToConvert.substring(5));
+        } catch (final MalformedURLException ignored) { }
+
+        return convertedUrl;
     }
 }
