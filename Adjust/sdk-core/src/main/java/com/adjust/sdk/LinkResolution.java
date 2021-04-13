@@ -138,10 +138,6 @@ public final class LinkResolution {
             return urlToConvert;
         }
 
-        if (stringUrlToConvert.startsWith("https:")) {
-            return urlToConvert;
-        }
-
         if (! stringUrlToConvert.startsWith("http:")) {
             return urlToConvert;
         }
