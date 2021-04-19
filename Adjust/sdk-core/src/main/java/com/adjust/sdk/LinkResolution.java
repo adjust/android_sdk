@@ -99,10 +99,11 @@ public final class LinkResolution {
                                           final int recursionNumber,
                                           final LinkResolutionCallback linkResolutionCallback)
     {
+        final URL httpsUrl = convertToHttps(urlToRequest);
         URL resolvedURL = null;
         HttpURLConnection ucon = null;
         try {
-            ucon = (HttpURLConnection) convertToHttps(urlToRequest).openConnection();
+            ucon = (HttpURLConnection) httpsUrl.openConnection();
             ucon.setInstanceFollowRedirects(false);
 
             ucon.connect();
@@ -119,7 +120,7 @@ public final class LinkResolution {
             }
 
             resolveLink(resolvedURL,
-                    urlToRequest,
+                    httpsUrl,
                     recursionNumber + 1,
                     linkResolutionCallback);
         }
