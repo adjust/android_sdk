@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_TR;
 import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CHINA;
 import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_INDIA;
 import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_EU;
@@ -23,6 +24,10 @@ public class UrlStrategy {
     private static final String BASE_URL_EU = "https://app.eu.adjust.com";
     private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
     private static final String SUBSCRIPTION_URL_EU = "https://subscription.eu.adjust.com";
+
+    private static final String BASE_URL_TR = "https://app.tr.adjust.com";
+    private static final String GDPR_URL_TR = "https://gdpr.tr.adjust.com";
+    private static final String SUBSCRIPTION_URL_TR = "https://subscription.tr.adjust.com";
 
     private final String baseUrlOverwrite;
     private final String gdprUrlOverwrite;
@@ -127,6 +132,8 @@ public class UrlStrategy {
             return Arrays.asList(BASE_URL_CHINA, Constants.BASE_URL);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(BASE_URL_EU);
+        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
+            return Collections.singletonList(BASE_URL_TR);
         } else {
             return Arrays.asList(Constants.BASE_URL, BASE_URL_INDIA, BASE_URL_CHINA);
         }
@@ -139,6 +146,8 @@ public class UrlStrategy {
             return Arrays.asList(GDPR_URL_CHINA, Constants.GDPR_URL);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(GDPR_URL_EU);
+        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
+            return Collections.singletonList(GDPR_URL_TR);
         } else {
             return Arrays.asList(Constants.GDPR_URL, GDPR_URL_INDIA, GDPR_URL_CHINA);
         }
@@ -151,6 +160,8 @@ public class UrlStrategy {
             return Arrays.asList(SUBSCRIPTION_URL_CHINA, Constants.SUBSCRIPTION_URL);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(SUBSCRIPTION_URL_EU);
+        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
+            return Collections.singletonList(SUBSCRIPTION_URL_TR);
         } else {
             return Arrays.asList(Constants.SUBSCRIPTION_URL,
                     SUBSCRIPTION_URL_INDIA,
