@@ -23,10 +23,32 @@ public final class LinkResolution {
 
     private LinkResolution() { }
 
-    public static void resolveLink(final String encodedURL,
+    public static void resolveLink(final String url,
+                                   final String[] resolveUrlSuffixArray,
                                    final LinkResolutionCallback linkResolutionCallback)
     {
         if (linkResolutionCallback == null) {
+            return;
+        }
+
+        if (url == null) {
+            linkResolutionCallback.resolvedLinkCallback(null);
+            return;
+        }
+
+        URL originalURL = null;
+        try {
+            originalURL = new URL(url);
+        } catch (final MalformedURLException ignored) {
+        }
+
+        if (originalURL == null) {
+            linkResolutionCallback.resolvedLinkCallback(null);
+            return;
+        }
+
+        if (! urlMatchesSuffix(originalURL.getHost(), resolveUrlSuffixArray)) {
+            linkResolutionCallback.resolvedLinkCallback(originalURL);
             return;
         }
 
@@ -38,21 +60,11 @@ public final class LinkResolution {
             }
         }
 
+        final URL finalOriginalURL = originalURL;
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                URL originalURL = null;
-                try {
-                    originalURL = new URL(encodedURL);
-                } catch (final MalformedURLException ignored) {
-                }
-
-                if (originalURL == null) {
-                    linkResolutionCallback.resolvedLinkCallback(null);
-                    return;
-                }
-
-                requestAndResolve(originalURL, 0, linkResolutionCallback);
+                requestAndResolve(finalOriginalURL, 0, linkResolutionCallback);
             }
         });
     }
@@ -69,7 +81,7 @@ public final class LinkResolution {
         }
 
         // return found url with expected host
-        if (isExpectedUrl(responseUrl.getHost())) {
+        if (isTerminalUrl(responseUrl.getHost())) {
             linkResolutionCallback.resolvedLinkCallback(responseUrl);
             return;
         }
@@ -113,12 +125,20 @@ public final class LinkResolution {
         }
     }
 
-    private static boolean isExpectedUrl(final String urlHost) {
+    private static boolean isTerminalUrl(final String urlHost) {
+        return urlMatchesSuffix(urlHost, expectedUrlHostSuffixArray);
+    }
+
+    private static boolean urlMatchesSuffix(final String urlHost, final String[] suffixArray) {
         if (urlHost == null) {
             return false;
         }
 
-        for (final String expectedUrlHostSuffix : expectedUrlHostSuffixArray) {
+        if (suffixArray == null) {
+            return false;
+        }
+
+        for (final String expectedUrlHostSuffix : suffixArray) {
             if (urlHost.endsWith(expectedUrlHostSuffix)) {
                 return true;
             }
