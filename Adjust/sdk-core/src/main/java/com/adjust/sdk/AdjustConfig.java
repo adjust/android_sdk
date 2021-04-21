@@ -52,24 +52,9 @@ public class AdjustConfig {
 
     public static final String AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk";
     public static final String AD_REVENUE_MOPUB = "mopub";
-    public static final String AD_REVENUE_ADMOB = "admob";
-    public static final String AD_REVENUE_FB_NATIVE_AD = "facebook_native_ad";
-    public static final String AD_REVENUE_FB_AUDIENCE_NETWORK = "facebook_audience_network";
-    public static final String AD_REVENUE_IRONSOURCE = "ironsource";
-    public static final String AD_REVENUE_FYBER = "fyber";
-    public static final String AD_REVENUE_AERSERV = "aerserv";
-    public static final String AD_REVENUE_APPODEAL = "appodeal";
-    public static final String AD_REVENUE_ADINCUBE = "adincube";
-    public static final String AD_REVENUE_FUSE_POWERED = "fusepowered";
-    public static final String AD_REVENUE_ADDAPTR = "addapptr";
-    public static final String AD_REVENUE_MILLENNIAL_MEDITATION = "millennial_mediation";
-    public static final String AD_REVENUE_FLURRY = "flurry";
-    public static final String AD_REVENUE_ADMOST = "admost";
-    public static final String AD_REVENUE_DELTADNA = "deltadna";
-    public static final String AD_REVENUE_UPSIGHT = "upsight";
-    public static final String AD_REVENUE_UNITYADS = "unityads";
-    public static final String AD_REVENUE_ADTOAPP = "adtoapp";
-    public static final String AD_REVENUE_TAPDAQ = "tapdaq";
+    public static final String AD_REVENUE_ADMOB = "admob_sdk";
+    public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
+    public static final String AD_REVENUE_FACEBOOK = "facebook_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
