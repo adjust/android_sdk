@@ -54,7 +54,6 @@ public class AdjustConfig {
     public static final String AD_REVENUE_MOPUB = "mopub";
     public static final String AD_REVENUE_ADMOB = "admob_sdk";
     public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
-    public static final String AD_REVENUE_FACEBOOK = "facebook_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
