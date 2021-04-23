@@ -1418,7 +1418,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
-**Note**: This feature is available only in the native SDK v4.28.0 and above.
+**Note**: This ad revenue tracking API is available only in the native SDK v4.28.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
 
