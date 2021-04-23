@@ -1418,6 +1418,8 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
+#### Using JSON payload
+
 **Note**: This feature is available only in the native SDK v4.18.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
@@ -1446,6 +1448,36 @@ Parameters of the method which you need to pass are:
 Currently we support the below `source` parameter values:
 
 - `AD_REVENUE_MOPUB` - representing MoPub mediation platform (for more information, check [integration guide][sdk2sdk-mopub])
+
+#### Using `AdjustAdRevenue` parameter
+
+**Note**: This feature is available only in the native SDK v4.28.0 and above.
+
+You can track ad revenue information with Adjust SDK by invoking the following method:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+Adjust.trackAdRevenue(adjustAdRevenue);
+```
+</td>
+</tr>
+</table>
+
+Parameters of the method which you need to pass is:
+
+- `adjustAdRevenue` - `AdjustAdRevenue` object can be constructed passing the source of ad revenue info.  It also allows setting of other ad revenue related info.
+
+Currently we support the below `source` parameter values:
+
+- `AD_REVENUE_APPLOVIN_MAX` - representing AppLovin MAX platform.
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
