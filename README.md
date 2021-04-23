@@ -1418,39 +1418,6 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
-#### Using JSON payload
-
-**Note**: This feature is available only in the native SDK v4.18.0 and above.
-
-You can track ad revenue information with Adjust SDK by invoking the following method:
-
-<table>
-<tr>
-<td>
-<b>Native App SDK</b>
-</td>
-</tr>
-<tr>
-<td>
-
-```java
-Adjust.trackAdRevenue(source, payload);
-```
-</td>
-</tr>
-</table>
-
-Parameters of the method which you need to pass are:
-
-- `source` - `String` object which indicates the source of ad revenue info.
-- `payload` - `JSONObject` object which contains ad revenue JSON.
-
-Currently we support the below `source` parameter values:
-
-- `AD_REVENUE_MOPUB` - representing MoPub mediation platform (for more information, check [integration guide][sdk2sdk-mopub])
-
-#### Using `AdjustAdRevenue` parameter
-
 **Note**: This feature is available only in the native SDK v4.28.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
@@ -1471,13 +1438,16 @@ Adjust.trackAdRevenue(adjustAdRevenue);
 </tr>
 </table>
 
-Parameters of the method which you need to pass is:
-
-- `adjustAdRevenue` - `AdjustAdRevenue` object can be constructed passing the source of ad revenue info.  It also allows setting of other ad revenue related info.
+where `adjustAdRevenue` represents instance of `AdjustAdRevenue` class which is used to pass ad revenue source as well as other ad revenue related info.
 
 Currently we support the below `source` parameter values:
 
-- `AD_REVENUE_APPLOVIN_MAX` - representing AppLovin MAX platform.
+- `AdjustConfig.AD_REVENUE_APPLOVIN_MAX` - representing AppLovin MAX platform.
+- `AdjustConfig.AD_REVENUE_MOPUB` - representing MoPub platform.
+- `AdjustConfig.AD_REVENUE_ADMOB` - representing AdMob platform.
+- `AdjustConfig.AD_REVENUE_IRONSOURCE` - representing IronSource platform.
+
+**Note**: Additional documentation which explains detailed integration with every of the supported sources will be provided outside of this README. Also, in order to use this feature, additional setup is needed for your app in Adjust dashboard, so make sure to get in touch with our support team to make sure that everything is set up correctly before you start to use this feature.
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
@@ -2210,7 +2180,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyTR); // for Turkey data re
 </tr>
 </table>
 
-**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com.
+**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
 
 ## Testing and troubleshooting
 
