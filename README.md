@@ -77,7 +77,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
-   * [Data residency](#af-data-residency)
+   * [[beta] Data residency](#af-data-residency)
 
 ### Testing and troubleshooting
 
@@ -2143,7 +2143,7 @@ Adjust.trackMeasurementConsent(true);
 
 Upon receiving this information, Adjust enables or disables consent measurement. The Adjust SDK will continue to work as expected.
 
-### <a id="af-data-residency"></a>Data residency
+### <a id="af-data-residency"></a>[beta] Data residency
 
 In order to enable data residency feature, make sure to make a call to `setUrlStrategy` method of the `AdjustConfig` instance with one of the following constants:
 
@@ -2158,6 +2158,7 @@ In order to enable data residency feature, make sure to make a call to `setUrlSt
 
 ```java
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data residency region
 ```
 </td>
 </tr>
@@ -2171,10 +2172,13 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data resi
 
 ```js
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyTR); // for Turkey data residency region
 ```
 </td>
 </tr>
 </table>
+
+**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com.
 
 ## Testing and troubleshooting
 
