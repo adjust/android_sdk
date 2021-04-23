@@ -102,14 +102,14 @@
 如果您使用的是 Maven，请添加下行到您的 `build.gradle` 文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.27.0'
+implementation 'com.adjust.sdk:adjust-android:4.28.0'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 如果您想在应用 web view 中使用 Adjust SDK，请也添加下列附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.27.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.0'
 ```
 
 **请注意:** web view 扩展支持的最低安卓 API 级别为 17 (Jelly Bean)。
