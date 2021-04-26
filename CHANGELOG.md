@@ -1,4 +1,4 @@
-### Version 4.28.0 (23rd April 2021)
+### Version 4.28.0 (26th April 2021)
 #### Added
 - [beta] Added data residency support for Turkey region. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_TR` parameter.
 - Added `trackAdRevenue(AdjustAdRevnue)` method to `Adjust` interface to allow tracking of ad revenue by passing `AdjustAdRevnue` as parameter. 
