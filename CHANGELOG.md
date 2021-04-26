@@ -1,6 +1,17 @@
+### Version 4.28.0 (26th April 2021)
+#### Added
+- [beta] Added data residency support for Turkey region. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_TR` parameter.
+- Added `trackAdRevenue(AdjustAdRevnue)` method to `Adjust` interface to allow tracking of ad revenue by passing `AdjustAdRevnue` as parameter. 
+- Added support for `AppLovin MAX` ad revenue tracking.
+
+#### Changed
+- Removed unused ad revenue constants from `AdjustConfig`.
+
+---
+
 ### Version 4.27.0 (17th March 2021)
 #### Added
-- Added data residency feature. Support for EU data residency region is added. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_EU` parameter.
+- [beta] Added data residency feature. Support for EU data residency region is added. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_EU` parameter.
 - Added preinstall tracking with usage of system installer receiver.
 - Added support for MSA SDK v1.0.25 to OAID plugin.
 

@@ -453,6 +453,19 @@ public class AdjustInstance {
     }
 
     /**
+     * Track ad revenue from a source provider
+     *
+     * @param adjustAdRevenue Adjust ad revenue information like source, revenue, currency etc
+     */
+    public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
+        if (!checkActivityHandler()) {
+            return;
+        }
+
+        activityHandler.trackAdRevenue(adjustAdRevenue);
+    }
+
+    /**
      * Track subscription from Google Play.
      *
      * @param subscription AdjustPlayStoreSubscription object to be tracked

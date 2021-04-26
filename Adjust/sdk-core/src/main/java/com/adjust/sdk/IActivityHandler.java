@@ -73,6 +73,8 @@ public interface IActivityHandler {
 
     void trackAdRevenue(String source, JSONObject adRevenueJson);
 
+    void trackAdRevenue(AdjustAdRevenue adjustAdRevenue);
+
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
 
     void gotOptOutResponse();

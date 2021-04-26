@@ -40,6 +40,7 @@ public class AdjustConfig {
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
     String urlStrategy;
+    String preinstallFilePath;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -47,26 +48,12 @@ public class AdjustConfig {
     public static final String URL_STRATEGY_INDIA = "url_strategy_india";
     public static final String URL_STRATEGY_CHINA = "url_strategy_china";
     public static final String DATA_RESIDENCY_EU = "data_residency_eu";
+    public static final String DATA_RESIDENCY_TR = "data_residency_tr";
 
+    public static final String AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk";
     public static final String AD_REVENUE_MOPUB = "mopub";
-    public static final String AD_REVENUE_ADMOB = "admob";
-    public static final String AD_REVENUE_FB_NATIVE_AD = "facebook_native_ad";
-    public static final String AD_REVENUE_FB_AUDIENCE_NETWORK = "facebook_audience_network";
-    public static final String AD_REVENUE_IRONSOURCE = "ironsource";
-    public static final String AD_REVENUE_FYBER = "fyber";
-    public static final String AD_REVENUE_AERSERV = "aerserv";
-    public static final String AD_REVENUE_APPODEAL = "appodeal";
-    public static final String AD_REVENUE_ADINCUBE = "adincube";
-    public static final String AD_REVENUE_FUSE_POWERED = "fusepowered";
-    public static final String AD_REVENUE_ADDAPTR = "addapptr";
-    public static final String AD_REVENUE_MILLENNIAL_MEDITATION = "millennial_mediation";
-    public static final String AD_REVENUE_FLURRY = "flurry";
-    public static final String AD_REVENUE_ADMOST = "admost";
-    public static final String AD_REVENUE_DELTADNA = "deltadna";
-    public static final String AD_REVENUE_UPSIGHT = "upsight";
-    public static final String AD_REVENUE_UNITYADS = "unityads";
-    public static final String AD_REVENUE_ADTOAPP = "adtoapp";
-    public static final String AD_REVENUE_TAPDAQ = "tapdaq";
+    public static final String AD_REVENUE_ADMOB = "admob_sdk";
+    public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
@@ -183,6 +170,10 @@ public class AdjustConfig {
 
     public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
         this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+    }
+
+    public void setPreinstallFilePath(String preinstallFilePath) {
+        this.preinstallFilePath = preinstallFilePath;
     }
 
     public void setNeedsCost(boolean needsCost) {

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
@@ -81,6 +82,7 @@ public class AdjustCommandExecutor {
             case "thirdPartySharing" : thirdPartySharing(); break;
             case "measurementConsent" : measurementConsent(); break;
             case "trackAdRevenue": trackAdRevenue(); break;
+            case "trackAdRevenueV2" : trackAdRevenueV2(); break;
             case "trackSubscription": trackSubscription(); break;
             //case "testBegin": testBegin(); break;
             // case "testEnd": testEnd(); break;
@@ -681,6 +683,58 @@ public class AdjustCommandExecutor {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void trackAdRevenueV2() {
+        String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
+        AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(adRevenueSource);
+
+        if (command.parameters.containsKey("revenue")) {
+            List<String> revenueParams = command.parameters.get("revenue");
+            String currency = revenueParams.get(0);
+            Double revenue = Double.valueOf(revenueParams.get(1));
+            adjustAdRevenue.setRevenue(revenue, currency);
+        }
+
+        if (command.parameters.containsKey("adImpressionsCount")) {
+            Integer adImpressionsCount =
+                    Integer.valueOf(command.getFirstParameterValue("adImpressionsCount"));
+            adjustAdRevenue.setAdImpressionsCount(adImpressionsCount);
+        }
+
+        if (command.parameters.containsKey("adRevenueNetwork")) {
+            String adRevenueNetwork = command.getFirstParameterValue("adRevenueNetwork");
+            adjustAdRevenue.setAdRevenueNetwork(adRevenueNetwork);
+        }
+
+        if (command.parameters.containsKey("adRevenueUnit")) {
+            String adRevenueUnit = command.getFirstParameterValue("adRevenueUnit");
+            adjustAdRevenue.setAdRevenueUnit(adRevenueUnit);
+        }
+
+        if (command.parameters.containsKey("adRevenuePlacement")) {
+            String adRevenuePlacement = command.getFirstParameterValue("adRevenuePlacement");
+            adjustAdRevenue.setAdRevenuePlacement(adRevenuePlacement);
+        }
+
+        if (command.parameters.containsKey("callbackParams")) {
+            List<String> callbackParams = command.parameters.get("callbackParams");
+            for (int i = 0; i < callbackParams.size(); i = i + 2) {
+                String key = callbackParams.get(i);
+                String value = callbackParams.get(i + 1);
+                adjustAdRevenue.addCallbackParameter(key, value);
+            }
+        }
+        if (command.parameters.containsKey("partnerParams")) {
+            List<String> partnerParams = command.parameters.get("partnerParams");
+            for (int i = 0; i < partnerParams.size(); i = i + 2) {
+                String key = partnerParams.get(i);
+                String value = partnerParams.get(i + 1);
+                adjustAdRevenue.addPartnerParameter(key, value);
+            }
+        }
+
+        Adjust.trackAdRevenue(adjustAdRevenue);
     }
 
     private void trackSubscription() {

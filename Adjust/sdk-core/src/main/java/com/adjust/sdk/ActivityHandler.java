@@ -673,6 +673,16 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
+    public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                trackAdRevenueI(adjustAdRevenue);
+            }
+        });
+    }
+
+    @Override
     public void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
         executor.submit(new Runnable() {
             @Override
@@ -1056,6 +1066,7 @@ public class ActivityHandler implements IActivityHandler {
         if (PreinstallUtil.hasNotBeenRead(Constants.FILE_SYSTEM, readStatus)) {
             String payloadFileSystem = PreinstallUtil.getPayloadFromFileSystem(
                     deviceInfo.packageName,
+                    adjustConfig.preinstallFilePath,
                     logger);
 
             if (payloadFileSystem != null && !payloadFileSystem.isEmpty()) {
@@ -2291,6 +2302,21 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.sendFirstPackage();
     }
 
+    private void trackAdRevenueI(AdjustAdRevenue adjustAdRevenue) {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (!checkAdjustAdRevenue(adjustAdRevenue)) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        long now = System.currentTimeMillis();
+
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue, internalState.isInDelayedStart());
+        packageHandler.addPackage(adRevenuePackage);
+        packageHandler.sendFirstPackage();
+    }
+
     private void trackSubscriptionI(final AdjustPlayStoreSubscription subscription) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
@@ -2448,6 +2474,20 @@ public class ActivityHandler implements IActivityHandler {
         activityState.addOrderId(orderId);
         logger.verbose("Added order ID '%s'", orderId);
         // activity state will get written by caller
+        return true;
+    }
+
+    private boolean checkAdjustAdRevenue(AdjustAdRevenue adjustAdRevenue) {
+        if (adjustAdRevenue == null) {
+            logger.error("Ad revenue object missing");
+            return false;
+        }
+
+        if (!adjustAdRevenue.isValid()) {
+            logger.error("Ad revenue object not initialized correctly");
+            return false;
+        }
+
         return true;
     }
 

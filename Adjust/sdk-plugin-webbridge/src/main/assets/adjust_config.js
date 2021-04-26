@@ -52,6 +52,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.fbPixelMapping = [];
     this.urlStrategy = null;
     this.preinstallTrackingEnabled = null;
+    this.preinstallFilePath = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -60,6 +61,7 @@ AdjustConfig.EnvironmentProduction = 'production';
 AdjustConfig.UrlStrategyIndia = "url_strategy_india";
 AdjustConfig.UrlStrategyChina = "url_strategy_china";
 AdjustConfig.DataResidencyEU = "data_residency_eu";
+AdjustConfig.DataResidencyTR = "data_residency_tr";
 
 AdjustConfig.LogLevelVerbose = 'VERBOSE',
 AdjustConfig.LogLevelDebug = 'DEBUG',
@@ -240,4 +242,8 @@ AdjustConfig.prototype.setUrlStrategy = function(urlStrategy) {
 
 AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackingEnabled) {
     this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+};
+
+AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {
+    this.preinstallFilePath = preinstallFilePath;
 };

@@ -77,7 +77,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
-   * [Data residency](#af-data-residency)
+   * [[beta] Data residency](#af-data-residency)
 
 ### Testing and troubleshooting
 
@@ -103,14 +103,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.27.0'
+implementation 'com.adjust.sdk:adjust-android:4.28.0'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.27.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.0'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -1418,7 +1418,7 @@ Adjust.trackPlayStoreSubscription(subscription);
 
 ### <a id="af-ad-revenue"></a>Ad revenue tracking
 
-**Note**: This feature is available only in the native SDK v4.18.0 and above.
+**Note**: This ad revenue tracking API is available only in the native SDK v4.28.0 and above.
 
 You can track ad revenue information with Adjust SDK by invoking the following method:
 
@@ -1432,20 +1432,22 @@ You can track ad revenue information with Adjust SDK by invoking the following m
 <td>
 
 ```java
-Adjust.trackAdRevenue(source, payload);
+Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 </td>
 </tr>
 </table>
 
-Parameters of the method which you need to pass are:
-
-- `source` - `String` object which indicates the source of ad revenue info.
-- `payload` - `JSONObject` object which contains ad revenue JSON.
+where `adjustAdRevenue` represents instance of `AdjustAdRevenue` class which is used to pass ad revenue source as well as other ad revenue related info.
 
 Currently we support the below `source` parameter values:
 
-- `AD_REVENUE_MOPUB` - representing MoPub mediation platform (for more information, check [integration guide][sdk2sdk-mopub])
+- `AdjustConfig.AD_REVENUE_APPLOVIN_MAX` - representing AppLovin MAX platform.
+- `AdjustConfig.AD_REVENUE_MOPUB` - representing MoPub platform.
+- `AdjustConfig.AD_REVENUE_ADMOB` - representing AdMob platform.
+- `AdjustConfig.AD_REVENUE_IRONSOURCE` - representing IronSource platform.
+
+**Note**: Additional documentation which explains detailed integration with every of the supported sources will be provided outside of this README. Also, in order to use this feature, additional setup is needed for your app in Adjust dashboard, so make sure to get in touch with our support team to make sure that everything is set up correctly before you start to use this feature.
 
 ### <a id="af-session-event-callbacks"></a>Session and event callbacks
 
@@ -2143,7 +2145,7 @@ Adjust.trackMeasurementConsent(true);
 
 Upon receiving this information, Adjust enables or disables consent measurement. The Adjust SDK will continue to work as expected.
 
-### <a id="af-data-residency"></a>Data residency
+### <a id="af-data-residency"></a>[beta] Data residency
 
 In order to enable data residency feature, make sure to make a call to `setUrlStrategy` method of the `AdjustConfig` instance with one of the following constants:
 
@@ -2158,6 +2160,7 @@ In order to enable data residency feature, make sure to make a call to `setUrlSt
 
 ```java
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data residency region
 ```
 </td>
 </tr>
@@ -2171,10 +2174,13 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data resi
 
 ```js
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyTR); // for Turkey data residency region
 ```
 </td>
 </tr>
 </table>
+
+**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
 
 ## Testing and troubleshooting
 
