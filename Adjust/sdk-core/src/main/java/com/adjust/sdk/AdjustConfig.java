@@ -49,6 +49,7 @@ public class AdjustConfig {
     public static final String URL_STRATEGY_CHINA = "url_strategy_china";
     public static final String DATA_RESIDENCY_EU = "data_residency_eu";
     public static final String DATA_RESIDENCY_TR = "data_residency_tr";
+    public static final String DATA_RESIDENCY_US = "data_residency_us";
 
     public static final String AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk";
     public static final String AD_REVENUE_MOPUB = "mopub";
