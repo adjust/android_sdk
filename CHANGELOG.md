@@ -1,3 +1,12 @@
+### Version 4.28.1 (12th May 2021)
+#### Added
+- [beta] Added data residency support for US region. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_US` parameter.
+
+#### Fixed
+- Removed 5 decimal places formatting for ad revenue value.
+
+---
+
 ### Version 4.28.0 (26th April 2021)
 #### Added
 - [beta] Added data residency support for Turkey region. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_TR` parameter.
