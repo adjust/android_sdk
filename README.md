@@ -2161,6 +2161,7 @@ In order to enable data residency feature, make sure to make a call to `setUrlSt
 ```java
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data residency region
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_US); // for US data residency region
 ```
 </td>
 </tr>
@@ -2175,6 +2176,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data 
 ```js
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyTR); // for Turkey data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data residency region
 ```
 </td>
 </tr>
