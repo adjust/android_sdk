@@ -1084,7 +1084,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", adjustAdRevenue.source);
-        PackageBuilder.addDouble(parameters, "revenue", adjustAdRevenue.revenue);
+        PackageBuilder.addDoubleWithoutRounding(parameters, "revenue", adjustAdRevenue.revenue);
         PackageBuilder.addString(parameters, "currency", adjustAdRevenue.currency);
         PackageBuilder.addInteger(parameters, "ad_impressions_count", adjustAdRevenue.adImpressionsCount);
         PackageBuilder.addString(parameters, "ad_revenue_network", adjustAdRevenue.adRevenueNetwork);
@@ -1287,6 +1287,14 @@ public class PackageBuilder {
             return;
         }
         String doubleString = Util.formatString("%.5f", value);
+        PackageBuilder.addString(parameters, key, doubleString);
+    }
+
+    private static void addDoubleWithoutRounding(Map<String, String> parameters, String key, Double value) {
+        if (value == null) {
+            return;
+        }
+        String doubleString = Double.toString(value);
         PackageBuilder.addString(parameters, key, doubleString);
     }
 

@@ -14,7 +14,7 @@ public final class LinkResolution {
     // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
     private static volatile ExecutorService executor;
 
-    private static final int maxRecursions = 3;
+    private static final int maxRecursions = 10;
     private static final String[] expectedUrlHostSuffixArray = {
             "adjust.com",
             "adj.st",
