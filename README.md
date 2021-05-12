@@ -35,6 +35,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Standard deep linking scenario](#dl-standard)
    * [Deferred deep linking scenario](#dl-deferred)
    * [Reattribution via deep links](#dl-reattribution)
+   * [Link resolution](#link-resolution)
 
 ### Event tracking
 
@@ -728,6 +729,24 @@ protected void onNewIntent(Intent intent) {
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
 ```
+
+### <a id="link-resolution"></a>Link resolution
+
+If you are serving deep links from an Email Service Provider (ESP) and need to track clicks through a custom tracking link, you can use the `resolveLink` method of the  `LinkResolution` class to resolve the link. This ensures that you record the interaction with your email tracking campaigns when a deep link is opened in your application.
+
+The `resolveLink` method takes the following parameters:
+
+- `url` - the deep link that opened the application
+- `resolveUrlSuffixArray` - the custom domains of the configured campaigns that need to be resolved
+- `linkResolutionCallback` - the callback that will contain the final URL
+
+If the link received does not belong to any of the domains specified in the `resolveUrlSuffixArray`, the callback will forward the deep link URL as is. If the link does contain one of the domains specified, the SDK will attempt to resolve the link and return the resulting deep link to the `callback` parameter. The returned deep link can also be reattributed in the Adjust SDK using the `Adjust.appWillOpenUrl` method.
+
+> **Note**: The SDK will automatically follow up to ten redirects when attempting to resolve the URL. It will return the latest URL it has followed as the `callback` URL, meaning that if there are more than ten redirects to follow the **tenth redirect URL** will be returned.
+
+**Example**
+
+
 
 ## Event tracking
 
