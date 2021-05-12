@@ -8,8 +8,8 @@ import java.net.URL;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public final class LinkResolution {
-    public interface LinkResolutionCallback {
+public final class AdjustLinkResolution {
+    public interface AdjustLinkResolutionCallback {
         void resolvedLinkCallback(Uri resolvedLink);
     }
 
@@ -23,18 +23,18 @@ public final class LinkResolution {
             "go.link"
     };
 
-    private LinkResolution() { }
+    private AdjustLinkResolution() { }
 
     public static void resolveLink(final String url,
                                    final String[] resolveUrlSuffixArray,
-                                   final LinkResolutionCallback linkResolutionCallback)
+                                   final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
     {
-        if (linkResolutionCallback == null) {
+        if (adjustLinkResolutionCallback == null) {
             return;
         }
 
         if (url == null) {
-            linkResolutionCallback.resolvedLinkCallback(null);
+            adjustLinkResolutionCallback.resolvedLinkCallback(null);
             return;
         }
 
@@ -45,12 +45,12 @@ public final class LinkResolution {
         }
 
         if (originalURL == null) {
-            linkResolutionCallback.resolvedLinkCallback(null);
+            adjustLinkResolutionCallback.resolvedLinkCallback(null);
             return;
         }
 
         if (! urlMatchesSuffix(originalURL.getHost(), resolveUrlSuffixArray)) {
-            linkResolutionCallback.resolvedLinkCallback(Uri.parse(originalURL.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(originalURL.toString()));
             return;
         }
 
@@ -66,7 +66,7 @@ public final class LinkResolution {
         executor.execute(new Runnable() {
             @Override
             public void run() {
-                requestAndResolve(finalOriginalURL, 0, linkResolutionCallback);
+                requestAndResolve(finalOriginalURL, 0, adjustLinkResolutionCallback);
             }
         });
     }
@@ -74,32 +74,32 @@ public final class LinkResolution {
             final URL responseUrl,
             final URL previousUrl,
             final int recursionNumber,
-            final LinkResolutionCallback linkResolutionCallback)
+            final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
     {
         // return (possible null) previous url when the current one does not exist
         if (responseUrl == null) {
-            linkResolutionCallback.resolvedLinkCallback(Uri.parse(previousUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(previousUrl.toString()));
             return;
         }
 
         // return found url with expected host
         if (isTerminalUrl(responseUrl.getHost())) {
-            linkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
             return;
         }
 
         // return previous (non-null) url when it reached the max number of recursive tries
         if (recursionNumber > maxRecursions) {
-            linkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
             return;
         }
 
-        requestAndResolve(responseUrl, recursionNumber, linkResolutionCallback);
+        requestAndResolve(responseUrl, recursionNumber, adjustLinkResolutionCallback);
     }
 
     private static void requestAndResolve(final URL urlToRequest,
                                           final int recursionNumber,
-                                          final LinkResolutionCallback linkResolutionCallback)
+                                          final AdjustLinkResolutionCallback adjustLinkResolutionCallback)
     {
         final URL httpsUrl = convertToHttps(urlToRequest);
         URL resolvedURL = null;
@@ -124,7 +124,7 @@ public final class LinkResolution {
             resolveLink(resolvedURL,
                     httpsUrl,
                     recursionNumber + 1,
-                    linkResolutionCallback);
+                    adjustLinkResolutionCallback);
         }
     }
 
