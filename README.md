@@ -732,13 +732,13 @@ Adjust.appWillOpenUrl(deeplinkUrl);
 
 ### <a id="link-resolution"></a>Link resolution
 
-If you are serving deep links from an Email Service Provider (ESP) and need to track clicks through a custom tracking link, you can use the `resolveLink` method of the  `LinkResolution` class to resolve the link. This ensures that you record the interaction with your email tracking campaigns when a deep link is opened in your application.
+If you are serving deep links from an Email Service Provider (ESP) and need to track clicks through a custom tracking link, you can use the `resolveLink` method of the  `AdjustLinkResolution` class to resolve the link. This ensures that you record the interaction with your email tracking campaigns when a deep link is opened in your application.
 
 The `resolveLink` method takes the following parameters:
 
 - `url` - the deep link that opened the application
 - `resolveUrlSuffixArray` - the custom domains of the configured campaigns that need to be resolved
-- `linkResolutionCallback` - the callback that will contain the final URL
+- `adjustLinkResolutionCallback` - the callback that will contain the final URL
 
 If the link received does not belong to any of the domains specified in the `resolveUrlSuffixArray`, the callback will forward the deep link URL as is. If the link does contain one of the domains specified, the SDK will attempt to resolve the link and return the resulting deep link to the `callback` parameter. The returned deep link can also be reattributed in the Adjust SDK using the `Adjust.appWillOpenUrl` method.
 
@@ -746,7 +746,16 @@ If the link received does not belong to any of the domains specified in the `res
 
 **Example**
 
-
+```java
+AdjustLinkResolution.resolveLink(url, 
+                                 new String[]{"example.com"},
+                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+    @Override
+    public void resolvedLinkCallback(Uri resolvedLink) {
+        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+    }
+});
+```
 
 ## Event tracking
 
