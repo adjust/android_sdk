@@ -1,5 +1,7 @@
 package com.adjust.sdk;
 
+import android.net.Uri;
+
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -8,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public final class LinkResolution {
     public interface LinkResolutionCallback {
-        void resolvedLinkCallback(URL resolvedLink);
+        void resolvedLinkCallback(Uri resolvedLink);
     }
 
     // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
@@ -48,7 +50,7 @@ public final class LinkResolution {
         }
 
         if (! urlMatchesSuffix(originalURL.getHost(), resolveUrlSuffixArray)) {
-            linkResolutionCallback.resolvedLinkCallback(originalURL);
+            linkResolutionCallback.resolvedLinkCallback(Uri.parse(originalURL.toString()));
             return;
         }
 
@@ -76,19 +78,19 @@ public final class LinkResolution {
     {
         // return (possible null) previous url when the current one does not exist
         if (responseUrl == null) {
-            linkResolutionCallback.resolvedLinkCallback(previousUrl);
+            linkResolutionCallback.resolvedLinkCallback(Uri.parse(previousUrl.toString()));
             return;
         }
 
         // return found url with expected host
         if (isTerminalUrl(responseUrl.getHost())) {
-            linkResolutionCallback.resolvedLinkCallback(responseUrl);
+            linkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
             return;
         }
 
         // return previous (non-null) url when it reached the max number of recursive tries
         if (recursionNumber > maxRecursions) {
-            linkResolutionCallback.resolvedLinkCallback(responseUrl);
+            linkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
             return;
         }
 
