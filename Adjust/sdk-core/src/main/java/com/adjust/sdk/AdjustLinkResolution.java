@@ -50,7 +50,8 @@ public final class AdjustLinkResolution {
         }
 
         if (! urlMatchesSuffix(originalURL.getHost(), resolveUrlSuffixArray)) {
-            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(originalURL.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(
+                    AdjustLinkResolution.convertToUri(originalURL));
             return;
         }
 
@@ -78,19 +79,22 @@ public final class AdjustLinkResolution {
     {
         // return (possible null) previous url when the current one does not exist
         if (responseUrl == null) {
-            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(previousUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(
+                    AdjustLinkResolution.convertToUri(previousUrl));
             return;
         }
 
         // return found url with expected host
         if (isTerminalUrl(responseUrl.getHost())) {
-            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(
+                    AdjustLinkResolution.convertToUri(responseUrl));
             return;
         }
 
         // return previous (non-null) url when it reached the max number of recursive tries
         if (recursionNumber > maxRecursions) {
-            adjustLinkResolutionCallback.resolvedLinkCallback(Uri.parse(responseUrl.toString()));
+            adjustLinkResolutionCallback.resolvedLinkCallback(
+                    AdjustLinkResolution.convertToUri(responseUrl));
             return;
         }
 
@@ -171,5 +175,13 @@ public final class AdjustLinkResolution {
         } catch (final MalformedURLException ignored) { }
 
         return convertedUrl;
+    }
+
+    private static Uri convertToUri(URL url) {
+        if (url == null) {
+            return null;
+        }
+
+        return Uri.parse(url.toString());
     }
 }
