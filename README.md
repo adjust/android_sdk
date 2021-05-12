@@ -35,6 +35,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Standard deep linking scenario](#dl-standard)
    * [Deferred deep linking scenario](#dl-deferred)
    * [Reattribution via deep links](#dl-reattribution)
+   * [Link resolution](#link-resolution)
 
 ### Event tracking
 
@@ -103,14 +104,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.0'
+implementation 'com.adjust.sdk:adjust-android:4.28.1'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.1'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -727,6 +728,33 @@ protected void onNewIntent(Intent intent) {
 
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
+```
+
+### <a id="link-resolution"></a>Link resolution
+
+If you are serving deep links from an Email Service Provider (ESP) and need to track clicks through a custom tracking link, you can use the `resolveLink` method of the  `AdjustLinkResolution` class to resolve the link. This ensures that you record the interaction with your email tracking campaigns when a deep link is opened in your application.
+
+The `resolveLink` method takes the following parameters:
+
+- `url` - the deep link that opened the application
+- `resolveUrlSuffixArray` - the custom domains of the configured campaigns that need to be resolved
+- `adjustLinkResolutionCallback` - the callback that will contain the final URL
+
+If the link received does not belong to any of the domains specified in the `resolveUrlSuffixArray`, the callback will forward the deep link URL as is. If the link does contain one of the domains specified, the SDK will attempt to resolve the link and return the resulting deep link to the `callback` parameter. The returned deep link can also be reattributed in the Adjust SDK using the `Adjust.appWillOpenUrl` method.
+
+> **Note**: The SDK will automatically follow up to ten redirects when attempting to resolve the URL. It will return the latest URL it has followed as the `callback` URL, meaning that if there are more than ten redirects to follow the **tenth redirect URL** will be returned.
+
+**Example**
+
+```java
+AdjustLinkResolution.resolveLink(url, 
+                                 new String[]{"example.com"},
+                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+    @Override
+    public void resolvedLinkCallback(Uri resolvedLink) {
+        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+    }
+});
 ```
 
 ## Event tracking
@@ -2161,6 +2189,7 @@ In order to enable data residency feature, make sure to make a call to `setUrlSt
 ```java
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_EU); // for EU data residency region
 adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_US); // for US data residency region
 ```
 </td>
 </tr>
@@ -2175,6 +2204,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DATA_RESIDENCY_TR); // for Turkey data 
 ```js
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyEU); // for EU data residency region
 adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyTR); // for Turkey data residency region
+adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data residency region
 ```
 </td>
 </tr>

@@ -5,15 +5,15 @@ OAID is an advertising ID that the MSA (Mobile Security Alliance) announced all 
 The OAID plugin enables the Adjust Android SDK to read a device’s OAID value *in addition* to the other device IDs it searches for by default. OAID is readable on all devices using the MSA SDK or HMS (Huawei Mobile Service) on Huawei devices. 
 Before getting started, make sure you have read the official [Android SDK README][readme] and successfully integrated the Adjust SDK into your app.
 
-To enable the Adjust SDK to collect and track OAID, follow these steps. To only use the plugin to read the OAID of Huawei devices, you can skip the step [Add the MSA SDK to your app](add-msa-sdk).
+To enable the Adjust SDK to collect and track OAID, follow these steps. To only use the plugin to read the OAID of Huawei devices, you can skip the step [Add the MSA SDK to your app](#add-msa-sdk).
 
 ### Add the OAID plugin to your app
 
 If you are using Maven, add the following OAID plugin dependency to your `build.gradle` file next to the existing Adjust SDK dependency:
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.28.0'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.28.0'
+implementation 'com.adjust.sdk:adjust-android:4.28.1'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.28.1'
 ```
 
 You can also add the Adjust OAID plugin as JAR file, which you can download from our [releases page][releases].
