@@ -235,8 +235,6 @@ public class SharedPreferencesManager {
 
     /**
      * Remove saved preinstall referrer string from shared preferences.
-     *
-     * @return referrer Preinstall referrer string
      */
     public synchronized void removePreinstallReferrer() {
         remove(PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER);
