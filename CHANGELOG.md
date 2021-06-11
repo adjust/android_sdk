@@ -1,6 +1,6 @@
-### Version 4.28.2 (xx June 2021)
-#### Fixed
-- Decoding deeplink url while parsing its parameters.
+### Version 4.28.2 (11th June 2021)
+#### Changed
+- Added deep link URL decoding before parsing its parameters.
 
 ---
 
