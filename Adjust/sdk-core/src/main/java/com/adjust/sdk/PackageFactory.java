@@ -87,12 +87,27 @@ public class PackageFactory {
             return null;
         }
 
-        AdjustFactory.getLogger().verbose("Url to parse (%s)", url);
+        String urlStringDecoded;
+
+        try {
+            urlStringDecoded = URLDecoder.decode(urlString, ENCODING);
+        } catch (UnsupportedEncodingException e) {
+            urlStringDecoded = urlString;
+            AdjustFactory.getLogger().error("Deeplink url decoding failed due to UnsupportedEncodingException. Message: (%s)", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            urlStringDecoded = urlString;
+            AdjustFactory.getLogger().error("Deeplink url decoding failed due to IllegalArgumentException. Message: (%s)", e.getMessage());
+        } catch (Exception e) {
+            urlStringDecoded = urlString;
+            AdjustFactory.getLogger().error("Deeplink url decoding failed. Message: (%s)", e.getMessage());
+        }
+
+        AdjustFactory.getLogger().verbose("Url to parse (%s)", urlStringDecoded);
 
         UrlQuerySanitizer querySanitizer = new UrlQuerySanitizer();
         querySanitizer.setUnregisteredParameterValueSanitizer(UrlQuerySanitizer.getAllButNulLegal());
         querySanitizer.setAllowUnregisteredParamaters(true);
-        querySanitizer.parseUrl(urlString);
+        querySanitizer.parseUrl(urlStringDecoded);
 
         PackageBuilder clickPackageBuilder = queryStringClickPackageBuilder(
                 querySanitizer.getParameterList(),

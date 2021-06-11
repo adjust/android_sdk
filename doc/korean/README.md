@@ -104,14 +104,14 @@ Adjust™의 Android SDK에 관한 문서입니다. Adjust™에 대한 자세�
 Maven을 사용하는 경우, 다음을 `build.gradle` 파일에 추가하시기 바랍니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.1'
+implementation 'com.adjust.sdk:adjust-android:4.28.2'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 앱의 웹뷰 안에서 Adjust SDK를 사용하고자 하는 경우, 다음의 추가적인 dependency를 추가하시기 바랍니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.1'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.2'
 ```
 
 **참고**: 웹뷰 확장에 필요한 Android API의 최소 지원 레벨은 17(Jelley Bean)입니다.
