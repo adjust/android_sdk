@@ -1,3 +1,9 @@
+### Version 4.28.2 (xx June 2021)
+#### Fixed
+- Decoding deeplink url while parsing its parameters.
+
+---
+
 ### Version 4.28.1 (12th May 2021)
 #### Added
 - [beta] Added data residency support for US region. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.DATA_RESIDENCY_US` parameter.
