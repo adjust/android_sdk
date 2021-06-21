@@ -14,8 +14,7 @@ If you want to track your ad revenue with the AppLovin MAX SDK, you can use our 
 
 ```java
 @Override
-public void onAdRevenuePaid(final MaxAd ad)
-{
+public void onAdRevenuePaid(final MaxAd ad) {
     AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
     adjustAdRevenue.setRevenue(ad.getRevenue(), "USD");
     adjustAdRevenue.setAdRevenueNetwork(ad.getNetworkName());
