@@ -13,19 +13,18 @@ If you want to track your ad revenue with the AppLovin MAX SDK, you can use our 
 ### Example
 
 ```java
-// initialize with AppLovin MAX source
-AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
+@Override
+public void onAdRevenuePaid(final MaxAd ad)
+{
+    AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue( AdjustConfig.AD_REVENUE_APPLOVIN_MAX);
+    adjustAdRevenue.setRevenue(ad.getRevenue(), "USD");
+    adjustAdRevenue.setAdRevenueNetwork(ad.getNetworkName());
+    adjustAdRevenue.setAdRevenueUnit(ad.getAdUnitId());
+    adjustAdRevenue.setAdRevenuePlacement(ad.getPlacement());
 
-// set revenue and currency
-adjustAdRevenue.setRevenue(6.66, "USD");
+    Adjust.trackAdRevenue( adjustAdRevenue);
+}
 
-// optional parameters
-adjustAdRevenue.setAdRevenueNetwork("network");
-adjustAdRevenue.setAdRevenueUnit("unit");
-adjustAdRevenue.setAdRevenuePlacement("placement");
-
-// track ad revenue
-Adjust.trackAdRevenue(adjustAdRevenue);
 ```
 
 [android-readme]:    ../../../README.md
