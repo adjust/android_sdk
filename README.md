@@ -1,3 +1,12 @@
+**This guide is being retired.**
+
+This README file will be retired shortly. The SDK documentation can now be found on our help center:
+
+* [English][en-helpcenter]
+* [中文][zh-helpcenter]
+* [日本語][ja-helpcenter]
+* [한국어][ko-helpcenter]
+
 ## Summary
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
@@ -2306,6 +2315,11 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [zh-readme]:  doc/chinese/README.md
 [ja-readme]:  doc/japanese/README.md
 [ko-readme]:  doc/korean/README.md
+
+[en-helpcenter]: https://help.adjust.com/en/developer/android-sdk-documentation
+[zh-helpcenter]: https://help.adjust.com/zh/developer/android-sdk-documentation
+[ja-helpcenter]: https://help.adjust.com/ja/developer/android-sdk-documentation
+[ko-helpcenter]: https://help.adjust.com/ko/developer/android-sdk-documentation
 
 [example-java]:       Adjust/example-app-java
 [example-kotlin]:     Adjust/example-app-kotlin
