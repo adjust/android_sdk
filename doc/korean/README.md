@@ -37,6 +37,7 @@ Adjust™의 Android SDK에 관한 문서입니다. Adjust™에 대한 자세�
    * [표준 딥링크 시나리오](#dl-standard)
    * [디퍼드 딥링크 시나리오](#dl-deferred)
    * [딥링크를 통한 리어트리뷰션](#dl-reattribution)
+   * [링크 해석](#link-resolution)
 
 ### 이벤트 추적
 
@@ -728,6 +729,33 @@ protected void onNewIntent(Intent intent) {
 
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
+```
+  
+### <a id="link-resolution"></a>링크 해석
+
+이메일 서비스 제공자(ESP)로부터의 딥링크를 제공하고 커스텀 트래킹 링크를 통해 클릭을 트래킹해야 하는 경우, `AdjustLinkResolution` 클래스의 `resolveLink` 메서드를 사용하여 링크를 해석할 수 있습니다. 이를 통해 딥링크가 앱에서 열렸을 때 이메일 트래킹 캠페인과의 교류를 기록할 수 있습니다.
+
+`resolveLink` 메서드는 다음의 파라미터를 사용합니다:
+
+- `url` - 앱을 연 딥링크
+- `resolveUrlSuffixArray` - 해석되어야 하는 구성된 캠페인의 커스텀 도메인
+- `adjustLinkResolutionCallback` - 최종 URL을 포함하는 콜백.
+
+수신한 링크가 `resolveUrlSuffixArray`에 명시된 도메인에 속하지 않는 경우, 해당 콜백은 딥링크 URL을 그대로 전달합니다. 링크가 명시된 도메인을 포함하는 경우, SDK는 링크 해석 시도하고, `callback` 파라미터로 결과 딥링크를 반환합니다. 반환된 딥링크는 또한 Adjust SDK에서 `Adjust.appWillOpenUrl` 메서드를 사용하여 리어트리뷰션될 수 있습니다.
+
+> **참고**: SDK는 URL 해석을 시도할 때 자동으로 최대 10개의 리다이렉트를 따르게 됩니다. SDK는 `callback` URL의 가장 마지막 URL을 반환하는데, 이는 따라야 할 리다이렉트가 10개 이상인 경우 **10번 째 리다이렉트 URL이** 반환됨을 의미합니다.
+
+**예시**
+
+```java
+AdjustLinkResolution.resolveLink(url, 
+                                 new String[]{"example.com"},
+                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+    @Override
+    public void resolvedLinkCallback(Uri resolvedLink) {
+        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+    }
+});
 ```
 
 ## 이벤트 추적
