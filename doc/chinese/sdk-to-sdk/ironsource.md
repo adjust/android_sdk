@@ -24,4 +24,4 @@ public void onImpressionSuccess (ImpressionData impressionData) {
     Adjust.trackAdRevenue(adjustAdRevenue);
 }
 ```
-[android-readme]:    https://github.com/adjust/android_sdk_dev/blob/master/doc/chinese/README.md
+[android-readme]:    https://github.com/adjust/android_sdk/blob/master/doc/chinese/README.md
