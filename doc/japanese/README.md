@@ -34,6 +34,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [スタンダードディープリンク](#dl-standard)
    * [ディファードディープリンク](#dl-deferred)
    * [ディープリンクを介したリアトリビューション](#dl-reattribution)
+   * [リンクのresolution (解析と変換)](#link-resolution)
 
 ### イベントトラッキング
 
@@ -101,14 +102,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.2'
+implementation 'com.adjust.sdk:adjust-android:4.28.3'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 アプリの WebView内でAdjust SDKを使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.2'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.3'
 ```
 
 **注意**：WebView拡張機能用にサポートされている最小のAndroid APIレベルは17（Jelly Bean）です。
@@ -725,6 +726,33 @@ protected void onNewIntent(Intent intent) {
 
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
+```
+
+### <a id="link-resolution"></a>リンクのresolution (解析と変換
+
+Emailサービスプロバイダー（ESP）独自のカスタムトラッキングリンク経由でディープリンクを使用したり、クリックを計測する必要がある場合は、`AdjustLinkResolution`クラスの`resolveLink`メソッドを使用してリンクをresolve（解析し、変換すること）します。これにより、アプリでディープリンクが開かれた時に、メール計測キャンペーンとのインタラクションを記録できます。
+
+`resolveLink`メソッドでは、以下のパラメーターが使用できます。
+
+- `url` - アプリを起動したディープリンク
+- `resolveUrlSuffixArray` - リンクの解析が必要な、設定済みキャンペーンのカスタムドメイン
+- `adjustLinkResolutionCallback` - 最終的なURLを含むコールバック
+
+受信したリンクが`resolveUrlSuffixArray`で指定されたドメインのいずれにも属さない場合、コールバックはディープリンクURLをそのまま転送します。リンクが指定されたドメインのいずれかを含む場合、SDKはリンクの解析を試み、`callback`パラメーターにディープリンクを返します。返されたディープリンクは、`Adjust.appWillOpenUrl`メソッドを使ってAdjust SDKでリアトリビュートすることも可能です。
+
+> **注**: URLの解析と変換が行われると、SDKは自動的に最大10のリダイレクトをフォローします。さらに、SDKはフォローした最新のURLを`callback` URLとして返します。つまり、フォローするリダイレクトが10個を超える場合は**10番目のリダイレクトURL**が返されます。
+
+**例**
+
+```java
+AdjustLinkResolution.resolveLink(url, 
+                                 new String[]{"example.com"},
+                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+    @Override
+    public void resolvedLinkCallback(Uri resolvedLink) {
+        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+    }
+});
 ```
 
 ### イベントトラッキング

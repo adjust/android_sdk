@@ -1,3 +1,9 @@
+### Version 4.28.3 (21st July 2021)
+#### Fixed
+- Fixed missing authorization header in retry requests.
+
+---
+
 ### Version 4.28.2 (11th June 2021)
 #### Changed
 - Added deep link URL decoding before parsing its parameters.

@@ -35,6 +35,7 @@
    * [标准深度链接场景](#dl-standard)
    * [延迟深度链接场景](#dl-deferred)
    * [通过深度链接的再归因](#dl-reattribution)
+   * [链接解析](#link-resolution)
 
 ### 事件跟踪
 
@@ -102,14 +103,14 @@
 如果您使用的是 Maven，请添加下行到您的 `build.gradle` 文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.2'
+implementation 'com.adjust.sdk:adjust-android:4.28.3'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 如果您想在应用 web view 中使用 Adjust SDK，请也添加下列附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.2'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.3'
 ```
 
 **请注意:** web view 扩展支持的最低安卓 API 级别为 17 (Jelly Bean)。
@@ -726,6 +727,33 @@ protected void onNewIntent(Intent intent) {
 
 ```js
 Adjust.appWillOpenUrl(deeplinkUrl);
+```
+
+### <a id="link-resolution"></a>链接解析
+
+通过电子邮件服务提供商 (ESP) 投放深度链接且需要使用自定义跟踪链接来跟踪点击时，可以使用 `AdjustLinkResolution` 类的 `resolveLink` 方法进行链接解析。这样，当用户在应用中打开深度链接时，您就能记录用户与电子邮件推广活动的互动了。
+
+`resolveLink` 方法携带下列参数：
+
+- `url` - 打开应用程序的深度链接
+- `resolveUrlSuffixArray` - 需要解析的、已设置推广活动的自定义域名
+- `adjustLinkResolutionCallback` - 将包含最终 URL 的回传
+
+如果接收到的链接不属于 `resolveUrlSuffixArray` 中指定的任何域名，那么回传就会原样转发深度链接 URL；如果链接包含所指定的域名，那么 SDK 就会尝试解析链接，并将得出的深度链接返回至 `callback` 参数。您也可以使用 `Adjust.appWillOpenUrl` 方法，在 Adjust SDK 中针对返回的深度链接进行再归因。
+
+> **请注意**：在尝试解析 URL 时，SDK 会自动追溯最多 10 个重定向 (redirect)，并将其中最新的 URL 返回为 `回传` URL，也就是说，如果要追溯的重定向超过 10 个，那么 SDK 就会返回 **第 10 个重定向 URL**。
+
+**示例**
+
+```java
+AdjustLinkResolution.resolveLink(url, 
+                                 new String[]{"example.com"},
+                                 new AdjustLinkResolution.AdjustLinkResolutionCallback() {
+    @Override
+    public void resolvedLinkCallback(Uri resolvedLink) {
+        Adjust.appWillOpenUrl(resolvedLink, getApplicationContext());
+    }
+});
 ```
 
 ## 事件跟踪

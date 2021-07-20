@@ -1,3 +1,12 @@
+**This guide is being retired.**
+
+This README file will be retired shortly. The SDK documentation can now be found on our help center:
+
+* [English][en-helpcenter]
+* [中文][zh-helpcenter]
+* [日本語][ja-helpcenter]
+* [한국어][ko-helpcenter]
+
 ## Summary
 
 This is the Android SDK of Adjust™. You can read more about Adjust™ at [adjust.com].
@@ -104,14 +113,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.2'
+implementation 'com.adjust.sdk:adjust-android:4.28.3'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.2'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.3'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -2306,6 +2315,11 @@ If you want to trigger an event when the app is launched, use the `onCreate` met
 [zh-readme]:  doc/chinese/README.md
 [ja-readme]:  doc/japanese/README.md
 [ko-readme]:  doc/korean/README.md
+
+[en-helpcenter]: https://help.adjust.com/en/developer/android-sdk-documentation
+[zh-helpcenter]: https://help.adjust.com/zh/developer/android-sdk-documentation
+[ja-helpcenter]: https://help.adjust.com/ja/developer/android-sdk-documentation
+[ko-helpcenter]: https://help.adjust.com/ko/developer/android-sdk-documentation
 
 [example-java]:       Adjust/example-app-java
 [example-kotlin]:     Adjust/example-app-kotlin
