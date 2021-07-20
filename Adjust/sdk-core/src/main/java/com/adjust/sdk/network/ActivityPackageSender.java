@@ -128,17 +128,27 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         try {
             ActivityPackage activityPackage = responseData.activityPackage;
+            Map<String, String> activityPackageParameters =
+                    new HashMap<>(activityPackage.getParameters());
             Map<String, String> sendingParameters = responseData.sendingParameters;
+
+            String authorizationHeader = buildAndExtractAuthorizationHeader(
+                    activityPackageParameters,
+                    activityPackage.getActivityKind());
 
             boolean shouldUseGET =
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
             final String urlString;
             if (shouldUseGET) {
-                extractEventCallbackId(activityPackage.getParameters());
+                extractEventCallbackId(activityPackageParameters);
 
-                urlString = generateUrlStringForGET(activityPackage, sendingParameters);
+                urlString = generateUrlStringForGET(activityPackage.getActivityKind(),
+                                                    activityPackage.getPath(),
+                                                    activityPackageParameters,
+                                                    sendingParameters);
             } else {
-                urlString = generateUrlStringForPOST(activityPackage);
+                urlString = generateUrlStringForPOST(activityPackage.getActivityKind(),
+                                                     activityPackage.getPath());
             }
 
             final URL url = new URL(urlString);
@@ -148,7 +158,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
             // get and apply connection options (default or for tests)
             connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
 
-            String authorizationHeader = buildAuthorizationHeader(activityPackage);
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
             }
@@ -156,10 +165,11 @@ public class ActivityPackageSender implements IActivityPackageSender {
             if (shouldUseGET) {
                 dataOutputStream = configConnectionForGET(connection);
             } else {
-                extractEventCallbackId(activityPackage.getParameters());
+                extractEventCallbackId(activityPackageParameters);
 
-                dataOutputStream =
-                        configConnectionForPOST(connection, activityPackage, sendingParameters);
+                dataOutputStream = configConnectionForPOST(connection,
+                                                           activityPackageParameters,
+                                                           sendingParameters);
             }
 
             // read connection response
@@ -249,26 +259,28 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return Util.formatString("%s. (%s)", failureMessage, reasonString);
     }
 
-    private String generateUrlStringForGET(final ActivityPackage activityPackage,
+    private String generateUrlStringForGET(final ActivityKind activityKind,
+                                           final String activityPackagePath,
+                                           final Map<String, String> activityPackageParameters,
                                            final Map<String, String> sendingParameters)
             throws MalformedURLException
     {
-        String targetUrl = urlStrategy.targetUrlByActivityKind(activityPackage.getActivityKind());
+        String targetUrl = urlStrategy.targetUrlByActivityKind(activityKind);
 
         // extra path, if present, has the format '/X/Y'
         String urlWithPath =
-                urlWithExtraPathByActivityKind(activityPackage.getActivityKind(), targetUrl);
+                urlWithExtraPathByActivityKind(activityKind, targetUrl);
 
         final URL urlObject = new URL(urlWithPath);
         final Uri.Builder uriBuilder = new Uri.Builder();
         uriBuilder.scheme(urlObject.getProtocol());
         uriBuilder.encodedAuthority(urlObject.getAuthority());
         uriBuilder.path(urlObject.getPath());
-        uriBuilder.appendPath(activityPackage.getPath());
+        uriBuilder.appendPath(activityPackagePath);
 
         logger.debug("Making request to url: %s", uriBuilder.toString());
 
-        for (final Map.Entry<String, String> entry : activityPackage.getParameters().entrySet()) {
+        for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
 
@@ -281,19 +293,20 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return uriBuilder.build().toString();
     }
 
-    private String generateUrlStringForPOST(final ActivityPackage activityPackage)
+    private String generateUrlStringForPOST(final ActivityKind activityKind,
+                                            final String activityPackagePath)
     {
         String targetUrl =
-                urlStrategy.targetUrlByActivityKind(activityPackage.getActivityKind());
+                urlStrategy.targetUrlByActivityKind(activityKind);
 
         // extra path, if present, has the format '/X/Y'
         String urlWithPath =
-                urlWithExtraPathByActivityKind(activityPackage.getActivityKind(), targetUrl);
+                urlWithExtraPathByActivityKind(activityKind, targetUrl);
 
 
         // 'targetUrl' does not end with '/', but activity package paths that are sent by POST
         //  do start with '/', so it's not added om between
-        String urlString = Util.formatString("%s%s", urlWithPath, activityPackage.getPath());
+        String urlString = Util.formatString("%s%s", urlWithPath, activityPackagePath);
 
         logger.debug("Making request to url : %s", urlString);
 
@@ -322,7 +335,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     }
 
     private DataOutputStream configConnectionForPOST(final HttpsURLConnection connection,
-                                                     final ActivityPackage activityPackage,
+                                                     final Map<String, String> activityPackageParameters,
                                                      final Map<String, String> sendingParameters)
             throws ProtocolException,
             UnsupportedEncodingException,
@@ -339,7 +352,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         // build POST body
         final String postBodyString = generatePOSTBodyString(
-                activityPackage.getParameters(),
+                activityPackageParameters,
                 sendingParameters);
 
         if (postBodyString == null) {
@@ -510,9 +523,9 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 Util.getSdkPrefixPlatform(clientSdk));
     }
 
-    private String buildAuthorizationHeader(final ActivityPackage activityPackage) {
-        Map<String, String> parameters = activityPackage.getParameters();
-        String activityKindString = activityPackage.getActivityKind().toString();
+    private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters,
+                                                      final ActivityKind activityKind) {
+        String activityKindString = activityKind.toString();
 
         String secretId = extractSecretId(parameters);
         String headersId = extractHeadersId(parameters);
