@@ -1,6 +1,6 @@
-### Version 4.28.3 (XX July 2021)
-#### Changed
-- Send Authorization header while package sending retries.
+### Version 4.28.3 (21st July 2021)
+#### Fixed
+- Fixed missing authorization header in retry requests.
 
 ---
 
