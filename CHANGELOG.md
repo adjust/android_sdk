@@ -1,3 +1,9 @@
+### Version 4.28.3 (XX July 2021)
+#### Changed
+- Send Authorization header while package sending retries.
+
+---
+
 ### Version 4.28.2 (11th June 2021)
 #### Changed
 - Added deep link URL decoding before parsing its parameters.
