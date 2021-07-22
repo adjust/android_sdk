@@ -1325,6 +1325,7 @@ public class PackageBuilder {
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")
+                && !parameters.containsKey("fire_adid")
                 && !parameters.containsKey("oaid")
                 && !parameters.containsKey("imei")
                 && !parameters.containsKey("meid")
