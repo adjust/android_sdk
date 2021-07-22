@@ -16,6 +16,8 @@ import android.util.DisplayMetrics;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.res.Configuration.UI_MODE_TYPE_MASK;
+import static android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
 import static com.adjust.sdk.Constants.LONG;
@@ -90,7 +92,7 @@ class DeviceInfo {
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
-        deviceType = getDeviceType(screenLayout);
+        deviceType = getDeviceType(configuration);
         deviceName = getDeviceName();
         deviceManufacturer = getDeviceManufacturer();
         osName = getOsName();
@@ -223,9 +225,13 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceType(int screenLayout) {
-        int screenSize = screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
+    private String getDeviceType(Configuration configuration) {
+        int uiMode = configuration.uiMode & UI_MODE_TYPE_MASK;
+        if (uiMode == UI_MODE_TYPE_TELEVISION) {
+            return "tv";
+        }
 
+        int screenSize = configuration.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK;
         switch (screenSize) {
             case Configuration.SCREENLAYOUT_SIZE_SMALL:
             case Configuration.SCREENLAYOUT_SIZE_NORMAL:
