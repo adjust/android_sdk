@@ -23,7 +23,7 @@ rewardedAd.setOnPaidEventListener(new OnPaidEventListener() {
         // ...
         // send ad revenue info to Adjust
         AdjustAdRevenue adRevenue = new AdjustAdRevenue(AdjustConfig.AD_REVENUE_ADMOB);
-        adRevenue.setRevenue(adValue.getValueMicros() / 1000000, adValue.getCurrencyCode());
+        adRevenue.setRevenue(adValue.getValueMicros() / 1000000.0, adValue.getCurrencyCode());
         Adjust.trackAdRevenue(adRevenue);
     }
 }
