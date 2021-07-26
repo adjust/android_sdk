@@ -1,3 +1,12 @@
+**このガイドはまもなく廃止されます。**
+
+このREADMEファイルはまもなく廃止されます。SDKのドキュメントはAdjustヘルプセンターに掲載されています。以下のリンクよりご覧ください。
+
+* [English][en-helpcenter]
+* [中文][zh-helpcenter]
+* [日本語][ja-helpcenter]
+* [한국어][ko-helpcenter]
+
 ## 概要
 
 これはネイティブAdjust™のAndroid SDKガイドです。Adjust™についての詳細はadjust.comをご覧ください。
@@ -2253,6 +2262,11 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [dev-api]:                        https://docs.adjust.com/en/adjust-for-developers/
 
 [sdk2sdk-mopub]:  ../../doc/japanese/sdk-to-sdk/mopub.md
+
+[en-helpcenter]: https://help.adjust.com/en/developer/android-sdk-documentation
+[zh-helpcenter]: https://help.adjust.com/zh/developer/android-sdk-documentation
+[ja-helpcenter]: https://help.adjust.com/ja/developer/android-sdk-documentation
+[ko-helpcenter]: https://help.adjust.com/ko/developer/android-sdk-documentation
 
 ## <a id="license"></a>ライセンス
 
