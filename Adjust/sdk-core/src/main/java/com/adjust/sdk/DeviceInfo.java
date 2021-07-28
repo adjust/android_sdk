@@ -16,15 +16,8 @@ import android.util.DisplayMetrics;
 import java.util.Date;
 import java.util.Locale;
 
-import static android.content.res.Configuration.UI_MODE_TYPE_APPLIANCE;
-import static android.content.res.Configuration.UI_MODE_TYPE_CAR;
-import static android.content.res.Configuration.UI_MODE_TYPE_DESK;
 import static android.content.res.Configuration.UI_MODE_TYPE_MASK;
-import static android.content.res.Configuration.UI_MODE_TYPE_NORMAL;
 import static android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
-import static android.content.res.Configuration.UI_MODE_TYPE_UNDEFINED;
-import static android.content.res.Configuration.UI_MODE_TYPE_VR_HEADSET;
-import static android.content.res.Configuration.UI_MODE_TYPE_WATCH;
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
 import static com.adjust.sdk.Constants.LONG;
