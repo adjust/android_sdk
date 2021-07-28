@@ -101,7 +101,7 @@ public class AdjustInstance {
      * @param event AdjustEvent object to be tracked
      */
     public void trackEvent(final AdjustEvent event) {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("trackEvent")) {
             return;
         }
         activityHandler.trackEvent(event);
@@ -111,7 +111,7 @@ public class AdjustInstance {
      * Called upon each Activity's onResume() method call.
      */
     public void onResume() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("onResume")) {
             return;
         }
         activityHandler.onResume();
@@ -121,7 +121,7 @@ public class AdjustInstance {
      * Called upon each Activity's onPause() method call.
      */
     public void onPause() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("onPause")) {
             return;
         }
         activityHandler.onPause();
@@ -145,7 +145,7 @@ public class AdjustInstance {
      * @return boolean indicating whether SDK is enabled or not
      */
     public boolean isEnabled() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("isEnabled")) {
             return isInstanceEnabled();
         }
         return activityHandler.isEnabled();
@@ -157,7 +157,7 @@ public class AdjustInstance {
      * @param url Deep link URL to process
      */
     public void appWillOpenUrl(final Uri url) {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("appWillOpenUrl")) {
             return;
         }
         long clickTime = System.currentTimeMillis();
@@ -172,7 +172,7 @@ public class AdjustInstance {
      */
     public void appWillOpenUrl(final Uri url, final Context context) {
         long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("appWillOpenUrl")) {
             SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
             sharedPreferencesManager.saveDeeplink(url, clickTime);
             return;
@@ -196,7 +196,7 @@ public class AdjustInstance {
         }
 
         saveRawReferrer(rawReferrer, clickTime, context);
-        if (checkActivityHandler("referrer")) {
+        if (checkActivityHandler("referrer", true)) {
             if (activityHandler.isEnabled()) {
                 activityHandler.sendReftagReferrer();
             }
@@ -216,7 +216,7 @@ public class AdjustInstance {
         }
 
         savePreinstallReferrer(referrer, context);
-        if (checkActivityHandler("preinstall referrer")) {
+        if (checkActivityHandler("preinstall referrer", true)) {
             if (activityHandler.isEnabled()) {
                 activityHandler.sendPreinstallReferrer();
             }
@@ -240,7 +240,7 @@ public class AdjustInstance {
      * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
      */
     public void sendFirstPackages() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("sendFirstPackages")) {
             return;
         }
         activityHandler.sendFirstPackages();
@@ -253,7 +253,7 @@ public class AdjustInstance {
      * @param value Global callback parameter value
      */
     public void addSessionCallbackParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session callback parameter")) {
+        if (checkActivityHandler("adding session callback parameter", true)) {
             activityHandler.addSessionCallbackParameter(key, value);
             return;
         }
@@ -273,7 +273,7 @@ public class AdjustInstance {
      * @param value Global partner parameter value
      */
     public void addSessionPartnerParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session partner parameter")) {
+        if (checkActivityHandler("adding session partner parameter", true)) {
             activityHandler.addSessionPartnerParameter(key, value);
             return;
         }
@@ -291,7 +291,7 @@ public class AdjustInstance {
      * @param key Global callback parameter key
      */
     public void removeSessionCallbackParameter(final String key) {
-        if (checkActivityHandler("removing session callback parameter")) {
+        if (checkActivityHandler("removing session callback parameter", true)) {
             activityHandler.removeSessionCallbackParameter(key);
             return;
         }
@@ -309,7 +309,7 @@ public class AdjustInstance {
      * @param key Global partner parameter key
      */
     public void removeSessionPartnerParameter(final String key) {
-        if (checkActivityHandler("removing session partner parameter")) {
+        if (checkActivityHandler("removing session partner parameter", true)) {
             activityHandler.removeSessionPartnerParameter(key);
             return;
         }
@@ -325,7 +325,7 @@ public class AdjustInstance {
      * Called to remove all added global callback parameters.
      */
     public void resetSessionCallbackParameters() {
-        if (checkActivityHandler("resetting session callback parameters")) {
+        if (checkActivityHandler("resetting session callback parameters", true)) {
             activityHandler.resetSessionCallbackParameters();
             return;
         }
@@ -341,7 +341,7 @@ public class AdjustInstance {
      * Called to remove all added global partner parameters.
      */
     public void resetSessionPartnerParameters() {
-        if (checkActivityHandler("resetting session partner parameters")) {
+        if (checkActivityHandler("resetting session partner parameters", true)) {
             activityHandler.resetSessionPartnerParameters();
             return;
         }
@@ -358,7 +358,7 @@ public class AdjustInstance {
      * Used only for Adjust tests, shouldn't be used in client apps.
      */
     public void teardown() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("teardown")) {
             return;
         }
         activityHandler.teardown();
@@ -371,7 +371,7 @@ public class AdjustInstance {
      * @param token Push notifications token
      */
     public void setPushToken(final String token) {
-        if (!checkActivityHandler("push token")) {
+        if (!checkActivityHandler("push token", true)) {
             this.pushToken = token;
         } else {
             activityHandler.setPushToken(token, false);
@@ -386,7 +386,7 @@ public class AdjustInstance {
      */
     public void setPushToken(final String token, final Context context) {
         savePushToken(token, context);
-        if (checkActivityHandler("push token")) {
+        if (checkActivityHandler("push token", true)) {
             if (activityHandler.isEnabled()) {
                 activityHandler.setPushToken(token, true);
             }
@@ -400,7 +400,7 @@ public class AdjustInstance {
      */
     public void gdprForgetMe(final Context context) {
         saveGdprForgetMe(context);
-        if (checkActivityHandler("gdpr")) {
+        if (checkActivityHandler("gdpr", true)) {
             if (activityHandler.isEnabled()) {
                 activityHandler.gdprForgetMe();
             }
@@ -413,7 +413,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     public void disableThirdPartySharing(final Context context) {
-        if (!checkActivityHandler("disable third party sharing")) {
+        if (!checkActivityHandler("disable third party sharing", true)) {
             saveDisableThirdPartySharing(context);
             return;
         }
@@ -422,7 +422,7 @@ public class AdjustInstance {
     }
 
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
-        if (!checkActivityHandler("third party sharing")) {
+        if (!checkActivityHandler("third party sharing", true)) {
             preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
             return;
         }
@@ -431,7 +431,7 @@ public class AdjustInstance {
     }
 
     public void trackMeasurementConsent(final boolean consentMeasurement) {
-        if (!checkActivityHandler("measurement consent")) {
+        if (!checkActivityHandler("measurement consent", true)) {
             preLaunchActions.lastMeasurementConsentTracked = consentMeasurement;
             return;
         }
@@ -446,7 +446,7 @@ public class AdjustInstance {
      * @param adRevenueJson JsonObject content of the ad revenue information
      */
     public void trackAdRevenue(String source, JSONObject adRevenueJson) {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("trackAdRevenue")) {
             return;
         }
         activityHandler.trackAdRevenue(source, adRevenueJson);
@@ -458,7 +458,7 @@ public class AdjustInstance {
      * @param adjustAdRevenue Adjust ad revenue information like source, revenue, currency etc
      */
     public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("trackAdRevenue")) {
             return;
         }
 
@@ -471,7 +471,7 @@ public class AdjustInstance {
      * @param subscription AdjustPlayStoreSubscription object to be tracked
      */
     public void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription) {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("trackPlayStoreSubscription")) {
             return;
         }
         activityHandler.trackPlayStoreSubscription(subscription);
@@ -483,7 +483,7 @@ public class AdjustInstance {
      * @return Unique Adjust device indetifier
      */
     public String getAdid() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("getAdid")) {
             return null;
         }
         return activityHandler.getAdid();
@@ -495,7 +495,7 @@ public class AdjustInstance {
      * @return AdjustAttribution object with current attribution value
      */
     public AdjustAttribution getAttribution() {
-        if (!checkActivityHandler()) {
+        if (!checkActivityHandler("getAttribution")) {
             return null;
         }
         return activityHandler.getAttribution();
@@ -515,8 +515,8 @@ public class AdjustInstance {
      *
      * @return boolean indicating whether ActivityHandler instance is set or not
      */
-    private boolean checkActivityHandler() {
-        return checkActivityHandler(null);
+    private boolean checkActivityHandler(final String action) {
+        return checkActivityHandler(action, false);
     }
 
     /**
@@ -529,31 +529,38 @@ public class AdjustInstance {
      */
     private boolean checkActivityHandler(final boolean status, final String trueMessage, final String falseMessage) {
         if (status) {
-            return checkActivityHandler(trueMessage);
+            return checkActivityHandler(trueMessage, true);
         } else {
-            return checkActivityHandler(falseMessage);
+            return checkActivityHandler(falseMessage, true);
         }
     }
 
     /**
      * Check if ActivityHandler instance is set or not.
      *
-     * @param savedForLaunchWarningSuffixMessage Log message to indicate action that was asked when SDK was disabled
+     * @param action Log message to indicate action that was asked to perform when SDK was disabled
      * @return boolean indicating whether ActivityHandler instance is set or not
      */
-    private boolean checkActivityHandler(final String savedForLaunchWarningSuffixMessage) {
-        if (activityHandler == null) {
-            if (savedForLaunchWarningSuffixMessage != null) {
-                AdjustFactory.getLogger().warn(
-                        "Adjust not initialized, but %s saved for launch",
-                        savedForLaunchWarningSuffixMessage);
-            } else {
-                AdjustFactory.getLogger().error("Adjust not initialized correctly");
-            }
-            return false;
-        } else {
+    private boolean checkActivityHandler(final String action, final boolean actionSaved) {
+        if (activityHandler != null) {
             return true;
         }
+
+        if (action == null) {
+            AdjustFactory.getLogger().error("Adjust not initialized correctly");
+            return false;
+        }
+
+        if (actionSaved) {
+            AdjustFactory.getLogger().warn(
+                    "Adjust not initialized, but %s saved for launch",
+                    action);
+        } else {
+            AdjustFactory.getLogger().warn(
+                    "Adjust not initialized, can't perform %s",
+                    action);
+        }
+        return false;
     }
 
     /**
