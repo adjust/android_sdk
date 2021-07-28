@@ -89,7 +89,6 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
-        ContentResolver contentResolver = context.getContentResolver();
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
