@@ -88,7 +88,7 @@ class DeviceInfo {
     String buildName;
     String appInstallTime;
     String appUpdateTime;
-    String uiMode;
+    int uiMode;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
@@ -253,20 +253,8 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceUiMode(Configuration configuration) {
-        int uiMode = configuration.uiMode & UI_MODE_TYPE_MASK;
-        switch (uiMode) {
-            case UI_MODE_TYPE_NORMAL: return "normal";
-            case UI_MODE_TYPE_DESK: return "desk";
-            case UI_MODE_TYPE_CAR: return "car";
-            case UI_MODE_TYPE_TELEVISION: return "tv";
-            case UI_MODE_TYPE_APPLIANCE: return "appliance";
-            case UI_MODE_TYPE_WATCH: return "watch";
-            case UI_MODE_TYPE_VR_HEADSET: return "vr";
-            case UI_MODE_TYPE_UNDEFINED: return "undefined";
-            default:
-                return null;
-        }
+    private int getDeviceUiMode(Configuration configuration) {
+        return configuration.uiMode & UI_MODE_TYPE_MASK;
     }
 
     private String getDeviceName() {
