@@ -16,8 +16,15 @@ import android.util.DisplayMetrics;
 import java.util.Date;
 import java.util.Locale;
 
+import static android.content.res.Configuration.UI_MODE_TYPE_APPLIANCE;
+import static android.content.res.Configuration.UI_MODE_TYPE_CAR;
+import static android.content.res.Configuration.UI_MODE_TYPE_DESK;
 import static android.content.res.Configuration.UI_MODE_TYPE_MASK;
+import static android.content.res.Configuration.UI_MODE_TYPE_NORMAL;
 import static android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
+import static android.content.res.Configuration.UI_MODE_TYPE_UNDEFINED;
+import static android.content.res.Configuration.UI_MODE_TYPE_VR_HEADSET;
+import static android.content.res.Configuration.UI_MODE_TYPE_WATCH;
 import static com.adjust.sdk.Constants.HIGH;
 import static com.adjust.sdk.Constants.LARGE;
 import static com.adjust.sdk.Constants.LONG;
@@ -81,6 +88,7 @@ class DeviceInfo {
     String buildName;
     String appInstallTime;
     String appUpdateTime;
+    String uiMode;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
@@ -112,6 +120,7 @@ class DeviceInfo {
         buildName = getBuildName();
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
+        uiMode = getDeviceUiMode(configuration);
     }
 
     void reloadPlayIds(Context context) {
@@ -239,6 +248,22 @@ class DeviceInfo {
             case Configuration.SCREENLAYOUT_SIZE_LARGE:
             case 4:
                 return "tablet";
+            default:
+                return null;
+        }
+    }
+
+    private String getDeviceUiMode(Configuration configuration) {
+        int uiMode = configuration.uiMode & UI_MODE_TYPE_MASK;
+        switch (uiMode) {
+            case UI_MODE_TYPE_NORMAL: return "normal";
+            case UI_MODE_TYPE_DESK: return "desk";
+            case UI_MODE_TYPE_CAR: return "car";
+            case UI_MODE_TYPE_TELEVISION: return "tv";
+            case UI_MODE_TYPE_APPLIANCE: return "appliance";
+            case UI_MODE_TYPE_WATCH: return "watch";
+            case UI_MODE_TYPE_VR_HEADSET: return "vr";
+            case UI_MODE_TYPE_UNDEFINED: return "undefined";
             default:
                 return null;
         }
