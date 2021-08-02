@@ -314,6 +314,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -404,6 +405,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -555,6 +557,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -647,6 +650,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
@@ -708,6 +712,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
@@ -768,6 +773,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
@@ -838,6 +844,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
@@ -903,6 +910,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
@@ -968,6 +976,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -1060,6 +1069,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -1157,6 +1167,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
+        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
@@ -1325,6 +1336,7 @@ public class PackageBuilder {
                 && !parameters.containsKey("mac_md5")
                 && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")
+                && !parameters.containsKey("fire_adid")
                 && !parameters.containsKey("oaid")
                 && !parameters.containsKey("imei")
                 && !parameters.containsKey("meid")
