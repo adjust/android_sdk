@@ -172,9 +172,8 @@ public class AdjustInstance {
      */
     public void appWillOpenUrl(final Uri url, final Context context) {
         long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler("appWillOpenUrl")) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-            sharedPreferencesManager.saveDeeplink(url, clickTime);
+        if (!checkActivityHandler("appWillOpenUrl", true)) {
+            saveDeeplink(url, clickTime, context);
             return;
         }
 
@@ -642,6 +641,24 @@ public class AdjustInstance {
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
                 sharedPreferencesManager.setDisableThirdPartySharing();
+            }
+        };
+        Util.runInBackground(command);
+    }
+
+    /**
+     * Save deep link to shared preferences.
+     *
+     * @param deeplink  Deeplink Uri object
+     * @param clickTime Time when appWillOpenUrl(Uri, Context) method was called
+     * @param context   Application context
+     */
+    private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.saveDeeplink(deeplink, clickTime);
             }
         };
         Util.runInBackground(command);
