@@ -15,8 +15,6 @@ If you want to track your ad revenue with the Admob SDK, you can use our SDK-to-
 ### Example
 
 ```java
-rewardedAd = new RewardedAd(this, AD_UNIT_ID);
-// set paid event listener
 rewardedAd.setOnPaidEventListener(new OnPaidEventListener() {
     @Override
     public void onPaidEvent(AdValue adValue) {
@@ -28,5 +26,7 @@ rewardedAd.setOnPaidEventListener(new OnPaidEventListener() {
     }
 }
 ```
+
+For more information on how to properly integrate and set up AdMob SDK, please check out the [official documentation](https://developers.google.com/admob/android/early-access/paid-events).
 
 [android-readme]:    ../../../README.md
