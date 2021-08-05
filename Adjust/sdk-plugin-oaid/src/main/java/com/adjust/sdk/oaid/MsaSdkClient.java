@@ -3,7 +3,7 @@ package com.adjust.sdk.oaid;
 import android.content.Context;
 
 import com.adjust.sdk.ILogger;
-import com.bun.miitmdid.core.ErrorCode;
+import com.bun.miitmdid.core.InfoCode;
 import com.bun.miitmdid.core.MdidSdkHelper;
 import com.bun.miitmdid.interfaces.IIdentifierListener;
 import com.bun.miitmdid.interfaces.IdSupplier;
@@ -20,7 +20,7 @@ public class MsaSdkClient {
             boolean msaInternalLogging = false;
             int result = MdidSdkHelper.InitSdk(context, msaInternalLogging, new IIdentifierListener() {
                 @Override
-                public void OnSupport(boolean b, IdSupplier idSupplier) {
+                public void onSupport(IdSupplier idSupplier) {
                     try {
                         if (idSupplier == null || idSupplier.getOAID() == null) {
                             // so to avoid waiting for timeout
@@ -51,20 +51,20 @@ public class MsaSdkClient {
 
     private static boolean isError(int result, ILogger logger) {
         switch(result) {
-            case ErrorCode.INIT_ERROR_BEGIN:
-                logger.error("msa sdk error - INIT_ERROR_BEGIN");
+            case InfoCode.INIT_ERROR_CERT_ERROR:
+                logger.error("msa sdk error - INIT_ERROR_CERT_ERROR");
                 return true;
-            case ErrorCode.INIT_ERROR_DEVICE_NOSUPPORT:
+            case InfoCode.INIT_ERROR_DEVICE_NOSUPPORT:
                 logger.error("msa sdk error - INIT_ERROR_DEVICE_NOSUPPORT");
                 return true;
-            case ErrorCode.INIT_ERROR_LOAD_CONFIGFILE:
+            case InfoCode.INIT_ERROR_LOAD_CONFIGFILE:
                 logger.error("msa sdk error - INIT_ERROR_LOAD_CONFIGFILE");
                 return true;
-            case ErrorCode.INIT_ERROR_MANUFACTURER_NOSUPPORT:
+            case InfoCode.INIT_ERROR_MANUFACTURER_NOSUPPORT:
                 logger.error("msa sdk error - INIT_ERROR_MANUFACTURER_NOSUPPORT");
                 return true;
-            case ErrorCode.INIT_HELPER_CALL_ERROR:
-                logger.error("msa sdk error - INIT_HELPER_CALL_ERROR");
+            case InfoCode.INIT_ERROR_SDK_CALL_ERROR:
+                logger.error("msa sdk error - INIT_ERROR_SDK_CALL_ERROR");
                 return true;
             default:
                 return false;
