@@ -1,11 +1,16 @@
 package com.adjust.sdk.oaid;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.PackageBuilder;
 import com.adjust.sdk.oaid.OpenDeviceIdentifierClient.Info;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,5 +90,23 @@ public class Util {
 
         logger.debug("Fail to read the OAID using MSA");
         return null;
+    }
+
+    public static String readCertFromAssetFile(Context context) {
+        try {
+            String assetFileName = context.getPackageName() + ".cert.pem";
+            InputStream is = context.getAssets().open(assetFileName);
+            BufferedReader in = new BufferedReader(new InputStreamReader(is));
+            StringBuilder builder= new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null){
+                builder.append(line);
+                builder.append('\n');
+            }
+            return builder.toString();
+        } catch (Exception e) {
+            Log.e("Adjust", "readCertFromAssetFile failed");
+            return "";
+        }
     }
 }
