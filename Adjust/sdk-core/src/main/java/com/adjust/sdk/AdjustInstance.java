@@ -171,10 +171,16 @@ public class AdjustInstance {
      * @param context Application context
      */
     public void appWillOpenUrl(final Uri url, final Context context) {
+        // Check for deep link validity. If invalid, return.
+        if (url == null || url.toString().length() == 0) {
+            AdjustFactory.getLogger().warn(
+                    "Skipping deep link processing (null or empty)");
+            return;
+        }
+
         long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler("appWillOpenUrl")) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-            sharedPreferencesManager.saveDeeplink(url, clickTime);
+        if (!checkActivityHandler("appWillOpenUrl", true)) {
+            saveDeeplink(url, clickTime, context);
             return;
         }
 
@@ -192,6 +198,8 @@ public class AdjustInstance {
 
         // Check for referrer validity. If invalid, return.
         if (rawReferrer == null || rawReferrer.length() == 0) {
+            AdjustFactory.getLogger().warn(
+                    "Skipping INSTALL_REFERRER intent referrer processing (null or empty)");
             return;
         }
 
@@ -212,6 +220,8 @@ public class AdjustInstance {
     public void sendPreinstallReferrer(final String referrer, final Context context) {
         // Check for referrer validity. If invalid, return.
         if (referrer == null || referrer.length() == 0) {
+            AdjustFactory.getLogger().warn(
+                    "Skipping SYSTEM_INSTALLER_REFERRER preinstall referrer processing (null or empty)");
             return;
         }
 
@@ -642,6 +652,24 @@ public class AdjustInstance {
             public void run() {
                 SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
                 sharedPreferencesManager.setDisableThirdPartySharing();
+            }
+        };
+        Util.runInBackground(command);
+    }
+
+    /**
+     * Save deep link to shared preferences.
+     *
+     * @param deeplink  Deeplink Uri object
+     * @param clickTime Time when appWillOpenUrl(Uri, Context) method was called
+     * @param context   Application context
+     */
+    private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
+        Runnable command = new Runnable() {
+            @Override
+            public void run() {
+                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+                sharedPreferencesManager.saveDeeplink(deeplink, clickTime);
             }
         };
         Util.runInBackground(command);
