@@ -1,3 +1,12 @@
+**该指南即将过期。**
+
+该自述文件即将过期。现在，您可以前往我们的帮助中心查看此 SDK 文档。
+
+* [English][en-helpcenter]
+* [中文][zh-helpcenter]
+* [日本語][ja-helpcenter]
+* [한국어][ko-helpcenter]
+
 ## 摘要
 
 这是 Adjust™ 的安卓 SDK 包。您可以在 [adjust.com] 了解更多有关 Adjust™ 的信息。
@@ -103,14 +112,14 @@
 如果您使用的是 Maven，请添加下行到您的 `build.gradle` 文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.3'
+implementation 'com.adjust.sdk:adjust-android:4.28.4'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 如果您想在应用 web view 中使用 Adjust SDK，请也添加下列附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.3'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.4'
 ```
 
 **请注意:** web view 扩展支持的最低安卓 API 级别为 17 (Jelly Bean)。
@@ -2258,6 +2267,11 @@ public void onFireIntentClick(View v) {
 
 [sdk2sdk-mopub]:    ../../doc/chinese/sdk-to-sdk/mopub.md
 [集成指南]:          https://github.com/adjust/android_sdk/tree/master/doc/chinese
+
+[en-helpcenter]: https://help.adjust.com/en/developer/android-sdk-documentation
+[zh-helpcenter]: https://help.adjust.com/zh/developer/android-sdk-documentation
+[ja-helpcenter]: https://help.adjust.com/ja/developer/android-sdk-documentation
+[ko-helpcenter]: https://help.adjust.com/ko/developer/android-sdk-documentation
 
 ## <a id="license"></a>许可
 

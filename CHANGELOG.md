@@ -1,3 +1,13 @@
+### Version 4.28.4 (9th August 2021)
+#### Added
+- Added support for Android TV.
+- Added support to OAID plugin for MSA SDK v1.0.26.
+
+#### Changed
+- Improved logging.
+
+---
+
 ### Version 4.28.3 (21st July 2021)
 #### Fixed
 - Fixed missing authorization header in retry requests.

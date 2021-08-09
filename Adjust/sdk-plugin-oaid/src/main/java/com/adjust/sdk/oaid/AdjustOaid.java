@@ -1,8 +1,9 @@
 package com.adjust.sdk.oaid;
 
 import android.content.Context;
+import android.util.Log;
 
-import com.adjust.sdk.Reflection;
+import com.bun.miitmdid.core.MdidSdkHelper;
 
 public class AdjustOaid {
     static boolean isOaidToBeRead = false;
@@ -10,13 +11,19 @@ public class AdjustOaid {
 
     public static void readOaid() {
         isOaidToBeRead = true;
-
-        isMsaSdkAvailable =
-                Reflection.forName("com.bun.miitmdid.core.MdidSdkHelper") != null;
     }
 
-    public static void readOaid(Context base) {
+    public static void readOaid(Context context) {
         readOaid();
+
+        try {
+            System.loadLibrary("nllvm1623827671");
+            String certificate = Util.readCertFromAssetFile(context);
+            isMsaSdkAvailable = MdidSdkHelper.InitCert(context, certificate);
+        } catch (Throwable t) {
+            isMsaSdkAvailable = false;
+            Log.d("Adjust", "Error during msa sdk initialization " + t.getMessage());
+        }
     }
 
     public static void doNotReadOaid() {

@@ -1,3 +1,12 @@
+**このガイドはまもなく廃止されます。**
+
+このREADMEファイルはまもなく廃止されます。SDKのドキュメントはAdjustヘルプセンターに掲載されています。以下のリンクよりご覧ください。
+
+* [English][en-helpcenter]
+* [中文][zh-helpcenter]
+* [日本語][ja-helpcenter]
+* [한국어][ko-helpcenter]
+
 ## 概要
 
 これはネイティブAdjust™のAndroid SDKガイドです。Adjust™についての詳細はadjust.comをご覧ください。
@@ -102,14 +111,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.3'
+implementation 'com.adjust.sdk:adjust-android:4.28.4'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 アプリの WebView内でAdjust SDKを使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.3'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.4'
 ```
 
 **注意**：WebView拡張機能用にサポートされている最小のAndroid APIレベルは17（Jelly Bean）です。
@@ -2253,6 +2262,11 @@ Adjust SDKはこの場合の初期化についてサポートしています。�
 [dev-api]:                        https://docs.adjust.com/en/adjust-for-developers/
 
 [sdk2sdk-mopub]:  ../../doc/japanese/sdk-to-sdk/mopub.md
+
+[en-helpcenter]: https://help.adjust.com/en/developer/android-sdk-documentation
+[zh-helpcenter]: https://help.adjust.com/zh/developer/android-sdk-documentation
+[ja-helpcenter]: https://help.adjust.com/ja/developer/android-sdk-documentation
+[ko-helpcenter]: https://help.adjust.com/ko/developer/android-sdk-documentation
 
 ## <a id="license"></a>ライセンス
 
