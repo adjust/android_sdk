@@ -1,4 +1,4 @@
-### Version 4.28.4 (6th August 2021)
+### Version 4.28.4 (9th August 2021)
 #### Added
 - Added support for Android TV.
 - Added support to OAID plugin for MSA SDK v1.0.26.
