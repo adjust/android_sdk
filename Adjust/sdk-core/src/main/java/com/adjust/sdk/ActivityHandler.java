@@ -928,15 +928,15 @@ public class ActivityHandler implements IActivityHandler {
 
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
-                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_GOOGLE);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                sendInstallReferrer(referrerDetails, referrerApi);
             }
         });
 
         installReferrerHuawei = new InstallReferrerHuawei(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
-                sendInstallReferrer(referrerDetails, Constants.REFERRER_API_HUAWEI);
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                sendInstallReferrer(referrerDetails, referrerApi);
             }
         });
 
