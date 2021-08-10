@@ -20,6 +20,26 @@ public class InstallReferrerHuawei {
     private static final String REFERRER_PROVIDER_URI = "content://" + REFERRER_PROVIDER_AUTHORITY + "/item/5";
 
     /**
+     * Huawei install referrer provider column index referrer.
+     */
+    private static final int COLUMN_INDEX_REFERRER = 0;
+
+    /**
+     * Huawei install referrer provider column index click time.
+     */
+    private static final int COLUMN_INDEX_CLICK_TIME = 1;
+
+    /**
+     * Huawei install referrer provider column index install time.
+     */
+    private static final int COLUMN_INDEX_INSTALL_TIME = 2;
+
+    /**
+     * Huawei install referrer provider column index track ID.
+     */
+    private static final int COLUMN_INDEX_TRACK_ID = 4;
+
+    /**
      * Adjust logger instance.
      */
     private ILogger logger;
@@ -30,7 +50,7 @@ public class InstallReferrerHuawei {
     private Context context;
 
     /**
-     * Weak reference to ActivityHandler instance.
+     * Huawei Referrer callback.
      */
     private final InstallReferrerReadListener referrerCallback;
 
@@ -75,9 +95,15 @@ public class InstallReferrerHuawei {
 
             if (cursor != null && cursor.moveToFirst()) {
 
-                String installReferrer = cursor.getString(0);
-                String clickTime = cursor.getString(1);
-                String installTime = cursor.getString(2);
+                String installReferrer = cursor.getString(COLUMN_INDEX_REFERRER);
+                String clickTime = cursor.getString(COLUMN_INDEX_CLICK_TIME);
+                String installTime = cursor.getString(COLUMN_INDEX_INSTALL_TIME);
+                String referrerApi = Constants.REFERRER_API_HUAWEI;
+
+                if (installReferrer == null || installReferrer.isEmpty()) {
+                    installReferrer = cursor.getString(COLUMN_INDEX_TRACK_ID);
+                    referrerApi = Constants.REFERRER_API_HUAWEI_ADS;
+                }
 
                 logger.debug("InstallReferrerHuawei reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
 
@@ -87,7 +113,7 @@ public class InstallReferrerHuawei {
                 ReferrerDetails referrerDetails = new ReferrerDetails(installReferrer,
                         referrerClickTimestampSeconds, installBeginTimestampSeconds);
 
-                referrerCallback.onInstallReferrerRead(referrerDetails);
+                referrerCallback.onInstallReferrerRead(referrerDetails, referrerApi);
 
             } else {
                 logger.debug("InstallReferrerHuawei fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());

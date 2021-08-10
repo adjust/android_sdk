@@ -35,6 +35,7 @@ public interface Constants {
     String INSTALL_REFERRER = "install_referrer";
     String REFERRER_API_GOOGLE = "google";
     String REFERRER_API_HUAWEI = "huawei";
+    String REFERRER_API_HUAWEI_ADS = "huawei_ads";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";
