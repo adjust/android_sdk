@@ -364,7 +364,7 @@ We use this environment to distinguish between real traffic and test traffic fro
 - Add a private class that implements the `ActivityLifecycleCallbacks` interface. If you don't have access to this interface, your app is targeting an Android API level lower than 14. You will have to manually update each activity by following these [instructions](#qs-session-tracking-api-9). If you have `Adjust.onResume` and `Adjust.onPause` calls on each of your app's activities, you should remove them.
 - Edit the `onActivityResumed(Activity activity)` method and add a call to `Adjust.onResume()`. Edit the
 `onActivityPaused(Activity activity)` method and add a call to `Adjust.onPause()`.
-- Add the `onCreate()` method with the Adjust SDK is configured and call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
+- Add the `onCreate()` method where the Adjust SDK is configured and call  `registerActivityLifecycleCallbacks` with an instance of the created `ActivityLifecycleCallbacks` class.
 
     ```java
     import com.adjust.sdk.Adjust;
