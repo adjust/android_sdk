@@ -808,7 +808,8 @@ public class Util {
                                                  final ActivityState activityState) {
         if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
             return isEqualGoogleReferrerDetails(referrerDetails, activityState);
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS) ||
+                   referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
             return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
         }
 

@@ -2539,7 +2539,10 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        boolean isInstallReferrerHuawei = responseData.referrerApi != null && responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI);
+        boolean isInstallReferrerHuawei =
+                responseData.referrerApi != null &&
+                (responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_ADS) ||
+                 responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_APP_GALLERY));
 
         if (!isInstallReferrerHuawei) {
             activityState.clickTime = responseData.clickTime;
