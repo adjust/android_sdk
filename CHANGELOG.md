@@ -1,3 +1,9 @@
+### Version 4.28.5 (21st September 2021)
+#### Added
+- Added support for `Admost` ad revenue tracking.
+
+---
+
 ### Version 4.28.4 (9th August 2021)
 #### Added
 - Added support for Android TV.
