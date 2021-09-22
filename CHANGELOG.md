@@ -1,4 +1,4 @@
-### Version 4.28.5 (21st September 2021)
+### Version 4.28.5 (22nd September 2021)
 #### Added
 - Added support for `Admost` ad revenue tracking.
 
