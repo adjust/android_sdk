@@ -45,7 +45,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -808,9 +807,10 @@ public class Util {
                                                  final ActivityState activityState) {
         if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
             return isEqualGoogleReferrerDetails(referrerDetails, activityState);
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS) ||
-                   referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
-            return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS)) {
+            return isEqualHuaweiReferrerAdsDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
+            return isEqualHuaweiReferrerAppGalleryDetails(referrerDetails, activityState);
         }
 
         return false;
@@ -827,10 +827,17 @@ public class Util {
                 && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
     }
 
-    private static boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
-                                                       final ActivityState activityState) {
+    private static boolean isEqualHuaweiReferrerAdsDetails(final ReferrerDetails referrerDetails,
+                                                           final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
+    }
+
+    private static boolean isEqualHuaweiReferrerAppGalleryDetails(final ReferrerDetails referrerDetails,
+                                                                  final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
+               && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuaweiAppGallery);
     }
 }

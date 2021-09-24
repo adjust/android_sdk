@@ -2539,24 +2539,38 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        boolean isInstallReferrerHuawei =
+        boolean isInstallReferrerHuaweiAds =
                 responseData.referrerApi != null &&
-                (responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_ADS) ||
-                 responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_APP_GALLERY));
+                (responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_ADS));
+        if (isInstallReferrerHuaweiAds) {
+            activityState.clickTimeHuawei = responseData.clickTime;
+            activityState.installBeginHuawei    = responseData.installBegin;
+            activityState.installReferrerHuawei = responseData.installReferrer;
 
-        if (!isInstallReferrerHuawei) {
-            activityState.clickTime = responseData.clickTime;
-            activityState.installBegin = responseData.installBegin;
-            activityState.installReferrer = responseData.installReferrer;
-            activityState.clickTimeServer = responseData.clickTimeServer;
-            activityState.installBeginServer = responseData.installBeginServer;
-            activityState.installVersion = responseData.installVersion;
-            activityState.googlePlayInstant = responseData.googlePlayInstant;
-        } else {
+            writeActivityStateI();
+            return;
+        }
+
+        boolean isInstallReferrerHuaweiAppGallery =
+                responseData.referrerApi != null &&
+                (responseData.referrerApi.equalsIgnoreCase(Constants.REFERRER_API_HUAWEI_APP_GALLERY));
+
+        if (isInstallReferrerHuaweiAppGallery) {
             activityState.clickTimeHuawei = responseData.clickTime;
             activityState.installBeginHuawei = responseData.installBegin;
-            activityState.installReferrerHuawei = responseData.installReferrer;
+            activityState.installReferrerHuaweiAppGallery = responseData.installReferrer;
+
+            writeActivityStateI();
+            return;
         }
+
+        activityState.clickTime = responseData.clickTime;
+        activityState.installBegin = responseData.installBegin;
+        activityState.installReferrer = responseData.installReferrer;
+        activityState.clickTimeServer = responseData.clickTimeServer;
+        activityState.installBeginServer = responseData.installBeginServer;
+        activityState.installVersion = responseData.installVersion;
+        activityState.googlePlayInstant = responseData.googlePlayInstant;
 
         writeActivityStateI();
     }
