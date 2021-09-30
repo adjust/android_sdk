@@ -151,6 +151,16 @@ Adjust SDK 需要下列权限。如果尚未添加，请将权限加入您的 `A
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
+#### <a id="gps-adid-permission"></a>添加收集 Google 广告 ID 的许可
+
+如果您针对的是 Android 12 及更高版本 (API level 31)，则需要添加`com.google.android.gms.AD_ID` 许可来读取设备的广告 ID。请将下列行添加至您的 `AndroidManifest.xml` 中，以启用许可。
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
+要了解更多信息，请参阅 [Google `AdvertisingIdClient.Info` 相关文档](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)。
+
 ### <a id="qs-proguard"></a>Proguard 设置
 
 如果您使用的是 Proguard，请将如下代码行添加至您的 Proguard 文件：
