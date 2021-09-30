@@ -150,6 +150,16 @@ implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
+#### <a id="gps-adid-permission"></a>Google 広告IDを取得するためのパーミッションの追加
+
+Android 12以上（APIレベル31）を対象としている場合、デバイスの広告IDを読み取るにはパーミッション「com.google.android.gms.AD_ID」を追加する必要があります。パーミッションを有効にするには、「AndroidManifest.xml」に次の行を追加します。
+
+```xml
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
+詳細については、[Googleの `AdvertisingIdClient.Info` のドキュメント](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) をご覧ください。
+
 ### <a id="qs-proguard"></a>Proguardの設定
 
 Proguardをお使いの場合は、以下をProguardファイルに追加してください。
