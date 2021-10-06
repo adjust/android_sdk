@@ -3,6 +3,7 @@
     package="com.adjust.examples">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application
         android:allowBackup="true"
@@ -15,7 +16,8 @@
 
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="fb308873563017393"/>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
