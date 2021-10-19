@@ -1,3 +1,13 @@
+### Version 4.28.6 (19th October 2021)
+#### Added
+- Added Huawei Install Referrer Track ID support.
+
+#### Changed
+- Replaced deprecated [`AsyncTask`](https://developer.android.com/reference/android/os/AsyncTask) with custom implementation.
+- Added permission `com.google.android.gms.permission.AD_ID` in the example apps for Android 12 & above.
+
+---
+
 ### Version 4.28.5 (22nd September 2021)
 #### Added
 - Added support for `Admost` ad revenue tracking.
