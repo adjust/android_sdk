@@ -1,4 +1,4 @@
-### Version 4.28.6 (xx October 2021)
+### Version 4.28.6 (19th October 2021)
 #### Added
 - Added Huawei Install Referrer Track ID support.
 
