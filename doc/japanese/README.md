@@ -111,14 +111,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.5'
+implementation 'com.adjust.sdk:adjust-android:4.28.6'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 アプリの WebView内でAdjust SDKを使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.5'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.6'
 ```
 
 **注意**：WebView拡張機能用にサポートされている最小のAndroid APIレベルは17（Jelly Bean）です。
@@ -149,16 +149,6 @@ implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
-
-#### <a id="gps-adid-permission"></a>Google 広告IDを取得するためのパーミッションの追加
-
-Android 12以上（APIレベル31）を対象としている場合、デバイスの広告IDを読み取るにはパーミッション「com.google.android.gms.AD_ID」を追加する必要があります。パーミッションを有効にするには、「AndroidManifest.xml」に次の行を追加します。
-
-```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-```
-
-詳細については、[Googleの`AdvertisingIdClient.Info` のドキュメント](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid) をご覧ください。
 
 ### <a id="qs-proguard"></a>Proguardの設定
 
