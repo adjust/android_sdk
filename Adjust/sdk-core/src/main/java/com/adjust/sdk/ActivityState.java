@@ -49,6 +49,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("clickTimeHuawei", long.class),
             new ObjectStreamField("installBeginHuawei", long.class),
             new ObjectStreamField("installReferrerHuawei", String.class),
+            new ObjectStreamField("installReferrerHuaweiAppGallery", String.class),
     };
 
     // persistent data
@@ -88,6 +89,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected long clickTimeHuawei;
     protected long installBeginHuawei;
     protected String installReferrerHuawei;
+    protected String installReferrerHuaweiAppGallery;
 
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
@@ -118,6 +120,7 @@ public class ActivityState implements Serializable, Cloneable {
         clickTimeHuawei = 0;
         installBeginHuawei = 0;
         installReferrerHuawei = null;
+        installReferrerHuaweiAppGallery = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -186,6 +189,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(clickTimeHuawei, otherActivityState.clickTimeHuawei)) return false;
         if (!Util.equalLong(installBeginHuawei, otherActivityState.installBeginHuawei)) return false;
         if (!Util.equalString(installReferrerHuawei, otherActivityState.installReferrerHuawei)) return false;
+        if (!Util.equalString(installReferrerHuaweiAppGallery, otherActivityState.installReferrerHuaweiAppGallery)) return false;
         return true;
     }
 
@@ -217,6 +221,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(clickTimeHuawei);
         hashCode = 37 * hashCode + Util.hashLong(installBeginHuawei);
         hashCode = 37 * hashCode + Util.hashString(installReferrerHuawei);
+        hashCode = 37 * hashCode + Util.hashString(installReferrerHuaweiAppGallery);
         return hashCode;
     }
 
@@ -254,6 +259,7 @@ public class ActivityState implements Serializable, Cloneable {
         clickTimeHuawei = Util.readLongField(fields, "clickTimeHuawei", -1l);
         installBeginHuawei = Util.readLongField(fields, "installBeginHuawei", -1l);
         installReferrerHuawei = Util.readStringField(fields, "installReferrerHuawei", null);
+        installReferrerHuaweiAppGallery = Util.readStringField(fields, "installReferrerHuaweiAppGallery", null);
 
         // create UUID for migrating devices
         if (uuid == null) {
