@@ -7,8 +7,8 @@ subprojects {
 ext {
     // Android config.
     coreMinSdkVersion = 9
-    coreCompileSdkVersion = 30
-    coreTargetSdkVersion = 30
+    coreCompileSdkVersion = 31
+    coreTargetSdkVersion = 31
     coreVersionName = '4.28.5'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 17
@@ -18,7 +18,7 @@ ext {
 }
 
 buildscript {
-    ext.kotlin_version = '1.4.21'
+    ext.kotlin_version = '1.5.31'
 
     repositories {
         jcenter()
