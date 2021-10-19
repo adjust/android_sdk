@@ -20,6 +20,26 @@ public class InstallReferrerHuawei {
     private static final String REFERRER_PROVIDER_URI = "content://" + REFERRER_PROVIDER_AUTHORITY + "/item/5";
 
     /**
+     * Huawei install referrer provider column index referrer.
+     */
+    private static final int COLUMN_INDEX_REFERRER = 0;
+
+    /**
+     * Huawei install referrer provider column index click time.
+     */
+    private static final int COLUMN_INDEX_CLICK_TIME = 1;
+
+    /**
+     * Huawei install referrer provider column index install time.
+     */
+    private static final int COLUMN_INDEX_INSTALL_TIME = 2;
+
+    /**
+     * Huawei install referrer provider column index track ID.
+     */
+    private static final int COLUMN_INDEX_TRACK_ID = 4;
+
+    /**
      * Adjust logger instance.
      */
     private ILogger logger;
@@ -30,7 +50,7 @@ public class InstallReferrerHuawei {
     private Context context;
 
     /**
-     * Weak reference to ActivityHandler instance.
+     * Huawei Referrer callback.
      */
     private final InstallReferrerReadListener referrerCallback;
 
@@ -48,7 +68,9 @@ public class InstallReferrerHuawei {
      * @param context         Application context
      * @param referrerCallback Callback for referrer information
      */
-    public InstallReferrerHuawei(final Context context, final InstallReferrerReadListener referrerCallback) {
+    public InstallReferrerHuawei(final Context context,
+                                 final InstallReferrerReadListener referrerCallback)
+    {
         this.logger = AdjustFactory.getLogger();
         this.context = context;
         this.referrerCallback = referrerCallback;
@@ -69,28 +91,52 @@ public class InstallReferrerHuawei {
         Uri uri = Uri.parse(REFERRER_PROVIDER_URI);
         ContentResolver contentResolver = context.getContentResolver();
 
-        String packageName[] = new String[] { context.getPackageName() };
+        String[] packageName = new String[] { context.getPackageName() };
         try {
             cursor = contentResolver.query(uri, null, null, packageName, null);
 
             if (cursor != null && cursor.moveToFirst()) {
 
-                String installReferrer = cursor.getString(0);
-                String clickTime = cursor.getString(1);
-                String installTime = cursor.getString(2);
+                String referrerHuaweiAds = cursor.getString(COLUMN_INDEX_REFERRER);
+                String referrerHuaweiAppGallery = cursor.getString(COLUMN_INDEX_TRACK_ID);
 
-                logger.debug("InstallReferrerHuawei reads referrer[%s] clickTime[%s] installTime[%s]", installReferrer, clickTime, installTime );
+                logger.debug("InstallReferrerHuawei reads " +
+                             "index_referrer[%s] index_track_id[%s]",
+                             referrerHuaweiAds, referrerHuaweiAppGallery);
+
+                String clickTime = cursor.getString(COLUMN_INDEX_CLICK_TIME);
+                String installTime = cursor.getString(COLUMN_INDEX_INSTALL_TIME);
+
+                logger.debug("InstallReferrerHuawei reads " +
+                             "clickTime[%s] installTime[%s]", clickTime, installTime );
 
                 long referrerClickTimestampSeconds = Long.parseLong(clickTime);
                 long installBeginTimestampSeconds = Long.parseLong(installTime);
 
-                ReferrerDetails referrerDetails = new ReferrerDetails(installReferrer,
-                        referrerClickTimestampSeconds, installBeginTimestampSeconds);
+                if (isValidReferrerHuaweiAds(referrerHuaweiAds)) {
+                    ReferrerDetails referrerDetails =
+                            new ReferrerDetails(referrerHuaweiAds,
+                                                referrerClickTimestampSeconds,
+                                                installBeginTimestampSeconds);
 
-                referrerCallback.onInstallReferrerRead(referrerDetails);
+                    referrerCallback.onInstallReferrerRead(referrerDetails,
+                                                           Constants.REFERRER_API_HUAWEI_ADS);
+                }
+
+                if (isValidReferrerHuaweiAppGallery(referrerHuaweiAppGallery)) {
+                    ReferrerDetails referrerDetails =
+                            new ReferrerDetails(referrerHuaweiAppGallery,
+                                                referrerClickTimestampSeconds,
+                                                installBeginTimestampSeconds);
+
+                    referrerCallback.onInstallReferrerRead(referrerDetails,
+                                                           Constants.REFERRER_API_HUAWEI_APP_GALLERY);
+                }
 
             } else {
-                logger.debug("InstallReferrerHuawei fail to read referrer for package [%s] and content uri [%s]", context.getPackageName(), uri.toString());
+                logger.debug("InstallReferrerHuawei fail to read referrer for " +
+                             "package [%s] and content uri [%s]",
+                             context.getPackageName(), uri.toString());
             }
         } catch (Exception e) {
                 logger.debug("InstallReferrerHuawei error [%s]", e.getMessage());
@@ -102,5 +148,30 @@ public class InstallReferrerHuawei {
 
         shouldTryToRead.set(false);
     }
+
+    private boolean isValidReferrerHuaweiAds(String referrerHuaweiAds) {
+        if (referrerHuaweiAds == null) {
+            return false;
+        }
+
+        if (referrerHuaweiAds.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean isValidReferrerHuaweiAppGallery(String referrerHuaweiAppGallery) {
+        if (referrerHuaweiAppGallery == null) {
+            return false;
+        }
+
+        if (referrerHuaweiAppGallery.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+
 
 }

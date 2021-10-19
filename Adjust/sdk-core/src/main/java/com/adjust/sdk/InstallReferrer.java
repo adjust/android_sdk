@@ -90,7 +90,7 @@ public class InstallReferrer implements InvocationHandler {
     private TimerOnce retryTimer;
 
     /**
-     * Weak reference to ActivityHandler instance.
+     * Referrer callback.
      */
     private final InstallReferrerReadListener referrerCallback;
 
@@ -367,7 +367,7 @@ public class InstallReferrer implements InvocationHandler {
                             installVersion, googlePlayInstant);
 
                     // Stuff successfully read, try to send it.
-                    referrerCallback.onInstallReferrerRead(installReferrerDetails);
+                    referrerCallback.onInstallReferrerRead(installReferrerDetails, Constants.REFERRER_API_GOOGLE);
                 } catch (Exception e) {
                     logger.warn("Couldn't get install referrer from client (%s). Retrying...", e.getMessage());
                     retryAtEnd = true;

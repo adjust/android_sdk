@@ -18,7 +18,6 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.LocaleList;
 import android.os.Looper;
@@ -26,6 +25,7 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
 
 import java.io.BufferedInputStream;
@@ -45,7 +45,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
@@ -168,7 +167,7 @@ public class Util {
             command.run();
             return;
         }
-        new AsyncTask<Object,Void,Void>() {
+        new AsyncTaskExecutor<Object,Void>() {
             @Override
             protected Void doInBackground(Object... params) {
                 Runnable command = (Runnable)params[0];
@@ -191,7 +190,7 @@ public class Util {
         }
 
         logger.debug("GoogleAdId being read in the foreground");
-        new AsyncTask<Context,Void,String>() {
+        new AsyncTaskExecutor<Context, String>() {
             @Override
             protected String doInBackground(Context... params) {
                 ILogger logger = AdjustFactory.getLogger();
@@ -808,8 +807,10 @@ public class Util {
                                                  final ActivityState activityState) {
         if (referrerApi.equals(Constants.REFERRER_API_GOOGLE)) {
             return isEqualGoogleReferrerDetails(referrerDetails, activityState);
-        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI)) {
-            return isEqualHuaweiReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_ADS)) {
+            return isEqualHuaweiReferrerAdsDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
+            return isEqualHuaweiReferrerAppGalleryDetails(referrerDetails, activityState);
         }
 
         return false;
@@ -826,10 +827,17 @@ public class Util {
                 && Util.equalBoolean(referrerDetails.googlePlayInstant, activityState.googlePlayInstant) ;
     }
 
-    private static boolean isEqualHuaweiReferrerDetails(final ReferrerDetails referrerDetails,
-                                                       final ActivityState activityState) {
+    private static boolean isEqualHuaweiReferrerAdsDetails(final ReferrerDetails referrerDetails,
+                                                           final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
                 && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuawei);
+    }
+
+    private static boolean isEqualHuaweiReferrerAppGalleryDetails(final ReferrerDetails referrerDetails,
+                                                                  final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
+               && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuaweiAppGallery);
     }
 }
