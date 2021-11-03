@@ -51,7 +51,6 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Track event](#et-tracking)
    * [Track revenue](#et-revenue)
    * [Revenue deduplication](#et-revenue-deduplication)
-   * [In-app purchase verification](#et-purchase-verification)
 
 ### Custom parameters
 
@@ -896,10 +895,6 @@ Adjust.trackEvent(event);
 </td>
 </tr>
 </table>
-
-### <a id="et-purchase-verification"></a>In-app purchase verification
-
-It's possible to verify the in-app Purchases made in your app using [Adjust's Purchase Verification][android-purchase-verification], a server side receipt verification tool. Click the link to find out more.   
 
 ## Custom parameters
 
