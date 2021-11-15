@@ -111,14 +111,14 @@ Adjust SDKをAndroidプロジェクトに実装する手順を説明します。
 Mavenを使用している場合は、以下の内容を`build.gradle`ファイルに追加します。file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.6'
+implementation 'com.adjust.sdk:adjust-android:4.28.7'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 アプリの WebView内でAdjust SDKを使用したい場合は、以下のdependencyを追加してください。
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.6'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.7'
 ```
 
 **注意**：WebView拡張機能用にサポートされている最小のAndroid APIレベルは17（Jelly Bean）です。

@@ -51,7 +51,6 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Track event](#et-tracking)
    * [Track revenue](#et-revenue)
    * [Revenue deduplication](#et-revenue-deduplication)
-   * [In-app purchase verification](#et-purchase-verification)
 
 ### Custom parameters
 
@@ -113,14 +112,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.6'
+implementation 'com.adjust.sdk:adjust-android:4.28.7'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.6'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.7'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -896,10 +895,6 @@ Adjust.trackEvent(event);
 </td>
 </tr>
 </table>
-
-### <a id="et-purchase-verification"></a>In-app purchase verification
-
-It's possible to verify the in-app Purchases made in your app using [Adjust's Purchase Verification][android-purchase-verification], a server side receipt verification tool. Click the link to find out more.   
 
 ## Custom parameters
 
