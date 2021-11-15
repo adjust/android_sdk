@@ -112,14 +112,14 @@
 如果您使用的是 Maven，请添加下行到您的 `build.gradle` 文件：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.6'
+implementation 'com.adjust.sdk:adjust-android:4.28.7'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 如果您想在应用 web view 中使用 Adjust SDK，请也添加下列附加依赖项：
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.6'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.7'
 ```
 
 **请注意:** web view 扩展支持的最低安卓 API 级别为 17 (Jelly Bean)。
@@ -150,16 +150,6 @@ Adjust SDK 需要下列权限。如果尚未添加，请将权限加入您的 `A
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
-
-#### <a id="gps-adid-permission"></a>添加收集 Google 广告 ID 的许可
-
-如果您针对的是 Android 12 及更高版本 (API level 31)，则需要添加`com.google.android.gms.AD_ID` 许可来读取设备的广告 ID。请将下列行添加至您的 `AndroidManifest.xml` 中，以启用许可。
-
-```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-```
-
-要了解更多信息，请参阅 [Google `AdvertisingIdClient.Info` 相关文档](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)。
 
 ### <a id="qs-proguard"></a>Proguard 设置
 
