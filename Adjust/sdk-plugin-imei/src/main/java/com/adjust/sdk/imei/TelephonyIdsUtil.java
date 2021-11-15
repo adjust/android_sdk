@@ -13,6 +13,13 @@ import java.util.List;
 import java.util.Map;
 
 class TelephonyIdsUtil {
+    private static String imei = null;
+    private static String meid = null;
+    private static String deviceId = null;
+    private static String imeis = null;
+    private static String meids = null;
+    private static String deviceIds = null;
+
     static void injectImei(Map<String, String> parameters, Context context, ILogger logger) {
         if (!AdjustImei.isImeiToBeRead) {
             return;
@@ -28,6 +35,10 @@ class TelephonyIdsUtil {
     }
 
     private static String getDeviceIds(TelephonyManager telephonyManager, ILogger logger) {
+        if (deviceIds != null) {
+            return deviceIds;
+        }
+
         List<String> telephonyIdList = new ArrayList<String>();
         for (int i = 0; i < 10; i++) {
             String telephonyId = getDeviceIdByIndex(telephonyManager, i, logger);
@@ -35,13 +46,19 @@ class TelephonyIdsUtil {
                 break;
             }
         }
-        return TextUtils.join(",", telephonyIdList);
+        deviceIds = TextUtils.join(",", telephonyIdList);
+        return deviceIds;
     }
 
     // Test difference mentioned here https://stackoverflow.com/a/35343531
     private static String getDefaultDeviceId(TelephonyManager telephonyManager, ILogger logger) {
+        if (deviceId != null) {
+            return deviceId;
+        }
+
         try {
-            return telephonyManager.getDeviceId();
+            deviceId = telephonyManager.getDeviceId();
+            return deviceId;
         } catch (SecurityException e) {
             logger.debug("Couldn't read default Device Id: %s", e.getMessage());
         }
@@ -60,6 +77,10 @@ class TelephonyIdsUtil {
     }
 
     private static String getImeis(TelephonyManager telephonyManager, ILogger logger) {
+        if (imeis != null) {
+            return imeis;
+        }
+
         List<String> imeiList = new ArrayList<String>();
         for (int i = 0; i < 10; i++) {
             String imei = getImeiByIndex(telephonyManager, i, logger);
@@ -67,13 +88,19 @@ class TelephonyIdsUtil {
                 break;
             }
         }
-        return TextUtils.join(",", imeiList);
+        imeis = TextUtils.join(",", imeiList);
+        return imeis;
     }
 
     private static String getDefaultImei(TelephonyManager telephonyManager, ILogger logger) {
+        if (imei != null) {
+            return imei;
+        }
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return telephonyManager.getImei();
+                imei = telephonyManager.getImei();
+                return imei;
             }
         } catch (SecurityException e) {
             logger.debug("Couldn't read default IMEI: %s", e.getMessage());
@@ -93,6 +120,10 @@ class TelephonyIdsUtil {
     }
 
     public static String getMeids(TelephonyManager telephonyManager, ILogger logger) {
+        if (meids != null) {
+            return meids;
+        }
+
         List<String> meidList = new ArrayList<String>();
         for (int i = 0; i < 10; i++) {
             String meid = getMeidByIndex(telephonyManager, i, logger);
@@ -100,13 +131,19 @@ class TelephonyIdsUtil {
                 break;
             }
         }
-        return TextUtils.join(",", meidList);
+        meids = TextUtils.join(",", meidList);
+        return meids;
     }
 
     private static String getDefaultMeid(TelephonyManager telephonyManager, ILogger logger) {
+        if (meid != null) {
+            return meid;
+        }
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                return telephonyManager.getMeid();
+                meid = telephonyManager.getMeid();
+                return meid;
             }
         } catch (SecurityException e) {
             logger.debug("Couldn't read default MEID: %s", e.getMessage());
