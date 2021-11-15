@@ -114,14 +114,14 @@ Adjust™의 Android SDK에 관한 문서입니다. Adjust™에 대한 자세�
 Maven을 사용하는 경우, 다음을 `build.gradle` 파일에 추가하시기 바랍니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.6'
+implementation 'com.adjust.sdk:adjust-android:4.28.7'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 앱의 웹뷰 안에서 Adjust SDK를 사용하고자 하는 경우, 다음의 추가적인 dependency를 추가하시기 바랍니다.
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.6'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.7'
 ```
 
 **참고**: 웹뷰 확장에 필요한 Android API의 최소 지원 레벨은 17(Jelley Bean)입니다.
@@ -152,16 +152,6 @@ Adjust SDK는 다음의 권한을 필요로합니다. 아직 다음의 권한이
 ```xml
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
-
-#### <a id="gps-adid-permission"></a>Google 광고 ID 수집을 위해 권한 추가하기
-
-Android 12 이상(API 레벨 31)을 타겟팅 하는 경우, 기기의 광고 ID를 읽기 위해 `com.google.android.gms.AD_ID` 권한을 추가해야 합니다. 다음의 라인을 `AndroidManifest.xml`에 추가하여 권한을 활성화합니다.
-
-```xml
-<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-```
-
-자세한 정보는 [Google의 `AdvertisingIdClient.Info` 문서](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)를 참조하시기 바랍니다.
 
 ### <a id="qs-proguard"></a>Proguard 설정
 
