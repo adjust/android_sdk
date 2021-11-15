@@ -1,3 +1,9 @@
+### Version 4.28.7 (XXth November 2021)
+#### Changed
+- Added caching of IDs in the IMEI plugin to avoid frequent reads.
+
+---
+
 ### Version 4.28.6 (19th October 2021)
 #### Added
 - Added Huawei Install Referrer Track ID support.
