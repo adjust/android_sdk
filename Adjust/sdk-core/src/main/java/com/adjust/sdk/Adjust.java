@@ -339,12 +339,13 @@ public class Adjust {
      * @return Amazon Advertising Identifier
      */
     public static String getAmazonAdId(final Context context) {
-        Context appContext = null;
+        Context appContext;
         if (context != null) {
             appContext = context.getApplicationContext();
+            return Util.getFireAdvertisingId(appContext.getContentResolver());
         }
 
-        return Util.getFireAdvertisingId(appContext.getContentResolver());
+        return null;
     }
 
     /**
