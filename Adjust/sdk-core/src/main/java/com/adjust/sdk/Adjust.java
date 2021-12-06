@@ -116,13 +116,8 @@ public class Adjust {
      * @param context Application context
      */
     public static void appWillOpenUrl(Uri url, Context context) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
-
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, appContext);
+        adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
     }
 
     /**
@@ -132,13 +127,8 @@ public class Adjust {
      * @param context  Application context
      */
     public static void setReferrer(String referrer, Context context) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
-
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendReferrer(referrer, appContext);
+        adjustInstance.sendReferrer(referrer, extractApplicationContext(context));
     }
 
     /**
@@ -235,13 +225,8 @@ public class Adjust {
      * @param context Application context
      */
     public static void setPushToken(final String token, final Context context) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
-
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setPushToken(token, appContext);
+        adjustInstance.setPushToken(token, extractApplicationContext(context));
     }
 
     /**
@@ -250,13 +235,8 @@ public class Adjust {
      * @param context Application context
      */
     public static void gdprForgetMe(final Context context) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
-
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.gdprForgetMe(appContext);
+        adjustInstance.gdprForgetMe(extractApplicationContext(context));
     }
 
     /**
@@ -265,13 +245,8 @@ public class Adjust {
      * @param context Application context
      */
     public static void disableThirdPartySharing(final Context context) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
-        }
-
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disableThirdPartySharing(appContext);
+        adjustInstance.disableThirdPartySharing(extractApplicationContext(context));
     }
 
     public static void trackThirdPartySharing(
@@ -339,9 +314,8 @@ public class Adjust {
      * @return Amazon Advertising Identifier
      */
     public static String getAmazonAdId(final Context context) {
-        Context appContext;
-        if (context != null) {
-            appContext = context.getApplicationContext();
+        Context appContext = extractApplicationContext(context);
+        if (appContext != null) {
             return Util.getFireAdvertisingId(appContext.getContentResolver());
         }
 
@@ -394,5 +368,13 @@ public class Adjust {
 
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setTestOptions(testOptions);
+    }
+
+    private static Context extractApplicationContext(final Context context) {
+        if (context == null) {
+            return null;
+        }
+
+        return context.getApplicationContext();
     }
 }
