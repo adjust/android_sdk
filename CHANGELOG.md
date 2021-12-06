@@ -1,3 +1,9 @@
+### Version 4.28.8 (6th December 2021)
+#### Changed
+- Added extraction & usage of application context for all the APIs.
+
+---
+
 ### Version 4.28.7 (15th November 2021)
 #### Changed
 - Added caching of IDs in the IMEI plugin to avoid frequent reads.

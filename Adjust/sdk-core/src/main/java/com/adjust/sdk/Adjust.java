@@ -32,7 +32,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.28.7";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.28.8";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -117,7 +117,7 @@ public class Adjust {
      */
     public static void appWillOpenUrl(Uri url, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, context);
+        adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
     }
 
     /**
@@ -128,7 +128,7 @@ public class Adjust {
      */
     public static void setReferrer(String referrer, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendReferrer(referrer, context);
+        adjustInstance.sendReferrer(referrer, extractApplicationContext(context));
     }
 
     /**
@@ -226,7 +226,7 @@ public class Adjust {
      */
     public static void setPushToken(final String token, final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setPushToken(token, context);
+        adjustInstance.setPushToken(token, extractApplicationContext(context));
     }
 
     /**
@@ -236,7 +236,7 @@ public class Adjust {
      */
     public static void gdprForgetMe(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.gdprForgetMe(context);
+        adjustInstance.gdprForgetMe(extractApplicationContext(context));
     }
 
     /**
@@ -246,7 +246,7 @@ public class Adjust {
      */
     public static void disableThirdPartySharing(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disableThirdPartySharing(context);
+        adjustInstance.disableThirdPartySharing(extractApplicationContext(context));
     }
 
     public static void trackThirdPartySharing(
@@ -299,7 +299,12 @@ public class Adjust {
      * @param onDeviceIdRead Callback to get triggered once identifier is obtained
      */
     public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
-        Util.getGoogleAdId(context, onDeviceIdRead);
+        Context appContext = null;
+        if (context != null) {
+            appContext = context.getApplicationContext();
+        }
+
+        Util.getGoogleAdId(appContext, onDeviceIdRead);
     }
 
     /**
@@ -309,7 +314,12 @@ public class Adjust {
      * @return Amazon Advertising Identifier
      */
     public static String getAmazonAdId(final Context context) {
-        return Util.getFireAdvertisingId(context.getContentResolver());
+        Context appContext = extractApplicationContext(context);
+        if (appContext != null) {
+            return Util.getFireAdvertisingId(appContext.getContentResolver());
+        }
+
+        return null;
     }
 
     /**
@@ -358,5 +368,13 @@ public class Adjust {
 
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setTestOptions(testOptions);
+    }
+
+    private static Context extractApplicationContext(final Context context) {
+        if (context == null) {
+            return null;
+        }
+
+        return context.getApplicationContext();
     }
 }
