@@ -21,7 +21,7 @@ buildscript {
     ext.kotlin_version = '1.5.31'
 
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     dependencies {
@@ -34,7 +34,7 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         google()
     }
     gradle.projectsEvaluated {
