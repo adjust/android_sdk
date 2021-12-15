@@ -49,7 +49,7 @@ task androidJavadocs(type: Javadoc) {
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
     android.libraryVariants.all { variant ->
         if (variant.name == 'release') {
-            classpath += variant.javaCompiler.classpath
+            classpath += variant.javaCompileProvider.get().classpath
         }
     }
 }
