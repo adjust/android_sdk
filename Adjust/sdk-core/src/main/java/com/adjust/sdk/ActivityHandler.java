@@ -288,7 +288,12 @@ public class ActivityHandler implements IActivityHandler {
                 return null;
             }
 
-            for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+            List<ActivityManager.RunningAppProcessInfo> processInfoList = manager.getRunningAppProcesses();
+            if (processInfoList == null) {
+                return null;
+            }
+
+            for (ActivityManager.RunningAppProcessInfo processInfo : processInfoList) {
                 if (processInfo.pid == currentPid) {
                     if (!processInfo.processName.equalsIgnoreCase(adjustConfig.processName)) {
                         AdjustFactory.getLogger().info("Skipping initialization in background process (%s)", processInfo.processName);
