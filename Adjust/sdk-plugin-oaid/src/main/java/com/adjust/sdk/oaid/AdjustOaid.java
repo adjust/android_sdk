@@ -17,7 +17,7 @@ public class AdjustOaid {
         readOaid();
 
         try {
-            System.loadLibrary("nllvm1623827671");
+            System.loadLibrary("msaoaidsec");
             String certificate = Util.readCertFromAssetFile(context);
             isMsaSdkAvailable = MdidSdkHelper.InitCert(context, certificate);
         } catch (Throwable t) {
