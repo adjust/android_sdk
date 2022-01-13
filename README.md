@@ -145,12 +145,6 @@ The Adjust SDK requires the following permissions. Please add them to your `Andr
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 ```
 
-If you are **not targeting the Google Play Store**, you must also add the following permission:
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-```
-
 #### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID
 
 If you are targeting Android 12 and above (API level 31), you need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID. Add the following line to your `AndroidManifest.xml` to enable the permission.
