@@ -188,9 +188,6 @@ class DeviceInfo {
         if (nonGoogleIdsReadOnce) {
             return;
         }
-        if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
-        }
         androidId = Util.getAndroidId(context);
         nonGoogleIdsReadOnce = true;
     }
