@@ -791,10 +791,7 @@ public class ActivityHandler implements IActivityHandler {
         deviceInfo.reloadPlayIds(adjustConfig.context);
         if (deviceInfo.playAdId == null) {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
-            if (deviceInfo.macSha1 == null &&
-                    deviceInfo.macShortMd5 == null &&
-                    deviceInfo.androidId == null)
-            {
+            if (deviceInfo.androidId == null) {
                 logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
             }
         } else {
