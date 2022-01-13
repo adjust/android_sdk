@@ -218,10 +218,6 @@ public class Util {
         return googleAdId;
     }
 
-    public static String getMacAddress(Context context) {
-        return MacAddressUtil.getMacAddress(context);
-    }
-
     public static String getAndroidId(Context context) {
         return AndroidIdUtil.getAndroidId(context);
     }
@@ -422,16 +418,8 @@ public class Util {
         return value.hashCode();
     }
 
-    public static String sha1(final String text) {
-        return hash(text, SHA1);
-    }
-
     public static String sha256(final String text) {
         return hash(text, SHA256);
-    }
-
-    public static String md5(final String text) {
-        return hash(text, MD5);
     }
 
     public static String hash(final String text, final String method) {

@@ -655,8 +655,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         String googleAdIdName = "gps_adid";
         String fireAdIdName = "fire_adid";
         String androidIdName = "android_id";
-        String macSha1Name = "mac_sha1";
-        String macMd5Name = "mac_md5";
         String androidUUIDName= "android_uuid";
 
         if (parameters.get(googleAdIdName) != null) {
@@ -667,12 +665,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         }
         if (parameters.get(androidIdName) != null) {
             return androidIdName;
-        }
-        if (parameters.get(macSha1Name) != null) {
-            return macSha1Name;
-        }
-        if (parameters.get(macMd5Name) != null) {
-            return macMd5Name;
         }
         if (parameters.get(androidUUIDName) != null) {
             return androidUUIDName;
