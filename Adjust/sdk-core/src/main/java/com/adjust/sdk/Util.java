@@ -178,18 +178,6 @@ public class Util {
     }
 
     public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
-        ILogger logger = AdjustFactory.getLogger();
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            logger.debug("GoogleAdId being read in the background");
-
-            String GoogleAdId = Util.getGoogleAdId(context);
-
-            logger.debug("GoogleAdId read " + GoogleAdId);
-            onDeviceIdRead.onGoogleAdIdRead(GoogleAdId);
-            return;
-        }
-
-        logger.debug("GoogleAdId being read in the foreground");
         new AsyncTaskExecutor<Context, String>() {
             @Override
             protected String doInBackground(Context... params) {
@@ -202,7 +190,6 @@ public class Util {
 
             @Override
             protected void onPostExecute(String playAdiId) {
-                ILogger logger = AdjustFactory.getLogger();
                 onDeviceIdRead.onGoogleAdIdRead(playAdiId);
             }
         }.execute(context);
