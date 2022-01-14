@@ -1,3 +1,17 @@
+### Version 4.28.9 (14th January 2022)
+#### Added
+- Added support to OAID plugin for MSA SDK v1.1.0.
+
+#### Changed
+- Removed reading of MAC address.
+- Updated Gradle version 7.0.4 and Gradle Javadoc task.
+
+#### Fixed
+- Fixed crash while iterating through the running processes.
+- Fixed ANR while reading Google Play Advertising Id.
+
+---
+
 ### Version 4.28.8 (6th December 2021)
 #### Changed
 - Added extraction & usage of application context for all the APIs.
