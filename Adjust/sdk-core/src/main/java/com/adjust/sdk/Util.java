@@ -58,8 +58,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.MD5;
-import static com.adjust.sdk.Constants.SHA1;
 import static com.adjust.sdk.Constants.SHA256;
 
 /**
