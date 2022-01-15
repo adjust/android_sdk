@@ -19,4 +19,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class com.bun.miitmdid.core.** {*;}
+-keep class com.bun.miitmdid.** {*;}
+-keep interface com.bun.supplier.** {*;}

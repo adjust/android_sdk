@@ -294,8 +294,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -385,8 +383,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -471,8 +467,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -525,8 +519,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Attribution parameters.
@@ -635,8 +627,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -697,8 +687,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -758,8 +746,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -830,8 +816,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -896,8 +880,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -956,8 +938,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -1049,8 +1029,6 @@ public class PackageBuilder {
                         "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Rest of the parameters.
@@ -1141,8 +1119,6 @@ public class PackageBuilder {
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.reloadNonPlayIds(adjustConfig.context);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-            PackageBuilder.addString(parameters, "mac_md5", deviceInfo.macShortMd5);
-            PackageBuilder.addString(parameters, "mac_sha1", deviceInfo.macSha1);
         }
 
         // Callback and partner parameters.
@@ -1332,9 +1308,7 @@ public class PackageBuilder {
     }
 
     private void checkDeviceIds(Map<String, String> parameters) {
-        if (parameters != null && !parameters.containsKey("mac_sha1")
-                && !parameters.containsKey("mac_md5")
-                && !parameters.containsKey("android_id")
+        if (parameters != null && !parameters.containsKey("android_id")
                 && !parameters.containsKey("gps_adid")
                 && !parameters.containsKey("fire_adid")
                 && !parameters.containsKey("oaid")

@@ -20,11 +20,11 @@ android {
 }
 
 dependencies {
-    compileOnly files('libs/oaid_sdk_1.0.26.aar')
+    compileOnly files('libs/oaid_sdk_1.1.0.aar')
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.28.8'
+    // implementation 'com.adjust.sdk:adjust-android:4.28.9'
 }
 
 task adjustOaidAndroidAar (type: Copy) {
@@ -52,9 +52,10 @@ task adjustOaidAndroidJar(type: Jar) {
 task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation.
-    if (org.gradle.internal.jvm.Jvm.current().getJavaVersion() == JavaVersion.VERSION_1_8) {
-        options.addStringOption('Xdoclint:none', '-quiet')
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            classpath += variant.javaCompileProvider.get().classpath
+        }
     }
 }
 
