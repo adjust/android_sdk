@@ -112,14 +112,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.28.8'
+implementation 'com.adjust.sdk:adjust-android:4.28.9'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.8'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.28.9'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -143,12 +143,6 @@ The Adjust SDK requires the following permissions. Please add them to your `Andr
 ```xml
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-```
-
-If you are **not targeting the Google Play Store**, you must also add the following permission:
-
-```xml
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 ```
 
 #### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID

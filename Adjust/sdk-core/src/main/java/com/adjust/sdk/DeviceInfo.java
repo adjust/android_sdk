@@ -56,8 +56,6 @@ class DeviceInfo {
     int playAdIdAttempt;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
-    String macSha1;
-    String macShortMd5;
     String androidId;
     String fbAttributionId;
     String clientSdk;
@@ -190,25 +188,8 @@ class DeviceInfo {
         if (nonGoogleIdsReadOnce) {
             return;
         }
-        if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
-        }
-        String macAddress = Util.getMacAddress(context);
-        macSha1 = getMacSha1(macAddress);
-        macShortMd5 = getMacShortMd5(macAddress);
         androidId = Util.getAndroidId(context);
         nonGoogleIdsReadOnce = true;
-    }
-
-    private String getMacAddress(Context context, boolean isGooglePlayServicesAvailable) {
-        if (!isGooglePlayServicesAvailable) {
-            if (!Util.checkPermission(context, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-                AdjustFactory.getLogger().warn("Missing permission: ACCESS_WIFI_STATE");
-            }
-            return Util.getMacAddress(context);
-        } else {
-            return null;
-        }
     }
 
     private String getPackageName(Context context) {
@@ -344,25 +325,6 @@ class DeviceInfo {
         } else {
             return Util.formatString("%s@%s", sdkPrefix, Constants.CLIENT_SDK);
         }
-    }
-
-    private String getMacSha1(String macAddress) {
-        if (macAddress == null) {
-            return null;
-        }
-        String macSha1 = Util.sha1(macAddress);
-
-        return macSha1;
-    }
-
-    private String getMacShortMd5(String macAddress) {
-        if (macAddress == null) {
-            return null;
-        }
-        String macShort = macAddress.replaceAll(":", "");
-        String macShortMd5 = Util.md5(macShort);
-
-        return macShortMd5;
     }
 
     private String getFacebookAttributionId(final Context context) {
