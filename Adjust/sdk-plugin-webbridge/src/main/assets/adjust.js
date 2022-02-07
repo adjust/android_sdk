@@ -211,7 +211,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge4.28.9';
+            return 'web-bridge4.29.0';
         }
     },
 
