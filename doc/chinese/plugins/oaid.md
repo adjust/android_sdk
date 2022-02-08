@@ -13,8 +13,8 @@ OAID 是由移动安全联盟 (MSA) 推出的广告 ID。所有中国国内的�
 如果您使用的是 Maven，请将以下 OAID 插件依赖项添加到现有 Adjust SDK 依赖项旁的 `build.gradle` 文件：
 
 ```
-implementation 'com.adjust.sdk:adjust-android:4.29.0'
-implementation 'com.adjust.sdk:adjust-android-oaid:4.29.0'
+implementation 'com.adjust.sdk:adjust-android:4.29.1'
+implementation 'com.adjust.sdk:adjust-android-oaid:4.29.1'
 ```
 
 您还可以将 Adjust OAID 插件作为 JAR 文件进行添加，该文件可从我们的 [版本页面][releases] 下载。
