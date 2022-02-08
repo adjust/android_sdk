@@ -1,4 +1,4 @@
-### Version 4.29.0 (07th February 2022)
+### Version 4.29.0 (8th February 2022)
 #### Added
 - Added support for `Unity` ad revenue tracking.
 
