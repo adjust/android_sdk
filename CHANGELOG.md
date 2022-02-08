@@ -1,3 +1,9 @@
+### Version 4.29.1 (8th February 2022)
+#### Added
+- Added support for `Helium Chartboost` ad revenue tracking.
+
+---
+
 ### Version 4.29.0 (8th February 2022)
 #### Added
 - Added support for `Unity` ad revenue tracking.

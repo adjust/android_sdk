@@ -53,7 +53,7 @@ public class TestActivityPackage {
         // default values
         appToken = "123456789012";
         environment = "sandbox";
-        clientSdk = "android4.29.0";
+        clientSdk = "android4.29.1";
         suffix = "";
         attribution = new AdjustAttribution();
         playServices = true;
