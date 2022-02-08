@@ -8,8 +8,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        versionName rootProject.ext.coreVersionName
-        versionCode rootProject.ext.defaultVersionCode
         consumerProguardFiles 'adjust-proguard-rules.txt'
     }
 

@@ -14,8 +14,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.webbridgeMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        versionName rootProject.ext.coreVersionName
-        versionCode rootProject.ext.defaultVersionCode
     }
 }
 
@@ -24,7 +22,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.28.9'
+    // implementation 'com.adjust.sdk:adjust-android:4.29.0'
 }
 
 task adjustWebBridgeAndroidAar (type: Copy) {
