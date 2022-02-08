@@ -57,6 +57,7 @@ public class AdjustConfig {
     public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
     public static final String AD_REVENUE_ADMOST = "admost_sdk";
     public static final String AD_REVENUE_UNITY = "unity_sdk";
+    public static final String AD_REVENUE_HELIUM_CHARTBOOST = "helium_chartboost_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
