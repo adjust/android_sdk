@@ -372,20 +372,7 @@ public class AdjustCommandExecutor {
                 public void onAttributionChanged(AdjustAttribution attribution) {
                     Log.d("TestApp", "attribution = " + attribution.toString());
 
-                    MainActivity.testLibrary.addInfoToSend("trackerToken", attribution.trackerToken);
-                    MainActivity.testLibrary.addInfoToSend("trackerName", attribution.trackerName);
-                    MainActivity.testLibrary.addInfoToSend("network", attribution.network);
-                    MainActivity.testLibrary.addInfoToSend("campaign", attribution.campaign);
-                    MainActivity.testLibrary.addInfoToSend("adgroup", attribution.adgroup);
-                    MainActivity.testLibrary.addInfoToSend("creative", attribution.creative);
-                    MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
-                    MainActivity.testLibrary.addInfoToSend("adid", attribution.adid);
-                    MainActivity.testLibrary.addInfoToSend("costType", attribution.costType);
-                    if (attribution.costAmount != null) {
-                        MainActivity.testLibrary.addInfoToSend("costAmount", attribution.costAmount.toString());
-                    }
-                    MainActivity.testLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
-                    MainActivity.testLibrary.addInfoToSend("fbInstallReferrer", attribution.fbInstallReferrer);
+                    MainActivity.testLibrary.setInfoToSend(attribution.toMap());
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
