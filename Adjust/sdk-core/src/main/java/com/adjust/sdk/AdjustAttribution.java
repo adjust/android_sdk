@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by pfms on 07/11/14.
@@ -95,6 +97,23 @@ public class AdjustAttribution implements Serializable {
         if (!Util.equalString(costCurrency, otherAttribution.costCurrency)) return false;
 
         return true;
+    }
+
+    public Map<String, String> toMap() {
+        Map<String, String> fields = new HashMap<>();
+        if (trackerToken != null) fields.put("trackerToken", trackerToken);
+        if (trackerName != null) fields.put("trackerName", trackerName);
+        if (network != null) fields.put("network", network);
+        if (campaign != null) fields.put("campaign", campaign);
+        if (adgroup != null) fields.put("adgroup", adgroup);
+        if (creative != null) fields.put("creative", creative);
+        if (clickLabel != null) fields.put("clickLabel", clickLabel);
+        if (adid != null) fields.put("adid", adid);
+        if (costType != null) fields.put("costType", costType);
+        if (costAmount != null) fields.put("costAmount", costAmount.toString());
+        if (costCurrency != null) fields.put("costCurrency", costCurrency);
+
+        return fields;
     }
 
     @Override
