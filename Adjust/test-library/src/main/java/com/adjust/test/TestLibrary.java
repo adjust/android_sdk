@@ -154,6 +154,10 @@ public class TestLibrary {
         infoToServer.put(key, value);
     }
 
+    public void setInfoToSend(Map<String, String> info) {
+        infoToServer = info;
+    }
+
     public void sendInfoToServer(final String basePath) {
         executor.submit(new Runnable() {
             @Override
