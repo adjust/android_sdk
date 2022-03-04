@@ -172,6 +172,8 @@ public class AdjustBridgeInstance {
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
+            Object playStoreKidsAppEnabledField = jsonAdjustConfig.get("playStoreKidsAppEnabled");
+            Object coppaCompliantEnabledField = jsonAdjustConfig.get("coppaCompliantEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -385,6 +387,18 @@ public class AdjustBridgeInstance {
             String preinstallFilePath = AdjustBridgeUtil.fieldToString(preinstallFilePathField);
             if (preinstallFilePath != null) {
                 adjustConfig.setPreinstallFilePath(preinstallFilePath);
+            }
+
+            // PlayStore Kids app
+            Boolean playStoreKidsAppEnabled = AdjustBridgeUtil.fieldToBoolean(playStoreKidsAppEnabledField);
+            if (playStoreKidsAppEnabled != null) {
+                adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
+            }
+
+            // Coppa compliant
+            Boolean coppaCompliantEnabled = AdjustBridgeUtil.fieldToBoolean(coppaCompliantEnabledField);
+            if (coppaCompliantEnabled != null) {
+                adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
