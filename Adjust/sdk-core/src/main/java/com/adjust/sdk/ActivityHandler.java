@@ -788,8 +788,8 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Event buffering is enabled");
         }
 
-        deviceInfo.reloadPlayIds(adjustConfig.context);
-        if (deviceInfo.playAdId == null) {
+        deviceInfo.reloadPlayIds(adjustConfig);
+        if (deviceInfo.canReadPlayIds(adjustConfig) && deviceInfo.playAdId == null) {
             logger.warn("Unable to get Google Play Services Advertising ID at start time");
             if (deviceInfo.androidId == null) {
                 logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
@@ -1131,6 +1131,8 @@ public class ActivityHandler implements IActivityHandler {
 
         updateHandlersStatusAndSendI();
 
+        processCoppaComplianceI();
+
         processSessionI();
 
         checkAttributionStateI();
@@ -1156,6 +1158,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                processCoppaComplianceI();
+
                 // check if disable third party sharing request came, then send it first
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
@@ -2575,5 +2579,12 @@ public class ActivityHandler implements IActivityHandler {
         activityState.googlePlayInstant = responseData.googlePlayInstant;
 
         writeActivityStateI();
+    }
+
+    private void processCoppaComplianceI() {
+        if (adjustConfig.coppaCompliantEnabled != null &&
+            adjustConfig.coppaCompliantEnabled) {
+            disableThirdPartySharingI();
+        }
     }
 }

@@ -113,7 +113,12 @@ class DeviceInfo {
         uiMode = getDeviceUiMode(configuration);
     }
 
-    void reloadPlayIds(Context context) {
+    void reloadPlayIds(final AdjustConfig adjustConfig) {
+        if (!canReadPlayIds(adjustConfig)) {
+            return;
+        }
+
+        Context context = adjustConfig.context;
         String previousPlayAdId = playAdId;
         Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
@@ -184,11 +189,15 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(Context context) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
+        if (!canReadNonPlayIds(adjustConfig)) {
+            return;
+        }
+
         if (nonGoogleIdsReadOnce) {
             return;
         }
-        androidId = Util.getAndroidId(context);
+        androidId = Util.getAndroidId(adjustConfig.context);
         nonGoogleIdsReadOnce = true;
     }
 
@@ -401,5 +410,29 @@ class DeviceInfo {
         } catch (Exception ex) {
             return null;
         }
+    }
+
+    public boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
+            return false;
+        }
+
+        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
+            return false;
+        }
+
+        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
+            return false;
+        }
+
+        return true;
     }
 }
