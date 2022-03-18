@@ -324,7 +324,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -415,7 +414,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -568,7 +566,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -977,7 +974,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -1069,7 +1065,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -1166,7 +1161,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);

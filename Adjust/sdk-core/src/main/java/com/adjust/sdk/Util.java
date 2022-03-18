@@ -627,24 +627,6 @@ public class Util {
         return -1;
     }
 
-    public static int getNetworkType(Context context) {
-        int networkType = -1; // default value that will not be send
-
-        try {
-            TelephonyManager teleMan =
-                    (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                networkType = teleMan.getDataNetworkType();
-            } else {
-                networkType = teleMan.getNetworkType();
-            }
-        } catch (Exception e) {
-            getLogger().warn("Couldn't read network type (%s)", e.getMessage());
-        }
-
-        return networkType;
-    }
-
     public static String getMcc(Context context) {
         try {
             TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
