@@ -53,7 +53,7 @@ class DeviceInfo {
 
     String playAdId;
     String playAdIdSource;
-    int playAdIdAttempt;
+    int playAdIdAttempt = -1;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     String androidId;
