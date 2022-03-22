@@ -2582,9 +2582,58 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void processCoppaComplianceI() {
-        if (adjustConfig.coppaCompliantEnabled != null &&
-            adjustConfig.coppaCompliantEnabled) {
-            disableThirdPartySharingI();
+        if (adjustConfig.coppaCompliantEnabled == null) {
+            return;
         }
+
+        if (adjustConfig.coppaCompliantEnabled) {
+            disableThirdPartySharingForCoppaEnabledI();
+        } else {
+            enableThirdPartySharingForCoppaDisabledI();
+        }
+    }
+
+    private void disableThirdPartySharingForCoppaEnabledI() {
+        if (shouldDisableThirdPartySharingForCoppaEnabled()) {
+            activityState.isThirdPartySharingDisabledForCoppa = true;
+            writeActivityStateI();
+            AdjustThirdPartySharing adjustThirdPartySharingForCoppaDisabled =
+                    new AdjustThirdPartySharing(false);
+            trackThirdPartySharingI(adjustThirdPartySharingForCoppaDisabled);
+        }
+    }
+
+    private void enableThirdPartySharingForCoppaDisabledI() {
+        if (shouldEnableThirdPartySharingForCoppaDisabled()) {
+            activityState.isThirdPartySharingDisabledForCoppa = false;
+            writeActivityStateI();
+            AdjustThirdPartySharing adjustThirdPartySharingForCoppaEnabled =
+                    new AdjustThirdPartySharing(true);
+            trackThirdPartySharingI(adjustThirdPartySharingForCoppaEnabled);
+        }
+    }
+
+    private boolean shouldDisableThirdPartySharingForCoppaEnabled() {
+        if (activityState == null) {
+            return false;
+        }
+
+        if (activityState.isThirdPartySharingDisabledForCoppa == null) {
+            return true;
+        }
+
+        return !activityState.isThirdPartySharingDisabledForCoppa;
+    }
+
+    private boolean shouldEnableThirdPartySharingForCoppaDisabled() {
+        if (activityState == null) {
+            return false;
+        }
+
+        if (activityState.isThirdPartySharingDisabledForCoppa == null) {
+            return false;
+        }
+
+        return activityState.isThirdPartySharingDisabledForCoppa;
     }
 }
