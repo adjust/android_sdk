@@ -1611,6 +1611,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                processCoppaComplianceI();
+
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
                 }
@@ -2255,6 +2257,10 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
+        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
+            // block calling third party sharing API when COPPA enabled
+            return;
+        }
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
@@ -2589,32 +2595,53 @@ public class ActivityHandler implements IActivityHandler {
         if (adjustConfig.coppaCompliantEnabled) {
             disableThirdPartySharingForCoppaEnabledI();
         } else {
-            enableThirdPartySharingForCoppaDisabledI();
+            resetThirdPartySharingCoppaActivityStateI();
         }
     }
 
     private void disableThirdPartySharingForCoppaEnabledI() {
-        if (shouldDisableThirdPartySharingForCoppaEnabled()) {
-            activityState.isThirdPartySharingDisabledForCoppa = true;
-            writeActivityStateI();
-            AdjustThirdPartySharing adjustThirdPartySharingForCoppaDisabled =
-                    new AdjustThirdPartySharing(false);
-            trackThirdPartySharingI(adjustThirdPartySharingForCoppaDisabled);
+        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
+            return;
+        }
+
+        activityState.isThirdPartySharingDisabledForCoppa = true;
+        writeActivityStateI();
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(false);
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
         }
     }
 
-    private void enableThirdPartySharingForCoppaDisabledI() {
-        if (shouldEnableThirdPartySharingForCoppaDisabled()) {
+    private void resetThirdPartySharingCoppaActivityStateI() {
+        if (activityState == null) { return; }
+        if (activityState.isThirdPartySharingDisabledForCoppa) {
             activityState.isThirdPartySharingDisabledForCoppa = false;
             writeActivityStateI();
-            AdjustThirdPartySharing adjustThirdPartySharingForCoppaEnabled =
-                    new AdjustThirdPartySharing(true);
-            trackThirdPartySharingI(adjustThirdPartySharingForCoppaEnabled);
         }
     }
 
-    private boolean shouldDisableThirdPartySharingForCoppaEnabled() {
+    private boolean shouldDisableThirdPartySharingWhenCoppaEnabled() {
         if (activityState == null) {
+            return false;
+        }
+
+        if (!isEnabledI()) {
+            return false;
+        }
+
+        if (activityState.isGdprForgotten) {
             return false;
         }
 
@@ -2623,17 +2650,5 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         return !activityState.isThirdPartySharingDisabledForCoppa;
-    }
-
-    private boolean shouldEnableThirdPartySharingForCoppaDisabled() {
-        if (activityState == null) {
-            return false;
-        }
-
-        if (activityState.isThirdPartySharingDisabledForCoppa == null) {
-            return false;
-        }
-
-        return activityState.isThirdPartySharingDisabledForCoppa;
     }
 }
