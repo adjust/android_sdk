@@ -27,7 +27,6 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("enabled", boolean.class),
             new ObjectStreamField("isGdprForgotten", boolean.class),
             new ObjectStreamField("isThirdPartySharingDisabled", boolean.class),
-            new ObjectStreamField("isThirdPartySharingDisabledForCoppa", Boolean.class),
             new ObjectStreamField("askingAttribution", boolean.class),
             new ObjectStreamField("eventCount", int.class),
             new ObjectStreamField("sessionCount", int.class),
@@ -51,6 +50,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("installBeginHuawei", long.class),
             new ObjectStreamField("installReferrerHuawei", String.class),
             new ObjectStreamField("installReferrerHuaweiAppGallery", String.class),
+            new ObjectStreamField("isThirdPartySharingDisabledForCoppa", Boolean.class),
     };
 
     // persistent data
