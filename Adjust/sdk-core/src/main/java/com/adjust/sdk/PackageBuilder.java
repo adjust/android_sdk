@@ -260,7 +260,7 @@ public class PackageBuilder {
     private Map<String, String> getSessionParameters(boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -268,7 +268,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -286,7 +286,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -351,7 +351,7 @@ public class PackageBuilder {
     public Map<String, String> getEventParameters(AdjustEvent event, boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -359,7 +359,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -377,7 +377,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -443,7 +443,7 @@ public class PackageBuilder {
     private Map<String, String> getInfoParameters(String source) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -451,7 +451,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -463,7 +463,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -497,7 +497,7 @@ public class PackageBuilder {
     private Map<String, String> getClickParameters(String source) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -505,7 +505,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -517,7 +517,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -607,7 +607,7 @@ public class PackageBuilder {
     private Map<String, String> getAttributionParameters(String initiatedBy) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -615,7 +615,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -627,7 +627,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -669,7 +669,7 @@ public class PackageBuilder {
     private Map<String, String> getGdprParameters() {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -677,7 +677,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -689,7 +689,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -730,7 +730,7 @@ public class PackageBuilder {
     private Map<String, String> getDisableThirdPartySharingParameters() {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -738,7 +738,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -750,7 +750,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -793,7 +793,7 @@ public class PackageBuilder {
     {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -801,7 +801,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -822,7 +822,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -864,7 +864,7 @@ public class PackageBuilder {
     {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -872,7 +872,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -888,7 +888,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -928,7 +928,7 @@ public class PackageBuilder {
     private Map<String, String> getAdRevenueParameters(String source, JSONObject adRevenueJson) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -936,7 +936,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -948,7 +948,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -1015,7 +1015,7 @@ public class PackageBuilder {
     private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue, boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1023,7 +1023,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -1041,7 +1041,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
@@ -1113,7 +1113,7 @@ public class PackageBuilder {
     private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
         ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1121,7 +1121,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -1133,7 +1133,7 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
