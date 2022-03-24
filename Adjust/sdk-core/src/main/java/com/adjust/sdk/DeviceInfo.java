@@ -114,7 +114,7 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
-        if (!canReadPlayIds(adjustConfig)) {
+        if (!Util.canReadPlayIds(adjustConfig)) {
             return;
         }
 
@@ -190,7 +190,7 @@ class DeviceInfo {
     }
 
     void reloadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (!canReadNonPlayIds(adjustConfig)) {
+        if (!Util.canReadNonPlayIds(adjustConfig)) {
             return;
         }
 
@@ -412,27 +412,5 @@ class DeviceInfo {
         }
     }
 
-    public boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
 
-        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
-
-        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
-    }
 }

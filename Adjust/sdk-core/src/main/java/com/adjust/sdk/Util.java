@@ -771,6 +771,68 @@ public class Util {
         return false;
     }
 
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+        if (isPlayStoreKidsAppEnabled(adjustConfig)) {
+            return false;
+        }
+
+        if (isCoppaEnabled(adjustConfig)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+        if (isPlayStoreKidsAppEnabled(adjustConfig)) {
+            return false;
+        }
+
+        if (isCoppaEnabled(adjustConfig)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isCoppaEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isPlayStoreKidsAppEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
+            return true;
+        }
+        return false;
+    }
+
+    public static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig, ILogger logger) {
+        if (isCoppaEnabled(adjustConfig)) {
+            return null;
+        }
+
+        return Reflection.getImeiParameters(adjustConfig.context, logger);
+    }
+
+    public static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig, ILogger logger) {
+        if (isCoppaEnabled(adjustConfig)) {
+            return null;
+        }
+
+        return Reflection.getOaidParameters(adjustConfig.context, logger);
+    }
+
+    public static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
+        if (isCoppaEnabled(adjustConfig)) {
+            return null;
+        }
+
+        return getFireAdvertisingId(adjustConfig.context.getContentResolver());
+    }
+
     private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                        final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime

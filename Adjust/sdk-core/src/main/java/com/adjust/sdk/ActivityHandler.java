@@ -790,14 +790,14 @@ public class ActivityHandler implements IActivityHandler {
 
         deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
-            if (deviceInfo.canReadPlayIds(adjustConfig)) {
+            if (Util.canReadPlayIds(adjustConfig)) {
                 logger.warn("Unable to get Google Play Services Advertising ID at start time");
             } else {
                 logger.info("Cannot read Google Play Services Advertising ID for kids");
             }
 
             if (deviceInfo.androidId == null) {
-                if (deviceInfo.canReadNonPlayIds(adjustConfig)) {
+                if (Util.canReadNonPlayIds(adjustConfig)) {
                     logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
                 } else {
                     logger.info("Cannot read non Play Ids for kids");
