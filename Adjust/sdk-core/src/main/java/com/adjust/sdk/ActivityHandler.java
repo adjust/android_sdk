@@ -2589,6 +2589,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void processCoppaComplianceI() {
         if (adjustConfig.coppaCompliantEnabled == null) {
+            resetThirdPartySharingCoppaActivityStateI();
             return;
         }
 
@@ -2626,7 +2627,8 @@ public class ActivityHandler implements IActivityHandler {
 
     private void resetThirdPartySharingCoppaActivityStateI() {
         if (activityState == null) { return; }
-        if (activityState.isThirdPartySharingDisabledForCoppa) {
+        if (activityState.isThirdPartySharingDisabledForCoppa != null &&
+            activityState.isThirdPartySharingDisabledForCoppa) {
             activityState.isThirdPartySharingDisabledForCoppa = false;
             writeActivityStateI();
         }
