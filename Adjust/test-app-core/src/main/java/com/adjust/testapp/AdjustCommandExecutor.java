@@ -316,6 +316,18 @@ public class AdjustCommandExecutor {
             adjustConfig.setExternalDeviceId(externalDeviceId);
         }
 
+        if (command.containsParameter("coppaCompliant")) {
+            String coppaCompliantS = command.getFirstParameterValue("coppaCompliant");
+            boolean coppaCompliant = "true".equals(coppaCompliantS);
+            adjustConfig.setCoppaCompliantEnabled(coppaCompliant);
+        }
+
+        if (command.containsParameter("playStoreKids")) {
+            String playStoreKidsS = command.getFirstParameterValue("playStoreKids");
+            boolean playStoreKids = "true".equals(playStoreKidsS);
+            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
+        }
+
         if(command.containsParameter("deferredDeeplinkCallback")) {
             adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                 @Override
