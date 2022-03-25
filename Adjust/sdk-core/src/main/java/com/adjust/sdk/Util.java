@@ -851,6 +851,14 @@ public class Util {
         return getFireAdvertisingId(adjustConfig.context.getContentResolver());
     }
 
+    public static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
+        if (isCoppaEnabled(adjustConfig)) {
+            return null;
+        }
+
+        return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
+    }
+
     private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                        final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
