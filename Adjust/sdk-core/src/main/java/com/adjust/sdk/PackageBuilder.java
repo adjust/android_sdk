@@ -15,7 +15,6 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 import android.text.TextUtils;
-import android.content.ContentResolver;
 
 public class PackageBuilder {
     private static ILogger logger = AdjustFactory.getLogger();
@@ -258,7 +257,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getSessionParameters(boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -287,7 +285,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -348,7 +346,6 @@ public class PackageBuilder {
     }
 
     public Map<String, String> getEventParameters(AdjustEvent event, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -377,7 +374,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -439,7 +436,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getInfoParameters(String source) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -462,7 +458,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -493,7 +489,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getClickParameters(String source) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -516,7 +511,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -602,7 +597,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getAttributionParameters(String initiatedBy) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -625,7 +619,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -664,7 +658,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getGdprParameters() {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -687,7 +680,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -725,7 +718,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getDisableThirdPartySharingParameters() {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -748,7 +740,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -788,7 +780,6 @@ public class PackageBuilder {
     private Map<String, String> getThirdPartySharingParameters
             (final AdjustThirdPartySharing adjustThirdPartySharing)
     {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -820,7 +811,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -859,7 +850,6 @@ public class PackageBuilder {
     private Map<String, String> getMeasurementConsentParameters(
             final boolean consentMeasurement)
     {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -886,7 +876,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -923,7 +913,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getAdRevenueParameters(String source, JSONObject adRevenueJson) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -946,7 +935,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -1009,7 +998,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -1038,7 +1026,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -1106,7 +1094,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
         Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
@@ -1129,7 +1116,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -1336,7 +1323,11 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
+            if (Util.isCoppaEnabled(adjustConfig)) {
+                logger.info("Missing device id's. Coppa enabled.");
+            } else {
+                logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
+            }
         }
     }
 
