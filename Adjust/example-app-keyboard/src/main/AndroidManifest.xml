@@ -5,7 +5,7 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <!-- Use ONLY IF you are using plugin-imei and if your app is NOT DISTRIBUTED in Play Store -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!-- <uses-permission android:name="android.permission.READ_PHONE_STATE" />-->
 
     <application
         android:name=".GlobalApplication"
