@@ -2271,8 +2271,6 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        resetThirdPartySharingCoppaActivityStateI();
-
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
@@ -2600,11 +2598,14 @@ public class ActivityHandler implements IActivityHandler {
 
     private void processCoppaComplianceI() {
         if (adjustConfig.coppaCompliantEnabled == null) {
+            resetThirdPartySharingCoppaActivityStateI();
             return;
         }
 
         if (adjustConfig.coppaCompliantEnabled) {
             disableThirdPartySharingForCoppaEnabledI();
+        } else {
+            resetThirdPartySharingCoppaActivityStateI();
         }
     }
 
