@@ -50,7 +50,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("installBeginHuawei", long.class),
             new ObjectStreamField("installReferrerHuawei", String.class),
             new ObjectStreamField("installReferrerHuaweiAppGallery", String.class),
-            new ObjectStreamField("isThirdPartySharingDisabledForCoppa", Boolean.class),
+            new ObjectStreamField("isThirdPartySharingDisabledForCoppa", boolean.class),
     };
 
     // persistent data
@@ -58,7 +58,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected boolean enabled;
     protected boolean isGdprForgotten;
     protected boolean isThirdPartySharingDisabled;
-    protected Boolean isThirdPartySharingDisabledForCoppa;
+    protected boolean isThirdPartySharingDisabledForCoppa;
     protected boolean askingAttribution;
 
     // global counters
@@ -100,7 +100,7 @@ public class ActivityState implements Serializable, Cloneable {
         enabled = true;
         isGdprForgotten = false;
         isThirdPartySharingDisabled = false;
-        isThirdPartySharingDisabledForCoppa = null;
+        isThirdPartySharingDisabledForCoppa = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -246,7 +246,7 @@ public class ActivityState implements Serializable, Cloneable {
         enabled = Util.readBooleanField(fields, "enabled", true);
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
         isThirdPartySharingDisabled = Util.readBooleanField(fields, "isThirdPartySharingDisabled", false);
-        isThirdPartySharingDisabledForCoppa = Util.readObjectField(fields, "isThirdPartySharingDisabledForCoppa", null);
+        isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);

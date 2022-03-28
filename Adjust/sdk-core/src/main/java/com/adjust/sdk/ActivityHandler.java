@@ -2602,11 +2602,12 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (adjustConfig.coppaCompliantEnabled) {
-            disableThirdPartySharingForCoppaEnabledI();
-        } else {
+        if (adjustConfig.coppaCompliantEnabled == false) {
             resetThirdPartySharingCoppaActivityStateI();
+            return;
         }
+
+        disableThirdPartySharingForCoppaEnabledI();
     }
 
     private void disableThirdPartySharingForCoppaEnabledI() {
@@ -2636,8 +2637,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void resetThirdPartySharingCoppaActivityStateI() {
         if (activityState == null) { return; }
-        if (activityState.isThirdPartySharingDisabledForCoppa != null &&
-            activityState.isThirdPartySharingDisabledForCoppa) {
+        if (activityState.isThirdPartySharingDisabledForCoppa) {
             activityState.isThirdPartySharingDisabledForCoppa = false;
             writeActivityStateI();
         }
@@ -2654,10 +2654,6 @@ public class ActivityHandler implements IActivityHandler {
 
         if (activityState.isGdprForgotten) {
             return false;
-        }
-
-        if (activityState.isThirdPartySharingDisabledForCoppa == null) {
-            return true;
         }
 
         return !activityState.isThirdPartySharingDisabledForCoppa;
