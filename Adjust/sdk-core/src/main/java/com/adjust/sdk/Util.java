@@ -790,11 +790,11 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        if (isPlayStoreKidsAppEnabled(adjustConfig)) {
+        if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return false;
         }
 
@@ -802,33 +802,19 @@ public class Util {
     }
 
     public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (isPlayStoreKidsAppEnabled(adjustConfig)) {
+        if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return false;
         }
 
         return true;
     }
 
-    public static boolean isCoppaEnabled(final AdjustConfig adjustConfig) {
-        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isPlayStoreKidsAppEnabled(final AdjustConfig adjustConfig) {
-        if (adjustConfig.playStoreKidsAppEnabled != null && adjustConfig.playStoreKidsAppEnabled) {
-            return true;
-        }
-        return false;
-    }
-
     public static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig, ILogger logger) {
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return null;
         }
 
@@ -836,7 +822,7 @@ public class Util {
     }
 
     public static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig, ILogger logger) {
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return null;
         }
 
@@ -844,7 +830,7 @@ public class Util {
     }
 
     public static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return null;
         }
 
@@ -852,7 +838,7 @@ public class Util {
     }
 
     public static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-        if (isCoppaEnabled(adjustConfig)) {
+        if (adjustConfig.coppaCompliantEnabled) {
             return null;
         }
 
