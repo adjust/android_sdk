@@ -790,17 +790,29 @@ public class ActivityHandler implements IActivityHandler {
 
         deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
-            if (Util.canReadPlayIds(adjustConfig)) {
-                logger.warn("Unable to get Google Play Services Advertising ID at start time");
+            if (!Util.canReadPlayIds(adjustConfig)) {
+                if (adjustConfig.coppaCompliantEnabled) {
+                    logger.info("Cannot read Google Play Services Advertising ID with COPPA enabled");
+                }
+
+                if (adjustConfig.playStoreKidsAppEnabled) {
+                    logger.info("Cannot read Google Play Services Advertising ID with play store kids app enabled");
+                }
             } else {
-                logger.info("Cannot read Google Play Services Advertising ID for kids");
+                logger.warn("Unable to get Google Play Services Advertising ID at start time");
             }
 
             if (deviceInfo.androidId == null) {
-                if (Util.canReadNonPlayIds(adjustConfig)) {
-                    logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
+                if (!Util.canReadNonPlayIds(adjustConfig)) {
+                    if (adjustConfig.coppaCompliantEnabled) {
+                        logger.info("Cannot read non Play IDs with COPPA enabled");
+                    }
+
+                    if (adjustConfig.playStoreKidsAppEnabled) {
+                        logger.info("Cannot read non Play IDs with play store kids app enabled");
+                    }
                 } else {
-                    logger.info("Cannot read non Play Ids for kids");
+                    logger.error("Unable to get any Device IDs. Please check if Proguard is correctly set with Adjust SDK");
                 }
             }
         } else {
@@ -2266,8 +2278,8 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
-        if (adjustConfig.coppaCompliantEnabled != null && adjustConfig.coppaCompliantEnabled) {
-            // block calling third party sharing API when COPPA enabled
+        if (adjustConfig.coppaCompliantEnabled) {
+            logger.warn("Calling third party sharing API not allowed when COPPA enabled");
             return;
         }
 
@@ -2597,12 +2609,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void processCoppaComplianceI() {
-        if (adjustConfig.coppaCompliantEnabled == null) {
-            resetThirdPartySharingCoppaActivityStateI();
-            return;
-        }
-
-        if (adjustConfig.coppaCompliantEnabled == false) {
+        if (!adjustConfig.coppaCompliantEnabled) {
             resetThirdPartySharingCoppaActivityStateI();
             return;
         }

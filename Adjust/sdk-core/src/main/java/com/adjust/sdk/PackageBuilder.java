@@ -1330,10 +1330,10 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            if (Util.isCoppaEnabled(adjustConfig)) {
-                logger.info("Missing device id's. Coppa enabled.");
+            if (adjustConfig.coppaCompliantEnabled) {
+                logger.info("Missing Device IDs. COPPA enabled.");
             } else {
-                logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
+                logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");
             }
         }
     }
