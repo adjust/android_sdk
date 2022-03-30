@@ -338,8 +338,8 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -428,8 +428,8 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -481,8 +481,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -589,8 +589,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -650,8 +650,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -710,8 +710,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -770,8 +770,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -840,8 +840,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -905,8 +905,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -990,8 +990,8 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -1086,8 +1086,8 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -1185,8 +1185,8 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "revenue", subscription.getPrice());
         PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
-        PackageBuilder.addPositiveBoolean(parameters, "ff_play_store_kids_app", adjustConfig.playStoreKidsAppEnabled);
-        PackageBuilder.addPositiveBoolean(parameters, "ff_coppa", adjustConfig.coppaCompliantEnabled);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -1196,6 +1196,16 @@ public class PackageBuilder {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
+    }
+
+    private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            PackageBuilder.addLong(parameters, "ff_coppa", 1);
+        }
+
+        if (adjustConfig.playStoreKidsAppEnabled) {
+            PackageBuilder.addLong(parameters, "ff_play_store_kids_app", 1);
+        }
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {
@@ -1211,13 +1221,6 @@ public class PackageBuilder {
         }
         int intValue = value ? 1 : 0;
         PackageBuilder.addLong(parameters, key, intValue);
-    }
-
-    public static void addPositiveBoolean(Map<String, String> parameters, String key, Boolean value) {
-        if (value == null || value == false) {
-            return;
-        }
-        PackageBuilder.addLong(parameters, key, 1);
     }
 
     static void addJsonObject(Map<String, String> parameters, String key, JSONObject jsonObject) {
