@@ -2224,6 +2224,8 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data reside
 </tr>
 </table>
 
+**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
+
 ### <a id="af-coppa-compliance"></a>COPPA compliance
 
 The default behaviour of the Adjust SDK is COPPA compliance disabled. You can enable this in your config instance:
