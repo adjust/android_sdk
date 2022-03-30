@@ -87,6 +87,8 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
    * [[beta] Data residency](#af-data-residency)
+   * [COPPA compliance](#af-coppa-compliance)
+   * [Playstore Kids App](#af-playstore-kids-app)
 
 ### Testing and troubleshooting
 
@@ -2222,7 +2224,73 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data reside
 </tr>
 </table>
 
-**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
+### <a id="af-coppa-compliance"></a>COPPA compliance
+
+The default behaviour of the Adjust SDK is COPPA compliance disabled. You can enable this in your config instance:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+**Note:** On enabling this feature, third-party sharing gets disabled internally. But on re-enabling this feature, third-party sharing status remains unchanged.  In order to re-enable third-party sharing, one needs to call third-party sharing API explicitly.
+
+### <a id="af-playstore-kids-app"></a>Playstore Kids App
+
+The default behaviour of the Adjust SDK is Playstore Kids App disabled. You can enable this in your config instance:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+</td>
+</tr>
+</table>
 
 ## Testing and troubleshooting
 
