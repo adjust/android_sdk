@@ -340,6 +340,18 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setUserAgent(userAgent);
     }
 
+    if ('coppaCompliant' in params) {
+        var coppaCompliantS = getFirstParameterValue(params, 'coppaCompliant');
+        var coppaCompliant = coppaCompliantS == 'true';
+        adjustConfig.setCoppaCompliantEnabled(coppaCompliant);
+    }
+
+    if ('playStoreKids' in params) {
+        var playStoreKidsS = getFirstParameterValue(params, 'playStoreKids');
+        var playStoreKids = playStoreKidsS == 'true';
+        adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
+    }
+
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
         adjustConfig.setAttributionCallback(function(attribution) {
