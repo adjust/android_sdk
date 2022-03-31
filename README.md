@@ -149,7 +149,7 @@ The Adjust SDK requires the following permissions. Please add them to your `Andr
 
 #### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID
 
-If you are targeting Android 12 and above (API level 31), you need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID. Add the following line to your `AndroidManifest.xml` to enable the permission.
+You will need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID, when your apps are able to target Android 13 (API level 33) and above. Add the following line to your `AndroidManifest.xml` to enable the permission.
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
