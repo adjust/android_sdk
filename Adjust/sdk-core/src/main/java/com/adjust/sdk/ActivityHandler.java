@@ -2250,6 +2250,10 @@ public class ActivityHandler implements IActivityHandler {
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
         if (activityState.isThirdPartySharingDisabled) { return; }
+        if (adjustConfig.coppaCompliantEnabled) {
+            logger.warn("Call to disable third party sharing API ignored, already done when COPPA enabled");
+            return;
+        }
 
         activityState.isThirdPartySharingDisabled = true;
         writeActivityStateI();
