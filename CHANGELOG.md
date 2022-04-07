@@ -1,3 +1,14 @@
+### Version 4.30.0 (7th April 2022)
+#### Added
+- Added COPPA compliant support. You can choose this setting by calling `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter to enable or disable it.
+- Added Playstore Kids App support. You can choose this setting by calling `setPlayStoreKidsAppEnabled` method of `AdjustConfig` instance with boolean parameter to enable or disable it.
+
+#### Changed
+- Removed reading of `network_type` parameter.
+- Updated docs.
+
+---
+
 ### Version 4.29.1 (8th February 2022)
 #### Added
 - Added support for `Helium Chartboost` ad revenue tracking.
