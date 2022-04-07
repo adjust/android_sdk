@@ -88,7 +88,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
    * [Consent measurement](#af-measurement-consent)
    * [[beta] Data residency](#af-data-residency)
    * [COPPA compliance](#af-coppa-compliance)
-   * [Playstore Kids App](#af-playstore-kids-app)
+   * [Play Store Kids Apps](#af-play-store-kids-apps)
 
 ### Testing and troubleshooting
 
@@ -2228,7 +2228,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data reside
 
 ### <a id="af-coppa-compliance"></a>COPPA compliance
 
-The default behaviour of the Adjust SDK is COPPA compliance disabled. You can enable this in your config instance:
+By deafult Adjust SDK doesn't mark app as COPPA compliant. In order to mark your app as COPPA compliant, make sure to call `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter `true`:
 
 <table>
 <tr>
@@ -2259,11 +2259,11 @@ adjustConfig.setCoppaCompliantEnabled(true);
 </tr>
 </table>
 
-**Note:** On enabling this feature, third-party sharing gets disabled internally. But on re-enabling this feature, third-party sharing status remains unchanged.  In order to re-enable third-party sharing, one needs to call third-party sharing API explicitly.
+**Note:** By enabling this feature, third-party sharing will be automatically disabled for the users. If later during the app lifetime you decide not to mark app as COPPA compliant anymore, third-party sharing **will not be automatically re-enabled**. Instead, next to not marking your app as COPPA compliant anymore, you will need to explicitly re-enable third-party sharing in case you want to do that.
 
-### <a id="af-playstore-kids-app"></a>Playstore Kids App
+### <a id="af-play-store-kids-apps"></a>Play Store Kids Apps
 
-The default behaviour of the Adjust SDK is Playstore Kids App disabled. You can enable this in your config instance:
+By default Adjust SDK doesn't mark app as Play Store Kids App. In order to mark your app as the app which is targetting kids in Play Store, make sure to call `setPlayStoreKidsAppEnabled` method of `AdjustConfig` instance with boolean parameter `true`:
 
 <table>
 <tr>
