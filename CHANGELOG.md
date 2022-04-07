@@ -1,7 +1,7 @@
 ### Version 4.30.0 (7th April 2022)
 #### Added
-- Added COPPA compliant support. You can choose this setting by calling `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter to enable or disable it.
-- Added Playstore Kids App support. You can choose this setting by calling `setPlayStoreKidsAppEnabled` method of `AdjustConfig` instance with boolean parameter to enable or disable it.
+- Added ability to mark your app as COPPA compliant. You can enable this setting by calling `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter `true`.
+- Added ability to mark your app as app for the kids in accordance to Google Play Families policies. You can enable this setting by calling `setPlayStoreKidsAppEnabled` method of `AdjustConfig` instance with boolean parameter `true`.
 
 #### Changed
 - Removed reading of `network_type` parameter.
