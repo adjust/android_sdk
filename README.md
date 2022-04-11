@@ -87,6 +87,8 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
    * [[beta] Data residency](#af-data-residency)
+   * [COPPA compliance](#af-coppa-compliance)
+   * [Play Store Kids Apps](#af-play-store-kids-apps)
 
 ### Testing and troubleshooting
 
@@ -112,14 +114,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.29.1'
+implementation 'com.adjust.sdk:adjust-android:4.30.0'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.29.1'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.30.0'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -147,7 +149,7 @@ The Adjust SDK requires the following permissions. Please add them to your `Andr
 
 #### <a id="gps-adid-permission"></a>Add permission to gather Google advertising ID
 
-If you are targeting Android 12 and above (API level 31), you need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID. Add the following line to your `AndroidManifest.xml` to enable the permission.
+You will need to add the `com.google.android.gms.AD_ID` permission to read the device's advertising ID, when your apps are able to target Android 13 (API level 33) and above. Add the following line to your `AndroidManifest.xml` to enable the permission.
 
 ```xml
 <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
@@ -2223,6 +2225,74 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data reside
 </table>
 
 **Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
+
+### <a id="af-coppa-compliance"></a>COPPA compliance
+
+By deafult Adjust SDK doesn't mark app as COPPA compliant. In order to mark your app as COPPA compliant, make sure to call `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter `true`:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setCoppaCompliantEnabled(true);
+```
+</td>
+</tr>
+</table>
+
+**Note:** By enabling this feature, third-party sharing will be automatically disabled for the users. If later during the app lifetime you decide not to mark app as COPPA compliant anymore, third-party sharing **will not be automatically re-enabled**. Instead, next to not marking your app as COPPA compliant anymore, you will need to explicitly re-enable third-party sharing in case you want to do that.
+
+### <a id="af-play-store-kids-apps"></a>Play Store Kids Apps
+
+By default Adjust SDK doesn't mark app as Play Store Kids App. In order to mark your app as the app which is targetting kids in Play Store, make sure to call `setPlayStoreKidsAppEnabled` method of `AdjustConfig` instance with boolean parameter `true`:
+
+<table>
+<tr>
+<td>
+<b>Native App SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```java
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+</td>
+</tr>
+<tr>
+<td>
+<b>Web View SDK</b>
+</td>
+</tr>
+<tr>
+<td>
+
+```js
+adjustConfig.setPlayStoreKidsAppEnabled(true);
+```
+</td>
+</tr>
+</table>
 
 ## Testing and troubleshooting
 

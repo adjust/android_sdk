@@ -41,6 +41,8 @@ public class AdjustConfig {
     Boolean needsCost;
     String urlStrategy;
     String preinstallFilePath;
+    boolean playStoreKidsAppEnabled;
+    boolean coppaCompliantEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -182,6 +184,14 @@ public class AdjustConfig {
 
     public void setNeedsCost(boolean needsCost) {
         this.needsCost = needsCost;
+    }
+
+    public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled) {
+        this.playStoreKidsAppEnabled = playStoreKidsAppEnabled;
+    }
+
+    public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled) {
+        this.coppaCompliantEnabled = coppaCompliantEnabled;
     }
 
     public boolean isValid() {

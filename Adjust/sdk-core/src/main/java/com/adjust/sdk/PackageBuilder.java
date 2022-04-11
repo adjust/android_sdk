@@ -15,7 +15,6 @@ import java.util.HashMap;
 import org.json.JSONObject;
 
 import android.text.TextUtils;
-import android.content.ContentResolver;
 
 public class PackageBuilder {
     private static ILogger logger = AdjustFactory.getLogger();
@@ -258,9 +257,8 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getSessionParameters(boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -268,7 +266,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -280,19 +278,19 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -326,7 +324,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -342,14 +339,15 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     public Map<String, String> getEventParameters(AdjustEvent event, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -357,7 +355,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -369,19 +367,19 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -416,7 +414,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -432,14 +429,15 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getInfoParameters(String source) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -447,25 +445,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -484,14 +482,15 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getClickParameters(String source) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -499,25 +498,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -567,7 +566,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -592,14 +590,15 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getAttributionParameters(String initiatedBy) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -607,25 +606,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -652,14 +651,15 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getGdprParameters() {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -667,25 +667,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -710,15 +710,16 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getDisableThirdPartySharingParameters() {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -726,25 +727,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -769,6 +770,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -777,9 +780,8 @@ public class PackageBuilder {
     private Map<String, String> getThirdPartySharingParameters
             (final AdjustThirdPartySharing adjustThirdPartySharing)
     {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -787,7 +789,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -802,19 +804,19 @@ public class PackageBuilder {
                 adjustThirdPartySharing.granularOptions);
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -839,6 +841,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
@@ -846,9 +850,8 @@ public class PackageBuilder {
     private Map<String, String> getMeasurementConsentParameters(
             final boolean consentMeasurement)
     {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -856,7 +859,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -866,19 +869,19 @@ public class PackageBuilder {
                 consentMeasurement ? "enable" : "disable");
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -903,14 +906,15 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getAdRevenueParameters(String source, JSONObject adRevenueJson) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -918,25 +922,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -970,7 +974,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -988,14 +991,15 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1003,7 +1007,7 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
@@ -1015,19 +1019,19 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1061,7 +1065,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -1084,14 +1087,15 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
 
     private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
-        ContentResolver contentResolver = adjustConfig.context.getContentResolver();
         Map<String, String> parameters = new HashMap<String, String>();
-        Map<String, String> imeiParameters = Reflection.getImeiParameters(adjustConfig.context, logger);
+        Map<String, String> imeiParameters = Util.getImeiParameters(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (imeiParameters != null) {
@@ -1099,25 +1103,25 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Reflection.getOaidParameters(adjustConfig.context, logger);
+        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
         if (oaidParameters != null) {
             parameters.putAll(oaidParameters);
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
         PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(contentResolver));
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(contentResolver));
+        PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
+        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig.context);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1157,7 +1161,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "mcc", Util.getMcc(adjustConfig.context));
         PackageBuilder.addString(parameters, "mnc", Util.getMnc(adjustConfig.context));
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addLong(parameters, "network_type", Util.getNetworkType(adjustConfig.context));
         PackageBuilder.addString(parameters, "os_build", deviceInfo.buildName);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
@@ -1183,6 +1186,8 @@ public class PackageBuilder {
         PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
 
+        injectFeatureFlagsWithParameters(parameters);
+
         checkDeviceIds(parameters);
         return parameters;
     }
@@ -1191,6 +1196,16 @@ public class PackageBuilder {
         ActivityPackage activityPackage = new ActivityPackage(activityKind);
         activityPackage.setClientSdk(deviceInfo.clientSdk);
         return activityPackage;
+    }
+
+    private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            PackageBuilder.addLong(parameters, "ff_coppa", 1);
+        }
+
+        if (adjustConfig.playStoreKidsAppEnabled) {
+            PackageBuilder.addLong(parameters, "ff_play_store_kids_app", 1);
+        }
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {
@@ -1318,7 +1333,11 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            logger.error("Missing device id's. Please check if Proguard is correctly set with Adjust SDK");
+            if (adjustConfig.coppaCompliantEnabled) {
+                logger.info("Missing Device IDs. COPPA enabled.");
+            } else {
+                logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");
+            }
         }
     }
 
