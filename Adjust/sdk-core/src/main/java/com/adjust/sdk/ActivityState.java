@@ -50,6 +50,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("installBeginHuawei", long.class),
             new ObjectStreamField("installReferrerHuawei", String.class),
             new ObjectStreamField("installReferrerHuaweiAppGallery", String.class),
+            new ObjectStreamField("isThirdPartySharingDisabledForCoppa", boolean.class),
     };
 
     // persistent data
@@ -57,6 +58,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected boolean enabled;
     protected boolean isGdprForgotten;
     protected boolean isThirdPartySharingDisabled;
+    protected boolean isThirdPartySharingDisabledForCoppa;
     protected boolean askingAttribution;
 
     // global counters
@@ -98,6 +100,7 @@ public class ActivityState implements Serializable, Cloneable {
         enabled = true;
         isGdprForgotten = false;
         isThirdPartySharingDisabled = false;
+        isThirdPartySharingDisabledForCoppa = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
         sessionCount = 0; // the first session just started
@@ -168,6 +171,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
         if (!Util.equalBoolean(isGdprForgotten, otherActivityState.isGdprForgotten)) return false;
         if (!Util.equalBoolean(isThirdPartySharingDisabled, otherActivityState.isThirdPartySharingDisabled)) return false;
+        if (!Util.equalBoolean(isThirdPartySharingDisabledForCoppa, otherActivityState.isThirdPartySharingDisabledForCoppa)) return false;
         if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
         if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
         if (!Util.equalInt(sessionCount, otherActivityState.sessionCount)) return false;
@@ -200,6 +204,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashBoolean(enabled);
         hashCode = 37 * hashCode + Util.hashBoolean(isGdprForgotten);
         hashCode = 37 * hashCode + Util.hashBoolean(isThirdPartySharingDisabled);
+        hashCode = 37 * hashCode + Util.hashBoolean(isThirdPartySharingDisabledForCoppa);
         hashCode = 37 * hashCode + Util.hashBoolean(askingAttribution);
         hashCode = 37 * hashCode + eventCount;
         hashCode = 37 * hashCode + sessionCount;
@@ -241,6 +246,7 @@ public class ActivityState implements Serializable, Cloneable {
         enabled = Util.readBooleanField(fields, "enabled", true);
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
         isThirdPartySharingDisabled = Util.readBooleanField(fields, "isThirdPartySharingDisabled", false);
+        isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
         updatePackages = Util.readBooleanField(fields, "updatePackages", false);

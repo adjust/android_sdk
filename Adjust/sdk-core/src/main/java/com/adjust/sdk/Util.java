@@ -771,6 +771,62 @@ public class Util {
         return false;
     }
 
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+        if (adjustConfig.playStoreKidsAppEnabled) {
+            return false;
+        }
+
+        if (adjustConfig.coppaCompliantEnabled) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+        if (adjustConfig.playStoreKidsAppEnabled) {
+            return false;
+        }
+
+        if (adjustConfig.coppaCompliantEnabled) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig, ILogger logger) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            return null;
+        }
+
+        return Reflection.getImeiParameters(adjustConfig.context, logger);
+    }
+
+    public static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig, ILogger logger) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            return null;
+        }
+
+        return Reflection.getOaidParameters(adjustConfig.context, logger);
+    }
+
+    public static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            return null;
+        }
+
+        return getFireAdvertisingId(adjustConfig.context.getContentResolver());
+    }
+
+    public static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaCompliantEnabled) {
+            return null;
+        }
+
+        return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
+    }
+
     private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                        final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime

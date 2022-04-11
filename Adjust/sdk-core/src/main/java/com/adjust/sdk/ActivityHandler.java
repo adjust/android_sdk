@@ -788,11 +788,32 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Event buffering is enabled");
         }
 
-        deviceInfo.reloadPlayIds(adjustConfig.context);
+        deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
-            logger.warn("Unable to get Google Play Services Advertising ID at start time");
+            if (!Util.canReadPlayIds(adjustConfig)) {
+                if (adjustConfig.coppaCompliantEnabled) {
+                    logger.info("Cannot read Google Play Services Advertising ID with COPPA enabled");
+                }
+
+                if (adjustConfig.playStoreKidsAppEnabled) {
+                    logger.info("Cannot read Google Play Services Advertising ID with play store kids app enabled");
+                }
+            } else {
+                logger.warn("Unable to get Google Play Services Advertising ID at start time");
+            }
+
             if (deviceInfo.androidId == null) {
-                logger.error("Unable to get any device id's. Please check if Proguard is correctly set with Adjust SDK");
+                if (!Util.canReadNonPlayIds(adjustConfig)) {
+                    if (adjustConfig.coppaCompliantEnabled) {
+                        logger.info("Cannot read non Play IDs with COPPA enabled");
+                    }
+
+                    if (adjustConfig.playStoreKidsAppEnabled) {
+                        logger.info("Cannot read non Play IDs with play store kids app enabled");
+                    }
+                } else {
+                    logger.error("Unable to get any Device IDs. Please check if Proguard is correctly set with Adjust SDK");
+                }
             }
         } else {
             logger.info("Google Play Services Advertising ID read correctly at start time");
@@ -1131,6 +1152,8 @@ public class ActivityHandler implements IActivityHandler {
 
         updateHandlersStatusAndSendI();
 
+        processCoppaComplianceI();
+
         processSessionI();
 
         checkAttributionStateI();
@@ -1156,6 +1179,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                processCoppaComplianceI();
+
                 // check if disable third party sharing request came, then send it first
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
@@ -1607,6 +1632,8 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                processCoppaComplianceI();
+
                 if (sharedPreferencesManager.getDisableThirdPartySharing()) {
                     disableThirdPartySharingI();
                 }
@@ -2223,6 +2250,10 @@ public class ActivityHandler implements IActivityHandler {
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
         if (activityState.isThirdPartySharingDisabled) { return; }
+        if (adjustConfig.coppaCompliantEnabled) {
+            logger.warn("Call to disable third party sharing API ignored, already done when COPPA enabled");
+            return;
+        }
 
         activityState.isThirdPartySharingDisabled = true;
         writeActivityStateI();
@@ -2251,6 +2282,10 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
+        if (adjustConfig.coppaCompliantEnabled) {
+            logger.warn("Calling third party sharing API not allowed when COPPA enabled");
+            return;
+        }
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
@@ -2575,5 +2610,63 @@ public class ActivityHandler implements IActivityHandler {
         activityState.googlePlayInstant = responseData.googlePlayInstant;
 
         writeActivityStateI();
+    }
+
+    private void processCoppaComplianceI() {
+        if (!adjustConfig.coppaCompliantEnabled) {
+            resetThirdPartySharingCoppaActivityStateI();
+            return;
+        }
+
+        disableThirdPartySharingForCoppaEnabledI();
+    }
+
+    private void disableThirdPartySharingForCoppaEnabledI() {
+        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
+            return;
+        }
+
+        activityState.isThirdPartySharingDisabledForCoppa = true;
+        writeActivityStateI();
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(false);
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
+    }
+
+    private void resetThirdPartySharingCoppaActivityStateI() {
+        if (activityState == null) { return; }
+        if (activityState.isThirdPartySharingDisabledForCoppa) {
+            activityState.isThirdPartySharingDisabledForCoppa = false;
+            writeActivityStateI();
+        }
+    }
+
+    private boolean shouldDisableThirdPartySharingWhenCoppaEnabled() {
+        if (activityState == null) {
+            return false;
+        }
+
+        if (!isEnabledI()) {
+            return false;
+        }
+
+        if (activityState.isGdprForgotten) {
+            return false;
+        }
+
+        return !activityState.isThirdPartySharingDisabledForCoppa;
     }
 }
