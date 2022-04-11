@@ -161,7 +161,7 @@ public class Util {
     }
 
     public static void runInBackground(Runnable command) {
-        if (Looper.myLooper() != null && Looper.myLooper() != Looper.getMainLooper()) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
             command.run();
             return;
         }
