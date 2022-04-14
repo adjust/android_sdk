@@ -9,7 +9,7 @@ ext {
     coreMinSdkVersion = 9
     coreCompileSdkVersion = 31
     coreTargetSdkVersion = 31
-    coreVersionName = '4.30.0-SNAPSHOT'
+    coreVersionName = '4.30.1-SNAPSHOT'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 17
 
@@ -21,6 +21,7 @@ buildscript {
     ext.kotlin_version = '1.5.31'
 
     repositories {
+        mavenLocal()
         mavenCentral()
         google()
     }
