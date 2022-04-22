@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import java.util.Map;
-
 /**
  * Class used for shared preferences manipulation.
  *
