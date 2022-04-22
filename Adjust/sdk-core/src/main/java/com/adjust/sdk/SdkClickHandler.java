@@ -148,7 +148,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             @Override
             public void run() {
                 IActivityHandler activityHandler = activityHandlerWeakRef.get();
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(
+                SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(
                         activityHandler.getContext());
                 try {
                     JSONArray rawReferrerArray = sharedPreferencesManager.getRawReferrerArray();
@@ -315,10 +315,7 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         if (isReftag) {
             // Check before sending if referrer was removed already.
-            SharedPreferencesManager sharedPreferencesManager
-                    = new SharedPreferencesManager(activityHandler.getContext());
-
-            JSONArray rawReferrer = sharedPreferencesManager.getRawReferrer(
+            JSONArray rawReferrer = SharedPreferencesManager.getDefaultInstance(activityHandler.getContext()).getRawReferrer(
                     rawReferrerString,
                     sdkClickPackage.getClickTimeInMilliseconds());
 
@@ -381,10 +378,8 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         if (isReftag) {
             // Remove referrer from shared preferences after sdk_click is sent.
-            SharedPreferencesManager sharedPreferencesManager
-                    = new SharedPreferencesManager(activityHandler.getContext());
-
-            sharedPreferencesManager.removeRawReferrer(
+            SharedPreferencesManager.getDefaultInstance(
+                    activityHandler.getContext()).removeRawReferrer(
                     rawReferrerString,
                     sdkClickPackage.getClickTimeInMilliseconds());
         }
@@ -407,7 +402,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             if (payloadLocation != null && !payloadLocation.isEmpty()) {
                 // update preinstall flag in shared preferences after sdk_click is sent.
                 SharedPreferencesManager sharedPreferencesManager
-                        = new SharedPreferencesManager(activityHandler.getContext());
+                        = SharedPreferencesManager.getDefaultInstance(activityHandler.getContext());
 
                 if (Constants.SYSTEM_INSTALLER_REFERRER.equalsIgnoreCase(payloadLocation)) {
                     sharedPreferencesManager.removePreinstallReferrer();

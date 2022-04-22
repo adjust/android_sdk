@@ -132,8 +132,7 @@ public class ActivityHandler implements IActivityHandler {
         deleteSessionCallbackParameters(context);
         deleteSessionPartnerParameters(context);
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-        sharedPreferencesManager.clear();
+        SharedPreferencesManager.getDefaultInstance(context).clear();
     }
 
     public class InternalState {
@@ -612,8 +611,7 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 if (!preSaved) {
-                    SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-                    sharedPreferencesManager.savePushToken(token);
+                    SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(token);
                 }
 
                 if (internalState.hasFirstSdkStartNotOcurred()) {
@@ -830,14 +828,12 @@ public class ActivityHandler implements IActivityHandler {
                 setPushToken(adjustConfig.pushToken, false);
             } else {
                 // since sdk has not yet started, save current push token for when it does
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-                sharedPreferencesManager.savePushToken(adjustConfig.pushToken);
+                SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(adjustConfig.pushToken);
             }
         } else {
             // since sdk has already started, check if there is a saved push from previous runs
             if (internalState.hasFirstSdkStartOcurred()) {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-                String savedPushToken = sharedPreferencesManager.getPushToken();
+                String savedPushToken = SharedPreferencesManager.getDefaultInstance(getContext()).getPushToken();
 
                 setPushToken(savedPushToken, true);
             }
@@ -845,7 +841,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // GDPR
         if (internalState.hasFirstSdkStartOcurred()) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMe();
             } else {
@@ -983,7 +979,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         long readStatus = sharedPreferencesManager.getPreinstallPayloadReadStatus();
 
         if (PreinstallUtil.hasAllLocationsBeenRead(readStatus)) {
@@ -1170,7 +1166,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         activityState.pushToken = sharedPreferencesManager.getPushToken();
         // activityState.isGdprForgotten = sharedPreferencesManager.getGdprForgetMe();
 
@@ -1302,7 +1298,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
         long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
 
@@ -1448,8 +1444,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // mark install as tracked on success
         if (sessionResponseData.success) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-            sharedPreferencesManager.setInstallTracked();
+            SharedPreferencesManager.getDefaultInstance(getContext()).setInstallTracked();
         }
 
         // launch Session tracking listener if available
@@ -1627,7 +1622,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
 
         if (enabled) {
-            SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
 
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
@@ -1670,8 +1665,7 @@ public class ActivityHandler implements IActivityHandler {
 
 
     private void checkAfterNewStartI() {
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-        checkAfterNewStartI(sharedPreferencesManager);
+        checkAfterNewStartI(SharedPreferencesManager.getDefaultInstance(getContext()));
     }
 
     private void checkAfterNewStartI(SharedPreferencesManager sharedPreferencesManager) {
@@ -1786,9 +1780,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        SharedPreferencesManager sharedPreferencesManager =
-                new SharedPreferencesManager(getContext());
-        String referrerPayload = sharedPreferencesManager.getPreinstallReferrer();
+        String referrerPayload = SharedPreferencesManager.getDefaultInstance(getContext()).getPreinstallReferrer();
 
         if (referrerPayload == null || referrerPayload.isEmpty()) {
             return;
@@ -2205,8 +2197,7 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.addPackage(infoPackage);
 
         // If push token was cached, remove it.
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-        sharedPreferencesManager.removePushToken();
+        SharedPreferencesManager.getDefaultInstance(getContext()).removePushToken();
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", infoPackage.getSuffix());
@@ -2230,8 +2221,7 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.addPackage(gdprPackage);
 
         // If GDPR choice was cached, remove it.
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
-        sharedPreferencesManager.removeGdprForgetMe();
+        SharedPreferencesManager.getDefaultInstance(getContext()).removeGdprForgetMe();
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", gdprPackage.getSuffix());
@@ -2243,7 +2233,7 @@ public class ActivityHandler implements IActivityHandler {
     private void disableThirdPartySharingI() {
         // cache the disable third party sharing request, so that the request order maintains
         // even this call returns before making server request
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(getContext());
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         sharedPreferencesManager.setDisableThirdPartySharing();
 
         if (!checkActivityStateI(activityState)) { return; }

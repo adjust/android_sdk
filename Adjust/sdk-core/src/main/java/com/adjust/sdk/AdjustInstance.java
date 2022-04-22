@@ -584,8 +584,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
+                SharedPreferencesManager.getDefaultInstance(context).saveRawReferrer(rawReferrer, clickTime);
             }
         };
         Util.runInBackground(command);
@@ -601,8 +600,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.savePreinstallReferrer(referrer);
+                SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
             }
         };
         Util.runInBackground(command);
@@ -618,8 +616,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.savePushToken(pushToken);
+                SharedPreferencesManager.getDefaultInstance(context).savePushToken(pushToken);
             }
         };
         Util.runInBackground(command);
@@ -634,8 +631,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setGdprForgetMe();
+                SharedPreferencesManager.getDefaultInstance(context).setGdprForgetMe();
             }
         };
         Util.runInBackground(command);
@@ -650,8 +646,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setDisableThirdPartySharing();
+                SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
             }
         };
         Util.runInBackground(command);
@@ -668,8 +663,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.saveDeeplink(deeplink, clickTime);
+                SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
             }
         };
         Util.runInBackground(command);
@@ -684,8 +678,7 @@ public class AdjustInstance {
         Runnable command = new Runnable() {
             @Override
             public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setSendingReferrersAsNotSent();
+                SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
 
             }
         };

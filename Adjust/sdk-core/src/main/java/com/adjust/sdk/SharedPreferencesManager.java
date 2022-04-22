@@ -71,21 +71,36 @@ public class SharedPreferencesManager {
     private static final int REFERRERS_COUNT = 10;
 
     /**
-     * Shared preferences of the app.
+     * Shared preferences editor of the app.
      */
-    private SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
+    private static SharedPreferences.Editor sharedPreferencesEditor;
+
+
+    private static SharedPreferencesManager defaultInstance;
+
 
     /**
      * Default constructor.
      *
      * @param context Application context
      */
-    public SharedPreferencesManager(final Context context) {
+    private SharedPreferencesManager(final Context context) {
         try {
-            this.sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            sharedPreferencesEditor = sharedPreferences.edit();
         } catch (IllegalStateException illegalStateException) {
-            this.sharedPreferences = null;
+            sharedPreferences = null;
+            sharedPreferencesEditor = null;
         }
+    }
+
+    public static SharedPreferencesManager getDefaultInstance(final Context context) {
+        if (defaultInstance == null) {
+            defaultInstance = new SharedPreferencesManager(context);
+            return defaultInstance;
+        }
+        return defaultInstance;
     }
 
     /**
@@ -407,8 +422,8 @@ public class SharedPreferencesManager {
      * Remove all key-value pairs from shared preferences.
      */
     public synchronized void clear() {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().clear().apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.clear().apply();
     }
 
     /**
@@ -418,8 +433,8 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveString(final String key, final String value) {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().putString(key, value).apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.putString(key, value).apply();
     }
 
     /**
@@ -429,8 +444,8 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveBoolean(final String key, final boolean value) {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().putBoolean(key, value).apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.putBoolean(key, value).apply();
     }
 
     /**
@@ -440,8 +455,8 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveLong(final String key, final long value) {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().putLong(key, value).apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.putLong(key, value).apply();
     }
 
     /**
@@ -451,8 +466,8 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveInteger(final String key, final int value) {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().putInt(key, value).apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.putInt(key, value).apply();
     }
 
     /**
@@ -462,9 +477,9 @@ public class SharedPreferencesManager {
      * @return String value for given key saved in shared preferences (null if not found)
      */
     private synchronized String getString(final String key) {
-        if (this.sharedPreferences != null) {
+        if (sharedPreferences != null) {
             try {
-                return this.sharedPreferences.getString(key, null);
+                return sharedPreferences.getString(key, null);
             } catch (ClassCastException e) {
                 return null;
             } catch (Throwable t) {
@@ -486,9 +501,9 @@ public class SharedPreferencesManager {
      * @return Boolean value for given key saved in shared preferences
      */
     private synchronized boolean getBoolean(final String key, final boolean defaultValue) {
-        if (this.sharedPreferences != null) {
+        if (sharedPreferences != null) {
             try {
-                return this.sharedPreferences.getBoolean(key, defaultValue);
+                return sharedPreferences.getBoolean(key, defaultValue);
             } catch (ClassCastException e) {
                 return defaultValue;
             }
@@ -505,9 +520,9 @@ public class SharedPreferencesManager {
      * @return Long value for given key saved in shared preferences
      */
     private synchronized long getLong(final String key, final long defaultValue) {
-        if (this.sharedPreferences != null) {
+        if (sharedPreferences != null) {
             try {
-                return this.sharedPreferences.getLong(key, defaultValue);
+                return sharedPreferences.getLong(key, defaultValue);
             } catch (ClassCastException e) {
                 return defaultValue;
             }
@@ -522,7 +537,7 @@ public class SharedPreferencesManager {
      * @param key Key to be removed
      */
     private synchronized void remove(final String key) {
-        if (this.sharedPreferences != null)
-            this.sharedPreferences.edit().remove(key).apply();
+        if (sharedPreferencesEditor != null)
+            sharedPreferencesEditor.remove(key).apply();
     }
 }
