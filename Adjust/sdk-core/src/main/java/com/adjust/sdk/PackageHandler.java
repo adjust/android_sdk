@@ -169,7 +169,7 @@ public class PackageHandler implements IPackageHandler,
         int retries = responseData.activityPackage.increaseRetries();
         long waitTimeMilliSeconds;
 
-        SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context);
 
         if (responseData.activityPackage.getActivityKind() ==
                 ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked())
