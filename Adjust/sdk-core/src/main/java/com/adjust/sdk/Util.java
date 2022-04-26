@@ -160,21 +160,6 @@ public class Util {
         return null;
     }
 
-    public static void runInBackground(Runnable command) {
-        if (Looper.myLooper() != Looper.getMainLooper()) {
-            command.run();
-            return;
-        }
-        new AsyncTaskExecutor<Object,Void>() {
-            @Override
-            protected Void doInBackground(Object... params) {
-                Runnable command = (Runnable)params[0];
-                command.run();
-                return null;
-            }
-        }.execute((Object)command);
-    }
-
     public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
         new AsyncTaskExecutor<Context, String>() {
             @Override
