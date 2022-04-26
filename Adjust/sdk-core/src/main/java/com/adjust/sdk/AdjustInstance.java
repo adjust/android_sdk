@@ -581,13 +581,7 @@ public class AdjustInstance {
      * @param context     Application context
      */
     private void saveRawReferrer(final String rawReferrer, final long clickTime, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).saveRawReferrer(rawReferrer, clickTime);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).saveRawReferrer(rawReferrer, clickTime);
     }
 
     /**
@@ -597,13 +591,7 @@ public class AdjustInstance {
      * @param context     Application context
      */
     private void savePreinstallReferrer(final String referrer, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
     }
 
     /**
@@ -613,13 +601,7 @@ public class AdjustInstance {
      * @param context   Application context
      */
     private void savePushToken(final String pushToken, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).savePushToken(pushToken);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).savePushToken(pushToken);
     }
 
     /**
@@ -628,13 +610,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void saveGdprForgetMe(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).setGdprForgetMe();
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setGdprForgetMe();
     }
 
     /**
@@ -643,13 +619,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void saveDisableThirdPartySharing(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
     }
 
     /**
@@ -660,13 +630,7 @@ public class AdjustInstance {
      * @param context   Application context
      */
     private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
     }
 
     /**
@@ -675,14 +639,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void setSendingReferrersAsNotSent(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
-
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
     }
 
     /**
