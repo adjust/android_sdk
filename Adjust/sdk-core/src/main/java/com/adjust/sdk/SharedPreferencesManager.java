@@ -90,7 +90,6 @@ public class SharedPreferencesManager {
             sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
             sharedPreferencesEditor = sharedPreferences.edit();
         } catch (Exception exception) {
-            exception.printStackTrace();
             AdjustFactory.getLogger().error("Cannot access to SharedPreferences", exception.getMessage());
             sharedPreferences = null;
             sharedPreferencesEditor = null;
@@ -99,8 +98,7 @@ public class SharedPreferencesManager {
 
     public static synchronized SharedPreferencesManager getDefaultInstance(final Context context) {
         if (defaultInstance == null) {
-            defaultInstance = new SharedPreferencesManager(context);
-            return defaultInstance;
+            return new SharedPreferencesManager(context);
         }
         return defaultInstance;
     }

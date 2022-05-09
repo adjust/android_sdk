@@ -834,8 +834,8 @@ public class ActivityHandler implements IActivityHandler {
             // since sdk has already started, check if there is a saved push from previous runs
             if (internalState.hasFirstSdkStartOcurred()) {
                 String savedPushToken = SharedPreferencesManager.getDefaultInstance(getContext()).getPushToken();
-
-                setPushToken(savedPushToken, true);
+                if(savedPushToken!=null)
+                    setPushToken(savedPushToken, true);
             }
         }
 
