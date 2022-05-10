@@ -73,15 +73,39 @@ public class SharedPreferencesManager {
     /**
      * Shared preferences of the app.
      */
-    private final SharedPreferences sharedPreferences;
+    private static SharedPreferences sharedPreferences;
+
+    /**
+     * Shared preferences editor of the app.
+     */
+    private static SharedPreferences.Editor sharedPreferencesEditor;
+
+    /**
+     * Singleton instance.
+     */
+    private static SharedPreferencesManager defaultInstance;
 
     /**
      * Default constructor.
      *
      * @param context Application context
      */
-    public SharedPreferencesManager(final Context context) {
-        this.sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    private SharedPreferencesManager(final Context context) {
+        try {
+            sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            sharedPreferencesEditor = sharedPreferences.edit();
+        } catch (Exception exception) {
+            AdjustFactory.getLogger().error("Cannot access to SharedPreferences", exception.getMessage());
+            sharedPreferences = null;
+            sharedPreferencesEditor = null;
+        }
+    }
+
+    public static synchronized SharedPreferencesManager getDefaultInstance(final Context context) {
+        if (defaultInstance == null) {
+            defaultInstance = new SharedPreferencesManager(context);
+        }
+        return defaultInstance;
     }
 
     /**
@@ -403,7 +427,9 @@ public class SharedPreferencesManager {
      * Remove all key-value pairs from shared preferences.
      */
     public synchronized void clear() {
-        this.sharedPreferences.edit().clear().apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.clear().apply();
+        }
     }
 
     /**
@@ -413,7 +439,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveString(final String key, final String value) {
-        this.sharedPreferences.edit().putString(key, value).apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.putString(key, value).apply();
+        }
     }
 
     /**
@@ -423,7 +451,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveBoolean(final String key, final boolean value) {
-        this.sharedPreferences.edit().putBoolean(key, value).apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.putBoolean(key, value).apply();
+        }
     }
 
     /**
@@ -433,7 +463,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveLong(final String key, final long value) {
-        this.sharedPreferences.edit().putLong(key, value).apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.putLong(key, value).apply();
+        }
     }
 
     /**
@@ -443,7 +475,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveInteger(final String key, final int value) {
-        this.sharedPreferences.edit().putInt(key, value).apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.putInt(key, value).apply();
+        }
     }
 
     /**
@@ -453,14 +487,18 @@ public class SharedPreferencesManager {
      * @return String value for given key saved in shared preferences (null if not found)
      */
     private synchronized String getString(final String key) {
-        try {
-            return this.sharedPreferences.getString(key, null);
-        } catch (ClassCastException e) {
-            return null;
-        } catch (Throwable t) {
-            if (key.equals(PREFS_KEY_RAW_REFERRERS)) {
-                remove(PREFS_KEY_RAW_REFERRERS);
+        if (sharedPreferences != null) {
+            try {
+                return sharedPreferences.getString(key, null);
+            } catch (ClassCastException e) {
+                return null;
+            } catch (Throwable t) {
+                if (key.equals(PREFS_KEY_RAW_REFERRERS)) {
+                    remove(PREFS_KEY_RAW_REFERRERS);
+                }
+                return null;
             }
+        } else {
             return null;
         }
     }
@@ -473,9 +511,13 @@ public class SharedPreferencesManager {
      * @return Boolean value for given key saved in shared preferences
      */
     private synchronized boolean getBoolean(final String key, final boolean defaultValue) {
-        try {
-            return this.sharedPreferences.getBoolean(key, defaultValue);
-        } catch (ClassCastException e) {
+        if (sharedPreferences != null) {
+            try {
+                return sharedPreferences.getBoolean(key, defaultValue);
+            } catch (ClassCastException e) {
+                return defaultValue;
+            }
+        } else {
             return defaultValue;
         }
     }
@@ -488,9 +530,13 @@ public class SharedPreferencesManager {
      * @return Long value for given key saved in shared preferences
      */
     private synchronized long getLong(final String key, final long defaultValue) {
-        try {
-            return this.sharedPreferences.getLong(key, defaultValue);
-        } catch (ClassCastException e) {
+        if (sharedPreferences != null) {
+            try {
+                return sharedPreferences.getLong(key, defaultValue);
+            } catch (ClassCastException e) {
+                return defaultValue;
+            }
+        } else {
             return defaultValue;
         }
     }
@@ -501,6 +547,8 @@ public class SharedPreferencesManager {
      * @param key Key to be removed
      */
     private synchronized void remove(final String key) {
-        this.sharedPreferences.edit().remove(key).apply();
+        if (sharedPreferencesEditor != null) {
+            sharedPreferencesEditor.remove(key).apply();
+        }
     }
 }
