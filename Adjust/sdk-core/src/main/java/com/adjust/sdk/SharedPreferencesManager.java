@@ -71,14 +71,19 @@ public class SharedPreferencesManager {
     private static final int REFERRERS_COUNT = 10;
 
     /**
-     * Shared preferences editor of the app.
+     * Shared preferences of the app.
      */
     private static SharedPreferences sharedPreferences;
+
+    /**
+     * Shared preferences editor of the app.
+     */
     private static SharedPreferences.Editor sharedPreferencesEditor;
 
-
+    /**
+     * Singleton instance.
+     */
     private static SharedPreferencesManager defaultInstance;
-
 
     /**
      * Default constructor.
@@ -98,7 +103,7 @@ public class SharedPreferencesManager {
 
     public static synchronized SharedPreferencesManager getDefaultInstance(final Context context) {
         if (defaultInstance == null) {
-            return new SharedPreferencesManager(context);
+            defaultInstance = new SharedPreferencesManager(context);
         }
         return defaultInstance;
     }
@@ -422,8 +427,9 @@ public class SharedPreferencesManager {
      * Remove all key-value pairs from shared preferences.
      */
     public synchronized void clear() {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.clear().apply();
+        }
     }
 
     /**
@@ -433,8 +439,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveString(final String key, final String value) {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.putString(key, value).apply();
+        }
     }
 
     /**
@@ -444,8 +451,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveBoolean(final String key, final boolean value) {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.putBoolean(key, value).apply();
+        }
     }
 
     /**
@@ -455,8 +463,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveLong(final String key, final long value) {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.putLong(key, value).apply();
+        }
     }
 
     /**
@@ -466,8 +475,9 @@ public class SharedPreferencesManager {
      * @param value Value to be written to shared preferences
      */
     private synchronized void saveInteger(final String key, final int value) {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.putInt(key, value).apply();
+        }
     }
 
     /**
@@ -537,7 +547,8 @@ public class SharedPreferencesManager {
      * @param key Key to be removed
      */
     private synchronized void remove(final String key) {
-        if (sharedPreferencesEditor != null)
+        if (sharedPreferencesEditor != null) {
             sharedPreferencesEditor.remove(key).apply();
+        }
     }
 }
