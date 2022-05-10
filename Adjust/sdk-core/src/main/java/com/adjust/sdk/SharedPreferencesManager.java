@@ -98,7 +98,7 @@ public class SharedPreferencesManager {
 
     public static synchronized SharedPreferencesManager getDefaultInstance(final Context context) {
         if (defaultInstance == null) {
-            return new SharedPreferencesManager(context);
+            defaultInstance = new SharedPreferencesManager(context);
         }
         return defaultInstance;
     }
