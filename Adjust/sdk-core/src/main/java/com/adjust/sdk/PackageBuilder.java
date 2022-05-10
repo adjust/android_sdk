@@ -420,6 +420,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
+        PackageBuilder.addString(parameters, "order_id", event.orderId);
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
