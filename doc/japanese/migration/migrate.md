@@ -1,4 +1,4 @@
-## Android用adjust SDKのv3.6.2からv4.30.0への移行
+## Android用adjust SDKのv3.6.2からv4.30.1への移行
 
 ### アプリケーションクラス
 
