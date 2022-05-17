@@ -19,6 +19,18 @@ android {
     }
 }
 
+// read local properties
+File localPropsFile = project.rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    Properties p = new Properties()
+    new FileInputStream(localPropsFile).withCloseable { is ->
+        p.load(is)
+    }
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
@@ -98,18 +110,9 @@ publishing {
             artifactId 'adjust-android'
             version rootProject.ext.coreVersionName
 
-            // Create the signed POM artifact.
-            pom.withXml {
-                def pomFile = file("${project.buildDir}/generated-pom.xml")
-                writeTo(pomFile)
-                def pomAscFile = signing.sign(pomFile).signatureFiles[0]
-                artifact(pomAscFile) {
-                    classifier = null
-                    extension = 'pom.asc'
-                }
+            artifact("$buildDir/outputs/aar/sdk-core-release.aar"){
+                builtBy tasks.getByPath("adjustCoreAarRelease")
             }
-
-            artifact("$buildDir/outputs/aar/sdk-core-release.aar")
             artifact adjustCoreAndroidJavadocsJar
             artifact adjustCoreAndroidSourcesJar
         }

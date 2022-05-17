@@ -1,3 +1,14 @@
+### Version 4.30.1 (17th May 2022)
+#### Added
+- Added support to publish AAR in maven repository.
+- Added support for `Generic` ad revenue tracking.
+- Added sending of `deduplication_id` parameter in `event` package.
+
+#### Fixed
+- Added catching of `IllegalStateException` while retrieving `SharedPreferences`
+
+---
+
 ### Version 4.30.0 (11th April 2022)
 #### Added
 - Added ability to mark your app as COPPA compliant. You can enable this setting by calling `setCoppaCompliantEnabled` method of `AdjustConfig` instance with boolean parameter `true`.

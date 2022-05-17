@@ -581,14 +581,7 @@ public class AdjustInstance {
      * @param context     Application context
      */
     private void saveRawReferrer(final String rawReferrer, final long clickTime, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.saveRawReferrer(rawReferrer, clickTime);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).saveRawReferrer(rawReferrer, clickTime);
     }
 
     /**
@@ -598,14 +591,7 @@ public class AdjustInstance {
      * @param context     Application context
      */
     private void savePreinstallReferrer(final String referrer, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.savePreinstallReferrer(referrer);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
     }
 
     /**
@@ -615,14 +601,7 @@ public class AdjustInstance {
      * @param context   Application context
      */
     private void savePushToken(final String pushToken, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.savePushToken(pushToken);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).savePushToken(pushToken);
     }
 
     /**
@@ -631,14 +610,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void saveGdprForgetMe(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setGdprForgetMe();
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setGdprForgetMe();
     }
 
     /**
@@ -647,14 +619,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void saveDisableThirdPartySharing(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setDisableThirdPartySharing();
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
     }
 
     /**
@@ -665,14 +630,7 @@ public class AdjustInstance {
      * @param context   Application context
      */
     private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.saveDeeplink(deeplink, clickTime);
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
     }
 
     /**
@@ -681,15 +639,7 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void setSendingReferrersAsNotSent(final Context context) {
-        Runnable command = new Runnable() {
-            @Override
-            public void run() {
-                SharedPreferencesManager sharedPreferencesManager = new SharedPreferencesManager(context);
-                sharedPreferencesManager.setSendingReferrersAsNotSent();
-
-            }
-        };
-        Util.runInBackground(command);
+        SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
     }
 
     /**
