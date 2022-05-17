@@ -86,7 +86,7 @@ Read this in other languages: [English][en-readme], [中文][zh-readme], [日本
       * [Disable third-party sharing](#af-disable-third-party-sharing)
       * [Enable third-party sharing](#af-enable-third-party-sharing)
    * [Consent measurement](#af-measurement-consent)
-   * [[beta] Data residency](#af-data-residency)
+   * [Data residency](#af-data-residency)
    * [COPPA compliance](#af-coppa-compliance)
    * [Play Store Kids Apps](#af-play-store-kids-apps)
 
@@ -114,14 +114,14 @@ These are the minimum required steps to integrate the Adjust SDK in your Android
 If you are using Maven, add the following to your `build.gradle` file:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android:4.30.0'
+implementation 'com.adjust.sdk:adjust-android:4.30.1'
 implementation 'com.android.installreferrer:installreferrer:2.2'
 ```
 
 If you would prefer to use the Adjust SDK inside web views in your app, please include this additional dependency as well:
 
 ```gradle
-implementation 'com.adjust.sdk:adjust-android-webbridge:4.30.0'
+implementation 'com.adjust.sdk:adjust-android-webbridge:4.30.1'
 ```
 
 **Note**: The minimum supported Android API level for the web view extension is 17 (Jelly Bean).
@@ -1484,6 +1484,10 @@ Currently we support the below `source` parameter values:
 - `AdjustConfig.AD_REVENUE_MOPUB` - representing MoPub platform.
 - `AdjustConfig.AD_REVENUE_ADMOB` - representing AdMob platform.
 - `AdjustConfig.AD_REVENUE_IRONSOURCE` - representing IronSource platform.
+- `AdjustConfig.AD_REVENUE_ADMOST` - representing AdMost platform.
+- `AdjustConfig.AD_REVENUE_UNITY` - representing Unity platform.
+- `AdjustConfig.AD_REVENUE_HELIUM_CHARTBOOST` - representing Helium Chartboost platform.
+- `AdjustConfig.AD_REVENUE_SOURCE_PUBLISHER` - representing Generic platform.
 
 **Note**: Additional documentation which explains detailed integration with every of the supported sources will be provided outside of this README. Also, in order to use this feature, additional setup is needed for your app in Adjust dashboard, so make sure to get in touch with our support team to make sure that everything is set up correctly before you start to use this feature.
 
@@ -1806,8 +1810,10 @@ Depending upon your implmentation method, you may need to make a change to your 
 <td>System Installer Receiver</td>
 <td>Declare receiver:</br>
 
-```
-<receiver android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver">
+```xml
+<receiver
+    android:name="com.adjust.sdk.AdjustPreinstallReferrerReceiver"
+    android:exported="true" >
     <intent-filter>
         <action android:name="com.attribution.SYSTEM_INSTALLER_REFERRER" />
     </intent-filter>
@@ -2187,7 +2193,7 @@ Adjust.trackMeasurementConsent(true);
 
 Upon receiving this information, Adjust enables or disables consent measurement. The Adjust SDK will continue to work as expected.
 
-### <a id="af-data-residency"></a>[beta] Data residency
+### <a id="af-data-residency"></a>Data residency
 
 In order to enable data residency feature, make sure to make a call to `setUrlStrategy` method of the `AdjustConfig` instance with one of the following constants:
 
@@ -2224,7 +2230,7 @@ adjustConfig.setUrlStrategy(AdjustConfig.DataResidencyUS); // for US data reside
 </tr>
 </table>
 
-**Note:** This feature is currently in beta testing phase. If you are interested in getting access to it, please contact your dedicated account manager or write an email to support@adjust.com. Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
+**Note:** Please, do not turn this setting on before making sure with the support team that this feature is enabled for your app because otherwise SDK traffic will get dropped.
 
 ### <a id="af-coppa-compliance"></a>COPPA compliance
 
