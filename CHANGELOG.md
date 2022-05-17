@@ -1,11 +1,11 @@
-### Version 4.30.1 (16th May 2022)
+### Version 4.30.1 (17th May 2022)
 #### Added
 - Added support to publish AAR in maven repository.
 - Added support for `Generic` ad revenue tracking.
 - Added sending of `deduplication_id` parameter in `event` package.
 
 #### Fixed
-- Catch `IllegalStateException` while retrieving `SharedPreferences`
+- Added catching of `IllegalStateException` while retrieving `SharedPreferences`
 
 ---
 
