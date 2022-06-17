@@ -57,6 +57,19 @@ public class Reflection {
         }
     }
 
+    public static ReferrerDetails getXiaomiReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.xiaomi.Util",
+                                                                   "getXiaomiInstallReferrerDetails",
+                                                                   new Class[]{Context.class, ILogger.class},
+                                                                   context, logger);
+        } catch (Exception e) {
+            logger.error("invoke getXiaomiInstallReferrerDetails error: " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
     public static Class forName(String className) {
         try {
             Class classObject = Class.forName(className);
