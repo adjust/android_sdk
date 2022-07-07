@@ -21,10 +21,12 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     // Add SDK via module.
+    compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // TODO: update referrer dependency to the one in maven public repo
-    implementation 'com.miui.referrer:homereferrer:1.0.0.5-SNAPSHOT'
-    implementation project(path: ':sdk-core')
+    // implementation 'com.adjust.sdk:adjust-android:4.30.1'
+
+    // Add xiaomi referrer lib via Maven.
+    implementation 'com.miui.referrer:homereferrer:1.0.0.6'
 }
 
 task adjustXiaomiReferrerPluginAar (type: Copy) {
