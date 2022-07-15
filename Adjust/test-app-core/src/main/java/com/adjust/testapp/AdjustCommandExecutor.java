@@ -368,6 +368,7 @@ public class AdjustCommandExecutor {
                         MainActivity.testLibrary.addInfoToSend("costAmount", attribution.costAmount.toString());
                     }
                     MainActivity.testLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
+                    MainActivity.testLibrary.addInfoToSend("fbInstallReferrer", attribution.fbInstallReferrer);
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
