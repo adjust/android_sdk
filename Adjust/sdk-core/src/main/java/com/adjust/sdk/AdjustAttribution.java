@@ -59,7 +59,7 @@ public class AdjustAttribution implements Serializable {
             attribution.costType = jsonObject.optString("cost_type", "");
             attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
             attribution.costCurrency = jsonObject.optString("cost_currency", "");
-            attribution.costCurrency = jsonObject.optString("fb_install_referrer", "");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer", "");
         } else {
             // Rest of all platforms.
             attribution.trackerToken = jsonObject.optString("tracker_token");
@@ -73,7 +73,7 @@ public class AdjustAttribution implements Serializable {
             attribution.costType = jsonObject.optString("cost_type");
             attribution.costAmount = jsonObject.optDouble("cost_amount");
             attribution.costCurrency = jsonObject.optString("cost_currency");
-            attribution.costCurrency = jsonObject.optString("fb_install_referrer");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer");
         }
 
         return attribution;
