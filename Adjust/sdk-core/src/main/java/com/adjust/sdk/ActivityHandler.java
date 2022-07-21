@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
 
@@ -1256,11 +1257,24 @@ public class ActivityHandler implements IActivityHandler {
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
             installReferrerHuawei.readReferrer();
+            readInstallReferrerXiaomi();
 
             return;
         }
 
         logger.verbose("Time span since last activity too short for a new subsession");
+    }
+
+    private void readInstallReferrerXiaomi() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                ReferrerDetails referrerDetails = Reflection.getXiaomiReferrer(getContext(), logger);
+                if (referrerDetails != null) {
+                    sendInstallReferrer(referrerDetails, REFERRER_API_XIAOMI);
+                }
+            }
+        });
     }
 
     private void trackNewSessionI(final long now) {
@@ -1689,6 +1703,7 @@ public class ActivityHandler implements IActivityHandler {
         // try to read and send the install referrer
         installReferrer.startConnection();
         installReferrerHuawei.readReferrer();
+        readInstallReferrerXiaomi();
     }
 
     private void setOfflineModeI(boolean offline) {
