@@ -51,6 +51,11 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("installReferrerHuawei", String.class),
             new ObjectStreamField("installReferrerHuaweiAppGallery", String.class),
             new ObjectStreamField("isThirdPartySharingDisabledForCoppa", boolean.class),
+            new ObjectStreamField("clickTimeXiaomi", long.class),
+            new ObjectStreamField("installBeginXiaomi", long.class),
+            new ObjectStreamField("installReferrerXiaomi", String.class),
+            new ObjectStreamField("clickTimeServerXiaomi", long.class),
+            new ObjectStreamField("installBeginServerXiaomi", long.class),
     };
 
     // persistent data
@@ -93,6 +98,12 @@ public class ActivityState implements Serializable, Cloneable {
     protected String installReferrerHuawei;
     protected String installReferrerHuaweiAppGallery;
 
+    protected long clickTimeXiaomi;
+    protected long installBeginXiaomi;
+    protected String installReferrerXiaomi;
+    protected long clickTimeServerXiaomi;
+    protected long installBeginServerXiaomi;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -124,6 +135,11 @@ public class ActivityState implements Serializable, Cloneable {
         installBeginHuawei = 0;
         installReferrerHuawei = null;
         installReferrerHuaweiAppGallery = null;
+        clickTimeXiaomi = 0;
+        installBeginXiaomi = 0;
+        installReferrerXiaomi = null;
+        clickTimeServerXiaomi = 0;
+        installBeginServerXiaomi = 0;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -194,6 +210,11 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(installBeginHuawei, otherActivityState.installBeginHuawei)) return false;
         if (!Util.equalString(installReferrerHuawei, otherActivityState.installReferrerHuawei)) return false;
         if (!Util.equalString(installReferrerHuaweiAppGallery, otherActivityState.installReferrerHuaweiAppGallery)) return false;
+        if (!Util.equalLong(clickTimeXiaomi, otherActivityState.clickTime)) return false;
+        if (!Util.equalLong(installBeginXiaomi, otherActivityState.installBegin)) return false;
+        if (!Util.equalString(installReferrerXiaomi, otherActivityState.installReferrer)) return false;
+        if (!Util.equalLong(clickTimeServerXiaomi, otherActivityState.clickTimeServer)) return false;
+        if (!Util.equalLong(installBeginServerXiaomi, otherActivityState.installBeginServer)) return false;
         return true;
     }
 
@@ -227,6 +248,11 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = 37 * hashCode + Util.hashLong(installBeginHuawei);
         hashCode = 37 * hashCode + Util.hashString(installReferrerHuawei);
         hashCode = 37 * hashCode + Util.hashString(installReferrerHuaweiAppGallery);
+        hashCode = 37 * hashCode + Util.hashLong(clickTimeXiaomi);
+        hashCode = 37 * hashCode + Util.hashLong(installBeginXiaomi);
+        hashCode = 37 * hashCode + Util.hashString(installReferrerXiaomi);
+        hashCode = 37 * hashCode + Util.hashLong(clickTimeServerXiaomi);
+        hashCode = 37 * hashCode + Util.hashLong(installBeginServerXiaomi);
         return hashCode;
     }
 
@@ -266,6 +292,12 @@ public class ActivityState implements Serializable, Cloneable {
         installBeginHuawei = Util.readLongField(fields, "installBeginHuawei", -1l);
         installReferrerHuawei = Util.readStringField(fields, "installReferrerHuawei", null);
         installReferrerHuaweiAppGallery = Util.readStringField(fields, "installReferrerHuaweiAppGallery", null);
+
+        clickTimeXiaomi = Util.readLongField(fields, "clickTimeXiaomi", -1l);
+        installBeginXiaomi = Util.readLongField(fields, "installBeginXiaomi", -1l);
+        installReferrerXiaomi = Util.readStringField(fields, "installReferrerXiaomi", null);
+        clickTimeServerXiaomi = Util.readLongField(fields, "clickTimeServerXiaomi", -1l);
+        installBeginServerXiaomi = Util.readLongField(fields, "installBeginServerXiaomi", -1l);
 
         // create UUID for migrating devices
         if (uuid == null) {

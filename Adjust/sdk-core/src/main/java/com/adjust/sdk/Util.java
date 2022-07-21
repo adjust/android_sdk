@@ -751,6 +751,8 @@ public class Util {
             return isEqualHuaweiReferrerAdsDetails(referrerDetails, activityState);
         } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
             return isEqualHuaweiReferrerAppGalleryDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_XIAOMI)) {
+            return isEqualXiaomiReferrerDetails(referrerDetails, activityState);
         }
 
         return false;
@@ -835,5 +837,14 @@ public class Util {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeHuawei
                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginHuawei
                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuaweiAppGallery);
+    }
+
+    private static boolean isEqualXiaomiReferrerDetails(final ReferrerDetails referrerDetails,
+                                                        final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeXiaomi
+               && referrerDetails.installBeginTimestampSeconds == activityState.installBeginXiaomi
+               && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServerXiaomi
+               && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServerXiaomi
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerXiaomi);
     }
 }
