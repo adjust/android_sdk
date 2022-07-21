@@ -2606,6 +2606,21 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        boolean isInstallReferrerXiaomi =
+                responseData.referrerApi != null &&
+                (responseData.referrerApi.equalsIgnoreCase(REFERRER_API_XIAOMI));
+
+        if (isInstallReferrerXiaomi) {
+            activityState.clickTimeXiaomi = responseData.clickTime;
+            activityState.installBeginXiaomi = responseData.installBegin;
+            activityState.installReferrerXiaomi = responseData.installReferrer;
+            activityState.clickTimeServerXiaomi = responseData.clickTimeServer;
+            activityState.installBeginServerXiaomi = responseData.installBeginServer;
+
+            writeActivityStateI();
+            return;
+        }
+
         activityState.clickTime = responseData.clickTime;
         activityState.installBegin = responseData.installBegin;
         activityState.installReferrer = responseData.installReferrer;
