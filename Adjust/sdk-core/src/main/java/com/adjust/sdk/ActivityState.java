@@ -210,11 +210,11 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(installBeginHuawei, otherActivityState.installBeginHuawei)) return false;
         if (!Util.equalString(installReferrerHuawei, otherActivityState.installReferrerHuawei)) return false;
         if (!Util.equalString(installReferrerHuaweiAppGallery, otherActivityState.installReferrerHuaweiAppGallery)) return false;
-        if (!Util.equalLong(clickTimeXiaomi, otherActivityState.clickTime)) return false;
-        if (!Util.equalLong(installBeginXiaomi, otherActivityState.installBegin)) return false;
-        if (!Util.equalString(installReferrerXiaomi, otherActivityState.installReferrer)) return false;
-        if (!Util.equalLong(clickTimeServerXiaomi, otherActivityState.clickTimeServer)) return false;
-        if (!Util.equalLong(installBeginServerXiaomi, otherActivityState.installBeginServer)) return false;
+        if (!Util.equalLong(clickTimeXiaomi, otherActivityState.clickTimeXiaomi)) return false;
+        if (!Util.equalLong(installBeginXiaomi, otherActivityState.installBeginXiaomi)) return false;
+        if (!Util.equalString(installReferrerXiaomi, otherActivityState.installReferrerXiaomi)) return false;
+        if (!Util.equalLong(clickTimeServerXiaomi, otherActivityState.clickTimeServerXiaomi)) return false;
+        if (!Util.equalLong(installBeginServerXiaomi, otherActivityState.installBeginServerXiaomi)) return false;
         return true;
     }
 
