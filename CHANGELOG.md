@@ -1,3 +1,10 @@
+### Version 4.31.0 (27th July 2022)
+#### Added
+- Added support for Xiaomi install referrer.
+- Added support to get Facebook install referrer information in attribution callback.
+
+---
+
 ### Version 4.30.1 (17th May 2022)
 #### Added
 - Added support to publish AAR in maven repository.
