@@ -1,4 +1,4 @@
-### Version 4.31.0 (27th July 2022)
+### Version 4.31.0 (28th July 2022)
 #### Added
 - Added support for Xiaomi install referrer.
 - Added support to get Facebook install referrer information in attribution callback.
