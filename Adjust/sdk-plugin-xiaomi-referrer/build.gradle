@@ -83,7 +83,7 @@ publishing {
         mavenAndroidXiaomiReferrer(MavenPublication) {
             customizePom(pom)
             groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-xiamoi-referrer'
+            artifactId 'adjust-android-xiaomi-referrer'
             version rootProject.ext.coreVersionName
 
             artifact adjustXiaomiReferrerPluginJar
