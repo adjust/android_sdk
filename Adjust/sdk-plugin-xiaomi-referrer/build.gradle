@@ -29,6 +29,18 @@ dependencies {
     implementation 'com.miui.referrer:homereferrer:1.0.0.6'
 }
 
+// read local properties
+File localPropsFile = project.rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    Properties p = new Properties()
+    new FileInputStream(localPropsFile).withCloseable { is ->
+        p.load(is)
+    }
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
+
 task adjustXiaomiReferrerPluginAar (type: Copy) {
     dependsOn 'assembleRelease'
 
