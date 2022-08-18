@@ -1,3 +1,15 @@
+### Version 4.31.1 (18th August 2022)
+#### Added
+- Added permission `com.google.android.gms.permission.AD_ID` in the SDK's mainfest.
+
+#### Fixed
+- Typo in Xiaomi Install Referrer's maven artifact id.
+
+#### Changed
+- Updated Gradle version 7.3.3 and other dependencies.
+
+---
+
 ### Version 4.31.0 (28th July 2022)
 #### Added
 - Added support for Xiaomi install referrer.
