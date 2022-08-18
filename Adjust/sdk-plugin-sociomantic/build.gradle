@@ -22,7 +22,19 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.31.0'
+    // implementation 'com.adjust.sdk:adjust-android:4.31.1'
+}
+
+// read local properties
+File localPropsFile = project.rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    Properties p = new Properties()
+    new FileInputStream(localPropsFile).withCloseable { is ->
+        p.load(is)
+    }
+    p.each { name, value ->
+        ext[name] = value
+    }
 }
 
 task adjustSociomanticAndroidAar (type: Copy) {
