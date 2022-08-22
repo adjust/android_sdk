@@ -679,6 +679,19 @@ public class AdjustCommandExecutor {
             }
         }
 
+        if (command.parameters.containsKey("partnerSharingSettings")) {
+            List<String> partnerSharingSettings = command.parameters.get("partnerSharingSettings");
+            for (int i = 0; i < partnerSharingSettings.size(); i = i + 3) {
+                String partnerName = partnerSharingSettings.get(i);
+                String key = partnerSharingSettings.get(i + 1);
+                String valueString = partnerSharingSettings.get(i + 2);
+                Boolean valueBoolean = Util.strictParseStringToBoolean(valueString);
+                if (valueBoolean != null) {
+                    adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, valueBoolean);
+                }
+            }
+        }
+
         Adjust.trackThirdPartySharing(adjustThirdPartySharing);
     }
 
