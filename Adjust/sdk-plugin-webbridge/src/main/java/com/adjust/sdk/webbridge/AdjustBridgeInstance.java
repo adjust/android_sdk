@@ -667,13 +667,14 @@ public class AdjustBridgeInstance {
             Object isEnabledField =
                     jsonAdjustThirdPartySharing.get("isEnabled");
             Object granularOptionsField = jsonAdjustThirdPartySharing.get("granularOptions");
+            Object partnerSharingSettingsField = jsonAdjustThirdPartySharing.get("partnerSharingSettings");
 
             Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledField);
 
             AdjustThirdPartySharing adjustThirdPartySharing =
                     new AdjustThirdPartySharing(isEnabled);
 
-            // Callback parameters
+            // Granular options
             String[] granularOptions =
                     AdjustBridgeUtil.jsonArrayToArray((JSONArray)granularOptionsField);
             if (granularOptions != null) {
@@ -682,6 +683,20 @@ public class AdjustBridgeInstance {
                     String key = granularOptions[i + 1];
                     String value = granularOptions[i + 2];
                     adjustThirdPartySharing.addGranularOption(partnerName, key, value);
+                }
+            }
+
+            // Partner sharing settings
+            String[] partnerSharingSettings =
+                    AdjustBridgeUtil.jsonArrayToArray((JSONArray)partnerSharingSettingsField);
+            if (partnerSharingSettings != null) {
+                for (int i = 0; i < partnerSharingSettings.length; i += 3) {
+                    String partnerName = partnerSharingSettings[i];
+                    String key = partnerSharingSettings[i + 1];
+                    Boolean value = AdjustBridgeUtil.fieldToBoolean(partnerSharingSettings[i + 2]);
+                    if (value != null) {
+                        adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, value);
+                    }
                 }
             }
 
