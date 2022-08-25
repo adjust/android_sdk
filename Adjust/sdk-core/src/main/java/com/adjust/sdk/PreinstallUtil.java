@@ -266,9 +266,18 @@ public class PreinstallUtil {
                                                                 final ILogger logger)
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            List<ResolveInfo> providers = context.getPackageManager()
-                                                 .queryIntentContentProviders(
-                                                         new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
+            List<ResolveInfo> providers;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                providers = context.getPackageManager()
+                  .queryIntentContentProviders(
+                    new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION),
+                    PackageManager.ResolveInfoFlags.of(0));
+            }else{
+                providers = context.getPackageManager()
+                  .queryIntentContentProviders(
+                    new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
+            }
+
             List<String> payloads = new ArrayList<String>();
             for (ResolveInfo provider : providers) {
                 boolean permissionGranted = true;
