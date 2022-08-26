@@ -265,46 +265,48 @@ public class PreinstallUtil {
                                                                 final String permission,
                                                                 final ILogger logger)
     {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            List<ResolveInfo> providers;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                providers = context.getPackageManager()
-                  .queryIntentContentProviders(
-                    new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION),
-                    PackageManager.ResolveInfoFlags.of(0));
-            }else{
-                providers = context.getPackageManager()
-                  .queryIntentContentProviders(
-                    new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            return null;
+        }
 
-            List<String> payloads = new ArrayList<String>();
-            for (ResolveInfo provider : providers) {
-                boolean permissionGranted = true;
-                if (permission != null) {
-                    int result = context.getPackageManager().checkPermission(
-                            permission, provider.providerInfo.packageName);
-                    if (result != PackageManager.PERMISSION_GRANTED) {
-                        permissionGranted = false;
-                    }
-                }
+        List<ResolveInfo> providers;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            providers = context.getPackageManager()
+              .queryIntentContentProviders(
+                new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION),
+                PackageManager.ResolveInfoFlags.of(0));
+        } else {
+            providers = context.getPackageManager()
+              .queryIntentContentProviders(
+                new Intent(ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION), 0);
+        }
 
-                if (permissionGranted) {
-                    String authority = provider.providerInfo.authority;
-                    if (authority != null && !authority.isEmpty()) {
-                        String contentUri = Util.formatString("content://%s/%s",
-                                                              authority, ADJUST_PREINSTALL_CONTENT_URI_PATH);
-                        String payload = readContentProvider(context, contentUri, packageName, logger);
-                        if (payload != null && !payload.isEmpty()) {
-                            payloads.add(payload);
-                        }
-                    }
+        List<String> payloads = new ArrayList<String>();
+        for (ResolveInfo provider : providers) {
+            boolean permissionGranted = true;
+            if (permission != null) {
+                int result = context.getPackageManager().checkPermission(
+                        permission, provider.providerInfo.packageName);
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    permissionGranted = false;
                 }
             }
 
-            if (!payloads.isEmpty()) {
-                return payloads;
+            if (permissionGranted) {
+                String authority = provider.providerInfo.authority;
+                if (authority != null && !authority.isEmpty()) {
+                    String contentUri = Util.formatString("content://%s/%s",
+                                                          authority, ADJUST_PREINSTALL_CONTENT_URI_PATH);
+                    String payload = readContentProvider(context, contentUri, packageName, logger);
+                    if (payload != null && !payload.isEmpty()) {
+                        payloads.add(payload);
+                    }
+                }
             }
+        }
+
+        if (!payloads.isEmpty()) {
+            return payloads;
         }
 
         return null;
