@@ -57,6 +57,19 @@ public class Reflection {
         }
     }
 
+    public static ReferrerDetails getSamsungReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.samsung.Util",
+                                                                   "getSamsungInstallReferrerDetails",
+                                                                   new Class[]{Context.class, ILogger.class},
+                                                                   context, logger);
+        } catch (Exception e) {
+            logger.error("invoke getSamsungInstallReferrerDetails error: " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
     public static ReferrerDetails getXiaomiReferrer(Context context, ILogger logger) {
         ReferrerDetails referrerDetails = null;
         try {

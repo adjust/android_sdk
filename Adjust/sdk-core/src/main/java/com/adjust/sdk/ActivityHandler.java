@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.REFERRER_API_SAMSUNG;
 import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
 import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
@@ -1257,12 +1258,25 @@ public class ActivityHandler implements IActivityHandler {
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
             installReferrerHuawei.readReferrer();
+            readInstallReferrerSamsung();
             readInstallReferrerXiaomi();
 
             return;
         }
 
         logger.verbose("Time span since last activity too short for a new subsession");
+    }
+
+    private void readInstallReferrerSamsung() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                ReferrerDetails referrerDetails = Reflection.getSamsungReferrer(getContext(), logger);
+                if (referrerDetails != null) {
+                    sendInstallReferrer(referrerDetails, REFERRER_API_SAMSUNG);
+                }
+            }
+        });
     }
 
     private void readInstallReferrerXiaomi() {
@@ -1703,6 +1717,7 @@ public class ActivityHandler implements IActivityHandler {
         // try to read and send the install referrer
         installReferrer.startConnection();
         installReferrerHuawei.readReferrer();
+        readInstallReferrerSamsung();
         readInstallReferrerXiaomi();
     }
 
@@ -2606,6 +2621,19 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        boolean isInstallReferrerSamsung =
+                responseData.referrerApi != null &&
+                (responseData.referrerApi.equalsIgnoreCase(REFERRER_API_SAMSUNG));
+
+        if (isInstallReferrerSamsung) {
+            activityState.clickTimeSamsung = responseData.clickTime;
+            activityState.installBeginSamsung = responseData.installBegin;
+            activityState.installReferrerSamsung = responseData.installReferrer;
+
+            writeActivityStateI();
+            return;
+        }
+
         boolean isInstallReferrerXiaomi =
                 responseData.referrerApi != null &&
                 (responseData.referrerApi.equalsIgnoreCase(REFERRER_API_XIAOMI));
@@ -2616,6 +2644,7 @@ public class ActivityHandler implements IActivityHandler {
             activityState.installReferrerXiaomi = responseData.installReferrer;
             activityState.clickTimeServerXiaomi = responseData.clickTimeServer;
             activityState.installBeginServerXiaomi = responseData.installBeginServer;
+            activityState.installVersionXiaomi = responseData.installVersion;
 
             writeActivityStateI();
             return;
