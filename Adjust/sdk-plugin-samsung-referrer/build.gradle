@@ -12,7 +12,7 @@ android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.coreMinSdkVersion
+        minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
 }

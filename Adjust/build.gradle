@@ -12,6 +12,7 @@ ext {
     coreVersionName = '4.31.1'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 17
+    samsungReferrerMinSdkVersion = 18
 
     // POM.
     adjustGroupId = 'com.adjust.sdk'
