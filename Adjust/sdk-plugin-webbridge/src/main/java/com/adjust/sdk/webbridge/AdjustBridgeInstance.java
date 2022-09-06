@@ -696,6 +696,8 @@ public class AdjustBridgeInstance {
                     Boolean value = AdjustBridgeUtil.fieldToBoolean(partnerSharingSettings[i + 2]);
                     if (value != null) {
                         adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, value);
+                    } else {
+                        AdjustFactory.getLogger().error("Cannot add partner sharing setting with non boolean value");
                     }
                 }
             }
