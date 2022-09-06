@@ -1,3 +1,9 @@
+### Version 4.32.0 (7th September 2022)
+#### Added
+- Added partner sharing settings to the third party sharing feature.
+
+---
+
 ### Version 4.31.1 (18th August 2022)
 #### Added
 - Added permission `com.google.android.gms.permission.AD_ID` in the SDK's mainfest.
