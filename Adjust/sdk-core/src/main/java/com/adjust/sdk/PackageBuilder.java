@@ -804,6 +804,9 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "granular_third_party_sharing_options",
                 adjustThirdPartySharing.granularOptions);
 
+        PackageBuilder.addMapJson(parameters, "partner_sharing_settings",
+                adjustThirdPartySharing.partnerSharingSettings);
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);

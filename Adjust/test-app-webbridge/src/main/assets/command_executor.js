@@ -580,6 +580,16 @@ AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
         }
     }
 
+    if ('partnerSharingSettings' in params) {
+        var partnerSharingSettings = getValueFromKey(params, "partnerSharingSettings");
+        for (var i = 0; i < partnerSharingSettings.length; i = i + 3) {
+            var partnerName = partnerSharingSettings[i];
+            var key = partnerSharingSettings[i + 1];
+            var value = partnerSharingSettings[i + 2];
+            adjustThirdPartySharing.addPartnerSharingSetting(partnerName, key, value);
+        }
+    }
+
     Adjust.trackThirdPartySharing(adjustThirdPartySharing);
 }
 
