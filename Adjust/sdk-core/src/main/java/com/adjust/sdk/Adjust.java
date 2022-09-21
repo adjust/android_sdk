@@ -5,6 +5,8 @@ import android.net.Uri;
 
 import org.json.JSONObject;
 
+import java.util.Map;
+
 /**
  * The main interface to Adjust.
  * Use the methods of this class to tell Adjust about the usage of your app.
@@ -94,6 +96,19 @@ public class Adjust {
     public static boolean isEnabled() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         return adjustInstance.isEnabled();
+    }
+
+    /**
+     * Get information if the payload is originates from Adjust.
+     *
+     * @return boolean indicating whether payload is originates from Adjust or not.
+     */
+    public static boolean isAdjustPushNotificationPayload(Map<String, String> remoteMessage) {
+        if (remoteMessage == null) {
+            return false;
+        }
+
+        return Util.isAdjustPushNotificationPayload(remoteMessage);
     }
 
     /**
