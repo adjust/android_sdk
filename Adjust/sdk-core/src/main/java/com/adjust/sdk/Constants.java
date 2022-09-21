@@ -64,6 +64,10 @@ public interface Constants {
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";
 
+    String FCM_PAYLOAD_KEY = "adjust_purpose";
+
+    String FCM_PAYLOAD_VALUE = "uninstall detection";
+
     int MAX_INSTALL_REFERRER_RETRIES = 2;
 
     String FB_AUTH_REGEX = "^(fb|vk)[0-9]{5,}[^:]*://authorize.*access_token=.*";
