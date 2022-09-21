@@ -99,9 +99,9 @@ public class Adjust {
     }
 
     /**
-     * Get information if the payload is originates from Adjust.
+     * Get information if the payload originates from Adjust.
      *
-     * @return boolean indicating whether payload is originates from Adjust or not.
+     * @return boolean indicating whether payload originates from Adjust or not.
      */
     public static boolean isAdjustPushNotificationPayload(Map<String, String> remoteMessage) {
         if (remoteMessage == null) {
