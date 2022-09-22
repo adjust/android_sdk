@@ -93,18 +93,18 @@ artifacts {
 
 publishing {
     publications {
-        mavenAndroidCore(MavenPublication) {
-            customizePom(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android'
-            version rootProject.ext.coreVersionName
+//        mavenAndroidCoreJar(MavenPublication) {
+//            customizePomForJar(pom)
+//            groupId rootProject.ext.adjustGroupId
+//            artifactId 'adjust-android'
+//            version rootProject.ext.coreVersionName
+//
+//            artifact adjustCoreJarRelease
+//            artifact adjustCoreAndroidJavadocsJar
+//            artifact adjustCoreAndroidSourcesJar
+//        }
 
-            artifact adjustCoreJarRelease
-            artifact adjustCoreAndroidJavadocsJar
-            artifact adjustCoreAndroidSourcesJar
-        }
-
-        mavenAndroidCoreAAR(MavenPublication) {
+        mavenAndroidCoreAar(MavenPublication) {
             customizePomForAar(pom)
             groupId rootProject.ext.adjustGroupId
             artifactId 'adjust-android'
@@ -137,7 +137,7 @@ publishing {
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
     pom.withXml {
         // Add all items necessary for maven central publication.
         asNode().children().last() + {
@@ -216,9 +216,9 @@ def customizePomForAar(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidCorePublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidCoreJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidCorePublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -227,7 +227,7 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
-    tasks.generatePomFileForMavenAndroidCoreAARPublication {
+    tasks.generatePomFileForMavenAndroidCoreAarPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
     /* TODO check if/how to replace this tasks
@@ -241,6 +241,6 @@ model {
 }
 
 signing {
-    sign publishing.publications.mavenAndroidCore
-    sign publishing.publications.mavenAndroidCoreAAR
+//    sign publishing.publications.mavenAndroidCoreJar
+    sign publishing.publications.mavenAndroidCoreAar
 }
