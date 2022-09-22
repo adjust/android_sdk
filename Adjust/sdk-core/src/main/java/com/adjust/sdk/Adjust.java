@@ -103,12 +103,12 @@ public class Adjust {
      *
      * @return boolean indicating whether payload originates from Adjust or not.
      */
-    public static boolean isAdjustPushNotificationPayload(Map<String, String> payload) {
+    public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
         if (payload == null) {
             return false;
         }
 
-        return Util.isAdjustPushNotificationPayload(payload);
+        return Util.isAdjustUninstallDetectionPayload(payload);
     }
 
     /**
