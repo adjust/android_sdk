@@ -484,7 +484,7 @@ public class Util {
         return true;
     }
 
-    public static boolean isAdjustPushNotificationPayload(Map<String, String> payload) {
+    public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
         return Objects.equals(payload.get(Constants.FCM_PAYLOAD_KEY), Constants.FCM_PAYLOAD_VALUE);
     }
 
