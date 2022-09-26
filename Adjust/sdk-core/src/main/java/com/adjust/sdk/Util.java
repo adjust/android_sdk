@@ -485,7 +485,8 @@ public class Util {
     }
 
     public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
-        return Objects.equals(payload.get(Constants.FCM_PAYLOAD_KEY), Constants.FCM_PAYLOAD_VALUE);
+        return payload.size() == 1 &&
+          Objects.equals(payload.get(Constants.FCM_PAYLOAD_KEY), Constants.FCM_PAYLOAD_VALUE);
     }
 
     public static Map<String, String> mergeParameters(Map<String, String> target,
