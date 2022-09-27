@@ -104,10 +104,6 @@ public class Adjust {
      * @return boolean indicating whether payload originates from Adjust or not.
      */
     public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
-        if (payload == null) {
-            return false;
-        }
-
         return Util.isAdjustUninstallDetectionPayload(payload);
     }
 

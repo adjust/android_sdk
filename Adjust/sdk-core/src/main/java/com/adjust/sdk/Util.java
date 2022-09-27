@@ -485,6 +485,9 @@ public class Util {
     }
 
     public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
+        if (payload == null) {
+            return false;
+        }
         return payload.size() == 1 &&
           Objects.equals(payload.get(Constants.FCM_PAYLOAD_KEY), Constants.FCM_PAYLOAD_VALUE);
     }
