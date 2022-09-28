@@ -20,7 +20,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.LocaleList;
-import android.os.Looper;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -47,6 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -482,6 +482,14 @@ public class Util {
         }
 
         return true;
+    }
+
+    public static boolean isAdjustUninstallDetectionPayload(Map<String, String> payload) {
+        if (payload == null) {
+            return false;
+        }
+        return payload.size() == 1 &&
+          Objects.equals(payload.get(Constants.FCM_PAYLOAD_KEY), Constants.FCM_PAYLOAD_VALUE);
     }
 
     public static Map<String, String> mergeParameters(Map<String, String> target,
