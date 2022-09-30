@@ -6,6 +6,9 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/staging/"
     }
+    maven {
+        url "https://developer.huawei.com/repo/"
+    }
 }
 
 android {
@@ -23,6 +26,7 @@ dependencies {
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.32.0'
+    implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
 }
 
 // read local properties
