@@ -108,7 +108,7 @@ public class AdjustBridgeUtil {
         if (webView == null) {
             return;
         }
-        if (attribution == null){
+        if (attribution == null) {
             return;
         }
 
@@ -143,7 +143,7 @@ public class AdjustBridgeUtil {
         if (webView == null) {
             return;
         }
-        if (sessionSuccess == null){
+        if (sessionSuccess == null) {
             return;
         }
 
