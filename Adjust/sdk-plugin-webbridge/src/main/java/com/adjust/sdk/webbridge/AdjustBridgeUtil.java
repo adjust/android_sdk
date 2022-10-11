@@ -108,6 +108,9 @@ public class AdjustBridgeUtil {
         if (webView == null) {
             return;
         }
+        if (attribution == null) {
+            return;
+        }
 
         webView.post(new Runnable() {
             @Override
@@ -129,7 +132,7 @@ public class AdjustBridgeUtil {
 
                     String command = "javascript:" + commandName + "(" + jsonAttribution.toString() + ");";
                     webView.loadUrl(command);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -138,6 +141,9 @@ public class AdjustBridgeUtil {
 
     public static void execSessionSuccessCallbackCommand(final WebView webView, final String commandName, final AdjustSessionSuccess sessionSuccess) {
         if (webView == null) {
+            return;
+        }
+        if (sessionSuccess == null) {
             return;
         }
 
@@ -153,7 +159,7 @@ public class AdjustBridgeUtil {
 
                     String command = "javascript:" + commandName + "(" + jsonSessionSuccess.toString() + ");";
                     webView.loadUrl(command);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -162,6 +168,9 @@ public class AdjustBridgeUtil {
 
     public static void execSessionFailureCallbackCommand(final WebView webView, final String commandName, final AdjustSessionFailure sessionFailure) {
         if (webView == null) {
+            return;
+        }
+        if (sessionFailure == null) {
             return;
         }
 
@@ -178,7 +187,7 @@ public class AdjustBridgeUtil {
 
                     String command = "javascript:" + commandName + "(" + jsonSessionFailure.toString() + ");";
                     webView.loadUrl(command);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -187,6 +196,9 @@ public class AdjustBridgeUtil {
 
     public static void execEventSuccessCallbackCommand(final WebView webView, final String commandName, final AdjustEventSuccess eventSuccess) {
         if (webView == null) {
+            return;
+        }
+        if (eventSuccess == null) {
             return;
         }
 
@@ -204,7 +216,7 @@ public class AdjustBridgeUtil {
 
                     String command = "javascript:" + commandName + "(" + jsonEventSuccess.toString() + ");";
                     webView.loadUrl(command);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -213,6 +225,9 @@ public class AdjustBridgeUtil {
 
     public static void execEventFailureCallbackCommand(final WebView webView, final String commandName, final AdjustEventFailure eventFailure) {
         if (webView == null) {
+            return;
+        }
+        if (eventFailure == null) {
             return;
         }
 
@@ -231,7 +246,7 @@ public class AdjustBridgeUtil {
 
                     String command = "javascript:" + commandName + "(" + jsonEventFailure.toString() + ");";
                     webView.loadUrl(command);
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
