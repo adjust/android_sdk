@@ -23,7 +23,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.31.1'
+    // implementation 'com.adjust.sdk:adjust-android:4.33.0'
 
     // Add Samsung referrer lib via Maven.
 }
