@@ -5,10 +5,8 @@ import android.util.Log;
 
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.PackageBuilder;
-import com.adjust.sdk.oaid.OpenDeviceIdentifierClient.Info;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
@@ -28,19 +26,19 @@ public class Util {
         // otherwise use the msa sdk which only gives the oaid currently
 
         if (isManufacturerHuawei(logger)) {
-            oaidParameters = getOaidParametersUsingHMS(context, logger);
+            oaidParameters = getOaidParametersUsingHms(context, logger);
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            return getOaidParametersUsingMSA(context, logger);
+            return getOaidParametersUsingMsa(context, logger);
         } else {
-            oaidParameters = getOaidParametersUsingMSA(context, logger);
+            oaidParameters = getOaidParametersUsingMsa(context, logger);
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            return getOaidParametersUsingHMS(context, logger);
+            return getOaidParametersUsingHms(context, logger);
         }
     }
 
@@ -56,13 +54,13 @@ public class Util {
         return false;
     }
 
-    private static Map<String, String> getOaidParametersUsingHMS(Context context, ILogger logger) {
-        for (int attempt = 1; attempt <= 3; attempt += 1) {
-            Info oaidInfo = OpenDeviceIdentifierClient.getOaidInfo(context, logger, 3000 * attempt);
-            if (oaidInfo != null) {
+    private static Map<String, String> getOaidParametersUsingHms(Context context, ILogger logger) {
+        for (int attempt = 1; attempt <= 2; attempt += 1) {
+            OaidInfo oaidInfo = HmsSdkClient.getOaidInfo(context, logger, 3000 * attempt);
+            if (oaidInfo != null && oaidInfo.getOaid() != null) {
                 Map<String, String> parameters = new HashMap<String, String>();
                 PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
-                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", !oaidInfo.isOaidTrackLimited());
+                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "hms");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
                 return parameters;
@@ -72,16 +70,17 @@ public class Util {
         return null;
     }
 
-    private static Map<String, String> getOaidParametersUsingMSA(Context context, ILogger logger) {
+    private static Map<String, String> getOaidParametersUsingMsa(Context context, ILogger logger) {
         if (!AdjustOaid.isMsaSdkAvailable) {
             return null;
         }
 
-        for (int attempt = 1; attempt <= 3; attempt += 1) {
-            String oaid = MsaSdkClient.getOaid(context, logger, 3000 * attempt);
-            if (oaid != null && !oaid.isEmpty()) {
+        for (int attempt = 1; attempt <= 2; attempt += 1) {
+            OaidInfo oaidInfo = MsaSdkClient.getOaidInfo(context, logger, 3000 * attempt);
+            if (oaidInfo != null && oaidInfo.getOaid() != null) {
                 Map<String, String> parameters = new HashMap<String, String>();
-                PackageBuilder.addString(parameters, "oaid", oaid);
+                PackageBuilder.addString(parameters, "oaid", oaidInfo.getOaid());
+                PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "msa");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
                 return parameters;
