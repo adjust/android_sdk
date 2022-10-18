@@ -759,6 +759,8 @@ public class Util {
             return isEqualHuaweiReferrerAdsDetails(referrerDetails, activityState);
         } else if (referrerApi.equals(Constants.REFERRER_API_HUAWEI_APP_GALLERY)) {
             return isEqualHuaweiReferrerAppGalleryDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_SAMSUNG)) {
+            return isEqualSamsungReferrerDetails(referrerDetails, activityState);
         } else if (referrerApi.equals(Constants.REFERRER_API_XIAOMI)) {
             return isEqualXiaomiReferrerDetails(referrerDetails, activityState);
         }
@@ -847,12 +849,20 @@ public class Util {
                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerHuaweiAppGallery);
     }
 
+    private static boolean isEqualSamsungReferrerDetails(final ReferrerDetails referrerDetails,
+                                                         final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeSamsung
+               && referrerDetails.installBeginTimestampSeconds == activityState.installBeginSamsung
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerSamsung);
+    }
+
     private static boolean isEqualXiaomiReferrerDetails(final ReferrerDetails referrerDetails,
                                                         final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeXiaomi
                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginXiaomi
                && referrerDetails.referrerClickTimestampServerSeconds == activityState.clickTimeServerXiaomi
                && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServerXiaomi
-               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerXiaomi);
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerXiaomi)
+               && Util.equalString(referrerDetails.installVersion, activityState.installVersionXiaomi);
     }
 }
