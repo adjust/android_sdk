@@ -1,3 +1,18 @@
+### Version 4.33.0 (18th October 2022)
+#### Added
+- Added support for Samsung install referrer.
+- Added `isAdjustUninstallDetectionPayload()` method to `Adjust` interface to know whether payload originates from Adjust or not.
+- Added support to OAID plugin for MSA SDK v2.0.0.
+
+#### Fixed
+- Added catching of `NullPointerException` while extracting attribution fields in `webbridge` plugin.
+- Added bundling of Adjust Javascript files to `webbridge` plugin in the `asset` folder.
+
+#### Changed
+- Updated OAID plugin to read OAID on Huawei devices using Huawei Mobile Sevices Core Ads Identifier Sdk.
+
+---
+
 ### Version 4.32.0 (7th September 2022)
 #### Added
 - Added partner sharing settings to the third party sharing feature.
