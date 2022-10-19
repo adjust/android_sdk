@@ -6,27 +6,26 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/staging/"
     }
-    maven {
-        url "https://developer.huawei.com/repo/"
-    }
 }
 
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.coreMinSdkVersion
+        minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
 }
 
 dependencies {
-    compileOnly files('libs/oaid_sdk_2.0.0.aar')
+    compileOnly files('libs/galaxyapps_sdk_referrer-release-v2.0.aar')
+
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.33.0'
-    implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
+
+    // Add Samsung referrer lib via Maven.
 }
 
 // read local properties
@@ -41,17 +40,17 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustOaidAndroidAar (type: Copy) {
+task adjustSamsungReferrerPluginAar (type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
-    include 'sdk-plugin-oaid-release.aar'
+    include 'sdk-plugin-samsung-referrer-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-plugin-oaid-release.aar', "${project.name}.aar"
+    rename 'sdk-plugin-samsung-referrer-release.aar', "${project.name}.aar"
 
 }
 
-task adjustOaidAndroidJar(type: Jar) {
+task adjustSamsungReferrerPluginJar(type: Jar) {
     dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
 
@@ -73,34 +72,34 @@ task androidJavadocs(type: Javadoc) {
     }
 }
 
-task adjustOaidAndroidJavadocsJar(type: Jar) {
+task adjustSamsungReferrerPluginJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
     classifier = 'javadoc'
     from androidJavadocs.destinationDir
 }
 
-task adjustOaidAndroidSourcesJar(type: Jar) {
+task adjustSamsungReferrerPluginSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives adjustOaidAndroidJar
-    archives adjustOaidAndroidJavadocsJar
-    archives adjustOaidAndroidSourcesJar
+    archives adjustSamsungReferrerPluginJar
+    archives adjustSamsungReferrerPluginJavadocsJar
+    archives adjustSamsungReferrerPluginSourcesJar
 }
 
 publishing {
     publications {
-        mavenAndroidOaid(MavenPublication) {
+        mavenAndroidSamsungReferrer(MavenPublication) {
             customizePom(pom)
             groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-oaid'
+            artifactId 'adjust-android-samsung-referrer'
             version rootProject.ext.coreVersionName
 
-            artifact adjustOaidAndroidJar
-            artifact adjustOaidAndroidJavadocsJar
-            artifact adjustOaidAndroidSourcesJar
+            artifact adjustSamsungReferrerPluginJar
+            artifact adjustSamsungReferrerPluginJavadocsJar
+            artifact adjustSamsungReferrerPluginSourcesJar
         }
     }
 
@@ -124,8 +123,8 @@ def customizePom(pom) {
         // Add all items necessary for maven central publication.
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
-            description 'The Oaid plugin for Adjust SDK for Android'
-            name 'Adjust Android SDK Oaid plugin'
+            description 'The Samsung Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Samsung Referrer plugin'
             url 'https://github.com/adjust/android_sdk'
 
             organization {
@@ -158,19 +157,19 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidOaidPublication {
+    tasks.generatePomFileForMavenAndroidSamsungReferrerPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
     /* TODO check if/how to replace this tasks
-    tasks.publishMavenAndroidOaidPublicationToMavenLocal {
+    tasks.publishMavenAndroidSamsungReferrerPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
-    tasks.publishMavenAndroidOaidPublicationToMavenRepository {
+    tasks.publishMavenAndroidSamsungReferrerPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
     */
 }
 
 signing {
-    sign publishing.publications.mavenAndroidOaid
+    sign publishing.publications.mavenAndroidSamsungReferrer
 }

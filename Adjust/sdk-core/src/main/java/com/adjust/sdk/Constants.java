@@ -29,13 +29,14 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.32.0";
+    String CLIENT_SDK = "android4.33.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
     String REFERRER_API_GOOGLE = "google";
     String REFERRER_API_HUAWEI_ADS = "huawei_ads";
     String REFERRER_API_HUAWEI_APP_GALLERY = "huawei_app_gallery";
+    String REFERRER_API_SAMSUNG = "samsung";
     String REFERRER_API_XIAOMI = "xiaomi";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
@@ -63,6 +64,10 @@ public interface Constants {
 
     String CALLBACK_PARAMETERS = "callback_params";
     String PARTNER_PARAMETERS = "partner_params";
+
+    String FCM_PAYLOAD_KEY = "adjust_purpose";
+
+    String FCM_PAYLOAD_VALUE = "uninstall detection";
 
     int MAX_INSTALL_REFERRER_RETRIES = 2;
 

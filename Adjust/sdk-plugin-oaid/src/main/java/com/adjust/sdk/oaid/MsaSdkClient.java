@@ -13,8 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 public class MsaSdkClient {
-    public static String getOaid(Context context, final ILogger logger, long maxWaitTimeInMilli) {
-        final BlockingQueue<String> oaidHolder = new LinkedBlockingQueue<String>(1);
+    public static OaidInfo getOaidInfo(Context context, final ILogger logger, long maxWaitTimeInMilli) {
+        final BlockingQueue<OaidInfo> oaidInfoHolder = new LinkedBlockingQueue<OaidInfo>(1);
 
         try {
             boolean msaInternalLogging = false;
@@ -24,9 +24,9 @@ public class MsaSdkClient {
                     try {
                         if (idSupplier == null || idSupplier.getOAID() == null) {
                             // so to avoid waiting for timeout
-                            oaidHolder.offer("");
+                            oaidInfoHolder.offer(new OaidInfo(null, false));
                         } else {
-                            oaidHolder.offer(idSupplier.getOAID());
+                            oaidInfoHolder.offer(new OaidInfo(idSupplier.getOAID(), !idSupplier.isLimited()));
                         }
                     } catch (Exception e) {
                         logger.error("Fail to add %s", e.getMessage());
@@ -35,7 +35,7 @@ public class MsaSdkClient {
             });
 
             if (!isError(result, logger)) {
-                return oaidHolder.poll(maxWaitTimeInMilli, TimeUnit.MILLISECONDS);
+                return oaidInfoHolder.poll(maxWaitTimeInMilli, TimeUnit.MILLISECONDS);
             }
         } catch (NoClassDefFoundError ex) {
           logger.error("Couldn't find msa sdk " + ex.getMessage());
