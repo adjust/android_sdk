@@ -18,7 +18,7 @@ android {
 }
 
 dependencies {
-    compileOnly files('libs/galaxyapps_sdk_referrer-release-v2.0.aar')
+//    compileOnly files('libs/galaxyapps_sdk_referrer-release-v2.0.aar')
 
     // Add SDK via module.
     compileOnly project(':sdk-core')
