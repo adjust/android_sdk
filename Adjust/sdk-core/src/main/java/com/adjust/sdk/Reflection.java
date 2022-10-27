@@ -78,7 +78,7 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.error("invoke getXiaomiInstallReferrerDetails error: " + e.getMessage());
+            logger.info("invoke getXiaomiInstallReferrerDetails error: " + e.getMessage());
         }
         return referrerDetails;
     }
