@@ -65,7 +65,7 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.error("invoke getSamsungInstallReferrerDetails error: " + e.getMessage());
+            logger.info("invoke getSamsungInstallReferrerDetails error: " + e.getMessage());
         }
         return referrerDetails;
     }
