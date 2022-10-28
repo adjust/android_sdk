@@ -31,11 +31,11 @@ public class XiaomiReferrerClient {
                         }
                         break;
                     case GetAppsReferrerResponse.FEATURE_NOT_SUPPORTED:
-                        logger.error("XiaomiReferrer onGetAppsReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
+                        logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
                         referrerDetailsHolder.offer(null);
                         break;
                     case GetAppsReferrerResponse.SERVICE_UNAVAILABLE:
-                        logger.error("XiaomiReferrer onGetAppsReferrerSetupFinished: SERVICE_UNAVAILABLE");
+                        logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: SERVICE_UNAVAILABLE");
                         referrerDetailsHolder.offer(null);
                         break;
                 }
