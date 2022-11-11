@@ -24,6 +24,8 @@ public class UrlStrategy {
     private static final String SUBSCRIPTION_URL_CHINA = "https://subscription.adjust.world";
 
     private static final String BASE_URL_CN = "https://app.adjust.cn";
+    private static final String GDPR_URL_CN = "https://gdpr.adjust.com";
+    private static final String SUBSCRIPTION_URL_CN = "https://subscription.adjust.com";
 
     private static final String BASE_URL_EU = "https://app.eu.adjust.com";
     private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
@@ -156,6 +158,8 @@ public class UrlStrategy {
             return Arrays.asList(GDPR_URL_INDIA, Constants.GDPR_URL);
         } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
             return Arrays.asList(GDPR_URL_CHINA, Constants.GDPR_URL);
+        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
+            return Arrays.asList(GDPR_URL_CN, Constants.GDPR_URL);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(GDPR_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
@@ -172,6 +176,8 @@ public class UrlStrategy {
             return Arrays.asList(SUBSCRIPTION_URL_INDIA, Constants.SUBSCRIPTION_URL);
         } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
             return Arrays.asList(SUBSCRIPTION_URL_CHINA, Constants.SUBSCRIPTION_URL);
+        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
+            return Arrays.asList(SUBSCRIPTION_URL_CN, Constants.SUBSCRIPTION_URL);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(SUBSCRIPTION_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
