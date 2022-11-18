@@ -38,6 +38,7 @@ public interface Constants {
     String REFERRER_API_HUAWEI_APP_GALLERY = "huawei_app_gallery";
     String REFERRER_API_SAMSUNG = "samsung";
     String REFERRER_API_XIAOMI = "xiaomi";
+    String REFERRER_API_VIVO = "vivo";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";

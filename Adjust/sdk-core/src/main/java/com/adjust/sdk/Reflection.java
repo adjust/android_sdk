@@ -83,6 +83,19 @@ public class Reflection {
         return referrerDetails;
     }
 
+    public static ReferrerDetails getVivoReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.vivo.Util",
+                                                                   "getVivoInstallReferrerDetails",
+                                                                   new Class[]{Context.class, ILogger.class},
+                                                                   context, logger);
+        } catch (Exception e) {
+            logger.info("invoke getVivoInstallReferrerDetails : " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
     public static Class forName(String className) {
         try {
             Class classObject = Class.forName(className);
