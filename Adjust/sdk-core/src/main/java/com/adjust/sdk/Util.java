@@ -763,6 +763,8 @@ public class Util {
             return isEqualSamsungReferrerDetails(referrerDetails, activityState);
         } else if (referrerApi.equals(Constants.REFERRER_API_XIAOMI)) {
             return isEqualXiaomiReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_VIVO)) {
+            return isEqualVivoReferrerDetails(referrerDetails, activityState);
         }
 
         return false;
@@ -864,5 +866,13 @@ public class Util {
                && referrerDetails.installBeginTimestampServerSeconds == activityState.installBeginServerXiaomi
                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerXiaomi)
                && Util.equalString(referrerDetails.installVersion, activityState.installVersionXiaomi);
+    }
+
+    private static boolean isEqualVivoReferrerDetails(final ReferrerDetails referrerDetails,
+                                                        final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeVivo
+               && referrerDetails.installBeginTimestampSeconds == activityState.installBeginVivo
+               && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerVivo)
+               && Util.equalString(referrerDetails.installVersion, activityState.installVersionVivo);
     }
 }
