@@ -16,13 +16,15 @@ public class VivoReferrerClient {
             if (resultBundle == null) {
                 return null;
             }
+
             String installReferrer = resultBundle.getString("install_referrer");
             long clickTime = resultBundle.getLong("referrer_click_timestamp_seconds");
-            long installBeginTime = resultBundle.getLong("download_begin_timestamp_seconds");
-            String installVersion = resultBundle.getString("install_version");
             if (TextUtils.isEmpty(installReferrer)) {
                 return null;
             }
+
+            long installBeginTime = resultBundle.getLong("download_begin_timestamp_seconds");
+            String installVersion = resultBundle.getString("install_version");
 
             return new ReferrerDetails(installReferrer, clickTime, installBeginTime, -1, -1, installVersion, null);
         } catch (Exception e) {
