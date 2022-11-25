@@ -18,11 +18,11 @@ public class VivoReferrerClient {
             }
 
             String installReferrer = resultBundle.getString("install_referrer");
-            long clickTime = resultBundle.getLong("referrer_click_timestamp_seconds");
             if (TextUtils.isEmpty(installReferrer)) {
                 return null;
             }
 
+            long clickTime = resultBundle.getLong("referrer_click_timestamp_seconds");
             long installBeginTime = resultBundle.getLong("download_begin_timestamp_seconds");
             String installVersion = resultBundle.getString("install_version");
 
