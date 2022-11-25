@@ -29,7 +29,7 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.33.0";
+    String CLIENT_SDK = "android4.33.1";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -38,6 +38,7 @@ public interface Constants {
     String REFERRER_API_HUAWEI_APP_GALLERY = "huawei_app_gallery";
     String REFERRER_API_SAMSUNG = "samsung";
     String REFERRER_API_XIAOMI = "xiaomi";
+    String REFERRER_API_VIVO = "vivo";
     String DEEPLINK = "deeplink";
     String PUSH = "push";
     String THREAD_PREFIX = "Adjust-";

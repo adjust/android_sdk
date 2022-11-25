@@ -1,3 +1,13 @@
+### Version 4.33.1 (25th November 2022)
+#### Added
+- Added support for Vivo install referrer.
+- Added support for setting a new China Url Strategy. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.URL_STRATEGY_CN` parameter.
+
+#### Changed
+- Changed log type for Samsung & Xiaomi install referrer error logging.
+
+---
+
 ### Version 4.33.0 (19th October 2022)
 #### Added
 - Added support for Samsung install referrer.

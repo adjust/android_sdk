@@ -32,10 +32,10 @@ public class SamsungReferrerClient {
                         }
                         break;
                     case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
-                        logger.error("SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
+                        logger.info("SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
                         break;
                     case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
-                        logger.error("SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE");
+                        logger.info("SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE");
                         break;
                 }
             }

@@ -6,27 +6,24 @@ repositories {
     maven {
         url "https://oss.sonatype.org/content/repositories/staging/"
     }
-    maven {
-        url "https://developer.huawei.com/repo/"
-    }
 }
 
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
     defaultConfig {
-        minSdkVersion rootProject.ext.coreMinSdkVersion
+        minSdkVersion rootProject.ext.vivoReferrerMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
 }
 
 dependencies {
-    compileOnly files('libs/oaid_sdk_2.0.0.aar')
+//    compileOnly files('libs/galaxyapps_sdk_referrer-release-v2.0.aar')
+
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:4.33.1'
-    implementation 'com.huawei.hms:ads-identifier:3.4.56.300'
 }
 
 // read local properties
@@ -41,17 +38,17 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustOaidAndroidAar (type: Copy) {
+task adjustVivoReferrerPluginAar (type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
-    include 'sdk-plugin-oaid-release.aar'
+    include 'sdk-plugin-vivo-referrer-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-plugin-oaid-release.aar', "${project.name}.aar"
+    rename 'sdk-plugin-vivo-referrer-release.aar', "${project.name}.aar"
 
 }
 
-task adjustOaidAndroidJar(type: Jar) {
+task adjustVivoReferrerPluginJar(type: Jar) {
     dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
 
@@ -73,34 +70,34 @@ task androidJavadocs(type: Javadoc) {
     }
 }
 
-task adjustOaidAndroidJavadocsJar(type: Jar) {
+task adjustVivoReferrerPluginJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
     classifier = 'javadoc'
     from androidJavadocs.destinationDir
 }
 
-task adjustOaidAndroidSourcesJar(type: Jar) {
+task adjustVivoReferrerPluginSourcesJar(type: Jar) {
     classifier = 'sources'
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives adjustOaidAndroidJar
-    archives adjustOaidAndroidJavadocsJar
-    archives adjustOaidAndroidSourcesJar
+    archives adjustVivoReferrerPluginJar
+    archives adjustVivoReferrerPluginJavadocsJar
+    archives adjustVivoReferrerPluginSourcesJar
 }
 
 publishing {
     publications {
-        mavenAndroidOaid(MavenPublication) {
+        mavenAndroidVivoReferrer(MavenPublication) {
             customizePom(pom)
             groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-oaid'
+            artifactId 'adjust-android-vivo-referrer'
             version rootProject.ext.coreVersionName
 
-            artifact adjustOaidAndroidJar
-            artifact adjustOaidAndroidJavadocsJar
-            artifact adjustOaidAndroidSourcesJar
+            artifact adjustVivoReferrerPluginJar
+            artifact adjustVivoReferrerPluginJavadocsJar
+            artifact adjustVivoReferrerPluginSourcesJar
         }
     }
 
@@ -124,8 +121,8 @@ def customizePom(pom) {
         // Add all items necessary for maven central publication.
         root.children().last() + {
             resolveStrategy = Closure.DELEGATE_FIRST
-            description 'The Oaid plugin for Adjust SDK for Android'
-            name 'Adjust Android SDK Oaid plugin'
+            description 'The Vivo Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Vivo Referrer plugin'
             url 'https://github.com/adjust/android_sdk'
 
             organization {
@@ -158,19 +155,19 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidOaidPublication {
+    tasks.generatePomFileForMavenAndroidVivoReferrerPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
     /* TODO check if/how to replace this tasks
-    tasks.publishMavenAndroidOaidPublicationToMavenLocal {
+    tasks.publishMavenAndroidVivoReferrerPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
-    tasks.publishMavenAndroidOaidPublicationToMavenRepository {
+    tasks.publishMavenAndroidVivoReferrerPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
     */
 }
 
 signing {
-    sign publishing.publications.mavenAndroidOaid
+    sign publishing.publications.mavenAndroidVivoReferrer
 }
