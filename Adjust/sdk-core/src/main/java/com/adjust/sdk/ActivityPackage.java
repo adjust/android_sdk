@@ -242,13 +242,13 @@ public class ActivityPackage implements Serializable {
     public int hashCode() {
         if (hashCode == 0) {
             hashCode = 17;
-            hashCode = 37 * hashCode + Util.hashString(path);
-            hashCode = 37 * hashCode + Util.hashString(clientSdk);
-            hashCode = 37 * hashCode + Util.hashObject(parameters);
-            hashCode = 37 * hashCode + Util.hashEnum(activityKind);
-            hashCode = 37 * hashCode + Util.hashString(suffix);
-            hashCode = 37 * hashCode + Util.hashObject(callbackParameters);
-            hashCode = 37 * hashCode + Util.hashObject(partnerParameters);
+            hashCode = Util.hashString(path, hashCode);
+            hashCode = Util.hashString(clientSdk, hashCode);
+            hashCode = Util.hashObject(parameters, hashCode);
+            hashCode = Util.hashEnum(activityKind, hashCode);
+            hashCode = Util.hashString(suffix, hashCode);
+            hashCode = Util.hashObject(callbackParameters, hashCode);
+            hashCode = Util.hashObject(partnerParameters, hashCode);
         }
         return hashCode;
     }

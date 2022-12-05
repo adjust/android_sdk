@@ -26,8 +26,8 @@ public class SessionParameters {
     @Override
     public int hashCode() {
         int hashCode = 17;
-        hashCode = 37 * hashCode + Util.hashObject(callbackParameters);
-        hashCode = 37 * hashCode + Util.hashObject(partnerParameters);
+        hashCode = Util.hashObject(callbackParameters, hashCode);
+        hashCode = Util.hashObject(partnerParameters, hashCode);
         return hashCode;
     }
 
