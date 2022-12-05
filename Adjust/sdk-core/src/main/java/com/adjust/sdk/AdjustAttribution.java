@@ -105,18 +105,18 @@ public class AdjustAttribution implements Serializable {
     @Override
     public int hashCode() {
         int hashCode = 17;
-        hashCode = 37 * hashCode + Util.hashString(trackerToken);
-        hashCode = 37 * hashCode + Util.hashString(trackerName);
-        hashCode = 37 * hashCode + Util.hashString(network);
-        hashCode = 37 * hashCode + Util.hashString(campaign);
-        hashCode = 37 * hashCode + Util.hashString(adgroup);
-        hashCode = 37 * hashCode + Util.hashString(creative);
-        hashCode = 37 * hashCode + Util.hashString(clickLabel);
-        hashCode = 37 * hashCode + Util.hashString(adid);
-        hashCode = 37 * hashCode + Util.hashString(costType);
-        hashCode = 37 * hashCode + Util.hashDouble(costAmount);
-        hashCode = 37 * hashCode + Util.hashString(costCurrency);
-        hashCode = 37 * hashCode + Util.hashString(fbInstallReferrer);
+        hashCode = Util.hashString(trackerToken, hashCode);
+        hashCode = Util.hashString(trackerName, hashCode);
+        hashCode = Util.hashString(network, hashCode);
+        hashCode = Util.hashString(campaign, hashCode);
+        hashCode = Util.hashString(adgroup, hashCode);
+        hashCode = Util.hashString(creative, hashCode);
+        hashCode = Util.hashString(clickLabel, hashCode);
+        hashCode = Util.hashString(adid, hashCode);
+        hashCode = Util.hashString(costType, hashCode);
+        hashCode = Util.hashDouble(costAmount, hashCode);
+        hashCode = Util.hashString(costCurrency, hashCode);
+        hashCode = Util.hashString(fbInstallReferrer, hashCode);
 
         return hashCode;
     }

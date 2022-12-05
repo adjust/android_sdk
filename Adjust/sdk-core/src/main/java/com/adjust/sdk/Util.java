@@ -359,46 +359,46 @@ public class Util {
         return equalObject(first, second);
     }
 
-    public static int hashBoolean(Boolean value) {
+    public static int hashBoolean(Boolean value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
-    public static int hashLong(Long value) {
+    public static int hashLong(Long value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
-    public static int hashDouble(Double value) {
+    public static int hashDouble(Double value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
-    public static int hashString(String value) {
+    public static int hashString(String value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
-    public static int hashEnum(Enum value) {
+    public static int hashEnum(Enum value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
-    public static int hashObject(Object value) {
+    public static int hashObject(Object value, int hashCode) {
         if (value == null) {
-            return 0;
+            return 37 * hashCode;
         }
-        return value.hashCode();
+        return 37 * hashCode + value.hashCode();
     }
 
     public static String sha256(final String text) {
