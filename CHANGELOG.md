@@ -1,3 +1,9 @@
+### Version 4.33.2 (7th December 2022)
+#### Fixed
+- Fixed Duplicate class error caused by compiler generating package `a.a`.
+
+---
+
 ### Version 4.33.1 (25th November 2022)
 #### Added
 - Added support for Vivo install referrer.
