@@ -27,16 +27,13 @@ public class XiaomiReferrerClient {
                             referrerDetailsHolder.offer(getAppsReferrerDetails);
                         } catch (Exception e) {
                             logger.error("XiaomiReferrer getInstallReferrer: " + e.getMessage());
-                            referrerDetailsHolder.offer(null);
                         }
                         break;
                     case GetAppsReferrerResponse.FEATURE_NOT_SUPPORTED:
                         logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
-                        referrerDetailsHolder.offer(null);
                         break;
                     case GetAppsReferrerResponse.SERVICE_UNAVAILABLE:
                         logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: SERVICE_UNAVAILABLE");
-                        referrerDetailsHolder.offer(null);
                         break;
                 }
             }

@@ -26,7 +26,6 @@ public class SamsungReferrerClient {
                             referrerDetailsHolder.offer(details);
                         } catch (Exception e) {
                             logger.error("SamsungReferrer getInstallReferrer: " + e.getMessage());
-                            referrerDetailsHolder.offer(null);
                         } finally {
                             referrerClient.endConnection();
                         }
