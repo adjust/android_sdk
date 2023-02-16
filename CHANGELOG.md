@@ -1,3 +1,9 @@
+### Version 4.33.3 (16th February 2023)
+#### Fixed
+- Added catching of exceptions in referrer plugins when thrown anytime while retrieving referrer.
+
+---
+
 ### Version 4.33.2 (7th December 2022)
 #### Fixed
 - Fixed Duplicate class error caused by compiler generating package `a.a`.
