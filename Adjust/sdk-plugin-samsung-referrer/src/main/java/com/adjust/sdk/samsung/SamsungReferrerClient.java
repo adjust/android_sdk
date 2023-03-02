@@ -3,9 +3,9 @@ package com.adjust.sdk.samsung;
 import android.content.Context;
 
 import com.adjust.sdk.ILogger;
-import com.sec.android.app.samsungapps.installreferrer.api.InstallReferrerClient;
-import com.sec.android.app.samsungapps.installreferrer.api.InstallReferrerStateListener;
-import com.sec.android.app.samsungapps.installreferrer.api.ReferrerDetails;
+import com.samsung.android.sdk.sinstallreferrer.api.InstallReferrerClient;
+import com.samsung.android.sdk.sinstallreferrer.api.InstallReferrerStateListener;
+import com.samsung.android.sdk.sinstallreferrer.api.ReferrerDetails;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
