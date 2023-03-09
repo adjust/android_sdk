@@ -11,7 +11,7 @@ public class Util {
          return null;
       }
 
-      com.sec.android.app.samsungapps.installreferrer.api.ReferrerDetails referrerDetails =
+      com.samsung.android.sdk.sinstallreferrer.api.ReferrerDetails referrerDetails =
               SamsungReferrerClient.getReferrer(context, logger, 3000);
       if (referrerDetails == null) {
          return null;
