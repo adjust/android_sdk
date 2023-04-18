@@ -20,6 +20,8 @@ class TelephonyIdsUtil {
     private static String meids = null;
     private static String deviceIds = null;
 
+    private static boolean allIdsAlreadyReadOnce = false;
+
     static void injectImei(Map<String, String> parameters, Context context, ILogger logger) {
         if (!AdjustImei.isImeiToBeRead) {
             return;
@@ -32,11 +34,17 @@ class TelephonyIdsUtil {
         PackageBuilder.addString(parameters, "imeis", getImeis(telephonyManager, logger));
         PackageBuilder.addString(parameters, "meids", getMeids(telephonyManager, logger));
         PackageBuilder.addString(parameters, "device_ids", getDeviceIds(telephonyManager, logger));
+
+        allIdsAlreadyReadOnce = true;
     }
 
     private static String getDeviceIds(TelephonyManager telephonyManager, ILogger logger) {
         if (deviceIds != null) {
             return deviceIds;
+        }
+
+        if (allIdsAlreadyReadOnce) {
+            return null;
         }
 
         List<String> telephonyIdList = new ArrayList<String>();
@@ -54,6 +62,10 @@ class TelephonyIdsUtil {
     private static String getDefaultDeviceId(TelephonyManager telephonyManager, ILogger logger) {
         if (deviceId != null) {
             return deviceId;
+        }
+
+        if (allIdsAlreadyReadOnce) {
+            return null;
         }
 
         try {
@@ -81,6 +93,10 @@ class TelephonyIdsUtil {
             return imeis;
         }
 
+        if (allIdsAlreadyReadOnce) {
+            return null;
+        }
+
         List<String> imeiList = new ArrayList<String>();
         for (int i = 0; i < 10; i++) {
             String imei = getImeiByIndex(telephonyManager, i, logger);
@@ -95,6 +111,10 @@ class TelephonyIdsUtil {
     private static String getDefaultImei(TelephonyManager telephonyManager, ILogger logger) {
         if (imei != null) {
             return imei;
+        }
+
+        if (allIdsAlreadyReadOnce) {
+            return null;
         }
 
         try {
@@ -124,6 +144,10 @@ class TelephonyIdsUtil {
             return meids;
         }
 
+        if (allIdsAlreadyReadOnce) {
+            return null;
+        }
+
         List<String> meidList = new ArrayList<String>();
         for (int i = 0; i < 10; i++) {
             String meid = getMeidByIndex(telephonyManager, i, logger);
@@ -138,6 +162,10 @@ class TelephonyIdsUtil {
     private static String getDefaultMeid(TelephonyManager telephonyManager, ILogger logger) {
         if (meid != null) {
             return meid;
+        }
+
+        if (allIdsAlreadyReadOnce) {
+            return null;
         }
 
         try {
