@@ -1,3 +1,10 @@
+### Version 4.33.4 (27th April 2023)
+#### Changed
+- Updated Samsung Install Referrer library version to 3.0.1.
+- Updated IMEI reading attempt to only once.
+
+---
+
 ### Version 4.33.3 (16th February 2023)
 #### Fixed
 - Added catching of exceptions in referrer plugins when thrown anytime while retrieving referrer.
