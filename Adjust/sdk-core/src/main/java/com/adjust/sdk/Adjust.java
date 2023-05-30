@@ -364,6 +364,17 @@ public class Adjust {
     }
 
     /**
+     * Verify in app purchase from Google Play.
+     *
+     * @param purchase  AdjustPurchase object to be tracked
+     * @param callback  Callback to obtain verification results
+     */
+    public static void verifyPurchase(final AdjustPurchase purchase, OnVerificationFinished callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.verifyPurchase(purchase, callback);
+    }
+
+    /**
      * Used for testing purposes only. Do NOT use this method.
      *
      * @param testOptions Adjust integration tests options

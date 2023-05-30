@@ -14,6 +14,7 @@ public class AdjustTestOptions {
     public String basePath;
     public String gdprPath;
     public String subscriptionPath;
+    public String purchaseVerificationPath;
     public Long timerIntervalInMilliseconds;
     public Long timerStartInMilliseconds;
     public Long sessionIntervalInMilliseconds;

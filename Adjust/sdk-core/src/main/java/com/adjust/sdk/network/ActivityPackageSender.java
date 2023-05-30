@@ -67,6 +67,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 AdjustFactory.getBaseUrl(),
                 AdjustFactory.getGdprUrl(),
                 AdjustFactory.getSubscriptionUrl(),
+                AdjustFactory.getPurchaseVerificationUrl(),
                 adjustUrlStrategy);
 
         httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();

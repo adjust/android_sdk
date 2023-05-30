@@ -65,6 +65,11 @@ public class AdjustInstance {
     private String subscriptionPath;
 
     /**
+     * Path for purchase verification package.
+     */
+    private String purchaseVerificationPath;
+
+    /**
      * Called upon SDK initialisation.
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
@@ -90,6 +95,7 @@ public class AdjustInstance {
         adjustConfig.basePath = this.basePath;
         adjustConfig.gdprPath = this.gdprPath;
         adjustConfig.subscriptionPath = this.subscriptionPath;
+        adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -652,6 +658,19 @@ public class AdjustInstance {
     }
 
     /**
+     * Verify in app purchase from Google Play.
+     *
+     * @param purchase  AdjustPurchase object to be verified
+     * @param callback  Callback to be pinged with the verification results
+     */
+    public void verifyPurchase(AdjustPurchase purchase, OnVerificationFinished callback) {
+        if (!checkActivityHandler("verifyPurchase")) {
+            return;
+        }
+        activityHandler.verifyPurchase(purchase, callback);
+    }
+
+    /**
      * Used for testing purposes only. Do NOT use this method.
      *
      * @param testOptions Adjust integration tests options
@@ -665,6 +684,9 @@ public class AdjustInstance {
         }
         if (testOptions.subscriptionPath != null) {
             this.subscriptionPath = testOptions.subscriptionPath;
+        }
+        if (testOptions.purchaseVerificationPath != null) {
+            this.purchaseVerificationPath = testOptions.purchaseVerificationPath;
         }
         if (testOptions.baseUrl != null) {
             AdjustFactory.setBaseUrl(testOptions.baseUrl);
