@@ -75,6 +75,7 @@ public class ActivityHandler implements IActivityHandler {
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
+    private IPurchaseVerificationHandler purchaseVerificationHandler;
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private InstallReferrerHuawei installReferrerHuawei;
@@ -102,6 +103,9 @@ public class ActivityHandler implements IActivityHandler {
         if (sdkClickHandler != null) {
             sdkClickHandler.teardown();
         }
+        if (purchaseVerificationHandler != null) {
+            purchaseVerificationHandler.teardown();
+        }
         if (sessionParameters != null) {
             if (sessionParameters.callbackParameters != null) {
                 sessionParameters.callbackParameters.clear();
@@ -126,6 +130,7 @@ public class ActivityHandler implements IActivityHandler {
         adjustConfig = null;
         attributionHandler = null;
         sdkClickHandler = null;
+        purchaseVerificationHandler = null;
         sessionParameters = null;
     }
 
@@ -744,6 +749,16 @@ public class ActivityHandler implements IActivityHandler {
         return attribution;
     }
 
+    @Override
+    public void verifyPurchase(final AdjustPurchase purchase, final OnVerificationFinished callback) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                verifyPurchaseI(purchase, callback);
+            }
+        });
+    }
+
     public InternalState getInternalState() {
         return internalState;
     }
@@ -943,6 +958,19 @@ public class ActivityHandler implements IActivityHandler {
                 this,
                 toSendI(true),
                 sdkClickHandlerActivitySender);
+
+        IActivityPackageSender purchaseVerificationHandlerActivitySender =
+                new ActivityPackageSender(
+                        adjustConfig.urlStrategy,
+                        adjustConfig.basePath,
+                        adjustConfig.gdprPath,
+                        adjustConfig.subscriptionPath,
+                        deviceInfo.clientSdk);
+
+        purchaseVerificationHandler = AdjustFactory.getPurchaseVerificationHandler(
+                this,
+                toSendI(true),
+                purchaseVerificationHandlerActivitySender);
 
         if (isToUpdatePackagesI()) {
             updatePackagesI();
@@ -1923,8 +1951,10 @@ public class ActivityHandler implements IActivityHandler {
         // it's possible for the sdk click handler to be active while others are paused
         if (!toSendI(true)) {
             sdkClickHandler.pauseSending();
+            purchaseVerificationHandler.pauseSending();
         } else {
             sdkClickHandler.resumeSending();
+            purchaseVerificationHandler.resumeSending();
         }
     }
 
@@ -1932,6 +1962,7 @@ public class ActivityHandler implements IActivityHandler {
         attributionHandler.resumeSending();
         packageHandler.resumeSending();
         sdkClickHandler.resumeSending();
+        purchaseVerificationHandler.resumeSending();
     }
 
     private boolean updateActivityStateI(long now) {
@@ -2401,6 +2432,20 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
         packageHandler.addPackage(subscriptionPackage);
         packageHandler.sendFirstPackage();
+    }
+
+    private void verifyPurchaseI(final AdjustPurchase purchase, final OnVerificationFinished callback) {
+        if (!checkActivityStateI(activityState)) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(purchase, callback);
+        if (verificationPackage == null) {
+            return;
+        }
+        purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
     }
 
     private void gotOptOutResponseI() {

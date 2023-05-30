@@ -18,34 +18,42 @@ public class UrlStrategy {
     private static final String BASE_URL_INDIA = "https://app.adjust.net.in";
     private static final String GDPR_URL_INDIA = "https://gdpr.adjust.net.in";
     private static final String SUBSCRIPTION_URL_INDIA = "https://subscription.adjust.net.in";
+    private static final String PURCHASE_VERIFICATION_URL_INDIA = "https://ssrv.adjust.net.in";
 
     private static final String BASE_URL_CHINA = "https://app.adjust.world";
     private static final String GDPR_URL_CHINA = "https://gdpr.adjust.world";
     private static final String SUBSCRIPTION_URL_CHINA = "https://subscription.adjust.world";
+    private static final String PURCHASE_VERIFICATION_URL_CHINA = "https://ssrv.adjust.world";
 
     private static final String BASE_URL_CN = "https://app.adjust.cn";
-    private static final String GDPR_URL_CN = "https://gdpr.adjust.com";
-    private static final String SUBSCRIPTION_URL_CN = "https://subscription.adjust.com";
+    private static final String GDPR_URL_CN = "https://gdpr.adjust.cn";
+    private static final String SUBSCRIPTION_URL_CN = "https://subscription.adjust.cn";
+    private static final String PURCHASE_VERIFICATION_URL_CN = "https://ssrv.adjust.cn";
 
     private static final String BASE_URL_EU = "https://app.eu.adjust.com";
     private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
     private static final String SUBSCRIPTION_URL_EU = "https://subscription.eu.adjust.com";
+    private static final String PURCHASE_VERIFICATION_URL_EU = "https://ssrv.eu.adjust.com";
 
     private static final String BASE_URL_TR = "https://app.tr.adjust.com";
     private static final String GDPR_URL_TR = "https://gdpr.tr.adjust.com";
     private static final String SUBSCRIPTION_URL_TR = "https://subscription.tr.adjust.com";
+    private static final String PURCHASE_VERIFICATION_URL_TR = "https://ssrv.tr.adjust.com";
 
     private static final String BASE_URL_US = "https://app.us.adjust.com";
     private static final String GDPR_URL_US = "https://gdpr.us.adjust.com";
     private static final String SUBSCRIPTION_URL_US = "https://subscription.us.adjust.com";
+    private static final String PURCHASE_VERIFICATION_URL_US = "https://ssrv.us.adjust.com";
 
     private final String baseUrlOverwrite;
     private final String gdprUrlOverwrite;
     private final String subscriptionUrlOverwrite;
+    private final String purchaseVerificationUrlOverwrite;
 
     final List<String> baseUrlChoicesList;
     final List<String> gdprUrlChoicesList;
     final List<String> subscriptionUrlChoicesList;
+    final List<String> purchaseVerificationUrlChoicesList;
     boolean wasLastAttemptSuccess;
     int choiceIndex;
     int startingChoiceIndex;
@@ -54,15 +62,18 @@ public class UrlStrategy {
     public UrlStrategy(final String baseUrlOverwrite,
                        final String gdprUrlOverwrite,
                        final String subscriptionUrlOverwrite,
+                       final String purchaseVerificationUrlOverwrite,
                        final String adjustUrlStrategy)
     {
         this.baseUrlOverwrite = baseUrlOverwrite;
         this.gdprUrlOverwrite = gdprUrlOverwrite;
         this.subscriptionUrlOverwrite = subscriptionUrlOverwrite;
+        this.purchaseVerificationUrlOverwrite = purchaseVerificationUrlOverwrite;
 
         baseUrlChoicesList = baseUrlChoices(adjustUrlStrategy);
         gdprUrlChoicesList = gdprUrlChoices(adjustUrlStrategy);
         subscriptionUrlChoicesList = subscriptionUrlChoices(adjustUrlStrategy);
+        purchaseVerificationUrlChoicesList = purchaseVerificationUrlChoices(adjustUrlStrategy);
 
         wasLastAttemptSuccess = false;
         choiceIndex = 0;
@@ -93,15 +104,15 @@ public class UrlStrategy {
             choiceListSize = gdprUrlChoicesList.size();
         } else if (activityKind == ActivityKind.SUBSCRIPTION) {
             choiceListSize = subscriptionUrlChoicesList.size();
+        } else if (activityKind == ActivityKind.PURCHASE_VERIFICATION) {
+            choiceListSize = purchaseVerificationUrlChoicesList.size();
         } else {
             choiceListSize = baseUrlChoicesList.size();
         }
 
         final int nextChoiceIndex = (choiceIndex + 1) % choiceListSize;
         choiceIndex = nextChoiceIndex;
-
-        final boolean nextChoiceHasNotReturnedToStartingChoice =
-                choiceIndex != startingChoiceIndex;
+        final boolean nextChoiceHasNotReturnedToStartingChoice = choiceIndex != startingChoiceIndex;
 
         return nextChoiceHasNotReturnedToStartingChoice;
     }
@@ -123,6 +134,14 @@ public class UrlStrategy {
                 wasLastAttemptWithOverwrittenUrl = false;
                 return subscriptionUrlChoicesList.get(choiceIndex);
             }
+        } else if (activityKind == ActivityKind.PURCHASE_VERIFICATION) {
+            if (purchaseVerificationUrlOverwrite != null) {
+                wasLastAttemptWithOverwrittenUrl = true;
+                return purchaseVerificationUrlOverwrite;
+            } else {
+                wasLastAttemptWithOverwrittenUrl = false;
+                return purchaseVerificationUrlChoicesList.get(choiceIndex);
+            }
         } else {
             if (baseUrlOverwrite != null) {
                 wasLastAttemptWithOverwrittenUrl = true;
@@ -134,8 +153,7 @@ public class UrlStrategy {
         }
     }
 
-    private static List<String> baseUrlChoices(final String urlStrategy)
-    {
+    private static List<String> baseUrlChoices(final String urlStrategy) {
         if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
             return Arrays.asList(BASE_URL_INDIA, Constants.BASE_URL);
         } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
@@ -152,8 +170,7 @@ public class UrlStrategy {
             return Arrays.asList(Constants.BASE_URL, BASE_URL_INDIA, BASE_URL_CHINA);
         }
     }
-    private static List<String> gdprUrlChoices(final String urlStrategy)
-    {
+    private static List<String> gdprUrlChoices(final String urlStrategy) {
         if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
             return Arrays.asList(GDPR_URL_INDIA, Constants.GDPR_URL);
         } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
@@ -170,8 +187,7 @@ public class UrlStrategy {
             return Arrays.asList(Constants.GDPR_URL, GDPR_URL_INDIA, GDPR_URL_CHINA);
         }
     }
-    private static List<String> subscriptionUrlChoices(final String urlStrategy)
-    {
+    private static List<String> subscriptionUrlChoices(final String urlStrategy) {
         if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
             return Arrays.asList(SUBSCRIPTION_URL_INDIA, Constants.SUBSCRIPTION_URL);
         } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
@@ -188,6 +204,25 @@ public class UrlStrategy {
             return Arrays.asList(Constants.SUBSCRIPTION_URL,
                     SUBSCRIPTION_URL_INDIA,
                     SUBSCRIPTION_URL_CHINA);
+        }
+    }
+    private static List<String> purchaseVerificationUrlChoices(final String urlStrategy) {
+        if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
+            return Arrays.asList(PURCHASE_VERIFICATION_URL_INDIA, Constants.PURCHASE_VERIFICATION_URL);
+        } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
+            return Arrays.asList(PURCHASE_VERIFICATION_URL_CHINA, Constants.PURCHASE_VERIFICATION_URL);
+        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
+            return Arrays.asList(PURCHASE_VERIFICATION_URL_CN, Constants.PURCHASE_VERIFICATION_URL);
+        } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
+            return Collections.singletonList(PURCHASE_VERIFICATION_URL_EU);
+        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
+            return Collections.singletonList(PURCHASE_VERIFICATION_URL_TR);
+        } else if (DATA_RESIDENCY_US.equals(urlStrategy)) {
+            return Collections.singletonList(PURCHASE_VERIFICATION_URL_US);
+        } else {
+            return Arrays.asList(Constants.PURCHASE_VERIFICATION_URL,
+                    PURCHASE_VERIFICATION_URL_INDIA,
+                    PURCHASE_VERIFICATION_URL_CHINA);
         }
     }
 }
