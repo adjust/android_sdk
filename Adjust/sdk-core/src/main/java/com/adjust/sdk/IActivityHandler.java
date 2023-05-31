@@ -35,6 +35,8 @@ public interface IActivityHandler {
 
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
+    void launchPurchaseVerificationResponseTasks(PurchaseVerificationResponseData purchaseVerificationResponseData);
+
     void sendReftagReferrer();
 
     void sendPreinstallReferrer();
