@@ -663,7 +663,7 @@ public class AdjustInstance {
      * @param purchase  AdjustPurchase object to be verified
      * @param callback  Callback to be pinged with the verification results
      */
-    public void verifyPurchase(AdjustPurchase purchase, OnVerificationFinished callback) {
+    public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
             return;
         }

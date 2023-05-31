@@ -369,7 +369,7 @@ public class Adjust {
      * @param purchase  AdjustPurchase object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyPurchase(final AdjustPurchase purchase, OnVerificationFinished callback) {
+    public static void verifyPurchase(final AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.verifyPurchase(purchase, callback);
     }

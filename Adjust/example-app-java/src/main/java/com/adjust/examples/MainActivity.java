@@ -15,10 +15,9 @@ import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
-import com.adjust.sdk.OnVerificationFinished;
+import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onTrackSimpleEventClick(View v) {
         AdjustPurchase purchase = new AdjustPurchase("sku-very-nice", "purchase-token-very-nice");
-        Adjust.verifyPurchase(purchase, new OnVerificationFinished() {
+        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
             @Override
             public void onVerificationFinished(AdjustPurchaseVerificationResult result) {
                 Log.d("AdjustExample", "Yay");
