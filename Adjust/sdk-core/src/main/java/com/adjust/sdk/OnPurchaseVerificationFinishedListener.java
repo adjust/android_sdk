@@ -1,5 +1,5 @@
 package com.adjust.sdk;
 
-public interface OnVerificationFinished {
+public interface OnPurchaseVerificationFinishedListener {
     void onVerificationFinished(AdjustPurchaseVerificationResult result);
 }

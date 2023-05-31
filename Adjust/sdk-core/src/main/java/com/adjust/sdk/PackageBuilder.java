@@ -256,7 +256,7 @@ public class PackageBuilder {
         return subscriptionPackage;
     }
 
-    ActivityPackage buildVerificationPackage(AdjustPurchase purchase, OnVerificationFinished callback) {
+    ActivityPackage buildVerificationPackage(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         Map<String, String> parameters = getVerificationParameters(purchase);
         ActivityPackage purchaseVerificationPackage = getDefaultActivityPackage(ActivityKind.PURCHASE_VERIFICATION);
         purchaseVerificationPackage.setPath("/verify");

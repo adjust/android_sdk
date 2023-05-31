@@ -77,7 +77,7 @@ public interface IActivityHandler {
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
 
-    void verifyPurchase(AdjustPurchase purchase, OnVerificationFinished callback);
+    void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback);
 
     void gotOptOutResponse();
 

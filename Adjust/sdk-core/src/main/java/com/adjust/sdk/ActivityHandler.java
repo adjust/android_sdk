@@ -750,7 +750,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void verifyPurchase(final AdjustPurchase purchase, final OnVerificationFinished callback) {
+    public void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -2434,7 +2434,7 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.sendFirstPackage();
     }
 
-    private void verifyPurchaseI(final AdjustPurchase purchase, final OnVerificationFinished callback) {
+    private void verifyPurchaseI(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
