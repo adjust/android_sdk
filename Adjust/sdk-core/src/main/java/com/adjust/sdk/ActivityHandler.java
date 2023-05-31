@@ -388,6 +388,10 @@ public class ActivityHandler implements IActivityHandler {
             launchEventResponseTasks((EventResponseData)responseData);
             return;
         }
+        // check if it's a purchase verification response
+        if (responseData instanceof PurchaseVerificationResponseData) {
+            launchPurchaseVerificationResponseTasks((PurchaseVerificationResponseData)responseData);
+        }
     }
 
     @Override
@@ -539,6 +543,16 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 launchAttributionResponseTasksI(attributionResponseData);
+            }
+        });
+    }
+
+    @Override
+    public void launchPurchaseVerificationResponseTasks(final PurchaseVerificationResponseData purchaseVerificationResponseData) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                launchPurchaseVerificationResponseTasksI(purchaseVerificationResponseData);
             }
         });
     }
@@ -1605,6 +1619,35 @@ public class ActivityHandler implements IActivityHandler {
         handler.post(runnable);
     }
 
+    private void launchPurchaseVerificationResponseTasksI(PurchaseVerificationResponseData purchaseVerificationResponseData) {
+        // use the same handler to ensure that all tasks are executed sequentially
+        Handler handler = new Handler(adjustConfig.context.getMainLooper());
+        JSONObject jsonResponse = purchaseVerificationResponseData.jsonResponse;
+
+        // check and parse response data
+        AdjustPurchaseVerificationResult verificationResult;
+        if (jsonResponse == null) {
+            verificationResult = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    100,
+                    purchaseVerificationResponseData.message);
+        } else {
+            verificationResult = new AdjustPurchaseVerificationResult(
+                    UtilNetworking.extractJsonString(jsonResponse, "verification_status"),
+                    UtilNetworking.extractJsonInt(jsonResponse, "code"),
+                    UtilNetworking.extractJsonString(jsonResponse, "message"));
+        }
+
+        // trigger purchase verification callback with the verification result
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                purchaseVerificationResponseData.activityPackage.getPurchaseVerificationCallback().onVerificationFinished(verificationResult);
+            }
+        };
+        handler.post(runnable);
+    }
+
     private void prepareDeeplinkI(final Uri deeplink, final Handler handler) {
         if (deeplink == null) {
             return;
@@ -2435,14 +2478,44 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void verifyPurchaseI(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
-        if (!checkActivityStateI(activityState)) { return; }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
+        if (!checkActivityStateI(activityState)) {
+            logger.warn("Purchase verification aborted because SDK is still not initialized");
+            return;
+        }
+        if (!isEnabledI()) {
+            logger.warn("Purchase verification aborted because SDK is disabled");
+            return;
+        }
+        if (activityState.isGdprForgotten) {
+            logger.warn("Purchase verification aborted because user is GDPR forgotten");
+            return;
+        }
+        if (callback == null) {
+            logger.warn("Purchase verification aborted because verification callback is null");
+            return;
+        }
+        if (purchase == null) {
+            logger.warn("Purchase verification aborted because purchase instance is null");
+            AdjustPurchaseVerificationResult verificationResult =
+                    new AdjustPurchaseVerificationResult(
+                            "not_verified",
+                            101,
+                            "Purchase verification aborted because purchase instance is null");
+            callback.onVerificationFinished(verificationResult);
+            return;
+        }
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
         ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(purchase, callback);
         if (verificationPackage == null) {
+            logger.warn("Purchase verification aborted because verification package is null");
+            AdjustPurchaseVerificationResult verificationResult =
+                    new AdjustPurchaseVerificationResult(
+                            "not_verified",
+                            102,
+                            "Purchase verification aborted because verification package is null");
+            callback.onVerificationFinished(verificationResult);
             return;
         }
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
