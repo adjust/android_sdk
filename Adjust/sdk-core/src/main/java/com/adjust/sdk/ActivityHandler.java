@@ -940,6 +940,7 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
+                        adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk);
         packageHandler = AdjustFactory.getPackageHandler(
                 this,
@@ -953,6 +954,7 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
+                        adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk);
 
         attributionHandler = AdjustFactory.getAttributionHandler(
@@ -966,6 +968,7 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
+                        adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk);
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(
@@ -979,6 +982,7 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
+                        adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk);
 
         purchaseVerificationHandler = AdjustFactory.getPurchaseVerificationHandler(

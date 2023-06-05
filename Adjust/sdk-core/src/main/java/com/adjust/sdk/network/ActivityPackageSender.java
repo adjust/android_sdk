@@ -40,6 +40,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private String basePath;
     private String gdprPath;
     private String subscriptionPath;
+    private String purchaseVerificationPath;
     private String clientSdk;
 
     private ILogger logger;
@@ -52,26 +53,24 @@ public class ActivityPackageSender implements IActivityPackageSender {
                                  final String basePath,
                                  final String gdprPath,
                                  final String subscriptionPath,
+                                 final String purchaseVerificationPath,
                                  final String clientSdk)
     {
         this.basePath = basePath;
         this.gdprPath = gdprPath;
         this.subscriptionPath = subscriptionPath;
+        this.purchaseVerificationPath = purchaseVerificationPath;
         this.clientSdk = clientSdk;
 
         logger = AdjustFactory.getLogger();
-
         executor = new SingleThreadCachedScheduler("ActivityPackageSender");
-
         urlStrategy = new UrlStrategy(
                 AdjustFactory.getBaseUrl(),
                 AdjustFactory.getGdprUrl(),
                 AdjustFactory.getSubscriptionUrl(),
                 AdjustFactory.getPurchaseVerificationUrl(),
                 adjustUrlStrategy);
-
         httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();
-
         connectionOptions = AdjustFactory.getConnectionOptions();
     }
 
@@ -321,6 +320,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
             return gdprPath != null ? targetUrl + gdprPath : targetUrl;
         } else if (activityKind == ActivityKind.SUBSCRIPTION) {
             return subscriptionPath != null ? targetUrl + subscriptionPath : targetUrl;
+        } else if (activityKind == ActivityKind.PURCHASE_VERIFICATION) {
+            return purchaseVerificationPath != null ? targetUrl + purchaseVerificationPath : targetUrl;
         } else {
             return basePath != null ? targetUrl + basePath : targetUrl;
         }
