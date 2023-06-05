@@ -73,11 +73,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
+        // TODO: revert to simple event tracking
         AdjustPurchase purchase = new AdjustPurchase("sku-very-nice", "purchase-token-very-nice");
         Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
             @Override
             public void onVerificationFinished(AdjustPurchaseVerificationResult result) {
-                Log.d("AdjustExample", "Yay");
+                Log.d("AdjustExample", "Purchase verification callback triggered!");
+                Log.d("AdjustExample", "Verification status = " + result.getVerificationStatus());
+                Log.d("AdjustExample", "Code = " + result.getCode());
+                Log.d("AdjustExample", "Message = " + result.getMessage());
             }
         });
     }
