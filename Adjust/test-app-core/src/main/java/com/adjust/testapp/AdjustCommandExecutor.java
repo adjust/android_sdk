@@ -14,6 +14,8 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustPurchase;
+import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
@@ -24,6 +26,7 @@ import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.test_options.TestConnectionOptions;
@@ -88,6 +91,7 @@ public class AdjustCommandExecutor {
                 case "trackAdRevenue": trackAdRevenue(); break;
                 case "trackAdRevenueV2" : trackAdRevenueV2(); break;
                 case "trackSubscription": trackSubscription(); break;
+                case "verifyPurchase": verifyPurchase(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -122,6 +126,7 @@ public class AdjustCommandExecutor {
         testOptions.baseUrl = baseUrl;
         testOptions.gdprUrl = gdprUrl;
         testOptions.subscriptionUrl = baseUrl; // TODO: for now, consider making it separate
+        testOptions.purchaseVerificationUrl = baseUrl; // TODO: for now, consider making it separate
         if (command.containsParameter("basePath")) {
             basePath = command.getFirstParameterValue("basePath");
             gdprPath = command.getFirstParameterValue("basePath");
@@ -807,6 +812,23 @@ public class AdjustCommandExecutor {
         }
 
         Adjust.trackPlayStoreSubscription(subscription);
+    }
+
+    private void verifyPurchase() {
+        String sku = command.getFirstParameterValue("productId");
+        String purchaseToken = command.getFirstParameterValue("purchaseToken");
+
+        final String localBasePath = basePath;
+        AdjustPurchase purchase = new AdjustPurchase(sku, purchaseToken);
+        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+            @Override
+            public void onVerificationFinished(AdjustPurchaseVerificationResult result) {
+                MainActivity.testLibrary.addInfoToSend("verification_status", result.getVerificationStatus());
+                MainActivity.testLibrary.addInfoToSend("code", String.valueOf(result.getCode()));
+                MainActivity.testLibrary.addInfoToSend("message", result.getMessage());
+                MainActivity.testLibrary.sendInfoToServer(localBasePath);
+            }
+        });
     }
 /*
     private void testBegin() {
