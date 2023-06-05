@@ -50,6 +50,9 @@ public class ResponseData {
             case EVENT:
                 responseData = new EventResponseData(activityPackage);
                 break;
+            case PURCHASE_VERIFICATION:
+                responseData = new PurchaseVerificationResponseData();
+                break;
             default:
                 responseData = new ResponseData();
                 break;
