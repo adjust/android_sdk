@@ -1,9 +1,9 @@
 package com.adjust.sdk;
 
 public class AdjustPurchaseVerificationResult {
-    private String verificationStatus;
-    private int code;
-    private String message;
+    private final String verificationStatus;
+    private final int code;
+    private final String message;
 
     public AdjustPurchaseVerificationResult(final String verificationStatus,
                                             final int code,
@@ -11,5 +11,17 @@ public class AdjustPurchaseVerificationResult {
         this.verificationStatus = verificationStatus;
         this.code = code;
         this.message = message;
+    }
+
+    public String getVerificationStatus() {
+        return verificationStatus;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getMessage() {
+        return message;
     }
 }
