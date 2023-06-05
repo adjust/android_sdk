@@ -1633,7 +1633,7 @@ public class ActivityHandler implements IActivityHandler {
         if (jsonResponse == null) {
             verificationResult = new AdjustPurchaseVerificationResult(
                     "not_verified",
-                    100,
+                    101,
                     purchaseVerificationResponseData.message);
         } else {
             verificationResult = new AdjustPurchaseVerificationResult(
@@ -2503,7 +2503,7 @@ public class ActivityHandler implements IActivityHandler {
             AdjustPurchaseVerificationResult verificationResult =
                     new AdjustPurchaseVerificationResult(
                             "not_verified",
-                            101,
+                            102,
                             "Purchase verification aborted because purchase instance is null");
             callback.onVerificationFinished(verificationResult);
             return;
@@ -2517,7 +2517,7 @@ public class ActivityHandler implements IActivityHandler {
             AdjustPurchaseVerificationResult verificationResult =
                     new AdjustPurchaseVerificationResult(
                             "not_verified",
-                            102,
+                            103,
                             "Purchase verification aborted because verification package is null");
             callback.onVerificationFinished(verificationResult);
             return;

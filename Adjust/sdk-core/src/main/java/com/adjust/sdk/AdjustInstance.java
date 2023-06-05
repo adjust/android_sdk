@@ -665,6 +665,13 @@ public class AdjustInstance {
      */
     public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
+            if (callback != null) {
+                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                        "not_verified",
+                        100,
+                        "SDK needs to be initialized before making purchase verification request");
+                callback.onVerificationFinished(result);
+            }
             return;
         }
         activityHandler.verifyPurchase(purchase, callback);
@@ -696,6 +703,9 @@ public class AdjustInstance {
         }
         if (testOptions.subscriptionUrl != null) {
             AdjustFactory.setSubscriptionUrl(testOptions.subscriptionUrl);
+        }
+        if (testOptions.purchaseVerificationUrl != null) {
+            AdjustFactory.setPurchaseVerificationUrl(testOptions.purchaseVerificationUrl);
         }
         if (testOptions.timerIntervalInMilliseconds != null) {
             AdjustFactory.setTimerInterval(testOptions.timerIntervalInMilliseconds);
