@@ -73,7 +73,7 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
         init(activityHandler, startsSending, purchaseVerificationHandlerActivityPackageSender);
         this.logger = AdjustFactory.getLogger();
         backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
-        scheduler = new SingleThreadCachedScheduler("PurchaseVerificationHandler");
+        scheduler = new SingleThreadCachedScheduler(SCHEDULED_EXECUTOR_SOURCE);
     }
 
     /**
