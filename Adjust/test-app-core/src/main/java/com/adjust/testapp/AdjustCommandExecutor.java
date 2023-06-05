@@ -46,6 +46,7 @@ public class AdjustCommandExecutor {
     private String basePath;
     private String gdprPath;
     private String subscriptionPath;
+    private String purchaseVerificationPath;
     private SparseArray<AdjustEvent> savedEvents = new SparseArray<>();
     private SparseArray<AdjustConfig> savedConfigs = new SparseArray<>();
     private Command command;
@@ -125,6 +126,7 @@ public class AdjustCommandExecutor {
             basePath = command.getFirstParameterValue("basePath");
             gdprPath = command.getFirstParameterValue("basePath");
             subscriptionPath = command.getFirstParameterValue("basePath");
+            purchaseVerificationPath = command.getFirstParameterValue("basePath");
         }
         if (command.containsParameter("timerInterval")) {
             long timerInterval = Long.parseLong(command.getFirstParameterValue("timerInterval"));
@@ -165,6 +167,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = basePath;
                     testOptions.gdprPath = gdprPath;
                     testOptions.subscriptionPath = subscriptionPath;
+                    testOptions.purchaseVerificationPath = purchaseVerificationPath;
                     useTestConnectionOptions = true;
                     testOptions.tryInstallReferrer = false;
                 }
@@ -184,6 +187,7 @@ public class AdjustCommandExecutor {
                     testOptions.basePath = null;
                     testOptions.gdprPath = null;
                     testOptions.subscriptionPath = null;
+                    testOptions.purchaseVerificationPath = null;
                 }
                 if (teardownOption.equals("test")) {
                     savedEvents = null;
