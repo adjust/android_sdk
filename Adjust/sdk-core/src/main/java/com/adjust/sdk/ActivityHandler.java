@@ -2482,20 +2482,36 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void verifyPurchaseI(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+        if (callback == null) {
+            logger.warn("Purchase verification aborted because verification callback is null");
+            return;
+        }
+        // from this moment on we know that we can ping client callback in case of error
         if (!checkActivityStateI(activityState)) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    102,
+                    "Purchase verification aborted because SDK is still not initialized");
+            callback.onVerificationFinished(result);
             logger.warn("Purchase verification aborted because SDK is still not initialized");
             return;
         }
         if (!isEnabledI()) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    103,
+                    "Purchase verification aborted because SDK is disabled");
+            callback.onVerificationFinished(result);
             logger.warn("Purchase verification aborted because SDK is disabled");
             return;
         }
         if (activityState.isGdprForgotten) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    104,
+                    "Purchase verification aborted because user is GDPR forgotten");
+            callback.onVerificationFinished(result);
             logger.warn("Purchase verification aborted because user is GDPR forgotten");
-            return;
-        }
-        if (callback == null) {
-            logger.warn("Purchase verification aborted because verification callback is null");
             return;
         }
         if (purchase == null) {
@@ -2503,7 +2519,7 @@ public class ActivityHandler implements IActivityHandler {
             AdjustPurchaseVerificationResult verificationResult =
                     new AdjustPurchaseVerificationResult(
                             "not_verified",
-                            102,
+                            105,
                             "Purchase verification aborted because purchase instance is null");
             callback.onVerificationFinished(verificationResult);
             return;
