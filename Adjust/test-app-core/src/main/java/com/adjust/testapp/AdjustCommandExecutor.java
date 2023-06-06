@@ -540,6 +540,14 @@ public class AdjustCommandExecutor {
             String callbackId = command.getFirstParameterValue("callbackId");
             adjustEvent.setCallbackId(callbackId);
         }
+        if (command.parameters.containsKey("productId")) {
+            String productId = command.getFirstParameterValue("productId");
+            adjustEvent.setProductId(productId);
+        }
+        if (command.parameters.containsKey("purchaseToken")) {
+            String purchaseToken = command.getFirstParameterValue("purchaseToken");
+            adjustEvent.setPurchaseToken(purchaseToken);
+        }
 
 //        Adjust.trackEvent(adjustEvent);
     }
