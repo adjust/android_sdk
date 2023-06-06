@@ -14,6 +14,8 @@ public class AdjustEvent {
     Map<String, String> partnerParameters;
     String orderId;
     String callbackId;
+    String productId;
+    String purchaseToken;
 
     private static ILogger logger = AdjustFactory.getLogger();
 
@@ -66,6 +68,14 @@ public class AdjustEvent {
 
     public void setCallbackId(String callbackId) {
         this.callbackId = callbackId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
+    }
+
+    public void setPurchaseToken(String purchaseToken) {
+        this.purchaseToken = purchaseToken;
     }
 
     public boolean isValid() {
