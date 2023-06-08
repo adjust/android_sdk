@@ -1302,8 +1302,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
         // purchase verification specific parameters
-        PackageBuilder.addString(parameters, "gps_product_id", purchase.getProductId());
-        PackageBuilder.addString(parameters, "gps_token", purchase.getPurchaseToken());
+        PackageBuilder.addString(parameters, "product_id", purchase.getProductId());
+        PackageBuilder.addString(parameters, "purchase_token", purchase.getPurchaseToken());
         PackageBuilder.addString(parameters, "sdk_version", "android_purchase2.0.0"); // TODO: temp, remove later
 
         injectFeatureFlagsWithParameters(parameters);
