@@ -2533,7 +2533,7 @@ public class ActivityHandler implements IActivityHandler {
             AdjustPurchaseVerificationResult verificationResult =
                     new AdjustPurchaseVerificationResult(
                             "not_verified",
-                            103,
+                            106,
                             "Purchase verification aborted because verification package is null");
             callback.onVerificationFinished(verificationResult);
             return;
