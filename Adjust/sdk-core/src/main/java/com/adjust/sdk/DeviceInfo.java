@@ -80,6 +80,7 @@ class DeviceInfo {
     String appInstallTime;
     String appUpdateTime;
     int uiMode;
+    String appSetId;
 
     DeviceInfo(Context context, String sdkPrefix) {
         Resources resources = context.getResources();
@@ -111,6 +112,7 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
         uiMode = getDeviceUiMode(configuration);
+        appSetId = Reflection.getAppSetId(context, AdjustFactory.getLogger());
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {

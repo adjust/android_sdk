@@ -286,6 +286,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -375,6 +376,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -460,6 +462,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -513,6 +516,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -621,6 +625,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -682,6 +687,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -742,6 +748,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -816,6 +823,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -881,6 +889,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -940,6 +949,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -1031,6 +1041,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
@@ -1121,6 +1132,7 @@ public class PackageBuilder {
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", Util.getFireAdvertisingId(adjustConfig));
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", Util.getFireTrackingEnabled(adjustConfig));
+        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
 
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
