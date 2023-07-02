@@ -783,7 +783,7 @@ public class ActivityHandler implements IActivityHandler {
 
         readConfigFile(adjustConfig.context);
 
-        deviceInfo = new DeviceInfo(adjustConfig.context, adjustConfig.sdkPrefix);
+        deviceInfo = new DeviceInfo(adjustConfig);
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Event buffering is enabled");
