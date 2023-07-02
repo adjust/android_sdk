@@ -34,6 +34,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
+    implementation 'com.google.android.gms:play-services-appset:16.0.2'
 
     implementation project(':sdk-core')
 }
