@@ -97,30 +97,28 @@ public class Reflection {
         return referrerDetails;
     }
 
-    public static String getAppSetId(Context context, ILogger logger) {
+    public static String getAppSetId(Context context) {
         try {
-            Class appSetClass = Class.forName("com.google.android.gms.appset.AppSet");
-            Method getClientMethod = appSetClass.getMethod("getClient", Context.class);
-            Object appSetIdClientObject = getClientMethod.invoke(null, context);
-            Method getAppSetIdInfoMethod = appSetIdClientObject.getClass().getMethod("getAppSetIdInfo");
-            Object taskWithAppSetInfoObject = getAppSetIdInfoMethod.invoke(appSetIdClientObject);
-            Class tasksClass = Class.forName("com.google.android.gms.tasks.Tasks");
-            Method awaitMethod = tasksClass.getMethod("await", Class.forName("com.google.android.gms.tasks.Task"));
-            Object appSetInfoObject = awaitMethod.invoke(null, taskWithAppSetInfoObject);
-            Method getIdMethod = appSetInfoObject.getClass().getMethod("getId");
+            Object appSetIdClientObject =
+              invokeStaticMethod("com.google.android.gms.appset.AppSet",
+                "getClient",
+                new Class[]{Context.class}, context);
 
-            return (String) getIdMethod.invoke(appSetInfoObject);
-        } catch (ClassNotFoundException e) {
-            logger.error("ClassNotFoundException while retrieving app set id with error: %s", e.getMessage());
-        } catch (NoSuchMethodException e) {
-            logger.error("NoSuchMethodException while retrieving app set id with error: %s", e.getMessage());
-        } catch (InvocationTargetException e) {
-            logger.error("InvocationTargetException while retrieving app set id with error: %s", e.getMessage());
-        } catch (Exception e) {
-            logger.error("Exception while retrieving app set id with error: %s", e.getMessage());
+            Object taskWithAppSetInfoObject =
+              invokeInstanceMethod(appSetIdClientObject,
+                "getAppSetIdInfo", null);
+
+            Object appSetInfoObject =
+              invokeStaticMethod("com.google.android.gms.tasks.Tasks",
+                "await",
+                new Class[]{forName("com.google.android.gms.tasks.Task")},
+                taskWithAppSetInfoObject);
+
+            return (String) invokeInstanceMethod(appSetInfoObject,
+              "getId", null);
+        } catch (Throwable t) {
+            return null;
         }
-
-        return null;
     }
 
     public static Class forName(String className) {
