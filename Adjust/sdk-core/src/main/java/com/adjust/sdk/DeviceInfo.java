@@ -114,7 +114,7 @@ class DeviceInfo {
         appUpdateTime = getAppUpdateTime(context);
         uiMode = getDeviceUiMode(configuration);
         if (Util.canReadPlayIds(adjustConfig)) {
-            appSetId = Reflection.getAppSetId(context, AdjustFactory.getLogger());
+            appSetId = Reflection.getAppSetId(context);
         }
     }
 
