@@ -1,3 +1,9 @@
+### Version 4.33.5 (5th July 2023)
+#### Added
+- Added sending of App Set Identifier.
+
+---
+
 ### Version 4.33.4 (27th April 2023)
 #### Changed
 - Updated Samsung Install Referrer library version to 3.0.1.
