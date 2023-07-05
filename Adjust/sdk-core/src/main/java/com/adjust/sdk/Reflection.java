@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -94,6 +95,30 @@ public class Reflection {
             logger.info("invoke getVivoInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
+    }
+
+    public static String getAppSetId(Context context) {
+        try {
+            Object appSetIdClientObject =
+              invokeStaticMethod("com.google.android.gms.appset.AppSet",
+                "getClient",
+                new Class[]{Context.class}, context);
+
+            Object taskWithAppSetInfoObject =
+              invokeInstanceMethod(appSetIdClientObject,
+                "getAppSetIdInfo", null);
+
+            Object appSetInfoObject =
+              invokeStaticMethod("com.google.android.gms.tasks.Tasks",
+                "await",
+                new Class[]{forName("com.google.android.gms.tasks.Task")},
+                taskWithAppSetInfoObject);
+
+            return (String) invokeInstanceMethod(appSetInfoObject,
+              "getId", null);
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     public static Class forName(String className) {

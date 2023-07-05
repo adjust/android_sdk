@@ -80,8 +80,10 @@ class DeviceInfo {
     String appInstallTime;
     String appUpdateTime;
     int uiMode;
+    String appSetId;
 
-    DeviceInfo(Context context, String sdkPrefix) {
+    DeviceInfo(AdjustConfig adjustConfig) {
+        Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
@@ -103,7 +105,7 @@ class DeviceInfo {
         screenDensity = getScreenDensity(displayMetrics);
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
-        clientSdk = getClientSdk(sdkPrefix);
+        clientSdk = getClientSdk(adjustConfig.sdkPrefix);
         fbAttributionId = getFacebookAttributionId(context);
         hardwareName = getHardwareName();
         abi = getABI();
@@ -111,6 +113,9 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(context);
         appUpdateTime = getAppUpdateTime(context);
         uiMode = getDeviceUiMode(configuration);
+        if (Util.canReadPlayIds(adjustConfig)) {
+            appSetId = Reflection.getAppSetId(context);
+        }
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
