@@ -94,4 +94,13 @@ public class UtilNetworking {
         }
         return null;
     }
+
+    public static int extractJsonInt(final JSONObject jsonObject, final String name) {
+        // taken from JSONObject.optString(...) to add null fallback
+        final Object object = jsonObject.opt(name);
+        if (object instanceof Integer) {
+            return (int) object;
+        }
+        return -1;
+    }
 }

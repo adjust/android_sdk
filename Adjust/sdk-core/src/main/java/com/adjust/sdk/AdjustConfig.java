@@ -11,6 +11,7 @@ public class AdjustConfig {
     String basePath;
     String gdprPath;
     String subscriptionPath;
+    String purchaseVerificationPath;
     Context context;
     String appToken;
     String environment;

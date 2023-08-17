@@ -35,6 +35,8 @@ public interface IActivityHandler {
 
     void launchAttributionResponseTasks(AttributionResponseData attributionResponseData);
 
+    void launchPurchaseVerificationResponseTasks(PurchaseVerificationResponseData purchaseVerificationResponseData);
+
     void sendReftagReferrer();
 
     void sendPreinstallReferrer();
@@ -76,6 +78,8 @@ public interface IActivityHandler {
     void trackAdRevenue(AdjustAdRevenue adjustAdRevenue);
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
+
+    void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback);
 
     void gotOptOutResponse();
 

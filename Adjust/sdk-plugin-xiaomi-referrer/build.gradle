@@ -23,7 +23,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.33.5'
+    // implementation 'com.adjust.sdk:adjust-android:4.34.0'
 
     // Add xiaomi referrer lib via Maven.
     implementation 'com.miui.referrer:homereferrer:1.0.0.6'

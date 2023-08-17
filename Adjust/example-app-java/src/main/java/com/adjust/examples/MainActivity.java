@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +15,9 @@ import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.AdjustPlayStoreSubscription;
+import com.adjust.sdk.AdjustPurchase;
+import com.adjust.sdk.AdjustPurchaseVerificationResult;
+import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
@@ -71,9 +74,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void onTrackSimpleEventClick(View v) {
         AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
-
-        // Assign custom identifier to event which will be reported in success/failure callbacks.
-        event.setCallbackId("PrettyRandomIdentifier");
 
         Adjust.trackEvent(event);
     }

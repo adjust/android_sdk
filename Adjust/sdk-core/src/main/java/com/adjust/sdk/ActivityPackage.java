@@ -48,6 +48,9 @@ public class ActivityPackage implements Serializable {
     private Map<String, String> callbackParameters;
     private Map<String, String> partnerParameters;
 
+    // callbacks
+    private OnPurchaseVerificationFinishedListener purchaseVerificationCallback;
+
     private int retries;
     private long clickTimeInMilliseconds;
     private long clickTimeInSeconds;
@@ -163,6 +166,14 @@ public class ActivityPackage implements Serializable {
 
     public void setGooglePlayInstant(Boolean googlePlayInstant) {
         this.googlePlayInstant = googlePlayInstant;
+    }
+
+    public OnPurchaseVerificationFinishedListener getPurchaseVerificationCallback() {
+        return this.purchaseVerificationCallback;
+    }
+
+    public void setPurchaseVerificationCallback(final OnPurchaseVerificationFinishedListener callback) {
+        this.purchaseVerificationCallback = callback;
     }
 
     public Map<String, String> getCallbackParameters() {

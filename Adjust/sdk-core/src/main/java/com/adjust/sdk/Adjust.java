@@ -34,7 +34,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.33.5";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.34.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -361,6 +361,17 @@ public class Adjust {
     public static String getSdkVersion() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         return adjustInstance.getSdkVersion();
+    }
+
+    /**
+     * Verify in app purchase from Google Play.
+     *
+     * @param purchase  AdjustPurchase object to be tracked
+     * @param callback  Callback to obtain verification results
+     */
+    public static void verifyPurchase(final AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.verifyPurchase(purchase, callback);
     }
 
     /**
