@@ -1,3 +1,9 @@
+### Version 4.34.0 (17th August 2023)
+#### Added
+- Added support for purchase verification. In case you are using this feature, you can now use it by calling `verifyPurchase` method of the `Adjust` instance.
+
+---
+
 ### Version 4.33.5 (5th July 2023)
 #### Added
 - Added sending of App Set Identifier.
