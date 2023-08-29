@@ -529,14 +529,21 @@ public class ActivityPackageSender implements IActivityPackageSender {
                                                       final ActivityKind activityKind) {
         String activityKindString = activityKind.toString();
 
+        String adjSigningId = extractAdjSigningId(parameters);
         String secretId = extractSecretId(parameters);
         String headersId = extractHeadersId(parameters);
         String signature = extractSignature(parameters);
         String algorithm = extractAlgorithm(parameters);
         String nativeVersion = extractNativeVersion(parameters);
 
-        String authorizationHeader = buildAuthorizationHeaderV2(signature, secretId,
+        String authorizationHeader = buildAuthorizationHeaderV2WithAdjSigningId(signature, adjSigningId,
                 headersId, algorithm, nativeVersion);
+        if (authorizationHeader != null) {
+            return authorizationHeader;
+        }
+
+        authorizationHeader = buildAuthorizationHeaderV2WithSecretId(signature, secretId, headersId,
+                algorithm, nativeVersion);
         if (authorizationHeader != null) {
             return authorizationHeader;
         }
@@ -574,11 +581,35 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return authorizationHeader;
     }
 
-    private String buildAuthorizationHeaderV2(final String signature,
-                                              final String secretId,
-                                              final String headersId,
-                                              final String algorithm,
-                                              final String nativeVersion)
+    private String buildAuthorizationHeaderV2WithAdjSigningId(final String signature,
+                                                              final String adjSigningId,
+                                                              final String headersId,
+                                                              final String algorithm,
+                                                              final String nativeVersion)
+    {
+        if (adjSigningId == null || signature == null || headersId == null) {
+            return null;
+        }
+
+        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
+        String adjSigningIdHeader  = Util.formatString("adj_signing_id=\"%s\"", adjSigningId);
+        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
+        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
+        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
+
+        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
+                signatureHeader, adjSigningIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
+
+        logger.verbose("authorizationHeader: %s", authorizationHeader);
+
+        return authorizationHeader;
+    }
+
+    private String buildAuthorizationHeaderV2WithSecretId(final String signature,
+                                                          final String secretId,
+                                                          final String headersId,
+                                                          final String algorithm,
+                                                          final String nativeVersion)
     {
         if (secretId == null || signature == null || headersId == null) {
             return null;
@@ -702,4 +733,10 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private static void extractEventCallbackId(final Map<String, String> parameters) {
         parameters.remove("event_callback_id");
     }
+
+    private static String extractAdjSigningId(final Map<String, String> parameters) {
+        return parameters.remove("adj_signing_id");
+    }
+
+
 }
