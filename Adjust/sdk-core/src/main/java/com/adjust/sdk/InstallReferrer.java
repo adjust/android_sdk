@@ -364,7 +364,7 @@ public class InstallReferrer implements InvocationHandler {
 
                     ReferrerDetails installReferrerDetails = new ReferrerDetails(installReferrer,
                             clickTime, installBegin, clickTimeServer, installBeginServer,
-                            installVersion, googlePlayInstant);
+                            installVersion, googlePlayInstant, null);
 
                     // Stuff successfully read, try to send it.
                     referrerCallback.onInstallReferrerRead(installReferrerDetails, Constants.REFERRER_API_GOOGLE);
