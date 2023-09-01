@@ -56,6 +56,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.playStoreKidsAppEnabled = null;
     this.coppaCompliantEnabled = null;
     this.finalAttributionEnabled = null;
+    this.fbAppId = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -263,4 +264,8 @@ AdjustConfig.prototype.setCoppaCompliantEnabled = function(isEnabled) {
 
 AdjustConfig.prototype.setFinalAttributionEnabled = function(isEnabled) {
     this.finalAttributionEnabled = isEnabled;
+};
+
+AdjustConfig.prototype.setFbAppId = function(fbAppId) {
+    this.fbAppId = fbAppId;
 };

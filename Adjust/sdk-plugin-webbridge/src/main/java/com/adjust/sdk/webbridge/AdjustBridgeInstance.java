@@ -175,6 +175,7 @@ public class AdjustBridgeInstance {
             Object playStoreKidsAppEnabledField = jsonAdjustConfig.get("playStoreKidsAppEnabled");
             Object coppaCompliantEnabledField = jsonAdjustConfig.get("coppaCompliantEnabled");
             Object finalAttributionEnabledField = jsonAdjustConfig.get("finalAttributionEnabled");
+            Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -406,6 +407,12 @@ public class AdjustBridgeInstance {
             Boolean finalAttributionEnabled = AdjustBridgeUtil.fieldToBoolean(finalAttributionEnabledField);
             if (finalAttributionEnabled != null) {
                 adjustConfig.setFinalAttributionEnabled(finalAttributionEnabled);
+            }
+
+            // FB App ID
+            String fbAppId = AdjustBridgeUtil.fieldToString(fbAppIdField);
+            if (fbAppId != null) {
+                adjustConfig.setFbAppId(fbAppId);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
