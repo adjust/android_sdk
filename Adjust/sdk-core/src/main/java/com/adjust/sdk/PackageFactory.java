@@ -150,6 +150,7 @@ public class PackageFactory {
         clickPackageBuilder.installBeginTimeServerInSeconds = referrerDetails.installBeginTimestampServerSeconds;
         clickPackageBuilder.installVersion = referrerDetails.installVersion;
         clickPackageBuilder.googlePlayInstant = referrerDetails.googlePlayInstant;
+        clickPackageBuilder.isClick = referrerDetails.isClick;
         clickPackageBuilder.referrerApi = referrerApi;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.INSTALL_REFERRER);

@@ -332,6 +332,7 @@ public class SdkClickHandler implements ISdkClickHandler {
         long installBeginServer = -1;
         String installVersion = null;
         Boolean googlePlayInstant = null;
+        Boolean isClick = null;
         String referrerApi = null;
 
         if (isInstallReferrer) {
@@ -345,6 +346,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             installBeginServer = sdkClickPackage.getInstallBeginTimeServerInSeconds();
             installVersion = sdkClickPackage.getInstallVersion();
             googlePlayInstant = sdkClickPackage.getGooglePlayInstant();
+            isClick = sdkClickPackage.getIsClick();
             referrerApi = sdkClickPackage.getParameters().get("referrer_api");
         }
 
@@ -393,6 +395,7 @@ public class SdkClickHandler implements ISdkClickHandler {
             sdkClickResponseData.installBeginServer = installBeginServer;
             sdkClickResponseData.installVersion = installVersion;
             sdkClickResponseData.googlePlayInstant = googlePlayInstant;
+            sdkClickResponseData.isClick = isClick;
             sdkClickResponseData.referrerApi = referrerApi;
             sdkClickResponseData.isInstallReferrer = true;
         }
