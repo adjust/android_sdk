@@ -18,6 +18,7 @@ android {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
+    namespace 'com.adjust.sdk.oaid'
 }
 
 dependencies {
@@ -60,7 +61,7 @@ task adjustOaidAndroidJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveName "${project.name}.jar"
+    archiveFileName  = project.provider { "${project.name}.jar"}
 }
 
 task androidJavadocs(type: Javadoc) {
@@ -75,12 +76,12 @@ task androidJavadocs(type: Javadoc) {
 
 task adjustOaidAndroidJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
-    classifier = 'javadoc'
+    setArchiveClassifier('javadoc')
     from androidJavadocs.destinationDir
 }
 
 task adjustOaidAndroidSourcesJar(type: Jar) {
-    classifier = 'sources'
+    setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
 }
 

@@ -10,6 +10,7 @@ android {
     defaultConfig {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+    namespace 'com.adjust.sdk.test'
 }
 
 repositories {
