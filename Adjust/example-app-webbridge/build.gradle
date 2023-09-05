@@ -20,6 +20,7 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    namespace 'com.example.examples'
 }
 
 dependencies {

@@ -17,6 +17,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    namespace 'com.adjust.sdk'
 }
 
 // read local properties
@@ -56,13 +57,13 @@ task adjustCoreAarDebug(type: Copy) {
 task adjustCoreJarRelease(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/classes/')
-    archiveName "adjust-sdk-release.jar"
+    archiveFileName  = project.provider {"adjust-sdk-release.jar"}
 }
 
 task adjustCoreJarDebug(type: Jar) {
     dependsOn 'compileDebugJavaWithJavac'
     from('build/intermediates/javac/debug/classes/')
-    archiveName "adjust-sdk-debug.jar"
+    archiveFileName  = project.provider {"adjust-sdk-debug.jar"}
 }
 
 task androidJavadocs(type: Javadoc) {
@@ -76,12 +77,12 @@ task androidJavadocs(type: Javadoc) {
 
 task adjustCoreAndroidJavadocsJar(type: Jar) {
     dependsOn 'androidJavadocs'
-    classifier = 'javadoc'
+    setArchiveClassifier('javadoc')
     from androidJavadocs.destinationDir
 }
 
 task adjustCoreAndroidSourcesJar(type: Jar) {
-    classifier = 'sources'
+    setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
 }
 

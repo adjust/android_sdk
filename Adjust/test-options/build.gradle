@@ -9,6 +9,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 33
     }
+    namespace 'com.adjust.test_options'
 }
 
 dependencies {
