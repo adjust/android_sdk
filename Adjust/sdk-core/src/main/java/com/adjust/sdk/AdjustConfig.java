@@ -44,6 +44,7 @@ public class AdjustConfig {
     String preinstallFilePath;
     boolean playStoreKidsAppEnabled;
     boolean coppaCompliantEnabled;
+    boolean finalAttributionEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -195,6 +196,10 @@ public class AdjustConfig {
 
     public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled) {
         this.coppaCompliantEnabled = coppaCompliantEnabled;
+    }
+
+    public void setFinalAttributionEnabled(boolean finalAttributionEnabled) {
+        this.finalAttributionEnabled = finalAttributionEnabled;
     }
 
     public boolean isValid() {
