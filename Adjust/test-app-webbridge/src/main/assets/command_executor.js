@@ -352,6 +352,12 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
     }
 
+    if ('finalAttributionEnabled' in params) {
+        var finalAttributionEnabledS = getFirstParameterValue(params, 'finalAttributionEnabled');
+        var finalAttributionEnabled = finalAttributionEnabledS == 'true';
+        adjustConfig.setFinalAttributionEnabled(finalAttributionEnabled);
+    }
+
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
         adjustConfig.setAttributionCallback(function(attribution) {
