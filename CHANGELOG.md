@@ -1,3 +1,10 @@
+### Version 4.35.0 (12th September 2023)
+#### Added
+- Added support for SigV3 library. Update authorization header building logic to use `adj_signing_id`.
+- Added `setFinalAttributionEnabled(boolean)` method to `AdjustConfig` to indicate if only final attribution is needed in attribution callback (by default attribution callback return intermediate attribution as well before final attribution if not enabled with this setter method).
+
+---
+
 ### Version 4.34.0 (17th August 2023)
 #### Added
 - Added support for purchase verification. In case you are using this feature, you can now use it by calling `verifyPurchase` method of the `Adjust` instance.
