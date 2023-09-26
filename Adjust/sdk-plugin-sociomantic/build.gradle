@@ -10,10 +10,17 @@ repositories {
 
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
-
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
     defaultConfig {
-        minSdkVersion rootProject.ext.coreMinSdkVersion
-        targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        aarMetadata {
+            minSdkVersion rootProject.ext.coreMinSdkVersion
+            targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        }
     }
     namespace 'com.adjust.sdk.sociomantic'
 }
@@ -54,22 +61,6 @@ task adjustSociomanticAndroidJar(type: Jar) {
     archiveFileName  = project.provider { "${project.name}.jar"}
 }
 
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-}
-
-task adjustSociomanticAndroidJavadocsJar(type: Jar) {
-    dependsOn 'androidJavadocs'
-    setArchiveClassifier('javadoc')
-    from androidJavadocs.destinationDir
-}
-
 task adjustSociomanticAndroidSourcesJar(type: Jar) {
     setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
@@ -77,34 +68,37 @@ task adjustSociomanticAndroidSourcesJar(type: Jar) {
 
 artifacts {
     archives adjustSociomanticAndroidJar
-    archives adjustSociomanticAndroidJavadocsJar
     archives adjustSociomanticAndroidSourcesJar
 }
 
-publishing {
-    publications {
-        mavenAndroidSociomantic(MavenPublication) {
-            customizePom(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-sociomantic'
-            version rootProject.ext.coreVersionName
+afterEvaluate {
+    publishing {
+        publications {
+            mavenAndroidSociomantic(MavenPublication) {
+                customizePom(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-sociomantic'
+                version rootProject.ext.coreVersionName
 
-            artifact adjustSociomanticAndroidJar
-            artifact adjustSociomanticAndroidJavadocsJar
-            artifact adjustSociomanticAndroidSourcesJar
+                artifact adjustSociomanticAndroidJar
+                artifact adjustSociomanticAndroidSourcesJar
+            }
         }
-    }
 
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            if (project.hasProperty("sonatypeUsername")) {
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
                 }
             }
         }
+    }
+    signing {
+        sign publishing.publications.mavenAndroidSociomantic
     }
 }
 
@@ -163,6 +157,4 @@ model {
     */
 }
 
-signing {
-    sign publishing.publications.mavenAndroidSociomantic
-}
+
