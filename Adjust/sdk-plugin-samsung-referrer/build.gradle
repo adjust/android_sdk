@@ -10,10 +10,17 @@ repositories {
 
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
-
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
     defaultConfig {
-        minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
-        targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        aarMetadata {
+            minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
+            targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        }
     }
     namespace 'com.adjust.sdk.samsung'
 }
@@ -62,21 +69,6 @@ task adjustSamsungReferrerPluginJar(type: Jar) {
     archiveFileName  = project.provider { "${project.name}.jar"}
 }
 
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-}
-
-task adjustSamsungReferrerPluginJavadocsJar(type: Jar) {
-    dependsOn 'androidJavadocs'
-    setArchiveClassifier('javadoc')
-    from androidJavadocs.destinationDir
-}
 
 task adjustSamsungReferrerPluginSourcesJar(type: Jar) {
     setArchiveClassifier('sources')
@@ -85,34 +77,37 @@ task adjustSamsungReferrerPluginSourcesJar(type: Jar) {
 
 artifacts {
     archives adjustSamsungReferrerPluginJar
-    archives adjustSamsungReferrerPluginJavadocsJar
     archives adjustSamsungReferrerPluginSourcesJar
 }
 
-publishing {
-    publications {
-        mavenAndroidSamsungReferrer(MavenPublication) {
-            customizePom(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-samsung-referrer'
-            version rootProject.ext.coreVersionName
+afterEvaluate {
+    publishing {
+        publications {
+            mavenAndroidSamsungReferrer(MavenPublication) {
+                customizePom(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-samsung-referrer'
+                version rootProject.ext.coreVersionName
 
-            artifact adjustSamsungReferrerPluginJar
-            artifact adjustSamsungReferrerPluginJavadocsJar
-            artifact adjustSamsungReferrerPluginSourcesJar
+                artifact adjustSamsungReferrerPluginJar
+                artifact adjustSamsungReferrerPluginSourcesJar
+            }
         }
-    }
 
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            if (project.hasProperty("sonatypeUsername")) {
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
                 }
             }
         }
+    }
+    signing {
+        sign publishing.publications.mavenAndroidSamsungReferrer
     }
 }
 
@@ -170,6 +165,4 @@ model {
     */
 }
 
-signing {
-    sign publishing.publications.mavenAndroidSamsungReferrer
-}
+

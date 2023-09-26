@@ -5,10 +5,19 @@ apply plugin: 'signing'
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
+
     defaultConfig {
-        minSdkVersion rootProject.ext.coreMinSdkVersion
-        targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        consumerProguardFiles 'adjust-proguard-rules.txt'
+        aarMetadata {
+            minSdkVersion rootProject.ext.coreMinSdkVersion
+            targetSdkVersion rootProject.ext.coreTargetSdkVersion
+            consumerProguardFiles 'adjust-proguard-rules.txt'
+        }
     }
 
     buildTypes {
@@ -66,21 +75,6 @@ task adjustCoreJarDebug(type: Jar) {
     archiveFileName  = project.provider {"adjust-sdk-debug.jar"}
 }
 
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    // JDK 1.8 is more strict then 1.7. Have JDK 1.8 behave like 1.7 for javadoc generation.
-    if (org.gradle.internal.jvm.Jvm.current().getJavaVersion() == JavaVersion.VERSION_1_8) {
-        options.addStringOption('Xdoclint:none', '-quiet')
-    }
-}
-
-task adjustCoreAndroidJavadocsJar(type: Jar) {
-    dependsOn 'androidJavadocs'
-    setArchiveClassifier('javadoc')
-    from androidJavadocs.destinationDir
-}
-
 task adjustCoreAndroidSourcesJar(type: Jar) {
     setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
@@ -88,12 +82,11 @@ task adjustCoreAndroidSourcesJar(type: Jar) {
 
 artifacts {
     archives adjustCoreJarRelease
-    archives adjustCoreAndroidJavadocsJar
     archives adjustCoreAndroidSourcesJar
 }
-
-publishing {
-    publications {
+afterEvaluate {
+    publishing {
+        publications {
 //        mavenAndroidCoreJar(MavenPublication) {
 //            customizePomForJar(pom)
 //            groupId rootProject.ext.adjustGroupId
@@ -105,36 +98,40 @@ publishing {
 //            artifact adjustCoreAndroidSourcesJar
 //        }
 
-        mavenAndroidCoreAar(MavenPublication) {
-            customizePomForAar(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android'
-            version rootProject.ext.coreVersionName
+            mavenAndroidCoreAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android'
+                version rootProject.ext.coreVersionName
 
-            artifact("$buildDir/outputs/aar/sdk-core-release.aar"){
-                builtBy tasks.getByPath("adjustCoreAarRelease")
+                artifact("$buildDir/outputs/aar/sdk-core-release.aar") {
+                    builtBy tasks.getByPath("adjustCoreAarRelease")
+                }
+//                artifact adjustCoreAndroidJavadocsJar
+                artifact adjustCoreAndroidSourcesJar
             }
-            artifact adjustCoreAndroidJavadocsJar
-            artifact adjustCoreAndroidSourcesJar
+
         }
 
-    }
-
-    repositories {
-        maven {
-            if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
-                println "Using Maven SNAPSHOT repository for publishing"
-                url "https://oss.sonatype.org/content/repositories/snapshots/"
-            } else {
-                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            }
-            if (project.hasProperty("sonatypeUsername")) {
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
+        repositories {
+            maven {
+                if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
+                    println "Using Maven SNAPSHOT repository for publishing"
+                    url "https://oss.sonatype.org/content/repositories/snapshots/"
+                } else {
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                }
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
                 }
             }
         }
+    }
+    signing {
+        sign publishing.publications.mavenAndroidCoreAar
     }
 }
 
@@ -241,7 +238,7 @@ model {
     */
 }
 
-signing {
-//    sign publishing.publications.mavenAndroidCoreJar
-    sign publishing.publications.mavenAndroidCoreAar
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
