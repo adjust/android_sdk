@@ -38,14 +38,4 @@ dependencies {
     implementation 'com.google.android.gms:play-services-appset:16.0.2'
 
     implementation project(':sdk-core')
-//    implementation 'com.adjust.sdk:adjust-android:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-sociomantic:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-criteo:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-imei:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-oaid:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-samsung-referrer:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-trademob:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-vivo-referrer:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-webbridge:4.37.0'
-//    implementation 'com.adjust.sdk:adjust-android-xiaomi-referrer:4.37.0'
 }
