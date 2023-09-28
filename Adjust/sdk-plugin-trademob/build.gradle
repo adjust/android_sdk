@@ -17,10 +17,8 @@ android {
         }
     }
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.coreMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.trademob'
 }
@@ -45,7 +43,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustTrademobAndroidAar (type: Copy) {
+task adjustTrademobAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -59,7 +57,7 @@ task adjustTrademobAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
 
     from('build/intermediates/javac/release/classes/')
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 

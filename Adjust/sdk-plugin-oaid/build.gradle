@@ -22,10 +22,8 @@ android {
     }
 
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.coreMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.oaid'
 }
@@ -51,7 +49,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustOaidAndroidAar (type: Copy) {
+task adjustOaidAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -70,7 +68,7 @@ task adjustOaidAndroidJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 task adjustOaidAndroidSourcesJar(type: Jar) {

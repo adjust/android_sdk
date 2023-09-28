@@ -18,10 +18,8 @@ android {
         }
     }
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.coreMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.criteo'
 }
@@ -47,7 +45,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustCriteoAndroidAar (type: Copy) {
+task adjustCriteoAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -60,7 +58,7 @@ task adjustCriteoAndroidAar (type: Copy) {
 task adjustCriteoAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/classes/')
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 task adjustCriteoAndroidSourcesJar(type: Jar) {

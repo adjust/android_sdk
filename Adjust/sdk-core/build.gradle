@@ -13,11 +13,9 @@ android {
     }
 
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.coreMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-            consumerProguardFiles 'adjust-proguard-rules.txt'
-        }
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        consumerProguardFiles 'adjust-proguard-rules.txt'
     }
 
     buildTypes {

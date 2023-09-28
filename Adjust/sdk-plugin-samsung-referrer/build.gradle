@@ -17,10 +17,8 @@ android {
         }
     }
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.samsungReferrerMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.samsung'
 }
@@ -47,7 +45,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustSamsungReferrerPluginAar (type: Copy) {
+task adjustSamsungReferrerPluginAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -66,7 +64,7 @@ task adjustSamsungReferrerPluginJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 
