@@ -17,10 +17,8 @@ android {
         }
     }
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.coreMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.coreMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.sociomantic'
 }
@@ -45,7 +43,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustSociomanticAndroidAar (type: Copy) {
+task adjustSociomanticAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -58,7 +56,7 @@ task adjustSociomanticAndroidAar (type: Copy) {
 task adjustSociomanticAndroidJar(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/classes/')
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 task adjustSociomanticAndroidSourcesJar(type: Jar) {

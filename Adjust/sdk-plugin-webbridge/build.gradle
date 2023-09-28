@@ -19,10 +19,8 @@ android {
     }
 
     defaultConfig {
-        aarMetadata {
-            minSdkVersion rootProject.ext.webbridgeMinSdkVersion
-            targetSdkVersion rootProject.ext.coreTargetSdkVersion
-        }
+        minSdkVersion rootProject.ext.webbridgeMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
     namespace 'com.adjust.sdk.webbridge'
 }
@@ -47,7 +45,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustWebBridgeAndroidAar (type: Copy) {
+task adjustWebBridgeAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -66,7 +64,7 @@ task adjustWebBridgeAndroidJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveFileName  = project.provider { "${project.name}.jar"}
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 task adjustWebBridgeAndroidSourcesJar(type: Jar) {
