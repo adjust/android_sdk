@@ -11,10 +11,17 @@ repositories {
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
     defaultConfig {
         minSdkVersion rootProject.ext.vivoReferrerMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
+    namespace 'com.adjust.sdk.vivo'
 }
 
 dependencies {
@@ -38,7 +45,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustVivoReferrerPluginAar (type: Copy) {
+task adjustVivoReferrerPluginAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -57,60 +64,48 @@ task adjustVivoReferrerPluginJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveName "${project.name}.jar"
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-}
-
-task adjustVivoReferrerPluginJavadocsJar(type: Jar) {
-    dependsOn 'androidJavadocs'
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
-}
 
 task adjustVivoReferrerPluginSourcesJar(type: Jar) {
-    classifier = 'sources'
+    setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
     archives adjustVivoReferrerPluginJar
-    archives adjustVivoReferrerPluginJavadocsJar
     archives adjustVivoReferrerPluginSourcesJar
 }
 
-publishing {
-    publications {
-        mavenAndroidVivoReferrer(MavenPublication) {
-            customizePom(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-vivo-referrer'
-            version rootProject.ext.coreVersionName
+afterEvaluate {
+    publishing {
+        publications {
+            mavenAndroidVivoReferrer(MavenPublication) {
+                customizePom(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-vivo-referrer'
+                version rootProject.ext.coreVersionName
 
-            artifact adjustVivoReferrerPluginJar
-            artifact adjustVivoReferrerPluginJavadocsJar
-            artifact adjustVivoReferrerPluginSourcesJar
+                artifact adjustVivoReferrerPluginJar
+                artifact adjustVivoReferrerPluginSourcesJar
+            }
         }
-    }
 
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            if (project.hasProperty("sonatypeUsername")) {
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
                 }
             }
         }
+    }
+    signing {
+        sign publishing.publications.mavenAndroidVivoReferrer
     }
 }
 
@@ -168,6 +163,4 @@ model {
     */
 }
 
-signing {
-    sign publishing.publications.mavenAndroidVivoReferrer
-}
+

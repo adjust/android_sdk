@@ -14,10 +14,18 @@ repositories {
 android {
     compileSdkVersion rootProject.ext.coreCompileSdkVersion
 
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
+
     defaultConfig {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
+    namespace 'com.adjust.sdk.oaid'
 }
 
 dependencies {
@@ -41,7 +49,7 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustOaidAndroidAar (type: Copy) {
+task adjustOaidAndroidAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
@@ -60,60 +68,47 @@ task adjustOaidAndroidJar(type: Jar) {
     }
     from('build/intermediates/javac/release/classes/')
 
-    archiveName "${project.name}.jar"
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    android.libraryVariants.all { variant ->
-        if (variant.name == 'release') {
-            classpath += variant.javaCompileProvider.get().classpath
-        }
-    }
-}
-
-task adjustOaidAndroidJavadocsJar(type: Jar) {
-    dependsOn 'androidJavadocs'
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
+    archiveFileName = project.provider { "${project.name}.jar" }
 }
 
 task adjustOaidAndroidSourcesJar(type: Jar) {
-    classifier = 'sources'
+    setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
     archives adjustOaidAndroidJar
-    archives adjustOaidAndroidJavadocsJar
     archives adjustOaidAndroidSourcesJar
 }
 
-publishing {
-    publications {
-        mavenAndroidOaid(MavenPublication) {
-            customizePom(pom)
-            groupId rootProject.ext.adjustGroupId
-            artifactId 'adjust-android-oaid'
-            version rootProject.ext.coreVersionName
+afterEvaluate {
+    publishing {
+        publications {
+            mavenAndroidOaid(MavenPublication) {
+                customizePom(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-oaid'
+                version rootProject.ext.coreVersionName
 
-            artifact adjustOaidAndroidJar
-            artifact adjustOaidAndroidJavadocsJar
-            artifact adjustOaidAndroidSourcesJar
+                artifact adjustOaidAndroidJar
+                artifact adjustOaidAndroidSourcesJar
+            }
         }
-    }
 
-    repositories {
-        maven {
-            url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-            if (project.hasProperty("sonatypeUsername")) {
-                credentials {
-                    username sonatypeUsername
-                    password sonatypePassword
+        repositories {
+            maven {
+                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
                 }
             }
         }
+    }
+    signing {
+        sign publishing.publications.mavenAndroidOaid
     }
 }
 
@@ -171,6 +166,4 @@ model {
     */
 }
 
-signing {
-    sign publishing.publications.mavenAndroidOaid
-}
+
