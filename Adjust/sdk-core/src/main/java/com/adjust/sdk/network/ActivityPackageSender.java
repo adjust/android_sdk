@@ -140,8 +140,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
             final String urlString;
             if (shouldUseGET) {
-                extractEventCallbackId(activityPackageParameters);
-
                 urlString = generateUrlStringForGET(activityPackage.getActivityKind(),
                                                     activityPackage.getPath(),
                                                     activityPackageParameters,
@@ -165,8 +163,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
             if (shouldUseGET) {
                 dataOutputStream = configConnectionForGET(connection);
             } else {
-                extractEventCallbackId(activityPackageParameters);
-
                 dataOutputStream = configConnectionForPOST(connection,
                                                            activityPackageParameters,
                                                            sendingParameters);
@@ -728,10 +724,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
     private static String extractHeadersId(final Map<String, String> parameters) {
         return parameters.remove("headers_id");
-    }
-
-    private static void extractEventCallbackId(final Map<String, String> parameters) {
-        parameters.remove("event_callback_id");
     }
 
     private static String extractAdjSigningId(final Map<String, String> parameters) {

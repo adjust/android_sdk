@@ -26,6 +26,7 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+    namespace 'com.adjust.examples'
 }
 
 dependencies {

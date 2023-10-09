@@ -7,6 +7,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 33
     }
+    namespace 'com.adjust.test_library'
 }
 
 dependencies {
@@ -43,13 +44,13 @@ task adjustTestLibraryAarDebug(type: Copy) {
 task adjustTestLibraryJarRelease(type: Jar) {
     dependsOn 'compileReleaseJavaWithJavac'
     from('build/intermediates/javac/release/classes/')
-    archiveName "test-library-release.jar"
+    archiveFileName  = project.provider { "test-library-release.jar"}
 }
 
 task adjustTestLibraryJarDebug(type: Jar) {
     dependsOn 'compileDebugJavaWithJavac'
     from('build/intermediates/javac/debug/classes/')
-    archiveName "test-library-debug.jar"
+    archiveFileName  = project.provider { "test-library-debug.jar"}
 }
 
 adjustTestLibraryJarDebug.dependsOn(adjustTestLibraryJarCleanDebug, build)
