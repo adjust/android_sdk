@@ -1,3 +1,10 @@
+### Version 4.35.1 (9th October 2023)
+#### Changed
+- Added sending of `event_callback_id` parameter in `event` package.
+- Updated Gradle version 8.1.1.
+
+---
+
 ### Version 4.35.0 (12th September 2023)
 #### Added
 - Added support for SigV3 library. Update authorization header building logic to use `adj_signing_id`.
