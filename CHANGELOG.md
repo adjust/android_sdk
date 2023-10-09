@@ -1,6 +1,6 @@
 ### Version 4.35.1 (9th October 2023)
 #### Changed
-- Added sending of `event_callback_id` parameter in `event` package.
+- Added sending of `event_callback_id` parameter (if set) with the event payload.
 - Updated Gradle version 8.1.1.
 
 ---
