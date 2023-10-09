@@ -83,13 +83,26 @@ artifacts {
 afterEvaluate {
     publishing {
         publications {
-            mavenAndroidXiaomiReferrer(MavenPublication) {
-                customizePom(pom)
+/*
+            mavenAndroidXiaomiReferrerJar(MavenPublication) {
+                customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-xiaomi-referrer'
                 version rootProject.ext.coreVersionName
 
                 artifact adjustXiaomiReferrerPluginJar
+                artifact adjustXiaomiReferrerPluginSourcesJar
+            }
+*/
+            mavenAndroidXiaomiReferrerAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-xiaomi-referrer'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-xiaomi-referrer-release.aar") {
+                    builtBy tasks.getByPath("adjustXiaomiReferrerPluginAar")
+                }
                 artifact adjustXiaomiReferrerPluginSourcesJar
             }
         }
@@ -107,11 +120,52 @@ afterEvaluate {
         }
     }
     signing {
-        sign publishing.publications.mavenAndroidXiaomiReferrer
+//        sign publishing.publications.mavenAndroidXiaomiReferrerJar
+        sign publishing.publications.mavenAndroidXiaomiReferrerAar
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Xiaomi Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Xiaomi Referrer plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
     pom.withXml {
         def root = asNode()
 
@@ -152,9 +206,9 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidXiaomiReferrerPublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidXiaomiReferrerJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidXiaomiReferrerPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -163,6 +217,9 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
+    tasks.generatePomFileForMavenAndroidXiaomiReferrerAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
 }
 
 

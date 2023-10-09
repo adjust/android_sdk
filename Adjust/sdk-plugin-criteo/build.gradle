@@ -74,13 +74,26 @@ artifacts {
 afterEvaluate {
     publishing {
         publications {
-            mavenAndroidCriteo(MavenPublication) {
-                customizePom(pom)
+/*
+            mavenAndroidCriteoJar(MavenPublication) {
+                customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-criteo'
                 version rootProject.ext.coreVersionName
 
                 artifact adjustCriteoAndroidJar
+                artifact adjustCriteoAndroidSourcesJar
+            }
+*/
+            mavenAndroidCriteoAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-criteo'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-criteo-release.aar") {
+                    builtBy tasks.getByPath("adjustCriteoAndroidAar")
+                }
                 artifact adjustCriteoAndroidSourcesJar
             }
         }
@@ -98,11 +111,52 @@ afterEvaluate {
         }
     }
     signing {
-        sign publishing.publications.mavenAndroidCriteo
+//        sign publishing.publications.mavenAndroidCriteoJar
+        sign publishing.publications.mavenAndroidCriteoAar
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Criteo plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Criteo plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
     pom.withXml {
         def root = asNode()
 
@@ -143,9 +197,9 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidCriteoPublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidCriteoJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidCriteoPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -154,6 +208,9 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
+    tasks.generatePomFileForMavenAndroidCriteoAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
 }
 
 

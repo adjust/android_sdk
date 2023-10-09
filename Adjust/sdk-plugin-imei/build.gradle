@@ -80,13 +80,26 @@ artifacts {
 afterEvaluate {
     publishing {
         publications {
-            mavenAndroidImei(MavenPublication) {
-                customizePom(pom)
+/*
+            mavenAndroidImeiJar(MavenPublication) {
+                customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-imei'
                 version rootProject.ext.coreVersionName
 
                 artifact adjustImeiAndroidJar
+                artifact adjustImeiAndroidSourcesJar
+            }
+*/
+            mavenAndroidImeiAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-imei'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-imei-release.aar") {
+                    builtBy tasks.getByPath("adjustImeiAndroidAar")
+                }
                 artifact adjustImeiAndroidSourcesJar
             }
         }
@@ -104,11 +117,52 @@ afterEvaluate {
         }
     }
     signing {
-        sign publishing.publications.mavenAndroidImei
+//        sign publishing.publications.mavenAndroidImeiJar
+        sign publishing.publications.mavenAndroidImeiAar
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Imei plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Imei plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
     pom.withXml {
         def root = asNode()
 
@@ -149,9 +203,9 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidImeiPublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidImeiJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidImeiPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -160,5 +214,8 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
+    tasks.generatePomFileForMavenAndroidImeiAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
 }
 
