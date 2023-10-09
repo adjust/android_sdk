@@ -81,13 +81,26 @@ artifacts {
 afterEvaluate {
     publishing {
         publications {
-            mavenAndroidSamsungReferrer(MavenPublication) {
-                customizePom(pom)
+/*
+            mavenAndroidSamsungReferrerJar(MavenPublication) {
+                customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-samsung-referrer'
                 version rootProject.ext.coreVersionName
 
                 artifact adjustSamsungReferrerPluginJar
+                artifact adjustSamsungReferrerPluginSourcesJar
+            }
+*/
+            mavenAndroidSamsungReferrerAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-samsung-referrer'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-samsung-referrer-release.aar") {
+                    builtBy tasks.getByPath("adjustSamsungReferrerPluginAar")
+                }
                 artifact adjustSamsungReferrerPluginSourcesJar
             }
         }
@@ -105,11 +118,52 @@ afterEvaluate {
         }
     }
     signing {
-        sign publishing.publications.mavenAndroidSamsungReferrer
+//        sign publishing.publications.mavenAndroidSamsungReferrerJar
+        sign publishing.publications.mavenAndroidSamsungReferrerAar
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Samsung Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Samsung Referrer plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
     pom.withXml {
         def root = asNode()
 
@@ -150,9 +204,9 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidSamsungReferrerPublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidSamsungReferrerJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidSamsungReferrerPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -161,6 +215,9 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
+    tasks.generatePomFileForMavenAndroidSamsungReferrerAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
 }
 
 

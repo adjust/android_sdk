@@ -74,13 +74,26 @@ artifacts {
 afterEvaluate {
     publishing {
         publications {
-            mavenAndroidTrademob(MavenPublication) {
-                customizePom(pom)
+/*
+            mavenAndroidTrademobJar(MavenPublication) {
+                customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-trademob'
                 version rootProject.ext.coreVersionName
 
                 artifact adjustTrademobAndroidJar
+                artifact adjustTrademobAndroidSourcesJar
+            }
+*/
+            mavenAndroidTrademobAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-trademob'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-trademob-release.aar") {
+                    builtBy tasks.getByPath("adjustTrademobAndroidAar")
+                }
                 artifact adjustTrademobAndroidSourcesJar
             }
         }
@@ -98,11 +111,52 @@ afterEvaluate {
         }
     }
     signing {
-        sign publishing.publications.mavenAndroidTrademob
+//        sign publishing.publications.mavenAndroidTrademobJar
+        sign publishing.publications.mavenAndroidTrademobAar
     }
 }
 
-def customizePom(pom) {
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Trademob plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Trademob plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
     pom.withXml {
         def root = asNode()
 
@@ -143,9 +197,9 @@ def customizePom(pom) {
 }
 
 model {
-    tasks.generatePomFileForMavenAndroidTrademobPublication {
-        destination = file("${project.buildDir}/generated-pom.xml")
-    }
+//    tasks.generatePomFileForMavenAndroidTrademobJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
     /* TODO check if/how to replace this tasks
     tasks.publishMavenAndroidTrademobPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
@@ -154,4 +208,7 @@ model {
         dependsOn project.tasks.signArchives
     }
     */
+    tasks.generatePomFileForMavenAndroidTrademobAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
 }
