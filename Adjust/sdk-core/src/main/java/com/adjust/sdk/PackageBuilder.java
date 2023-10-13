@@ -354,6 +354,10 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -448,6 +452,10 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -501,6 +509,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -611,6 +623,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -673,6 +689,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -734,6 +754,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -794,6 +818,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -869,6 +897,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -934,6 +966,10 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1020,6 +1056,10 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1117,6 +1157,10 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1218,6 +1262,10 @@ public class PackageBuilder {
         PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
 
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1304,6 +1352,10 @@ public class PackageBuilder {
         // purchase verification specific parameters
         PackageBuilder.addString(parameters, "product_id", purchase.getProductId());
         PackageBuilder.addString(parameters, "purchase_token", purchase.getPurchaseToken());
+
+        if (Util.isGooglePlayGamesForPC(adjustConfig.context)) {
+            PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", true);
+        }
 
         injectFeatureFlagsWithParameters(parameters);
 

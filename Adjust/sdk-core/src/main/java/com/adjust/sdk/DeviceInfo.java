@@ -92,11 +92,11 @@ class DeviceInfo {
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
-        deviceType = getDeviceType(configuration);
-        deviceName = getDeviceName();
+        deviceType = getDeviceType(context, configuration);
+        deviceName = getDeviceName(context);
         deviceManufacturer = getDeviceManufacturer();
-        osName = getOsName();
-        osVersion = getOsVersion();
+        osName = getOsName(context);
+        osVersion = getOsVersion(context);
         apiLevel = getApiLevel();
         language = getLanguage(locale);
         country = getCountry(locale);
@@ -221,7 +221,11 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceType(Configuration configuration) {
+    private String getDeviceType(Context context, Configuration configuration) {
+        if (Util.isGooglePlayGamesForPC(context)) {
+            return "pc";
+        }
+
         int uiMode = configuration.uiMode & UI_MODE_TYPE_MASK;
         if (uiMode == UI_MODE_TYPE_TELEVISION) {
             return "tv";
@@ -244,7 +248,10 @@ class DeviceInfo {
         return configuration.uiMode & UI_MODE_TYPE_MASK;
     }
 
-    private String getDeviceName() {
+    private String getDeviceName(Context context) {
+        if (Util.isGooglePlayGamesForPC(context)) {
+            return null;
+        }
         return Build.MODEL;
     }
 
@@ -252,11 +259,17 @@ class DeviceInfo {
         return Build.MANUFACTURER;
     }
 
-    private String getOsName() {
+    private String getOsName(Context context) {
+        if (Util.isGooglePlayGamesForPC(context)) {
+            return "windows";
+        }
         return "android";
     }
 
-    private String getOsVersion() {
+    private String getOsVersion(Context context) {
+        if (Util.isGooglePlayGamesForPC(context)) {
+            return null;
+        }
         return Build.VERSION.RELEASE;
     }
 

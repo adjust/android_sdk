@@ -826,6 +826,11 @@ public class Util {
         return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
     }
 
+    public static boolean isGooglePlayGamesForPC(final Context context) {
+        PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+    }
+
     private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                        final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
