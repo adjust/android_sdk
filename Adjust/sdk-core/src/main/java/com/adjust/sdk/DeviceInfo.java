@@ -81,6 +81,7 @@ class DeviceInfo {
     String appUpdateTime;
     int uiMode;
     String appSetId;
+    boolean isGooglePlayGamesForPC;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -89,14 +90,15 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
+        isGooglePlayGamesForPC = Util.isGooglePlayGamesForPC(context);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
-        deviceType = getDeviceType(context, configuration);
-        deviceName = getDeviceName(context);
+        deviceType = getDeviceType(configuration);
+        deviceName = getDeviceName();
         deviceManufacturer = getDeviceManufacturer();
-        osName = getOsName(context);
-        osVersion = getOsVersion(context);
+        osName = getOsName();
+        osVersion = getOsVersion();
         apiLevel = getApiLevel();
         language = getLanguage(locale);
         country = getCountry(locale);
@@ -221,8 +223,8 @@ class DeviceInfo {
         }
     }
 
-    private String getDeviceType(Context context, Configuration configuration) {
-        if (Util.isGooglePlayGamesForPC(context)) {
+    private String getDeviceType(Configuration configuration) {
+        if (isGooglePlayGamesForPC) {
             return "pc";
         }
 
@@ -248,8 +250,8 @@ class DeviceInfo {
         return configuration.uiMode & UI_MODE_TYPE_MASK;
     }
 
-    private String getDeviceName(Context context) {
-        if (Util.isGooglePlayGamesForPC(context)) {
+    private String getDeviceName() {
+        if (isGooglePlayGamesForPC) {
             return null;
         }
         return Build.MODEL;
@@ -259,15 +261,15 @@ class DeviceInfo {
         return Build.MANUFACTURER;
     }
 
-    private String getOsName(Context context) {
-        if (Util.isGooglePlayGamesForPC(context)) {
+    private String getOsName() {
+        if (isGooglePlayGamesForPC) {
             return "windows";
         }
         return "android";
     }
 
-    private String getOsVersion(Context context) {
-        if (Util.isGooglePlayGamesForPC(context)) {
+    private String getOsVersion() {
+        if (isGooglePlayGamesForPC) {
             return null;
         }
         return Build.VERSION.RELEASE;
