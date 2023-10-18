@@ -64,6 +64,8 @@ public class AdjustConfig {
     public static final String AD_REVENUE_UNITY = "unity_sdk";
     public static final String AD_REVENUE_HELIUM_CHARTBOOST = "helium_chartboost_sdk";
     public static final String AD_REVENUE_SOURCE_PUBLISHER = "publisher_sdk";
+    public static final String AD_REVENUE_TOPON = "topon_sdk";
+    public static final String AD_REVENUE_ADX = "adx_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
