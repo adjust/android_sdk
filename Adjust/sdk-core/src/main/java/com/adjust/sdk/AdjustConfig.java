@@ -227,6 +227,154 @@ public class AdjustConfig {
         this.urlStrategy = urlStrategy;
     }
 
+    public String getBasePath() {
+        return basePath;
+    }
+
+    public String getGdprPath() {
+        return gdprPath;
+    }
+
+    public String getSubscriptionPath() {
+        return subscriptionPath;
+    }
+
+    public String getPurchaseVerificationPath() {
+        return purchaseVerificationPath;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public String getAppToken() {
+        return appToken;
+    }
+
+    public String getEnvironment() {
+        return environment;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public String getSdkPrefix() {
+        return sdkPrefix;
+    }
+
+    public boolean isEventBufferingEnabled() {
+        return eventBufferingEnabled;
+    }
+
+    public String getDefaultTracker() {
+        return defaultTracker;
+    }
+
+    public OnAttributionChangedListener getOnAttributionChangedListener() {
+        return onAttributionChangedListener;
+    }
+
+    public Boolean getDeviceKnown() {
+        return deviceKnown;
+    }
+
+    public Class getDeepLinkComponent() {
+        return deepLinkComponent;
+    }
+
+    public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {
+        return onEventTrackingSucceededListener;
+    }
+
+    public OnEventTrackingFailedListener getOnEventTrackingFailedListener() {
+        return onEventTrackingFailedListener;
+    }
+
+    public OnSessionTrackingSucceededListener getOnSessionTrackingSucceededListener() {
+        return onSessionTrackingSucceededListener;
+    }
+
+    public OnSessionTrackingFailedListener getOnSessionTrackingFailedListener() {
+        return onSessionTrackingFailedListener;
+    }
+
+    public OnDeeplinkResponseListener getOnDeeplinkResponseListener() {
+        return onDeeplinkResponseListener;
+    }
+
+    public boolean isSendInBackground() {
+        return sendInBackground;
+    }
+
+    public Double getDelayStart() {
+        return delayStart;
+    }
+
+    public AdjustInstance.PreLaunchActions getPreLaunchActions() {
+        return preLaunchActions;
+    }
+
+    public ILogger getLogger() {
+        return logger;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public String getPushToken() {
+        return pushToken;
+    }
+
+    public Boolean getStartEnabled() {
+        return startEnabled;
+    }
+
+    public boolean isStartOffline() {
+        return startOffline;
+    }
+
+    public String getSecretId() {
+        return secretId;
+    }
+
+    public String getAppSecret() {
+        return appSecret;
+    }
+
+    public String getExternalDeviceId() {
+        return externalDeviceId;
+    }
+
+    public boolean isPreinstallTrackingEnabled() {
+        return preinstallTrackingEnabled;
+    }
+
+    public Boolean getNeedsCost() {
+        return needsCost;
+    }
+
+    public String getUrlStrategy() {
+        return urlStrategy;
+    }
+
+    public String getPreinstallFilePath() {
+        return preinstallFilePath;
+    }
+
+    public boolean isPlayStoreKidsAppEnabled() {
+        return playStoreKidsAppEnabled;
+    }
+
+    public boolean isCoppaCompliantEnabled() {
+        return coppaCompliantEnabled;
+    }
+
+    public boolean isFinalAttributionEnabled() {
+        return finalAttributionEnabled;
+    }
+
     private void setLogLevel(LogLevel logLevel, String environment) {
         logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
