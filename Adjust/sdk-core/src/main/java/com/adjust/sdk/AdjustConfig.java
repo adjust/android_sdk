@@ -45,6 +45,7 @@ public class AdjustConfig {
     boolean playStoreKidsAppEnabled;
     boolean coppaCompliantEnabled;
     boolean finalAttributionEnabled;
+    String fbAppId;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -202,6 +203,10 @@ public class AdjustConfig {
 
     public void setFinalAttributionEnabled(boolean finalAttributionEnabled) {
         this.finalAttributionEnabled = finalAttributionEnabled;
+    }
+
+    public void setFbAppId(String fbAppId) {
+        this.fbAppId = fbAppId;
     }
 
     public boolean isValid() {
@@ -375,6 +380,10 @@ public class AdjustConfig {
 
     public boolean isFinalAttributionEnabled() {
         return finalAttributionEnabled;
+    }
+
+    public String getFbAppId() {
+        return fbAppId;
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {

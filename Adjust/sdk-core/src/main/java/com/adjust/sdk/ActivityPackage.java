@@ -59,6 +59,7 @@ public class ActivityPackage implements Serializable {
     private long installBeginTimeServerInSeconds;
     private String installVersion;
     private Boolean googlePlayInstant;
+    private Boolean isClick;
 
     public String getPath() {
         return path;
@@ -168,6 +169,14 @@ public class ActivityPackage implements Serializable {
         this.googlePlayInstant = googlePlayInstant;
     }
 
+    public Boolean getIsClick() {
+        return this.isClick;
+    }
+
+    public void setIsClick(Boolean isClick) {
+        this.isClick = isClick;
+    }
+    
     public OnPurchaseVerificationFinishedListener getPurchaseVerificationCallback() {
         return this.purchaseVerificationCallback;
     }

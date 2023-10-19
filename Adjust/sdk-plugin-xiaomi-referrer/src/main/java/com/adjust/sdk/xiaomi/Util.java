@@ -22,6 +22,6 @@ public class Util {
                                  getAppsReferrerDetails.getInstallBeginTimestampSeconds(),
                                  getAppsReferrerDetails.getReferrerClickTimestampServerSeconds(),
                                  getAppsReferrerDetails.getInstallBeginTimestampServerSeconds(),
-                                 getAppsReferrerDetails.getInstallVersion(), null);
+                                 getAppsReferrerDetails.getInstallVersion(), null, null);
    }
 }

@@ -64,6 +64,9 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("installBeginVivo", long.class),
             new ObjectStreamField("installReferrerVivo", String.class),
             new ObjectStreamField("installVersionVivo", String.class),
+            new ObjectStreamField("installReferrerMeta", String.class),
+            new ObjectStreamField("clickTimeMeta", long.class),
+            new ObjectStreamField("isClickMeta", Boolean.class),
     };
 
     // persistent data
@@ -122,6 +125,10 @@ public class ActivityState implements Serializable, Cloneable {
     protected String installReferrerVivo;
     protected String installVersionVivo;
 
+    protected String installReferrerMeta;
+    protected long clickTimeMeta;
+    protected Boolean isClickMeta;
+
     protected ActivityState() {
         logger = AdjustFactory.getLogger();
         // create UUID for new devices
@@ -166,6 +173,9 @@ public class ActivityState implements Serializable, Cloneable {
         installBeginVivo = 0;
         installReferrerVivo = null;
         installVersionVivo = null;
+        installReferrerMeta = null;
+        clickTimeMeta = 0;
+        isClickMeta = null;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -249,6 +259,9 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(installBeginVivo, otherActivityState.installBeginVivo)) return false;
         if (!Util.equalString(installReferrerVivo, otherActivityState.installReferrerVivo)) return false;
         if (!Util.equalString(installVersionVivo, otherActivityState.installVersionVivo)) return false;
+        if (!Util.equalString(installReferrerMeta, otherActivityState.installReferrerMeta)) return false;
+        if (!Util.equalLong(clickTimeMeta, otherActivityState.clickTimeMeta)) return false;
+        if (!Util.equalBoolean(isClickMeta, otherActivityState.isClickMeta)) return false;
         return true;
     }
 
@@ -295,6 +308,9 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashLong(installBeginVivo, hashCode);
         hashCode = Util.hashString(installReferrerVivo, hashCode);
         hashCode = Util.hashString(installVersionVivo, hashCode);
+        hashCode = Util.hashString(installReferrerMeta, hashCode);
+        hashCode = Util.hashLong(clickTimeMeta, hashCode);
+        hashCode = Util.hashBoolean(isClickMeta, hashCode);
         return hashCode;
     }
 
@@ -350,6 +366,10 @@ public class ActivityState implements Serializable, Cloneable {
         installBeginVivo = Util.readLongField(fields, "installBeginVivo", -1l);
         installReferrerVivo = Util.readStringField(fields, "installReferrerVivo", null);
         installVersionVivo = Util.readStringField(fields, "installVersionVivo", null);
+
+        installReferrerMeta = Util.readStringField(fields, "installReferrerMeta", null);
+        clickTimeMeta = Util.readLongField(fields, "clickTimeMeta", -1l);
+        isClickMeta = Util.readObjectField(fields, "isClickMeta", null);
 
         // create UUID for migrating devices
         if (uuid == null) {

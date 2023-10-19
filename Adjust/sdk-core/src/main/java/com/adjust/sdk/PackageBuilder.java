@@ -40,6 +40,7 @@ public class PackageBuilder {
     Boolean googlePlayInstant;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
+    Boolean isClick;
 
     private class ActivityStateCopy {
         int eventCount = -1;
@@ -135,6 +136,7 @@ public class PackageBuilder {
         clickPackage.setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds);
         clickPackage.setInstallVersion(installVersion);
         clickPackage.setGooglePlayInstant(googlePlayInstant);
+        clickPackage.setIsClick(isClick);
 
         AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
                 clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
@@ -586,6 +588,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addBoolean(parameters, "google_play_instant", googlePlayInstant);
+        PackageBuilder.addBoolean(parameters, "is_click", isClick);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time_server", installBeginTimeServerInSeconds);
