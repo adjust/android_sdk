@@ -26,7 +26,7 @@ public class VivoReferrerClient {
             long installBeginTime = resultBundle.getLong("download_begin_timestamp_seconds");
             String installVersion = resultBundle.getString("install_version");
 
-            return new ReferrerDetails(installReferrer, clickTime, installBeginTime, -1, -1, installVersion, null);
+            return new ReferrerDetails(installReferrer, clickTime, installBeginTime, -1, -1, installVersion, null, null);
         } catch (Exception e) {
             logger.info("VivoReferrer read error" + e.getMessage());
         }

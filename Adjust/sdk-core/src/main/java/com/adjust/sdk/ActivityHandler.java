@@ -36,6 +36,7 @@ import java.util.Properties;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.REFERRER_API_META;
 import static com.adjust.sdk.Constants.REFERRER_API_SAMSUNG;
 import static com.adjust.sdk.Constants.REFERRER_API_VIVO;
 import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
@@ -79,6 +80,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private InstallReferrerHuawei installReferrerHuawei;
+    private InstallReferrerMeta installReferrerMeta;
 
     @Override
     public void teardown() {
@@ -1013,6 +1015,13 @@ public class ActivityHandler implements IActivityHandler {
             }
         });
 
+        installReferrerMeta = new InstallReferrerMeta(adjustConfig.context, adjustConfig.fbAppId,
+                new InstallReferrerReadListener() {
+                    @Override
+                    public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                        sendInstallReferrer(referrerDetails, referrerApi);
+                    }
+                });
         preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
         sendReftagReferrerI();
     }
@@ -1310,6 +1319,7 @@ public class ActivityHandler implements IActivityHandler {
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
             installReferrerHuawei.readReferrer();
+            installReferrerMeta.readReferrer();
             readInstallReferrerSamsung();
             readInstallReferrerXiaomi();
             readInstallReferrerVivo();
@@ -1811,6 +1821,7 @@ public class ActivityHandler implements IActivityHandler {
         // try to read and send the install referrer
         installReferrer.startConnection();
         installReferrerHuawei.readReferrer();
+        installReferrerMeta.readReferrer();
         readInstallReferrerSamsung();
         readInstallReferrerXiaomi();
         readInstallReferrerVivo();
@@ -2781,6 +2792,19 @@ public class ActivityHandler implements IActivityHandler {
             activityState.clickTimeHuawei = responseData.clickTime;
             activityState.installBeginHuawei = responseData.installBegin;
             activityState.installReferrerHuaweiAppGallery = responseData.installReferrer;
+
+            writeActivityStateI();
+            return;
+        }
+
+        boolean isInstallReferrerMeta =
+                responseData.referrerApi != null &&
+                        (responseData.referrerApi.equalsIgnoreCase(REFERRER_API_META));
+
+        if (isInstallReferrerMeta) {
+            activityState.clickTimeMeta = responseData.clickTime;
+            activityState.installReferrerMeta = responseData.installReferrer;
+            activityState.isClickMeta = responseData.isClick;
 
             writeActivityStateI();
             return;

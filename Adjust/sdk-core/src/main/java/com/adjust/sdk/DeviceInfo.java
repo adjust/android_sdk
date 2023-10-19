@@ -81,6 +81,7 @@ class DeviceInfo {
     String appUpdateTime;
     int uiMode;
     String appSetId;
+    boolean isGooglePlayGamesForPC;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -89,6 +90,7 @@ class DeviceInfo {
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
         int screenLayout = configuration.screenLayout;
+        isGooglePlayGamesForPC = Util.isGooglePlayGamesForPC(context);
 
         packageName = getPackageName(context);
         appVersion = getAppVersion(context);
@@ -222,6 +224,10 @@ class DeviceInfo {
     }
 
     private String getDeviceType(Configuration configuration) {
+        if (isGooglePlayGamesForPC) {
+            return "pc";
+        }
+
         int uiMode = configuration.uiMode & UI_MODE_TYPE_MASK;
         if (uiMode == UI_MODE_TYPE_TELEVISION) {
             return "tv";
@@ -245,6 +251,9 @@ class DeviceInfo {
     }
 
     private String getDeviceName() {
+        if (isGooglePlayGamesForPC) {
+            return null;
+        }
         return Build.MODEL;
     }
 
@@ -253,10 +262,16 @@ class DeviceInfo {
     }
 
     private String getOsName() {
+        if (isGooglePlayGamesForPC) {
+            return "windows";
+        }
         return "android";
     }
 
     private String getOsVersion() {
+        if (isGooglePlayGamesForPC) {
+            return null;
+        }
         return Build.VERSION.RELEASE;
     }
 

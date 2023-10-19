@@ -765,6 +765,8 @@ public class Util {
             return isEqualXiaomiReferrerDetails(referrerDetails, activityState);
         } else if (referrerApi.equals(Constants.REFERRER_API_VIVO)) {
             return isEqualVivoReferrerDetails(referrerDetails, activityState);
+        } else if (referrerApi.equals(Constants.REFERRER_API_META)) {
+            return isEqualMetaReferrerDetails(referrerDetails, activityState);
         }
 
         return false;
@@ -826,6 +828,11 @@ public class Util {
         return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
     }
 
+    public static boolean isGooglePlayGamesForPC(final Context context) {
+        PackageManager pm = context.getPackageManager();
+        return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");
+    }
+
     private static boolean isEqualGoogleReferrerDetails(final ReferrerDetails referrerDetails,
                                                        final ActivityState activityState) {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTime
@@ -874,5 +881,12 @@ public class Util {
                && referrerDetails.installBeginTimestampSeconds == activityState.installBeginVivo
                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerVivo)
                && Util.equalString(referrerDetails.installVersion, activityState.installVersionVivo);
+    }
+
+    private static boolean isEqualMetaReferrerDetails(final ReferrerDetails referrerDetails,
+                                                      final ActivityState activityState) {
+        return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeMeta
+                && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerMeta)
+                && Util.equalBoolean(referrerDetails.isClick, activityState.isClickMeta);
     }
 }

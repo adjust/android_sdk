@@ -79,6 +79,42 @@ public class AdjustAdRevenue {
         return isValidSource(this.source);
     }
 
+    public String getSource() {
+        return source;
+    }
+
+    public Double getRevenue() {
+        return revenue;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public Integer getAdImpressionsCount() {
+        return adImpressionsCount;
+    }
+
+    public String getAdRevenueNetwork() {
+        return adRevenueNetwork;
+    }
+
+    public String getAdRevenueUnit() {
+        return adRevenueUnit;
+    }
+
+    public String getAdRevenuePlacement() {
+        return adRevenuePlacement;
+    }
+
+    public Map<String, String> getCallbackParameters() {
+        return callbackParameters;
+    }
+
+    public Map<String, String> getPartnerParameters() {
+        return partnerParameters;
+    }
+
     private boolean isValidSource(final String param) {
         if (param == null) {
             logger.error("Missing source");

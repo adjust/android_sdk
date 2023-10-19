@@ -40,6 +40,7 @@ public class PackageBuilder {
     Boolean googlePlayInstant;
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
+    Boolean isClick;
 
     private class ActivityStateCopy {
         int eventCount = -1;
@@ -135,6 +136,7 @@ public class PackageBuilder {
         clickPackage.setInstallBeginTimeServerInSeconds(installBeginTimeServerInSeconds);
         clickPackage.setInstallVersion(installVersion);
         clickPackage.setGooglePlayInstant(googlePlayInstant);
+        clickPackage.setIsClick(isClick);
 
         AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
                 clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
@@ -354,6 +356,9 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -448,6 +453,9 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -501,6 +509,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -577,6 +588,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addBoolean(parameters, "google_play_instant", googlePlayInstant);
+        PackageBuilder.addBoolean(parameters, "is_click", isClick);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time_server", installBeginTimeServerInSeconds);
@@ -610,6 +622,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -673,6 +688,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -734,6 +752,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -794,6 +815,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -869,6 +893,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -934,6 +961,9 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1020,6 +1050,9 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1117,6 +1150,9 @@ public class PackageBuilder {
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -1218,6 +1254,9 @@ public class PackageBuilder {
         PackageBuilder.addDateInMilliseconds(parameters, "transaction_date", subscription.getPurchaseTime());
         PackageBuilder.addString(parameters, "transaction_id", subscription.getOrderId());
 
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1304,6 +1343,9 @@ public class PackageBuilder {
         // purchase verification specific parameters
         PackageBuilder.addString(parameters, "product_id", purchase.getProductId());
         PackageBuilder.addString(parameters, "purchase_token", purchase.getPurchaseToken());
+
+        // google play games
+        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
         injectFeatureFlagsWithParameters(parameters);
 

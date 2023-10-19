@@ -82,6 +82,42 @@ public class AdjustEvent {
         return eventToken != null;
     }
 
+    public String getEventToken() {
+        return eventToken;
+    }
+
+    public Double getRevenue() {
+        return revenue;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public Map<String, String> getCallbackParameters() {
+        return callbackParameters;
+    }
+
+    public Map<String, String> getPartnerParameters() {
+        return partnerParameters;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public String getCallbackId() {
+        return callbackId;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public String getPurchaseToken() {
+        return purchaseToken;
+    }
+
     private static boolean checkEventToken(String eventToken, ILogger logger) {
         if (eventToken == null) {
             logger.error("Missing Event Token");
