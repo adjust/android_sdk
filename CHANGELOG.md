@@ -1,3 +1,12 @@
+### Version 4.36.0 (19th October 2023)
+#### Added
+- Added support for Meta install referrer.
+- Added support for Google Play Games on PC.
+- Added support for `TopOn` and `AD(X)` ad revenue tracking.
+- Added Getters for certain public classes.
+
+---
+
 ### Version 4.35.1 (9th October 2023)
 #### Changed
 - Added sending of `event_callback_id` parameter (if set) with the event payload.
