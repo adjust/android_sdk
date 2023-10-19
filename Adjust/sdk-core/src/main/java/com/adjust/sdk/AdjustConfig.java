@@ -382,6 +382,10 @@ public class AdjustConfig {
         return finalAttributionEnabled;
     }
 
+    public String getFbAppId() {
+        return fbAppId;
+    }
+
     private void setLogLevel(LogLevel logLevel, String environment) {
         logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
