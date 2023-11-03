@@ -65,6 +65,7 @@ AdjustConfig.EnvironmentProduction = 'production';
 AdjustConfig.UrlStrategyIndia = "url_strategy_india";
 AdjustConfig.UrlStrategyChina = "url_strategy_china";
 AdjustConfig.UrlStrategyCn = "url_strategy_cn";
+AdjustConfig.UrlStrategyCnOnly = "url_strategy_cn_only";
 AdjustConfig.DataResidencyEU = "data_residency_eu";
 AdjustConfig.DataResidencyTR = "data_residency_tr";
 AdjustConfig.DataResidencyUS = "data_residency_us";
