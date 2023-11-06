@@ -15,6 +15,7 @@ import android.util.DisplayMetrics;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 import static android.content.res.Configuration.UI_MODE_TYPE_MASK;
 import static android.content.res.Configuration.UI_MODE_TYPE_TELEVISION;
@@ -56,6 +57,8 @@ class DeviceInfo {
     int playAdIdAttempt = -1;
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
+    private boolean playIdsReadOnce = false;
+    private boolean otherDeviceInfoParamsReadOnce = false;
     String androidId;
     String fbAttributionId;
     String clientSdk;
@@ -83,17 +86,26 @@ class DeviceInfo {
     String appSetId;
     boolean isGooglePlayGamesForPC;
 
+    Map<String, String> imeiParameters;
+    Map<String, String> oaidParameters;
+    String fireAdId;
+    Boolean fireTrackingEnabled;
+    int connectivityType;
+    String mcc;
+    String mnc;
+
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
         Configuration configuration = resources.getConfiguration();
         Locale locale = Util.getLocale(configuration);
+        PackageInfo packageInfo = getPackageInfo(context);
         int screenLayout = configuration.screenLayout;
         isGooglePlayGamesForPC = Util.isGooglePlayGamesForPC(context);
 
         packageName = getPackageName(context);
-        appVersion = getAppVersion(context);
+        appVersion = getAppVersion(packageInfo);
         deviceType = getDeviceType(configuration);
         deviceName = getDeviceName();
         deviceManufacturer = getDeviceManufacturer();
@@ -112,8 +124,8 @@ class DeviceInfo {
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
-        appInstallTime = getAppInstallTime(context);
-        appUpdateTime = getAppUpdateTime(context);
+        appInstallTime = getAppInstallTime(packageInfo);
+        appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
         if (Util.canReadPlayIds(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
@@ -122,6 +134,10 @@ class DeviceInfo {
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
         if (!Util.canReadPlayIds(adjustConfig)) {
+            return;
+        }
+
+        if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
             return;
         }
 
@@ -134,6 +150,7 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
+        playIdsReadOnce = true;
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
@@ -204,20 +221,44 @@ class DeviceInfo {
         if (nonGoogleIdsReadOnce) {
             return;
         }
+
         androidId = Util.getAndroidId(adjustConfig.context);
         nonGoogleIdsReadOnce = true;
+    }
+
+    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, ILogger logger) {
+        if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
+            return;
+        }
+
+        imeiParameters = Util.getImeiParameters(adjustConfig, logger);
+        oaidParameters = Util.getOaidParameters(adjustConfig, logger);
+        fireAdId = Util.getFireAdvertisingId(adjustConfig);
+        fireTrackingEnabled = Util.getFireTrackingEnabled(adjustConfig);
+        connectivityType = Util.getConnectivityType(adjustConfig.context);
+        mcc = Util.getMcc(adjustConfig.context);
+        mnc = Util.getMnc(adjustConfig.context);
+
+        otherDeviceInfoParamsReadOnce = true;
     }
 
     private String getPackageName(Context context) {
         return context.getPackageName();
     }
 
-    private String getAppVersion(Context context) {
+    private PackageInfo getPackageInfo(Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();
             String name = context.getPackageName();
-            PackageInfo info = packageManager.getPackageInfo(name, 0);
-            return info.versionName;
+            return packageManager.getPackageInfo(name, PackageManager.GET_PERMISSIONS);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private String getAppVersion(PackageInfo packageInfo) {
+        try {
+            return packageInfo.versionName;
         } catch (Exception e) {
             return null;
         }
@@ -406,27 +447,17 @@ class DeviceInfo {
         return SupportedABIS[0];
     }
 
-    private String getAppInstallTime(Context context) {
+    private String getAppInstallTime(PackageInfo packageInfo) {
         try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-
-            String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.firstInstallTime));
-
-            return appInstallTime;
+            return Util.dateFormatter.format(new Date(packageInfo.firstInstallTime));
         } catch (Exception ex) {
             return null;
         }
     }
 
-    private String getAppUpdateTime(Context context) {
+    private String getAppUpdateTime(PackageInfo packageInfo) {
         try {
-            PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-
-            String appInstallTime = Util.dateFormatter.format(new Date(packageInfo.lastUpdateTime));
-
-            return appInstallTime;
+            return Util.dateFormatter.format(new Date(packageInfo.lastUpdateTime));
         } catch (Exception ex) {
             return null;
         }
