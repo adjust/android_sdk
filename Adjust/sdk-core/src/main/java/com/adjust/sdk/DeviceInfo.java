@@ -150,8 +150,6 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        playIdsReadOnce = true;
-
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
             try {
@@ -163,6 +161,7 @@ class DeviceInfo {
                                 timeoutServiceMilli);
                 if (playAdId == null) {
                     playAdId = gpsInfo.getGpsAdid();
+                    playIdsReadOnce = true;
                 }
                 if (isTrackingEnabled == null) {
                     isTrackingEnabled = gpsInfo.isTrackingEnabled();
@@ -190,6 +189,7 @@ class DeviceInfo {
                 // just needs a short timeout since it should be just accessing a POJO
                 playAdId = Util.getPlayAdId(
                         context, advertisingInfoObject, Constants.ONE_SECOND);
+                playIdsReadOnce = true;
             }
             if (isTrackingEnabled == null) {
                 // just needs a short timeout since it should be just accessing a POJO
@@ -207,6 +207,7 @@ class DeviceInfo {
         // if both weren't found, use previous values
         if (playAdId == null) {
             playAdId = previousPlayAdId;
+            playIdsReadOnce = true;
         }
         if (isTrackingEnabled == null) {
             isTrackingEnabled = previousIsTrackingEnabled;
