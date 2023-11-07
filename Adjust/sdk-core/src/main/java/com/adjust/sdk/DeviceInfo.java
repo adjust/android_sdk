@@ -9,8 +9,15 @@ import android.content.pm.Signature;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import java.util.Date;
@@ -227,20 +234,23 @@ class DeviceInfo {
         nonGoogleIdsReadOnce = true;
     }
 
-    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, ILogger logger) {
+    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, final ILogger logger) {
         if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
             return;
         }
 
-        imeiParameters = Util.getImeiParameters(adjustConfig, logger);
-        oaidParameters = Util.getOaidParameters(adjustConfig, logger);
-        fireAdId = Util.getFireAdvertisingId(adjustConfig);
-        fireTrackingEnabled = Util.getFireTrackingEnabled(adjustConfig);
-        connectivityType = Util.getConnectivityType(adjustConfig.context);
-        mcc = Util.getMcc(adjustConfig.context);
-        mnc = Util.getMnc(adjustConfig.context);
+        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, logger);
+        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, logger);
+        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig);
+        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig);
+        connectivityType = UtilDeviceIds.getConnectivityType(adjustConfig.context, logger);
+        mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
+        mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
 
         otherDeviceInfoParamsReadOnce = true;
+    }
+    public static String getFireAdvertisingIdBypassConditions(ContentResolver contentResolver) {
+        return UtilDeviceIds.getFireAdvertisingId(contentResolver);
     }
 
     private String getPackageName(Context context) {
@@ -464,5 +474,155 @@ class DeviceInfo {
         }
     }
 
+    private static class UtilDeviceIds {
+        private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
+                                                             final ILogger logger)
+        {
+            if (adjustConfig.coppaCompliantEnabled) {
+                return null;
+            }
 
+            return Reflection.getImeiParameters(adjustConfig.context, logger);
+        }
+        private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
+                                                             final ILogger logger)
+        {
+            if (adjustConfig.coppaCompliantEnabled) {
+                return null;
+            }
+
+            return Reflection.getOaidParameters(adjustConfig.context, logger);
+        }
+        private static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
+            if (adjustConfig.coppaCompliantEnabled) {
+                return null;
+            }
+
+            return getFireAdvertisingId(adjustConfig.context.getContentResolver());
+        }
+        private static String getFireAdvertisingId(final ContentResolver contentResolver) {
+            if (contentResolver == null) {
+                return null;
+            }
+            try {
+                // get advertising
+                return Settings.Secure.getString(contentResolver, "advertising_id");
+            } catch (Exception ex) {
+                // not supported
+            }
+            return null;
+        }
+        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
+            if (adjustConfig.coppaCompliantEnabled) {
+                return null;
+            }
+
+            return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
+        }
+        private static Boolean getFireTrackingEnabled(final ContentResolver contentResolver) {
+            try {
+                // get user's tracking preference
+                return Settings.Secure.getInt(contentResolver, "limit_ad_tracking") == 0;
+            } catch (Exception ex) {
+                // not supported
+            }
+            return null;
+        }
+        private static int getConnectivityType(final Context context, final ILogger logger) {
+            try {
+                ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+                if (cm == null) {
+                    return -1;
+                }
+
+                // for api 22 or lower, still need to get raw type
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    return activeNetwork.getType();
+                }
+
+                // .getActiveNetwork() is only available from api 23
+                Network activeNetwork = cm.getActiveNetwork();
+                if (activeNetwork == null) {
+                    return -1;
+                }
+
+                NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
+                if (activeNetworkCapabilities == null) {
+                    return -1;
+                }
+
+                // check each network capability available from api 23
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    return NetworkCapabilities.TRANSPORT_WIFI;
+                }
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    return NetworkCapabilities.TRANSPORT_CELLULAR;
+                }
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    return NetworkCapabilities.TRANSPORT_ETHERNET;
+                }
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    return NetworkCapabilities.TRANSPORT_VPN;
+                }
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
+                    return NetworkCapabilities.TRANSPORT_BLUETOOTH;
+                }
+
+                // only after api 26, that more transport capabilities were added
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    return -1;
+                }
+
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) {
+                    return NetworkCapabilities.TRANSPORT_WIFI_AWARE;
+                }
+
+                // and then after api 27, that more transport capabilities were added
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
+                    return -1;
+                }
+
+                if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_LOWPAN)) {
+                    return NetworkCapabilities.TRANSPORT_LOWPAN;
+                }
+            } catch (Exception e) {
+                logger.warn("Couldn't read connectivity type (%s)", e.getMessage());
+            }
+
+            return -1;
+        }
+        public static String getMcc(final Context context, final ILogger logger) {
+            try {
+                TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                String networkOperator = tel.getNetworkOperator();
+
+                if (TextUtils.isEmpty(networkOperator)) {
+                    AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MCC");
+                    return null;
+                }
+                return networkOperator.substring(0, 3);
+            } catch (Exception ex) {
+                AdjustFactory.getLogger().warn("Couldn't return mcc");
+                return null;
+            }
+        }
+
+        private static String getMnc(final Context context, final ILogger logger) {
+            try {
+                TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+                String networkOperator = tel.getNetworkOperator();
+
+                if (TextUtils.isEmpty(networkOperator)) {
+                    AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MNC");
+                    return null;
+                }
+                return networkOperator.substring(3);
+            } catch (Exception ex) {
+                logger.warn("Couldn't return mnc");
+                return null;
+            }
+        }
+    }
 }
