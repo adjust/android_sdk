@@ -473,9 +473,8 @@ public class PackageBuilder {
         }
 
         // Check if oaid plugin is used and if yes, add the parameter
-        Map<String, String> oaidParameters = Util.getOaidParameters(adjustConfig, logger);
-        if (oaidParameters != null) {
-            parameters.putAll(oaidParameters);
+        if (deviceInfo.oaidParameters != null) {
+            parameters.putAll(deviceInfo.oaidParameters);
         }
 
         // Device identifiers.
