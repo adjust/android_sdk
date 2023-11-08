@@ -46,6 +46,7 @@ public class AdjustConfig {
     boolean coppaCompliantEnabled;
     boolean finalAttributionEnabled;
     String fbAppId;
+    boolean readDeviceInfoOnceEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -53,6 +54,7 @@ public class AdjustConfig {
     public static final String URL_STRATEGY_INDIA = "url_strategy_india";
     public static final String URL_STRATEGY_CHINA = "url_strategy_china";
     public static final String URL_STRATEGY_CN = "url_strategy_cn";
+    public static final String URL_STRATEGY_CN_ONLY = "url_strategy_cn_only";
     public static final String DATA_RESIDENCY_EU = "data_residency_eu";
     public static final String DATA_RESIDENCY_TR = "data_residency_tr";
     public static final String DATA_RESIDENCY_US = "data_residency_us";
@@ -225,6 +227,7 @@ public class AdjustConfig {
         if (!urlStrategy.equals(URL_STRATEGY_INDIA)
                 && !urlStrategy.equals(URL_STRATEGY_CHINA)
                 && !urlStrategy.equals(URL_STRATEGY_CN)
+                && !urlStrategy.equals(URL_STRATEGY_CN_ONLY)
                 && !urlStrategy.equals(DATA_RESIDENCY_EU)
                 && !urlStrategy.equals(DATA_RESIDENCY_TR)
                 && !urlStrategy.equals(DATA_RESIDENCY_US))
@@ -232,6 +235,10 @@ public class AdjustConfig {
             logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
         this.urlStrategy = urlStrategy;
+    }
+
+    public void setReadDeviceInfoOnceEnabled(boolean readDeviceInfoOnceEnabled) {
+        this.readDeviceInfoOnceEnabled = readDeviceInfoOnceEnabled;
     }
 
     public String getBasePath() {
@@ -384,6 +391,10 @@ public class AdjustConfig {
 
     public String getFbAppId() {
         return fbAppId;
+    }
+
+    public boolean isReadDeviceInfoOnceEnabled() {
+        return readDeviceInfoOnceEnabled;
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {

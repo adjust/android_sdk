@@ -11,6 +11,7 @@ import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_TR;
 import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_US;
 import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CHINA;
 import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CN;
+import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CN_ONLY;
 import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_INDIA;
 import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_EU;
 
@@ -160,6 +161,8 @@ public class UrlStrategy {
             return Arrays.asList(BASE_URL_CHINA, Constants.BASE_URL);
         } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
             return Arrays.asList(BASE_URL_CN, Constants.BASE_URL);
+        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
+            return Arrays.asList(BASE_URL_CN);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(BASE_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
@@ -177,6 +180,8 @@ public class UrlStrategy {
             return Arrays.asList(GDPR_URL_CHINA, Constants.GDPR_URL);
         } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
             return Arrays.asList(GDPR_URL_CN, Constants.GDPR_URL);
+        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
+            return Arrays.asList(GDPR_URL_CN);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(GDPR_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
@@ -194,6 +199,8 @@ public class UrlStrategy {
             return Arrays.asList(SUBSCRIPTION_URL_CHINA, Constants.SUBSCRIPTION_URL);
         } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
             return Arrays.asList(SUBSCRIPTION_URL_CN, Constants.SUBSCRIPTION_URL);
+        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
+            return Arrays.asList(SUBSCRIPTION_URL_CN);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(SUBSCRIPTION_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
@@ -213,6 +220,8 @@ public class UrlStrategy {
             return Arrays.asList(PURCHASE_VERIFICATION_URL_CHINA, Constants.PURCHASE_VERIFICATION_URL);
         } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
             return Arrays.asList(PURCHASE_VERIFICATION_URL_CN, Constants.PURCHASE_VERIFICATION_URL);
+        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
+            return Arrays.asList(PURCHASE_VERIFICATION_URL_CN);
         } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
             return Collections.singletonList(PURCHASE_VERIFICATION_URL_EU);
         } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
