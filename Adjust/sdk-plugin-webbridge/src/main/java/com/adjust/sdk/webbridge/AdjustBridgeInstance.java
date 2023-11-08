@@ -176,6 +176,7 @@ public class AdjustBridgeInstance {
             Object coppaCompliantEnabledField = jsonAdjustConfig.get("coppaCompliantEnabled");
             Object finalAttributionEnabledField = jsonAdjustConfig.get("finalAttributionEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
+            Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -413,6 +414,12 @@ public class AdjustBridgeInstance {
             String fbAppId = AdjustBridgeUtil.fieldToString(fbAppIdField);
             if (fbAppId != null) {
                 adjustConfig.setFbAppId(fbAppId);
+            }
+
+            // read device info once
+            Boolean readDeviceInfoOnceEnabled = AdjustBridgeUtil.fieldToBoolean(readDeviceInfoOnceEnabledField);
+            if (readDeviceInfoOnceEnabled != null) {
+                adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
             }
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
