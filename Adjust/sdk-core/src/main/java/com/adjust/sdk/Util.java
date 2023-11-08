@@ -9,20 +9,15 @@
 
 package com.adjust.sdk;
 
-import android.content.ContentResolver;
+import static com.adjust.sdk.Constants.ENCODING;
+import static com.adjust.sdk.Constants.SHA256;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.net.ConnectivityManager;
-import android.net.Network;
-import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.LocaleList;
-import android.provider.Settings.Secure;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
@@ -56,9 +51,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.SHA256;
 
 /**
  * Collects utility functions used by Adjust.
@@ -531,127 +523,6 @@ public class Util {
         return null;
     }
 
-    public static String getFireAdvertisingId(ContentResolver contentResolver) {
-        if (contentResolver == null) {
-            return null;
-        }
-        try {
-            // get advertising
-            return Secure.getString(contentResolver, "advertising_id");
-        } catch (Exception ex) {
-            // not supported
-        }
-        return null;
-    }
-
-    public static Boolean getFireTrackingEnabled(ContentResolver contentResolver) {
-        try {
-            // get user's tracking preference
-            return Secure.getInt(contentResolver, "limit_ad_tracking") == 0;
-        } catch (Exception ex) {
-            // not supported
-        }
-        return null;
-    }
-
-    public static int getConnectivityType(Context context) {
-        try {
-            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-            if (cm == null) {
-                return -1;
-            }
-
-            // for api 22 or lower, still need to get raw type
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                return activeNetwork.getType();
-            }
-
-            // .getActiveNetwork() is only available from api 23
-            Network activeNetwork = cm.getActiveNetwork();
-            if (activeNetwork == null) {
-                return -1;
-            }
-
-            NetworkCapabilities activeNetworkCapabilities = cm.getNetworkCapabilities(activeNetwork);
-            if (activeNetworkCapabilities == null) {
-                return -1;
-            }
-
-            // check each network capability available from api 23
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                return NetworkCapabilities.TRANSPORT_WIFI;
-            }
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                return NetworkCapabilities.TRANSPORT_CELLULAR;
-            }
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                return NetworkCapabilities.TRANSPORT_ETHERNET;
-            }
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-                return NetworkCapabilities.TRANSPORT_VPN;
-            }
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH)) {
-                return NetworkCapabilities.TRANSPORT_BLUETOOTH;
-            }
-
-            // only after api 26, that more transport capabilities were added
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                return -1;
-            }
-
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI_AWARE)) {
-                return NetworkCapabilities.TRANSPORT_WIFI_AWARE;
-            }
-
-            // and then after api 27, that more transport capabilities were added
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O_MR1) {
-                return -1;
-            }
-
-            if (activeNetworkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_LOWPAN)) {
-                return NetworkCapabilities.TRANSPORT_LOWPAN;
-            }
-        } catch (Exception e) {
-            getLogger().warn("Couldn't read connectivity type (%s)", e.getMessage());
-        }
-
-        return -1;
-    }
-
-    public static String getMcc(Context context) {
-        try {
-            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String networkOperator = tel.getNetworkOperator();
-
-            if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MCC");
-                return null;
-            }
-            return networkOperator.substring(0, 3);
-        } catch (Exception ex) {
-            AdjustFactory.getLogger().warn("Couldn't return mcc");
-            return null;
-        }
-    }
-
-    public static String getMnc(Context context) {
-        try {
-            TelephonyManager tel = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-            String networkOperator = tel.getNetworkOperator();
-
-            if (TextUtils.isEmpty(networkOperator)) {
-                AdjustFactory.getLogger().warn("Couldn't receive networkOperator string to read MNC");
-                return null;
-            }
-            return networkOperator.substring(3);
-        } catch (Exception ex) {
-            AdjustFactory.getLogger().warn("Couldn't return mnc");
-            return null;
-        }
-    }
-
     public static String formatString(String format, Object... args) {
         return String.format(Locale.US, format, args);
     }
@@ -796,37 +667,9 @@ public class Util {
         return true;
     }
 
-    public static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig, ILogger logger) {
-        if (adjustConfig.coppaCompliantEnabled) {
-            return null;
-        }
 
-        return Reflection.getImeiParameters(adjustConfig.context, logger);
-    }
 
-    public static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig, ILogger logger) {
-        if (adjustConfig.coppaCompliantEnabled) {
-            return null;
-        }
 
-        return Reflection.getOaidParameters(adjustConfig.context, logger);
-    }
-
-    public static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-        if (adjustConfig.coppaCompliantEnabled) {
-            return null;
-        }
-
-        return getFireAdvertisingId(adjustConfig.context.getContentResolver());
-    }
-
-    public static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-        if (adjustConfig.coppaCompliantEnabled) {
-            return null;
-        }
-
-        return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
-    }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();
