@@ -1,3 +1,10 @@
+### Version 4.37.0 (8th November 2023)
+#### Added
+- Added a new type of URL strategy called `AdjustConfig.URL_STRATEGY_CN_ONLY`. This URL strategy represents `AdjustConfig.URL_STRATEGY_CN` strategy, but without fallback domains.
+- Added `setReadDeviceInfoOnceEnabled(boolean)` method to `AdjustConfig` to indicate if device info to be read only once.
+
+---
+
 ### Version 4.36.0 (19th October 2023)
 #### Added
 - Added support for Meta install referrer.
