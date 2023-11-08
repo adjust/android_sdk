@@ -1,3 +1,10 @@
+### Version 4.36.1 (8th November 2023)
+#### Added
+- Added support for setting a new China Url Strategy with no fallback domain. You can choose this setting by calling `setUrlStrategy` method of `AdjustConfig` instance with `AdjustConfig.URL_STRATEGY_CN_ONLY` parameter.
+- Added `setReadDeviceInfoOnceEnabled(boolean)` method to `AdjustConfig` to indicate if device info to be read only once.
+
+---
+
 ### Version 4.36.0 (19th October 2023)
 #### Added
 - Added support for Meta install referrer.
