@@ -57,6 +57,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.coppaCompliantEnabled = null;
     this.finalAttributionEnabled = null;
     this.fbAppId = null;
+    this.readDeviceInfoOnceEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -269,4 +270,8 @@ AdjustConfig.prototype.setFinalAttributionEnabled = function(isEnabled) {
 
 AdjustConfig.prototype.setFbAppId = function(fbAppId) {
     this.fbAppId = fbAppId;
+};
+
+AdjustConfig.prototype.setReadDeviceInfoOnceEnabled = function(isEnabled) {
+    this.readDeviceInfoOnceEnabled = isEnabled;
 };
