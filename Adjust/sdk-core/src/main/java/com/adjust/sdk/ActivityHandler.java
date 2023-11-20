@@ -1526,7 +1526,7 @@ public class ActivityHandler implements IActivityHandler {
 
         if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
             if (cachedDeeplinkResolutionCallback != null) {
-                cachedDeeplinkResolutionCallback.onDeeplinkResolved(new AdjustResolvedDeeplinkResult(sdkClickResponseData.resolvedDeeplink));
+                cachedDeeplinkResolutionCallback.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
             }
         }
     }
