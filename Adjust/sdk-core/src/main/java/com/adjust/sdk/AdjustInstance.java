@@ -167,16 +167,17 @@ public class AdjustInstance {
             return;
         }
         long clickTime = System.currentTimeMillis();
-        activityHandler.readOpenUrl(url, clickTime);
+        activityHandler.readOpenUrl(url, null, clickTime);
     }
 
     /**
-     * Called to process deep link.
+     * Process the deep link that has opened an app and potentially get a resolved link.
      *
-     * @param url     Deep link URL to process
+     * @param url Deep link URL to process
+     * @param callback  Callback where either resolved or echoed deep link will be sent.
      * @param context Application context
      */
-    public void appWillOpenUrl(final Uri url, final Context context) {
+    public void appWillOpenUrl(final Uri url, final OnDeeplinkResolvedListener callback, final Context context) {
         // Check for deep link validity. If invalid, return.
         if (url == null || url.toString().length() == 0) {
             AdjustFactory.getLogger().warn(
@@ -186,11 +187,11 @@ public class AdjustInstance {
 
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("appWillOpenUrl", true)) {
-            saveDeeplink(url, clickTime, context);
+            saveDeeplink(url, callback, clickTime, context);
             return;
         }
 
-        activityHandler.readOpenUrl(url, clickTime);
+        activityHandler.readOpenUrl(url, callback, clickTime);
     }
 
     /**
@@ -632,11 +633,13 @@ public class AdjustInstance {
      * Save deep link to shared preferences.
      *
      * @param deeplink  Deeplink Uri object
+     * @param callback  Callback to obtain link resolution result
      * @param clickTime Time when appWillOpenUrl(Uri, Context) method was called
      * @param context   Application context
      */
-    private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
-        SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
+    private void saveDeeplink(final Uri deeplink, final OnDeeplinkResolvedListener callback,
+                              final long clickTime, final Context context) {
+        SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, callback, clickTime);
     }
 
     /**

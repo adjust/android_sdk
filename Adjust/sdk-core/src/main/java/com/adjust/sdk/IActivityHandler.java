@@ -23,7 +23,7 @@ public interface IActivityHandler {
 
     boolean isEnabled();
 
-    void readOpenUrl(Uri url, long clickTime);
+    void readOpenUrl(Uri url, OnDeeplinkResolvedListener callback, long clickTime);
 
     boolean updateAttributionI(AdjustAttribution attribution);
 
