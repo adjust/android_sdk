@@ -14,7 +14,6 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
-import com.adjust.sdk.AdjustResolvedDeeplinkResult;
 import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
@@ -854,8 +853,8 @@ public class AdjustCommandExecutor {
         final String localBasePath = basePath;
         Adjust.processDeeplink(deeplinkUri, new OnDeeplinkResolvedListener() {
             @Override
-            public void onDeeplinkResolved(AdjustResolvedDeeplinkResult result) {
-                MainActivity.testLibrary.addInfoToSend("resolved_link", result.getResolvedLink());
+            public void onDeeplinkResolved(String resolvedLink) {
+                MainActivity.testLibrary.addInfoToSend("resolved_link", resolvedLink);
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         }, context);
