@@ -25,6 +25,7 @@ public class ResponseData {
 
     public ActivityPackage activityPackage;
     public Map<String, String> sendingParameters;
+    public String resolvedDeeplink;
 
     protected ResponseData() {
         success = false;

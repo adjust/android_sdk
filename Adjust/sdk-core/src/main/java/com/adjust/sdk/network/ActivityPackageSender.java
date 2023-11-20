@@ -519,6 +519,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 attributionJson,
                 responseData.adid,
                 Util.getSdkPrefixPlatform(clientSdk));
+
+        responseData.resolvedDeeplink = UtilNetworking.extractJsonString(jsonResponse,"resolved_click_url");
     }
 
     private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters,

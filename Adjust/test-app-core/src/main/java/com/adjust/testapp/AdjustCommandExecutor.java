@@ -14,6 +14,7 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustResolvedDeeplinkResult;
 import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
@@ -26,6 +27,7 @@ import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
@@ -92,6 +94,7 @@ public class AdjustCommandExecutor {
                 case "trackAdRevenueV2" : trackAdRevenueV2(); break;
                 case "trackSubscription": trackSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
+                case "processDeeplink" : processDeeplink(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -843,6 +846,19 @@ public class AdjustCommandExecutor {
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         });
+    }
+
+    private void processDeeplink() {
+        String deeplink = command.getFirstParameterValue("deeplink");
+        Uri deeplinkUri = Uri.parse(deeplink);
+        final String localBasePath = basePath;
+        Adjust.processDeeplink(deeplinkUri, new OnDeeplinkResolvedListener() {
+            @Override
+            public void onDeeplinkResolved(AdjustResolvedDeeplinkResult result) {
+                MainActivity.testLibrary.addInfoToSend("resolved_link", result.getResolvedLink());
+                MainActivity.testLibrary.sendInfoToServer(localBasePath);
+            }
+        }, context);
     }
 /*
     private void testBegin() {

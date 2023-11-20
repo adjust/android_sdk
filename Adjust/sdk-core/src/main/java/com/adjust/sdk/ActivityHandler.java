@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import com.adjust.sdk.network.ActivityPackageSender;
 import com.adjust.sdk.network.IActivityPackageSender;
@@ -81,6 +82,7 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
     private InstallReferrerHuawei installReferrerHuawei;
     private InstallReferrerMeta installReferrerMeta;
+    private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
     @Override
     public void teardown() {
@@ -430,11 +432,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void readOpenUrl(final Uri url, final long clickTime) {
+    public void readOpenUrl(final Uri url, final OnDeeplinkResolvedListener callback, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                readOpenUrlI(url, clickTime);
+                readOpenUrlI(url, callback, clickTime);
             }
         });
     }
@@ -1403,6 +1405,7 @@ public class ActivityHandler implements IActivityHandler {
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
+        OnDeeplinkResolvedListener callback = sharedPreferencesManager.getCachedDeeplinkResolutionCallback();
         long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
 
         if (cachedDeeplinkUrl == null) {
@@ -1412,7 +1415,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        readOpenUrl(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
+        readOpenUrl(Uri.parse(cachedDeeplinkUrl), callback, cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -1519,6 +1522,12 @@ public class ActivityHandler implements IActivityHandler {
         // if attribution changed, launch attribution changed delegate
         if (attributionUpdated) {
             launchAttributionListenerI(handler);
+        }
+
+        if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
+            if (cachedDeeplinkResolutionCallback != null) {
+                cachedDeeplinkResolutionCallback.onDeeplinkResolved(new AdjustResolvedDeeplinkResult(sdkClickResponseData.resolvedDeeplink));
+            }
         }
     }
 
@@ -1963,13 +1972,13 @@ public class ActivityHandler implements IActivityHandler {
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void readOpenUrlI(Uri url, long clickTime) {
+    private void readOpenUrlI(Uri url, OnDeeplinkResolvedListener callback, long clickTime) {
         if (!isEnabledI()) {
             return;
         }
 
         if (Util.isUrlFilteredOut(url)) {
-            logger.debug("Deep link (" + url.toString() + ") processing skipped");
+            logger.debug("Deeplink (" + url.toString() + ") processing skipped");
             return;
         }
 
@@ -1984,6 +1993,8 @@ public class ActivityHandler implements IActivityHandler {
         if (sdkClickPackage == null) {
             return;
         }
+
+        cachedDeeplinkResolutionCallback = callback;
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
