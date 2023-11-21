@@ -432,11 +432,21 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void readOpenUrl(final Uri url, final OnDeeplinkResolvedListener callback, final long clickTime) {
+    public void readOpenUrl(final Uri url, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                readOpenUrlI(url, callback, clickTime);
+                readOpenUrlI(url, clickTime);
+            }
+        });
+    }
+
+    public void readOpenUrl(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
+        this.cachedDeeplinkResolutionCallback = callback;
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                readOpenUrlI(url, clickTime);
             }
         });
     }
@@ -862,6 +872,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
+        // push token
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
             if (internalState.hasFirstSdkStartOcurred()) {
@@ -878,6 +889,11 @@ public class ActivityHandler implements IActivityHandler {
                 if(savedPushToken!=null)
                     setPushToken(savedPushToken, true);
             }
+        }
+
+        // cached deep link resolution callback
+        if (this.cachedDeeplinkResolutionCallback == null) {
+            this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
         }
 
         // GDPR
@@ -1405,7 +1421,6 @@ public class ActivityHandler implements IActivityHandler {
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
-        OnDeeplinkResolvedListener callback = sharedPreferencesManager.getCachedDeeplinkResolutionCallback();
         long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
 
         if (cachedDeeplinkUrl == null) {
@@ -1415,7 +1430,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        readOpenUrl(Uri.parse(cachedDeeplinkUrl), callback, cachedDeeplinkClickTime);
+        readOpenUrl(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -1526,7 +1541,14 @@ public class ActivityHandler implements IActivityHandler {
 
         if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
             if (cachedDeeplinkResolutionCallback != null) {
-                cachedDeeplinkResolutionCallback.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        cachedDeeplinkResolutionCallback.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
+                        cachedDeeplinkResolutionCallback = null;
+                    }
+                };
+                handler.post(runnable);
             }
         }
     }
@@ -1972,7 +1994,7 @@ public class ActivityHandler implements IActivityHandler {
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void readOpenUrlI(Uri url, OnDeeplinkResolvedListener callback, long clickTime) {
+    private void readOpenUrlI(Uri url, long clickTime) {
         if (!isEnabledI()) {
             return;
         }
@@ -1993,8 +2015,6 @@ public class ActivityHandler implements IActivityHandler {
         if (sdkClickPackage == null) {
             return;
         }
-
-        cachedDeeplinkResolutionCallback = callback;
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
