@@ -851,13 +851,13 @@ public class AdjustCommandExecutor {
         String deeplink = command.getFirstParameterValue("deeplink");
         Uri deeplinkUri = Uri.parse(deeplink);
         final String localBasePath = basePath;
-        Adjust.processDeeplink(deeplinkUri, new OnDeeplinkResolvedListener() {
+        Adjust.processDeeplink(deeplinkUri, context, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 MainActivity.testLibrary.addInfoToSend("resolved_link", resolvedLink);
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
-        }, context);
+        });
     }
 /*
     private void testBegin() {
