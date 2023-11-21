@@ -128,7 +128,7 @@ public class Adjust {
      */
     public static void appWillOpenUrl(Uri url, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, null, extractApplicationContext(context));
+        adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
     }
 
     /**
@@ -140,7 +140,7 @@ public class Adjust {
      */
     public static void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, callback, extractApplicationContext(context));
+        adjustInstance.processDeeplink(url, extractApplicationContext(context), callback);
     }
 
     /**

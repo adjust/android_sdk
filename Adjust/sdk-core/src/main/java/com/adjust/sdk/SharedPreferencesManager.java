@@ -86,11 +86,6 @@ public class SharedPreferencesManager {
     private static SharedPreferencesManager defaultInstance;
 
     /**
-     * Deeplink resolution callback instance.
-     */
-    private static OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-
-    /**
      * Default constructor.
      *
      * @param context Application context
@@ -389,23 +384,17 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING);
     }
 
-    public synchronized void saveDeeplink(final Uri deeplink, final OnDeeplinkResolvedListener deeplinkResolutionCallback, final long clickTime) {
+    public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {
         if (deeplink == null) {
             return;
         }
 
         saveString(PREFS_KEY_DEEPLINK_URL, deeplink.toString());
         saveLong(PREFS_KEY_DEEPLINK_CLICK_TIME, clickTime);
-
-        cachedDeeplinkResolutionCallback = deeplinkResolutionCallback;
     }
 
     public synchronized String getDeeplinkUrl() {
         return getString(PREFS_KEY_DEEPLINK_URL);
-    }
-
-    public synchronized OnDeeplinkResolvedListener getCachedDeeplinkResolutionCallback() {
-        return cachedDeeplinkResolutionCallback;
     }
 
     public synchronized long getDeeplinkClickTime() {
@@ -415,7 +404,6 @@ public class SharedPreferencesManager {
     public synchronized void removeDeeplink() {
         remove(PREFS_KEY_DEEPLINK_URL);
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
-        cachedDeeplinkResolutionCallback = null;
     }
 
     /**
