@@ -9,7 +9,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion rootProject.ext.coreCompileSdkVersion
+    compileSdk rootProject.ext.coreCompileSdkVersion
     publishing {
         multipleVariants {
             allVariants()
