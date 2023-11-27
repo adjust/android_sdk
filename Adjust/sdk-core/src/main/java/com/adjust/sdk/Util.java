@@ -165,7 +165,9 @@ public class Util {
 
             @Override
             protected void onPostExecute(String playAdiId) {
-                onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+                if (onDeviceIdRead != null) {
+                    onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+                }
             }
         }.execute(context);
     }
