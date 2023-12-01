@@ -321,6 +321,7 @@ public class PackageHandler implements IPackageHandler,
         writePackageQueueI();
     }
 
+    @SuppressWarnings("unchecked")
     private void readPackageQueueI() {
         try {
             packageQueue = Util.readObject(context,

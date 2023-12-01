@@ -13,6 +13,7 @@ public class Reflection {
         return invokeStaticMethod("com.google.android.gms.ads.identifier.AdvertisingIdClient", "getAdvertisingIdInfo", new Class[]{Context.class}, context);
     }
 
+    @SuppressWarnings("unchecked")
     static Map<String, String> getImeiParameters(Context context, ILogger logger) {
         Object nonPlayParameters = null;
         try {
@@ -26,6 +27,7 @@ public class Reflection {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     static Map<String, String> getOaidParameters(Context context, ILogger logger) {
         Object oaidParameters = null;
         try {
@@ -140,9 +142,10 @@ public class Reflection {
         return instance;
     }
 
+    @SuppressWarnings("unchecked")
     public static Object createDefaultInstance(Class classObject) {
         try {
-            Object instance = classObject.newInstance();
+            Object instance = classObject.getDeclaredConstructor().newInstance();
             return instance;
         } catch (Throwable t) {
             return null;
