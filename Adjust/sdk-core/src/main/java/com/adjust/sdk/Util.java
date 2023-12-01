@@ -283,6 +283,7 @@ public class Util {
         return readObjectField(fields, name, defaultValue);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T readObjectField(ObjectInputStream.GetField fields, String name, T defaultValue) {
         try {
             return (T) fields.get(name, defaultValue);
@@ -425,6 +426,7 @@ public class Util {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public static String getCpuAbi() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             return Build.CPU_ABI;
@@ -510,6 +512,7 @@ public class Util {
         return mergedParameters;
     }
 
+    @SuppressWarnings("deprecation")
     public static Locale getLocale(Configuration configuration) {
         // Configuration.getLocales() added as of API 24.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
