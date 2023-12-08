@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 android {
-    compileSdkVersion 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.adjust.sdk.test"
-        targetSdkVersion 33
+        targetSdkVersion 34
         minSdkVersion 9
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
