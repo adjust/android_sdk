@@ -3,7 +3,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
 android {
-    compileSdkVersion rootProject.ext.coreCompileSdkVersion
+    compileSdk rootProject.ext.coreCompileSdkVersion
 
     publishing {
         multipleVariants {

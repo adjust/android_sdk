@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
+import android.content.pm.SigningInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
@@ -408,12 +408,24 @@ class DeviceInfo {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private String getFacebookAttributionId(final Context context) {
         try {
             @SuppressLint("PackageManagerGetSignatures")
-            Signature[] signatures = context.getPackageManager().getPackageInfo(
-                    "com.facebook.katana",
-                    PackageManager.GET_SIGNATURES).signatures;
+            Signature[] signatures = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                SigningInfo signingInfo = context.getPackageManager().getPackageInfo(
+                        "com.facebook.katana",
+                        PackageManager.GET_SIGNING_CERTIFICATES).signingInfo;
+                if (signingInfo != null) {
+                    signatures = signingInfo.getApkContentsSigners();
+                }
+            } else {
+                signatures = context.getPackageManager().getPackageInfo(
+                "com.facebook.katana",
+                PackageManager.GET_SIGNATURES).signatures;
+            }
+
             if (signatures == null || signatures.length != 1) {
                 // Unable to find the correct signatures for this APK
                 return null;
@@ -528,6 +540,7 @@ class DeviceInfo {
             }
             return null;
         }
+        @SuppressWarnings("deprecation")
         private static int getConnectivityType(final Context context, final ILogger logger) {
             try {
                 ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -538,7 +551,7 @@ class DeviceInfo {
 
                 // for api 22 or lower, still need to get raw type
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                    NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+                    android.net.NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
                     return activeNetwork.getType();
                 }
 

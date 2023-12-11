@@ -22,6 +22,7 @@ public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
     private static final int ORDER_ID_MAXCOUNT = 10;
     private transient ILogger logger;
+    @SuppressWarnings("unchecked")
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),

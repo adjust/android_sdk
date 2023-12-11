@@ -2593,6 +2593,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void readSessionCallbackParametersI(Context context) {
         try {
             sessionParameters.callbackParameters = Util.readObject(context,
@@ -2605,6 +2606,7 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private void readSessionPartnerParametersI(Context context) {
         try {
             sessionParameters.partnerParameters = Util.readObject(context,
