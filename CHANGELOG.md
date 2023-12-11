@@ -1,3 +1,13 @@
+### Version 4.37.1 (11th December 2023)
+#### Fixed
+- Added null check for the `OnDeviceIdsRead` callback object passed to `Adjust.getGoogleAdId` method to avoid `NullPointerException`.
+
+#### Changed
+- Switched from usage of deprecated [`PackageInfo.signatures`](https://developer.android.com/reference/android/content/pm/PackageInfo#signatures) to [`PackageInfo.signingInfo`](https://developer.android.com/reference/android/content/pm/PackageInfo#signingInfo) on devices running Android 9 or later.
+- Switched from usage of deprecated [`Class.newInstance()`](https://developer.android.com/reference/java/lang/Class#newInstance()) to [`Class.getDeclaredConstructor().newInstance()`](https://developer.android.com/reference/java/lang/reflect/Constructor#newInstance(java.lang.Object[])) on devices running Android 14 or later.
+
+---
+
 ### Version 4.37.0 (8th November 2023)
 #### Added
 - Added a new type of URL strategy called `AdjustConfig.URL_STRATEGY_CN_ONLY`. This URL strategy represents `AdjustConfig.URL_STRATEGY_CN` strategy, but without fallback domains.
