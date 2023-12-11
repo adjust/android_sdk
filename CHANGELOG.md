@@ -1,4 +1,4 @@
-### Version 4.37.1 (8th December 2023)
+### Version 4.37.1 (11th December 2023)
 #### Fixed
 - Added null check for the `OnDeviceIdsRead` callback object passed to `Adjust.getGoogleAdId` method to avoid `NullPointerException`.
 
