@@ -117,6 +117,7 @@ public class AdjustAttribution implements Serializable {
         if (costType != null) fields.put("costType", costType);
         if (costAmount != null) fields.put("costAmount", costAmount.toString());
         if (costCurrency != null) fields.put("costCurrency", costCurrency);
+        if (fbInstallReferrer != null) fields.put("fbInstallReferrer", fbInstallReferrer);
 
         return fields;
     }
