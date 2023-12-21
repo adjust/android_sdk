@@ -49,6 +49,8 @@ public class AdjustInstance {
 
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
+    private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+
     /**
      * Base path for Adjust packages.
      */
@@ -96,6 +98,7 @@ public class AdjustInstance {
         adjustConfig.gdprPath = this.gdprPath;
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
+        adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -191,6 +194,32 @@ public class AdjustInstance {
         }
 
         activityHandler.readOpenUrl(url, clickTime);
+    }
+
+    /**
+     * Process the deep link that has opened an app and potentially get a resolved link.
+     *
+     * @param url Deep link URL to process
+     * @param callback  Callback where either resolved or echoed deep link will be sent.
+     * @param context Application context
+     */
+    public void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
+        // if resolution result is not wanted, fallback to default method
+        if (callback == null) {
+            appWillOpenUrl(url, context);
+            return;
+        }
+
+        // if deep link processing is triggered prior to SDK being initialized
+        long clickTime = System.currentTimeMillis();
+        if (!checkActivityHandler("processDeeplink", true)) {
+            saveDeeplink(url, clickTime, context);
+            this.cachedDeeplinkResolutionCallback = callback;
+            return;
+        }
+
+        // if deep link processing was triggered with SDK being initialized
+        activityHandler.readOpenUrl(url, clickTime, callback);
     }
 
     /**

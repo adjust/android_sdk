@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
+import android.text.TextUtils;
 
 import com.adjust.sdk.network.ActivityPackageSender;
 import com.adjust.sdk.network.IActivityPackageSender;
@@ -81,6 +82,7 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
     private InstallReferrerHuawei installReferrerHuawei;
     private InstallReferrerMeta installReferrerMeta;
+    private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
     @Override
     public void teardown() {
@@ -431,6 +433,16 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void readOpenUrl(final Uri url, final long clickTime) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                readOpenUrlI(url, clickTime);
+            }
+        });
+    }
+
+    public void readOpenUrl(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
+        this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -860,6 +872,7 @@ public class ActivityHandler implements IActivityHandler {
             logger.info("Default tracker: '%s'", adjustConfig.defaultTracker);
         }
 
+        // push token
         if (adjustConfig.pushToken != null) {
             logger.info("Push token: '%s'", adjustConfig.pushToken);
             if (internalState.hasFirstSdkStartOcurred()) {
@@ -876,6 +889,11 @@ public class ActivityHandler implements IActivityHandler {
                 if(savedPushToken!=null)
                     setPushToken(savedPushToken, true);
             }
+        }
+
+        // cached deep link resolution callback
+        if (this.cachedDeeplinkResolutionCallback == null) {
+            this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
         }
 
         // GDPR
@@ -1520,6 +1538,19 @@ public class ActivityHandler implements IActivityHandler {
         if (attributionUpdated) {
             launchAttributionListenerI(handler);
         }
+
+        if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
+            if (cachedDeeplinkResolutionCallback != null) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        cachedDeeplinkResolutionCallback.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
+                        cachedDeeplinkResolutionCallback = null;
+                    }
+                };
+                handler.post(runnable);
+            }
+        }
     }
 
     private void launchSessionResponseTasksI(SessionResponseData sessionResponseData) {
@@ -1969,7 +2000,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (Util.isUrlFilteredOut(url)) {
-            logger.debug("Deep link (" + url.toString() + ") processing skipped");
+            logger.debug("Deeplink (" + url.toString() + ") processing skipped");
             return;
         }
 

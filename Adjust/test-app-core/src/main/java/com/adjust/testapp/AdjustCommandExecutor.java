@@ -26,6 +26,7 @@ import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
@@ -92,6 +93,7 @@ public class AdjustCommandExecutor {
                 case "trackAdRevenueV2" : trackAdRevenueV2(); break;
                 case "trackSubscription": trackSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
+                case "processDeeplink" : processDeeplink(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -370,20 +372,7 @@ public class AdjustCommandExecutor {
                 public void onAttributionChanged(AdjustAttribution attribution) {
                     Log.d("TestApp", "attribution = " + attribution.toString());
 
-                    MainActivity.testLibrary.addInfoToSend("trackerToken", attribution.trackerToken);
-                    MainActivity.testLibrary.addInfoToSend("trackerName", attribution.trackerName);
-                    MainActivity.testLibrary.addInfoToSend("network", attribution.network);
-                    MainActivity.testLibrary.addInfoToSend("campaign", attribution.campaign);
-                    MainActivity.testLibrary.addInfoToSend("adgroup", attribution.adgroup);
-                    MainActivity.testLibrary.addInfoToSend("creative", attribution.creative);
-                    MainActivity.testLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
-                    MainActivity.testLibrary.addInfoToSend("adid", attribution.adid);
-                    MainActivity.testLibrary.addInfoToSend("costType", attribution.costType);
-                    if (attribution.costAmount != null) {
-                        MainActivity.testLibrary.addInfoToSend("costAmount", attribution.costAmount.toString());
-                    }
-                    MainActivity.testLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
-                    MainActivity.testLibrary.addInfoToSend("fbInstallReferrer", attribution.fbInstallReferrer);
+                    MainActivity.testLibrary.setInfoToSend(attribution.toMap());
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });
@@ -840,6 +829,19 @@ public class AdjustCommandExecutor {
                 MainActivity.testLibrary.addInfoToSend("verification_status", result.getVerificationStatus());
                 MainActivity.testLibrary.addInfoToSend("code", String.valueOf(result.getCode()));
                 MainActivity.testLibrary.addInfoToSend("message", result.getMessage());
+                MainActivity.testLibrary.sendInfoToServer(localBasePath);
+            }
+        });
+    }
+
+    private void processDeeplink() {
+        String deeplink = command.getFirstParameterValue("deeplink");
+        Uri deeplinkUri = Uri.parse(deeplink);
+        final String localBasePath = basePath;
+        Adjust.processDeeplink(deeplinkUri, context, new OnDeeplinkResolvedListener() {
+            @Override
+            public void onDeeplinkResolved(String resolvedLink) {
+                MainActivity.testLibrary.addInfoToSend("resolved_link", resolvedLink);
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         });

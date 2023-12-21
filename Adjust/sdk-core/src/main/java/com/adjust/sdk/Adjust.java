@@ -34,7 +34,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.37.1";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.38.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -129,6 +129,18 @@ public class Adjust {
     public static void appWillOpenUrl(Uri url, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
+    }
+
+    /**
+     * Process the deep link that has opened an app and potentially get a resolved link.
+     *
+     * @param url Deep link URL to process
+     * @param callback  Callback where either resolved or echoed deep link will be sent.
+     * @param context Application context
+     */
+    public static void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.processDeeplink(url, extractApplicationContext(context), callback);
     }
 
     /**

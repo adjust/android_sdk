@@ -25,6 +25,8 @@ public interface IActivityHandler {
 
     void readOpenUrl(Uri url, long clickTime);
 
+    void readOpenUrl(Uri url, long clickTime, OnDeeplinkResolvedListener callback);
+
     boolean updateAttributionI(AdjustAttribution attribution);
 
     void launchEventResponseTasks(EventResponseData eventResponseData);
