@@ -1,3 +1,10 @@
+### Version 4.38.0 (21st December 2023)
+#### Added
+- Added `toMap()` method in `AdjustAttribution` class to get all its field in a `Map<String, String>` (thanks to @ntsk).
+- Added ability to process shortened deep links and provide the unshortened link back as a response. You can achieve this by invoking `processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback)` method of the `Adjust` instance.
+
+---
+
 ### Version 4.37.1 (11th December 2023)
 #### Fixed
 - Added null check for the `OnDeviceIdsRead` callback object passed to `Adjust.getGoogleAdId` method to avoid `NullPointerException`.
