@@ -10,6 +10,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.ILogger;
+import com.adjust.sdk.PackageBuilder;
 import com.adjust.sdk.ResponseData;
 import com.adjust.sdk.TrackingState;
 import com.adjust.sdk.Util;
@@ -106,6 +107,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         boolean retryToSend;
         ResponseData responseData;
         do {
+            addErrorParameters(activityPackage, sendingParameters);
+
             responseData =
                     ResponseData.buildResponseData(activityPackage, sendingParameters);
 
@@ -115,6 +118,12 @@ public class ActivityPackageSender implements IActivityPackageSender {
         } while (retryToSend);
 
         return responseData;
+    }
+
+    private void addErrorParameters(ActivityPackage activityPackage, Map<String, String> sendingParameters) {
+        PackageBuilder.addLong(sendingParameters, "error_count", activityPackage.getErrorCount());
+        PackageBuilder.addString(sendingParameters, "first_error", activityPackage.getFirstErrorMessage());
+        PackageBuilder.addString(sendingParameters, "last_error", activityPackage.getLastErrorMessage());
     }
 
     private boolean shouldRetryToSend(final ResponseData responseData) {
@@ -255,6 +264,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         responseData.message = finalMessage;
 
         responseData.willRetry = true;
+
+        responseData.activityPackage.addError(finalMessage);
     }
 
     private String errorMessage(final Throwable throwable,
@@ -363,6 +374,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         final String postBodyString = generatePOSTBodyString(
                 activityPackageParameters,
                 sendingParameters);
+
+        logger.debug("Post body: %s", postBodyString);
 
         if (postBodyString == null) {
             return null;

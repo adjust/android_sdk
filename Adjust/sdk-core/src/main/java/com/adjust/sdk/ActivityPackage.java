@@ -32,6 +32,10 @@ public class ActivityPackage implements Serializable {
             new ObjectStreamField("suffix", String.class),
             new ObjectStreamField("callbackParameters", (Class<Map<String,String>>)(Class)Map.class),
             new ObjectStreamField("partnerParameters", (Class<Map<String,String>>)(Class)Map.class),
+            new ObjectStreamField("errorCount", int.class),
+            new ObjectStreamField("firstErrorMessage", String.class),
+            new ObjectStreamField("lastErrorMessage", String.class),
+            new ObjectStreamField("waitBeforeSendTimeSeconds", double.class),
     };
 
     private transient int hashCode;
@@ -61,6 +65,10 @@ public class ActivityPackage implements Serializable {
     private String installVersion;
     private Boolean googlePlayInstant;
     private Boolean isClick;
+    private int errorCount;
+    private String firstErrorMessage;
+    private String lastErrorMessage;
+    private double waitBeforeSendTimeSeconds;
 
     public String getPath() {
         return path;
@@ -226,6 +234,35 @@ public class ActivityPackage implements Serializable {
         return Util.formatString("Failed to track %s%s", activityKind.toString(), suffix);
     }
 
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public String getFirstErrorMessage() {
+        return firstErrorMessage;
+    }
+
+    public String getLastErrorMessage() {
+        return lastErrorMessage;
+    }
+
+    public double getWaitBeforeSendTimeSeconds() {
+        return waitBeforeSendTimeSeconds;
+    }
+
+    public void setWaitBeforeSendTimeSeconds(double waitSeconds) {
+        waitBeforeSendTimeSeconds = waitSeconds;
+    }
+
+    public void addError(String errorMessage) {
+        errorCount++;
+        if (firstErrorMessage == null) {
+            firstErrorMessage = errorMessage;
+        } else {
+            lastErrorMessage = errorMessage;
+        }
+    }
+
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
     }
@@ -240,6 +277,10 @@ public class ActivityPackage implements Serializable {
         suffix = Util.readStringField(fields, "suffix", null);
         callbackParameters = Util.readObjectField(fields, "callbackParameters", null);
         partnerParameters = Util.readObjectField(fields, "partnerParameters", null);
+        errorCount = Util.readIntField(fields, "errorCount", 0);
+        firstErrorMessage = Util.readStringField(fields, "firstErrorMessage", null);
+        lastErrorMessage = Util.readStringField(fields, "lastErrorMessage", null);
+        waitBeforeSendTimeSeconds = Util.readDoubleField(fields, "waitBeforeSendTimeSeconds", 0.0);
     }
 
     @Override
@@ -256,6 +297,10 @@ public class ActivityPackage implements Serializable {
         if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
         if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
         if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
+        if (!Util.equalInt(errorCount, otherActivityPackage.errorCount))   return false;
+        if (!Util.equalString(firstErrorMessage, otherActivityPackage.firstErrorMessage))   return false;
+        if (!Util.equalString(lastErrorMessage, otherActivityPackage.lastErrorMessage))   return false;
+        if (!Util.equalsDouble(waitBeforeSendTimeSeconds, otherActivityPackage.waitBeforeSendTimeSeconds)) return false;
         return true;
     }
 
@@ -270,6 +315,10 @@ public class ActivityPackage implements Serializable {
             hashCode = Util.hashString(suffix, hashCode);
             hashCode = Util.hashObject(callbackParameters, hashCode);
             hashCode = Util.hashObject(partnerParameters, hashCode);
+            hashCode = 37 * hashCode + errorCount;
+            hashCode = Util.hashString(firstErrorMessage, hashCode);
+            hashCode = Util.hashString(lastErrorMessage, hashCode);
+            hashCode = Util.hashDouble(waitBeforeSendTimeSeconds, hashCode);
         }
         return hashCode;
     }
