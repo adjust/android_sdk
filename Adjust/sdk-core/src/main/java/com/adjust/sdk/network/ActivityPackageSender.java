@@ -107,6 +107,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         boolean retryToSend;
         ResponseData responseData;
         do {
+            addErrorParameters(activityPackage, sendingParameters);
+
             responseData =
                     ResponseData.buildResponseData(activityPackage, sendingParameters);
 
@@ -116,6 +118,12 @@ public class ActivityPackageSender implements IActivityPackageSender {
         } while (retryToSend);
 
         return responseData;
+    }
+
+    private void addErrorParameters(ActivityPackage activityPackage, Map<String, String> sendingParameters) {
+        PackageBuilder.addLong(sendingParameters, "error_count", activityPackage.getErrorCount());
+        PackageBuilder.addString(sendingParameters, "first_error", activityPackage.getFirstErrorMessage());
+        PackageBuilder.addString(sendingParameters, "last_error", activityPackage.getLastErrorMessage());
     }
 
     private boolean shouldRetryToSend(final ResponseData responseData) {
