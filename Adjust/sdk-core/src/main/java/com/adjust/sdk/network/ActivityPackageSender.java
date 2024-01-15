@@ -296,8 +296,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         uriBuilder.path(urlObject.getPath());
         uriBuilder.appendPath(activityPackagePath);
 
-        logger.debug("Making request to url: %s", uriBuilder.toString());
-
         for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
@@ -307,6 +305,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
         }
+
+        logger.debug("Making request to url: %s", uriBuilder.toString());
 
         return uriBuilder.build().toString();
     }
