@@ -70,6 +70,7 @@ public class AdjustConfig {
     public static final String AD_REVENUE_SOURCE_PUBLISHER = "publisher_sdk";
     public static final String AD_REVENUE_TOPON = "topon_sdk";
     public static final String AD_REVENUE_ADX = "adx_sdk";
+    public static final String AD_REVENUE_TRADPLUS = "tradplus_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
