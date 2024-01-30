@@ -1,3 +1,9 @@
+### Version 4.38.1 (30th January 2024)
+#### Added
+- Added support for `TradPlus` ad revenue tracking.
+
+---
+
 ### Version 4.38.0 (21st December 2023)
 #### Added
 - Added `toMap()` method to `AdjustAttribution` class to get all its fields in a `Map<String, String>` (thanks to @ntsk).
