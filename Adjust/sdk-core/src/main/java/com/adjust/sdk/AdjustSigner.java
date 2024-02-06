@@ -63,6 +63,7 @@ public class AdjustSigner {
         }
 
         try {
+            logger.debug("Signing all the parameters");
             Reflection.invokeInstanceMethod(signerInstance, "sign",
                             new Class[]{Context.class, Map.class, String.class, String.class},
                             context, parameters, activityKind, clientSdk);

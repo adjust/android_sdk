@@ -1,11 +1,13 @@
 package com.adjust.sdk.network;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.ResponseData;
@@ -48,19 +50,22 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private UrlStrategy urlStrategy;
     private IHttpsURLConnectionProvider httpsURLConnectionProvider;
     private IConnectionOptions connectionOptions;
+    private Context context;
 
     public ActivityPackageSender(final String adjustUrlStrategy,
                                  final String basePath,
                                  final String gdprPath,
                                  final String subscriptionPath,
                                  final String purchaseVerificationPath,
-                                 final String clientSdk)
+                                 final String clientSdk,
+                                 final Context context)
     {
         this.basePath = basePath;
         this.gdprPath = gdprPath;
         this.subscriptionPath = subscriptionPath;
         this.purchaseVerificationPath = purchaseVerificationPath;
         this.clientSdk = clientSdk;
+        this.context = context;
 
         logger = AdjustFactory.getLogger();
         executor = new SingleThreadCachedScheduler("ActivityPackageSender");
@@ -92,6 +97,12 @@ public class ActivityPackageSender implements IActivityPackageSender {
     public ResponseData sendActivityPackageSync(final ActivityPackage activityPackage,
                                                 final Map<String, String> sendingParameters)
     {
+        AdjustSigner.sign(activityPackage.getParameters(),
+                activityPackage.getActivityKind().toString(),
+                activityPackage.getClientSdk(),
+                context,
+                logger);
+
         boolean retryToSend;
         ResponseData responseData;
         do {
