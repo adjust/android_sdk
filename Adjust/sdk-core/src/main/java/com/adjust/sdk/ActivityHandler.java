@@ -966,7 +966,8 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
-                        deviceInfo.clientSdk);
+                        deviceInfo.clientSdk,
+                        adjustConfig.context);
         packageHandler = AdjustFactory.getPackageHandler(
                 this,
                 adjustConfig.context,
@@ -980,7 +981,8 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
-                        deviceInfo.clientSdk);
+                        deviceInfo.clientSdk,
+                        adjustConfig.context);
 
         attributionHandler = AdjustFactory.getAttributionHandler(
                 this,
@@ -994,7 +996,8 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
-                        deviceInfo.clientSdk);
+                        deviceInfo.clientSdk,
+                        adjustConfig.context);
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(
                 this,
@@ -1008,7 +1011,8 @@ public class ActivityHandler implements IActivityHandler {
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
-                        deviceInfo.clientSdk);
+                        deviceInfo.clientSdk,
+                        adjustConfig.context);
 
         purchaseVerificationHandler = AdjustFactory.getPurchaseVerificationHandler(
                 this,

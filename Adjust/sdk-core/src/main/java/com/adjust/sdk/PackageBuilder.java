@@ -85,9 +85,6 @@ public class PackageBuilder {
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.SESSION.toString(),
-                sessionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         sessionPackage.setParameters(parameters);
         return sessionPackage;
     }
@@ -97,9 +94,6 @@ public class PackageBuilder {
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
-
-        AdjustSigner.sign(parameters, ActivityKind.EVENT.toString(),
-                eventPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         eventPackage.setParameters(parameters);
 
@@ -116,9 +110,6 @@ public class PackageBuilder {
         ActivityPackage infoPackage = getDefaultActivityPackage(ActivityKind.INFO);
         infoPackage.setPath("/sdk_info");
         infoPackage.setSuffix("");
-
-        AdjustSigner.sign(parameters, ActivityKind.INFO.toString(),
-                infoPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         infoPackage.setParameters(parameters);
         return infoPackage;
@@ -138,9 +129,6 @@ public class PackageBuilder {
         clickPackage.setGooglePlayInstant(googlePlayInstant);
         clickPackage.setIsClick(isClick);
 
-        AdjustSigner.sign(parameters, ActivityKind.CLICK.toString(),
-                clickPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         clickPackage.setParameters(parameters);
         return clickPackage;
     }
@@ -150,9 +138,6 @@ public class PackageBuilder {
         ActivityPackage attributionPackage = getDefaultActivityPackage(ActivityKind.ATTRIBUTION);
         attributionPackage.setPath("attribution"); // does not contain '/' because of Uri.Builder.appendPath
         attributionPackage.setSuffix("");
-
-        AdjustSigner.sign(parameters, ActivityKind.ATTRIBUTION.toString(),
-                attributionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         attributionPackage.setParameters(parameters);
         return attributionPackage;
@@ -164,9 +149,6 @@ public class PackageBuilder {
         gdprPackage.setPath("/gdpr_forget_device");
         gdprPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.GDPR.toString(),
-                gdprPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         gdprPackage.setParameters(parameters);
         return gdprPackage;
     }
@@ -176,9 +158,6 @@ public class PackageBuilder {
         ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
         activityPackage.setPath("/disable_third_party_sharing");
         activityPackage.setSuffix("");
-
-        AdjustSigner.sign(parameters, ActivityKind.DISABLE_THIRD_PARTY_SHARING.toString(),
-                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         activityPackage.setParameters(parameters);
         return activityPackage;
@@ -192,9 +171,6 @@ public class PackageBuilder {
         activityPackage.setPath("/third_party_sharing");
         activityPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.THIRD_PARTY_SHARING.toString(),
-                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         activityPackage.setParameters(parameters);
         return activityPackage;
     }
@@ -206,9 +182,6 @@ public class PackageBuilder {
         activityPackage.setPath("/measurement_consent");
         activityPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.MEASUREMENT_CONSENT.toString(),
-                activityPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         activityPackage.setParameters(parameters);
         return activityPackage;
     }
@@ -219,9 +192,6 @@ public class PackageBuilder {
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(),
-                adRevenuePackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         adRevenuePackage.setParameters(parameters);
         return adRevenuePackage;
     }
@@ -231,9 +201,6 @@ public class PackageBuilder {
         ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
-
-        AdjustSigner.sign(parameters, ActivityKind.AD_REVENUE.toString(),
-                          adRevenuePackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         adRevenuePackage.setParameters(parameters);
 
@@ -251,9 +218,6 @@ public class PackageBuilder {
         subscriptionPackage.setPath("/v2/purchase");
         subscriptionPackage.setSuffix("");
 
-        AdjustSigner.sign(parameters, ActivityKind.SUBSCRIPTION.toString(),
-                subscriptionPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
-
         subscriptionPackage.setParameters(parameters);
         return subscriptionPackage;
     }
@@ -264,9 +228,6 @@ public class PackageBuilder {
         purchaseVerificationPackage.setPath("/verify");
         purchaseVerificationPackage.setSuffix("");
         purchaseVerificationPackage.setPurchaseVerificationCallback(callback);
-
-        AdjustSigner.sign(parameters, ActivityKind.PURCHASE_VERIFICATION.toString(),
-                purchaseVerificationPackage.getClientSdk(), adjustConfig.context, adjustConfig.logger);
 
         purchaseVerificationPackage.setParameters(parameters);
         return purchaseVerificationPackage;
