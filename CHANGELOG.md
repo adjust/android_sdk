@@ -1,4 +1,4 @@
-### Version 4.38.2 (26th February 2024)
+### Version 4.38.2 (27th February 2024)
 #### Fixed
 - Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
 
