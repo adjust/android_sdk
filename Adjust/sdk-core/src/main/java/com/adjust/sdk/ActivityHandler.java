@@ -901,24 +901,6 @@ public class ActivityHandler implements IActivityHandler {
             SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMe();
-            } else {
-                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                    disableThirdPartySharing();
-                }
-                for (AdjustThirdPartySharing adjustThirdPartySharing :
-                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-                {
-                    trackThirdPartySharing(adjustThirdPartySharing);
-                }
-                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
-                    trackMeasurementConsent(
-                            adjustConfig.preLaunchActions.
-                                    lastMeasurementConsentTracked.booleanValue());
-                }
-
-                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
-                        new ArrayList<>();
-                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
             }
         }
 
@@ -1222,6 +1204,27 @@ public class ActivityHandler implements IActivityHandler {
             AdjustSigner.onResume(adjustConfig.logger);
             startFirstSessionI();
             return;
+        } else {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
+
+            // check if disable third party sharing request came, then send it first
+            if (sharedPreferencesManager.getDisableThirdPartySharing()) {
+                disableThirdPartySharingI();
+            }
+            for (AdjustThirdPartySharing adjustThirdPartySharing :
+                    adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+            {
+                trackThirdPartySharingI(adjustThirdPartySharing);
+            }
+            if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
+                trackMeasurementConsentI(
+                        adjustConfig.preLaunchActions.
+                                lastMeasurementConsentTracked.booleanValue());
+            }
+
+            adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
+                    new ArrayList<>();
+            adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
         }
 
         // it shouldn't start if it was disabled after a first session
