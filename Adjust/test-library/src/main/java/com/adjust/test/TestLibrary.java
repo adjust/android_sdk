@@ -1,5 +1,6 @@
 package com.adjust.test;
 
+import android.content.Context;
 import android.os.SystemClock;
 
 import com.adjust.test.ws.ControlWebSocketClient;
@@ -24,7 +25,6 @@ import static com.adjust.test.Constants.WAIT_FOR_CONTROL;
 import static com.adjust.test.Constants.WAIT_FOR_SLEEP;
 import static com.adjust.test.Utils.debug;
 import static com.adjust.test.Utils.error;
-import static com.adjust.test.UtilsNetworking.sendPostI;
 
 
 /**
@@ -32,8 +32,8 @@ import static com.adjust.test.UtilsNetworking.sendPostI;
  */
 
 public class TestLibrary {
-    static String baseUrl;
-    static String controlUrl;
+    private String controlUrl;
+    private Networking networking;
     private Gson gson = new Gson();
     private BlockingQueue<String> waitControlQueue;
     private ControlWebSocketClient controlClient;
@@ -49,24 +49,24 @@ public class TestLibrary {
     private StringBuilder currentTestNames = new StringBuilder();
     private boolean exitAfterEnd = true;
 
-    public TestLibrary(String baseUrl, String controlUrl, ICommandRawJsonListener commandRawJsonListener) {
-        this(baseUrl, controlUrl);
+    public TestLibrary(String baseUrl, String controlUrl, Context context, ICommandRawJsonListener commandRawJsonListener) {
+        this(baseUrl, controlUrl, context);
         this.commandRawJsonListener = commandRawJsonListener;
     }
 
-    public TestLibrary(String baseUrl, String controlUrl, ICommandJsonListener commandJsonListener) {
-        this(baseUrl, controlUrl);
+    public TestLibrary(String baseUrl, String controlUrl, Context context, ICommandJsonListener commandJsonListener) {
+        this(baseUrl, controlUrl, context);
         this.commandJsonListener = commandJsonListener;
     }
 
-    public TestLibrary(String baseUrl, String controlUrl, ICommandListener commandListener) {
-        this(baseUrl, controlUrl);
+    public TestLibrary(String baseUrl, String controlUrl, Context context, ICommandListener commandListener) {
+        this(baseUrl, controlUrl, context);
         this.commandListener = commandListener;
     }
 
-    private TestLibrary(String baseUrl, String controlUrl) {
-        this.baseUrl = baseUrl;
+    private TestLibrary(String baseUrl, String controlUrl, Context context) {
         this.controlUrl = controlUrl;
+        this.networking = new Networking(baseUrl, context);
         debug("> base url: \t%s", baseUrl);
         debug("> control url: \t%s", controlUrl);
         this.initializeWebSocket(controlUrl);
@@ -115,7 +115,7 @@ public class TestLibrary {
         // reconnect web socket client if disconnected
         if (!this.controlClient.isOpen()) {
             debug("reconnecting web socket client ...");
-            this.initializeWebSocket(controlUrl);
+            this.initializeWebSocket(this.controlUrl);
             // wait for WS to reconnect
             SystemClock.sleep(ONE_SECOND);
         }
@@ -141,8 +141,7 @@ public class TestLibrary {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-            UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
-            readResponseI(httpResponse);
+                readResponseI(networking.sendPost("/end_test_read_next", currentBasePath));
             }
         });
     }
@@ -168,21 +167,24 @@ public class TestLibrary {
     }
 
     private void startTestSessionI(String clientSdk) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI("/init_session", clientSdk, currentTestNames.toString());
-        this.testSessionId = httpResponse.headerFields.get(TEST_SESSION_ID_HEADER).get(0);
+        networking.clientSdk = clientSdk;
+        networking.testNames = currentTestNames.toString();
+        Networking.Response response = networking.sendPost("/init_session");
+
+        this.testSessionId = response.headerFields.get(TEST_SESSION_ID_HEADER).get(0);
         // set test session ID on the web socket object in Test Server, so it can be uniquely identified
         this.controlClient.sendInitTestSessionSignal(this.testSessionId);
         debug("starting new test session with ID: " + this.testSessionId);
-        readResponseI(httpResponse);
+        readResponseI(response);
     }
 
     private void sendInfoToServerI(String basePath) {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(basePath, "/test_info"), null, infoToServer);
+        Networking.Response response = networking.sendPost("/test_info", basePath, infoToServer);
         infoToServer = null;
-        readResponseI(httpResponse);
+        readResponseI(response);
     }
 
-    public void readResponseI(UtilsNetworking.HttpResponse httpResponse) {
+    public void readResponseI(Networking.Response httpResponse) {
         if (httpResponse == null) {
             debug("httpResponse is null");
             return;
@@ -298,8 +300,7 @@ public class TestLibrary {
     }
 
     private void endTestReadNextI() {
-        UtilsNetworking.HttpResponse httpResponse = sendPostI(Utils.appendBasePath(currentBasePath, "/end_test_read_next"));
-        readResponseI(httpResponse);
+        readResponseI(networking.sendPost("/end_test_read_next", currentBasePath));
     }
 
     private void endTestSessionI() {
