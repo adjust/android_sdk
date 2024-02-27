@@ -1,6 +1,6 @@
 ### Version 4.38.2 (26th February 2024)
 #### Fixed
-- Updated SDK package signing from its creation to while sending.  This fixes the invalid siganture cases when any parameters added into the package after signing.
+- Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
 
 ---
 
