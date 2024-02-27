@@ -1,3 +1,9 @@
+### Version 4.38.2 (27th February 2024)
+#### Fixed
+- Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
+
+---
+
 ### Version 4.38.1 (30th January 2024)
 #### Added
 - Added support for `TradPlus` ad revenue tracking.
