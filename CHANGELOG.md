@@ -1,6 +1,9 @@
-### Version 4.38.2 (27th February 2024)
+### Version 4.38.2 (28th February 2024)
 #### Fixed
 - Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
+
+#### Changed
+ - Updated order of tracking of `third_party_sharing` and `measurement_consent` packages if invoked before SDK initialization in subsequent SDK initializations.
 
 ---
 
