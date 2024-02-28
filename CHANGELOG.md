@@ -1,3 +1,12 @@
+### Version 4.38.2 (28th February 2024)
+#### Fixed
+- Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
+
+#### Changed
+ - Updated order of tracking of `third_party_sharing` and `measurement_consent` packages if invoked before SDK initialization in subsequent SDK initializations.
+
+---
+
 ### Version 4.38.1 (30th January 2024)
 #### Added
 - Added support for `TradPlus` ad revenue tracking.
