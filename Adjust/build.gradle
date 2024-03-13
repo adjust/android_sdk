@@ -14,6 +14,7 @@ ext {
     webbridgeMinSdkVersion = 17
     samsungReferrerMinSdkVersion = 18
     vivoReferrerMinSdkVersion = 23
+    samsungCloudDevMinSdkVersion = 24
 
     // POM.
     adjustGroupId = 'com.adjust.sdk'
