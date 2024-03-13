@@ -92,6 +92,7 @@ class DeviceInfo {
     int uiMode;
     String appSetId;
     boolean isGooglePlayGamesForPC;
+    Boolean isSamsungCloudEnvironment;
 
     Map<String, String> imeiParameters;
     Map<String, String> oaidParameters;
@@ -134,12 +135,21 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
+        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
+            isSamsungCloudEnvironment = true;
+            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            playAdIdSource = "samsung_cloud_sdk";
+        }
         if (Util.canReadPlayIds(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
+        if (isSamsungCloudEnvironment != null && isSamsungCloudEnvironment) {
+            return;
+        }
+
         if (!Util.canReadPlayIds(adjustConfig)) {
             return;
         }
