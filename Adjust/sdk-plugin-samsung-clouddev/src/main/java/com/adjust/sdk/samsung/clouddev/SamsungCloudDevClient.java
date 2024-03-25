@@ -22,7 +22,10 @@ public class SamsungCloudDevClient {
             CloudDevSdk.INSTANCE.request(context, Arrays.asList("gaid"), new CloudDevCallback() {
                 @Override
                 public void onSuccess(Map<String, String> kinds) { // This is called in IO thread
-                    String gaid = kinds.getOrDefault("gaid", "");
+                    String gaid = kinds.get("gaid");
+                    if (gaid == null) {
+                        gaid = "";
+                    }
                     logger.info("Google Advertising ID: " + gaid);
                     gaidHolder.offer(gaid);
                 }
