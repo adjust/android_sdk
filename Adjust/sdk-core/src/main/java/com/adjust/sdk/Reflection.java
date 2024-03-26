@@ -123,6 +123,32 @@ public class Reflection {
         }
     }
 
+    public static String getSamsungCloudDevGoogleAdId(Context context, ILogger logger) {
+        String googleAdId = null;
+        try {
+            googleAdId = (String) invokeStaticMethod("com.adjust.sdk.samsung.clouddev.Util",
+                    "getGoogleAdId",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+            logger.info("invoke getGoogleAdId : " + e.getMessage());
+        }
+        return googleAdId;
+    }
+
+    public static boolean isAppRunningInSamsungCloudEnvironment(Context context, ILogger logger) {
+        boolean isCloudEnvironment = false;
+        try {
+            isCloudEnvironment = (boolean) invokeStaticMethod("com.adjust.sdk.samsung.clouddev.Util",
+                    "isAppRunningInCloudEnvironment",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+            logger.info("invoke isAppRunningInCloudEnvironment : " + e.getMessage());
+        }
+        return isCloudEnvironment;
+    }
+
     public static Class forName(String className) {
         try {
             Class classObject = Class.forName(className);
