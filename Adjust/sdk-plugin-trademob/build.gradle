@@ -28,7 +28,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:4.38.2'
+    // implementation 'com.adjust.sdk:adjust-android:4.38.3'
 }
 
 // read local properties
