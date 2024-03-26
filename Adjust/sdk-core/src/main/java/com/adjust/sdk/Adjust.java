@@ -34,7 +34,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.38.2";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.38.3";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
