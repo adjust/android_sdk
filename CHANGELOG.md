@@ -1,3 +1,12 @@
+### Version 4.38.3 (26th March 2024)
+#### Added
+- Added support for Samsung CloudDev SDK to read Google Play Advertising Identifier.
+
+#### Changed
+ - Removed webbridge unused code.
+
+---
+
 ### Version 4.38.2 (28th February 2024)
 #### Fixed
 - Fixed occasional invalid signature cases when SDK package payload would be altered right before sending.
