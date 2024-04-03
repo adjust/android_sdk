@@ -287,17 +287,6 @@ public class Adjust {
     /**
      * Track ad revenue from a source provider
      *
-     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
-     * @param payload JsonObject content of the ad revenue information
-     */
-    public static void trackAdRevenue(final String source, final JSONObject payload) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.trackAdRevenue(source, payload);
-    }
-
-    /**
-     * Track ad revenue from a source provider
-     *
      * @param adjustAdRevenue Adjust ad revenue information like source, revenue, currency etc
      */
     public static void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
