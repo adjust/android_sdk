@@ -21,7 +21,6 @@ public class TestActivityPackage {
     public String appToken;
     public String environment;
     public String clientSdk;
-    public Boolean deviceKnow;
     public boolean playServices;
     public boolean eventBufferingEnabled;
     public String pushToken;
@@ -345,8 +344,6 @@ public class TestActivityPackage {
         assertParameterEquals("app_token", appToken);
         // environment
         assertParameterEquals("environment", environment);
-        // device_known
-        testParameterBoolean("device_known", deviceKnow);
         // needs_attribution_data
         testParameterBoolean("needs_response_details", true);
         // play services
