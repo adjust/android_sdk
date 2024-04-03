@@ -89,7 +89,6 @@ public class AdjustCommandExecutor {
                 case "disableThirdPartySharing": disableThirdPartySharing(); break;
                 case "thirdPartySharing" : thirdPartySharing(); break;
                 case "measurementConsent" : measurementConsent(); break;
-                case "trackAdRevenue": trackAdRevenue(); break;
                 case "trackAdRevenueV2" : trackAdRevenueV2(); break;
                 case "trackSubscription": trackSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
@@ -709,18 +708,6 @@ public class AdjustCommandExecutor {
         boolean measurementConsent = "true".equals(measurementConsentString);
 
         Adjust.trackMeasurementConsent(measurementConsent);
-    }
-
-    private void trackAdRevenue() {
-        String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
-        String adRevenueJsonString = command.getFirstParameterValue("adRevenueJsonString");
-
-        try {
-            JSONObject adRevenueJson = new JSONObject(adRevenueJsonString);
-            Adjust.trackAdRevenue(adRevenueSource, adRevenueJson);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     private void trackAdRevenueV2() {

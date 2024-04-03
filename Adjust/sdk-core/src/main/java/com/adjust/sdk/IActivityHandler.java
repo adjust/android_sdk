@@ -75,8 +75,6 @@ public interface IActivityHandler {
 
     void trackMeasurementConsent(boolean consentMeasurement);
 
-    void trackAdRevenue(String source, JSONObject adRevenueJson);
-
     void trackAdRevenue(AdjustAdRevenue adjustAdRevenue);
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
