@@ -707,16 +707,6 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void trackAdRevenue(final String source, final JSONObject adRevenueJson) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                trackAdRevenueI(source, adRevenueJson);
-            }
-        });
-    }
-
-    @Override
     public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
         executor.submit(new Runnable() {
             @Override
@@ -2490,20 +2480,6 @@ public class ActivityHandler implements IActivityHandler {
         } else {
             packageHandler.sendFirstPackage();
         }
-    }
-
-    private void trackAdRevenueI(String source, JSONObject adRevenueJson) {
-        if (!checkActivityStateI(activityState)) { return; }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
-
-        long now = System.currentTimeMillis();
-
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
-
-        ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(source, adRevenueJson);
-        packageHandler.addPackage(adRevenuePackage);
-        packageHandler.sendFirstPackage();
     }
 
     private void trackAdRevenueI(AdjustAdRevenue adjustAdRevenue) {
