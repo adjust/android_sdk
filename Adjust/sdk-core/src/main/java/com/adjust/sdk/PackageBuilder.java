@@ -274,7 +274,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
@@ -367,7 +366,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "currency", event.currency);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
@@ -452,7 +450,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
@@ -527,7 +524,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "deeplink", deeplink);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
@@ -624,7 +620,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
@@ -689,7 +684,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
@@ -753,7 +747,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
@@ -831,7 +824,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
@@ -900,7 +892,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
@@ -973,7 +964,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
@@ -1073,7 +1063,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
@@ -1169,7 +1158,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "cpu_type", deviceInfo.abi);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
-        PackageBuilder.addBoolean(parameters, "device_known", adjustConfig.deviceKnown);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "device_manufacturer", deviceInfo.deviceManufacturer);
         PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
