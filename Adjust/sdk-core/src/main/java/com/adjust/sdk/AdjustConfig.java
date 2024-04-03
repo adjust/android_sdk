@@ -31,7 +31,6 @@ public class AdjustConfig {
     Double delayStart;
     AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
-    String userAgent;
     String pushToken;
     Boolean startEnabled;
     boolean startOffline;
@@ -153,10 +152,6 @@ public class AdjustConfig {
 
     public void setDelayStart(double delayStart) {
         this.delayStart = delayStart;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
     }
 
     public void setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
@@ -321,10 +316,6 @@ public class AdjustConfig {
 
     public ILogger getLogger() {
         return logger;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
     }
 
     public String getPushToken() {

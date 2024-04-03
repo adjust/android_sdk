@@ -939,8 +939,6 @@ public class ActivityHandler implements IActivityHandler {
             }, DELAY_START_TIMER_NAME);
         }
 
-        UtilNetworking.setUserAgent(adjustConfig.userAgent);
-
         IActivityPackageSender packageHandlerActivitySender =
                 new ActivityPackageSender(
                         adjustConfig.urlStrategy,

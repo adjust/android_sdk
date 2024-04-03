@@ -338,12 +338,6 @@ public class AdjustBridgeInstance {
                 adjustConfig.setDelayStart(delayStart);
             }
 
-            // User agent
-            String userAgent = AdjustBridgeUtil.fieldToString(userAgentField);
-            if (userAgent != null) {
-                adjustConfig.setUserAgent(userAgent);
-            }
-
             // App secret
             Long secretId = AdjustBridgeUtil.fieldToLong(secretIdField);
             Long info1 = AdjustBridgeUtil.fieldToLong(info1Field);
