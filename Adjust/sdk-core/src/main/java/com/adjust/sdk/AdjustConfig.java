@@ -20,7 +20,6 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    Boolean deviceKnown;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
@@ -120,10 +119,6 @@ public class AdjustConfig {
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
         this.onAttributionChangedListener = onAttributionChangedListener;
-    }
-
-    public void setDeviceKnown(boolean deviceKnown) {
-        this.deviceKnown = deviceKnown;
     }
 
     public void setDeepLinkComponent(Class deepLinkComponent) {
@@ -272,10 +267,6 @@ public class AdjustConfig {
 
     public OnAttributionChangedListener getOnAttributionChangedListener() {
         return onAttributionChangedListener;
-    }
-
-    public Boolean getDeviceKnown() {
-        return deviceKnown;
     }
 
     public Class getDeepLinkComponent() {
