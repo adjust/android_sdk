@@ -19,12 +19,6 @@ var Adjust = {
         }
     },
 
-    trackAdRevenue: function(source, payload) {
-        if (AdjustBridge) {
-            AdjustBridge.trackAdRevenue(source, payload);
-        }
-    },
-
     onResume: function () {
         if (AdjustBridge) {
             AdjustBridge.onResume();
