@@ -60,18 +60,6 @@ public class AdjustConfig {
     public static final String DATA_RESIDENCY_TR = "data_residency_tr";
     public static final String DATA_RESIDENCY_US = "data_residency_us";
 
-    public static final String AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk";
-    public static final String AD_REVENUE_MOPUB = "mopub";
-    public static final String AD_REVENUE_ADMOB = "admob_sdk";
-    public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
-    public static final String AD_REVENUE_ADMOST = "admost_sdk";
-    public static final String AD_REVENUE_UNITY = "unity_sdk";
-    public static final String AD_REVENUE_HELIUM_CHARTBOOST = "helium_chartboost_sdk";
-    public static final String AD_REVENUE_SOURCE_PUBLISHER = "publisher_sdk";
-    public static final String AD_REVENUE_TOPON = "topon_sdk";
-    public static final String AD_REVENUE_ADX = "adx_sdk";
-    public static final String AD_REVENUE_TRADPLUS = "tradplus_sdk";
-
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
     }
