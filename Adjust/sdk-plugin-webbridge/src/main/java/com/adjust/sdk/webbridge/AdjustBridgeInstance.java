@@ -152,7 +152,6 @@ public class AdjustBridgeInstance {
             Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
             Object externalDeviceIdField = jsonAdjustConfig.get("externalDeviceId");
             Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
-            Object deviceKnownField = jsonAdjustConfig.get("deviceKnown");
             Object needsCostField = jsonAdjustConfig.get("needsCost");
             Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
             Object eventFailureCallbackNameField = jsonAdjustConfig.get("eventFailureCallbackName");
@@ -258,12 +257,6 @@ public class AdjustBridgeInstance {
                         AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallbackName, attribution);
                     }
                 });
-            }
-
-            // Is device known
-            Boolean deviceKnown = AdjustBridgeUtil.fieldToBoolean(deviceKnownField);
-            if (deviceKnown != null) {
-                adjustConfig.setDeviceKnown(deviceKnown);
             }
 
             // Needs cost

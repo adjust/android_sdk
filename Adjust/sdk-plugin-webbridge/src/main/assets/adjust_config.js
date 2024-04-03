@@ -28,7 +28,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.externalDeviceId = null;
     this.attributionCallbackName = null;
     this.attributionCallbackFunction = null;
-    this.deviceKnown = null;
     this.needsCost = null;
     this.eventSuccessCallbackName = null;
     this.eventSuccessCallbackFunction = null;
@@ -127,10 +126,6 @@ AdjustConfig.prototype.adjust_attributionCallback = function(attribution) {
     if (this.attributionCallbackFunction) {
         this.attributionCallbackFunction(attribution);
     }
-};
-
-AdjustConfig.prototype.setDeviceKnown = function(deviceKnown) {
-    this.deviceKnown = deviceKnown;
 };
 
 AdjustConfig.prototype.setNeedsCost = function(needsCost) {
