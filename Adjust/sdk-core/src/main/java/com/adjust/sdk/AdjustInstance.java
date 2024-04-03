@@ -487,19 +487,6 @@ public class AdjustInstance {
     /**
      * Track ad revenue from a source provider
      *
-     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
-     * @param adRevenueJson JsonObject content of the ad revenue information
-     */
-    public void trackAdRevenue(String source, JSONObject adRevenueJson) {
-        if (!checkActivityHandler("trackAdRevenue")) {
-            return;
-        }
-        activityHandler.trackAdRevenue(source, adRevenueJson);
-    }
-
-    /**
-     * Track ad revenue from a source provider
-     *
      * @param adjustAdRevenue Adjust ad revenue information like source, revenue, currency etc
      */
     public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
