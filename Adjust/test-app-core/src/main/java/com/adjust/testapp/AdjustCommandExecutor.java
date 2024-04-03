@@ -296,12 +296,6 @@ public class AdjustCommandExecutor {
             adjustConfig.setDelayStart(delayStart);
         }
 
-        if (command.containsParameter("deviceKnown")) {
-            String deviceKnownS = command.getFirstParameterValue("deviceKnown");
-            boolean deviceKnown = "true".equals(deviceKnownS);
-            adjustConfig.setDeviceKnown(deviceKnown);
-        }
-
         if (command.containsParameter("needsCost")) {
             String needsCostS = command.getFirstParameterValue("needsCost");
             boolean needsCost = "true".equals(needsCostS);
