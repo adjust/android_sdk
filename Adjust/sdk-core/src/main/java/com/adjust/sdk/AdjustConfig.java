@@ -42,7 +42,6 @@ public class AdjustConfig {
     String preinstallFilePath;
     boolean playStoreKidsAppEnabled;
     boolean coppaCompliantEnabled;
-    boolean finalAttributionEnabled;
     String fbAppId;
     boolean readDeviceInfoOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
@@ -181,10 +180,6 @@ public class AdjustConfig {
 
     public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled) {
         this.coppaCompliantEnabled = coppaCompliantEnabled;
-    }
-
-    public void setFinalAttributionEnabled(boolean finalAttributionEnabled) {
-        this.finalAttributionEnabled = finalAttributionEnabled;
     }
 
     public void setFbAppId(String fbAppId) {
@@ -355,10 +350,6 @@ public class AdjustConfig {
 
     public boolean isCoppaCompliantEnabled() {
         return coppaCompliantEnabled;
-    }
-
-    public boolean isFinalAttributionEnabled() {
-        return finalAttributionEnabled;
     }
 
     public String getFbAppId() {
