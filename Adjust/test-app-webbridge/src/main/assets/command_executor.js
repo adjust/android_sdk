@@ -311,12 +311,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setDelayStart(delayStart);
     }
 
-    if ('deviceKnown' in params) {
-        var deviceKnownS = getFirstParameterValue(params, 'deviceKnown');
-        var deviceKnown = deviceKnownS == 'true';
-        adjustConfig.setDeviceKnown(deviceKnown);
-    }
-
     if ('needsCost' in params) {
         var needsCostS = getFirstParameterValue(params, 'needsCost');
         var needsCost = needsCostS == 'true';
