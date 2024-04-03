@@ -321,10 +321,6 @@ public class AdjustCommandExecutor {
             adjustConfig.setSendInBackground(sendInBackground);
         }
 
-        if (command.containsParameter("userAgent")) {
-            String userAgent = command.getFirstParameterValue("userAgent");
-            adjustConfig.setUserAgent(userAgent);
-        }
 
         if (command.containsParameter("externalDeviceId")) {
             String externalDeviceId = command.getFirstParameterValue("externalDeviceId");

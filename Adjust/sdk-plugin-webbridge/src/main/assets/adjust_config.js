@@ -42,7 +42,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.deferredDeeplinkCallbackName = null;
     this.deferredDeeplinkCallbackFunction = null;
     this.delayStart = null;
-    this.userAgent = null;
     this.secretId = null;
     this.info1 = null;
     this.info2 = null;
@@ -219,10 +218,6 @@ AdjustConfig.prototype.adjust_deferredDeeplinkCallback = function(deeplink) {
 
 AdjustConfig.prototype.setDelayStart = function(delayStart) {
     this.delayStart = delayStart;
-};
-
-AdjustConfig.prototype.setUserAgent = function(userAgent) {
-    this.userAgent = userAgent;
 };
 
 AdjustConfig.prototype.setAppSecret = function(secretId, info1, info2, info3, info4) {
