@@ -332,12 +332,6 @@ public class AdjustCommandExecutor {
             adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
         }
 
-        if (command.containsParameter("finalAttributionEnabled")) {
-            String finalAttributionEnabledS = command.getFirstParameterValue("finalAttributionEnabled");
-            boolean finalAttributionEnabled = "true".equals(finalAttributionEnabledS);
-            adjustConfig.setFinalAttributionEnabled(finalAttributionEnabled);
-        }
-
         if(command.containsParameter("deferredDeeplinkCallback")) {
             adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
                 @Override

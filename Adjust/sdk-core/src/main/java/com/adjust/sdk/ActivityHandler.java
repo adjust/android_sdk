@@ -471,8 +471,7 @@ public class ActivityHandler implements IActivityHandler {
             return false;
         }
 
-        if (adjustConfig.finalAttributionEnabled && activityState.askingAttribution) {
-            logger.info("Not updating intermediate attribution");
+        if (activityState.askingAttribution) {
             return false;
         }
 

@@ -173,7 +173,6 @@ public class AdjustBridgeInstance {
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object playStoreKidsAppEnabledField = jsonAdjustConfig.get("playStoreKidsAppEnabled");
             Object coppaCompliantEnabledField = jsonAdjustConfig.get("coppaCompliantEnabled");
-            Object finalAttributionEnabledField = jsonAdjustConfig.get("finalAttributionEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
 
@@ -389,12 +388,6 @@ public class AdjustBridgeInstance {
             Boolean coppaCompliantEnabled = AdjustBridgeUtil.fieldToBoolean(coppaCompliantEnabledField);
             if (coppaCompliantEnabled != null) {
                 adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
-            }
-
-            // Final attribution config
-            Boolean finalAttributionEnabled = AdjustBridgeUtil.fieldToBoolean(finalAttributionEnabledField);
-            if (finalAttributionEnabled != null) {
-                adjustConfig.setFinalAttributionEnabled(finalAttributionEnabled);
             }
 
             // FB App ID
