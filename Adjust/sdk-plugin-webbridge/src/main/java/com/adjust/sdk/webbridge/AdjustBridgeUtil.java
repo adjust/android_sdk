@@ -129,7 +129,7 @@ public class AdjustBridgeUtil {
                     jsonAttribution.put("costAmount", attribution.costAmount == null || attribution.costAmount.isNaN() ? 0 : attribution.costAmount);
                     jsonAttribution.put("costCurrency", attribution.costCurrency == null ? JSONObject.NULL : attribution.costCurrency);
                     jsonAttribution.put("fbInstallReferrer", attribution.fbInstallReferrer == null ? JSONObject.NULL : attribution.fbInstallReferrer);
-                    jsonAttribution.put("fbInstallReferrer", attribution.state == null ? JSONObject.NULL : attribution.state);
+                    jsonAttribution.put("state", attribution.state == null ? JSONObject.NULL : attribution.state);
 
                     String command = "javascript:" + commandName + "(" + jsonAttribution.toString() + ");";
                     webView.loadUrl(command);
