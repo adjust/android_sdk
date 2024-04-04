@@ -35,7 +35,9 @@ import com.adjust.test_options.TestConnectionOptions;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.adjust.testapp.MainActivity.baseUrl;
 import static com.adjust.testapp.MainActivity.gdprUrl;
@@ -355,7 +357,23 @@ public class AdjustCommandExecutor {
                 public void onAttributionChanged(AdjustAttribution attribution) {
                     Log.d("TestApp", "attribution = " + attribution.toString());
 
-                    MainActivity.testLibrary.setInfoToSend(attribution.toMap());
+                    // TODO: do we wanna map actual backend param names into the toMap() method?
+                    // MainActivity.testLibrary.setInfoToSend(attribution.toMap());
+                    Map<String, String> fields = new HashMap<>();
+                    if (attribution.trackerToken != null) fields.put("tracker_token", attribution.trackerToken);
+                    if (attribution.trackerName != null) fields.put("tracker_name", attribution.trackerName);
+                    if (attribution.network != null) fields.put("network", attribution.network);
+                    if (attribution.campaign != null) fields.put("campaign", attribution.campaign);
+                    if (attribution.adgroup != null) fields.put("adgroup", attribution.adgroup);
+                    if (attribution.creative != null) fields.put("creative", attribution.creative);
+                    if (attribution.clickLabel != null) fields.put("click_label", attribution.clickLabel);
+                    if (attribution.adid != null) fields.put("adid", attribution.adid);
+                    if (attribution.costType != null) fields.put("cost_type", attribution.costType);
+                    if (attribution.costAmount != null) fields.put("cost_amount", attribution.costAmount.toString());
+                    if (attribution.costCurrency != null) fields.put("cost_currency", attribution.costCurrency);
+                    if (attribution.fbInstallReferrer != null) fields.put("fb_install_referrer", attribution.fbInstallReferrer);
+                    if (attribution.state != null) fields.put("state", attribution.state);
+                    MainActivity.testLibrary.setInfoToSend(fields);
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
             });

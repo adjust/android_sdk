@@ -349,18 +349,18 @@ AdjustCommandExecutor.prototype.config = function(params) {
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
         adjustConfig.setAttributionCallback(function(attribution) {
-            TestLibrary.addInfoToSend("trackerToken", attribution.trackerToken);
-            TestLibrary.addInfoToSend("trackerName", attribution.trackerName);
+            TestLibrary.addInfoToSend("tracker_token", attribution.trackerToken);
+            TestLibrary.addInfoToSend("tracker_name", attribution.trackerName);
             TestLibrary.addInfoToSend("network", attribution.network);
             TestLibrary.addInfoToSend("campaign", attribution.campaign);
             TestLibrary.addInfoToSend("adgroup", attribution.adgroup);
             TestLibrary.addInfoToSend("creative", attribution.creative);
-            TestLibrary.addInfoToSend("clickLabel", attribution.clickLabel);
+            TestLibrary.addInfoToSend("click_label", attribution.clickLabel);
             TestLibrary.addInfoToSend("adid", attribution.adid);
-            TestLibrary.addInfoToSend("costType", attribution.costType);
-            TestLibrary.addInfoToSend("costAmount", attribution.costAmount);
-            TestLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
-            TestLibrary.addInfoToSend("fbInstallReferrer", attribution.fbInstallReferrer);
+            TestLibrary.addInfoToSend("cost_type", attribution.costType);
+            TestLibrary.addInfoToSend("cost_amount", attribution.costAmount);
+            TestLibrary.addInfoToSend("cost_currency", attribution.costCurrency);
+            TestLibrary.addInfoToSend("fb_install_referrer", attribution.fbInstallReferrer);
             TestLibrary.addInfoToSend("state", attribution.state);
 
             TestLibrary.sendInfoToServer(basePath);
