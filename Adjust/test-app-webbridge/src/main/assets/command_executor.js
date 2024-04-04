@@ -361,6 +361,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("costAmount", attribution.costAmount);
             TestLibrary.addInfoToSend("costCurrency", attribution.costCurrency);
             TestLibrary.addInfoToSend("fbInstallReferrer", attribution.fbInstallReferrer);
+            TestLibrary.addInfoToSend("state", attribution.state);
 
             TestLibrary.sendInfoToServer(basePath);
         });
