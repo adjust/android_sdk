@@ -60,6 +60,32 @@ public class Reflection {
         }
     }
 
+    public static ReferrerDetails getHuaweiAdsReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.huawei.Util",
+                    "getHuaweiAdsInstallReferrerDetails",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+            logger.info("invoke getHuaweiAdsInstallReferrerDetails : " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
+    public static ReferrerDetails getHuaweiAppGalleryReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.huawei.Util",
+                    "getHuaweiAppGalleryInstallReferrerDetails",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+            logger.info("invoke getHuaweiAppGalleryInstallReferrerDetails : " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
     public static ReferrerDetails getSamsungReferrer(Context context, ILogger logger) {
         ReferrerDetails referrerDetails = null;
         try {
