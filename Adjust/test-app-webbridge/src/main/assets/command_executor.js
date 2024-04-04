@@ -329,11 +329,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setSendInBackground(sendInBackground);
     }
 
-    if ('userAgent' in params) {
-        var userAgent = getFirstParameterValue(params, 'userAgent');
-        adjustConfig.setUserAgent(userAgent);
-    }
-
     if ('coppaCompliant' in params) {
         var coppaCompliantS = getFirstParameterValue(params, 'coppaCompliant');
         var coppaCompliant = coppaCompliantS == 'true';

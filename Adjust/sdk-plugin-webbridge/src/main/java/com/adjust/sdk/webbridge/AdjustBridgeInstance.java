@@ -160,7 +160,6 @@ public class AdjustBridgeInstance {
             Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object delayStartField = jsonAdjustConfig.get("delayStart");
-            Object userAgentField = jsonAdjustConfig.get("userAgent");
             Object secretIdField = jsonAdjustConfig.get("secretId");
             Object info1Field = jsonAdjustConfig.get("info1");
             Object info2Field = jsonAdjustConfig.get("info2");
