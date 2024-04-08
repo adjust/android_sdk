@@ -154,16 +154,6 @@ public class PackageBuilder {
         return gdprPackage;
     }
 
-    ActivityPackage buildDisableThirdPartySharingPackage() {
-        Map<String, String> parameters = getDisableThirdPartySharingParameters();
-        ActivityPackage activityPackage = getDefaultActivityPackage(ActivityKind.DISABLE_THIRD_PARTY_SHARING);
-        activityPackage.setPath("/disable_third_party_sharing");
-        activityPackage.setSuffix("");
-
-        activityPackage.setParameters(parameters);
-        return activityPackage;
-    }
-
     ActivityPackage buildThirdPartySharingPackage(
             final AdjustThirdPartySharing adjustThirdPartySharing)
     {
@@ -645,69 +635,6 @@ public class PackageBuilder {
     }
 
     private Map<String, String> getGdprParameters() {
-        Map<String, String> parameters = new HashMap<String, String>();
-
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
-
-        // Check if plugin is used and if yes, add read parameters.
-        if (deviceInfo.imeiParameters != null) {
-            parameters.putAll(deviceInfo.imeiParameters);
-        }
-
-        // Check if oaid plugin is used and if yes, add the parameter
-        if (deviceInfo.oaidParameters != null) {
-            parameters.putAll(deviceInfo.oaidParameters);
-        }
-
-        // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig);
-        PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
-        PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
-        PackageBuilder.addString(parameters, "fire_adid", deviceInfo.fireAdId);
-        PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", deviceInfo.fireTrackingEnabled);
-        PackageBuilder.addString(parameters, "google_app_set_id", deviceInfo.appSetId);
-
-        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
-            logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
-                    "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
-            PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
-        }
-
-        // Rest of the parameters.
-        PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
-        PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
-        PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
-        PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
-        PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
-        PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
-        PackageBuilder.addString(parameters, "device_name", deviceInfo.deviceName);
-        PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
-        PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
-        PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
-        PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
-        PackageBuilder.addBoolean(parameters, "needs_response_details", true);
-        PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
-        PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
-        PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
-        PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
-
-        // google play games
-        PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
-
-        injectFeatureFlagsWithParameters(parameters);
-
-        checkDeviceIds(parameters);
-        return parameters;
-    }
-
-    private Map<String, String> getDisableThirdPartySharingParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);

@@ -69,8 +69,6 @@ public interface IActivityHandler {
 
     void gdprForgetMe();
 
-    void disableThirdPartySharing();
-
     void trackThirdPartySharing(AdjustThirdPartySharing adjustThirdPartySharing);
 
     void trackMeasurementConsent(boolean consentMeasurement);

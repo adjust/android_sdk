@@ -452,20 +452,6 @@ public class AdjustInstance {
         }
     }
 
-    /**
-     * Called to disable the third party sharing.
-     *
-     * @param context Application context
-     */
-    public void disableThirdPartySharing(final Context context) {
-        if (!checkActivityHandler("disable third party sharing", true)) {
-            saveDisableThirdPartySharing(context);
-            return;
-        }
-
-        activityHandler.disableThirdPartySharing();
-    }
-
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
         if (!checkActivityHandler("third party sharing", true)) {
             preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
@@ -633,15 +619,6 @@ public class AdjustInstance {
      */
     private void saveGdprForgetMe(final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).setGdprForgetMe();
-    }
-
-    /**
-     * Save disable third party sharing choice to shared preferences.
-     *
-     * @param context Application context
-     */
-    private void saveDisableThirdPartySharing(final Context context) {
-        SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
     }
 
     /**
