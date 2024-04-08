@@ -135,12 +135,6 @@ var Adjust = {
         }
     },
 
-    disableThirdPartySharing: function() {
-        if (AdjustBridge) {
-            AdjustBridge.disableThirdPartySharing();
-        }
-    },
-
     trackThirdPartySharing: function(adjustThirdPartySharing) {
         if (AdjustBridge) {
             AdjustBridge.trackThirdPartySharing(JSON.stringify(adjustThirdPartySharing));
