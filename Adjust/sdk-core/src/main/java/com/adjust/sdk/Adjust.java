@@ -262,16 +262,6 @@ public class Adjust {
         adjustInstance.gdprForgetMe(extractApplicationContext(context));
     }
 
-    /**
-     * Called to disable the third party sharing.
-     *
-     * @param context Application context
-     */
-    public static void disableThirdPartySharing(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disableThirdPartySharing(extractApplicationContext(context));
-    }
-
     public static void trackThirdPartySharing(
             final AdjustThirdPartySharing adjustThirdPartySharing)
     {
