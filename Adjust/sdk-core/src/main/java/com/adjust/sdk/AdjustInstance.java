@@ -50,10 +50,6 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-
-    public OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
-
-
     /**
      * Base path for Adjust packages.
      */
@@ -202,9 +198,9 @@ public class AdjustInstance {
     /**
      * Process the deep link that has opened an app and potentially get a resolved link.
      *
-     * @param url Deep link URL to process
-     * @param callback  Callback where either resolved or echoed deep link will be sent.
-     * @param context Application context
+     * @param url      Deep link URL to process
+     * @param callback Callback where either resolved or echoed deep link will be sent.
+     * @param context  Application context
      */
     public void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
         // if resolution result is not wanted, fallback to default method
@@ -252,8 +248,8 @@ public class AdjustInstance {
     /**
      * Called to process preinstall payload information sent with SYSTEM_INSTALLER_REFERRER intent.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     public void sendPreinstallReferrer(final String referrer, final Context context) {
         // Check for referrer validity. If invalid, return.
@@ -545,11 +541,14 @@ public class AdjustInstance {
         return Util.getSdkVersion();
     }
 
-    public void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
-        if (!checkActivityHandler("onPause")) {
-            return;
-        }
-        activityHandler.setOnGooglePlayInstallReferrerReadListener(onGooglePlayInstallReferrerReadListener);
+    public void setOnGooglePlayInstallReferrerReadListener(Context context ,OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails, referrerApi);
+            }
+        });
+        installReferrer.startConnection();
     }
 
 
@@ -620,8 +619,8 @@ public class AdjustInstance {
     /**
      * Save preinstall referrer to shared preferences.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     private void savePreinstallReferrer(final String referrer, final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
@@ -687,8 +686,8 @@ public class AdjustInstance {
     /**
      * Verify in app purchase from Google Play.
      *
-     * @param purchase  AdjustPurchase object to be verified
-     * @param callback  Callback to be pinged with the verification results
+     * @param purchase AdjustPurchase object to be verified
+     * @param callback Callback to be pinged with the verification results
      */
     public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
