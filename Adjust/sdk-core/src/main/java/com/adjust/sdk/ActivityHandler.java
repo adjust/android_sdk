@@ -84,7 +84,6 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
     private InstallReferrerMeta installReferrerMeta;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
 
     @Override
     public void teardown() {
@@ -275,11 +274,6 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public SessionParameters getSessionParameters() {
         return sessionParameters;
-    }
-
-    @Override
-    public void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
-        this.onGooglePlayInstallReferrerReadListener = onGooglePlayInstallReferrerReadListener;
     }
 
     @Override
@@ -992,9 +986,6 @@ public class ActivityHandler implements IActivityHandler {
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                if (onGooglePlayInstallReferrerReadListener != null) {
-                    onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails, referrerApi);
-                }
                 sendInstallReferrer(referrerDetails, referrerApi);
             }
 

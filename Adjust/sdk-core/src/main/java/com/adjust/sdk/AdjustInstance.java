@@ -48,10 +48,6 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-
-    public OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
-
-
     /**
      * Base path for Adjust packages.
      */
