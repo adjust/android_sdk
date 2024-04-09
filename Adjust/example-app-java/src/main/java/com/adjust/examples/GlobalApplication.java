@@ -154,8 +154,18 @@ public class GlobalApplication extends Application {
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
 
-        Adjust.setOnGooglePlayInstallReferrerReadListener(this, (referrerDetails, referrerApi) ->
-                Log.d("example", "referrerApi : " + referrerApi + " " + referrerDetails.toString()));
+        Adjust.setOnGooglePlayInstallReferrerReadListener(this, new OnGooglePlayInstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                Log.d("example", "referrerApi : " + referrerApi + referrerDetails.toString());
+            }
+
+            @Override
+            public void onFail(String message) {
+                Log.d("example", "failed : " + message);
+
+            }
+        });
 
         // Abort delay for the first session introduced with setDelayStart method.
         // Adjust.sendFirstPackages();
