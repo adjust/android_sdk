@@ -64,8 +64,8 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Boolean indicating whether service should be tried to read.
      * Either because it has not yet tried,
-     *  or it did and it was successful
-     *  or it did, was not successful, but it should not retry
+     * or it did and it was successful
+     * or it did, was not successful, but it should not retry
      */
     private final AtomicBoolean shouldTryToRead;
 
@@ -101,7 +101,7 @@ public class InstallReferrer implements InvocationHandler {
     /**
      * Default constructor.
      *
-     * @param context         Application context
+     * @param context          Application context
      * @param referrerCallback Callback for referrer information
      */
     public InstallReferrer(final Context context, final InstallReferrerReadListener referrerCallback) {
@@ -247,15 +247,22 @@ public class InstallReferrer implements InvocationHandler {
             Reflection.invokeInstanceMethod(this.referrerClient, "startConnection",
                     new Class[]{listenerClass}, listenerProxy);
         } catch (InvocationTargetException ex) {
-            // Check for an underlying root cause in the stack trace
             if (Util.hasRootCause(ex)) {
-                logger.error("InstallReferrer encountered an InvocationTargetException %s",
+                String failMessage = Util.formatString("InstallReferrer encountered an InvocationTargetException %s",
                         Util.getRootCause(ex));
+                referrerCallback.onFail(failMessage);
+                // Check for an underlying root cause in the stack trace
+                logger.error(failMessage);
+            }else {
+                referrerCallback.onFail("InstallReferrer encountered an InvocationTargetException");
             }
+
         } catch (Exception ex) {
-            logger.error("startConnection error (%s) thrown by (%s)",
+            String failMessage = Util.formatString("startConnection error (%s) thrown by (%s)",
                     ex.getMessage(),
                     ex.getClass().getCanonicalName());
+            referrerCallback.onFail(failMessage);
+            logger.error(failMessage);
         }
     }
 
@@ -264,18 +271,18 @@ public class InstallReferrer implements InvocationHandler {
      */
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args)
-            throws Throwable
-    {
+            throws Throwable {
         executor.submit(new Runnable() {
             @Override
-            public
-            void run() {
+            public void run() {
                 try {
                     invokeI(proxy, method, args);
                 } catch (Throwable throwable) {
-                    logger.error("invoke error (%s) thrown by (%s)",
+                    String failMessage = Util.formatString("invoke error (%s) thrown by (%s)",
                             throwable.getMessage(),
                             throwable.getClass().getCanonicalName());
+                    referrerCallback.onFail(failMessage);
+                    logger.error(failMessage);
                 }
             }
         });
@@ -284,8 +291,7 @@ public class InstallReferrer implements InvocationHandler {
     }
 
     private Object invokeI(final Object proxy, final Method method, Object[] args)
-            throws Throwable
-    {
+            throws Throwable {
         if (method == null) {
             logger.error("InstallReferrer invoke method null");
             return null;
@@ -369,7 +375,9 @@ public class InstallReferrer implements InvocationHandler {
                     // Stuff successfully read, try to send it.
                     referrerCallback.onInstallReferrerRead(installReferrerDetails, Constants.REFERRER_API_GOOGLE);
                 } catch (Exception e) {
-                    logger.warn("Couldn't get install referrer from client (%s). Retrying...", e.getMessage());
+                    String failMessage = Util.formatString("Couldn't get install referrer from client (%s). Retrying...", e.getMessage());
+                    referrerCallback.onFail(failMessage);
+                    logger.warn(failMessage);
                     retryAtEnd = true;
                 }
                 break;

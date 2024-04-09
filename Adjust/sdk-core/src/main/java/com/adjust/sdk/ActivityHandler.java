@@ -998,6 +998,12 @@ public class ActivityHandler implements IActivityHandler {
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
                 sendInstallReferrer(referrerDetails, referrerApi);
             }
+
+            @Override
+            public void onFail(String message) {
+                logger.info(message);
+            }
+
         });
 
         installReferrerMeta = new InstallReferrerMeta(adjustConfig.context, adjustConfig.fbAppId,
@@ -1005,6 +1011,11 @@ public class ActivityHandler implements IActivityHandler {
                     @Override
                     public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
                         sendInstallReferrer(referrerDetails, referrerApi);
+                    }
+
+                    @Override
+                    public void onFail(String message) {
+                        logger.info(message);
                     }
                 });
         preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
