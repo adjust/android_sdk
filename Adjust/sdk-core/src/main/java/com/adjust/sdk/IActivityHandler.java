@@ -94,4 +94,6 @@ public interface IActivityHandler {
     ActivityState getActivityState();
 
     SessionParameters getSessionParameters();
+
+    void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener);
 }

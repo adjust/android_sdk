@@ -96,9 +96,6 @@ public class GlobalApplication extends Application {
             }
         });
 
-        config.setOnGooglePlayInstallReferrerReadListener((referrerDetails, referrerApi) ->
-                Log.d("example", "referrerApi : " + referrerApi + " " + referrerDetails.toString()));
-
         // Set default tracker.
         // config.setDefaultTracker("{YourDefaultTracker}");
 
@@ -149,6 +146,9 @@ public class GlobalApplication extends Application {
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
+
+        Adjust.setOnGooglePlayInstallReferrerReadListener((referrerDetails, referrerApi) ->
+                Log.d("example", "referrerApi : " + referrerApi + " " + referrerDetails.toString()));
 
         // Abort delay for the first session introduced with setDelayStart method.
         // Adjust.sendFirstPackages();
