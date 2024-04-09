@@ -996,6 +996,7 @@ public class ActivityHandler implements IActivityHandler {
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                adjustConfig.onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails,referrerApi);
                 sendInstallReferrer(referrerDetails, referrerApi);
             }
         });

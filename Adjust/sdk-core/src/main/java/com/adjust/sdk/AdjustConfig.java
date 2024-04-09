@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.util.List;
-
 /**
  * Created by pfms on 06/11/14.
  */
@@ -20,6 +18,7 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
+    OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
@@ -110,7 +109,9 @@ public class AdjustConfig {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void setProcessName(String processName) { this.processName = processName; }
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
@@ -118,6 +119,10 @@ public class AdjustConfig {
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
         this.onAttributionChangedListener = onAttributionChangedListener;
+    }
+
+    public void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        this.onGooglePlayInstallReferrerReadListener = onGooglePlayInstallReferrerReadListener;
     }
 
     public void setDeepLinkComponent(Class deepLinkComponent) {
@@ -205,8 +210,7 @@ public class AdjustConfig {
                 && !urlStrategy.equals(URL_STRATEGY_CN_ONLY)
                 && !urlStrategy.equals(DATA_RESIDENCY_EU)
                 && !urlStrategy.equals(DATA_RESIDENCY_TR)
-                && !urlStrategy.equals(DATA_RESIDENCY_US))
-        {
+                && !urlStrategy.equals(DATA_RESIDENCY_US)) {
             logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
         this.urlStrategy = urlStrategy;
