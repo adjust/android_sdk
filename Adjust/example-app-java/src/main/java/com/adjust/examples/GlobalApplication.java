@@ -2,8 +2,10 @@ package com.adjust.examples;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
@@ -27,10 +29,15 @@ import com.adjust.sdk.ReferrerDetails;
  * Created by pfms on 17/12/14.
  */
 public class GlobalApplication extends Application {
+
+    Context context;
+
     @Override
     public void onCreate() {
         super.onCreate();
 
+
+        context = this;
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
@@ -147,7 +154,7 @@ public class GlobalApplication extends Application {
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
 
-        Adjust.setOnGooglePlayInstallReferrerReadListener((referrerDetails, referrerApi) ->
+        Adjust.setOnGooglePlayInstallReferrerReadListener(this, (referrerDetails, referrerApi) ->
                 Log.d("example", "referrerApi : " + referrerApi + " " + referrerDetails.toString()));
 
         // Abort delay for the first session introduced with setDelayStart method.
