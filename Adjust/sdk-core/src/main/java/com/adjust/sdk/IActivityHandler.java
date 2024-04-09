@@ -96,4 +96,6 @@ public interface IActivityHandler {
     SessionParameters getSessionParameters();
 
     ActivityHandler.InternalState getInternalState();
+
+    void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener);
 }

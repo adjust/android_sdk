@@ -51,6 +51,9 @@ public class AdjustInstance {
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
+    public OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
+
+
     /**
      * Base path for Adjust packages.
      */
@@ -527,6 +530,14 @@ public class AdjustInstance {
     public String getSdkVersion() {
         return Util.getSdkVersion();
     }
+
+    public void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        if (!checkActivityHandler("onPause")) {
+            return;
+        }
+        activityHandler.setOnGooglePlayInstallReferrerReadListener(onGooglePlayInstallReferrerReadListener);
+    }
+
 
     /**
      * Check if ActivityHandler instance is set or not.
