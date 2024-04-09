@@ -546,6 +546,11 @@ public class AdjustInstance {
             public void onFail(String message) {
                 onGooglePlayInstallReferrerReadListener.onFailure(message);
             }
+
+            @Override
+            public void onFail(String message) {
+                onGooglePlayInstallReferrerReadListener.onFail(message);
+            }
         });
         installReferrer.startConnection();
 

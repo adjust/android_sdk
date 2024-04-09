@@ -991,7 +991,7 @@ public class ActivityHandler implements IActivityHandler {
 
             @Override
             public void onFail(String message) {
-                logger.debug(message);
+                logger.info(message);
             }
 
         });
@@ -1005,7 +1005,7 @@ public class ActivityHandler implements IActivityHandler {
 
                     @Override
                     public void onFail(String message) {
-                        logger.debug(message);
+                        logger.info(message);
                     }
                 });
         preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
