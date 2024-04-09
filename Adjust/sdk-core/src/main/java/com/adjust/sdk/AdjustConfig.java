@@ -18,6 +18,7 @@ public class AdjustConfig {
     boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
+    OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener;
     Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
@@ -118,6 +119,10 @@ public class AdjustConfig {
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
         this.onAttributionChangedListener = onAttributionChangedListener;
+    }
+
+    public void setOnGooglePlayInstallReferrerReadListener(OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        this.onGooglePlayInstallReferrerReadListener = onGooglePlayInstallReferrerReadListener;
     }
 
     public void setDeepLinkComponent(Class deepLinkComponent) {

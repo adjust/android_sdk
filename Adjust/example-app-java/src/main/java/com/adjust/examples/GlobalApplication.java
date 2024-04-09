@@ -2,7 +2,6 @@ package com.adjust.examples;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,9 +11,6 @@ import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
-import com.adjust.sdk.AdjustSessionFailure;
-import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.GooglePlayInstallReferrerDetails;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
@@ -23,6 +19,9 @@ import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.ReferrerDetails;
 
 /**
  * Created by pfms on 17/12/14.
