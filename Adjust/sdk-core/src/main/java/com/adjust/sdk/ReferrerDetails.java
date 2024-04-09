@@ -58,4 +58,24 @@ public class ReferrerDetails {
                 isClick);
 
     }
+
+    public String toString() {
+        return Util.formatString(
+                " installReferrer : %s" +
+                " referrerClickTimestampSeconds : %d" +
+                " installBeginTimestampSeconds : %d" +
+                " referrerClickTimestampServerSeconds : %d" +
+                " installBeginTimestampServerSeconds : %d" +
+                " installVersion : %s" +
+                " googlePlayInstant : %s" +
+                " isClick: %s",
+                installReferrer,
+                referrerClickTimestampSeconds,
+                installBeginTimestampSeconds,
+                referrerClickTimestampServerSeconds,
+                installBeginTimestampServerSeconds,
+                installVersion,
+                googlePlayInstant,
+                isClick);
+    }
 }

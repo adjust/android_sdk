@@ -16,10 +16,12 @@ import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.ReferrerDetails;
 
 /**
  * Created by pfms on 17/12/14.
@@ -93,6 +95,9 @@ public class GlobalApplication extends Application {
                 return true;
             }
         });
+
+        config.setOnGooglePlayInstallReferrerReadListener((referrerDetails, referrerApi) ->
+                Log.d("example", "referrerApi : " + referrerApi + " " + referrerDetails.toString()));
 
         // Set default tracker.
         // config.setDefaultTracker("{YourDefaultTracker}");
