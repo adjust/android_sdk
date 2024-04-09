@@ -2,6 +2,7 @@ package com.adjust.sdk.samsung;
 
 import android.content.Context;
 
+import com.adjust.sdk.Adjust;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.ReferrerDetails;
 
@@ -21,7 +22,9 @@ public class Util {
                 referrerDetails.getReferrerClickTimestampSeconds(),
                 referrerDetails.getInstallBeginTimestampSeconds());
 
-        AdjustSamsungReferrer.onSamsungInstallReferrerReadListener.onInstallReferrerRead(returnReferrerDetails, "samsung");
+        if (AdjustSamsungReferrer.onSamsungInstallReferrerReadListener != null) {
+            AdjustSamsungReferrer.onSamsungInstallReferrerReadListener.onInstallReferrerRead(returnReferrerDetails, "samsung");
+        }
         return returnReferrerDetails;
     }
 }
