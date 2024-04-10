@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 import java.util.Map;
 
 /**
@@ -354,7 +352,7 @@ public class Adjust {
         return adjustInstance.getAttribution();
     }
 
-    public static void setOnGooglePlayInstallReferrerReadListener(Context context,OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+    public static void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setOnGooglePlayInstallReferrerReadListener(context ,onGooglePlayInstallReferrerReadListener);
     }
