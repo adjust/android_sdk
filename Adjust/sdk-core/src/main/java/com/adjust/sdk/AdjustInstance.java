@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -531,12 +529,12 @@ public class AdjustInstance {
         InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails, referrerApi);
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
             }
 
             @Override
             public void onFail(String message) {
-                onGooglePlayInstallReferrerReadListener.onFail(message);
+                onGooglePlayInstallReferrerReadListener.onFailure(message);
             }
         });
         installReferrer.startConnection();
