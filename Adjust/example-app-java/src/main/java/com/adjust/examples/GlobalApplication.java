@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
@@ -154,14 +153,14 @@ public class GlobalApplication extends Application {
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
 
-        Adjust.setOnGooglePlayInstallReferrerReadListener(this, new OnGooglePlayInstallReferrerReadListener() {
+        Adjust.getGooglePlayInstallReferrer(this, new OnGooglePlayInstallReferrerReadListener() {
             @Override
-            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                Log.d("example", "referrerApi : " + referrerApi + referrerDetails.toString());
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails) {
+                Log.d("example", "referrerApi : " + referrerDetails.toString());
             }
 
             @Override
-            public void onFail(String message) {
+            public void onFailure(String message) {
                 Log.d("example", "failed : " + message);
 
             }
