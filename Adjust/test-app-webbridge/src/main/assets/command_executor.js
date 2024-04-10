@@ -133,7 +133,6 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "openDeeplink"                   : this.openDeeplink(command.params); break;
         case "sendReferrer"                   : this.sendReferrer(command.params); break;
         case "gdprForgetMe"                   : this.gdprForgetMe(command.params); break;
-        case "disableThirdPartySharing"       : this.disableThirdPartySharing(command.params); break;
         case "thirdPartySharing"              : this.thirdPartySharing(command.params); break;
         case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
@@ -547,10 +546,6 @@ AdjustCommandExecutor.prototype.sendFirstPackages = function(params) {
 
 AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {
     Adjust.gdprForgetMe();
-}
-
-AdjustCommandExecutor.prototype.disableThirdPartySharing = function(params) {
-    Adjust.disableThirdPartySharing();
 }
 
 AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {

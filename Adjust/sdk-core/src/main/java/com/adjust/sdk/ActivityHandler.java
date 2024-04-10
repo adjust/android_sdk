@@ -677,16 +677,6 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void disableThirdPartySharing() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                disableThirdPartySharingI();
-            }
-        });
-    }
-
-    @Override
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
         executor.submit(new Runnable() {
             @Override
@@ -1188,10 +1178,7 @@ public class ActivityHandler implements IActivityHandler {
         } else {
             SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
 
-            // check if disable third party sharing request came, then send it first
-            if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                disableThirdPartySharingI();
-            }
+            // check if third party sharing request came, then send it first
             for (AdjustThirdPartySharing adjustThirdPartySharing :
                     adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
             {
@@ -1246,10 +1233,7 @@ public class ActivityHandler implements IActivityHandler {
             } else {
                 processCoppaComplianceI();
 
-                // check if disable third party sharing request came, then send it first
-                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                    disableThirdPartySharingI();
-                }
+                // check if third party sharing request came, then send it first
                 for (AdjustThirdPartySharing adjustThirdPartySharing :
                         adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
                 {
@@ -1279,7 +1263,6 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
         sharedPreferencesManager.removeGdprForgetMe();
-        sharedPreferencesManager.removeDisableThirdPartySharing();
 
         // check for cached deep links
         processCachedDeeplinkI();
@@ -1805,9 +1788,6 @@ public class ActivityHandler implements IActivityHandler {
             } else {
                 processCoppaComplianceI();
 
-                if (sharedPreferencesManager.getDisableThirdPartySharing()) {
-                    disableThirdPartySharingI();
-                }
                 for (AdjustThirdPartySharing adjustThirdPartySharing :
                         adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
                 {
@@ -2409,40 +2389,6 @@ public class ActivityHandler implements IActivityHandler {
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", gdprPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
-    }
-
-    private void disableThirdPartySharingI() {
-        // cache the disable third party sharing request, so that the request order maintains
-        // even this call returns before making server request
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
-        sharedPreferencesManager.setDisableThirdPartySharing();
-
-        if (!checkActivityStateI(activityState)) { return; }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
-        if (activityState.isThirdPartySharingDisabled) { return; }
-        if (adjustConfig.coppaCompliantEnabled) {
-            logger.warn("Call to disable third party sharing API ignored, already done when COPPA enabled");
-            return;
-        }
-
-        activityState.isThirdPartySharingDisabled = true;
-        writeActivityStateI();
-
-        long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
-
-        ActivityPackage activityPackage = packageBuilder.buildDisableThirdPartySharingPackage();
-        packageHandler.addPackage(activityPackage);
-
-        // Removed the cached disable third party sharing flag.
-        sharedPreferencesManager.removeDisableThirdPartySharing();
-
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
         } else {
             packageHandler.sendFirstPackage();
         }
