@@ -30,8 +30,6 @@ public enum ActivityKind {
             return INFO;
         } else if ("gdpr".equals(string)) {
             return GDPR;
-        } else if ("disable_third_party_sharing".equals(string)) {
-            return DISABLE_THIRD_PARTY_SHARING;
         } else if ("ad_revenue".equals(string)) {
             return AD_REVENUE;
         } else if ("subscription".equals(string)) {
@@ -62,8 +60,6 @@ public enum ActivityKind {
                 return "info";
             case GDPR:
                 return "gdpr";
-            case DISABLE_THIRD_PARTY_SHARING:
-                return "disable_third_party_sharing";
             case AD_REVENUE:
                 return "ad_revenue";
             case SUBSCRIPTION:
