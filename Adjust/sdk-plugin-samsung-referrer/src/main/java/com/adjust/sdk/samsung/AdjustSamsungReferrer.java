@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.adjust.sdk.AdjustFactory;
+import com.adjust.sdk.Constants;
 import com.adjust.sdk.ReferrerDetails;
 
 
@@ -17,7 +18,7 @@ public class AdjustSamsungReferrer {
       handler.post(() -> {
          try {
             ReferrerDetails referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
-            onSamsungInstallReferrerReadListener.onInstallReferrerRead(referrerDetails,"samsung");
+            onSamsungInstallReferrerReadListener.onInstallReferrerRead(referrerDetails, Constants.REFERRER_API_SAMSUNG);
          }catch (Exception exception){
             onSamsungInstallReferrerReadListener.onFail(exception.getMessage());
          }
