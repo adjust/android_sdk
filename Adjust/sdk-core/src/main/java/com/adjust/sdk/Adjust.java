@@ -342,7 +342,7 @@ public class Adjust {
         return adjustInstance.getAttribution();
     }
 
-    public static void setOnGooglePlayInstallReferrerReadListener(Context context,OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+    public static void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.setOnGooglePlayInstallReferrerReadListener(context ,onGooglePlayInstallReferrerReadListener);
     }
