@@ -17,14 +17,8 @@ public class Util {
         if (referrerDetails == null) {
             return null;
         }
-
-        ReferrerDetails returnReferrerDetails = new ReferrerDetails(referrerDetails.getInstallReferrer(),
+        return new ReferrerDetails(referrerDetails.getInstallReferrer(),
                 referrerDetails.getReferrerClickTimestampSeconds(),
                 referrerDetails.getInstallBeginTimestampSeconds());
-
-        if (AdjustSamsungReferrer.onSamsungInstallReferrerReadListener != null) {
-            AdjustSamsungReferrer.onSamsungInstallReferrerReadListener.onInstallReferrerRead(returnReferrerDetails, "samsung");
-        }
-        return returnReferrerDetails;
     }
 }
