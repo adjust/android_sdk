@@ -6,6 +6,10 @@ public class AdjustVivoReferrer {
 
    static boolean shouldReadVivoReferrer = true;
 
+   public static void getVivoInstallReferrer(Context context,OnVivoInstallReferrerReadListener onVivoInstallReferrerReadListener){
+
+   }
+
    public static void readVivoReferrer(Context context) {
       shouldReadVivoReferrer = true;
    }
