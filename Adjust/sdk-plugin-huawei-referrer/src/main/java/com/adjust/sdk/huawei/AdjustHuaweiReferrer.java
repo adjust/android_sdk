@@ -15,7 +15,7 @@ public class AdjustHuaweiReferrer {
 
    static boolean shouldReadHuaweiReferrer = true;
 
-   public static void setOnHuaweiInstallReferrerReadListener(Context context, OnHuaweiInstallReferrerReadListener onHuaweiInstallReferrerReadListener){
+   public static void getHuaweiInstallReferrer(Context context, OnHuaweiInstallReferrerReadListener onHuaweiInstallReferrerReadListener){
       Handler handlerAds = new Handler(Looper.getMainLooper());
       Handler handlerAppGallery = new Handler(Looper.getMainLooper());
       handlerAds.post(new Runnable() {
@@ -23,9 +23,9 @@ public class AdjustHuaweiReferrer {
          public void run() {
             try {
                ReferrerDetails referrerDetails = Util.getHuaweiAdsInstallReferrerDetails(context, AdjustFactory.getLogger());
-               onHuaweiInstallReferrerReadListener.onHuaweiAdsInstallReferrerDetailsRead(referrerDetails,REFERRER_API_HUAWEI_ADS);
+               onHuaweiInstallReferrerReadListener.onHuaweiAdsInstallReferrerDetailsRead(referrerDetails);
             }catch (Exception exception){
-               onHuaweiInstallReferrerReadListener.onFail(exception.getMessage());
+               onHuaweiInstallReferrerReadListener.onFailure(exception.getMessage());
             }
          }
       });
@@ -34,9 +34,9 @@ public class AdjustHuaweiReferrer {
          public void run() {
             try {
                ReferrerDetails referrerDetails = Util.getHuaweiAppGalleryInstallReferrerDetails(context, AdjustFactory.getLogger());
-               onHuaweiInstallReferrerReadListener.onHuaweiAppGalleryInstallReferrerDetailsRead(referrerDetails,REFERRER_API_HUAWEI_APP_GALLERY);
+               onHuaweiInstallReferrerReadListener.onHuaweiAppGalleryInstallReferrerDetailsRead(referrerDetails);
             }catch (Exception exception){
-               onHuaweiInstallReferrerReadListener.onFail(exception.getMessage());
+               onHuaweiInstallReferrerReadListener.onFailure(exception.getMessage());
             }
          }
       });
