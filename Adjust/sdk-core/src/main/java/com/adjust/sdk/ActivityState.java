@@ -27,7 +27,6 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
             new ObjectStreamField("isGdprForgotten", boolean.class),
-            new ObjectStreamField("isThirdPartySharingDisabled", boolean.class),
             new ObjectStreamField("askingAttribution", boolean.class),
             new ObjectStreamField("eventCount", int.class),
             new ObjectStreamField("sessionCount", int.class),
@@ -74,7 +73,6 @@ public class ActivityState implements Serializable, Cloneable {
     protected String uuid;
     protected boolean enabled;
     protected boolean isGdprForgotten;
-    protected boolean isThirdPartySharingDisabled;
     protected boolean isThirdPartySharingDisabledForCoppa;
     protected boolean askingAttribution;
 
@@ -136,7 +134,6 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.createUuid();
         enabled = true;
         isGdprForgotten = false;
-        isThirdPartySharingDisabled = false;
         isThirdPartySharingDisabledForCoppa = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
@@ -223,7 +220,6 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalString(uuid, otherActivityState.uuid)) return false;
         if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
         if (!Util.equalBoolean(isGdprForgotten, otherActivityState.isGdprForgotten)) return false;
-        if (!Util.equalBoolean(isThirdPartySharingDisabled, otherActivityState.isThirdPartySharingDisabled)) return false;
         if (!Util.equalBoolean(isThirdPartySharingDisabledForCoppa, otherActivityState.isThirdPartySharingDisabledForCoppa)) return false;
         if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
         if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
@@ -272,7 +268,6 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashString(uuid, hashCode);
         hashCode = Util.hashBoolean(enabled, hashCode);
         hashCode = Util.hashBoolean(isGdprForgotten, hashCode);
-        hashCode = Util.hashBoolean(isThirdPartySharingDisabled, hashCode);
         hashCode = Util.hashBoolean(isThirdPartySharingDisabledForCoppa, hashCode);
         hashCode = Util.hashBoolean(askingAttribution, hashCode);
         hashCode = 37 * hashCode + eventCount;
@@ -330,7 +325,6 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.readStringField(fields, "uuid", null);
         enabled = Util.readBooleanField(fields, "enabled", true);
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
-        isThirdPartySharingDisabled = Util.readBooleanField(fields, "isThirdPartySharingDisabled", false);
         isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
