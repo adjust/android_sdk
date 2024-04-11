@@ -316,9 +316,10 @@ public class InstallReferrer implements InvocationHandler {
         } else if (methodName.equals("onInstallReferrerServiceDisconnected")) {
             logger.debug("Connection to install referrer service was lost. Retrying ...");
             retryI("onInstallReferrerServiceDisconnected");
+        } else {
+            this.referrerCallback.onFail(
+              Util.formatString("Reflection call method name not expected: %s", methodName));
         }
-        this.referrerCallback.onFail(
-          Util.formatString("Reflection call method name not expected: %s", methodName));
         return null;
     }
 
