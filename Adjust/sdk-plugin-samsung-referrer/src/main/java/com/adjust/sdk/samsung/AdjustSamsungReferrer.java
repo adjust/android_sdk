@@ -6,6 +6,7 @@ import android.os.Looper;
 
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ReferrerDetails;
+import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
 
 public class AdjustSamsungReferrer {
@@ -13,15 +14,29 @@ public class AdjustSamsungReferrer {
    static boolean shouldReadSamsungReferrer = true;
 
    public static void getSamsungInstallReferrer(Context context ,OnSamsungInstallReferrerReadListener onSamsungInstallReferrerReadListener){
-      Handler handler = new Handler(Looper.getMainLooper());
-      handler.post(() -> {
-         try {
-            ReferrerDetails referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
-            onSamsungInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
-         }catch (Exception exception){
-            onSamsungInstallReferrerReadListener.onFailure(exception.getMessage());
+
+      new AsyncTaskExecutor<Context, ReferrerDetails>() {
+         @Override
+         protected ReferrerDetails doInBackground(Context[] contexts) {
+            ReferrerDetails referrerDetails=null;
+            try {
+                referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
+            }catch (Exception exception){
+               if (onSamsungInstallReferrerReadListener != null) {
+                  onSamsungInstallReferrerReadListener.onFailure(exception.getMessage());
+               }
+            }
+            return referrerDetails;
          }
-      });
+
+         @Override
+         protected void onPostExecute(ReferrerDetails referrerDetails) {
+            if (onSamsungInstallReferrerReadListener != null){
+               onSamsungInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
+            }
+         }
+      }.execute(context);
+
    }
 
    public static void readSamsungReferrer(Context context) {
