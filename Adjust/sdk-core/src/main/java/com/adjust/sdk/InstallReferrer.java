@@ -94,8 +94,6 @@ public class InstallReferrer implements InvocationHandler {
      */
     private final InstallReferrerReadListener referrerCallback;
 
-    private Object playInstallReferrer;
-
     private ThreadExecutor executor;
 
     /**
@@ -106,7 +104,6 @@ public class InstallReferrer implements InvocationHandler {
      */
     public InstallReferrer(final Context context, final InstallReferrerReadListener referrerCallback) {
         this.logger = AdjustFactory.getLogger();
-        this.playInstallReferrer = createInstallReferrer(context, referrerCallback, logger);
         this.context = context;
         this.shouldTryToRead = new AtomicBoolean(true);
         this.retries = 0;
@@ -120,25 +117,10 @@ public class InstallReferrer implements InvocationHandler {
         this.executor = new SingleThreadCachedScheduler("InstallReferrer");
     }
 
-    private Object createInstallReferrer(Context context, InstallReferrerReadListener referrerCallback, ILogger logger) {
-        return Reflection.createInstance("com.adjust.sdk.play.InstallReferrer",
-                new Class[]{Context.class, InstallReferrerReadListener.class, ILogger.class},
-                context, referrerCallback, logger);
-    }
-
     /**
      * Start connection with install referrer service.
      */
     public void startConnection() {
-        if (this.playInstallReferrer != null) {
-            try {
-                Reflection.invokeInstanceMethod(this.playInstallReferrer, "startConnection", null);
-                return;
-            } catch (Exception e) {
-                logger.error("Call to Play startConnection error: %s", e.getMessage());
-            }
-        }
-
         if (!AdjustFactory.getTryInstallReferrer()) {
             return;
         }
