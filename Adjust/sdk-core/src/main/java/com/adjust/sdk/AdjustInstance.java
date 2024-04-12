@@ -539,12 +539,7 @@ public class AdjustInstance {
         InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
-            }
-
-            @Override
-            public void onFail(String message) {
-                onGooglePlayInstallReferrerReadListener.onFailure(message);
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
             }
 
             @Override
@@ -553,7 +548,6 @@ public class AdjustInstance {
             }
         });
         installReferrer.startConnection();
-
     }
 
 
