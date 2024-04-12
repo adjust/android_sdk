@@ -539,21 +539,23 @@ public class AdjustInstance {
         return Util.getSdkVersion();
     }
 
-    public void setOnGooglePlayInstallReferrerReadListener(Context context ,OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
-        InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
-            @Override
-            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                if (referrerDetails != null) {
-                    onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
+    public void setOnGooglePlayInstallReferrerReadListener(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        if (onGooglePlayInstallReferrerReadListener != null && context != null) {
+            InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
+                @Override
+                public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                    if (referrerDetails != null) {
+                        onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
+                    }
                 }
-            }
 
-            @Override
-            public void onFail(String message) {
-                onGooglePlayInstallReferrerReadListener.onFailure(message);
-            }
-        });
-        installReferrer.startConnection();
+                @Override
+                public void onFail(String message) {
+                    onGooglePlayInstallReferrerReadListener.onFailure(message);
+                }
+            });
+            installReferrer.startConnection();
+        }
     }
 
 
