@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
-import java.util.List;
-
 /**
  * Created by pfms on 06/11/14.
  */
@@ -110,7 +108,9 @@ public class AdjustConfig {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void setProcessName(String processName) { this.processName = processName; }
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
@@ -205,8 +205,7 @@ public class AdjustConfig {
                 && !urlStrategy.equals(URL_STRATEGY_CN_ONLY)
                 && !urlStrategy.equals(DATA_RESIDENCY_EU)
                 && !urlStrategy.equals(DATA_RESIDENCY_TR)
-                && !urlStrategy.equals(DATA_RESIDENCY_US))
-        {
+                && !urlStrategy.equals(DATA_RESIDENCY_US)) {
             logger.warn("Unrecognised url strategy %s", urlStrategy);
         }
         this.urlStrategy = urlStrategy;

@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
-import org.json.JSONObject;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -50,7 +48,6 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-
     /**
      * Base path for Adjust packages.
      */
@@ -199,9 +196,9 @@ public class AdjustInstance {
     /**
      * Process the deep link that has opened an app and potentially get a resolved link.
      *
-     * @param url Deep link URL to process
-     * @param callback  Callback where either resolved or echoed deep link will be sent.
-     * @param context Application context
+     * @param url      Deep link URL to process
+     * @param callback Callback where either resolved or echoed deep link will be sent.
+     * @param context  Application context
      */
     public void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
         // if resolution result is not wanted, fallback to default method
@@ -249,8 +246,8 @@ public class AdjustInstance {
     /**
      * Called to process preinstall payload information sent with SYSTEM_INSTALLER_REFERRER intent.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     public void sendPreinstallReferrer(final String referrer, final Context context) {
         // Check for referrer validity. If invalid, return.
@@ -529,6 +526,33 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to get Google Install Referrer.
+     *
+     * @param context Application context
+     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
+     */
+    public void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        if (onGooglePlayInstallReferrerReadListener == null) {
+            AdjustFactory.getLogger().error("OnGooglePlayInstallReferrerReadListener can not be null");
+            return;
+        }
+        InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
+            }
+
+            @Override
+            public void onFail(String message) {
+                onGooglePlayInstallReferrerReadListener.onFailure(message);
+            }
+        });
+        installReferrer.startConnection();
+
+    }
+
+
+    /**
      * Check if ActivityHandler instance is set or not.
      *
      * @return boolean indicating whether ActivityHandler instance is set or not
@@ -595,8 +619,8 @@ public class AdjustInstance {
     /**
      * Save preinstall referrer to shared preferences.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     private void savePreinstallReferrer(final String referrer, final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
@@ -653,8 +677,8 @@ public class AdjustInstance {
     /**
      * Verify in app purchase from Google Play.
      *
-     * @param purchase  AdjustPurchase object to be verified
-     * @param callback  Callback to be pinged with the verification results
+     * @param purchase AdjustPurchase object to be verified
+     * @param callback Callback to be pinged with the verification results
      */
     public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {

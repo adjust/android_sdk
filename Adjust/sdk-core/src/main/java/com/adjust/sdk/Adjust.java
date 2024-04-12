@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 import java.util.Map;
 
 /**
@@ -344,6 +342,16 @@ public class Adjust {
         return adjustInstance.getAttribution();
     }
 
+    /**
+     * Called to get Google Install Referrer.
+     *
+     * @param context Application context
+     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
+     */
+    public static void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
+    }
     /**
      * Called to get native SDK version string.
      *

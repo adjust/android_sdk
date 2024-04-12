@@ -2,6 +2,7 @@ package com.adjust.examples;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,20 +12,23 @@ import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.GooglePlayInstallReferrerDetails;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.adjust.sdk.AdjustSessionFailure;
-import com.adjust.sdk.AdjustSessionSuccess;
 
 /**
  * Created by pfms on 17/12/14.
  */
 public class GlobalApplication extends Application {
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -144,6 +148,19 @@ public class GlobalApplication extends Application {
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
+
+        Adjust.getGooglePlayInstallReferrer(this, new OnGooglePlayInstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(GooglePlayInstallReferrerDetails referrerDetails) {
+                Log.d("example", "referrerApi : " + referrerDetails.toString());
+            }
+
+            @Override
+            public void onFailure(String message) {
+                Log.d("example", "failed : " + message);
+
+            }
+        });
 
         // Abort delay for the first session introduced with setDelayStart method.
         // Adjust.sendFirstPackages();
