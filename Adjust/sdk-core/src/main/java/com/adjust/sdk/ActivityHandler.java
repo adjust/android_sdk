@@ -1334,7 +1334,7 @@ public class ActivityHandler implements IActivityHandler {
             checkForPreinstallI();
 
             // Try to check if there's new referrer information.
-            installReferrer.startConnection();
+//            installReferrer.startConnection();
             installReferrerMeta.readReferrer();
             readInstallReferrerHuaweiAds();
             readInstallReferrerHuaweiAppGallery();
@@ -1874,7 +1874,7 @@ public class ActivityHandler implements IActivityHandler {
         checkForPreinstallI();
 
         // try to read and send the install referrer
-        installReferrer.startConnection();
+//        installReferrer.startConnection();
         installReferrerMeta.readReferrer();
         readInstallReferrerHuaweiAds();
         readInstallReferrerHuaweiAppGallery();
