@@ -529,7 +529,9 @@ public class AdjustInstance {
         InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
+                if (referrerDetails != null) {
+                    onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
+                }
             }
 
             @Override
