@@ -493,6 +493,34 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to enable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public void enableCoppaCompliance(Context context) {
+        saveCoppaCompliance(true, context);
+        if (checkActivityHandler("enable coppa compliance", true)) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.setCoppaCompliance(true);
+            }
+        }
+    }
+
+    /**
+     * Called to disable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public void disableCoppaCompliance(Context context) {
+        saveCoppaCompliance(false, context);
+        if (checkActivityHandler("disable coppa compliant", true)) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.setCoppaCompliance(false);
+            }
+        }
+    }
+
+    /**
      * Called to get value of unique Adjust device identifier.
      *
      * @return Unique Adjust device indetifier
@@ -662,6 +690,16 @@ public class AdjustInstance {
      */
     private void setSendingReferrersAsNotSent(final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
+    }
+
+    /**
+     * Save coppa compliant state to shared preferences.
+     *
+     * @param enabled boolean indicating should COPPA be enabled (true) or not (false)
+     * @param context Application context
+     */
+    private void saveCoppaCompliance(final boolean enabled, final Context context) {
+        SharedPreferencesManager.getDefaultInstance(context).saveCoppaCompliance(enabled);
     }
 
     /**

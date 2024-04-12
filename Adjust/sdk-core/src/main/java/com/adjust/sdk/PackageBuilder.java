@@ -1226,10 +1226,10 @@ public class PackageBuilder {
     }
 
     private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
-
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
-        PackageBuilder.addBoolean(parameters, "send_in_background_enabled", adjustConfig.sendInBackground);
-
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+        if (sharedPreferencesManager.getCoppaCompliance()) {
+            PackageBuilder.addLong(parameters, "ff_coppa", 1);
+        }
         if (internalState != null) {
             PackageBuilder.addBoolean(parameters, "offline_mode_enabled", internalState.offline);
             if (internalState.isInForeground()) {
@@ -1238,11 +1238,6 @@ public class PackageBuilder {
                 PackageBuilder.addBoolean(parameters, "background", true);
             }
         }
-
-        if (adjustConfig.coppaCompliantEnabled) {
-            PackageBuilder.addLong(parameters, "ff_coppa", 1);
-        }
-
         if (adjustConfig.playStoreKidsAppEnabled) {
             PackageBuilder.addLong(parameters, "ff_play_store_kids_app", 1);
         }
@@ -1381,7 +1376,8 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 logger.info("Missing Device IDs. COPPA enabled.");
             } else {
                 logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");
