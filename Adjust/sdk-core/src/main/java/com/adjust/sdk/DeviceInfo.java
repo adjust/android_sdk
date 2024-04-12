@@ -500,7 +500,8 @@ class DeviceInfo {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 return null;
             }
 
@@ -509,14 +510,16 @@ class DeviceInfo {
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 return null;
             }
 
             return Reflection.getOaidParameters(adjustConfig.context, logger);
         }
         private static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 return null;
             }
 
@@ -535,7 +538,8 @@ class DeviceInfo {
             return null;
         }
         private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 return null;
             }
 

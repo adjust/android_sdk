@@ -772,6 +772,16 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
+    public void setCoppaCompliance(final boolean enabled) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                setCoppaCompliantEnabledI(enabled);
+            }
+        });
+    }
+
     public InternalState getInternalState() {
         return internalState;
     }
@@ -819,8 +829,10 @@ public class ActivityHandler implements IActivityHandler {
 
         deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
+            SharedPreferencesManager sharedPreferencesManager =
+                    SharedPreferencesManager.getDefaultInstance(getContext());
             if (!Util.canReadPlayIds(adjustConfig)) {
-                if (adjustConfig.coppaCompliantEnabled) {
+                if (sharedPreferencesManager.getCoppaCompliance()) {
                     logger.info("Cannot read Google Play Services Advertising ID with COPPA enabled");
                 }
 
@@ -833,7 +845,7 @@ public class ActivityHandler implements IActivityHandler {
 
             if (deviceInfo.androidId == null) {
                 if (!Util.canReadNonPlayIds(adjustConfig)) {
-                    if (adjustConfig.coppaCompliantEnabled) {
+                    if (sharedPreferencesManager.getCoppaCompliance()) {
                         logger.info("Cannot read non Play IDs with COPPA enabled");
                     }
 
@@ -2413,7 +2425,8 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
-        if (adjustConfig.coppaCompliantEnabled) {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
+        if (sharedPreferencesManager.getCoppaCompliance()) {
             logger.warn("Calling third party sharing API not allowed when COPPA enabled");
             return;
         }
@@ -2550,6 +2563,15 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
+    }
+
+    private void setCoppaCompliantEnabledI(final boolean enabled) {
+        if (!enabled) {
+            enableThirdPartySharingForCoppaDisabledI();
+            return;
+        }
+
+        disableThirdPartySharingForCoppaEnabledI();
     }
 
     private void gotOptOutResponseI() {
@@ -2855,12 +2877,10 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void processCoppaComplianceI() {
-        if (!adjustConfig.coppaCompliantEnabled) {
-            resetThirdPartySharingCoppaActivityStateI();
-            return;
-        }
+        boolean coppaComplianceEnabled =
+                SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance();
 
-        disableThirdPartySharingForCoppaEnabledI();
+        setCoppaCompliantEnabledI(coppaComplianceEnabled);
     }
 
     private void disableThirdPartySharingForCoppaEnabledI() {
@@ -2888,11 +2908,28 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void resetThirdPartySharingCoppaActivityStateI() {
-        if (activityState == null) { return; }
-        if (activityState.isThirdPartySharingDisabledForCoppa) {
-            activityState.isThirdPartySharingDisabledForCoppa = false;
-            writeActivityStateI();
+    private void enableThirdPartySharingForCoppaDisabledI() {
+        if (!shouldEnableThirdPartySharingWhenCoppaDisabled()) {
+            return;
+        }
+
+        activityState.isThirdPartySharingDisabledForCoppa = false;
+        writeActivityStateI();
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(true);
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
         }
     }
 
@@ -2910,5 +2947,21 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         return !activityState.isThirdPartySharingDisabledForCoppa;
+    }
+
+    private boolean shouldEnableThirdPartySharingWhenCoppaDisabled() {
+        if (activityState == null) {
+            return false;
+        }
+
+        if (!isEnabledI()) {
+            return false;
+        }
+
+        if (activityState.isGdprForgotten) {
+            return false;
+        }
+
+        return activityState.isThirdPartySharingDisabledForCoppa;
     }
 }

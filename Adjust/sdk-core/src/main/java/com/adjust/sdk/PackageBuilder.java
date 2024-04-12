@@ -1137,7 +1137,8 @@ public class PackageBuilder {
     }
 
     private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
-        if (adjustConfig.coppaCompliantEnabled) {
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+        if (sharedPreferencesManager.getCoppaCompliance()) {
             PackageBuilder.addLong(parameters, "ff_coppa", 1);
         }
 
@@ -1271,7 +1272,8 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            if (adjustConfig.coppaCompliantEnabled) {
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+            if (sharedPreferencesManager.getCoppaCompliance()) {
                 logger.info("Missing Device IDs. COPPA enabled.");
             } else {
                 logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");

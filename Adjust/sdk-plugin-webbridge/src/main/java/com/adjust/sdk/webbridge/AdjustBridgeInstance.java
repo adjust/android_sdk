@@ -171,7 +171,6 @@ public class AdjustBridgeInstance {
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object playStoreKidsAppEnabledField = jsonAdjustConfig.get("playStoreKidsAppEnabled");
-            Object coppaCompliantEnabledField = jsonAdjustConfig.get("coppaCompliantEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
 
@@ -381,12 +380,6 @@ public class AdjustBridgeInstance {
             Boolean playStoreKidsAppEnabled = AdjustBridgeUtil.fieldToBoolean(playStoreKidsAppEnabledField);
             if (playStoreKidsAppEnabled != null) {
                 adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
-            }
-
-            // Coppa compliant
-            Boolean coppaCompliantEnabled = AdjustBridgeUtil.fieldToBoolean(coppaCompliantEnabledField);
-            if (coppaCompliantEnabled != null) {
-                adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
             }
 
             // FB App ID
@@ -698,6 +691,24 @@ public class AdjustBridgeInstance {
         if (consentMeasurement != null) {
             Adjust.trackMeasurementConsent(consentMeasurement);
         }
+    }
+
+    @JavascriptInterface
+    public void enableCoppaCompliance() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        Adjust.enableCoppaCompliance(application.getApplicationContext());
+    }
+
+    @JavascriptInterface
+    public void disableCoppaCompliance() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        Adjust.disableCoppaCompliance(application.getApplicationContext());
     }
 
     @JavascriptInterface

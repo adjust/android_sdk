@@ -649,11 +649,14 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+        SharedPreferencesManager sharedPreferencesManager =
+                SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (adjustConfig.coppaCompliantEnabled) {
+        if (sharedPreferencesManager.getCoppaCompliance()) {
             return false;
         }
 
@@ -661,11 +664,14 @@ public class Util {
     }
 
     public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+        SharedPreferencesManager sharedPreferencesManager =
+                SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
+
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (adjustConfig.coppaCompliantEnabled) {
+        if (sharedPreferencesManager.getCoppaCompliance()) {
             return false;
         }
 

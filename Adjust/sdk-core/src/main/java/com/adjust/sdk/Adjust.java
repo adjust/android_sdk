@@ -293,6 +293,26 @@ public class Adjust {
     }
 
     /**
+     * Called to enable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public static void enableCoppaCompliance(final Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.enableCoppaCompliance(context);
+    }
+
+    /**
+     * Called to disable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public static void disableCoppaCompliance(final Context context) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.disableCoppaCompliance(context);
+    }
+
+    /**
      * Called to get value of Google Play Advertising Identifier.
      *
      * @param context        Application context
