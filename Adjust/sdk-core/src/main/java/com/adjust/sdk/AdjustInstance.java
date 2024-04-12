@@ -525,21 +525,21 @@ public class AdjustInstance {
         return Util.getSdkVersion();
     }
 
-    public void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+    /**
+     * Called to get Google Install Referrer.
+     *
+     * @param context Application context
+     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
+     */
+    public void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
         if (onGooglePlayInstallReferrerReadListener == null) {
             AdjustFactory.getLogger().error("OnGooglePlayInstallReferrerReadListener can not be null");
-            return;
-        }
-        if (context == null){
-            AdjustFactory.getLogger().error("context can not be null");
             return;
         }
         InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                if (referrerDetails != null) {
-                    onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
-                }
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
             }
 
             @Override

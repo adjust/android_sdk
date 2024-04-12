@@ -10,6 +10,9 @@ public class GooglePlayInstallReferrerDetails {
     public Boolean googlePlayInstant;                  // Indicates whether app's instant experience was launched within the past 7 days.
 
     GooglePlayInstallReferrerDetails(ReferrerDetails referrerDetails){
+        if (referrerDetails == null){
+            return;
+        }
         this.installReferrer = referrerDetails.installReferrer;
         this.referrerClickTimestampSeconds = referrerDetails.referrerClickTimestampSeconds;
         this.installBeginTimestampSeconds = referrerDetails.installBeginTimestampSeconds;

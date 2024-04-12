@@ -29,14 +29,10 @@ import com.adjust.sdk.OnSessionTrackingSucceededListener;
  */
 public class GlobalApplication extends Application {
 
-    Context context;
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-
-        context = this;
         // Configure adjust SDK.
         String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
