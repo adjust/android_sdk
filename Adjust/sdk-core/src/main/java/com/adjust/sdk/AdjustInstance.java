@@ -525,7 +525,7 @@ public class AdjustInstance {
         return Util.getSdkVersion();
     }
 
-    public void setOnGooglePlayInstallReferrerReadListener(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+    public void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
         if (onGooglePlayInstallReferrerReadListener != null && context != null) {
             InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
                 @Override
