@@ -777,7 +777,7 @@ public class ActivityHandler implements IActivityHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                setCoppaCompliantEnabledI(enabled);
+                setCoppaComplianceI(enabled);
             }
         });
     }
@@ -2578,7 +2578,7 @@ public class ActivityHandler implements IActivityHandler {
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
     }
 
-    private void setCoppaCompliantEnabledI(final boolean enabled) {
+    private void setCoppaComplianceI(final boolean enabled) {
         if (!enabled) {
             enableThirdPartySharingForCoppaDisabledI();
             return;
@@ -2893,7 +2893,7 @@ public class ActivityHandler implements IActivityHandler {
         boolean coppaComplianceEnabled =
                 SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance();
 
-        setCoppaCompliantEnabledI(coppaComplianceEnabled);
+        setCoppaComplianceI(coppaComplianceEnabled);
     }
 
     private void disableThirdPartySharingForCoppaEnabledI() {
@@ -2902,7 +2902,6 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         activityState.isThirdPartySharingDisabledForCoppa = true;
-        writeActivityStateI();
         AdjustThirdPartySharing adjustThirdPartySharing =
                 new AdjustThirdPartySharing(false);
 
@@ -2914,6 +2913,8 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
         packageHandler.addPackage(activityPackage);
+
+        writeActivityStateI();
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", activityPackage.getSuffix());
@@ -2928,7 +2929,6 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         activityState.isThirdPartySharingDisabledForCoppa = false;
-        writeActivityStateI();
         AdjustThirdPartySharing adjustThirdPartySharing =
                 new AdjustThirdPartySharing(true);
 
@@ -2939,6 +2939,8 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
         packageHandler.addPackage(activityPackage);
+
+        writeActivityStateI();
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Buffered event %s", activityPackage.getSuffix());
