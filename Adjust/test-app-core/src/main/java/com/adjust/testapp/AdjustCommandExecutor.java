@@ -90,7 +90,7 @@ public class AdjustCommandExecutor {
                 case "gdprForgetMe": gdprForgetMe(); break;
                 case "thirdPartySharing" : thirdPartySharing(); break;
                 case "measurementConsent" : measurementConsent(); break;
-                case "trackAdRevenueV2" : trackAdRevenueV2(); break;
+                case "trackAdRevenue" : trackAdRevenue(); break;
                 case "trackSubscription": trackSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
                 case "processDeeplink" : processDeeplink(); break;
@@ -707,7 +707,7 @@ public class AdjustCommandExecutor {
         Adjust.trackMeasurementConsent(measurementConsent);
     }
 
-    private void trackAdRevenueV2() {
+    private void trackAdRevenue() {
         String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
         AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(adRevenueSource);
 
