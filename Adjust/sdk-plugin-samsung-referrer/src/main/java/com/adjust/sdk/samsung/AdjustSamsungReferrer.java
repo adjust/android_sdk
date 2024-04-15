@@ -1,8 +1,6 @@
 package com.adjust.sdk.samsung;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.ReferrerDetails;
@@ -13,30 +11,38 @@ public class AdjustSamsungReferrer {
 
    static boolean shouldReadSamsungReferrer = true;
 
-   public static void getSamsungInstallReferrer(Context context ,OnSamsungInstallReferrerReadListener onSamsungInstallReferrerReadListener){
-
-      new AsyncTaskExecutor<Context, ReferrerDetails>() {
-         @Override
-         protected ReferrerDetails doInBackground(Context[] contexts) {
-            ReferrerDetails referrerDetails=null;
-            try {
-                referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
-            }catch (Exception exception){
-               if (onSamsungInstallReferrerReadListener != null) {
-                  onSamsungInstallReferrerReadListener.onFailure(exception.getMessage());
+   /**
+    * Called to get Samsung Install Referrer.
+    *
+    * @param context Application context
+    * @param onSamsungInstallReferrerReadListener Callback to obtain install referrer.
+    */
+   public static void getSamsungInstallReferrer(final Context context, final OnSamsungInstallReferrerReadListener onSamsungInstallReferrerReadListener) {
+       new AsyncTaskExecutor<Context, ReferrerDetails>() {
+           @Override
+           protected ReferrerDetails doInBackground(Context[] contexts) {
+               ReferrerDetails referrerDetails = null;
+               try {
+                   referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
+               } catch (Exception exception) {
+                   if (onSamsungInstallReferrerReadListener == null) {
+                       AdjustFactory.getLogger().error("onSamsungInstallReferrerReadListener can not be null");
+                       return null;
+                   }
+                   onSamsungInstallReferrerReadListener.onFail(exception.getMessage());
                }
-            }
-            return referrerDetails;
-         }
+               return referrerDetails;
+           }
 
-         @Override
-         protected void onPostExecute(ReferrerDetails referrerDetails) {
-            if (onSamsungInstallReferrerReadListener != null){
-               onSamsungInstallReferrerReadListener.onInstallReferrerRead(referrerDetails);
-            }
-         }
-      }.execute(context);
-
+           @Override
+           protected void onPostExecute(ReferrerDetails referrerDetails) {
+               if (onSamsungInstallReferrerReadListener == null) {
+                   AdjustFactory.getLogger().error("onSamsungInstallReferrerReadListener can not be null");
+                   return;
+               }
+               onSamsungInstallReferrerReadListener.onInstallReferrerRead(new SamsungInstallReferrerDetails(referrerDetails));
+           }
+       }.execute(context);
    }
 
    public static void readSamsungReferrer(Context context) {
