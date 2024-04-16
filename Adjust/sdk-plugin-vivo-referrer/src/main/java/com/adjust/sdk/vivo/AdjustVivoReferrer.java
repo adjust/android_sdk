@@ -17,29 +17,32 @@ public class AdjustVivoReferrer {
     * @param onVivoInstallReferrerReadListener Callback to obtain install referrer.
     */
    public static void getVivoInstallReferrer(final Context context, final OnVivoInstallReferrerReadListener onVivoInstallReferrerReadListener) {
-      new AsyncTaskExecutor<Context, ReferrerDetails>() {
+      if (onVivoInstallReferrerReadListener == null){
+         AdjustFactory.getLogger().error("onVivoInstallReferrerReadListener can not be null");
+         return;
+      }
+
+      new AsyncTaskExecutor<Context, VivoInstallReferrerResult>() {
          @Override
-         protected ReferrerDetails doInBackground(Context[] contexts) {
-            ReferrerDetails referrerDetails = null;
+         protected VivoInstallReferrerResult doInBackground(Context[] contexts) {
+            VivoInstallReferrerDetails vivoInstallReferrerDetails = null;
             try {
-               referrerDetails = Util.getVivoInstallReferrerDetails(context, AdjustFactory.getLogger());
+               ReferrerDetails referrerDetails = Util.getVivoInstallReferrerDetails(context, AdjustFactory.getLogger());
+               vivoInstallReferrerDetails = new VivoInstallReferrerDetails(referrerDetails);
+               return new VivoInstallReferrerResult(vivoInstallReferrerDetails);
             } catch (Exception exception) {
-               if (onVivoInstallReferrerReadListener == null) {
-                  AdjustFactory.getLogger().error("onVivoInstallReferrerReadListener can not be null");
-                  return null;
-               }
-               onVivoInstallReferrerReadListener.onFail(exception.getMessage());
+               return new VivoInstallReferrerResult(exception.getMessage());
             }
-            return referrerDetails;
          }
 
          @Override
-         protected void onPostExecute(ReferrerDetails referrerDetails) {
-            if (onVivoInstallReferrerReadListener == null) {
-               AdjustFactory.getLogger().error("onVivoInstallReferrerReadListener can not be null");
-               return;
+         protected void onPostExecute(VivoInstallReferrerResult vivoInstallReferrerResult) {
+            if (vivoInstallReferrerResult.vivoInstallReferrerDetails != null) {
+               onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(vivoInstallReferrerResult.vivoInstallReferrerDetails);
             }
-            onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(new VivoInstallReferrerDetails(referrerDetails));
+            if (vivoInstallReferrerResult.error != null) {
+               onVivoInstallReferrerReadListener.onFail(vivoInstallReferrerResult.error);
+            }
          }
       }.execute(context);
    }
