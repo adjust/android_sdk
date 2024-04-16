@@ -27,7 +27,7 @@ public class AdjustVivoReferrer {
          protected VivoInstallReferrerResult doInBackground(Context[] contexts) {
             VivoInstallReferrerDetails vivoInstallReferrerDetails = null;
             try {
-               ReferrerDetails referrerDetails = Util.getVivoInstallReferrerDetails(context, AdjustFactory.getLogger());
+               ReferrerDetails referrerDetails = VivoReferrerClient.getReferrer(context, AdjustFactory.getLogger());
                vivoInstallReferrerDetails = new VivoInstallReferrerDetails(referrerDetails);
                return new VivoInstallReferrerResult(vivoInstallReferrerDetails);
             } catch (Exception exception) {
