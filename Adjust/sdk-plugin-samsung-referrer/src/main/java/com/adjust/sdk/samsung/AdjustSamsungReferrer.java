@@ -18,29 +18,31 @@ public class AdjustSamsungReferrer {
     * @param onSamsungInstallReferrerReadListener Callback to obtain install referrer.
     */
    public static void getSamsungInstallReferrer(final Context context, final OnSamsungInstallReferrerReadListener onSamsungInstallReferrerReadListener) {
-       new AsyncTaskExecutor<Context, ReferrerDetails>() {
+
+       if (onSamsungInstallReferrerReadListener == null){
+           AdjustFactory.getLogger().error("onSamsungInstallReferrerReadListener can not be null");
+           return;
+       }
+
+       new AsyncTaskExecutor<Context, SamsungInstallReferrerResult>() {
            @Override
-           protected ReferrerDetails doInBackground(Context[] contexts) {
-               ReferrerDetails referrerDetails = null;
+           protected SamsungInstallReferrerResult doInBackground(Context[] contexts) {
                try {
-                   referrerDetails = Util.getSamsungInstallReferrerDetails(context, AdjustFactory.getLogger());
+                   return SamsungReferrerClient.getReferrer(context, AdjustFactory.getLogger(),2000);
                } catch (Exception exception) {
-                   if (onSamsungInstallReferrerReadListener == null) {
-                       AdjustFactory.getLogger().error("onSamsungInstallReferrerReadListener can not be null");
-                       return null;
-                   }
-                   onSamsungInstallReferrerReadListener.onFail(exception.getMessage());
+                   return new SamsungInstallReferrerResult(exception.getMessage());
                }
-               return referrerDetails;
            }
 
            @Override
-           protected void onPostExecute(ReferrerDetails referrerDetails) {
-               if (onSamsungInstallReferrerReadListener == null) {
-                   AdjustFactory.getLogger().error("onSamsungInstallReferrerReadListener can not be null");
-                   return;
+           protected void onPostExecute(SamsungInstallReferrerResult samsungInstallReferrerResult) {
+               if (samsungInstallReferrerResult != null) {
+                   if (samsungInstallReferrerResult.samsungInstallReferrerDetails != null) {
+                       onSamsungInstallReferrerReadListener.onSamsungInstallReferrerRead(samsungInstallReferrerResult.samsungInstallReferrerDetails);
+                   } else if (samsungInstallReferrerResult.error != null) {
+                       onSamsungInstallReferrerReadListener.onFail(samsungInstallReferrerResult.error);
+                   }
                }
-               onSamsungInstallReferrerReadListener.onInstallReferrerRead(new SamsungInstallReferrerDetails(referrerDetails));
            }
        }.execute(context);
    }
