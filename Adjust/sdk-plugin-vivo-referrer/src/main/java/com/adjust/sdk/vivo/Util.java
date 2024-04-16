@@ -11,6 +11,20 @@ public class Util {
          return null;
       }
 
-      return VivoReferrerClient.getReferrer(context, logger);
+      VivoInstallReferrerResult vivoInstallReferrerResult = VivoReferrerClient.getReferrer(context, logger);
+      if (vivoInstallReferrerResult.vivoInstallReferrerDetails == null) {
+         return null;
+      }
+
+      VivoInstallReferrerDetails vivoInstallReferrerDetails = vivoInstallReferrerResult.vivoInstallReferrerDetails;
+
+      return new ReferrerDetails(vivoInstallReferrerDetails.installReferrer,
+              vivoInstallReferrerDetails.referrerClickTimestampSeconds,
+              vivoInstallReferrerDetails.installBeginTimestampSeconds,
+              -1,
+              -1,
+              vivoInstallReferrerDetails.installVersion,
+              null,
+              null);
    }
 }

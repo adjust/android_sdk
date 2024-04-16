@@ -25,11 +25,8 @@ public class AdjustVivoReferrer {
       new AsyncTaskExecutor<Context, VivoInstallReferrerResult>() {
          @Override
          protected VivoInstallReferrerResult doInBackground(Context[] contexts) {
-            VivoInstallReferrerDetails vivoInstallReferrerDetails = null;
             try {
-               ReferrerDetails referrerDetails = VivoReferrerClient.getReferrer(context, AdjustFactory.getLogger());
-               vivoInstallReferrerDetails = new VivoInstallReferrerDetails(referrerDetails);
-               return new VivoInstallReferrerResult(vivoInstallReferrerDetails);
+               return VivoReferrerClient.getReferrer(context, AdjustFactory.getLogger());
             } catch (Exception exception) {
                return new VivoInstallReferrerResult(exception.getMessage());
             }
@@ -40,8 +37,7 @@ public class AdjustVivoReferrer {
             if (vivoInstallReferrerResult != null) {
                if (vivoInstallReferrerResult.vivoInstallReferrerDetails != null) {
                   onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(vivoInstallReferrerResult.vivoInstallReferrerDetails);
-               }
-               if (vivoInstallReferrerResult.error != null) {
+               } else if (vivoInstallReferrerResult.error != null) {
                   onVivoInstallReferrerReadListener.onFail(vivoInstallReferrerResult.error);
                }
             }
