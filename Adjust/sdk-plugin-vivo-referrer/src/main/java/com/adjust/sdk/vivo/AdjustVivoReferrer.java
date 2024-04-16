@@ -37,11 +37,13 @@ public class AdjustVivoReferrer {
 
          @Override
          protected void onPostExecute(VivoInstallReferrerResult vivoInstallReferrerResult) {
-            if (vivoInstallReferrerResult.vivoInstallReferrerDetails != null) {
-               onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(vivoInstallReferrerResult.vivoInstallReferrerDetails);
-            }
-            if (vivoInstallReferrerResult.error != null) {
-               onVivoInstallReferrerReadListener.onFail(vivoInstallReferrerResult.error);
+            if (vivoInstallReferrerResult != null) {
+               if (vivoInstallReferrerResult.vivoInstallReferrerDetails != null) {
+                  onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(vivoInstallReferrerResult.vivoInstallReferrerDetails);
+               }
+               if (vivoInstallReferrerResult.error != null) {
+                  onVivoInstallReferrerReadListener.onFail(vivoInstallReferrerResult.error);
+               }
             }
          }
       }.execute(context);
