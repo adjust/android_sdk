@@ -20,6 +20,7 @@ public class SamsungReferrerClient {
             referrerClient.startConnection(new InstallReferrerStateListener() {
                 @Override
                 public void onInstallReferrerSetupFinished(int responseCode) {
+                    String error;
                     try {
                         switch (responseCode) {
                             case InstallReferrerClient.InstallReferrerResponse.OK:
@@ -27,20 +28,29 @@ public class SamsungReferrerClient {
                                     SamsungInstallReferrerDetails samsungInstallReferrerDetails = getSamsungInstallReferrerDetails(referrerClient);
                                     referrerDetailsHolder.offer(new SamsungInstallReferrerResult(samsungInstallReferrerDetails));
                                 } catch (Exception e) {
-                                    logger.error("SamsungReferrer getInstallReferrer: " + e.getMessage());
+                                    error = "SamsungReferrer getInstallReferrer: " + e.getMessage();
+                                    referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                    logger.error(error);
+
                                 } finally {
                                     referrerClient.endConnection();
                                 }
                                 break;
                             case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
-                                logger.info("SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
+                                error = "SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED";
+                                referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                logger.info(error);
                                 break;
                             case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
-                                logger.info("SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE");
+                                error = "SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE";
+                                referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                logger.info(error);
                                 break;
                         }
                     } catch (Exception e) {
-                        logger.error("SamsungReferrer onInstallReferrerSetupFinished: " + e.getMessage());
+                        error = "SamsungReferrer onInstallReferrerSetupFinished: " + e.getMessage();
+                        referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                        logger.error(error);
                     }
                 }
 
