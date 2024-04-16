@@ -17,6 +17,10 @@ public class AdjustHuaweiReferrer {
     * @param onHuaweiInstallReferrerReadListener Callback to obtain install referrer.
     */
    public static void getHuaweiInstallReferrer(final Context context, final OnHuaweiInstallReferrerReadListener onHuaweiInstallReferrerReadListener) {
+      if (onHuaweiInstallReferrerReadListener == null){
+         AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
+         return;
+      }
       new AsyncTaskExecutor<Context, ReferrerDetails>() {
          @Override
          protected ReferrerDetails doInBackground(Context[] contexts) {
@@ -35,8 +39,7 @@ public class AdjustHuaweiReferrer {
 
          @Override
          protected void onPostExecute(ReferrerDetails referrerDetails) {
-            if (onHuaweiInstallReferrerReadListener == null) {
-               AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
+            if (referrerDetails == null) {
                return;
             }
             onHuaweiInstallReferrerReadListener.onHuaweiAppGalleryInstallReferrerDetailsRead(new HuaweiInstallReferrerDetails(referrerDetails));
