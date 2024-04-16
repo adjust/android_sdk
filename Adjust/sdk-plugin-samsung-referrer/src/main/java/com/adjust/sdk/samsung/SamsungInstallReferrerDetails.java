@@ -8,16 +8,7 @@ public class SamsungInstallReferrerDetails {
     public long referrerClickTimestampSeconds;         // The client-side timestamp, when the referrer click happened.
     public long installBeginTimestampSeconds;          // The client-side timestamp, when app installation began.
 
-    public SamsungInstallReferrerDetails(ReferrerDetails referrerDetails){
-        if (referrerDetails == null){
-            return;
-        }
-        this.installReferrer = referrerDetails.installReferrer;
-        this.referrerClickTimestampSeconds = referrerDetails.referrerClickTimestampSeconds;
-        this.installBeginTimestampSeconds = referrerDetails.installBeginTimestampSeconds;
-    }
-
-    public SamsungInstallReferrerDetails(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds){
+    SamsungInstallReferrerDetails(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds){
         this.installReferrer = installReferrer;
         this.referrerClickTimestampSeconds = referrerClickTimestampSeconds;
         this.installBeginTimestampSeconds = installBeginTimestampSeconds;
