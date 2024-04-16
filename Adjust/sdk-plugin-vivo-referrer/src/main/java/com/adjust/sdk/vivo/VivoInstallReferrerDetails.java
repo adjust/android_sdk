@@ -10,6 +10,13 @@ public class VivoInstallReferrerDetails {
     public long installBeginTimestampSeconds;          // The client-side timestamp, when app installation began.
     public String installVersion;                      // The app's version at the time when the app was first installed.
 
+    public VivoInstallReferrerDetails(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds, String installVersion) {
+        this.installReferrer = installReferrer;
+        this.referrerClickTimestampSeconds = referrerClickTimestampSeconds;
+        this.installBeginTimestampSeconds = installBeginTimestampSeconds;
+        this.installVersion = installVersion;
+    }
+
     VivoInstallReferrerDetails(ReferrerDetails referrerDetails){
         if (referrerDetails == null){
             return;
