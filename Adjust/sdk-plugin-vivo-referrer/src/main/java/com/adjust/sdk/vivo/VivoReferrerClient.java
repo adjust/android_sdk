@@ -9,27 +9,32 @@ import com.adjust.sdk.ILogger;
 import com.adjust.sdk.ReferrerDetails;
 
 public class VivoReferrerClient {
-    public static ReferrerDetails getReferrer(Context context, final ILogger logger) {
+    public static VivoInstallReferrerResult getReferrer(Context context, final ILogger logger) {
+
         try {
             Uri url = Uri.parse("content://com.vivo.appstore.provider.referrer");
             Bundle resultBundle = context.getContentResolver().call(url, "read_referrer", null, null);
             if (resultBundle == null) {
-                return null;
+                return new VivoInstallReferrerResult("VivoReferrer read error: resultBundle null");
             }
 
             String installReferrer = resultBundle.getString("install_referrer");
             if (TextUtils.isEmpty(installReferrer)) {
-                return null;
+                return new VivoInstallReferrerResult("VivoReferrer read error: referrer string null");
             }
 
             long clickTime = resultBundle.getLong("referrer_click_timestamp_seconds");
             long installBeginTime = resultBundle.getLong("download_begin_timestamp_seconds");
             String installVersion = resultBundle.getString("install_version");
 
-            return new ReferrerDetails(installReferrer, clickTime, installBeginTime, -1, -1, installVersion, null, null);
+            VivoInstallReferrerDetails vivoInstallReferrerDetails = new VivoInstallReferrerDetails(
+                    installReferrer, clickTime, installBeginTime, installVersion);
+            return new VivoInstallReferrerResult(vivoInstallReferrerDetails);
+
         } catch (Exception e) {
-            logger.info("VivoReferrer read error" + e.getMessage());
+            String error = "VivoReferrer read error: " + e.getMessage();
+            logger.info(error);
+            return new VivoInstallReferrerResult(error);
         }
-        return null;
     }
 }
