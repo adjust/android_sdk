@@ -12,12 +12,12 @@ public class Util {
             return null;
         }
 
-        SamsungInstallReferrerResult referrerDetails =
+        SamsungInstallReferrerResult referrerResult =
                 SamsungReferrerClient.getReferrer(context, logger, 2000);
-        if (referrerDetails == null) {
+        if (referrerResult == null) {
             return null;
         }
-        SamsungInstallReferrerDetails samsungInstallReferrerDetails = referrerDetails.samsungInstallReferrerDetails;
+        SamsungInstallReferrerDetails samsungInstallReferrerDetails = referrerResult.samsungInstallReferrerDetails;
         if (samsungInstallReferrerDetails == null) {
             return null;
         }
