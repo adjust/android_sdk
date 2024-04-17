@@ -2425,11 +2425,6 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
-        if (sharedPreferencesManager.getCoppaCompliance()) {
-            logger.warn("Calling third party sharing API not allowed when COPPA enabled");
-            return;
-        }
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
