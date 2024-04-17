@@ -18,7 +18,9 @@ public class Util {
             return null;
         }
         SamsungInstallReferrerDetails samsungInstallReferrerDetails = referrerDetails.samsungInstallReferrerDetails;
-
+        if (samsungInstallReferrerDetails == null) {
+            return null;
+        }
         return new ReferrerDetails(samsungInstallReferrerDetails.installReferrer,
                 samsungInstallReferrerDetails.referrerClickTimestampSeconds,
                 samsungInstallReferrerDetails.installBeginTimestampSeconds,
