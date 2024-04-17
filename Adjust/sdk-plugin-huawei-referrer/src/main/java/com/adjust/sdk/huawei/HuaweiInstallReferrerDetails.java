@@ -17,6 +17,13 @@ public class HuaweiInstallReferrerDetails {
         this.installBeginTimestampSeconds = referrerDetails.installBeginTimestampSeconds;;
     }
 
+    public HuaweiInstallReferrerDetails (String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
+        this.installReferrer = installReferrer;
+        this.referrerClickTimestampSeconds = referrerClickTimestampSeconds;
+        this.installBeginTimestampSeconds = installBeginTimestampSeconds;
+
+    }
+
     public String toString() {
         return Util.formatString(
                 " installReferrer : %s" +
