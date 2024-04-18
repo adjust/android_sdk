@@ -3,8 +3,10 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Class used to forward instructions to SDK which user gives as part of Adjust class interface.
@@ -48,7 +50,7 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private OnAdidReadListener cachedAdidReadCallback;
+    private final Set<OnAdidReadListener> cachedAdidReadCallback = new HashSet<>();
     /**
      * Base path for Adjust packages.
      */
@@ -99,7 +101,7 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
-        adjustConfig.cachedAdidReadCallback = cachedAdidReadCallback;
+        adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallback;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -536,7 +538,7 @@ public class AdjustInstance {
     public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
             onAdidReadListener.onFail("ActivityHandler is not enabled");
-            this.cachedAdidReadCallback = onAdidReadListener;
+            this.cachedAdidReadCallback.add(onAdidReadListener);
             return;
         }
         activityHandler.getAdid(onAdidReadListener);

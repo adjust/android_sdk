@@ -30,10 +30,13 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
@@ -83,7 +86,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private OnAdidReadListener onAdidReadListener;
+    private Set<OnAdidReadListener> onAdidReadListener = new HashSet<>();
 
     @Override
     public void teardown() {
@@ -461,8 +464,10 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (onAdidReadListener != null){
-            onAdidReadListener.onAdidRead(adid);
+        if (onAdidReadListener != null && !onAdidReadListener.isEmpty()){
+            for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
+                onAdidReadListener.onAdidRead(adid);
+            }
         }
 
         activityState.adid = adid;
@@ -757,7 +762,7 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) {
             callback.onFail("SDK needs to be initialized before getting adid");
         }
-        this.onAdidReadListener = callback;
+        this.onAdidReadListener.add(callback);
     }
 
     @Override
@@ -885,7 +890,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // cached adid read callback
         if (this.onAdidReadListener == null) {
-            this.onAdidReadListener = adjustConfig.cachedAdidReadCallback;
+            this.onAdidReadListener = adjustConfig.cachedAdidReadCallbacks;
         }
 
         // GDPR
