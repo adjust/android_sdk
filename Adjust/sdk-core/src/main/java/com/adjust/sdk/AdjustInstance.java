@@ -101,7 +101,10 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
-        adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallback;
+        if (adjustConfig.cachedAdidReadCallbacks == null) {
+            adjustConfig.cachedAdidReadCallbacks = new HashSet<>();
+        }
+        adjustConfig.cachedAdidReadCallbacks.addAll(cachedAdidReadCallback);
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -537,7 +540,6 @@ public class AdjustInstance {
      */
     public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
-            onAdidReadListener.onFail("ActivityHandler is not enabled");
             this.cachedAdidReadCallback.add(onAdidReadListener);
             return;
         }
