@@ -42,6 +42,8 @@ public class AdjustSamsungReferrer {
                    } else if (samsungInstallReferrerResult.error != null) {
                        onSamsungInstallReferrerReadListener.onFail(samsungInstallReferrerResult.error);
                    }
+               }else {
+                   onSamsungInstallReferrerReadListener.onFail("SamsungReferrer getInstallReferrer: samsungInstallReferrerResult is null");
                }
            }
        }.execute(context);
