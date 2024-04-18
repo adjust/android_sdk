@@ -85,7 +85,7 @@ public interface IActivityHandler {
 
     Context getContext();
 
-    String getAdid();
+    void getAdid(OnAdidReadListener onAdidReadListener);
 
     AdjustAttribution getAttribution();
 

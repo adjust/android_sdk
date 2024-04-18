@@ -83,6 +83,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+    private OnAdidReadListener onAdidReadListener;
 
     @Override
     public void teardown() {
@@ -460,9 +461,12 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        if (onAdidReadListener != null){
+            onAdidReadListener.onAdidRead(adid);
+        }
+
         activityState.adid = adid;
         writeActivityStateI();
-        return;
     }
 
     @Override
@@ -749,11 +753,11 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public String getAdid() {
+    public void getAdid(OnAdidReadListener callback) {
         if (activityState == null) {
-            return null;
+            callback.onFail("SDK needs to be initialized before getting adid");
         }
-        return activityState.adid;
+        this.onAdidReadListener = callback;
     }
 
     @Override
@@ -877,6 +881,11 @@ public class ActivityHandler implements IActivityHandler {
         // cached deep link resolution callback
         if (this.cachedDeeplinkResolutionCallback == null) {
             this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
+        }
+
+        // cached adid read callback
+        if (this.onAdidReadListener == null) {
+            this.onAdidReadListener = adjustConfig.cachedAdidReadCallback;
         }
 
         // GDPR
