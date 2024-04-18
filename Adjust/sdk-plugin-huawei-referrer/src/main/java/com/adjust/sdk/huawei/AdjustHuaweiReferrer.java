@@ -21,53 +21,54 @@ public class AdjustHuaweiReferrer {
          AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
          return;
       }
-      new AsyncTaskExecutor<Context, ReferrerDetails>() {
+      new AsyncTaskExecutor<Context, HuaweiInstallReferrerResult>() {
          @Override
-         protected ReferrerDetails doInBackground(Context[] contexts) {
-            ReferrerDetails referrerDetails = null;
+         protected HuaweiInstallReferrerResult doInBackground(Context[] contexts) {
             try {
-               referrerDetails = Util.getHuaweiAppGalleryInstallReferrerDetails(context, AdjustFactory.getLogger());
+               return HuaweiReferrerClient.getHuaweiAppGalleryInstallReferrer(context, AdjustFactory.getLogger());
             } catch (Exception exception) {
-               if (onHuaweiInstallReferrerReadListener == null) {
-                  AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
-                  return null;
-               }
-               onHuaweiInstallReferrerReadListener.onFail(exception.getMessage());
+               return new HuaweiInstallReferrerResult(exception.getMessage());
             }
-            return referrerDetails;
          }
 
          @Override
-         protected void onPostExecute(ReferrerDetails referrerDetails) {
-            if (referrerDetails == null) {
-               return;
+         protected void onPostExecute(HuaweiInstallReferrerResult huaweiInstallReferrerResult) {
+            if (huaweiInstallReferrerResult != null) {
+               if (huaweiInstallReferrerResult.huaweiInstallReferrerDetails != null) {
+                  onHuaweiInstallReferrerReadListener.onHuaweiAppGalleryInstallReferrerDetailsRead(huaweiInstallReferrerResult.huaweiInstallReferrerDetails);
+               } else if (huaweiInstallReferrerResult.error != null) {
+                  onHuaweiInstallReferrerReadListener.onFail(huaweiInstallReferrerResult.error);
+               }else {
+                  onHuaweiInstallReferrerReadListener.onFail("HuaweiReferrer getInstallReferrer: huaweiInstallReferrerDetails is null");
+               }
+            }else {
+               onHuaweiInstallReferrerReadListener.onFail("HuaweiReferrer getInstallReferrer: huaweiInstallReferrerResult is null");
             }
-            onHuaweiInstallReferrerReadListener.onHuaweiAppGalleryInstallReferrerDetailsRead(new HuaweiInstallReferrerDetails(referrerDetails));
          }
       }.execute(context);
-      new AsyncTaskExecutor<Context, ReferrerDetails>() {
-         @Override
-         protected ReferrerDetails doInBackground(Context[] contexts) {
-            ReferrerDetails referrerDetails = null;
-            try {
-               referrerDetails = Util.getHuaweiAdsInstallReferrerDetails(context, AdjustFactory.getLogger());
-            } catch (Exception exception) {
-               if (onHuaweiInstallReferrerReadListener == null) {
-                  AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
-                  return null;
-               }
-               onHuaweiInstallReferrerReadListener.onFail(exception.getMessage());
-            }
-            return referrerDetails;
-         }
 
+      new AsyncTaskExecutor<Context, HuaweiInstallReferrerResult>() {
          @Override
-         protected void onPostExecute(ReferrerDetails referrerDetails) {
-            if (onHuaweiInstallReferrerReadListener == null) {
-               AdjustFactory.getLogger().error("onHuaweiInstallReferrerReadListener can not be null");
-               return;
+         protected HuaweiInstallReferrerResult doInBackground(Context[] contexts) {
+            try {
+               return HuaweiReferrerClient.getHuaweiAdsInstallReferrer(context, AdjustFactory.getLogger());
+            } catch (Exception exception) {
+               return new HuaweiInstallReferrerResult(exception.getMessage());
             }
-            onHuaweiInstallReferrerReadListener.onHuaweiAdsInstallReferrerDetailsRead(new HuaweiInstallReferrerDetails(referrerDetails));
+         }
+         @Override
+         protected void onPostExecute(HuaweiInstallReferrerResult huaweiInstallReferrerResult) {
+            if (huaweiInstallReferrerResult != null) {
+               if (huaweiInstallReferrerResult.huaweiInstallReferrerDetails != null) {
+                  onHuaweiInstallReferrerReadListener.onHuaweiAdsInstallReferrerDetailsRead(huaweiInstallReferrerResult.huaweiInstallReferrerDetails);
+               } else if (huaweiInstallReferrerResult.error != null) {
+                  onHuaweiInstallReferrerReadListener.onFail(huaweiInstallReferrerResult.error);
+               }else {
+                  onHuaweiInstallReferrerReadListener.onFail("HuaweiReferrer getInstallReferrer: huaweiInstallReferrerDetails is null");
+               }
+            }else {
+               onHuaweiInstallReferrerReadListener.onFail("HuaweiReferrer getInstallReferrer: huaweiInstallReferrerResult is null");
+            }
          }
       }.execute(context);
    }
