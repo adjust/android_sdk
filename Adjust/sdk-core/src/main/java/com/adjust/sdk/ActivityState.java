@@ -202,6 +202,12 @@ public class ActivityState implements Serializable, Cloneable {
         return orderIds.contains(orderId);
     }
 
+    public boolean isCoppaEnabled() {
+        return isThirdPartySharingDisabledForCoppa;
+    }
+    public void setCoppa(boolean enabled) {
+        this.isThirdPartySharingDisabledForCoppa = enabled;
+    }
     @Override
     public String toString() {
         return Util.formatString("ec:%d sc:%d ssc:%d sl:%.1f ts:%.1f la:%s uuid:%s",

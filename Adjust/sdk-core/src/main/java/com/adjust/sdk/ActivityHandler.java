@@ -2573,13 +2573,41 @@ public class ActivityHandler implements IActivityHandler {
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
     }
 
-    private void setCoppaComplianceI(final boolean enabled) {
-        if (!enabled) {
-            enableThirdPartySharingForCoppaDisabledI();
+    private void setCoppaComplianceI(final boolean coppaEnabled) {
+        if (activityState == null) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        if (activityState.isCoppaEnabled() && coppaEnabled) {
+            logger.debug("Coppa is already enabled in the activity state");
+            return;
+        }
+        if (! activityState.isCoppaEnabled() && ! coppaEnabled) {
+            logger.debug("Coppa is already disabled in the activity state");
             return;
         }
 
-        disableThirdPartySharingForCoppaEnabledI();
+        activityState.setCoppa(coppaEnabled);
+
+        // third party sharing is disabled when coppa is enabled and vice-versa
+        final boolean tpsEnabled = ! coppaEnabled;
+        final AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(tpsEnabled);
+
+        final long now = System.currentTimeMillis();
+        final PackageBuilder packageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, sessionParameters, now);
+
+        final ActivityPackage activityPackage =
+          packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        writeActivityStateI();
+
+        if (adjustConfig.eventBufferingEnabled) {
+            logger.info("Buffered event %s", activityPackage.getSuffix());
+        } else {
+            packageHandler.sendFirstPackage();
+        }
     }
 
     private void gotOptOutResponseI() {
@@ -2885,94 +2913,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void processCoppaComplianceI() {
-        boolean coppaComplianceEnabled =
-                SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance();
-
-        setCoppaComplianceI(coppaComplianceEnabled);
-    }
-
-    private void disableThirdPartySharingForCoppaEnabledI() {
-        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
-            return;
-        }
-
-        activityState.isThirdPartySharingDisabledForCoppa = true;
-        AdjustThirdPartySharing adjustThirdPartySharing =
-                new AdjustThirdPartySharing(false);
-
-        long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, sessionParameters, now);
-        packageBuilder.internalState = internalState;
-
-        ActivityPackage activityPackage =
-                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
-        packageHandler.addPackage(activityPackage);
-
-        writeActivityStateI();
-
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
-    }
-
-    private void enableThirdPartySharingForCoppaDisabledI() {
-        if (!shouldEnableThirdPartySharingWhenCoppaDisabled()) {
-            return;
-        }
-
-        activityState.isThirdPartySharingDisabledForCoppa = false;
-        AdjustThirdPartySharing adjustThirdPartySharing =
-                new AdjustThirdPartySharing(true);
-
-        long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, sessionParameters, now);
-
-        ActivityPackage activityPackage =
-                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
-        packageHandler.addPackage(activityPackage);
-
-        writeActivityStateI();
-
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
-    }
-
-    private boolean shouldDisableThirdPartySharingWhenCoppaEnabled() {
-        if (activityState == null) {
-            return false;
-        }
-
-        if (!isEnabledI()) {
-            return false;
-        }
-
-        if (activityState.isGdprForgotten) {
-            return false;
-        }
-
-        return !activityState.isThirdPartySharingDisabledForCoppa;
-    }
-
-    private boolean shouldEnableThirdPartySharingWhenCoppaDisabled() {
-        if (activityState == null) {
-            return false;
-        }
-
-        if (!isEnabledI()) {
-            return false;
-        }
-
-        if (activityState.isGdprForgotten) {
-            return false;
-        }
-
-        return activityState.isThirdPartySharingDisabledForCoppa;
+        setCoppaComplianceI(
+          SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance());
     }
 }
