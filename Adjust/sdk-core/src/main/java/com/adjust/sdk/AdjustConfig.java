@@ -2,6 +2,9 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by pfms on 06/11/14.
  */
@@ -40,7 +43,7 @@ public class AdjustConfig {
     String fbAppId;
     boolean readDeviceInfoOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    OnAdidReadListener cachedAdidReadCallback;
+    Set<OnAdidReadListener> cachedAdidReadCallbacks;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
