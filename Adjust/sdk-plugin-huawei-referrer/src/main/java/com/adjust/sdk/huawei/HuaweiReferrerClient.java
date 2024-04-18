@@ -101,6 +101,8 @@ public class HuaweiReferrerClient {
                             referrerClickTimestampSeconds,
                             installBeginTimestampSeconds);
                     return new HuaweiInstallReferrerResult(huaweiInstallReferrerDetails);
+                }else {
+                    return new HuaweiInstallReferrerResult("Invalid HuaweiAdsInstallReferrer");
                 }
 
             } else {
@@ -164,6 +166,8 @@ public class HuaweiReferrerClient {
                             referrerClickTimestampSeconds,
                             installBeginTimestampSeconds);
                     return new HuaweiInstallReferrerResult(huaweiInstallReferrerDetails);
+                }else {
+                    new HuaweiInstallReferrerResult("Invalid HuaweiAppGalleryInstallReferrer");
                 }
 
             } else {
