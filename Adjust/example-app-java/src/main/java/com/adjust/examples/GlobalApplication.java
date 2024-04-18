@@ -16,6 +16,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.GooglePlayInstallReferrerDetails;
 import com.adjust.sdk.LogLevel;
+import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
@@ -95,6 +96,19 @@ public class GlobalApplication extends Application {
                 Log.d("example", "Deep link URL: " + deeplink);
 
                 return true;
+            }
+        });
+
+        Adjust.getAdid(new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                Log.d("example", "Adid callback called!");
+                Log.d("example", "Adid: " + adid);
+            }
+
+            @Override
+            public void onFail(String message) {
+                Log.d("example", "failed : " + message);
             }
         });
 

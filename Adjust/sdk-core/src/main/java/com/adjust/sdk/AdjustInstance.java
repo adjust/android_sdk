@@ -48,6 +48,7 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+    private OnAdidReadListener cachedAdidReadCallback;
     /**
      * Base path for Adjust packages.
      */
@@ -67,6 +68,8 @@ public class AdjustInstance {
      * Path for purchase verification package.
      */
     private String purchaseVerificationPath;
+
+
 
     /**
      * Called upon SDK initialisation.
@@ -96,6 +99,7 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
+        adjustConfig.cachedAdidReadCallback = cachedAdidReadCallback;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -529,11 +533,13 @@ public class AdjustInstance {
      *
      * @return Unique Adjust device indetifier
      */
-    public String getAdid() {
+    public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
-            return null;
+            onAdidReadListener.onFail("ActivityHandler is not enabled");
+            this.cachedAdidReadCallback = onAdidReadListener;
+            return;
         }
-        return activityHandler.getAdid();
+        activityHandler.getAdid(onAdidReadListener);
     }
 
     /**
