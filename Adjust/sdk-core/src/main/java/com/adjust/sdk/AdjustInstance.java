@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class AdjustInstance {
     public static class PreLaunchActions {
         public List<IRunActivityHandler> preLaunchActionsArray;
-        public List<AdjustThirdPartySharing> preLaunchAdjustThirdPartySharingArray;
+        public List<Object> preLaunchAdjustThirdPartySharingArray;
         public Boolean lastMeasurementConsentTracked;
 
         public PreLaunchActions() {
@@ -503,6 +503,8 @@ public class AdjustInstance {
             if (activityHandler.isEnabled()) {
                 activityHandler.setCoppaCompliance(true);
             }
+        } else {
+            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(Boolean.TRUE);
         }
     }
 
@@ -517,6 +519,8 @@ public class AdjustInstance {
             if (activityHandler.isEnabled()) {
                 activityHandler.setCoppaCompliance(false);
             }
+        } else {
+            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(Boolean.FALSE);
         }
     }
 

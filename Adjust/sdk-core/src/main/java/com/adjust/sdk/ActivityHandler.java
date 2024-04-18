@@ -1192,6 +1192,21 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    private void processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI() {
+        for (final Object adjustThirdPartySharingOrCoppa :
+          adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+        {
+            if (adjustThirdPartySharingOrCoppa instanceof AdjustThirdPartySharing) {
+                trackThirdPartySharingI((AdjustThirdPartySharing) adjustThirdPartySharingOrCoppa);
+            } else if (adjustThirdPartySharingOrCoppa instanceof Boolean) {
+                setCoppaComplianceI(((Boolean)adjustThirdPartySharingOrCoppa).booleanValue());
+            } else {
+                processCoppaComplianceI();
+            }
+        }
+        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray.clear();
+    }
+
     private void startI() {
         // check if it's the first sdk start
         if (internalState.hasFirstSdkStartNotOcurred()) {
@@ -1202,11 +1217,8 @@ public class ActivityHandler implements IActivityHandler {
             SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
 
             // check if third party sharing request came, then send it first
-            for (AdjustThirdPartySharing adjustThirdPartySharing :
-                    adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-            {
-                trackThirdPartySharingI(adjustThirdPartySharing);
-            }
+            processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
+
             if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                 trackMeasurementConsentI(
                         adjustConfig.preLaunchActions.
@@ -1254,14 +1266,12 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                // preLaunchAdjustThirdPartySharing should be done *before* coppaCompliance
+                //  since it will check for coppaCompliance inside it
+                processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
+
                 processCoppaComplianceI();
 
-                // check if third party sharing request came, then send it first
-                for (AdjustThirdPartySharing adjustThirdPartySharing :
-                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-                {
-                    trackThirdPartySharingI(adjustThirdPartySharing);
-                }
                 if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
                             adjustConfig.preLaunchActions.
@@ -1809,13 +1819,12 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
+                // preLaunchAdjustThirdPartySharing should be done *before* coppaCompliance
+                //  since it will check for coppaCompliance inside it
+                processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
+
                 processCoppaComplianceI();
 
-                for (AdjustThirdPartySharing adjustThirdPartySharing :
-                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-                {
-                    trackThirdPartySharingI(adjustThirdPartySharing);
-                }
                 if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
                             adjustConfig.preLaunchActions.
