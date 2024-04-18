@@ -762,6 +762,9 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState == null) {
             callback.onFail("SDK needs to be initialized before getting adid");
         }
+        if (activityState != null && activityState.adid != null) {
+            callback.onAdidRead(activityState.adid);
+        }
         this.onAdidReadListener.add(callback);
     }
 
@@ -890,8 +893,9 @@ public class ActivityHandler implements IActivityHandler {
 
         // cached adid read callback
         if (this.onAdidReadListener == null) {
-            this.onAdidReadListener = adjustConfig.cachedAdidReadCallbacks;
+            this.onAdidReadListener = new HashSet<>();
         }
+        this.onAdidReadListener.addAll(adjustConfig.cachedAdidReadCallbacks);
 
         // GDPR
         if (internalState.hasFirstSdkStartOcurred()) {
