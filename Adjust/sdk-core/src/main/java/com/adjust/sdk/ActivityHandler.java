@@ -821,21 +821,17 @@ public class ActivityHandler implements IActivityHandler {
 
         readConfigFile(adjustConfig.context);
 
-        deviceInfo = new DeviceInfo(adjustConfig);
+        boolean coppaEnabledInState = activityState != null && activityState.isCoppaEnabled();
+
+        deviceInfo = new DeviceInfo(adjustConfig, coppaEnabledInState);
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Event buffering is enabled");
         }
 
-        deviceInfo.reloadPlayIds(adjustConfig);
+        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabledInState);
         if (deviceInfo.playAdId == null) {
-            SharedPreferencesManager sharedPreferencesManager =
-                    SharedPreferencesManager.getDefaultInstance(getContext());
-            if (!Util.canReadPlayIds(adjustConfig)) {
-                if (sharedPreferencesManager.getCoppaCompliance()) {
-                    logger.info("Cannot read Google Play Services Advertising ID with COPPA enabled");
-                }
-
+            if (!Util.canReadPlayIds(adjustConfig, coppaEnabledInState)) {
                 if (adjustConfig.playStoreKidsAppEnabled) {
                     logger.info("Cannot read Google Play Services Advertising ID with play store kids app enabled");
                 }
@@ -844,11 +840,7 @@ public class ActivityHandler implements IActivityHandler {
             }
 
             if (deviceInfo.androidId == null) {
-                if (!Util.canReadNonPlayIds(adjustConfig)) {
-                    if (sharedPreferencesManager.getCoppaCompliance()) {
-                        logger.info("Cannot read non Play IDs with COPPA enabled");
-                    }
-
+                if (! Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState)) {
                     if (adjustConfig.playStoreKidsAppEnabled) {
                         logger.info("Cannot read non Play IDs with play store kids app enabled");
                     }

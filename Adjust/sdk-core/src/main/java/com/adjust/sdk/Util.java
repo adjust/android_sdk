@@ -648,7 +648,7 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         SharedPreferencesManager sharedPreferencesManager =
                 SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
 
@@ -656,31 +656,17 @@ public class Util {
             return false;
         }
 
-        if (sharedPreferencesManager.getCoppaCompliance()) {
-            return false;
-        }
-
-        return true;
+        return ! coppaEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        SharedPreferencesManager sharedPreferencesManager =
-                SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled)
+    {
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (sharedPreferencesManager.getCoppaCompliance()) {
-            return false;
-        }
-
-        return true;
+        return ! coppaEnabled;
     }
-
-
-
-
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();
