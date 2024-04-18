@@ -102,7 +102,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
 
-    DeviceInfo(AdjustConfig adjustConfig) {
+    DeviceInfo(AdjustConfig adjustConfig, boolean coppaEnabled) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -140,32 +140,32 @@ class DeviceInfo {
             playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
             playAdIdSource = "samsung_cloud_sdk";
         }
-        if (Util.canReadPlayIds(adjustConfig)) {
+        if (Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig) {
+    void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
+        if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
+            return;
+        }
+
+        playAdId = null;
+        isTrackingEnabled = null;
+        playAdIdSource = null;
+        playAdIdAttempt = -1;
+
         if (isSamsungCloudEnvironment != null && isSamsungCloudEnvironment) {
             return;
         }
 
-        if (!Util.canReadPlayIds(adjustConfig)) {
-            return;
-        }
-
-        if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
+        if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
             return;
         }
 
         Context context = adjustConfig.context;
         String previousPlayAdId = playAdId;
         Boolean previousIsTrackingEnabled = isTrackingEnabled;
-
-        playAdId = null;
-        isTrackingEnabled = null;
-        playAdIdSource = null;
-        playAdIdAttempt = -1;
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
@@ -231,8 +231,8 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (!Util.canReadNonPlayIds(adjustConfig)) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
+        if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabled)) {
             return;
         }
 
@@ -244,15 +244,17 @@ class DeviceInfo {
         nonGoogleIdsReadOnce = true;
     }
 
-    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, final ILogger logger) {
+    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
+                                     final boolean coppaEnabled,
+                                     final ILogger logger) {
         if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
             return;
         }
 
-        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, logger);
-        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, logger);
-        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig);
-        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig);
+        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, coppaEnabled, logger);
+        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, coppaEnabled, logger);
+        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig, coppaEnabled);
+        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig, coppaEnabled);
         connectivityType = UtilDeviceIds.getConnectivityType(adjustConfig.context, logger);
         mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
         mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
@@ -498,28 +500,29 @@ class DeviceInfo {
 
     private static class UtilDeviceIds {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
+                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-            if (sharedPreferencesManager.getCoppaCompliance()) {
+            if (isCoppaEnabled) {
                 return null;
             }
 
             return Reflection.getImeiParameters(adjustConfig.context, logger);
         }
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
+                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-            if (sharedPreferencesManager.getCoppaCompliance()) {
+            if (isCoppaEnabled) {
                 return null;
             }
 
             return Reflection.getOaidParameters(adjustConfig.context, logger);
         }
-        private static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-            if (sharedPreferencesManager.getCoppaCompliance()) {
+        private static String getFireAdvertisingId(final AdjustConfig adjustConfig,
+                                                   final boolean isCoppaEnabled)
+        {
+            if (isCoppaEnabled) {
                 return null;
             }
 
@@ -537,9 +540,10 @@ class DeviceInfo {
             }
             return null;
         }
-        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-            if (sharedPreferencesManager.getCoppaCompliance()) {
+        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig,
+                                                      final boolean isCoppaEnabled)
+        {
+            if (isCoppaEnabled) {
                 return null;
             }
 
