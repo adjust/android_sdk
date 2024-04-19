@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.ReferrerDetails;
+import com.adjust.sdk.Util;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -58,15 +59,18 @@ public class HuaweiReferrerClient {
      */
     private static final AtomicBoolean shouldTryToReadHuaweiAppGalleryReferrer = new AtomicBoolean(true);
 
-    public static ReferrerDetails getHuaweiAdsInstallReferrer(Context context, final ILogger logger) {
+    public static HuaweiInstallReferrerResult getHuaweiAdsInstallReferrer(Context context, final ILogger logger) {
 
+        String errorMessage = null;
         if (!shouldTryToReadHuaweiAdsReferrer.get()) {
-            logger.debug("Should not try to read HuaweiAdsInstallReferrer");
-            return null;
+            errorMessage = "Should not try to read HuaweiAdsInstallReferrer";
+            logger.info(errorMessage);
+            return new HuaweiInstallReferrerResult(errorMessage);
         }
 
         if (!resolveContentProvider(context, REFERRER_PROVIDER_AUTHORITY)) {
-            return null;
+            errorMessage = "HuaweiAdsInstallReferrer fail to resolve content provider";
+            return new HuaweiInstallReferrerResult(errorMessage);
         }
 
         Cursor cursor = null;
@@ -93,38 +97,45 @@ public class HuaweiReferrerClient {
                 long installBeginTimestampSeconds = Long.parseLong(installTime);
 
                 if (isValidHuaweiAdsInstallReferrer(referrerHuaweiAds)) {
-                    return new ReferrerDetails(referrerHuaweiAds,
-                                    referrerClickTimestampSeconds,
-                                    installBeginTimestampSeconds);
+                    HuaweiInstallReferrerDetails huaweiInstallReferrerDetails = new HuaweiInstallReferrerDetails(referrerHuaweiAds,
+                            referrerClickTimestampSeconds,
+                            installBeginTimestampSeconds);
+                    return new HuaweiInstallReferrerResult(huaweiInstallReferrerDetails);
+                }else {
+                    return new HuaweiInstallReferrerResult("Invalid HuaweiAdsInstallReferrer");
                 }
 
             } else {
-                logger.debug("HuaweiAdsInstallReferrer fail to read referrer for " +
+                errorMessage = Util.formatString("HuaweiAdsInstallReferrer fail to read referrer for " +
                                 "package [%s] and content uri [%s]",
                         context.getPackageName(), uri.toString());
+                logger.debug(errorMessage);
             }
 
             shouldTryToReadHuaweiAdsReferrer.set(false);
 
         } catch (Exception e) {
-            logger.debug("HuaweiAdsInstallReferrer error [%s]", e.getMessage());
+            errorMessage = "HuaweiAdsInstallReferrer error [" + e.getMessage() + "]";
+            logger.debug(errorMessage);
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
-
-        return null;
+        return new HuaweiInstallReferrerResult(errorMessage);
     }
 
-    public static ReferrerDetails getHuaweiAppGalleryInstallReferrer(Context context, final ILogger logger) {
+    public static HuaweiInstallReferrerResult getHuaweiAppGalleryInstallReferrer(Context context, final ILogger logger) {
+        String errorMessage = null;
         if (!shouldTryToReadHuaweiAppGalleryReferrer.get()) {
-            logger.debug("Should not try to read HuaweiAppGalleryInstallReferrer");
-            return null;
+            errorMessage = "Should not try to read HuaweiAppGalleryInstallReferrer";
+            logger.debug(errorMessage);
+            return new HuaweiInstallReferrerResult(errorMessage);
         }
 
         if (!resolveContentProvider(context, REFERRER_PROVIDER_AUTHORITY)) {
-            return null;
+            errorMessage = "HuaweiAppGalleryInstallReferrer fail to resolve content provider";
+            return new HuaweiInstallReferrerResult(errorMessage);
         }
 
         Cursor cursor = null;
@@ -151,28 +162,34 @@ public class HuaweiReferrerClient {
                 long installBeginTimestampSeconds = Long.parseLong(installTime);
 
                 if (isValidHuaweiAppGalleryInstallReferrer(referrerHuaweiAppGallery)) {
-                    return new ReferrerDetails(referrerHuaweiAppGallery,
-                                    referrerClickTimestampSeconds,
-                                    installBeginTimestampSeconds);
+                    HuaweiInstallReferrerDetails huaweiInstallReferrerDetails = new HuaweiInstallReferrerDetails(referrerHuaweiAppGallery,
+                            referrerClickTimestampSeconds,
+                            installBeginTimestampSeconds);
+                    return new HuaweiInstallReferrerResult(huaweiInstallReferrerDetails);
+                }else {
+                    new HuaweiInstallReferrerResult("Invalid HuaweiAppGalleryInstallReferrer");
                 }
 
             } else {
-                logger.debug("HuaweiAppGalleryInstallReferrer fail to read referrer for " +
+                errorMessage = Util.formatString(
+                        "HuaweiAppGalleryInstallReferrer fail to read referrer for " +
                                 "package [%s] and content uri [%s]",
                         context.getPackageName(), uri.toString());
+                logger.debug(errorMessage);
             }
 
             shouldTryToReadHuaweiAppGalleryReferrer.set(false);
 
         } catch (Exception e) {
-            logger.debug("HuaweiAppGalleryInstallReferrer error [%s]", e.getMessage());
+            errorMessage = "HuaweiAppGalleryInstallReferrer error [" + e.getMessage() + "]";
+            logger.debug(errorMessage);
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
 
-        return null;
+        return new HuaweiInstallReferrerResult(errorMessage);
     }
 
     private static boolean resolveContentProvider(final Context applicationContext,
