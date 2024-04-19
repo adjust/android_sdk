@@ -902,7 +902,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (activityState != null && activityState.adid != null) {
-            new Handler(Looper.getMainLooper()).post(new Runnable() {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
