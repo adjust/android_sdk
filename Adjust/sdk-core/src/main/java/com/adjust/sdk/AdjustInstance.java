@@ -543,6 +543,9 @@ public class AdjustInstance {
             this.cachedAdidReadCallback.add(onAdidReadListener);
             return;
         }
+        if (activityHandler.getActivityState() != null){
+            onAdidReadListener.onAdidRead(activityHandler.getActivityState().adid);
+        }
         activityHandler.getAdid(onAdidReadListener);
     }
 
