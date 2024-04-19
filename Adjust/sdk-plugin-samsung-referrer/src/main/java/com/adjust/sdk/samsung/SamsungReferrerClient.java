@@ -13,34 +13,44 @@ import java.util.concurrent.TimeUnit;
 
 public class SamsungReferrerClient {
 
-    public static ReferrerDetails getReferrer(Context context, final ILogger logger, long maxWaitTimeInMilli) {
+    public static SamsungInstallReferrerResult getReferrer(Context context, final ILogger logger, long maxWaitTimeInMilli) {
         try {
             final InstallReferrerClient referrerClient = InstallReferrerClient.newBuilder(context).build();
-            final BlockingQueue<ReferrerDetails> referrerDetailsHolder = new LinkedBlockingQueue<ReferrerDetails>(1);
+            final BlockingQueue<SamsungInstallReferrerResult> referrerDetailsHolder = new LinkedBlockingQueue<SamsungInstallReferrerResult>(1);
             referrerClient.startConnection(new InstallReferrerStateListener() {
                 @Override
                 public void onInstallReferrerSetupFinished(int responseCode) {
+                    String error;
                     try {
                         switch (responseCode) {
                             case InstallReferrerClient.InstallReferrerResponse.OK:
                                 try {
-                                    ReferrerDetails details = referrerClient.getInstallReferrer();
-                                    referrerDetailsHolder.offer(details);
+                                    SamsungInstallReferrerDetails samsungInstallReferrerDetails = getSamsungInstallReferrerDetails(referrerClient);
+                                    referrerDetailsHolder.offer(new SamsungInstallReferrerResult(samsungInstallReferrerDetails));
                                 } catch (Exception e) {
-                                    logger.error("SamsungReferrer getInstallReferrer: " + e.getMessage());
+                                    error = "SamsungReferrer getInstallReferrer: " + e.getMessage();
+                                    referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                    logger.error(error);
+
                                 } finally {
                                     referrerClient.endConnection();
                                 }
                                 break;
                             case InstallReferrerClient.InstallReferrerResponse.FEATURE_NOT_SUPPORTED:
-                                logger.info("SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
+                                error = "SamsungReferrer onInstallReferrerSetupFinished: FEATURE_NOT_SUPPORTED";
+                                referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                logger.info(error);
                                 break;
                             case InstallReferrerClient.InstallReferrerResponse.SERVICE_UNAVAILABLE:
-                                logger.info("SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE");
+                                error = "SamsungReferrer onInstallReferrerSetupFinished: SERVICE_UNAVAILABLE";
+                                referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                                logger.info(error);
                                 break;
                         }
                     } catch (Exception e) {
-                        logger.error("SamsungReferrer onInstallReferrerSetupFinished: " + e.getMessage());
+                        error = "SamsungReferrer onInstallReferrerSetupFinished: " + e.getMessage();
+                        referrerDetailsHolder.offer(new SamsungInstallReferrerResult(error));
+                        logger.error(error);
                     }
                 }
 
@@ -53,9 +63,17 @@ public class SamsungReferrerClient {
             return referrerDetailsHolder.poll(maxWaitTimeInMilli, TimeUnit.MILLISECONDS);
 
         } catch (Exception e) {
-            logger.error("Exception while getting referrer: ", e.getMessage());
+            String error = "SamsungReferrer read error: " + e.getMessage();
+            logger.info(error);
+            return new SamsungInstallReferrerResult(error);
         }
+    }
 
-        return null;
+    private static SamsungInstallReferrerDetails getSamsungInstallReferrerDetails(InstallReferrerClient referrerClient) {
+        ReferrerDetails details = referrerClient.getInstallReferrer();
+        return new SamsungInstallReferrerDetails(
+                        details.getInstallReferrer(),
+                        details.getReferrerClickTimestampSeconds(),
+                        details.getInstallBeginTimestampSeconds());
     }
 }
