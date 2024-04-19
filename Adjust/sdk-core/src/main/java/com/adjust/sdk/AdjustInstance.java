@@ -3,10 +3,8 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
 
 /**
  * Class used to forward instructions to SDK which user gives as part of Adjust class interface.
@@ -50,7 +48,7 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private final Set<OnAdidReadListener> cachedAdidReadCallback = new HashSet<>();
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallback = null;
     /**
      * Base path for Adjust packages.
      */
@@ -101,10 +99,7 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
-        if (adjustConfig.cachedAdidReadCallbacks == null) {
-            adjustConfig.cachedAdidReadCallbacks = new HashSet<>();
-        }
-        adjustConfig.cachedAdidReadCallbacks.addAll(cachedAdidReadCallback);
+        adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallback;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -540,11 +535,11 @@ public class AdjustInstance {
      */
     public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
+            if (this.cachedAdidReadCallback == null) {
+                this.cachedAdidReadCallback = new ArrayList<OnAdidReadListener>();
+            }
             this.cachedAdidReadCallback.add(onAdidReadListener);
             return;
-        }
-        if (activityHandler.getActivityState() != null){
-            onAdidReadListener.onAdidRead(activityHandler.getActivityState().adid);
         }
         activityHandler.getAdid(onAdidReadListener);
     }

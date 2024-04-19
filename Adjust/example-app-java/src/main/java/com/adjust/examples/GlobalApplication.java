@@ -104,11 +104,6 @@ public class GlobalApplication extends Application {
                 Log.d("example", "Adid callback called!");
                 Log.d("example", "Adid: " + adid);
             }
-
-            @Override
-            public void onFail(String message) {
-                Log.d("example", "failed : " + message);
-            }
         });
 
         // Set default tracker.
