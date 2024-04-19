@@ -8,20 +8,10 @@ public class HuaweiInstallReferrerDetails {
     public long referrerClickTimestampSeconds;         // The client-side timestamp, when the referrer click happened.
     public long installBeginTimestampSeconds;          // The client-side timestamp, when app installation began.
 
-    HuaweiInstallReferrerDetails(ReferrerDetails referrerDetails){
-        if (referrerDetails == null){
-            return;
-        }
-        this.installReferrer = referrerDetails.installReferrer;
-        this.referrerClickTimestampSeconds = referrerDetails.referrerClickTimestampSeconds;
-        this.installBeginTimestampSeconds = referrerDetails.installBeginTimestampSeconds;;
-    }
-
-    public HuaweiInstallReferrerDetails (String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
+    HuaweiInstallReferrerDetails(String installReferrer, long referrerClickTimestampSeconds, long installBeginTimestampSeconds) {
         this.installReferrer = installReferrer;
         this.referrerClickTimestampSeconds = referrerClickTimestampSeconds;
         this.installBeginTimestampSeconds = installBeginTimestampSeconds;
-
     }
 
     public String toString() {
