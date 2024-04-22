@@ -92,7 +92,6 @@ class DeviceInfo {
     int uiMode;
     String appSetId;
     boolean isGooglePlayGamesForPC;
-    Boolean isSamsungCloudEnvironment;
 
     Map<String, String> imeiParameters;
     Map<String, String> oaidParameters;
@@ -135,11 +134,6 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
-            isSamsungCloudEnvironment = true;
-            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
-            playAdIdSource = "samsung_cloud_sdk";
-        }
         if (Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
             appSetId = Reflection.getAppSetId(context);
         }
@@ -155,15 +149,18 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        if (isSamsungCloudEnvironment != null && isSamsungCloudEnvironment) {
-            return;
-        }
-
         if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
             return;
         }
 
         Context context = adjustConfig.context;
+
+        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
+            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            playAdIdSource = "samsung_cloud_sdk";
+            playIdsReadOnce = true;
+        }
+
         String previousPlayAdId = playAdId;
         Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
