@@ -658,23 +658,19 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
-        SharedPreferencesManager sharedPreferencesManager =
-                SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
-
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        return ! coppaEnabled;
+        return !coppaEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled)
-    {
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        return ! coppaEnabled;
+        return !coppaEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
