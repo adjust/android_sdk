@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "com.adjust.examples.keyboard"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
         versionName "1.0"
