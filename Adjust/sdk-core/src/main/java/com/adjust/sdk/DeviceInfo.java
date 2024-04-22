@@ -141,6 +141,12 @@ class DeviceInfo {
 
     void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
+            if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+                playAdId = null;
+                isTrackingEnabled = null;
+                playAdIdSource = null;
+                playAdIdAttempt = -1;
+            }
             return;
         }
 
