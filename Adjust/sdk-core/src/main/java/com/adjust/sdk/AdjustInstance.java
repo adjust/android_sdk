@@ -531,7 +531,7 @@ public class AdjustInstance {
     /**
      * Called to get value of unique Adjust device identifier.
      *
-     * @return Unique Adjust device indetifier
+     * @param onAdidReadListener Callback to get triggered once identifier is obtained.
      */
     public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {

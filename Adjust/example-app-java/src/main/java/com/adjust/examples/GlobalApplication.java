@@ -2,7 +2,6 @@ package com.adjust.examples;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -157,6 +156,15 @@ public class GlobalApplication extends Application {
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
+
+        // Get the adid.
+        Adjust.getAdid(new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                Log.d("example", "Adid callback called!");
+                Log.d("example", "Adid: " + adid);
+            }
+        });
 
         Adjust.getGooglePlayInstallReferrer(this, new OnGooglePlayInstallReferrerReadListener() {
             @Override
