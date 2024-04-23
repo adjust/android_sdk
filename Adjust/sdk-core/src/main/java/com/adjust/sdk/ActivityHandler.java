@@ -840,7 +840,7 @@ public class ActivityHandler implements IActivityHandler {
             }
 
             if (deviceInfo.androidId == null) {
-                if (! Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState)) {
+                if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState)) {
                     if (adjustConfig.playStoreKidsAppEnabled) {
                         logger.info("Cannot read non Play IDs with play store kids app enabled");
                     }
@@ -1186,8 +1186,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI() {
         for (final Object adjustThirdPartySharingOrCoppa :
-          adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-        {
+                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray) {
             if (adjustThirdPartySharingOrCoppa instanceof AdjustThirdPartySharing) {
                 trackThirdPartySharingI((AdjustThirdPartySharing) adjustThirdPartySharingOrCoppa);
             } else if (adjustThirdPartySharingOrCoppa instanceof Boolean) {
@@ -1206,8 +1205,6 @@ public class ActivityHandler implements IActivityHandler {
             startFirstSessionI();
             return;
         } else {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
-
             // check if third party sharing request came, then send it first
             processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
 
@@ -1258,10 +1255,11 @@ public class ActivityHandler implements IActivityHandler {
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                // preLaunchAdjustThirdPartySharing should be done *before* coppaCompliance
-                //  since it will check for coppaCompliance inside it
+                // methods below need to be executed in this order
+                // first call is processing pre-init actions queue
+                // second call is making sure to process cached and not processed pre-init action
+                // from the previous run (if any)
                 processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
-
                 processCoppaComplianceI();
 
                 if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
@@ -2582,7 +2580,7 @@ public class ActivityHandler implements IActivityHandler {
         activityState.setCoppa(coppaEnabled);
 
         // third party sharing is disabled when coppa is enabled and vice-versa
-        final boolean tpsEnabled = ! coppaEnabled;
+        final boolean tpsEnabled = !coppaEnabled;
         final AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(tpsEnabled);
 
         final long now = System.currentTimeMillis();
@@ -2915,7 +2913,7 @@ public class ActivityHandler implements IActivityHandler {
         if (activityState.isCoppaEnabled() && coppaEnabled) {
             return;
         }
-        if (! activityState.isCoppaEnabled() && ! coppaEnabled) {
+        if (!activityState.isCoppaEnabled() && !coppaEnabled) {
             return;
         }
 
