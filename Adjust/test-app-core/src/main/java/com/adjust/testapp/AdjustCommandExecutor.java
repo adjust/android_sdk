@@ -14,6 +14,7 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
@@ -165,6 +166,18 @@ public class AdjustCommandExecutor {
                 testOptions.noBackoffWait = noBackoffWaitBoolean;
             }
         }
+        if (command.containsParameter("doNotIgnoreSystemLifecycleBootstrap")) {
+            String doNotIgnoreSystemLifecycleBootstrapString =
+              command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
+            Boolean doNotIgnoreSystemLifecycleBootstrap =
+              Util.strictParseStringToBoolean(doNotIgnoreSystemLifecycleBootstrapString);
+            if (doNotIgnoreSystemLifecycleBootstrap != null
+              && doNotIgnoreSystemLifecycleBootstrap.booleanValue())
+            {
+                testOptions.ignoreSystemLifecycleBootstrap = false;
+            }
+        }
+
         boolean useTestConnectionOptions = false;
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
