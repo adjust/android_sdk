@@ -41,7 +41,6 @@ public class PackageBuilder {
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
     Boolean isClick;
-
     boolean coppaEnabled;
 
     static class ActivityStateCopy {
@@ -73,8 +72,7 @@ public class PackageBuilder {
                    DeviceInfo deviceInfo,
                    ActivityState activityState,
                    SessionParameters sessionParameters,
-                   long createdAt)
-    {
+                   long createdAt) {
         this.createdAt = createdAt;
         this.deviceInfo = deviceInfo;
         this.adjustConfig = adjustConfig;
@@ -1280,7 +1278,6 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.getContext());
             if (coppaEnabled) {
                 logger.info("Missing Device IDs. COPPA enabled.");
             } else {
