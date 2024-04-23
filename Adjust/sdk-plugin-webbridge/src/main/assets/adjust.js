@@ -147,6 +147,18 @@ var Adjust = {
         }
     },
 
+    enableCoppaCompliance: function () {
+        if (AdjustBridge) {
+            AdjustBridge.enableCoppaCompliance();
+        }
+    },
+
+    disableCoppaCompliance: function () {
+        if (AdjustBridge) {
+            AdjustBridge.disableCoppaCompliance();
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {

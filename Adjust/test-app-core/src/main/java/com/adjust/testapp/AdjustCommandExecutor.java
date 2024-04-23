@@ -90,10 +90,12 @@ public class AdjustCommandExecutor {
                 case "gdprForgetMe": gdprForgetMe(); break;
                 case "thirdPartySharing" : thirdPartySharing(); break;
                 case "measurementConsent" : measurementConsent(); break;
-                case "trackAdRevenueV2" : trackAdRevenueV2(); break;
+                case "trackAdRevenue" : trackAdRevenue(); break;
                 case "trackSubscription": trackSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
                 case "processDeeplink" : processDeeplink(); break;
+                case "enableCoppaCompliance" : enableCoppaCompliance(); break;
+                case "disableCoppaCompliance" : disableCoppaCompliance(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -319,12 +321,6 @@ public class AdjustCommandExecutor {
         if (command.containsParameter("externalDeviceId")) {
             String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
             adjustConfig.setExternalDeviceId(externalDeviceId);
-        }
-
-        if (command.containsParameter("coppaCompliant")) {
-            String coppaCompliantS = command.getFirstParameterValue("coppaCompliant");
-            boolean coppaCompliant = "true".equals(coppaCompliantS);
-            adjustConfig.setCoppaCompliantEnabled(coppaCompliant);
         }
 
         if (command.containsParameter("playStoreKids")) {
@@ -711,7 +707,7 @@ public class AdjustCommandExecutor {
         Adjust.trackMeasurementConsent(measurementConsent);
     }
 
-    private void trackAdRevenueV2() {
+    private void trackAdRevenue() {
         String adRevenueSource = command.getFirstParameterValue("adRevenueSource");
         AdjustAdRevenue adjustAdRevenue = new AdjustAdRevenue(adRevenueSource);
 
@@ -830,6 +826,15 @@ public class AdjustCommandExecutor {
             }
         });
     }
+
+    private void enableCoppaCompliance() {
+        Adjust.enableCoppaCompliance(context.getApplicationContext());
+    }
+
+    private void disableCoppaCompliance() {
+        Adjust.disableCoppaCompliance(context.getApplicationContext());
+    }
+
 /*
     private void testBegin() {
         if (command.containsParameter("teardown")) {

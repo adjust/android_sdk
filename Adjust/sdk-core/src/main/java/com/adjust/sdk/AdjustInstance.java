@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class AdjustInstance {
     public static class PreLaunchActions {
         public List<IRunActivityHandler> preLaunchActionsArray;
-        public List<AdjustThirdPartySharing> preLaunchAdjustThirdPartySharingArray;
+        public List<Object> preLaunchAdjustThirdPartySharingArray;
         public Boolean lastMeasurementConsentTracked;
 
         public PreLaunchActions() {
@@ -493,6 +493,38 @@ public class AdjustInstance {
     }
 
     /**
+     * Called to enable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public void enableCoppaCompliance(Context context) {
+        saveCoppaCompliance(true, context);
+        if (checkActivityHandler("enable coppa compliance", true)) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.setCoppaCompliance(true);
+            }
+        } else {
+            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(Boolean.TRUE);
+        }
+    }
+
+    /**
+     * Called to disable COPPA compliance.
+     *
+     * @param context Application context
+     */
+    public void disableCoppaCompliance(Context context) {
+        saveCoppaCompliance(false, context);
+        if (checkActivityHandler("disable coppa compliant", true)) {
+            if (activityHandler.isEnabled()) {
+                activityHandler.setCoppaCompliance(false);
+            }
+        } else {
+            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(Boolean.FALSE);
+        }
+    }
+
+    /**
      * Called to get value of unique Adjust device identifier.
      *
      * @return Unique Adjust device indetifier
@@ -663,6 +695,16 @@ public class AdjustInstance {
      */
     private void setSendingReferrersAsNotSent(final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
+    }
+
+    /**
+     * Save coppa compliant state to shared preferences.
+     *
+     * @param enabled boolean indicating should COPPA be enabled (true) or not (false)
+     * @param context Application context
+     */
+    private void saveCoppaCompliance(final boolean enabled, final Context context) {
+        SharedPreferencesManager.getDefaultInstance(context).saveCoppaCompliance(enabled);
     }
 
     /**

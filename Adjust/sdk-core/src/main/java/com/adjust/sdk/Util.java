@@ -648,33 +648,21 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
+        return !coppaEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         if (adjustConfig.playStoreKidsAppEnabled) {
             return false;
         }
 
-        if (adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
+        return !coppaEnabled;
     }
-
-
-
-
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();

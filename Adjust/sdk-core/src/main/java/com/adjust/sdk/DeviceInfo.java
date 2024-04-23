@@ -92,7 +92,6 @@ class DeviceInfo {
     int uiMode;
     String appSetId;
     boolean isGooglePlayGamesForPC;
-    Boolean isSamsungCloudEnvironment;
 
     Map<String, String> imeiParameters;
     Map<String, String> oaidParameters;
@@ -102,7 +101,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
 
-    DeviceInfo(AdjustConfig adjustConfig) {
+    DeviceInfo(AdjustConfig adjustConfig, boolean coppaEnabled) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -135,37 +134,41 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
-            isSamsungCloudEnvironment = true;
-            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
-            playAdIdSource = "samsung_cloud_sdk";
-        }
-        if (Util.canReadPlayIds(adjustConfig)) {
+        if (Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig) {
-        if (isSamsungCloudEnvironment != null && isSamsungCloudEnvironment) {
-            return;
-        }
-
-        if (!Util.canReadPlayIds(adjustConfig)) {
-            return;
-        }
-
+    void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
         if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
+            if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+                playAdId = null;
+                isTrackingEnabled = null;
+                playAdIdSource = null;
+                playAdIdAttempt = -1;
+            }
             return;
         }
-
-        Context context = adjustConfig.context;
-        String previousPlayAdId = playAdId;
-        Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         playAdId = null;
         isTrackingEnabled = null;
         playAdIdSource = null;
         playAdIdAttempt = -1;
+
+        if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+            return;
+        }
+
+        Context context = adjustConfig.context;
+
+        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
+            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            playAdIdSource = "samsung_cloud_sdk";
+            playIdsReadOnce = true;
+        }
+
+        String previousPlayAdId = playAdId;
+        Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
@@ -231,8 +234,8 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (!Util.canReadNonPlayIds(adjustConfig)) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
+        if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabled)) {
             return;
         }
 
@@ -244,15 +247,17 @@ class DeviceInfo {
         nonGoogleIdsReadOnce = true;
     }
 
-    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, final ILogger logger) {
+    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
+                                     final boolean coppaEnabled,
+                                     final ILogger logger) {
         if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
             return;
         }
 
-        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, logger);
-        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, logger);
-        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig);
-        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig);
+        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, coppaEnabled, logger);
+        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, coppaEnabled, logger);
+        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig, coppaEnabled);
+        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig, coppaEnabled);
         connectivityType = UtilDeviceIds.getConnectivityType(adjustConfig.context, logger);
         mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
         mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
@@ -498,25 +503,29 @@ class DeviceInfo {
 
     private static class UtilDeviceIds {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
+                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            if (isCoppaEnabled) {
                 return null;
             }
 
             return Reflection.getImeiParameters(adjustConfig.context, logger);
         }
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
+                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            if (isCoppaEnabled) {
                 return null;
             }
 
             return Reflection.getOaidParameters(adjustConfig.context, logger);
         }
-        private static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+        private static String getFireAdvertisingId(final AdjustConfig adjustConfig,
+                                                   final boolean isCoppaEnabled)
+        {
+            if (isCoppaEnabled) {
                 return null;
             }
 
@@ -534,8 +543,10 @@ class DeviceInfo {
             }
             return null;
         }
-        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig,
+                                                      final boolean isCoppaEnabled)
+        {
+            if (isCoppaEnabled) {
                 return null;
             }
 

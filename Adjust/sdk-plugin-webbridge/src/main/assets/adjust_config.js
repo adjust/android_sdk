@@ -52,7 +52,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.preinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
     this.playStoreKidsAppEnabled = null;
-    this.coppaCompliantEnabled = null;
     this.fbAppId = null;
     this.readDeviceInfoOnceEnabled = null;
 }
@@ -247,10 +246,6 @@ AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {
 
 AdjustConfig.prototype.setPlayStoreKidsAppEnabled = function(isEnabled) {
     this.playStoreKidsAppEnabled = isEnabled;
-};
-
-AdjustConfig.prototype.setCoppaCompliantEnabled = function(isEnabled) {
-    this.coppaCompliantEnabled = isEnabled;
 };
 
 AdjustConfig.prototype.setFbAppId = function(fbAppId) {
