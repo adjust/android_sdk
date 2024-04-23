@@ -458,22 +458,20 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
+        if (!adid.equals(activityState.adid)) {
+            activityState.adid = adid;
+            writeActivityStateI();
+        }
 
         if (onAdidReadListener != null && !onAdidReadListener.isEmpty()){
-            for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
-                if (onAdidReadListener != null) {
-                    onAdidReadListener.onAdidRead(adid);
+            for (OnAdidReadListener listener : onAdidReadListener) {
+                if (listener != null) {
+                    listener.onAdidRead(adid);
                 }
             }
             onAdidReadListener = null;
             adjustConfig.cachedAdidReadCallbacks = null;
         }
-
-        if (adid.equals(activityState.adid)) {
-            return;
-        }
-        activityState.adid = adid;
-        writeActivityStateI();
     }
 
     @Override
