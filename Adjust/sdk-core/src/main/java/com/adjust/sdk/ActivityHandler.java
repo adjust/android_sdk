@@ -2566,15 +2566,6 @@ public class ActivityHandler implements IActivityHandler {
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
 
-        if (activityState.isCoppaEnabled() && coppaEnabled) {
-            logger.debug("Coppa is already enabled in the activity state");
-            return;
-        }
-        if (! activityState.isCoppaEnabled() && ! coppaEnabled) {
-            logger.debug("Coppa is already disabled in the activity state");
-            return;
-        }
-
         activityState.setCoppa(coppaEnabled);
 
         // third party sharing is disabled when coppa is enabled and vice-versa
@@ -2901,7 +2892,20 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     private void processCoppaComplianceI() {
-        setCoppaComplianceI(
-          SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance());
+        if (activityState == null) { return; }
+        if (!isEnabledI()) { return; }
+        if (activityState.isGdprForgotten) { return; }
+
+        boolean coppaEnabled =
+                SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance();
+
+        if (activityState.isCoppaEnabled() && coppaEnabled) {
+            return;
+        }
+        if (! activityState.isCoppaEnabled() && ! coppaEnabled) {
+            return;
+        }
+
+        setCoppaComplianceI(coppaEnabled);
     }
 }
