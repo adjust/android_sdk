@@ -31,6 +31,7 @@ public class AdjustFactory {
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
     private static boolean tryInstallReferrer = true;
+    private static boolean ignoreSystemLifecycleBootstrap = false;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -277,6 +278,13 @@ public class AdjustFactory {
 
     public static void setTryInstallReferrer(boolean tryInstallReferrer) {
         AdjustFactory.tryInstallReferrer = tryInstallReferrer;
+    }
+
+    public static void ignoreSystemLifecycleBootstrap() {
+        AdjustFactory.ignoreSystemLifecycleBootstrap = true;
+    }
+    public static boolean isSystemLifecycleBootstrapIgnored() {
+        return AdjustFactory.ignoreSystemLifecycleBootstrap;
     }
 
     private static String byte2HexFormatted(byte[] arr) {

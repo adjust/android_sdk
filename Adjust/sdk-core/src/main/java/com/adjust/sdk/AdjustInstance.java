@@ -804,5 +804,10 @@ public class AdjustInstance {
             AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
             AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
         }
+        if (testOptions.ignoreSystemLifecycleBootstrap != null
+          && testOptions.ignoreSystemLifecycleBootstrap.booleanValue())
+        {
+            AdjustFactory.ignoreSystemLifecycleBootstrap();
+        }
     }
 }
