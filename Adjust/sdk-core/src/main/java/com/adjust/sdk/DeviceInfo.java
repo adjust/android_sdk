@@ -264,8 +264,8 @@ class DeviceInfo {
 
         otherDeviceInfoParamsReadOnce = true;
     }
-    public static String getFireAdvertisingIdBypassConditions(ContentResolver contentResolver) {
-        return UtilDeviceIds.getFireAdvertisingId(contentResolver);
+    public static void getFireAdvertisingIdBypassConditions(ContentResolver contentResolver, OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        UtilDeviceIds.getFireAdvertisingIdAsync(contentResolver, onAmazonAdIdReadListener);
     }
 
     private String getPackageName(Context context) {
