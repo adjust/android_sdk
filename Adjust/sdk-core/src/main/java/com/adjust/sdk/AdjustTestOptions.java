@@ -23,4 +23,5 @@ public class AdjustTestOptions {
     public Boolean teardown;
     public Boolean tryInstallReferrer = false;
     public Boolean noBackoffWait;
+    public Boolean ignoreSystemLifecycleBootstrap = true;
 }

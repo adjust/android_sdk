@@ -9,6 +9,17 @@
 
 package com.adjust.sdk;
 
+import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
+import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.GLOBAL_CALLBACK_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.GLOBAL_PARTNER_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.REFERRER_API_HUAWEI_ADS;
+import static com.adjust.sdk.Constants.REFERRER_API_HUAWEI_APP_GALLERY;
+import static com.adjust.sdk.Constants.REFERRER_API_META;
+import static com.adjust.sdk.Constants.REFERRER_API_SAMSUNG;
+import static com.adjust.sdk.Constants.REFERRER_API_VIVO;
+import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +29,9 @@ import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
+import com.adjust.sdk.SystemLifecycle.SystemLifecycleCallback;
 import com.adjust.sdk.network.ActivityPackageSender;
 import com.adjust.sdk.network.IActivityPackageSender;
 import com.adjust.sdk.network.UtilNetworking;
@@ -35,18 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
-import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
-import static com.adjust.sdk.Constants.REFERRER_API_HUAWEI_ADS;
-import static com.adjust.sdk.Constants.REFERRER_API_HUAWEI_APP_GALLERY;
-import static com.adjust.sdk.Constants.REFERRER_API_META;
-import static com.adjust.sdk.Constants.REFERRER_API_SAMSUNG;
-import static com.adjust.sdk.Constants.REFERRER_API_VIVO;
-import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
-import static com.adjust.sdk.Constants.GLOBAL_CALLBACK_PARAMETERS_FILENAME;
-import static com.adjust.sdk.Constants.GLOBAL_PARTNER_PARAMETERS_FILENAME;
-
-public class ActivityHandler implements IActivityHandler {
+public class ActivityHandler
+  implements IActivityHandler, SystemLifecycleCallback
+{
     private static long FOREGROUND_TIMER_INTERVAL;
     private static long FOREGROUND_TIMER_START;
     private static long BACKGROUND_TIMER_INTERVAL;
@@ -83,6 +88,7 @@ public class ActivityHandler implements IActivityHandler {
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    private SystemLifecycle systemLifecycle;
 
     @Override
     public void teardown() {
@@ -146,11 +152,11 @@ public class ActivityHandler implements IActivityHandler {
     public class InternalState {
         boolean enabled;
         boolean offline;
-        boolean background;
         boolean firstLaunch;
         boolean sessionResponseProcessed;
         boolean firstSdkStart;
         boolean preinstallHasBeenRead;
+        Boolean foregroundOrElseBackground;
 
         public boolean isEnabled() {
             return enabled;
@@ -169,11 +175,13 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         public boolean isInBackground() {
-            return background;
+            return foregroundOrElseBackground != null
+              && ! foregroundOrElseBackground.booleanValue();
         }
 
         public boolean isInForeground() {
-            return !background;
+            return foregroundOrElseBackground != null
+              && foregroundOrElseBackground.booleanValue();
         }
 
         public boolean isFirstLaunch() {
@@ -201,6 +209,28 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
+    // region SystemLifecycleCallback
+    @Override public void onActivityLifecycle(final boolean foregroundOrElseBackground) {
+        executor.submit(() -> {
+            if (internalState.foregroundOrElseBackground != null
+              && internalState.foregroundOrElseBackground.booleanValue()
+                == foregroundOrElseBackground)
+            {
+                return;
+            }
+            // received foregroundOrElseBackground is strictly different from internal state one
+
+            this.internalState.foregroundOrElseBackground = foregroundOrElseBackground;
+
+            if (foregroundOrElseBackground) {
+                onResumeI();
+            } else {
+                onPauseI();
+            }
+        });
+    }
+    // endregion
+
     private ActivityHandler(AdjustConfig adjustConfig) {
         init(adjustConfig);
 
@@ -216,8 +246,6 @@ public class ActivityHandler implements IActivityHandler {
         internalState.enabled = adjustConfig.startEnabled != null ? adjustConfig.startEnabled : true;
         // online by default
         internalState.offline = adjustConfig.startOffline;
-        // in the background by default
-        internalState.background = true;
         // does not have the session response by default
         internalState.sessionResponseProcessed = false;
         // does not have first start by default
@@ -225,12 +253,7 @@ public class ActivityHandler implements IActivityHandler {
         // preinstall has not been read by default
         internalState.preinstallHasBeenRead = false;
 
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                initI();
-            }
-        });
+        executor.submit(() -> initI());
     }
 
     @Override
@@ -299,38 +322,30 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void onResume() {
-        internalState.background = false;
+        onActivityLifecycle(true);
+    }
+    public void onResumeI() {
+        stopBackgroundTimerI();
 
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                stopBackgroundTimerI();
+        startForegroundTimerI();
 
-                startForegroundTimerI();
+        logger.verbose("Subsession start");
 
-                logger.verbose("Subsession start");
-
-                startI();
-            }
-        });
+        startI();
     }
 
     @Override
     public void onPause() {
-        internalState.background = true;
+        onActivityLifecycle(false);
+    }
+    public void onPauseI() {
+        stopForegroundTimerI();
 
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                stopForegroundTimerI();
+        startBackgroundTimerI();
 
-                startBackgroundTimerI();
+        logger.verbose("Subsession end");
 
-                logger.verbose("Subsession end");
-
-                endI();
-            }
-        });
+        endI();
     }
 
     @Override
@@ -998,6 +1013,29 @@ public class ActivityHandler implements IActivityHandler {
 
         preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
         sendReftagReferrerI();
+
+        bootstrapLifecycleI();
+    }
+
+    private void bootstrapLifecycleI() {
+        this.systemLifecycle = SystemLifecycle.getSingletonInstance();
+
+        for (@NonNull final String message : systemLifecycle.logMessageList) {
+            logger.debug("Lifecycle: %s", message);
+        }
+
+        systemLifecycle.overwriteCallback(this);
+
+        if (AdjustFactory.isSystemLifecycleBootstrapIgnored()) {
+            return;
+        }
+
+        this.internalState.foregroundOrElseBackground =
+          systemLifecycle.foregroundOrElseBackgroundCached();
+
+        if (internalState.isInForeground()) {
+            onResumeI();
+        }
     }
 
     private void checkForPreinstallI() {

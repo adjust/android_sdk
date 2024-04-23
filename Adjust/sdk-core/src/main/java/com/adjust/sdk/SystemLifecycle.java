@@ -60,15 +60,6 @@ public class SystemLifecycle implements Application.ActivityLifecycleCallbacks
         }
         return localInstance;
     }
-
-    @NonNull
-    public static SystemLifecycle getInstanceAndClearSingleton() {
-        @NonNull final SystemLifecycle instanceToReturn = getSingletonInstance();
-        synchronized (SystemLifecycle.class) {
-            instance = null;
-        }
-        return instanceToReturn;
-    }
     // endregion
 
     // region Application.ActivityLifecycleCallbacks
