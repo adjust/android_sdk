@@ -280,8 +280,10 @@ public class AdjustFactory {
         AdjustFactory.tryInstallReferrer = tryInstallReferrer;
     }
 
-    public static void ignoreSystemLifecycleBootstrap() {
-        AdjustFactory.ignoreSystemLifecycleBootstrap = true;
+    public static void setIgnoreSystemLifecycleBootstrap(
+      final boolean ignoreSystemLifecycleBootstrap)
+    {
+        AdjustFactory.ignoreSystemLifecycleBootstrap = ignoreSystemLifecycleBootstrap;
     }
     public static boolean isSystemLifecycleBootstrapIgnored() {
         return AdjustFactory.ignoreSystemLifecycleBootstrap;
