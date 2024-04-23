@@ -16,6 +16,7 @@ import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.GooglePlayInstallReferrerDetails;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
+import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
@@ -177,6 +178,18 @@ public class GlobalApplication extends Application {
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.
         registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
+
+        Adjust.getAmazonAdId(this, new OnAmazonAdIdReadListener() {
+            @Override
+            public void onAmazonAdIdRead(String amazonAdId) {
+                Log.d("example", "amazonAdId : " + amazonAdId);
+            }
+
+            @Override
+            public void onFail(String message) {
+                Log.d("example", "failed : " + message);
+            }
+        });
 
         // Put the SDK in offline mode.
         // Adjust.setOfflineMode(true);
