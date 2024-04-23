@@ -461,7 +461,9 @@ public class ActivityHandler implements IActivityHandler {
 
         if (onAdidReadListener != null && !onAdidReadListener.isEmpty()){
             for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
-                onAdidReadListener.onAdidRead(adid);
+                if (onAdidReadListener != null) {
+                    onAdidReadListener.onAdidRead(adid);
+                }
             }
             onAdidReadListener = null;
             adjustConfig.cachedAdidReadCallbacks = null;
@@ -906,7 +908,9 @@ public class ActivityHandler implements IActivityHandler {
                 @Override
                 public void run() {
                     for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
-                        onAdidReadListener.onAdidRead(activityState.adid);
+                        if (onAdidReadListener != null) {
+                            onAdidReadListener.onAdidRead(activityState.adid);
+                        }
                     }
                     adjustConfig.cachedAdidReadCallbacks = null;
                     onAdidReadListener = null;
