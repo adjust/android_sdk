@@ -606,6 +606,16 @@ public class AdjustInstance {
 
 
     /**
+     * Called to get value of Amazon Advertising Identifier.
+     *
+     * @param context                  Application context
+     * @param onAmazonAdIdReadListener Callback to get triggered once identifier is obtained
+     */
+    public void getAmazonAdId(final Context context, final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        DeviceInfo.getFireAdvertisingIdBypassConditions(context.getContentResolver(),onAmazonAdIdReadListener);
+    }
+
+    /**
      * Check if ActivityHandler instance is set or not.
      *
      * @return boolean indicating whether ActivityHandler instance is set or not

@@ -350,16 +350,24 @@ public class Adjust {
     /**
      * Called to get value of Amazon Advertising Identifier.
      *
-     * @param context Application context
-     * @return Amazon Advertising Identifier
+     * @param context                  Application context
+     * @param onAmazonAdIdReadListener Callback to get triggered once identifier is obtained
      */
-    public static String getAmazonAdId(final Context context) {
-        Context appContext = extractApplicationContext(context);
-        if (appContext != null) {
-            return DeviceInfo.getFireAdvertisingIdBypassConditions(appContext.getContentResolver());
+    public static void getAmazonAdId(final Context context,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        if (context == null) {
+            String message = "context cannot be null";
+            AdjustFactory.getLogger().error(message);
+            onAmazonAdIdReadListener.onFail(message);
+            return;
+        }
+        if (onAmazonAdIdReadListener == null) {
+            AdjustFactory.getLogger().error("onAmazonAdIdReadListener cannot be null");
+            return;
         }
 
-        return null;
+        Context appContext = extractApplicationContext(context);
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getAmazonAdId(appContext, onAmazonAdIdReadListener);
     }
 
     /**
