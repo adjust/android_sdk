@@ -26,7 +26,7 @@ public class AdjustMetaReferrer {
          @Override
          protected MetaInstallReferrerResult doInBackground(Context[] contexts) {
             try {
-               return MetaReferrerClient.getMetaInstallReferrer(context, fbAppId, AdjustFactory.getLogger());
+               return MetaReferrerClient.getMetaInstallReferrer(context, fbAppId, AdjustFactory.getLogger(), false);
             } catch (Exception exception) {
                return new MetaInstallReferrerResult(exception.getMessage());
             }

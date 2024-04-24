@@ -11,7 +11,7 @@ public class Util {
          return null;
       }
 
-      MetaInstallReferrerResult metaInstallReferrerResult = MetaReferrerClient.getMetaInstallReferrer(context, fbAppId, logger);
+      MetaInstallReferrerResult metaInstallReferrerResult = MetaReferrerClient.getMetaInstallReferrer(context, fbAppId, logger, true);
       if (metaInstallReferrerResult == null) {
          return null;
       }

@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.Util;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class MetaReferrerClient {
 
     /**
@@ -37,23 +39,24 @@ public class MetaReferrerClient {
     private static final String COLUMN_IS_CT = "is_ct";
 
     /**
-     * Adjust logger instance.
+     * Boolean indicating whether service should be tried to read.
+     * Either because it has not yet tried,
+     *  or it did and it was successful
+     *  or it did, was not successful, but it should not retry
      */
-    private ILogger logger;
-
-    /**
-     * Application context.
-     */
-    private Context context;
-
-    /**
-     * FB app ID.
-     */
-    private String fbAppId;
+    private static final AtomicBoolean shouldTryToRead = new AtomicBoolean(true);
 
     public static MetaInstallReferrerResult getMetaInstallReferrer(
-            final Context context, final String fbAppId, final ILogger logger) {
+            final Context context, final String fbAppId, final ILogger logger, final boolean shouldAvoidFrequentRead) {
         String errorMessage = null;
+
+        if (shouldAvoidFrequentRead) {
+            if (!shouldTryToRead.get()) {
+                errorMessage = "Shouldn't try to read Meta Install referrer";
+                logger.debug(errorMessage);
+                return new MetaInstallReferrerResult(errorMessage);
+            }
+        }
 
         if (TextUtils.isEmpty(fbAppId)) {
             errorMessage = "Can't read Meta Install referrer with null or empty FBAppId";
@@ -99,6 +102,8 @@ public class MetaReferrerClient {
                     installReferrer, actualTimestampInSec, isClick);
 
             if (isValidReferrer(installReferrer)) {
+                shouldTryToRead.set(false);
+
                 MetaInstallReferrerDetails metaInstallReferrerDetails =
                         new MetaInstallReferrerDetails(installReferrer, actualTimestampInSec, isClick);
 
