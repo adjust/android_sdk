@@ -16,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Handler;
-import android.os.Looper;
 import android.text.TextUtils;
 
 import com.adjust.sdk.network.ActivityPackageSender;
@@ -84,7 +83,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private ArrayList<OnAdidReadListener> onAdidReadListener = new ArrayList<>();
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
 
     @Override
     public void teardown() {
@@ -463,13 +462,13 @@ public class ActivityHandler implements IActivityHandler {
             writeActivityStateI();
         }
 
-        if (onAdidReadListener != null && !onAdidReadListener.isEmpty()){
-            for (OnAdidReadListener listener : onAdidReadListener) {
+        if (cachedAdidReadCallbacks != null && !cachedAdidReadCallbacks.isEmpty()) {
+            for (OnAdidReadListener listener : cachedAdidReadCallbacks) {
                 if (listener != null) {
                     listener.onAdidRead(adid);
                 }
             }
-            onAdidReadListener = null;
+            cachedAdidReadCallbacks = null;
             adjustConfig.cachedAdidReadCallbacks = null;
         }
     }
@@ -766,7 +765,7 @@ public class ActivityHandler implements IActivityHandler {
             callback.onAdidRead(activityState.adid);
             return;
         }
-        this.onAdidReadListener.add(callback);
+        this.cachedAdidReadCallbacks.add(callback);
     }
 
     @Override
@@ -895,23 +894,23 @@ public class ActivityHandler implements IActivityHandler {
         // cached adid read callback
         // if it's not empty, we need to add it to the onAdidReadListener in case getAdid() is
         // called before the sdk starts
-        if (this.onAdidReadListener != null && !this.onAdidReadListener.isEmpty()) {
-            this.onAdidReadListener.addAll(adjustConfig.cachedAdidReadCallbacks);
-        }else {
-            this.onAdidReadListener = adjustConfig.cachedAdidReadCallbacks;
+        if (this.cachedAdidReadCallbacks != null && !this.cachedAdidReadCallbacks.isEmpty()) {
+            this.cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
+        } else {
+            this.cachedAdidReadCallbacks = adjustConfig.cachedAdidReadCallbacks;
         }
 
         if (activityState != null && activityState.adid != null) {
             new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    for (OnAdidReadListener onAdidReadListener : onAdidReadListener) {
+                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacks) {
                         if (onAdidReadListener != null) {
                             onAdidReadListener.onAdidRead(activityState.adid);
                         }
                     }
                     adjustConfig.cachedAdidReadCallbacks = null;
-                    onAdidReadListener = null;
+                    cachedAdidReadCallbacks = null;
                 }
             });
         }
