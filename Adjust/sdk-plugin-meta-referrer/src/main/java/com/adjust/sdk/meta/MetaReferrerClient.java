@@ -1,4 +1,4 @@
-package com.adjust.sdk;
+package com.adjust.sdk.meta;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -6,9 +6,13 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.adjust.sdk.ILogger;
+import com.adjust.sdk.Util;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class InstallReferrerMeta {
+public class MetaReferrerClient {
+
     /**
      * Facebook install referrer provider content authority.
      */
@@ -35,59 +39,29 @@ public class InstallReferrerMeta {
     private static final String COLUMN_IS_CT = "is_ct";
 
     /**
-     * Adjust logger instance.
-     */
-    private ILogger logger;
-
-    /**
-     * Application context.
-     */
-    private Context context;
-
-    /**
-     * FB app ID.
-     */
-    private String fbAppId;
-
-    /**
-     * Huawei Referrer callback.
-     */
-    private final InstallReferrerReadListener referrerCallback;
-
-    /**
      * Boolean indicating whether service should be tried to read.
      * Either because it has not yet tried,
      *  or it did and it was successful
      *  or it did, was not successful, but it should not retry
      */
-    private final AtomicBoolean shouldTryToRead;
+    private static final AtomicBoolean shouldTryToRead = new AtomicBoolean(true);
 
-    /**
-     * Default constructor.
-     *
-     * @param context         Application context
-     * @param referrerCallback Callback for referrer information
-     */
-    public InstallReferrerMeta(final Context context,
-                               final String fbAppId,
-                               final InstallReferrerReadListener referrerCallback)
-    {
-        this.logger = AdjustFactory.getLogger();
-        this.context = context;
-        this.fbAppId = fbAppId;
-        this.referrerCallback = referrerCallback;
-        this.shouldTryToRead = new AtomicBoolean(true);
-    }
+    public static MetaInstallReferrerResult getMetaInstallReferrer(
+            final Context context, final String fbAppId, final ILogger logger, final boolean shouldAvoidFrequentRead) {
+        String errorMessage = null;
 
-    public void readReferrer() {
-        if (!shouldTryToRead.get()) {
-            logger.debug("Should not retry to read Install referrer Meta");
-            return;
+        if (shouldAvoidFrequentRead) {
+            if (!shouldTryToRead.get()) {
+                errorMessage = "Shouldn't try to read Meta Install referrer";
+                logger.debug(errorMessage);
+                return new MetaInstallReferrerResult(errorMessage);
+            }
         }
 
         if (TextUtils.isEmpty(fbAppId)) {
-            logger.debug("Can't read Install referrer Meta with null or empty FB app ID");
-            return;
+            errorMessage = "Can't read Meta Install referrer with null or empty FBAppId";
+            logger.debug(errorMessage);
+            return new MetaInstallReferrerResult(errorMessage);
         }
 
         Cursor cursor = null;
@@ -95,12 +69,12 @@ public class InstallReferrerMeta {
         try {
             Uri providerUri = null;
 
-            if (Util.resolveContentProvider(context, FACEBOOK_REFERRER_PROVIDER_AUTHORITY)) {
+            if (resolveContentProvider(context, FACEBOOK_REFERRER_PROVIDER_AUTHORITY)) {
                 providerUri = Uri.parse("content://" + FACEBOOK_REFERRER_PROVIDER_AUTHORITY + "/" + fbAppId);
-            } else if (Util.resolveContentProvider(context, INSTAGRAM_REFERRER_PROVIDER_AUTHORITY)) {
+            } else if (resolveContentProvider(context, INSTAGRAM_REFERRER_PROVIDER_AUTHORITY)) {
                 providerUri = Uri.parse("content://" + INSTAGRAM_REFERRER_PROVIDER_AUTHORITY + "/" + fbAppId);
             } else {
-                return;
+                return new MetaInstallReferrerResult("Failed to find Meta Install Referrer content provider");
             }
 
             ContentResolver contentResolver = context.getContentResolver();
@@ -110,7 +84,9 @@ public class InstallReferrerMeta {
             cursor = contentResolver.query(providerUri, projection, null, null, null);
 
             if (cursor == null || !cursor.moveToFirst()) {
-                return;
+                errorMessage = Util.formatString("Fail to read Meta Install Referrer for FB AppId [%s]", fbAppId);
+                logger.debug(errorMessage);
+                return new MetaInstallReferrerResult(errorMessage);
             }
 
             int installReferrerIndex = cursor.getColumnIndex(COLUMN_INSTALL_REFERRER);
@@ -123,41 +99,52 @@ public class InstallReferrerMeta {
 
             logger.debug("InstallReferrerMeta reads " +
                             "installReferrer[%s] actualTimestampInSec[%d] isClick[%b]",
-                    installReferrer, actualTimestampInSec, ctValue);
+                    installReferrer, actualTimestampInSec, isClick);
 
             if (isValidReferrer(installReferrer)) {
-                ReferrerDetails referrerDetails =
-                        new ReferrerDetails(installReferrer,
-                                actualTimestampInSec,
-                                isClick);
+                shouldTryToRead.set(false);
 
-                referrerCallback.onInstallReferrerRead(referrerDetails,
-                        Constants.REFERRER_API_META);
+                MetaInstallReferrerDetails metaInstallReferrerDetails =
+                        new MetaInstallReferrerDetails(installReferrer, actualTimestampInSec, isClick);
+
+                return new MetaInstallReferrerResult(metaInstallReferrerDetails);
             } else {
-                logger.debug("InstallReferrerMeta invalid installReferrer");
+                errorMessage = "Invalid Meta Install Referrer";
+                logger.debug(errorMessage);
             }
 
         } catch (Exception e) {
-            logger.debug("InstallReferrerMeta error [%s]", e.getMessage());
+            errorMessage = "Meta Install Referrer error " +  e.getMessage();
+            logger.debug(errorMessage);
         } finally {
             if (cursor != null) {
                 cursor.close();
             }
         }
 
-        shouldTryToRead.set(false);
+        return new MetaInstallReferrerResult(errorMessage);
     }
 
-    private boolean isValidReferrer(String installReferrer) {
-        if (installReferrer == null) {
+    private static boolean resolveContentProvider(final Context applicationContext,
+                                                 final String authority) {
+        try {
+            return (applicationContext.getPackageManager()
+                    .resolveContentProvider(authority, 0) != null);
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean isValidReferrer(String referrer) {
+        if (referrer == null) {
             return false;
         }
 
-        if (installReferrer.isEmpty()) {
+        if (referrer.isEmpty()) {
             return false;
         }
 
         return true;
     }
-
 }

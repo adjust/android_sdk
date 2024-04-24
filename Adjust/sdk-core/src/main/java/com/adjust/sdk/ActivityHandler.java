@@ -82,7 +82,6 @@ public class ActivityHandler implements IActivityHandler {
     private IPurchaseVerificationHandler purchaseVerificationHandler;
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
-    private InstallReferrerMeta installReferrerMeta;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
     @Override
@@ -1000,18 +999,6 @@ public class ActivityHandler implements IActivityHandler {
 
         });
 
-        installReferrerMeta = new InstallReferrerMeta(adjustConfig.context, adjustConfig.fbAppId,
-                new InstallReferrerReadListener() {
-                    @Override
-                    public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
-                        sendInstallReferrer(referrerDetails, referrerApi);
-                    }
-
-                    @Override
-                    public void onFail(String message) {
-                        logger.debug(message);
-                    }
-                });
         preLaunchActionsI(adjustConfig.preLaunchActions.preLaunchActionsArray);
         sendReftagReferrerI();
     }
@@ -1330,7 +1317,7 @@ public class ActivityHandler implements IActivityHandler {
 
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
-            installReferrerMeta.readReferrer();
+            readInstallReferrerMeta();
             readInstallReferrerHuaweiAds();
             readInstallReferrerHuaweiAppGallery();
             readInstallReferrerSamsung();
@@ -1341,6 +1328,18 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         logger.verbose("Time span since last activity too short for a new subsession");
+    }
+
+    private void readInstallReferrerMeta() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                ReferrerDetails referrerDetails = Reflection.getMetaReferrer(getContext(), adjustConfig.fbAppId, logger);
+                if (referrerDetails != null) {
+                    sendInstallReferrer(referrerDetails, REFERRER_API_META);
+                }
+            }
+        });
     }
 
     private void readInstallReferrerHuaweiAds() {
@@ -1866,7 +1865,7 @@ public class ActivityHandler implements IActivityHandler {
 
         // try to read and send the install referrer
         installReferrer.startConnection();
-        installReferrerMeta.readReferrer();
+        readInstallReferrerMeta();
         readInstallReferrerHuaweiAds();
         readInstallReferrerHuaweiAppGallery();
         readInstallReferrerSamsung();

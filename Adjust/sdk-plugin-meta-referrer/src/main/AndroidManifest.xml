@@ -1,0 +1,8 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <queries>
+        <package android:name="com.facebook.katana" />
+    </queries>
+    <queries>
+        <package android:name="com.instagram.android" />
+    </queries>
+</manifest>

@@ -60,6 +60,19 @@ public class Reflection {
         }
     }
 
+    public static ReferrerDetails getMetaReferrer(Context context, String fbAppId, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.meta.Util",
+                    "getMetaInstallReferrerDetails",
+                    new Class[]{Context.class, String.class, ILogger.class},
+                    context, fbAppId, logger);
+        } catch (Exception e) {
+            logger.info("invoke getMetaInstallReferrerDetails : " + e.getMessage());
+        }
+        return referrerDetails;
+    }
+
     public static ReferrerDetails getHuaweiAdsReferrer(Context context, ILogger logger) {
         ReferrerDetails referrerDetails = null;
         try {
