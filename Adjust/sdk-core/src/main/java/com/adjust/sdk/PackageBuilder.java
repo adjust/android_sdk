@@ -261,7 +261,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -296,7 +295,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
@@ -353,7 +351,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -393,7 +390,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
@@ -442,7 +438,6 @@ public class PackageBuilder {
         }
 
         // Rest of the parameters.
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
@@ -452,7 +447,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", source);
 
         // google play games
@@ -507,7 +501,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -557,7 +550,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addString(parameters, "source", source);
@@ -611,7 +603,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -629,7 +620,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
@@ -675,7 +665,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -692,7 +681,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
@@ -752,7 +740,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -768,7 +755,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
@@ -820,7 +806,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -836,7 +821,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
@@ -888,7 +872,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -923,7 +906,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addString(parameters, "source", adjustAdRevenue.source);
         PackageBuilder.addDoubleWithoutRounding(parameters, "revenue", adjustAdRevenue.revenue);
         PackageBuilder.addString(parameters, "currency", adjustAdRevenue.currency);
@@ -987,7 +969,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -1022,7 +1003,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
@@ -1082,7 +1062,6 @@ public class PackageBuilder {
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);
-        PackageBuilder.addString(parameters, "app_secret", adjustConfig.appSecret);
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
@@ -1117,7 +1096,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);
-        PackageBuilder.addString(parameters, "secret_id", adjustConfig.secretId);
         PackageBuilder.addLong(parameters, "session_count", activityStateCopy.sessionCount);
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);

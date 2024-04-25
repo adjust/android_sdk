@@ -160,11 +160,6 @@ public class AdjustBridgeInstance {
             Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object delayStartField = jsonAdjustConfig.get("delayStart");
-            Object secretIdField = jsonAdjustConfig.get("secretId");
-            Object info1Field = jsonAdjustConfig.get("info1");
-            Object info2Field = jsonAdjustConfig.get("info2");
-            Object info3Field = jsonAdjustConfig.get("info3");
-            Object info4Field = jsonAdjustConfig.get("info4");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
@@ -326,16 +321,6 @@ public class AdjustBridgeInstance {
             Double delayStart = AdjustBridgeUtil.fieldToDouble(delayStartField);
             if (delayStart != null) {
                 adjustConfig.setDelayStart(delayStart);
-            }
-
-            // App secret
-            Long secretId = AdjustBridgeUtil.fieldToLong(secretIdField);
-            Long info1 = AdjustBridgeUtil.fieldToLong(info1Field);
-            Long info2 = AdjustBridgeUtil.fieldToLong(info2Field);
-            Long info3 = AdjustBridgeUtil.fieldToLong(info3Field);
-            Long info4 = AdjustBridgeUtil.fieldToLong(info4Field);
-            if (secretId != null && info1 != null && info2 != null && info3 != null && info4 != null) {
-                adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
             }
 
             // Check Pixel Default Event Token
