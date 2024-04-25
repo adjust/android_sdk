@@ -185,11 +185,21 @@ var Adjust = {
         }
     },
 
-    getAdid: function () {
-        if (AdjustBridge) {
-            return AdjustBridge.getAdid();
-        } else {
-            return undefined;
+    getAdid: function (callback) {
+     if (AdjustBridge) {
+                if (typeof callback === 'string' || callback instanceof String) {
+                    this.getAdIdCallbackName = callback;
+                } else {
+                    this.getAdIdCallbackName = 'Adjust.adjust_getAdIdCallback';
+                    this.getAdIdCallbackFunction = callback;
+                }
+                AdjustBridge.getAdid(this.getAdIdCallbackName);
+            }
+    },
+
+    adjust_getAdIdCallback: function (adId) {
+        if (AdjustBridge && this.getAdIdCallbackFunction) {
+            this.getAdIdCallbackFunction(adId);
         }
     },
 
@@ -223,6 +233,7 @@ var Adjust = {
         this.isEnabledCallbackName = undefined;
         this.isEnabledCallbackFunction = undefined;
         this.getGoogleAdIdCallbackName = undefined;
+        this.getAdIdCallbackName = undefined;
         this.getGoogleAdIdCallbackFunction = undefined;
     },
 };
