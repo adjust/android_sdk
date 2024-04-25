@@ -62,7 +62,6 @@ public interface Constants {
     String REFERRER = "referrer";
 
     String ENCODING = "UTF-8";
-    String SHA256 = "SHA-256";
     int MINIMAL_ERROR_STATUS_CODE = 400;
 
     String CALLBACK_PARAMETERS = "callback_params";

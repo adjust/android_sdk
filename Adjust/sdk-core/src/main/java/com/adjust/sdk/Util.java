@@ -10,7 +10,6 @@
 package com.adjust.sdk;
 
 import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.SHA256;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -403,10 +402,6 @@ public class Util {
             return 37 * hashCode;
         }
         return 37 * hashCode + value.hashCode();
-    }
-
-    public static String sha256(final String text) {
-        return hash(text, SHA256);
     }
 
     public static String hash(final String text, final String method) {
