@@ -143,9 +143,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                     new HashMap<>(activityPackage.getParameters());
             Map<String, String> sendingParameters = responseData.sendingParameters;
 
-            String authorizationHeader = buildAndExtractAuthorizationHeader(
-                    activityPackageParameters,
-                    activityPackage.getActivityKind());
+            String authorizationHeader = buildAndExtractAuthorizationHeader(activityPackageParameters);
 
             boolean shouldUseGET =
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
@@ -534,10 +532,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
         responseData.resolvedDeeplink = UtilNetworking.extractJsonString(jsonResponse,"resolved_click_url");
     }
 
-    private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters,
-                                                      final ActivityKind activityKind) {
-        String activityKindString = activityKind.toString();
-
+    private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters) {
         String adjSigningId = extractAdjSigningId(parameters);
         String secretId = extractSecretId(parameters);
         String headersId = extractHeadersId(parameters);
@@ -551,43 +546,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
             return authorizationHeader;
         }
 
-        authorizationHeader = buildAuthorizationHeaderV2WithSecretId(signature, secretId, headersId,
+        return buildAuthorizationHeaderV2WithSecretId(signature, secretId, headersId,
                 algorithm, nativeVersion);
-        if (authorizationHeader != null) {
-            return authorizationHeader;
-        }
-
-        String appSecret = extractAppSecret(parameters);
-        return buildAuthorizationHeaderV1(parameters, appSecret, secretId, activityKindString);
-    }
-
-    private String buildAuthorizationHeaderV1(final Map<String, String> parameters,
-                                              final String appSecret,
-                                              final String secretId,
-                                              final String activityKindString)
-    {
-        // check if the secret exists and it's not empty
-        if (appSecret == null || appSecret.length() == 0) {
-            return null;
-        }
-        String appSecretName = "app_secret";
-
-        Map<String, String> signatureDetails = getSignature(parameters, activityKindString, appSecret);
-
-        String algorithm = "sha256";
-        String signature = Util.sha256(signatureDetails.get("clear_signature"));
-        String fields = signatureDetails.get("fields");
-
-        String secretIdHeader = Util.formatString("secret_id=\"%s\"", secretId);
-        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
-        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm);
-        String fieldsHeader = Util.formatString("headers=\"%s\"", fields);
-
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s",
-                secretIdHeader, signatureHeader, algorithmHeader, fieldsHeader);
-        logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-        return authorizationHeader;
     }
 
     private String buildAuthorizationHeaderV2WithAdjSigningId(final String signature,
@@ -636,87 +596,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         logger.verbose("authorizationHeader: %s", authorizationHeader);
 
         return authorizationHeader;
-    }
-
-    private Map<String, String> getSignature(final Map<String, String> parameters,
-                                             final String activityKindString,
-                                             final String appSecret)
-    {
-        String activityKindName = "activity_kind";
-        String activityKindValue = activityKindString;
-
-        String createdAtName = "created_at";
-        String createdAt = parameters.get(createdAtName);
-
-        String deviceIdentifierName = getValidIdentifier(parameters);
-        String deviceIdentifier = parameters.get(deviceIdentifierName);
-
-        String sourceName = "source";
-        String sourceValue = parameters.get(sourceName);
-
-        String payloadName = "payload";
-        String payloadValue = parameters.get(payloadName);
-
-        Map<String, String> signatureParams = new HashMap<String, String>();
-
-        signatureParams.put("app_secret", appSecret);
-        signatureParams.put(createdAtName, createdAt);
-        signatureParams.put(activityKindName, activityKindValue);
-        signatureParams.put(deviceIdentifierName, deviceIdentifier);
-
-        if (sourceValue != null) {
-            signatureParams.put(sourceName, sourceValue);
-        }
-
-        if (payloadValue != null) {
-            signatureParams.put(payloadName, payloadValue);
-        }
-
-        String fields = "";
-        String clearSignature = "";
-
-        for (Map.Entry<String, String> entry : signatureParams.entrySet())  {
-            if (entry.getValue() != null) {
-                fields += entry.getKey() + " ";
-                clearSignature += entry.getValue();
-            }
-        }
-
-        // Remove last empty space.
-        fields = fields.substring(0, fields.length() - 1);
-
-        HashMap<String, String> signature = new HashMap<String, String>();
-
-        signature.put("clear_signature", clearSignature);
-        signature.put("fields", fields);
-
-        return signature;
-    }
-
-    private String getValidIdentifier(final Map<String, String> parameters) {
-        String googleAdIdName = "gps_adid";
-        String fireAdIdName = "fire_adid";
-        String androidIdName = "android_id";
-        String androidUUIDName= "android_uuid";
-
-        if (parameters.get(googleAdIdName) != null) {
-            return googleAdIdName;
-        }
-        if (parameters.get(fireAdIdName) != null) {
-            return fireAdIdName;
-        }
-        if (parameters.get(androidIdName) != null) {
-            return androidIdName;
-        }
-        if (parameters.get(androidUUIDName) != null) {
-            return androidUUIDName;
-        }
-
-        return null;
-    }
-
-    private static String extractAppSecret(final Map<String, String> parameters) {
-        return parameters.remove("app_secret");
     }
 
     private static String extractSecretId(final Map<String, String> parameters) {

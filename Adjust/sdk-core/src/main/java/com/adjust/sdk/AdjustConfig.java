@@ -31,8 +31,6 @@ public class AdjustConfig {
     String pushToken;
     Boolean startEnabled;
     boolean startOffline;
-    String secretId;
-    String appSecret;
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
@@ -145,11 +143,6 @@ public class AdjustConfig {
 
     public void setDelayStart(double delayStart) {
         this.delayStart = delayStart;
-    }
-
-    public void setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
-        this.secretId = Util.formatString("%d", secretId);
-        this.appSecret = Util.formatString("%d%d%d%d", info1, info2, info3, info4);
     }
 
     @Deprecated
@@ -308,14 +301,6 @@ public class AdjustConfig {
 
     public boolean isStartOffline() {
         return startOffline;
-    }
-
-    public String getSecretId() {
-        return secretId;
-    }
-
-    public String getAppSecret() {
-        return appSecret;
     }
 
     public String getExternalDeviceId() {

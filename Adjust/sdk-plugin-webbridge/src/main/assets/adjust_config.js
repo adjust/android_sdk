@@ -41,11 +41,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.deferredDeeplinkCallbackName = null;
     this.deferredDeeplinkCallbackFunction = null;
     this.delayStart = null;
-    this.secretId = null;
-    this.info1 = null;
-    this.info2 = null;
-    this.info3 = null;
-    this.info4 = null;
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
     this.urlStrategy = null;
@@ -211,14 +206,6 @@ AdjustConfig.prototype.adjust_deferredDeeplinkCallback = function(deeplink) {
 
 AdjustConfig.prototype.setDelayStart = function(delayStart) {
     this.delayStart = delayStart;
-};
-
-AdjustConfig.prototype.setAppSecret = function(secretId, info1, info2, info3, info4) {
-    this.secretId = secretId;
-    this.info1 = info1;
-    this.info2 = info2;
-    this.info3 = info3;
-    this.info4 = info4;
 };
 
 AdjustConfig.prototype.setReadMobileEquipmentIdentity = function(readMobileEquipmentIdentity) {};
