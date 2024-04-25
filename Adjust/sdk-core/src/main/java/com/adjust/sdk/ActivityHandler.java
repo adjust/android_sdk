@@ -463,13 +463,18 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (cachedAdidReadCallbacks != null && !cachedAdidReadCallbacks.isEmpty()) {
-            for (OnAdidReadListener listener : cachedAdidReadCallbacks) {
-                if (listener != null) {
-                    listener.onAdidRead(adid);
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAdidReadListener listener : cachedAdidReadCallbacks) {
+                        if (listener != null) {
+                            listener.onAdidRead(adid);
+                        }
+                    }
+                    cachedAdidReadCallbacks = null;
+                    adjustConfig.cachedAdidReadCallbacks = null;
                 }
-            }
-            cachedAdidReadCallbacks = null;
-            adjustConfig.cachedAdidReadCallbacks = null;
+            });
         }
     }
 
@@ -758,14 +763,14 @@ public class ActivityHandler implements IActivityHandler {
 
     @Override
     public void getAdid(OnAdidReadListener callback) {
-        if (activityState == null) {
-            logger.info("SDK needs to be initialized before getting adid");
-        }
         if (activityState != null && activityState.adid != null) {
             callback.onAdidRead(activityState.adid);
-            return;
+        } else {
+            if (activityState == null) {
+                logger.warn("SDK needs to be initialized before getting adid");
+            }
+            this.cachedAdidReadCallbacks.add(callback);
         }
-        this.cachedAdidReadCallbacks.add(callback);
     }
 
     @Override
@@ -897,7 +902,7 @@ public class ActivityHandler implements IActivityHandler {
         if (this.cachedAdidReadCallbacks != null && !this.cachedAdidReadCallbacks.isEmpty()) {
             this.cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
         } else {
-            this.cachedAdidReadCallbacks = adjustConfig.cachedAdidReadCallbacks;
+            this.cachedAdidReadCallbacks = new ArrayList<>(adjustConfig.cachedAdidReadCallbacks);
         }
 
         if (activityState != null && activityState.adid != null) {
