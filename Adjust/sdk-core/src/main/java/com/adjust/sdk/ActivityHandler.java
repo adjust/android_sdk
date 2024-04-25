@@ -764,7 +764,12 @@ public class ActivityHandler implements IActivityHandler {
     @Override
     public void getAdid(OnAdidReadListener callback) {
         if (activityState != null && activityState.adid != null) {
-            callback.onAdidRead(activityState.adid);
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onAdidRead(activityState.adid);
+                }
+            });
         } else {
             if (activityState == null) {
                 logger.warn("SDK needs to be initialized before getting adid");
