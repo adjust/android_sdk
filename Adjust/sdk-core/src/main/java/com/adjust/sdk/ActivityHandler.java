@@ -83,7 +83,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks;
 
     @Override
     public void teardown() {
