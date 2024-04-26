@@ -98,14 +98,6 @@ public class GlobalApplication extends Application {
             }
         });
 
-        Adjust.getAdid(new OnAdidReadListener() {
-            @Override
-            public void onAdidRead(String adid) {
-                Log.d("example", "Adid callback called!");
-                Log.d("example", "Adid: " + adid);
-            }
-        });
-
         // Set default tracker.
         // config.setDefaultTracker("{YourDefaultTracker}");
 
