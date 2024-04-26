@@ -774,6 +774,9 @@ public class ActivityHandler implements IActivityHandler {
             if (activityState == null) {
                 logger.warn("SDK needs to be initialized before getting adid");
             }
+            if (this.cachedAdidReadCallbacks == null) {
+                this.cachedAdidReadCallbacks = new ArrayList<>();
+            }
             this.cachedAdidReadCallbacks.add(callback);
         }
     }
