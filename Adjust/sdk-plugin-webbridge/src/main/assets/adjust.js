@@ -233,7 +233,8 @@ var Adjust = {
         this.isEnabledCallbackName = undefined;
         this.isEnabledCallbackFunction = undefined;
         this.getGoogleAdIdCallbackName = undefined;
-        this.getAdIdCallbackName = undefined;
         this.getGoogleAdIdCallbackFunction = undefined;
+        this.getAdIdCallbackName = undefined;
+        this.getAdIdCallbackFunction = undefined;
     },
 };
