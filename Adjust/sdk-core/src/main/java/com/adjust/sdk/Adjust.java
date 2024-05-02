@@ -345,11 +345,15 @@ public class Adjust {
     /**
      * Called to get value of unique Adjust device identifier.
      *
-     * @return Unique Adjust device indetifier
+     * @param onAdidReadListener Callback to get triggered once identifier is obtained.
      */
-    public static String getAdid() {
+    public static void getAdid(final OnAdidReadListener onAdidReadListener) {
+        if (onAdidReadListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting adid can't be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getAdid();
+        adjustInstance.getAdid(onAdidReadListener);
     }
 
     /**

@@ -18,9 +18,9 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
+import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
@@ -30,11 +30,7 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 
 /**
  * Created by uerceg on 22/07/16.
@@ -718,11 +714,16 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public String getAdid() {
+    public void getAdid(final String callback) {
         if (!isInitialized()) {
-            return null;
+            return;
         }
-        return Adjust.getAdid();
+        Adjust.getAdid(new OnAdidReadListener() {
+            @Override
+            public void onAdidRead(String adid) {
+                AdjustBridgeUtil.execSingleValueCallback(webView, callback, adid);
+            }
+        });
     }
 
     @JavascriptInterface

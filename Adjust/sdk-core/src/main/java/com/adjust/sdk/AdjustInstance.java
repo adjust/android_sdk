@@ -48,6 +48,8 @@ public class AdjustInstance {
     private PreLaunchActions preLaunchActions = new PreLaunchActions();
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = null;
     /**
      * Base path for Adjust packages.
      */
@@ -96,6 +98,7 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
+        adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallbacks;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -527,13 +530,17 @@ public class AdjustInstance {
     /**
      * Called to get value of unique Adjust device identifier.
      *
-     * @return Unique Adjust device indetifier
+     * @param onAdidReadListener Callback to get triggered once identifier is obtained.
      */
-    public String getAdid() {
+    public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
-            return null;
+            if (this.cachedAdidReadCallbacks == null) {
+                this.cachedAdidReadCallbacks = new ArrayList<OnAdidReadListener>();
+            }
+            this.cachedAdidReadCallbacks.add(onAdidReadListener);
+            return;
         }
-        return activityHandler.getAdid();
+        activityHandler.getAdid(onAdidReadListener);
     }
 
     /**

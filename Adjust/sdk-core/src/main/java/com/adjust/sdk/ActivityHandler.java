@@ -83,6 +83,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks;
 
     @Override
     public void teardown() {
@@ -456,13 +457,25 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        if (adid.equals(activityState.adid)) {
-            return;
+        if (!adid.equals(activityState.adid)) {
+            activityState.adid = adid;
+            writeActivityStateI();
         }
 
-        activityState.adid = adid;
-        writeActivityStateI();
-        return;
+        if (cachedAdidReadCallbacks != null && !cachedAdidReadCallbacks.isEmpty()) {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAdidReadListener listener : cachedAdidReadCallbacks) {
+                        if (listener != null) {
+                            listener.onAdidRead(adid);
+                        }
+                    }
+                    cachedAdidReadCallbacks = null;
+                    adjustConfig.cachedAdidReadCallbacks = null;
+                }
+            });
+        }
     }
 
     @Override
@@ -749,11 +762,23 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public String getAdid() {
-        if (activityState == null) {
-            return null;
+    public void getAdid(OnAdidReadListener callback) {
+        if (activityState != null && activityState.adid != null) {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onAdidRead(activityState.adid);
+                }
+            });
+        } else {
+            if (activityState == null) {
+                logger.warn("SDK needs to be initialized before getting adid");
+            }
+            if (this.cachedAdidReadCallbacks == null) {
+                this.cachedAdidReadCallbacks = new ArrayList<>();
+            }
+            this.cachedAdidReadCallbacks.add(callback);
         }
-        return activityState.adid;
     }
 
     @Override
@@ -877,6 +902,30 @@ public class ActivityHandler implements IActivityHandler {
         // cached deep link resolution callback
         if (this.cachedDeeplinkResolutionCallback == null) {
             this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
+        }
+
+        // cached adid read callback
+        // if it's not empty, we need to add it to the onAdidReadListener in case getAdid() is
+        // called before the sdk starts
+        if (this.cachedAdidReadCallbacks != null && !this.cachedAdidReadCallbacks.isEmpty()) {
+            this.cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
+        } else {
+            this.cachedAdidReadCallbacks = new ArrayList<>(adjustConfig.cachedAdidReadCallbacks);
+        }
+
+        if (activityState != null && activityState.adid != null) {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacks) {
+                        if (onAdidReadListener != null) {
+                            onAdidReadListener.onAdidRead(activityState.adid);
+                        }
+                    }
+                    adjustConfig.cachedAdidReadCallbacks = null;
+                    cachedAdidReadCallbacks = null;
+                }
+            });
         }
 
         // GDPR
