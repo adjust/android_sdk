@@ -187,14 +187,14 @@ var Adjust = {
 
     getAdid: function (callback) {
      if (AdjustBridge) {
-                if (typeof callback === 'string' || callback instanceof String) {
-                    this.getAdIdCallbackName = callback;
-                } else {
-                    this.getAdIdCallbackName = 'Adjust.adjust_getAdIdCallback';
-                    this.getAdIdCallbackFunction = callback;
-                }
-                AdjustBridge.getAdid(this.getAdIdCallbackName);
+            if (typeof callback === 'string' || callback instanceof String) {
+                this.getAdIdCallbackName = callback;
+            } else {
+                this.getAdIdCallbackName = 'Adjust.adjust_getAdIdCallback';
+                this.getAdIdCallbackFunction = callback;
             }
+            AdjustBridge.getAdid(this.getAdIdCallbackName);
+        }
     },
 
     adjust_getAdIdCallback: function (adId) {

@@ -349,7 +349,7 @@ public class Adjust {
      */
     public static void getAdid(final OnAdidReadListener onAdidReadListener) {
         if (onAdidReadListener == null) {
-            AdjustFactory.getLogger().info("onAdidReadListener is null");
+            AdjustFactory.getLogger().error("Callback for getting adid can't be null");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
