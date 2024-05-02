@@ -70,8 +70,6 @@ public class AdjustInstance {
      */
     private String purchaseVerificationPath;
 
-
-
     /**
      * Called upon SDK initialisation.
      *
