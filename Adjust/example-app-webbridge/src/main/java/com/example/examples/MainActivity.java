@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
 
         AdjustBridge.registerAndGetInstance(getApplication(), webView);
         try {
-//            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
-            webView.loadUrl("https://adjustweb.neocities.org");
+            webView.loadUrl("file:///android_asset/AdjustExample-WebView.html");
+//            webView.loadUrl("https://adjustweb.neocities.org");
         } catch (Exception e) {
             e.printStackTrace();
         }
