@@ -150,6 +150,18 @@
                     });
                 }
 
+                var btnGetAmazonId = document.getElementById('btnGetAmazonId')
+                btnGetAmazonId.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getAmazonAdId(function (gpsAdid) {
+                        alert('Amazon Ad Id:\n' + gpsAdid);
+                        alert('Message:\n' + message);
+                    },
+                    function (message) {
+                        alert('Message:\n' + message);
+                    });
+                }
+
                 var btnGetAdId = document.getElementById('btnGetAdId')
                 btnGetAdId.onclick = function(e) {
                     e.preventDefault();
@@ -192,6 +204,9 @@
             </div>
             <div style="width:400px;height:35px;text-align:center;">
                 <button id='btnGetAdId'>Get Adjust Identifier</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetAmazonId'>Get Amazon Ad Id</button>
             </div>
         </div>
     </body>

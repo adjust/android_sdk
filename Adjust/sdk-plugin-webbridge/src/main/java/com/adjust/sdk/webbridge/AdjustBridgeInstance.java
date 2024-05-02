@@ -21,6 +21,7 @@ import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
+import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
@@ -706,11 +707,21 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public String getAmazonAdId() {
+    public void getAmazonAdId(final String callbackSuccess,final String callbackFail) {
         if (!isInitialized()) {
-            return null;
+            return;
         }
-        return Adjust.getAmazonAdId(application.getApplicationContext());
+        Adjust.getAmazonAdId(application.getApplicationContext(),new OnAmazonAdIdReadListener() {
+            @Override
+            public void onAmazonAdIdRead(String adid) {
+                AdjustBridgeUtil.execSingleValueCallback(webView, callbackSuccess, adid);
+            }
+
+            @Override
+            public void onFail(String message) {
+                AdjustBridgeUtil.execSingleValueCallback(webView, callbackFail, null);
+            }
+        });
     }
 
     @JavascriptInterface
