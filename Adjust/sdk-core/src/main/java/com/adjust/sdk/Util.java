@@ -643,20 +643,12 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
-        if (adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
-
-        return !coppaEnabled;
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
+        return !coppaEnabled && !playStoreKidsAppEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
-        if (adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
-
-        return !coppaEnabled;
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
+        return !coppaEnabled && !playStoreKidsAppEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {

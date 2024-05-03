@@ -49,6 +49,8 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_COPPA_COMPLIANCE_ENABLED = "coppa_compliant_enabled";
 
+    private static final String PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED = "play_store_kids_app_enabled";
+
     /**
      * Index for raw referrer string content in saved JSONArray object.
      */
@@ -433,6 +435,31 @@ public class SharedPreferencesManager {
      */
     public synchronized void removeCoppaCompliance() {
         remove(PREFS_KEY_COPPA_COMPLIANCE_ENABLED);
+    }
+
+    /**
+     * Save Google Play Store Kids app state to shared preferences.
+     *
+     * @param enabled boolean indicating should GPSKA be enabled (true) or not (false)
+     */
+    public synchronized void savePlayStoreKidsApp(final boolean enabled) {
+        saveBoolean(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED, enabled);
+    }
+
+    /**
+     * Get Google Play Store Kids app from shared preferences.
+     *
+     * @return Google Play Store Kids app setting
+     */
+    public synchronized boolean getPlayStoreKidsApp() {
+        return getBoolean(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED, false);
+    }
+
+    /**
+     * Remove Google Play Store Kids app settings from shared preferences.
+     */
+    public synchronized void removePlayStoreKidsApp() {
+        remove(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED);
     }
 
     /**
