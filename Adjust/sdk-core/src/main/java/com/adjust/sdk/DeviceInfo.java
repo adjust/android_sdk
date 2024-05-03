@@ -101,7 +101,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
 
-    DeviceInfo(AdjustConfig adjustConfig, boolean coppaEnabled) {
+    DeviceInfo(AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -134,14 +134,14 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+        if (Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
+    void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
         if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
-            if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+            if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
                 playAdId = null;
                 isTrackingEnabled = null;
                 playAdIdSource = null;
@@ -155,7 +155,7 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        if (!Util.canReadPlayIds(adjustConfig, coppaEnabled)) {
+        if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
             return;
         }
 
@@ -234,8 +234,8 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled) {
-        if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabled)) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
+        if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
             return;
         }
 

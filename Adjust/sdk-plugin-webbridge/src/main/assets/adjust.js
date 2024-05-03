@@ -159,6 +159,18 @@ var Adjust = {
         }
     },
 
+    enablePlayStoreKidsApp: function () {
+        if (AdjustBridge) {
+            AdjustBridge.enablePlayStoreKidsApp();
+        }
+    },
+
+    disablePlayStoreKidsApp: function () {
+        if (AdjustBridge) {
+            AdjustBridge.disablePlayStoreKidsApp();
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {

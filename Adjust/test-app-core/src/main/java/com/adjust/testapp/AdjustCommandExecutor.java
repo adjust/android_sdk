@@ -96,6 +96,8 @@ public class AdjustCommandExecutor {
                 case "processDeeplink" : processDeeplink(); break;
                 case "enableCoppaCompliance" : enableCoppaCompliance(); break;
                 case "disableCoppaCompliance" : disableCoppaCompliance(); break;
+                case "enablePlayStoreKidsApp" : enablePlayStoreKidsApp(); break;
+                case "disablePlayStoreKidsApp" : disablePlayStoreKidsApp(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -307,12 +309,6 @@ public class AdjustCommandExecutor {
         if (command.containsParameter("externalDeviceId")) {
             String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
             adjustConfig.setExternalDeviceId(externalDeviceId);
-        }
-
-        if (command.containsParameter("playStoreKids")) {
-            String playStoreKidsS = command.getFirstParameterValue("playStoreKids");
-            boolean playStoreKids = "true".equals(playStoreKidsS);
-            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
         }
 
         if(command.containsParameter("deferredDeeplinkCallback")) {
@@ -819,6 +815,14 @@ public class AdjustCommandExecutor {
 
     private void disableCoppaCompliance() {
         Adjust.disableCoppaCompliance(context.getApplicationContext());
+    }
+
+    private void enablePlayStoreKidsApp() {
+        Adjust.enablePlayStoreKidsApp(context.getApplicationContext());
+    }
+
+    private void disablePlayStoreKidsApp() {
+        Adjust.disablePlayStoreKidsApp(context.getApplicationContext());
     }
 
 /*

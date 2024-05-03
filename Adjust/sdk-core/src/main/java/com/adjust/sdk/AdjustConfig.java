@@ -38,7 +38,6 @@ public class AdjustConfig {
     Boolean needsCost;
     String urlStrategy;
     String preinstallFilePath;
-    boolean playStoreKidsAppEnabled;
     String fbAppId;
     boolean readDeviceInfoOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
@@ -167,10 +166,6 @@ public class AdjustConfig {
 
     public void setNeedsCost(boolean needsCost) {
         this.needsCost = needsCost;
-    }
-
-    public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled) {
-        this.playStoreKidsAppEnabled = playStoreKidsAppEnabled;
     }
 
     public void setFbAppId(String fbAppId) {
@@ -324,10 +319,6 @@ public class AdjustConfig {
 
     public String getPreinstallFilePath() {
         return preinstallFilePath;
-    }
-
-    public boolean isPlayStoreKidsAppEnabled() {
-        return playStoreKidsAppEnabled;
     }
 
     public String getFbAppId() {

@@ -138,6 +138,8 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
         case "enableCoppaCompliance"          : this.enableCoppaCompliance(command.params); break;
         case "disableCoppaCompliance"         : this.disableCoppaCompliance(command.params); break;
+        case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsApp(command.params); break;
+        case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsApp(command.params); break;
         break;
     }
 
@@ -317,12 +319,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
         var sendInBackgroundS = getFirstParameterValue(params, 'sendInBackground');
         var sendInBackground = sendInBackgroundS == 'true';
         adjustConfig.setSendInBackground(sendInBackground);
-    }
-
-    if ('playStoreKids' in params) {
-        var playStoreKidsS = getFirstParameterValue(params, 'playStoreKids');
-        var playStoreKids = playStoreKidsS == 'true';
-        adjustConfig.setPlayStoreKidsAppEnabled(playStoreKids);
     }
 
     if ('attributionCallbackSendAll' in params) {
@@ -639,6 +635,14 @@ AdjustCommandExecutor.prototype.enableCoppaCompliance = function(params) {
 
 AdjustCommandExecutor.prototype.disableCoppaCompliance = function(params) {
         Adjust.disableCoppaCompliance();
+};
+
+AdjustCommandExecutor.prototype.enablePlayStoreKidsApp = function(params) {
+        Adjust.enablePlayStoreKidsApp();
+};
+
+AdjustCommandExecutor.prototype.disablePlayStoreKidsApp = function(params) {
+        Adjust.disablePlayStoreKidsApp();
 };
 
 //Util
