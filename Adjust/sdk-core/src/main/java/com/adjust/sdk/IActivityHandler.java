@@ -98,4 +98,6 @@ public interface IActivityHandler {
     ActivityState getActivityState();
 
     SessionParameters getSessionParameters();
+
+    ActivityHandler.InternalState getInternalState();
 }

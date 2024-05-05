@@ -177,7 +177,8 @@ public class SdkClickHandler implements ISdkClickHandler {
                                 activityHandler.getActivityState(),
                                 activityHandler.getAdjustConfig(),
                                 activityHandler.getDeviceInfo(),
-                                activityHandler.getSessionParameters());
+                                activityHandler.getSessionParameters(),
+                                activityHandler.getInternalState());
 
                         // Send referrer sdk_click package.
                         sendSdkClick(sdkClickPackage);

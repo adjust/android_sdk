@@ -9,6 +9,8 @@
 
 package com.adjust.sdk;
 
+import com.adjust.sdk.network.ErrorCodes;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -32,9 +34,9 @@ public class ActivityPackage implements Serializable {
             new ObjectStreamField("suffix", String.class),
             new ObjectStreamField("callbackParameters", (Class<Map<String,String>>)(Class)Map.class),
             new ObjectStreamField("partnerParameters", (Class<Map<String,String>>)(Class)Map.class),
-            new ObjectStreamField("errorCount", int.class),
-            new ObjectStreamField("firstErrorMessage", String.class),
-            new ObjectStreamField("lastErrorMessage", String.class),
+            new ObjectStreamField("retryCount", int.class),
+            new ObjectStreamField("firstErrorCode", int.class),
+            new ObjectStreamField("lastErrorCode", int.class),
             new ObjectStreamField("waitBeforeSendTimeSeconds", double.class),
     };
 
@@ -65,9 +67,9 @@ public class ActivityPackage implements Serializable {
     private String installVersion;
     private Boolean googlePlayInstant;
     private Boolean isClick;
-    private int errorCount;
-    private String firstErrorMessage;
-    private String lastErrorMessage;
+    private int retryCount;
+    private int firstErrorCode;
+    private int lastErrorCode;
     private double waitBeforeSendTimeSeconds;
 
     public String getPath() {
@@ -234,16 +236,16 @@ public class ActivityPackage implements Serializable {
         return Util.formatString("Failed to track %s%s", activityKind.toString(), suffix);
     }
 
-    public int getErrorCount() {
-        return errorCount;
+    public int getRetryCount() {
+        return retryCount;
     }
 
-    public String getFirstErrorMessage() {
-        return firstErrorMessage;
+    public int getFirstErrorCode() {
+        return firstErrorCode;
     }
 
-    public String getLastErrorMessage() {
-        return lastErrorMessage;
+    public int getLastErrorCode() {
+        return lastErrorCode;
     }
 
     public double getWaitBeforeSendTimeSeconds() {
@@ -254,12 +256,12 @@ public class ActivityPackage implements Serializable {
         waitBeforeSendTimeSeconds = waitSeconds;
     }
 
-    public void addError(String errorMessage) {
-        errorCount++;
-        if (firstErrorMessage == null) {
-            firstErrorMessage = errorMessage;
+    public void addError(int errorCode) {
+        retryCount++;
+        if (firstErrorCode == 0) {
+            firstErrorCode = errorCode;
         } else {
-            lastErrorMessage = errorMessage;
+            lastErrorCode = errorCode;
         }
     }
 
@@ -277,9 +279,9 @@ public class ActivityPackage implements Serializable {
         suffix = Util.readStringField(fields, "suffix", null);
         callbackParameters = Util.readObjectField(fields, "callbackParameters", null);
         partnerParameters = Util.readObjectField(fields, "partnerParameters", null);
-        errorCount = Util.readIntField(fields, "errorCount", 0);
-        firstErrorMessage = Util.readStringField(fields, "firstErrorMessage", null);
-        lastErrorMessage = Util.readStringField(fields, "lastErrorMessage", null);
+        retryCount = Util.readIntField(fields, "errorCount", 0);
+        firstErrorCode = Util.readIntField(fields, "firstErrorCode", 0);
+        lastErrorCode = Util.readIntField(fields, "lastErrorCode", 0);
         waitBeforeSendTimeSeconds = Util.readDoubleField(fields, "waitBeforeSendTimeSeconds", 0.0);
     }
 
@@ -297,9 +299,9 @@ public class ActivityPackage implements Serializable {
         if (!Util.equalString(suffix, otherActivityPackage.suffix))       return false;
         if (!Util.equalObject(callbackParameters, otherActivityPackage.callbackParameters))   return false;
         if (!Util.equalObject(partnerParameters, otherActivityPackage.partnerParameters))   return false;
-        if (!Util.equalInt(errorCount, otherActivityPackage.errorCount))   return false;
-        if (!Util.equalString(firstErrorMessage, otherActivityPackage.firstErrorMessage))   return false;
-        if (!Util.equalString(lastErrorMessage, otherActivityPackage.lastErrorMessage))   return false;
+        if (!Util.equalInt(retryCount, otherActivityPackage.retryCount))   return false;
+        if (!Util.equalInt(firstErrorCode, otherActivityPackage.firstErrorCode))   return false;
+        if (!Util.equalInt(lastErrorCode, otherActivityPackage.lastErrorCode))   return false;
         if (!Util.equalsDouble(waitBeforeSendTimeSeconds, otherActivityPackage.waitBeforeSendTimeSeconds)) return false;
         return true;
     }
@@ -315,9 +317,9 @@ public class ActivityPackage implements Serializable {
             hashCode = Util.hashString(suffix, hashCode);
             hashCode = Util.hashObject(callbackParameters, hashCode);
             hashCode = Util.hashObject(partnerParameters, hashCode);
-            hashCode = 37 * hashCode + errorCount;
-            hashCode = Util.hashString(firstErrorMessage, hashCode);
-            hashCode = Util.hashString(lastErrorMessage, hashCode);
+            hashCode = 37 * hashCode + retryCount;
+            hashCode = 37 * hashCode + firstErrorCode;
+            hashCode = 37 * hashCode + lastErrorCode;
             hashCode = Util.hashDouble(waitBeforeSendTimeSeconds, hashCode);
         }
         return hashCode;

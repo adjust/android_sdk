@@ -278,9 +278,9 @@ public class PackageHandler implements IPackageHandler,
 
         ActivityPackage firstPackage = packageQueue.get(0);
 
-        PackageBuilder.addLong(sendingParameters, "retry_count", firstPackage.getErrorCount());
-        PackageBuilder.addString(sendingParameters, "first_error", firstPackage.getFirstErrorMessage());
-        PackageBuilder.addString(sendingParameters, "last_error", firstPackage.getLastErrorMessage());
+        PackageBuilder.addLong(sendingParameters, "retry_count", firstPackage.getRetryCount());
+        PackageBuilder.addLong(sendingParameters, "first_error", firstPackage.getFirstErrorCode());
+        PackageBuilder.addLong(sendingParameters, "last_error", firstPackage.getLastErrorCode());
         PackageBuilder.addDouble(sendingParameters, "wait_total", totalWaitTimeSeconds);
         PackageBuilder.addDouble(sendingParameters, "wait_time", firstPackage.getWaitBeforeSendTimeSeconds());
 

@@ -1985,7 +1985,8 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
@@ -2018,7 +2019,8 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         if (sdkClickPackage == null) {
             return;
