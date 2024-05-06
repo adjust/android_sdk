@@ -49,7 +49,7 @@ public class AdjustInstance {
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
-    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = null;
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     /**
      * Base path for Adjust packages.
      */
@@ -552,10 +552,7 @@ public class AdjustInstance {
      */
     public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
-            if (this.cachedAdidReadCallbacks == null) {
-                this.cachedAdidReadCallbacks = new ArrayList<OnAdidReadListener>();
-            }
-            this.cachedAdidReadCallbacks.add(onAdidReadListener);
+            cachedAdidReadCallbacks.add(onAdidReadListener);
             return;
         }
         activityHandler.getAdid(onAdidReadListener);
