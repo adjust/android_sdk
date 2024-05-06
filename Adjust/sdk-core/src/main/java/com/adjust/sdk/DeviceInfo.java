@@ -264,8 +264,8 @@ class DeviceInfo {
 
         otherDeviceInfoParamsReadOnce = true;
     }
-    public static String getFireAdvertisingIdBypassConditions(ContentResolver contentResolver) {
-        return UtilDeviceIds.getFireAdvertisingId(contentResolver);
+    public static void getFireAdvertisingIdBypassConditions(ContentResolver contentResolver, OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        UtilDeviceIds.getFireAdvertisingIdAsync(contentResolver, onAmazonAdIdReadListener);
     }
 
     private String getPackageName(Context context) {
@@ -543,15 +543,29 @@ class DeviceInfo {
             }
             return null;
         }
-        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig,
-                                                      final boolean isCoppaEnabled)
-        {
+
+        private static void getFireAdvertisingIdAsync(final ContentResolver contentResolver,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+            if (contentResolver == null) {
+                onAmazonAdIdReadListener.onFail("contentResolver could not be retrieved");
+                return;
+            }
+            try {
+                // get advertising
+                String amazonAdId = Settings.Secure.getString(contentResolver, "advertising_id");
+                onAmazonAdIdReadListener.onAmazonAdIdRead(amazonAdId);
+            } catch (Exception ex) {
+                onAmazonAdIdReadListener.onFail(ex.getMessage());
+            }
+        }
+
+        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig, final boolean isCoppaEnabled) {
             if (isCoppaEnabled) {
                 return null;
             }
 
             return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
         }
+
         private static Boolean getFireTrackingEnabled(final ContentResolver contentResolver) {
             try {
                 // get user's tracking preference
