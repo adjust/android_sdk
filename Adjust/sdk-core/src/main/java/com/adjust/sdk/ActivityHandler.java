@@ -83,7 +83,7 @@ public class ActivityHandler implements IActivityHandler {
     private SessionParameters sessionParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks;
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
 
     @Override
     public void teardown() {
@@ -462,17 +462,19 @@ public class ActivityHandler implements IActivityHandler {
             writeActivityStateI();
         }
 
-        if (cachedAdidReadCallbacks != null && !cachedAdidReadCallbacks.isEmpty()) {
+        if (! cachedAdidReadCallbacks.isEmpty()) {
+            final ArrayList<OnAdidReadListener> cachedAdidReadCallbacksCopy =
+              new ArrayList<>(cachedAdidReadCallbacks);
+
+            cachedAdidReadCallbacks.clear();
             new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    for (OnAdidReadListener listener : cachedAdidReadCallbacks) {
-                        if (listener != null) {
-                            listener.onAdidRead(adid);
+                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacksCopy) {
+                        if (onAdidReadListener != null) {
+                            onAdidReadListener.onAdidRead(adid);
                         }
                     }
-                    cachedAdidReadCallbacks = null;
-                    adjustConfig.cachedAdidReadCallbacks = null;
                 }
             });
         }
@@ -774,10 +776,7 @@ public class ActivityHandler implements IActivityHandler {
             if (activityState == null) {
                 logger.warn("SDK needs to be initialized before getting adid");
             }
-            if (this.cachedAdidReadCallbacks == null) {
-                this.cachedAdidReadCallbacks = new ArrayList<>();
-            }
-            this.cachedAdidReadCallbacks.add(callback);
+            cachedAdidReadCallbacks.add(callback);
         }
     }
 
@@ -901,26 +900,26 @@ public class ActivityHandler implements IActivityHandler {
             this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
         }
 
-        // cached adid read callback
-        // if it's not empty, we need to add it to the onAdidReadListener in case getAdid() is
-        // called before the sdk starts
-        if (this.cachedAdidReadCallbacks != null && !this.cachedAdidReadCallbacks.isEmpty()) {
-            this.cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
-        } else {
-            this.cachedAdidReadCallbacks = new ArrayList<>(adjustConfig.cachedAdidReadCallbacks);
-        }
+        cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
+        adjustConfig.cachedAdidReadCallbacks.clear();
 
-        if (activityState != null && activityState.adid != null) {
+        if (! cachedAdidReadCallbacks.isEmpty()
+          && activityState != null
+          && activityState.adid != null)
+        {
+            final ArrayList<OnAdidReadListener> cachedAdidReadCallbacksCopy =
+              new ArrayList<>(cachedAdidReadCallbacks);
+            final String adidCopy = activityState.adid;
+
+            cachedAdidReadCallbacks.clear();
             new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
-                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacks) {
+                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacksCopy) {
                         if (onAdidReadListener != null) {
-                            onAdidReadListener.onAdidRead(activityState.adid);
+                            onAdidReadListener.onAdidRead(adidCopy);
                         }
                     }
-                    adjustConfig.cachedAdidReadCallbacks = null;
-                    cachedAdidReadCallbacks = null;
                 }
             });
         }

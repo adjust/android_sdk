@@ -41,7 +41,7 @@ public class AdjustConfig {
     String fbAppId;
     boolean readDeviceInfoOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
-    ArrayList<OnAdidReadListener> cachedAdidReadCallbacks;
+    ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
