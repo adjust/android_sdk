@@ -503,6 +503,7 @@ class DeviceInfo {
 
     private static class UtilDeviceIds {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
+                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
             if (isCoppaEnabled) {

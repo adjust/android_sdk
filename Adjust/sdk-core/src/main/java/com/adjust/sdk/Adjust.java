@@ -358,14 +358,14 @@ public class Adjust {
             AdjustFactory.getLogger().error("onAmazonAdIdReadListener cannot be null");
             return;
         }
-        if (context == null) {
-            String message = "context cannot be null";
+        Context appContext = extractApplicationContext(context);
+
+        if (appContext == null) {
+            String message = "null context";
             AdjustFactory.getLogger().error(message);
             onAmazonAdIdReadListener.onFail(message);
             return;
         }
-
-        Context appContext = extractApplicationContext(context);
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.getAmazonAdId(appContext, onAmazonAdIdReadListener);
     }
