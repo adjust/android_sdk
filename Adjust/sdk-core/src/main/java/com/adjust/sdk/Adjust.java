@@ -354,14 +354,14 @@ public class Adjust {
      * @param onAmazonAdIdReadListener Callback to get triggered once identifier is obtained
      */
     public static void getAmazonAdId(final Context context,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        if (onAmazonAdIdReadListener == null) {
+            AdjustFactory.getLogger().error("onAmazonAdIdReadListener cannot be null");
+            return;
+        }
         if (context == null) {
             String message = "context cannot be null";
             AdjustFactory.getLogger().error(message);
             onAmazonAdIdReadListener.onFail(message);
-            return;
-        }
-        if (onAmazonAdIdReadListener == null) {
-            AdjustFactory.getLogger().error("onAmazonAdIdReadListener cannot be null");
             return;
         }
 
