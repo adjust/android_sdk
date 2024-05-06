@@ -846,28 +846,25 @@ public class ActivityHandler implements IActivityHandler {
         readConfigFile(adjustConfig.context);
 
         boolean coppaEnabledInState = activityState != null && activityState.isCoppaEnabled();
+        boolean playStoreKidsAppEnabled = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getPlayStoreKidsApp();
 
-        deviceInfo = new DeviceInfo(adjustConfig, coppaEnabledInState);
+        deviceInfo = new DeviceInfo(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
 
         if (adjustConfig.eventBufferingEnabled) {
             logger.info("Event buffering is enabled");
         }
 
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabledInState);
+        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
         if (deviceInfo.playAdId == null) {
-            if (!Util.canReadPlayIds(adjustConfig, coppaEnabledInState)) {
-                if (adjustConfig.playStoreKidsAppEnabled) {
-                    logger.info("Cannot read Google Play Services Advertising ID with play store kids app enabled");
-                }
+            if (!Util.canReadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled)) {
+                logger.info("Cannot read Google Play Services Advertising ID with COPPA or play store kids app enabled");
             } else {
                 logger.warn("Unable to get Google Play Services Advertising ID at start time");
             }
 
             if (deviceInfo.androidId == null) {
-                if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState)) {
-                    if (adjustConfig.playStoreKidsAppEnabled) {
-                        logger.info("Cannot read non Play IDs with play store kids app enabled");
-                    }
+                if (! Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled)) {
+                    logger.info("Cannot read non Play IDs with COPPA or play store kids app enabled");
                 } else {
                     logger.error("Unable to get any Device IDs. Please check if Proguard is correctly set with Adjust SDK");
                 }

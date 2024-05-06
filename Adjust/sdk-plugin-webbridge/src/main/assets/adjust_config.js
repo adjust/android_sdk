@@ -46,7 +46,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.urlStrategy = null;
     this.preinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
-    this.playStoreKidsAppEnabled = null;
     this.fbAppId = null;
     this.readDeviceInfoOnceEnabled = null;
 }
@@ -229,10 +228,6 @@ AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackin
 
 AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {
     this.preinstallFilePath = preinstallFilePath;
-};
-
-AdjustConfig.prototype.setPlayStoreKidsAppEnabled = function(isEnabled) {
-    this.playStoreKidsAppEnabled = isEnabled;
 };
 
 AdjustConfig.prototype.setFbAppId = function(fbAppId) {

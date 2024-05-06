@@ -161,7 +161,6 @@ public class AdjustBridgeInstance {
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
-            Object playStoreKidsAppEnabledField = jsonAdjustConfig.get("playStoreKidsAppEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
 
@@ -355,12 +354,6 @@ public class AdjustBridgeInstance {
             String preinstallFilePath = AdjustBridgeUtil.fieldToString(preinstallFilePathField);
             if (preinstallFilePath != null) {
                 adjustConfig.setPreinstallFilePath(preinstallFilePath);
-            }
-
-            // PlayStore Kids app
-            Boolean playStoreKidsAppEnabled = AdjustBridgeUtil.fieldToBoolean(playStoreKidsAppEnabledField);
-            if (playStoreKidsAppEnabled != null) {
-                adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
             }
 
             // FB App ID
@@ -690,6 +683,24 @@ public class AdjustBridgeInstance {
         }
 
         Adjust.disableCoppaCompliance(application.getApplicationContext());
+    }
+
+    @JavascriptInterface
+    public void enablePlayStoreKidsApp() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        Adjust.enablePlayStoreKidsApp(application.getApplicationContext());
+    }
+
+    @JavascriptInterface
+    public void disablePlayStoreKidsApp() {
+        if (!isInitialized()) {
+            return;
+        }
+
+        Adjust.disablePlayStoreKidsApp(application.getApplicationContext());
     }
 
     @JavascriptInterface
