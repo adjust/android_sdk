@@ -161,29 +161,34 @@ public class PackageHandler implements IPackageHandler,
             }
         };
 
-        if (responseData.activityPackage == null) {
-            runnable.run();
-            return;
+
+        if (responseData.retryIn != null) {
+            long retryIn = responseData.retryIn;
+            scheduler.schedule(runnable, retryIn);
+        }else {
+            if (responseData.activityPackage == null) {
+                runnable.run();
+                return;
+            }
+
+            int retries = responseData.activityPackage.increaseRetries();
+            long waitTimeMilliSeconds;
+
+            SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context);
+
+            if (responseData.activityPackage.getActivityKind() ==
+                    ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()) {
+                waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
+            } else {
+                waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+            }
+
+            double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+
+            logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
+            scheduler.schedule(runnable, waitTimeMilliSeconds);
         }
-
-        int retries = responseData.activityPackage.increaseRetries();
-        long waitTimeMilliSeconds;
-
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context);
-
-        if (responseData.activityPackage.getActivityKind() ==
-                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked())
-        {
-            waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
-        } else {
-            waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-        }
-
-        double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
-        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-        logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
-        scheduler.schedule(runnable, waitTimeMilliSeconds);
     }
 
     // interrupt the sending loop after the current request has finished
