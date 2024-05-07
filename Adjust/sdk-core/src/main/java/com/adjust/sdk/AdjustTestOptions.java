@@ -23,6 +23,4 @@ public class AdjustTestOptions {
     public Boolean teardown;
     public Boolean tryInstallReferrer = false;
     public Boolean noBackoffWait;
-    public Boolean enableSigning;
-    public Boolean disableSigning;
 }

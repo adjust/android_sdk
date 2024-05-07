@@ -827,11 +827,5 @@ public class AdjustInstance {
             AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
             AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
         }
-        if (testOptions.enableSigning != null && testOptions.enableSigning) {
-            AdjustFactory.enableSigning();
-        }
-        if (testOptions.disableSigning != null && testOptions.disableSigning) {
-            AdjustFactory.disableSigning();
-        }
     }
 }
