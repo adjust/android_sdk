@@ -177,7 +177,11 @@ public class ActivityPackageSender implements IActivityPackageSender {
             String authorizationHeader = extractAuthorizationHeader(responseData.signedParameters);
             if (authorizationHeader == null) {
                 authorizationHeader = buildAndExtractAuthorizationHeader(activityPackageParameters);
+            } else {
+                logger.verbose("authorizationHeader: %s", authorizationHeader);
             }
+
+            extractActivityKind(responseData.signedParameters);
 
             boolean shouldUseGET =
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
@@ -198,8 +202,10 @@ public class ActivityPackageSender implements IActivityPackageSender {
             final HttpsURLConnection connection =
                     httpsURLConnectionProvider.generateHttpsURLConnection(url);
 
+            String clientSdk = extractClientSdk(responseData.signedParameters, activityPackage);
+
             // get and apply connection options (default or for tests)
-            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
+            connectionOptions.applyConnectionOptions(connection, clientSdk);
 
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
@@ -565,11 +571,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         try {
             jsonResponse = new JSONObject(responseString);
 
-            //TODO: remove after testing
-            String controlJson = "{\"i am a string\": \"wow, me too!\"}\n" + "}";
-            JSONObject jsonObject = new JSONObject(controlJson);
-            jsonResponse.put("control_params", jsonObject);
-
         } catch (final JSONException jsonException) {
             String errorMessage = errorMessage(jsonException,
                     "Failed to parse JSON response",
@@ -700,6 +701,18 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
     private static String extractAuthorizationHeader(final Map<String, String> parameters) {
         return parameters.remove("Authorization");
+    }
+
+    private static String extractActivityKind(final Map<String, String> parameters) {
+        return parameters.remove("activity_kind");
+    }
+
+    private static String extractClientSdk(final Map<String, String> parameters, ActivityPackage activityPackage) {
+        String clientSdk = parameters.remove("client_sdk");
+        if (clientSdk != null) {
+            return clientSdk;
+        }
+        return activityPackage.getClientSdk();
     }
 
     private static String extractTargetUrl(final Map<String, String> parameters,
