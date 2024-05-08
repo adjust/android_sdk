@@ -26,24 +26,23 @@ public class Util {
         // otherwise use the msa sdk which only gives the oaid currently
 
         if (isManufacturerHuawei(logger)) {
-            oaidParameters = getOaidParametersUsingHms(context, logger).oaidParameters;
+            oaidParameters = getOaidParametersUsingHms(context, logger);
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            oaidParameters = getOaidParametersUsingMsa(context, logger).oaidParameters;
-            return oaidParameters;
+            return getOaidParametersUsingMsa(context, logger);
         } else {
-            oaidParameters = getOaidParametersUsingMsa(context, logger).oaidParameters;
+            oaidParameters = getOaidParametersUsingMsa(context, logger);
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            return getOaidParametersUsingHms(context, logger).oaidParameters;
+            return getOaidParametersUsingHms(context, logger);
         }
     }
 
-    public static boolean isManufacturerHuawei(ILogger logger) {
+    private static boolean isManufacturerHuawei(ILogger logger) {
         try {
             String manufacturer = android.os.Build.MANUFACTURER;
             if (manufacturer != null && manufacturer.equalsIgnoreCase("huawei")) {
@@ -55,8 +54,7 @@ public class Util {
         return false;
     }
 
-    public static OaidResult getOaidParametersUsingHms(Context context, ILogger logger) {
-        OaidResult oaidResult = new OaidResult();
+    private static Map<String, String> getOaidParametersUsingHms(Context context, ILogger logger) {
         for (int attempt = 1; attempt <= 2; attempt += 1) {
             OaidInfo oaidInfo = HmsSdkClient.getOaidInfo(context, logger, 3000 * attempt);
             if (oaidInfo != null && oaidInfo.getOaid() != null) {
@@ -65,20 +63,16 @@ public class Util {
                 PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "hms");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
-                oaidResult.oaidParameters = parameters;
-                return oaidResult;
+                return parameters;
             }
         }
         logger.debug("Fail to read the OAID using HMS");
-        oaidResult.error = "Fail to read the OAID using HMS";
-        return oaidResult;
+        return null;
     }
 
-    public static OaidResult getOaidParametersUsingMsa(Context context, ILogger logger) {
-        OaidResult oaidResult = new OaidResult();
+    private static Map<String, String> getOaidParametersUsingMsa(Context context, ILogger logger) {
         if (!AdjustOaid.isMsaSdkAvailable) {
-            oaidResult.error = "MSA SDK not available";
-            return oaidResult;
+            return null;
         }
 
         for (int attempt = 1; attempt <= 2; attempt += 1) {
@@ -89,17 +83,15 @@ public class Util {
                 PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "msa");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
-                oaidResult.oaidParameters = parameters;
-                return oaidResult;
+                return parameters;
             }
         }
 
         logger.debug("Fail to read the OAID using MSA");
-        oaidResult.error = "Fail to read the OAID using MSA";
-        return oaidResult;
+        return null;
     }
 
-    public static String readCertFromAssetFile(Context context) {
+    public static String readCertFromAssetFile(Context context, ILogger logger) {
         try {
             String assetFileName = context.getPackageName() + ".cert.pem";
             InputStream is = context.getAssets().open(assetFileName);
@@ -112,7 +104,7 @@ public class Util {
             }
             return builder.toString();
         } catch (Exception e) {
-            Log.e("Adjust", "readCertFromAssetFile failed");
+            logger.error("readCertFromAssetFile Error reading asset file: " + e.getMessage());
             return "";
         }
     }
