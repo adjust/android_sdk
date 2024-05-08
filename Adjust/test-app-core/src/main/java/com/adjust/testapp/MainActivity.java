@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTestSession() {
-        // testLibrary.addTestDirectory("current/gdpr");
+         testLibrary.addTestDirectory("current/retry-in");
 
         testLibrary.startTestSession(Adjust.getSdkVersion());
     }
