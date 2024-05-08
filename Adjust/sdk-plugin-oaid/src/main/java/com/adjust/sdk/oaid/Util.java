@@ -26,23 +26,24 @@ public class Util {
         // otherwise use the msa sdk which only gives the oaid currently
 
         if (isManufacturerHuawei(logger)) {
-            oaidParameters = getOaidParametersUsingHms(context, logger);
+            oaidParameters = getOaidParametersUsingHms(context, logger).oaidParameters;
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            return getOaidParametersUsingMsa(context, logger);
+            oaidParameters = getOaidParametersUsingMsa(context, logger).oaidParameters;
+            return oaidParameters;
         } else {
-            oaidParameters = getOaidParametersUsingMsa(context, logger);
+            oaidParameters = getOaidParametersUsingMsa(context, logger).oaidParameters;
             if (oaidParameters != null) {
                 return oaidParameters;
             }
 
-            return getOaidParametersUsingHms(context, logger);
+            return getOaidParametersUsingHms(context, logger).oaidParameters;
         }
     }
 
-    private static boolean isManufacturerHuawei(ILogger logger) {
+    public static boolean isManufacturerHuawei(ILogger logger) {
         try {
             String manufacturer = android.os.Build.MANUFACTURER;
             if (manufacturer != null && manufacturer.equalsIgnoreCase("huawei")) {
@@ -54,7 +55,8 @@ public class Util {
         return false;
     }
 
-    private static Map<String, String> getOaidParametersUsingHms(Context context, ILogger logger) {
+    public static OaidResult getOaidParametersUsingHms(Context context, ILogger logger) {
+        OaidResult oaidResult = new OaidResult();
         for (int attempt = 1; attempt <= 2; attempt += 1) {
             OaidInfo oaidInfo = HmsSdkClient.getOaidInfo(context, logger, 3000 * attempt);
             if (oaidInfo != null && oaidInfo.getOaid() != null) {
@@ -63,16 +65,20 @@ public class Util {
                 PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "hms");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
-                return parameters;
+                oaidResult.oaidParameters = parameters;
+                return oaidResult;
             }
         }
         logger.debug("Fail to read the OAID using HMS");
-        return null;
+        oaidResult.error = "Fail to read the OAID using HMS";
+        return oaidResult;
     }
 
-    private static Map<String, String> getOaidParametersUsingMsa(Context context, ILogger logger) {
+    public static OaidResult getOaidParametersUsingMsa(Context context, ILogger logger) {
+        OaidResult oaidResult = new OaidResult();
         if (!AdjustOaid.isMsaSdkAvailable) {
-            return null;
+            oaidResult.error = "MSA SDK not available";
+            return oaidResult;
         }
 
         for (int attempt = 1; attempt <= 2; attempt += 1) {
@@ -83,12 +89,14 @@ public class Util {
                 PackageBuilder.addBoolean(parameters, "oaid_tracking_enabled", oaidInfo.isTrackingEnabled());
                 PackageBuilder.addString(parameters, "oaid_src", "msa");
                 PackageBuilder.addLong(parameters, "oaid_attempt", attempt);
-                return parameters;
+                oaidResult.oaidParameters = parameters;
+                return oaidResult;
             }
         }
 
         logger.debug("Fail to read the OAID using MSA");
-        return null;
+        oaidResult.error = "Fail to read the OAID using MSA";
+        return oaidResult;
     }
 
     public static String readCertFromAssetFile(Context context) {
