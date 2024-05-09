@@ -33,7 +33,7 @@ public class AdjustOaid {
         }
     }
 
-    public static void getOaidParameters(final Context context,final OnOaidReadListener listener) {
+    public static void getOaid(final Context context, final OnOaidReadListener listener) {
         ILogger logger = AdjustFactory.getLogger();
         if (listener == null) {
             logger.error("onOaidReadListener cannot be null");
@@ -50,26 +50,20 @@ public class AdjustOaid {
                 readOaid(context);
                 OaidResult oaidResult = new OaidResult();
                 Map<String, String> oaidParameters = Util.getOaidParameters(context, logger);
-                if (oaidParameters != null && !oaidParameters.isEmpty() && oaidParameters.get("oaid") != null) {
+                if (oaidParameters != null && oaidParameters.get("oaid") != null) {
                     oaidResult.oaid = oaidParameters.get("oaid");
-                }else {
-                    oaidResult.error = "OaidPlugin getOaidParameters: parameters is null";
+                } else {
+                    oaidResult.error = "Failed to read OAID";
                 }
                 return oaidResult;
             }
 
             @Override
             protected void onPostExecute(OaidResult oaidResult) {
-                if (oaidResult != null) {
-                    if (oaidResult.oaid != null) {
-                        listener.onOaidRead(oaidResult.oaid);
-                    } else if (oaidResult.error != null) {
-                        listener.onFail(oaidResult.error);
-                    }else {
-                        listener.onFail("OaidPlugin getOaidParameters: parameters is null");
-                    }
-                }else {
-                    listener.onFail("OaidPlugin getOaidParameters: OaidResults is null");
+                if (oaidResult.oaid != null) {
+                    listener.onOaidRead(oaidResult.oaid);
+                } else {
+                    listener.onFail(oaidResult.error);
                 }
             }
         }.execute(context);
