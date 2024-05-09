@@ -207,6 +207,14 @@ def customizePomForAar(pom) {
                     email 'ugljesa@adjust.com'
                 }
             }
+            dependencies {
+                dependency {
+                    groupId 'com.adjust.signature'
+                    artifactId 'adjust-android-signature'
+                    version '4+'
+                    scope 'compile'
+                }
+            }
         }
     }
 }
