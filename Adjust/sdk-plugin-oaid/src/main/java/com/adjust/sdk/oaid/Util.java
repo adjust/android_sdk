@@ -91,7 +91,7 @@ public class Util {
         return null;
     }
 
-    public static String readCertFromAssetFile(Context context) {
+    public static String readCertFromAssetFile(Context context, ILogger logger) {
         try {
             String assetFileName = context.getPackageName() + ".cert.pem";
             InputStream is = context.getAssets().open(assetFileName);
@@ -104,7 +104,7 @@ public class Util {
             }
             return builder.toString();
         } catch (Exception e) {
-            Log.e("Adjust", "readCertFromAssetFile failed");
+            logger.error("readCertFromAssetFile Error reading asset file: " + e.getMessage());
             return "";
         }
     }
