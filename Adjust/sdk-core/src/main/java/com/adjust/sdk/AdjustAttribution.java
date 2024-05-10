@@ -23,7 +23,6 @@ public class AdjustAttribution implements Serializable {
             new ObjectStreamField("adgroup", String.class),
             new ObjectStreamField("creative", String.class),
             new ObjectStreamField("clickLabel", String.class),
-            new ObjectStreamField("adid", String.class),
             new ObjectStreamField("costType", String.class),
             new ObjectStreamField("costAmount", Double.class),
             new ObjectStreamField("costCurrency", String.class),
@@ -100,8 +99,6 @@ public class AdjustAttribution implements Serializable {
         if (!Util.equalsDouble(costAmount, otherAttribution.costAmount)) return false;
         if (!Util.equalString(costCurrency, otherAttribution.costCurrency)) return false;
         if (!Util.equalString(fbInstallReferrer, otherAttribution.fbInstallReferrer)) return false;
-        // TODO: should state participate in the attribution comparison?
-        if (!Util.equalString(state, otherAttribution.state)) return false;
 
         return true;
     }
