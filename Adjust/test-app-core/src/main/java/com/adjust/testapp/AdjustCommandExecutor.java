@@ -344,7 +344,6 @@ public class AdjustCommandExecutor {
                     if (attribution.adgroup != null) fields.put("adgroup", attribution.adgroup);
                     if (attribution.creative != null) fields.put("creative", attribution.creative);
                     if (attribution.clickLabel != null) fields.put("click_label", attribution.clickLabel);
-                    if (attribution.adid != null) fields.put("adid", attribution.adid);
                     if (attribution.costType != null) fields.put("cost_type", attribution.costType);
                     if (attribution.costAmount != null) fields.put("cost_amount", attribution.costAmount.toString());
                     if (attribution.costCurrency != null) fields.put("cost_currency", attribution.costCurrency);
