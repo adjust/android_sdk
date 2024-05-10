@@ -331,7 +331,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("adgroup", attribution.adgroup);
             TestLibrary.addInfoToSend("creative", attribution.creative);
             TestLibrary.addInfoToSend("click_label", attribution.clickLabel);
-            TestLibrary.addInfoToSend("adid", attribution.adid);
             TestLibrary.addInfoToSend("cost_type", attribution.costType);
             TestLibrary.addInfoToSend("cost_amount", attribution.costAmount);
             TestLibrary.addInfoToSend("cost_currency", attribution.costCurrency);

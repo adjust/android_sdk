@@ -38,7 +38,6 @@ public class AdjustAttribution implements Serializable {
     public String adgroup;
     public String creative;
     public String clickLabel;
-    public String adid;
     public String costType;
     public Double costAmount;
     public String costCurrency;
@@ -59,7 +58,6 @@ public class AdjustAttribution implements Serializable {
             attribution.adgroup = jsonObject.optString("adgroup", "");
             attribution.creative = jsonObject.optString("creative", "");
             attribution.clickLabel = jsonObject.optString("click_label", "");
-            attribution.adid = adid != null ? adid : "";
             attribution.costType = jsonObject.optString("cost_type", "");
             attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
             attribution.costCurrency = jsonObject.optString("cost_currency", "");
@@ -74,7 +72,6 @@ public class AdjustAttribution implements Serializable {
             attribution.adgroup = jsonObject.optString("adgroup");
             attribution.creative = jsonObject.optString("creative");
             attribution.clickLabel = jsonObject.optString("click_label");
-            attribution.adid = adid;
             attribution.costType = jsonObject.optString("cost_type");
             attribution.costAmount = jsonObject.optDouble("cost_amount");
             attribution.costCurrency = jsonObject.optString("cost_currency");
@@ -99,7 +96,6 @@ public class AdjustAttribution implements Serializable {
         if (!Util.equalString(adgroup, otherAttribution.adgroup)) return false;
         if (!Util.equalString(creative, otherAttribution.creative)) return false;
         if (!Util.equalString(clickLabel, otherAttribution.clickLabel)) return false;
-        if (!Util.equalString(adid, otherAttribution.adid)) return false;
         if (!Util.equalString(costType, otherAttribution.costType)) return false;
         if (!Util.equalsDouble(costAmount, otherAttribution.costAmount)) return false;
         if (!Util.equalString(costCurrency, otherAttribution.costCurrency)) return false;
@@ -119,7 +115,6 @@ public class AdjustAttribution implements Serializable {
         if (adgroup != null) fields.put("adgroup", adgroup);
         if (creative != null) fields.put("creative", creative);
         if (clickLabel != null) fields.put("clickLabel", clickLabel);
-        if (adid != null) fields.put("adid", adid);
         if (costType != null) fields.put("costType", costType);
         if (costAmount != null) fields.put("costAmount", costAmount.toString());
         if (costCurrency != null) fields.put("costCurrency", costCurrency);
@@ -139,7 +134,6 @@ public class AdjustAttribution implements Serializable {
         hashCode = Util.hashString(adgroup, hashCode);
         hashCode = Util.hashString(creative, hashCode);
         hashCode = Util.hashString(clickLabel, hashCode);
-        hashCode = Util.hashString(adid, hashCode);
         hashCode = Util.hashString(costType, hashCode);
         hashCode = Util.hashDouble(costAmount, hashCode);
         hashCode = Util.hashString(costCurrency, hashCode);
@@ -152,9 +146,9 @@ public class AdjustAttribution implements Serializable {
     @Override
     public String toString() {
         return Util.formatString(
-                "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s adid:%s ct:%s ca:%.2f cc:%s fir:%s st:%s",
+                "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s ct:%s ca:%.2f cc:%s fir:%s st:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel,
-                adid, costType, costAmount, costCurrency, fbInstallReferrer, state);
+                costType, costAmount, costCurrency, fbInstallReferrer, state);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
