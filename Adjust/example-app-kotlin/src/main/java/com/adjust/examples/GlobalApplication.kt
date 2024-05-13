@@ -81,20 +81,20 @@ class GlobalApplication : Application() {
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar")
         Adjust.addGlobalCallbackParameter("sc_key", "sc_value")
 
-        // Add session partner parameters.
+        // Add global partner parameters.
         Adjust.addGlobalPartnerParameter("sp_foo", "sp_bar")
         Adjust.addGlobalPartnerParameter("sp_key", "sp_value")
 
         // Remove session callback parameters.
         Adjust.removeGlobalCallbackParameter("sc_foo")
 
-        // Remove session partner parameters.
+        // Remove global partner parameters.
         Adjust.removeGlobalPartnerParameter("sp_key")
 
         // Remove all session callback parameters.
         Adjust.resetGlobalCallbackParameters()
 
-        // Remove all session partner parameters.
+        // Remove all global partner parameters.
         Adjust.resetGlobalPartnerParameters()
 
         // Enable IMEI reading ONLY IF:
