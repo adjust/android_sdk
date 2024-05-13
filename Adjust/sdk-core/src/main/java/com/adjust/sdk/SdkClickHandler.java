@@ -290,31 +290,12 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
         };
 
-        // extract into method
-        //  check first for local retryIn var -> return millisecond of it, if present
-        //  do the same cal as before with the retries and return that
-        // if not null -> wait for; else, don't wait and run
-
         long waitTimeMilliSeconds = waitTime(retries);
         if (waitTimeMilliSeconds > 0) {
             scheduler.schedule(runnable, waitTimeMilliSeconds);
         } else {
             runnable.run();
         }
-/*
-        if (retries <= 0) {
-            runnable.run();
-            return;
-        }
-
-        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-        double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
-        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-        logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
-
-        scheduler.schedule(runnable, waitTimeMilliSeconds);
- */
     }
 
     /**
