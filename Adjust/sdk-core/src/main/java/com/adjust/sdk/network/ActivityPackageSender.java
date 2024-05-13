@@ -181,6 +181,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 logger.verbose("authorizationHeader: %s", authorizationHeader);
             }
 
+            String clientSdk = extractClientSdk(responseData.signedParameters, activityPackage);
+
             extractActivityKind(responseData.signedParameters);
 
             boolean shouldUseGET =
@@ -201,8 +203,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
             final URL url = new URL(urlString);
             final HttpsURLConnection connection =
                     httpsURLConnectionProvider.generateHttpsURLConnection(url);
-
-            String clientSdk = extractClientSdk(responseData.signedParameters, activityPackage);
 
             // get and apply connection options (default or for tests)
             connectionOptions.applyConnectionOptions(connection, clientSdk);
