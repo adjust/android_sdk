@@ -297,16 +297,16 @@ public class AdjustInstance {
      * @param key   Global callback parameter key
      * @param value Global callback parameter value
      */
-    public void addSessionCallbackParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session callback parameter", true)) {
-            activityHandler.addSessionCallbackParameter(key, value);
+    public void addGlobalCallbackParameter(final String key, final String value) {
+        if (checkActivityHandler("adding global callback parameter", true)) {
+            activityHandler.addGlobalCallbackParameter(key, value);
             return;
         }
 
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.addSessionCallbackParameterI(key, value);
+                activityHandler.addGlobalCallbackParameterI(key, value);
             }
         });
     }
@@ -317,15 +317,15 @@ public class AdjustInstance {
      * @param key   Global partner parameter key
      * @param value Global partner parameter value
      */
-    public void addSessionPartnerParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session partner parameter", true)) {
-            activityHandler.addSessionPartnerParameter(key, value);
+    public void addGlobalPartnerParameter(final String key, final String value) {
+        if (checkActivityHandler("adding global partner parameter", true)) {
+            activityHandler.addGlobalPartnerParameter(key, value);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.addSessionPartnerParameterI(key, value);
+                activityHandler.addGlobalPartnerParameterI(key, value);
             }
         });
     }
@@ -335,15 +335,15 @@ public class AdjustInstance {
      *
      * @param key Global callback parameter key
      */
-    public void removeSessionCallbackParameter(final String key) {
-        if (checkActivityHandler("removing session callback parameter", true)) {
-            activityHandler.removeSessionCallbackParameter(key);
+    public void removeGlobalCallbackParameter(final String key) {
+        if (checkActivityHandler("removing global callback parameter", true)) {
+            activityHandler.removeGlobalCallbackParameter(key);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.removeSessionCallbackParameterI(key);
+                activityHandler.removeGlobalCallbackParameterI(key);
             }
         });
     }
@@ -353,15 +353,15 @@ public class AdjustInstance {
      *
      * @param key Global partner parameter key
      */
-    public void removeSessionPartnerParameter(final String key) {
-        if (checkActivityHandler("removing session partner parameter", true)) {
-            activityHandler.removeSessionPartnerParameter(key);
+    public void removeGlobalPartnerParameter(final String key) {
+        if (checkActivityHandler("removing global partner parameter", true)) {
+            activityHandler.removeGlobalPartnerParameter(key);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.removeSessionPartnerParameterI(key);
+                activityHandler.removeGlobalPartnerParameterI(key);
             }
         });
     }
@@ -369,15 +369,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global callback parameters.
      */
-    public void resetSessionCallbackParameters() {
-        if (checkActivityHandler("resetting session callback parameters", true)) {
-            activityHandler.resetSessionCallbackParameters();
+    public void resetGlobalCallbackParameters() {
+        if (checkActivityHandler("resetting global callback parameters", true)) {
+            activityHandler.resetGlobalCallbackParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetSessionCallbackParametersI();
+                activityHandler.resetGlobalCallbackParametersI();
             }
         });
     }
@@ -385,15 +385,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global partner parameters.
      */
-    public void resetSessionPartnerParameters() {
-        if (checkActivityHandler("resetting session partner parameters", true)) {
-            activityHandler.resetSessionPartnerParameters();
+    public void resetGlobalPartnerParameters() {
+        if (checkActivityHandler("resetting global partner parameters", true)) {
+            activityHandler.resetGlobalPartnerParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetSessionPartnerParametersI();
+                activityHandler.resetGlobalPartnerParametersI();
             }
         });
     }

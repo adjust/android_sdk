@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * Created by pfms on 29/07/2016.
  */
-public class SessionParameters {
+public class GlobalParameters {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
 
@@ -15,10 +15,10 @@ public class SessionParameters {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
-        SessionParameters otherSessionParameters = (SessionParameters) other;
+        GlobalParameters otherGlobalParameters = (GlobalParameters) other;
 
-        if (!Util.equalObject(callbackParameters, otherSessionParameters.callbackParameters)) return false;
-        if (!Util.equalObject(partnerParameters, otherSessionParameters.partnerParameters)) return false;
+        if (!Util.equalObject(callbackParameters, otherGlobalParameters.callbackParameters)) return false;
+        if (!Util.equalObject(partnerParameters, otherGlobalParameters.partnerParameters)) return false;
 
         return true;
     }
@@ -31,14 +31,14 @@ public class SessionParameters {
         return hashCode;
     }
 
-    public SessionParameters deepCopy() {
-        SessionParameters newSessionParameters = new SessionParameters();
+    public GlobalParameters deepCopy() {
+        GlobalParameters newGlobalParameters = new GlobalParameters();
         if (this.callbackParameters != null) {
-            newSessionParameters.callbackParameters = new HashMap<String, String>(this.callbackParameters);
+            newGlobalParameters.callbackParameters = new HashMap<String, String>(this.callbackParameters);
         }
         if (this.partnerParameters != null) {
-            newSessionParameters.partnerParameters = new HashMap<String, String>(this.partnerParameters);
+            newGlobalParameters.partnerParameters = new HashMap<String, String>(this.partnerParameters);
         }
-        return newSessionParameters;
+        return newGlobalParameters;
     }
 }

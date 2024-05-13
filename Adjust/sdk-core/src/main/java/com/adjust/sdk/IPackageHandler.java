@@ -18,7 +18,7 @@ public interface IPackageHandler {
 
     void resumeSending();
 
-    void updatePackages(SessionParameters sessionParameters);
+    void updatePackages(GlobalParameters globalParameters);
 
     void flush();
 

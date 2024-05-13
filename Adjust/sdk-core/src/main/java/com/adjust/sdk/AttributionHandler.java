@@ -19,7 +19,6 @@ import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AttributionHandler implements IAttributionHandler,
@@ -261,7 +260,7 @@ public class AttributionHandler implements IAttributionHandler,
                 activityHandler.getAdjustConfig(),
                 activityHandler.getDeviceInfo(),
                 activityHandler.getActivityState(),
-                activityHandler.getSessionParameters(),
+                activityHandler.getGlobalParameters(),
                 now);
         ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedBy);
         lastInitiatedBy = null;
