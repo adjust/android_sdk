@@ -399,6 +399,11 @@ public class ActivityHandler implements IActivityHandler {
         return isEnabledI();
     }
 
+    @Override
+    public void getIsEnabled(OnIsEnabledListener onIsEnabledListener) {
+        onIsEnabledListener.onIsEnabledRead(isEnabledI());
+    }
+
     private boolean isEnabledI() {
         if (activityState != null) {
             return activityState.enabled;

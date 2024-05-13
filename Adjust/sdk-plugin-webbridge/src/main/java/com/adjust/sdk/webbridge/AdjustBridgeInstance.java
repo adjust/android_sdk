@@ -27,6 +27,7 @@ import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
@@ -472,17 +473,27 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        boolean isEnabled = Adjust.isEnabled();
-        AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
+        Adjust.isEnabled(new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
+            }
+        });
     }
 
-    @JavascriptInterface
-    public boolean isEnabled() {
-        if (!isInitialized()) {
-            return false;
-        }
-        return Adjust.isEnabled();
-    }
+//    @JavascriptInterface
+//    public boolean isEnabled() {
+//        if (!isInitialized()) {
+//            return false;
+//        }
+//
+//         Adjust.isEnabled(new OnIsEnabledListener() {
+//            @Override
+//            public void onIsEnabledRead(boolean isEnabled) {
+//
+//            }
+//        });
+//    }
 
     @JavascriptInterface
     public void setReferrer(String referrer) {

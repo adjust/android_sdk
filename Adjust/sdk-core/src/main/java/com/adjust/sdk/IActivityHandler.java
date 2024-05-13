@@ -20,6 +20,7 @@ public interface IActivityHandler {
     void setEnabled(boolean enabled);
 
     boolean isEnabled();
+    void getIsEnabled(OnIsEnabledListener onIsEnabledListener);
 
     void processDeeplink(Uri url, long clickTime);
 
