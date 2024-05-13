@@ -474,7 +474,6 @@ public class SharedPreferencesManager {
         try {
             saveString(PREFS_KEY_CONTROL_PARAMS, controlParams.toString());
         } catch (Throwable t) {
-            remove(PREFS_KEY_CONTROL_PARAMS);
         }
     }
 
