@@ -32,9 +32,6 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.test_options.TestConnectionOptions;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -570,7 +567,7 @@ public class AdjustCommandExecutor {
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
                 String key = keyValuePairs.get(i);
                 String value = keyValuePairs.get(i+1);
-                Adjust.addSessionCallbackParameter(key, value);
+                Adjust.addGlobalCallbackParameter(key, value);
             }
         }
     }
@@ -581,7 +578,7 @@ public class AdjustCommandExecutor {
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
                 String key = keyValuePairs.get(i);
                 String value = keyValuePairs.get(i+1);
-                Adjust.addSessionPartnerParameter(key, value);
+                Adjust.addGlobalPartnerParameter(key, value);
             }
         }
     }
@@ -591,7 +588,7 @@ public class AdjustCommandExecutor {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
                 String key = keys.get(i);
-                Adjust.removeSessionCallbackParameter(key);
+                Adjust.removeGlobalCallbackParameter(key);
             }
         }
     }
@@ -601,17 +598,17 @@ public class AdjustCommandExecutor {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
                 String key = keys.get(i);
-                Adjust.removeSessionPartnerParameter(key);
+                Adjust.removeGlobalPartnerParameter(key);
             }
         }
     }
 
     private void resetSessionCallbackParameters() {
-        Adjust.resetSessionCallbackParameters();
+        Adjust.resetGlobalCallbackParameters();
     }
 
     private void resetSessionPartnerParameters() {
-        Adjust.resetSessionPartnerParameters();
+        Adjust.resetGlobalPartnerParameters();
     }
 
     private void setPushToken() {
