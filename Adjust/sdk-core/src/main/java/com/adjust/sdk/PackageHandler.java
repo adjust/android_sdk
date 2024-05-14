@@ -42,6 +42,9 @@ public class PackageHandler implements IPackageHandler,
     private ILogger logger;
     private BackoffStrategy backoffStrategy;
     private BackoffStrategy backoffStrategyForInstallSession;
+    private boolean isRetrying;
+    private long retryStartedAtTimeMilliSeconds;
+    private double totalWaitTimeSeconds;
 
     @Override
     public void teardown() {
@@ -77,7 +80,8 @@ public class PackageHandler implements IPackageHandler,
         this.logger = AdjustFactory.getLogger();
         this.backoffStrategy = AdjustFactory.getPackageHandlerBackoffStrategy();
         this.backoffStrategyForInstallSession = AdjustFactory.getInstallSessionBackoffStrategy();
-
+        this.isRetrying = false;
+        this.totalWaitTimeSeconds = 0.0;
 
         init(activityHandler, context, startsSending, packageHandlerActivityPackageSender);
 
@@ -146,6 +150,13 @@ public class PackageHandler implements IPackageHandler,
             return;
         }
 
+        if (!isRetrying) {
+            isRetrying = true;
+            retryStartedAtTimeMilliSeconds = System.currentTimeMillis();
+        }
+
+        writePackageQueueI();
+
         if (activityHandler != null) {
             activityHandler.finishedTrackingActivity(responseData);
         }
@@ -182,8 +193,11 @@ public class PackageHandler implements IPackageHandler,
         double waitTimeSeconds = waitTimeMilliSeconds / 1000.0;
         String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
 
+        totalWaitTimeSeconds += waitTimeSeconds;
+
         logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
         scheduler.schedule(runnable, waitTimeMilliSeconds);
+        responseData.activityPackage.setWaitBeforeSendTimeSeconds(responseData.activityPackage.getWaitBeforeSendTimeSeconds() + waitTimeSeconds);
     }
 
     // interrupt the sending loop after the current request has finished
@@ -232,6 +246,13 @@ public class PackageHandler implements IPackageHandler,
     }
 
     private void addI(ActivityPackage newPackage) {
+        if (isRetrying) {
+            long now = System.currentTimeMillis();
+            double waitSeconds = totalWaitTimeSeconds - (now - retryStartedAtTimeMilliSeconds) / 1000.0;;
+            newPackage.setWaitBeforeSendTimeSeconds(waitSeconds);
+        }
+        PackageBuilder.addLong(newPackage.getParameters(), "enqueue_size", packageQueue.size());
+
         packageQueue.add(newPackage);
         logger.debug("Added package %d (%s)", packageQueue.size(), newPackage);
         logger.verbose("%s", newPackage.getExtendedString());
@@ -256,6 +277,13 @@ public class PackageHandler implements IPackageHandler,
         Map<String, String> sendingParameters = generateSendingParametersI();
 
         ActivityPackage firstPackage = packageQueue.get(0);
+
+        PackageBuilder.addLong(sendingParameters, "retry_count", firstPackage.getRetryCount());
+        PackageBuilder.addLong(sendingParameters, "first_error", firstPackage.getFirstErrorCode());
+        PackageBuilder.addLong(sendingParameters, "last_error", firstPackage.getLastErrorCode());
+        PackageBuilder.addDouble(sendingParameters, "wait_total", totalWaitTimeSeconds);
+        PackageBuilder.addDouble(sendingParameters, "wait_time", firstPackage.getWaitBeforeSendTimeSeconds());
+
         activityPackageSender.sendActivityPackage(firstPackage,
                 sendingParameters,
                 this);
@@ -277,7 +305,13 @@ public class PackageHandler implements IPackageHandler,
     }
 
     private void sendNextI() {
+        isRetrying = false;
+        retryStartedAtTimeMilliSeconds = 0;
+
         if (packageQueue.isEmpty()) {
+            // at this point, the queue has been emptied
+            // reset total_wait in this moment to allow all requests to populate total_wait
+            totalWaitTimeSeconds = 0.0;
             return;
         }
 

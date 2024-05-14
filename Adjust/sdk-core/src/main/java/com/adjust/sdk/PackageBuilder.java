@@ -41,6 +41,7 @@ public class PackageBuilder {
     AdjustAttribution attribution;
     Map<String, String> extraParameters;
     Boolean isClick;
+    ActivityHandler.InternalState internalState;
 
     private class ActivityStateCopy {
         int eventCount = -1;
@@ -1321,6 +1322,19 @@ public class PackageBuilder {
     }
 
     private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
+
+        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
+        PackageBuilder.addBoolean(parameters, "send_in_background_enabled", adjustConfig.sendInBackground);
+
+        if (internalState != null) {
+            PackageBuilder.addBoolean(parameters, "offline_mode_enabled", internalState.offline);
+            if (internalState.isInForeground()) {
+                PackageBuilder.addBoolean(parameters, "foreground", true);
+            } else {
+                PackageBuilder.addBoolean(parameters, "background", true);
+            }
+        }
+
         if (adjustConfig.coppaCompliantEnabled) {
             PackageBuilder.addLong(parameters, "ff_coppa", 1);
         }
@@ -1371,6 +1385,14 @@ public class PackageBuilder {
             return;
         }
         String valueString = Long.toString(value);
+        PackageBuilder.addString(parameters, key, valueString);
+    }
+
+    public static void addDouble(Map<String, String> parameters, String key, double value) {
+        if (value < 0.0) {
+            return;
+        }
+        String valueString = Double.toString(value);
         PackageBuilder.addString(parameters, key, valueString);
     }
 

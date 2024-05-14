@@ -1,0 +1,13 @@
+package com.adjust.sdk.network;
+
+public interface ErrorCodes {
+    int NULL_JSON_RESPONSE = 1000;
+    int SERVER_RETRY_IN = 1001;
+    int UNSUPPORTED_ENCODING_EXCEPTION = 1002;
+    int MALFORMED_URL_EXCEPTION = 1003;
+    int PROTOCOL_EXCEPTION = 1004;
+    int SOCKET_TIMEOUT_EXCEPTION = 1005;
+    int SSL_HANDSHAKE_EXCEPTION = 1006;
+    int IO_EXCEPTION = 1007;
+    int THROWABLE = 1100;
+}

@@ -20,11 +20,12 @@ public class PackageFactory {
     private static final String ADJUST_PREFIX = "adjust_";
 
     public static ActivityPackage buildReftagSdkClickPackage(final String rawReferrer,
-                                                              final long clickTime,
-                                                              final ActivityState activityState,
-                                                              final AdjustConfig adjustConfig,
-                                                              final DeviceInfo deviceInfo,
-                                                              final SessionParameters sessionParameters) {
+                                                             final long clickTime,
+                                                             final ActivityState activityState,
+                                                             final AdjustConfig adjustConfig,
+                                                             final DeviceInfo deviceInfo,
+                                                             final SessionParameters sessionParameters,
+                                                             final ActivityHandler.InternalState internalState) {
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return null;
         }
@@ -56,7 +57,8 @@ public class PackageFactory {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         if (clickPackageBuilder == null) {
             return null;
@@ -72,11 +74,12 @@ public class PackageFactory {
     }
 
     public static ActivityPackage buildDeeplinkSdkClickPackage(final Uri url,
-                                                              final long clickTime,
-                                                              final ActivityState activityState,
-                                                              final AdjustConfig adjustConfig,
-                                                              final DeviceInfo deviceInfo,
-                                                              final SessionParameters sessionParameters) {
+                                                               final long clickTime,
+                                                               final ActivityState activityState,
+                                                               final AdjustConfig adjustConfig,
+                                                               final DeviceInfo deviceInfo,
+                                                               final SessionParameters sessionParameters,
+                                                               final ActivityHandler.InternalState internalState) {
         if (url == null) {
             return null;
         }
@@ -114,7 +117,8 @@ public class PackageFactory {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         if (clickPackageBuilder == null) {
             return null;
@@ -133,7 +137,8 @@ public class PackageFactory {
                                                                       final ActivityState activityState,
                                                                       final AdjustConfig adjustConfig,
                                                                       final DeviceInfo deviceInfo,
-                                                                      final SessionParameters sessionParameters) {
+                                                                      final SessionParameters sessionParameters,
+                                                                      final ActivityHandler.InternalState internalState) {
         long now = System.currentTimeMillis();
 
         PackageBuilder clickPackageBuilder = new PackageBuilder(
@@ -142,6 +147,7 @@ public class PackageFactory {
                 activityState,
                 sessionParameters,
                 now);
+        clickPackageBuilder.internalState = internalState;
 
         clickPackageBuilder.referrer = referrerDetails.installReferrer;
         clickPackageBuilder.clickTimeInSeconds = referrerDetails.referrerClickTimestampSeconds;
@@ -190,7 +196,8 @@ public class PackageFactory {
             final ActivityState activityState,
             final AdjustConfig adjustConfig,
             final DeviceInfo deviceInfo,
-            final SessionParameters sessionParameters) {
+            final SessionParameters sessionParameters,
+            final ActivityHandler.InternalState internalState) {
         if (queryList == null) {
             return null;
         }
@@ -223,6 +230,7 @@ public class PackageFactory {
                 sessionParameters,
                 now);
 
+        builder.internalState = internalState;
         builder.extraParameters = queryStringParameters;
         builder.attribution = queryStringAttribution;
         builder.reftag = reftag;

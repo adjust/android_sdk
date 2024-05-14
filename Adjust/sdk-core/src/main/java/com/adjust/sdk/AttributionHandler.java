@@ -232,7 +232,7 @@ public class AttributionHandler implements IAttributionHandler,
         }
 
         // Create attribution package before sending attribution request.
-        ActivityPackage attributionPackage = buildAndGetAttributionPackage();
+        ActivityPackage attributionPackage = buildAndGetAttributionPackage(activityHandlerWeakRef.get().getInternalState());
         logger.verbose("%s", attributionPackage.getExtendedString());
 
         Map<String, String> sendingParameters = generateSendingParametersI();
@@ -254,7 +254,7 @@ public class AttributionHandler implements IAttributionHandler,
         return sendingParameters;
     }
 
-    private ActivityPackage buildAndGetAttributionPackage() {
+    private ActivityPackage buildAndGetAttributionPackage(ActivityHandler.InternalState internalState) {
         long now = System.currentTimeMillis();
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
         PackageBuilder packageBuilder = new PackageBuilder(
@@ -263,6 +263,8 @@ public class AttributionHandler implements IAttributionHandler,
                 activityHandler.getActivityState(),
                 activityHandler.getSessionParameters(),
                 now);
+        packageBuilder.internalState = internalState;
+
         ActivityPackage activityPackage = packageBuilder.buildAttributionPackage(lastInitiatedBy);
         lastInitiatedBy = null;
         return activityPackage;

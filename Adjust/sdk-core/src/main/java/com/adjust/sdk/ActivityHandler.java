@@ -1466,6 +1466,7 @@ public class ActivityHandler implements IActivityHandler {
         updateActivityStateI(now);
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        eventBuilder.internalState = internalState;
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, internalState.isInDelayedStart());
         packageHandler.addPackage(eventPackage);
 
@@ -1984,7 +1985,8 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
@@ -2017,7 +2019,8 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                sessionParameters,
+                internalState);
 
         if (sdkClickPackage == null) {
             return;
@@ -2105,6 +2108,7 @@ public class ActivityHandler implements IActivityHandler {
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
                 sessionParameters, now);
+        builder.internalState = internalState;
         ActivityPackage sessionPackage = builder.buildSessionPackage(internalState.isInDelayedStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
@@ -2369,6 +2373,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        infoPackageBuilder.internalState = internalState;
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
@@ -2393,6 +2398,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder gdprPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        gdprPackageBuilder.internalState = internalState;
 
         ActivityPackage gdprPackage = gdprPackageBuilder.buildGdprPackage();
         packageHandler.addPackage(gdprPackage);
@@ -2427,6 +2433,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage = packageBuilder.buildDisableThirdPartySharingPackage();
         packageHandler.addPackage(activityPackage);
@@ -2457,6 +2464,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
@@ -2480,6 +2488,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage =
                 packageBuilder.buildMeasurementConsentPackage(consentMeasurement);
@@ -2500,6 +2509,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
 
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(source, adRevenueJson);
         packageHandler.addPackage(adRevenuePackage);
@@ -2515,6 +2525,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
 
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue, internalState.isInDelayedStart());
         packageHandler.addPackage(adRevenuePackage);
@@ -2529,6 +2540,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
 
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
         packageHandler.addPackage(subscriptionPackage);
@@ -2588,6 +2600,8 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
+
         ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(purchase, callback);
         if (verificationPackage == null) {
             logger.warn("Purchase verification aborted because verification package is null");
@@ -2926,6 +2940,7 @@ public class ActivityHandler implements IActivityHandler {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);

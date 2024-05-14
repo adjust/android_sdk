@@ -320,6 +320,15 @@ public class Util {
         }
     }
 
+    public static double readDoubleField(ObjectInputStream.GetField fields, String name, double defaultValue) {
+        try {
+            return fields.get(name, defaultValue);
+        } catch (Exception e) {
+            getLogger().debug(fieldReadErrorMessage, name, e.getMessage());
+            return defaultValue;
+        }
+    }
+
     public static boolean equalObject(Object first, Object second) {
         if (first == null || second == null) {
             return first == null && second == null;

@@ -10,6 +10,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.ILogger;
+import com.adjust.sdk.PackageBuilder;
 import com.adjust.sdk.ResponseData;
 import com.adjust.sdk.TrackingState;
 import com.adjust.sdk.Util;
@@ -191,37 +192,44 @@ public class ActivityPackageSender implements IActivityPackageSender {
             //  a JSON response *AND* does not contain a retry_in
             responseData.willRetry =
                     responseData.jsonResponse == null  || responseData.retryIn != null;
+
+            if (responseData.jsonResponse == null) {
+                responseData.activityPackage.addError(ErrorCodes.NULL_JSON_RESPONSE);
+            } else if (responseData.retryIn != null) {
+                responseData.activityPackage.addError(ErrorCodes.SERVER_RETRY_IN);
+            }
+
         } catch (final UnsupportedEncodingException exception) {
 
-            localError(exception, "Failed to encode parameters", responseData);
+            localError(exception, "Failed to encode parameters", responseData, ErrorCodes.UNSUPPORTED_ENCODING_EXCEPTION);
 
         } catch (final MalformedURLException exception) {
 
-            localError(exception, "Malformed URL", responseData);
+            localError(exception, "Malformed URL", responseData, ErrorCodes.MALFORMED_URL_EXCEPTION);
 
         } catch (final ProtocolException exception) {
 
-            localError(exception, "Protocol Error", responseData);
+            localError(exception, "Protocol Error", responseData, ErrorCodes.PROTOCOL_EXCEPTION);
 
         } catch (final SocketTimeoutException exception) {
 
             // timeout is remote/network related -> did not fail locally
-            remoteError(exception, "Request timed out", responseData);
+            remoteError(exception, "Request timed out", responseData, ErrorCodes.SOCKET_TIMEOUT_EXCEPTION);
 
         } catch (final SSLHandshakeException exception) {
 
             // failed due certificate from the server -> did not fail locally
-            remoteError(exception, "Certificate failed", responseData);
+            remoteError(exception, "Certificate failed", responseData, ErrorCodes.SSL_HANDSHAKE_EXCEPTION);
 
         } catch (final IOException exception) {
 
             // IO is the network -> did not fail locally
-            remoteError(exception, "Request failed", responseData);
+            remoteError(exception, "Request failed", responseData, ErrorCodes.IO_EXCEPTION);
 
         } catch (final Throwable t) {
 
             // not sure if error is local or not -> assume it is local
-            localError(t, "Sending SDK package", responseData);
+            localError(t, "Sending SDK package", responseData, ErrorCodes.THROWABLE);
 
         } finally {
             try {
@@ -238,16 +246,18 @@ public class ActivityPackageSender implements IActivityPackageSender {
         }
     }
 
-    private void localError(Throwable throwable, String description, ResponseData responseData) {
+    private void localError(Throwable throwable, String description, ResponseData responseData, int errorCode) {
         String finalMessage = errorMessage(throwable, description, responseData.activityPackage);
 
         logger.error(finalMessage);
         responseData.message = finalMessage;
 
         responseData.willRetry = false;
+
+        responseData.activityPackage.addError(errorCode);
     }
 
-    private void remoteError(Throwable throwable, String description, ResponseData responseData) {
+    private void remoteError(Throwable throwable, String description, ResponseData responseData, Integer errorCode) {
         String finalMessage = errorMessage(throwable, description, responseData.activityPackage)
                 + " Will retry later";
 
@@ -255,6 +265,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         responseData.message = finalMessage;
 
         responseData.willRetry = true;
+
+        responseData.activityPackage.addError(errorCode);
     }
 
     private String errorMessage(final Throwable throwable,
@@ -285,8 +297,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         uriBuilder.path(urlObject.getPath());
         uriBuilder.appendPath(activityPackagePath);
 
-        logger.debug("Making request to url: %s", uriBuilder.toString());
-
         for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
             uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
         }
@@ -296,6 +306,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
         }
+
+        logger.debug("Making request to url: %s", uriBuilder.toString());
 
         return uriBuilder.build().toString();
     }
@@ -363,6 +375,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         final String postBodyString = generatePOSTBodyString(
                 activityPackageParameters,
                 sendingParameters);
+
+        logger.debug("Post body: %s", postBodyString);
 
         if (postBodyString == null) {
             return null;
