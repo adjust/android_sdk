@@ -27,7 +27,6 @@ public class AdjustAttribution implements Serializable {
             new ObjectStreamField("costAmount", Double.class),
             new ObjectStreamField("costCurrency", String.class),
             new ObjectStreamField("fbInstallReferrer", String.class),
-            new ObjectStreamField("state", String.class),
     };
 
     public String trackerToken;
@@ -41,7 +40,6 @@ public class AdjustAttribution implements Serializable {
     public Double costAmount;
     public String costCurrency;
     public String fbInstallReferrer;
-    public String state;
 
     public static AdjustAttribution fromJson(JSONObject jsonObject, String adid, String sdkPlatform) {
         if (jsonObject == null) return null;
@@ -61,7 +59,6 @@ public class AdjustAttribution implements Serializable {
             attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
             attribution.costCurrency = jsonObject.optString("cost_currency", "");
             attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer", "");
-            attribution.state = jsonObject.optString("state", "");
         } else {
             // Rest of all platforms.
             attribution.trackerToken = jsonObject.optString("tracker_token");
@@ -75,7 +72,6 @@ public class AdjustAttribution implements Serializable {
             attribution.costAmount = jsonObject.optDouble("cost_amount");
             attribution.costCurrency = jsonObject.optString("cost_currency");
             attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer");
-            attribution.state = jsonObject.optString("state");
         }
 
         return attribution;
@@ -116,7 +112,6 @@ public class AdjustAttribution implements Serializable {
         if (costAmount != null) fields.put("costAmount", costAmount.toString());
         if (costCurrency != null) fields.put("costCurrency", costCurrency);
         if (fbInstallReferrer != null) fields.put("fbInstallReferrer", fbInstallReferrer);
-        if (state != null) fields.put("state", state);
 
         return fields;
     }
@@ -135,7 +130,6 @@ public class AdjustAttribution implements Serializable {
         hashCode = Util.hashDouble(costAmount, hashCode);
         hashCode = Util.hashString(costCurrency, hashCode);
         hashCode = Util.hashString(fbInstallReferrer, hashCode);
-        hashCode = Util.hashString(state, hashCode);
 
         return hashCode;
     }
@@ -143,9 +137,9 @@ public class AdjustAttribution implements Serializable {
     @Override
     public String toString() {
         return Util.formatString(
-                "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s ct:%s ca:%.2f cc:%s fir:%s st:%s",
+                "tt:%s tn:%s net:%s cam:%s adg:%s cre:%s cl:%s ct:%s ca:%.2f cc:%s fir:%s",
                 trackerToken, trackerName, network, campaign, adgroup, creative, clickLabel,
-                costType, costAmount, costCurrency, fbInstallReferrer, state);
+                costType, costAmount, costCurrency, fbInstallReferrer);
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {
