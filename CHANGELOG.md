@@ -1,3 +1,9 @@
+### Version 4.38.4 (14th May 2024)
+#### Added
+- Added sending of the additional SDK observability parameters for debugging purposes.
+
+---
+
 ### Version 4.38.3 (26th March 2024)
 #### Added
 - Added support for Samsung CloudDev SDK to read Google Play Advertising Identifier.
