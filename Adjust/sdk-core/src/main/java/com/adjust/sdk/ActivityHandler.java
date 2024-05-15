@@ -425,7 +425,7 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void getIsEnabled(OnIsEnabledListener onIsEnabledListener) {
+    public void isEnabled(OnIsEnabledListener onIsEnabledListener) {
         executor.submit(new Runnable() {
             @Override
             public void run() {

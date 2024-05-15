@@ -20,7 +20,7 @@ public interface IActivityHandler {
     void setEnabled(boolean enabled);
 
     boolean isEnabled();
-    void getIsEnabled(OnIsEnabledListener onIsEnabledListener);
+    void isEnabled(OnIsEnabledListener onIsEnabledListener);
 
     void readOpenUrl(Uri url, long clickTime);
 

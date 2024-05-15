@@ -158,7 +158,7 @@ public class AdjustInstance {
              isEnabledListener.onIsEnabledRead(isInstanceEnabled());
             return;
         }
-        activityHandler.getIsEnabled(isEnabledListener);
+        activityHandler.isEnabled(isEnabledListener);
     }
 
     /**
