@@ -37,7 +37,6 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -175,11 +174,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
             Map<String, String> sendingParameters = responseData.sendingParameters;
 
             String authorizationHeader = extractAuthorizationHeader(responseData.signedParameters);
-            if (authorizationHeader == null) {
-                authorizationHeader = buildAndExtractAuthorizationHeader(activityPackageParameters);
-            } else {
-                logger.verbose("authorizationHeader: %s", authorizationHeader);
-            }
+            logger.verbose("authorizationHeader: %s", authorizationHeader);
 
             String clientSdk = extractClientSdk(responseData.signedParameters, activityPackage);
 
@@ -607,96 +602,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         responseData.resolvedDeeplink = UtilNetworking.extractJsonString(jsonResponse,"resolved_click_url");
         responseData.controlParams = jsonResponse.optJSONObject("control_params");
-    }
-
-    private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters) {
-        String adjSigningId = extractAdjSigningId(parameters);
-        String secretId = extractSecretId(parameters);
-        String headersId = extractHeadersId(parameters);
-        String signature = extractSignature(parameters);
-        String algorithm = extractAlgorithm(parameters);
-        String nativeVersion = extractNativeVersion(parameters);
-
-        String authorizationHeader = buildAuthorizationHeaderV2WithAdjSigningId(signature, adjSigningId,
-                headersId, algorithm, nativeVersion);
-        if (authorizationHeader != null) {
-            return authorizationHeader;
-        }
-
-        return buildAuthorizationHeaderV2WithSecretId(signature, secretId, headersId,
-                algorithm, nativeVersion);
-    }
-
-    private String buildAuthorizationHeaderV2WithAdjSigningId(final String signature,
-                                                              final String adjSigningId,
-                                                              final String headersId,
-                                                              final String algorithm,
-                                                              final String nativeVersion)
-    {
-        if (adjSigningId == null || signature == null || headersId == null) {
-            return null;
-        }
-
-        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
-        String adjSigningIdHeader  = Util.formatString("adj_signing_id=\"%s\"", adjSigningId);
-        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
-        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
-        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
-
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
-                signatureHeader, adjSigningIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
-
-        logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-        return authorizationHeader;
-    }
-
-    private String buildAuthorizationHeaderV2WithSecretId(final String signature,
-                                                          final String secretId,
-                                                          final String headersId,
-                                                          final String algorithm,
-                                                          final String nativeVersion)
-    {
-        if (secretId == null || signature == null || headersId == null) {
-            return null;
-        }
-
-        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
-        String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
-        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
-        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
-        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
-
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
-                signatureHeader, secretIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
-
-        logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-        return authorizationHeader;
-    }
-
-    private static String extractSecretId(final Map<String, String> parameters) {
-        return parameters.remove("secret_id");
-    }
-
-    private static String extractSignature(final Map<String, String> parameters) {
-        return parameters.remove("signature");
-    }
-
-    private static String extractAlgorithm(final Map<String, String> parameters) {
-        return parameters.remove("algorithm");
-    }
-
-    private static String extractNativeVersion(final Map<String, String> parameters) {
-        return parameters.remove("native_version");
-    }
-
-    private static String extractHeadersId(final Map<String, String> parameters) {
-        return parameters.remove("headers_id");
-    }
-
-    private static String extractAdjSigningId(final Map<String, String> parameters) {
-        return parameters.remove("adj_signing_id");
     }
 
     private static String extractAuthorizationHeader(final Map<String, String> parameters) {
