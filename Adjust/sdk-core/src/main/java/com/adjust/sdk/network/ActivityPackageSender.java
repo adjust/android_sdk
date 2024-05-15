@@ -423,19 +423,17 @@ public class ActivityPackageSender implements IActivityPackageSender {
                                           final Map<String, String> signedParameters)
             throws UnsupportedEncodingException
     {
-        if (parameters.isEmpty()) {
-            return null;
-        }
-
         final StringBuilder postStringBuilder = new StringBuilder();
 
-        if (!signedParameters.isEmpty()) {
+        if (signedParameters!= null && !signedParameters.isEmpty()) {
             injectParametersToPOSTStringBuilder(signedParameters, postStringBuilder);
-        } else {
+        } else if (parameters != null && !parameters.isEmpty()){
             injectParametersToPOSTStringBuilder(parameters, postStringBuilder);
         }
 
-        injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+        if (sendingParameters != null && !sendingParameters.isEmpty()) {
+            injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+        }
 
         // delete last added &
         if (postStringBuilder.length() > 0
