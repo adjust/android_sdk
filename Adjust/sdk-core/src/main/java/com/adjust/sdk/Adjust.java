@@ -367,9 +367,13 @@ public class Adjust {
      *
      * @return AdjustAttribution object with current attribution value
      */
-    public static AdjustAttribution getAttribution() {
+    public static void getAttribution(OnAttributionReadListener attributionReadListener) {
+        if (attributionReadListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting attribution can't be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getAttribution();
+        adjustInstance.getAttribution(attributionReadListener);
     }
 
     /**

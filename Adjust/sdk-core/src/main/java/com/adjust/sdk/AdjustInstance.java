@@ -54,6 +54,7 @@ public class AdjustInstance {
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     /**
      * Base path for Adjust packages.
      */
@@ -103,6 +104,7 @@ public class AdjustInstance {
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
         adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallbacks;
+        adjustConfig.cachedAttributionReadCallbacks = cachedAttributionReadCallbacks;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -543,11 +545,12 @@ public class AdjustInstance {
      *
      * @return AdjustAttribution object with current attribution value
      */
-    public AdjustAttribution getAttribution() {
+    public void getAttribution(OnAttributionReadListener attributionReadListener) {
         if (!checkActivityHandler("getAttribution")) {
-            return null;
+            cachedAttributionReadCallbacks.add(attributionReadListener);
+            return;
         }
-        return activityHandler.getAttribution();
+        activityHandler.getAttribution(attributionReadListener);
     }
 
     /**

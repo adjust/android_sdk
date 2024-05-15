@@ -89,6 +89,7 @@ public class ActivityHandler
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     private SystemLifecycle systemLifecycle;
+    private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
 
     @Override
     public void teardown() {
@@ -487,6 +488,23 @@ public class ActivityHandler
             return false;
         }
 
+        if (! cachedAttributionReadCallbacks.isEmpty()) {
+            final ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacksCopy =
+                    new ArrayList<>(cachedAttributionReadCallbacks);
+
+            cachedAttributionReadCallbacks.clear();
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAttributionReadListener onAttributionReadListener : cachedAttributionReadCallbacksCopy) {
+                        if (onAttributionReadListener != null) {
+                            onAttributionReadListener.onAttributionRead(attribution);
+                        }
+                    }
+                }
+            });
+        }
+
         if (activityState.askingAttribution) {
             return false;
         }
@@ -497,6 +515,7 @@ public class ActivityHandler
 
         this.attribution = attribution;
         writeAttributionI();
+
         return true;
     }
 
@@ -772,8 +791,8 @@ public class ActivityHandler
     }
 
     @Override
-    public AdjustAttribution getAttribution() {
-        return attribution;
+    public void getAttribution(OnAttributionReadListener onAttributionReadListener) {
+        cachedAttributionReadCallbacks.add(onAttributionReadListener);
     }
 
     @Override
@@ -892,6 +911,9 @@ public class ActivityHandler
 
         cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
         adjustConfig.cachedAdidReadCallbacks.clear();
+
+        cachedAttributionReadCallbacks.addAll(adjustConfig.cachedAttributionReadCallbacks);
+        adjustConfig.cachedAttributionReadCallbacks.clear();
 
         if (! cachedAdidReadCallbacks.isEmpty()
           && activityState != null
