@@ -125,8 +125,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         extraParams.put("client_sdk", activityPackage.getClientSdk());
         extraParams.put("activity_kind", activityPackage.getActivityKind().toString());
 
-        String endPoint = urlStrategy.targetUrlByActivityKind(activityPackage.getActivityKind());
-        extraParams.put("endpoint", endPoint);
+        String endpoint = urlStrategy.targetUrlByActivityKind(activityPackage.getActivityKind());
+        extraParams.put("endpoint", endpoint);
 
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(context).getControlParamsJson();
         if (controlParams != null) {
@@ -168,11 +168,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         DataOutputStream dataOutputStream = null;
 
         try {
-            ActivityPackage activityPackage = responseData.activityPackage;
-            Map<String, String> activityPackageParameters =
-                    new HashMap<>(activityPackage.getParameters());
-            Map<String, String> sendingParameters = responseData.sendingParameters;
-
             String authorizationHeader = extractAuthorizationHeader(responseData.signedParameters);
             logger.verbose("authorizationHeader: %s", authorizationHeader);
 
@@ -180,14 +175,14 @@ public class ActivityPackageSender implements IActivityPackageSender {
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
             final String urlString;
             if (shouldUseGET) {
-                urlString = generateUrlStringForGET(activityPackage.getActivityKind(),
-                                                    activityPackage.getPath(),
-                                                    activityPackageParameters,
-                                                    sendingParameters,
+                urlString = generateUrlStringForGET(responseData.activityPackage.getActivityKind(),
+                                                    responseData.activityPackage.getPath(),
+                                                    responseData.activityPackage.getParameters(),
+                                                    responseData.sendingParameters,
                                                     responseData.signedParameters);
             } else {
-                urlString = generateUrlStringForPOST(activityPackage.getActivityKind(),
-                                                     activityPackage.getPath(),
+                urlString = generateUrlStringForPOST(responseData.activityPackage.getActivityKind(),
+                                                     responseData.activityPackage.getPath(),
                                                      responseData.signedParameters);
             }
 
@@ -206,8 +201,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 dataOutputStream = configConnectionForGET(connection);
             } else {
                 dataOutputStream = configConnectionForPOST(connection,
-                                                           activityPackageParameters,
-                                                           sendingParameters,
+                                                           responseData.activityPackage.getParameters(),
+                                                           responseData.sendingParameters,
                                                            responseData.signedParameters);
             }
 
