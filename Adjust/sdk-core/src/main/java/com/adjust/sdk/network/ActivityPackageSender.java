@@ -99,7 +99,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     public ResponseData sendActivityPackageSync(final ActivityPackage activityPackage,
                                                 final Map<String, String> sendingParameters)
     {
-        Map<String, String> signedParameters = signParameters(activityPackage);
+        Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
 
         boolean retryToSend;
         ResponseData responseData;
@@ -115,7 +115,11 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return responseData;
     }
 
-    private Map<String, String> signParameters(ActivityPackage activityPackage) {
+    private Map<String, String> signParameters(final ActivityPackage activityPackage,
+                                               final Map<String, String> sendingParameters) {
+        Map<String, String> packageParams = new HashMap<>(activityPackage.getParameters());
+        packageParams.putAll(sendingParameters);
+
         Map<String, String> extraParams = new HashMap<>();
 
         extraParams.put("client_sdk", activityPackage.getClientSdk());
@@ -140,8 +144,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
             }
         }
 
-        return AdjustSigner.sign(
-                activityPackage.getParameters(), extraParams, context, logger);
+        return AdjustSigner.sign(packageParams, extraParams, context, logger);
     }
 
     private boolean shouldRetryToSend(final ResponseData responseData) {
@@ -172,10 +175,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
             String authorizationHeader = extractAuthorizationHeader(responseData.signedParameters);
             logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-            String clientSdk = extractClientSdk(responseData.signedParameters, activityPackage);
-
-            extractActivityKind(responseData.signedParameters);
 
             boolean shouldUseGET =
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
@@ -321,19 +320,21 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         logger.debug("Making request to url: %s", uriBuilder.toString());
 
-        if (!signedParameters.isEmpty()) {
+        if (signedParameters != null && !signedParameters.isEmpty()) {
             for (final Map.Entry<String, String> entry : signedParameters.entrySet()) {
                 uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
         } else {
-            for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
-                uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+            if (activityPackageParameters != null) {
+                for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
+                    uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
-        }
 
-        if (sendingParameters != null) {
-            for (final Map.Entry<String, String> entry : sendingParameters.entrySet()) {
-                uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+            if (sendingParameters != null) {
+                for (final Map.Entry<String, String> entry : sendingParameters.entrySet()) {
+                    uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
         }
 
@@ -427,12 +428,14 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         if (signedParameters!= null && !signedParameters.isEmpty()) {
             injectParametersToPOSTStringBuilder(signedParameters, postStringBuilder);
-        } else if (parameters != null && !parameters.isEmpty()){
-            injectParametersToPOSTStringBuilder(parameters, postStringBuilder);
-        }
+        } else {
+            if (parameters != null && !parameters.isEmpty()){
+                injectParametersToPOSTStringBuilder(parameters, postStringBuilder);
+            }
 
-        if (sendingParameters != null && !sendingParameters.isEmpty()) {
-            injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+            if (sendingParameters != null && !sendingParameters.isEmpty()) {
+                injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+            }
         }
 
         // delete last added &
@@ -587,19 +590,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     }
 
     private static String extractAuthorizationHeader(final Map<String, String> parameters) {
-        return parameters.remove("Authorization");
-    }
-
-    private static String extractActivityKind(final Map<String, String> parameters) {
-        return parameters.remove("activity_kind");
-    }
-
-    private static String extractClientSdk(final Map<String, String> parameters, ActivityPackage activityPackage) {
-        String clientSdk = parameters.remove("client_sdk");
-        if (clientSdk != null) {
-            return clientSdk;
-        }
-        return activityPackage.getClientSdk();
+        return parameters.remove("authorization");
     }
 
     private static String extractTargetUrl(final Map<String, String> parameters,
