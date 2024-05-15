@@ -792,7 +792,16 @@ public class ActivityHandler
 
     @Override
     public void getAttribution(OnAttributionReadListener onAttributionReadListener) {
-        cachedAttributionReadCallbacks.add(onAttributionReadListener);
+        if (attribution != null) {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    onAttributionReadListener.onAttributionRead(attribution);
+                }
+            });
+        }else {
+            cachedAttributionReadCallbacks.add(onAttributionReadListener);
+        }
     }
 
     @Override

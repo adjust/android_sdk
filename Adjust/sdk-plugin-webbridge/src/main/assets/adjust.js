@@ -227,8 +227,20 @@ var Adjust = {
         },
 
     getAttribution: function (callback) {
-        if (AdjustBridge) {
-            AdjustBridge.getAttribution(callback);
+     if (AdjustBridge) {
+            if (typeof callback === 'string' || callback instanceof String) {
+                this.getAttributionCallbackName = callback;
+            } else {
+                this.getAttributionCallbackName = 'Adjust.adjust_getAttributionCallback';
+                this.getAttributionCallbackFunction = callback;
+            }
+            AdjustBridge.getAttribution(this.getAttributionCallbackName);
+        }
+    },
+
+    adjust_getAttributionCallback: function (attribution) {
+        if (AdjustBridge && this.getAttributionCallbackFunction) {
+            this.getAttributionCallbackFunction(attribution);
         }
     },
 
@@ -269,6 +281,8 @@ var Adjust = {
         this.getGoogleAdIdCallbackFunction = undefined;
         this.getAdIdCallbackName = undefined;
         this.getAdIdCallbackFunction = undefined;
+        this.getAttributionCallbackName = undefined;
+        this.getAttributionCallbackFunction = undefined;
         this.getAmazonIdCallbackSuccessName = undefined;
         this.getAmazonIdCallbackSuccessFunction = undefined;
         this.getAmazonIdCallbackFailName = undefined;

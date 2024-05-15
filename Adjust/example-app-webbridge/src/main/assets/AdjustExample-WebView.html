@@ -177,6 +177,20 @@
                         alert('SDK version:\n' + sdkVersion);
                     });
                 }
+
+                var btnGetAttribution = document.getElementById('btnGetAttribution')
+                btnGetAttribution.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getAttribution(function (attribution) {
+                        alert('Tracker token = ' + attribution.trackerToken + '\n' +
+                              'Tracker name = ' + attribution.trackerName + '\n' +
+                              'Network = ' + attribution.network + '\n' +
+                              'Campaign = ' + attribution.campaign + '\n' +
+                              'Adgroup = ' + attribution.adgroup + '\n' +
+                              'Creative = ' + attribution.creative + '\n' +
+                              'Click label = ' + attribution.clickLabel);
+                    });
+                }
             }
         </script>
         <div id='buttons'>
@@ -218,6 +232,7 @@
             </div>
             <div style="width:400px;height:35px;text-align:center;">
                 <button id='btnGetSdkVersion'>Get SDK version</button>
+                <button id='btnGetAttribution'>Get Attribution</button>
             </div>
         </div>
     </body>
