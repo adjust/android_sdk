@@ -41,6 +41,7 @@ public class AdjustConfig {
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     Integer eventDeduplicationIdsMaxSize;
+    ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";

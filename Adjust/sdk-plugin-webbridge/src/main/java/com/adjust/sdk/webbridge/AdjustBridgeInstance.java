@@ -23,6 +23,7 @@ import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
@@ -711,8 +712,13 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        AdjustAttribution attribution = Adjust.getAttribution();
-        AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
+        Adjust.getAttribution(new OnAttributionReadListener() {
+            @Override
+            public void onAttributionRead(AdjustAttribution attribution) {
+                AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
+            }
+
+        });
     }
 
     @JavascriptInterface
