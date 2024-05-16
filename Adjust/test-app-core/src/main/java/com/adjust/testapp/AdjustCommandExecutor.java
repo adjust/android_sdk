@@ -302,6 +302,11 @@ public class AdjustCommandExecutor {
             adjustConfig.setSendInBackground(sendInBackground);
         }
 
+        if (command.containsParameter("eventDeduplicationIdsMaxSize")) {
+            String eventDeduplicationIdsMaxSizeS = command.getFirstParameterValue("eventDeduplicationIdsMaxSize");
+            int eventDeduplicationIdsMaxSize = Integer.parseInt(eventDeduplicationIdsMaxSizeS);
+            adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
+        }
 
         if (command.containsParameter("externalDeviceId")) {
             String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
@@ -503,6 +508,10 @@ public class AdjustCommandExecutor {
         if (command.parameters.containsKey("orderId")) {
             String orderId = command.getFirstParameterValue("orderId");
             adjustEvent.setOrderId(orderId);
+        }
+        if (command.parameters.containsKey("deduplicationId")) {
+            String deduplicationId = command.getFirstParameterValue("deduplicationId");
+            adjustEvent.setDeduplicationId(deduplicationId);
         }
         if (command.parameters.containsKey("callbackId")) {
             String callbackId = command.getFirstParameterValue("callbackId");

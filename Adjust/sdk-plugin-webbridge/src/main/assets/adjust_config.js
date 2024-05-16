@@ -46,6 +46,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.preinstallFilePath = null;
     this.fbAppId = null;
     this.readDeviceInfoOnceEnabled = null;
+    this.eventDeduplicationIdsMaxSize = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -226,4 +227,8 @@ AdjustConfig.prototype.setFbAppId = function(fbAppId) {
 
 AdjustConfig.prototype.setReadDeviceInfoOnceEnabled = function(isEnabled) {
     this.readDeviceInfoOnceEnabled = isEnabled;
+};
+
+AdjustConfig.prototype.setEventDeduplicationIdsMaxSize = function(eventDeduplicationIdsMaxSize) {
+    this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
 };

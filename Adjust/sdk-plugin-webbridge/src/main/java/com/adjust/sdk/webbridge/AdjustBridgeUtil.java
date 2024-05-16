@@ -103,6 +103,19 @@ public class AdjustBridgeUtil {
         }
     }
 
+    public static Integer fieldToInteger(Object field) {
+        if (field == null) {
+            return null;
+        }
+
+        String fieldString = field.toString();
+        try {
+            return Integer.parseInt(fieldString);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
 
     public static void execAttributionCallbackCommand(final WebView webView, final String commandName, final AdjustAttribution attribution) {
         if (webView == null) {
