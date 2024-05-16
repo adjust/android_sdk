@@ -151,8 +151,8 @@ public class GlobalApplication extends Application {
         Adjust.getAttribution(new OnAttributionReadListener() {
             @Override
             public void onAttributionRead(AdjustAttribution attribution) {
-                Log.d("exampleAttribution", "Attribution callback called!");
-                Log.d("exampleAttribution", "Attribution: " + attribution.toString());
+                Log.d("example", "Attribution callback called!");
+                Log.d("example", "Attribution: " + attribution.toString());
             }
         });
 
