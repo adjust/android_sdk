@@ -11,6 +11,7 @@ import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
 import com.adjust.sdk.ILogger;
 import com.adjust.sdk.ResponseData;
+import com.adjust.sdk.SharedPreferencesManager;
 import com.adjust.sdk.TrackingState;
 import com.adjust.sdk.Util;
 import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
@@ -33,6 +34,7 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -97,17 +99,13 @@ public class ActivityPackageSender implements IActivityPackageSender {
     public ResponseData sendActivityPackageSync(final ActivityPackage activityPackage,
                                                 final Map<String, String> sendingParameters)
     {
-        AdjustSigner.sign(activityPackage.getParameters(),
-                activityPackage.getActivityKind().toString(),
-                activityPackage.getClientSdk(),
-                context,
-                logger);
+        Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
 
         boolean retryToSend;
         ResponseData responseData;
         do {
             responseData =
-                    ResponseData.buildResponseData(activityPackage, sendingParameters);
+                    ResponseData.buildResponseData(activityPackage, sendingParameters, signedParameters);
 
             tryToGetResponse(responseData);
 
@@ -115,6 +113,38 @@ public class ActivityPackageSender implements IActivityPackageSender {
         } while (retryToSend);
 
         return responseData;
+    }
+
+    private Map<String, String> signParameters(final ActivityPackage activityPackage,
+                                               final Map<String, String> sendingParameters) {
+        Map<String, String> packageParams = new HashMap<>(activityPackage.getParameters());
+        packageParams.putAll(sendingParameters);
+
+        Map<String, String> extraParams = new HashMap<>();
+
+        extraParams.put("client_sdk", activityPackage.getClientSdk());
+        extraParams.put("activity_kind", activityPackage.getActivityKind().toString());
+
+        String endpoint = urlStrategy.targetUrlByActivityKind(activityPackage.getActivityKind());
+        extraParams.put("endpoint", endpoint);
+
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(context).getControlParamsJson();
+        if (controlParams != null) {
+            Iterator<String> keys = controlParams.keys();
+
+            while (keys.hasNext()) {
+                String key = keys.next();
+                try {
+                    if (controlParams.get(key) instanceof String) {
+                        extraParams.put(key, (String) controlParams.get(key));
+                    }
+                } catch (JSONException e) {
+                    logger.error("JSONException while iterating control params");
+                }
+            }
+        }
+
+        return AdjustSigner.sign(packageParams, extraParams, context, logger);
     }
 
     private boolean shouldRetryToSend(final ResponseData responseData) {
@@ -138,24 +168,22 @@ public class ActivityPackageSender implements IActivityPackageSender {
         DataOutputStream dataOutputStream = null;
 
         try {
-            ActivityPackage activityPackage = responseData.activityPackage;
-            Map<String, String> activityPackageParameters =
-                    new HashMap<>(activityPackage.getParameters());
-            Map<String, String> sendingParameters = responseData.sendingParameters;
-
-            String authorizationHeader = buildAndExtractAuthorizationHeader(activityPackageParameters);
+            String authorizationHeader = extractAuthorizationHeader(responseData.signedParameters);
+            logger.verbose("authorizationHeader: %s", authorizationHeader);
 
             boolean shouldUseGET =
                     responseData.activityPackage.getActivityKind() == ActivityKind.ATTRIBUTION;
             final String urlString;
             if (shouldUseGET) {
-                urlString = generateUrlStringForGET(activityPackage.getActivityKind(),
-                                                    activityPackage.getPath(),
-                                                    activityPackageParameters,
-                                                    sendingParameters);
+                urlString = generateUrlStringForGET(responseData.activityPackage.getActivityKind(),
+                                                    responseData.activityPackage.getPath(),
+                                                    responseData.activityPackage.getParameters(),
+                                                    responseData.sendingParameters,
+                                                    responseData.signedParameters);
             } else {
-                urlString = generateUrlStringForPOST(activityPackage.getActivityKind(),
-                                                     activityPackage.getPath());
+                urlString = generateUrlStringForPOST(responseData.activityPackage.getActivityKind(),
+                                                     responseData.activityPackage.getPath(),
+                                                     responseData.signedParameters);
             }
 
             final URL url = new URL(urlString);
@@ -163,7 +191,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                     httpsURLConnectionProvider.generateHttpsURLConnection(url);
 
             // get and apply connection options (default or for tests)
-            connectionOptions.applyConnectionOptions(connection, activityPackage.getClientSdk());
+            connectionOptions.applyConnectionOptions(connection, clientSdk);
 
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);
@@ -173,8 +201,9 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 dataOutputStream = configConnectionForGET(connection);
             } else {
                 dataOutputStream = configConnectionForPOST(connection,
-                                                           activityPackageParameters,
-                                                           sendingParameters);
+                                                           responseData.activityPackage.getParameters(),
+                                                           responseData.sendingParameters,
+                                                           responseData.signedParameters);
             }
 
             // read connection response
@@ -267,10 +296,11 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private String generateUrlStringForGET(final ActivityKind activityKind,
                                            final String activityPackagePath,
                                            final Map<String, String> activityPackageParameters,
-                                           final Map<String, String> sendingParameters)
+                                           final Map<String, String> sendingParameters,
+                                           final Map<String, String> signedParameters)
             throws MalformedURLException
     {
-        String targetUrl = urlStrategy.targetUrlByActivityKind(activityKind);
+        String targetUrl = extractTargetUrl(signedParameters, activityKind, urlStrategy);
 
         // extra path, if present, has the format '/X/Y'
         String urlWithPath =
@@ -285,13 +315,21 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         logger.debug("Making request to url: %s", uriBuilder.toString());
 
-        for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
-            uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
-        }
-
-        if (sendingParameters != null) {
-            for (final Map.Entry<String, String> entry: sendingParameters.entrySet()) {
+        if (signedParameters != null && !signedParameters.isEmpty()) {
+            for (final Map.Entry<String, String> entry : signedParameters.entrySet()) {
                 uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+            }
+        } else {
+            if (activityPackageParameters != null) {
+                for (final Map.Entry<String, String> entry : activityPackageParameters.entrySet()) {
+                    uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
+            }
+
+            if (sendingParameters != null) {
+                for (final Map.Entry<String, String> entry : sendingParameters.entrySet()) {
+                    uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+                }
             }
         }
 
@@ -299,10 +337,10 @@ public class ActivityPackageSender implements IActivityPackageSender {
     }
 
     private String generateUrlStringForPOST(final ActivityKind activityKind,
-                                            final String activityPackagePath)
+                                            final String activityPackagePath,
+                                            final Map<String, String> signedParameters)
     {
-        String targetUrl =
-                urlStrategy.targetUrlByActivityKind(activityKind);
+        String targetUrl = extractTargetUrl(signedParameters, activityKind, urlStrategy);
 
         // extra path, if present, has the format '/X/Y'
         String urlWithPath =
@@ -343,7 +381,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
     private DataOutputStream configConnectionForPOST(final HttpsURLConnection connection,
                                                      final Map<String, String> activityPackageParameters,
-                                                     final Map<String, String> sendingParameters)
+                                                     final Map<String, String> sendingParameters,
+                                                     final Map<String, String> signedParameters)
             throws ProtocolException,
             UnsupportedEncodingException,
             IOException
@@ -360,7 +399,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         // build POST body
         final String postBodyString = generatePOSTBodyString(
                 activityPackageParameters,
-                sendingParameters);
+                sendingParameters,
+                signedParameters);
 
         if (postBodyString == null) {
             return null;
@@ -375,17 +415,23 @@ public class ActivityPackageSender implements IActivityPackageSender {
     }
 
     private String generatePOSTBodyString(final Map<String, String> parameters,
-                                          final Map<String, String> sendingParameters)
+                                          final Map<String, String> sendingParameters,
+                                          final Map<String, String> signedParameters)
             throws UnsupportedEncodingException
     {
-        if (parameters.isEmpty()) {
-            return null;
-        }
-
         final StringBuilder postStringBuilder = new StringBuilder();
 
-        injectParametersToPOSTStringBuilder(parameters, postStringBuilder);
-        injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+        if (signedParameters!= null && !signedParameters.isEmpty()) {
+            injectParametersToPOSTStringBuilder(signedParameters, postStringBuilder);
+        } else {
+            if (parameters != null && !parameters.isEmpty()){
+                injectParametersToPOSTStringBuilder(parameters, postStringBuilder);
+            }
+
+            if (sendingParameters != null && !sendingParameters.isEmpty()) {
+                injectParametersToPOSTStringBuilder(sendingParameters, postStringBuilder);
+            }
+        }
 
         // delete last added &
         if (postStringBuilder.length() > 0
@@ -470,6 +516,10 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
         parseResponse(responseData, responseString);
 
+        if (responseData.controlParams != null) {
+            SharedPreferencesManager.getDefaultInstance(context).saveControlParams(responseData.controlParams);
+        }
+
         final String responseMessage = responseData.message;
         if (responseMessage == null) {
             return responseCode;
@@ -495,6 +545,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
         // convert string response to JSON object
         try {
             jsonResponse = new JSONObject(responseString);
+
         } catch (final JSONException jsonException) {
             String errorMessage = errorMessage(jsonException,
                     "Failed to parse JSON response",
@@ -530,97 +581,21 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 Util.getSdkPrefixPlatform(clientSdk));
 
         responseData.resolvedDeeplink = UtilNetworking.extractJsonString(jsonResponse,"resolved_click_url");
+        responseData.controlParams = jsonResponse.optJSONObject("control_params");
     }
 
-    private String buildAndExtractAuthorizationHeader(final Map<String, String> parameters) {
-        String adjSigningId = extractAdjSigningId(parameters);
-        String secretId = extractSecretId(parameters);
-        String headersId = extractHeadersId(parameters);
-        String signature = extractSignature(parameters);
-        String algorithm = extractAlgorithm(parameters);
-        String nativeVersion = extractNativeVersion(parameters);
+    private static String extractAuthorizationHeader(final Map<String, String> parameters) {
+        return parameters.remove("authorization");
+    }
 
-        String authorizationHeader = buildAuthorizationHeaderV2WithAdjSigningId(signature, adjSigningId,
-                headersId, algorithm, nativeVersion);
-        if (authorizationHeader != null) {
-            return authorizationHeader;
+    private static String extractTargetUrl(final Map<String, String> parameters,
+                                           final ActivityKind activityKind,
+                                           final UrlStrategy urlStrategy) {
+        String targetUrl = parameters.remove("endpoint");
+        if (targetUrl != null) {
+            return targetUrl;
         }
 
-        return buildAuthorizationHeaderV2WithSecretId(signature, secretId, headersId,
-                algorithm, nativeVersion);
+        return urlStrategy.targetUrlByActivityKind(activityKind);
     }
-
-    private String buildAuthorizationHeaderV2WithAdjSigningId(final String signature,
-                                                              final String adjSigningId,
-                                                              final String headersId,
-                                                              final String algorithm,
-                                                              final String nativeVersion)
-    {
-        if (adjSigningId == null || signature == null || headersId == null) {
-            return null;
-        }
-
-        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
-        String adjSigningIdHeader  = Util.formatString("adj_signing_id=\"%s\"", adjSigningId);
-        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
-        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
-        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
-
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
-                signatureHeader, adjSigningIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
-
-        logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-        return authorizationHeader;
-    }
-
-    private String buildAuthorizationHeaderV2WithSecretId(final String signature,
-                                                          final String secretId,
-                                                          final String headersId,
-                                                          final String algorithm,
-                                                          final String nativeVersion)
-    {
-        if (secretId == null || signature == null || headersId == null) {
-            return null;
-        }
-
-        String signatureHeader = Util.formatString("signature=\"%s\"", signature);
-        String secretIdHeader  = Util.formatString("secret_id=\"%s\"", secretId);
-        String idHeader        = Util.formatString("headers_id=\"%s\"", headersId);
-        String algorithmHeader = Util.formatString("algorithm=\"%s\"", algorithm != null ? algorithm : "adj1");
-        String nativeVersionHeader = Util.formatString("native_version=\"%s\"", nativeVersion != null ? nativeVersion : "");
-
-        String authorizationHeader = Util.formatString("Signature %s,%s,%s,%s,%s",
-                signatureHeader, secretIdHeader, algorithmHeader, idHeader, nativeVersionHeader);
-
-        logger.verbose("authorizationHeader: %s", authorizationHeader);
-
-        return authorizationHeader;
-    }
-
-    private static String extractSecretId(final Map<String, String> parameters) {
-        return parameters.remove("secret_id");
-    }
-
-    private static String extractSignature(final Map<String, String> parameters) {
-        return parameters.remove("signature");
-    }
-
-    private static String extractAlgorithm(final Map<String, String> parameters) {
-        return parameters.remove("algorithm");
-    }
-
-    private static String extractNativeVersion(final Map<String, String> parameters) {
-        return parameters.remove("native_version");
-    }
-
-    private static String extractHeadersId(final Map<String, String> parameters) {
-        return parameters.remove("headers_id");
-    }
-
-    private static String extractAdjSigningId(final Map<String, String> parameters) {
-        return parameters.remove("adj_signing_id");
-    }
-
-
 }

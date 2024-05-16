@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -50,6 +51,8 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_COPPA_COMPLIANCE_ENABLED = "coppa_compliant_enabled";
 
     private static final String PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED = "play_store_kids_app_enabled";
+
+    private static final String PREFS_KEY_CONTROL_PARAMS = "control_params";
 
     /**
      * Index for raw referrer string content in saved JSONArray object.
@@ -460,6 +463,37 @@ public class SharedPreferencesManager {
      */
     public synchronized void removePlayStoreKidsApp() {
         remove(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED);
+    }
+
+    /**
+     * Save control params json to shared preferences.
+     *
+     * @param controlParams Control params json to be saved
+     */
+    public synchronized void saveControlParams(final JSONObject controlParams) {
+        try {
+            saveString(PREFS_KEY_CONTROL_PARAMS, controlParams.toString());
+        } catch (Throwable t) {
+        }
+    }
+
+    /**
+     * Get saved control params json object.
+     *
+     * @return JSONObject containing control params information. Defaults to null if not found.
+     */
+    public synchronized JSONObject getControlParamsJson() {
+        String controlParamsString = getString(PREFS_KEY_CONTROL_PARAMS);
+
+        if (controlParamsString != null) {
+            try {
+                return new JSONObject(controlParamsString);
+            } catch (JSONException e) {
+            } catch (Throwable t) {
+            }
+        }
+
+        return null;
     }
 
     /**
