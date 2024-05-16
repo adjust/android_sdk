@@ -382,7 +382,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "purchase_token", event.purchaseToken);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addDouble(parameters, "revenue", event.revenue);
-        PackageBuilder.addString(parameters, "deduplication_id", event.orderId);
+        PackageBuilder.addString(parameters, "order_id", event.orderId);
+        PackageBuilder.addString(parameters, "deduplication_id", event.deduplicationId);
         PackageBuilder.addString(parameters, "screen_density", deviceInfo.screenDensity);
         PackageBuilder.addString(parameters, "screen_format", deviceInfo.screenFormat);
         PackageBuilder.addString(parameters, "screen_size", deviceInfo.screenSize);

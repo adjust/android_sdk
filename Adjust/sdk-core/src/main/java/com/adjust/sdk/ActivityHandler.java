@@ -816,6 +816,10 @@ public class ActivityHandler
         readGlobalCallbackParametersI(adjustConfig.context);
         readGlobalPartnerParametersI(adjustConfig.context);
 
+        if (activityState != null) {
+            activityState.setEventDeduplicationIdsMaxSize(adjustConfig.getEventDeduplicationIdsMaxSize());
+        }
+
         if (adjustConfig.startEnabled != null) {
             adjustConfig.preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
                 @Override
@@ -1263,6 +1267,8 @@ public class ActivityHandler
         activityState = new ActivityState();
         internalState.firstSdkStart = true;
 
+        activityState.setEventDeduplicationIdsMaxSize(adjustConfig.getEventDeduplicationIdsMaxSize());
+
         // still update handlers status
         updateHandlersStatusAndSendI();
 
@@ -1502,8 +1508,8 @@ public class ActivityHandler
         if (!checkActivityStateI(activityState)) return;
         if (!isEnabledI()) return;
         if (!checkEventI(event)) return;
-        if (!checkOrderIdI(event.orderId)) return;
         if (activityState.isGdprForgotten) return;
+        if (!shouldProcessEventI(event.deduplicationId)) return;
 
         long now = System.currentTimeMillis();
 
@@ -2662,18 +2668,18 @@ public class ActivityHandler
         return true;
     }
 
-    private boolean checkOrderIdI(String orderId) {
-        if (orderId == null || orderId.isEmpty()) {
-            return true;  // no order ID given
+    private boolean shouldProcessEventI(String deduplicationId) {
+        if (deduplicationId == null || deduplicationId.isEmpty()) {
+            return true;  // no deduplication ID given
         }
 
-        if (activityState.findOrderId(orderId)) {
-            logger.info("Skipping duplicated order ID '%s'", orderId);
-            return false; // order ID found -> used already
+        if (activityState.eventDeduplicationIdExists(deduplicationId)) {
+            logger.info("Skipping duplicate event with deduplication ID '%s'", deduplicationId);
+            return false; // deduplication ID found -> used already
         }
 
-        activityState.addOrderId(orderId);
-        logger.verbose("Added order ID '%s'", orderId);
+        activityState.addDeduplicationId(deduplicationId);
+        logger.verbose("Added deduplication ID '%s'", deduplicationId);
         // activity state will get written by caller
         return true;
     }
