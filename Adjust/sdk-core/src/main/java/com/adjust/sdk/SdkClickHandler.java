@@ -440,7 +440,7 @@ public class SdkClickHandler implements ISdkClickHandler {
      * @param retryIn
      */
     private void retrySendingI(final ActivityPackage sdkClickPackage, Long retryIn) {
-        if (retryIn!= null && retryIn > 0) {
+        if (retryIn != null && retryIn > 0) {
             lastPackageRetryInMilli = retryIn;
         } else {
             int retries = sdkClickPackage.increaseRetries();
@@ -475,8 +475,9 @@ public class SdkClickHandler implements ISdkClickHandler {
      */
     private long waitTime(int retries) {
         if (lastPackageRetryInMilli > 0) {
-            return  lastPackageRetryInMilli;
+            return lastPackageRetryInMilli;
         }
+
         if (retries > 0) {
             long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
             double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
