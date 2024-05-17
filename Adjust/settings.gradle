@@ -1,3 +1,3 @@
 include ':sdk-core', ':sdk-plugin-webbridge', ':sdk-plugin-oaid', ':sdk-plugin-sociomantic', ':sdk-plugin-trademob', ':sdk-plugin-imei', ':sdk-plugin-criteo', ':sdk-plugin-xiaomi-referrer', ':sdk-plugin-samsung-referrer', ':sdk-plugin-vivo-referrer', ':sdk-plugin-samsung-clouddev', ':sdk-plugin-huawei-referrer', ':sdk-plugin-meta-referrer'
-include ':test-options', ':test-unit', ':test-library', ':test-app-core', ':test-kotlin', ':test-app-webbridge'
+include ':test-options', ':test-library', ':test-app-core', ':test-kotlin', ':test-app-webbridge'
 include ':example-app-java', ':example-app-kotlin', ':example-app-tv', ':example-app-webbridge',  ':example-app-fbpixel', ':example-app-keyboard'
