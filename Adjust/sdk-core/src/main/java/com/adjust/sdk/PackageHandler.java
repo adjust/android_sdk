@@ -132,7 +132,7 @@ public class PackageHandler implements IPackageHandler,
             activityHandler.gotOptOutResponse();
         }
 
-        if (!responseData.willRetry) {
+        if (! responseData.willRetry) {
             scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
@@ -161,8 +161,9 @@ public class PackageHandler implements IPackageHandler,
             }
         };
 
-        if (responseData.activityPackage == null) {
-            runnable.run();
+        if (responseData.retryIn != null) {
+            long retryIn = responseData.retryIn;
+            scheduler.schedule(runnable, retryIn);
             return;
         }
 
@@ -172,8 +173,7 @@ public class PackageHandler implements IPackageHandler,
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context);
 
         if (responseData.activityPackage.getActivityKind() ==
-                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked())
-        {
+                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()) {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
         } else {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);

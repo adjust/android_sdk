@@ -60,6 +60,8 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
 
     private IActivityPackageSender activityPackageSender;
 
+    private long lastPackageRetryInMilli= 0L;
+
     /**
      * PurchaseVerificationHandler constructor.
      *
@@ -189,17 +191,13 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
             }
         };
 
-        if (retries <= 0) {
+        long waitTimeMilliSeconds = waitTime(retries);
+        if (waitTimeMilliSeconds > 0) {
+            scheduler.schedule(runnable, waitTimeMilliSeconds);
+        } else {
             runnable.run();
-            return;
         }
 
-        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-        double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
-        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-        logger.verbose("Waiting for %s seconds before retrying purchase_verification for the %d time", secondsString, retries);
-        scheduler.schedule(runnable, waitTimeMilliSeconds);
     }
 
     /**
@@ -222,9 +220,12 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
                 = (PurchaseVerificationResponseData)responseData;
 
         if (purchaseVerificationResponseData.willRetry) {
-            retrySendingI(purchaseVerificationPackage);
+            retrySendingI(purchaseVerificationPackage, responseData.retryIn);
             return;
         }
+
+        lastPackageRetryInMilli = 0L;
+
         if (activityHandler == null) {
             return;
         }
@@ -252,9 +253,36 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
      *
      * @param purchaseVerificationPackage purchase_verification package to be retried.
      */
-    private void retrySendingI(final ActivityPackage purchaseVerificationPackage) {
-        int retries = purchaseVerificationPackage.increaseRetries();
-        logger.error("Retrying purchase_verification package for the %d time", retries);
+    private void retrySendingI(final ActivityPackage purchaseVerificationPackage, Long retryIn) {
+        if (retryIn != null && retryIn > 0) {
+            lastPackageRetryInMilli = retryIn;
+        } else {
+            int retries = purchaseVerificationPackage.increaseRetries();
+            logger.error("Retrying purchase_verification package for the %d time", retries);
+        }
+
         sendPurchaseVerificationPackage(purchaseVerificationPackage);
+    }
+
+    /**
+     * calculate wait time (runs within scheduled executor).
+     * @param retries count of retries
+     * @return calculated wait time depends on the number of retry in and backoff strategy
+     */
+    private long waitTime(int retries) {
+        if (lastPackageRetryInMilli > 0) {
+            return  lastPackageRetryInMilli;
+        }
+        if (retries > 0) {
+            long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+            double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+            logger.verbose(
+              "Waiting for %s seconds before retrying purchase_verification for the %d time",
+              secondsString, retries);
+            return waitTimeMilliSeconds;
+        }
+
+        return 0L;
     }
 }
