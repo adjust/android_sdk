@@ -365,7 +365,7 @@ public class Adjust {
     /**
      * Called to get user's current attribution value.
      *
-     * @return AdjustAttribution object with current attribution value
+     *  @param attributionReadListener Callback to get triggered once attribution is obtained
      */
     public static void getAttribution(OnAttributionReadListener attributionReadListener) {
         if (attributionReadListener == null) {
