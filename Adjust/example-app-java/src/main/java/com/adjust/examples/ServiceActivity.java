@@ -19,7 +19,7 @@ public class ServiceActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.appWillOpenUrl(data, getApplicationContext());
+        Adjust.processDeeplink(data, getApplicationContext());
     }
 
     public void onServiceClick(View v) {

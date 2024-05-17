@@ -109,24 +109,11 @@ public class Adjust {
      * Called to process deep link.
      *
      * @param url Deep link URL to process
-     *
-     * @deprecated Use {@link #appWillOpenUrl(Uri, Context)}} instead.
-     */
-    @Deprecated
-    public static void appWillOpenUrl(Uri url) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url);
-    }
-
-    /**
-     * Called to process deep link.
-     *
-     * @param url Deep link URL to process
      * @param context Application context
      */
-    public static void appWillOpenUrl(Uri url, Context context) {
+    public static void processDeeplink(Uri url, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
+        adjustInstance.processDeeplink(url, extractApplicationContext(context));
     }
 
     /**
@@ -136,9 +123,9 @@ public class Adjust {
      * @param callback  Callback where either resolved or echoed deep link will be sent.
      * @param context Application context
      */
-    public static void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
+    public static void processAndResolveDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.processDeeplink(url, extractApplicationContext(context), callback);
+        adjustInstance.processAndResolveDeeplink(url, extractApplicationContext(context), callback);
     }
 
     /**
