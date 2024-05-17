@@ -408,21 +408,21 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void readOpenUrl(final Uri url, final long clickTime) {
+    public void processDeeplink(final Uri url, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                readOpenUrlI(url, clickTime);
+                processDeeplinkI(url, clickTime);
             }
         });
     }
 
-    public void readOpenUrl(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                readOpenUrlI(url, clickTime);
+                processDeeplinkI(url, clickTime);
             }
         });
     }
@@ -1437,7 +1437,7 @@ public class ActivityHandler implements IActivityHandler {
             return;
         }
 
-        readOpenUrl(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
+        processDeeplink(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -1998,7 +1998,7 @@ public class ActivityHandler implements IActivityHandler {
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void readOpenUrlI(Uri url, long clickTime) {
+    private void processDeeplinkI(Uri url, long clickTime) {
         if (!isEnabledI()) {
             return;
         }

@@ -617,7 +617,7 @@ public class AdjustCommandExecutor {
     private void openDeeplink() {
         String deeplink = command.getFirstParameterValue("deeplink");
 
-        Adjust.appWillOpenUrl(Uri.parse(deeplink), this.context);
+        Adjust.processDeeplink(Uri.parse(deeplink), this.context);
     }
 
     private void sendReferrer() {
@@ -784,7 +784,7 @@ public class AdjustCommandExecutor {
         String deeplink = command.getFirstParameterValue("deeplink");
         Uri deeplinkUri = Uri.parse(deeplink);
         final String localBasePath = basePath;
-        Adjust.processDeeplink(deeplinkUri, context, new OnDeeplinkResolvedListener() {
+        Adjust.processAndResolveDeeplink(deeplinkUri, context, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 MainActivity.testLibrary.addInfoToSend("resolved_link", resolvedLink);

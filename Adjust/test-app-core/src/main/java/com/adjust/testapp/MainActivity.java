@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
-            Adjust.appWillOpenUrl(deeplinkData, getApplicationContext());
+            Adjust.processDeeplink(deeplinkData, getApplicationContext());
             return;
         }
 

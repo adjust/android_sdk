@@ -163,23 +163,10 @@ public class AdjustInstance {
     /**
      * Called to process deep link.
      *
-     * @param url Deep link URL to process
-     */
-    public void appWillOpenUrl(final Uri url) {
-        if (!checkActivityHandler("appWillOpenUrl")) {
-            return;
-        }
-        long clickTime = System.currentTimeMillis();
-        activityHandler.readOpenUrl(url, clickTime);
-    }
-
-    /**
-     * Called to process deep link.
-     *
      * @param url     Deep link URL to process
      * @param context Application context
      */
-    public void appWillOpenUrl(final Uri url, final Context context) {
+    public void processDeeplink(final Uri url, final Context context) {
         // Check for deep link validity. If invalid, return.
         if (url == null || url.toString().length() == 0) {
             AdjustFactory.getLogger().warn(
@@ -188,12 +175,12 @@ public class AdjustInstance {
         }
 
         long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler("appWillOpenUrl", true)) {
+        if (!checkActivityHandler("processDeeplink", true)) {
             saveDeeplink(url, clickTime, context);
             return;
         }
 
-        activityHandler.readOpenUrl(url, clickTime);
+        activityHandler.processDeeplink(url, clickTime);
     }
 
     /**
@@ -203,23 +190,23 @@ public class AdjustInstance {
      * @param callback Callback where either resolved or echoed deep link will be sent.
      * @param context  Application context
      */
-    public void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
         // if resolution result is not wanted, fallback to default method
         if (callback == null) {
-            appWillOpenUrl(url, context);
+            processDeeplink(url, context);
             return;
         }
 
         // if deep link processing is triggered prior to SDK being initialized
         long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler("processDeeplink", true)) {
+        if (!checkActivityHandler("processAndResolveDeeplink", true)) {
             saveDeeplink(url, clickTime, context);
             this.cachedDeeplinkResolutionCallback = callback;
             return;
         }
 
         // if deep link processing was triggered with SDK being initialized
-        activityHandler.readOpenUrl(url, clickTime, callback);
+        activityHandler.processAndResolveDeeplink(url, clickTime, callback);
     }
 
     /**
@@ -690,7 +677,7 @@ public class AdjustInstance {
      * Save deep link to shared preferences.
      *
      * @param deeplink  Deeplink Uri object
-     * @param clickTime Time when appWillOpenUrl(Uri, Context) method was called
+     * @param clickTime Time when processDeeplink(Uri, Context) method was called
      * @param context   Application context
      */
     private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {

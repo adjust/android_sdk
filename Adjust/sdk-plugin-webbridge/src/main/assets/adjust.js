@@ -63,12 +63,6 @@ var Adjust = {
         }
     },
 
-    appWillOpenUrl: function (url) {
-        if (AdjustBridge) {
-            AdjustBridge.appWillOpenUrl(url);
-        }
-    },
-
     setReferrer: function (referrer) {
         if (AdjustBridge) {
             AdjustBridge.setReferrer(referrer);
