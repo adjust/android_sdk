@@ -488,6 +488,10 @@ public class ActivityHandler
             return false;
         }
 
+        if (activityState.askingAttribution) {
+            return false;
+        }
+
         if (! cachedAttributionReadCallbacks.isEmpty()) {
             final ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacksCopy =
                     new ArrayList<>(cachedAttributionReadCallbacks);
@@ -503,10 +507,6 @@ public class ActivityHandler
                     }
                 }
             });
-        }
-
-        if (activityState.askingAttribution) {
-            return false;
         }
 
         if (attribution.equals(this.attribution)) {
