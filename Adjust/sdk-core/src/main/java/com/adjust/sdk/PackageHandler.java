@@ -178,11 +178,6 @@ public class PackageHandler implements IPackageHandler,
             return;
         }
 
-        if (responseData.activityPackage == null) {
-            runnable.run();
-            return;
-        }
-
         int retries = responseData.activityPackage.increaseRetries();
         long waitTimeMilliSeconds;
 
