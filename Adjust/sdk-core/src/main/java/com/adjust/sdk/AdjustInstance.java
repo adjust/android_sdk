@@ -369,15 +369,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global callback parameters.
      */
-    public void resetGlobalCallbackParameters() {
+    public void removeGlobalCallbackParameters() {
         if (checkActivityHandler("resetting global callback parameters", true)) {
-            activityHandler.resetGlobalCallbackParameters();
+            activityHandler.removeGlobalCallbackParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetGlobalCallbackParametersI();
+                activityHandler.removeGlobalCallbackParametersI();
             }
         });
     }
@@ -385,15 +385,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global partner parameters.
      */
-    public void resetGlobalPartnerParameters() {
+    public void removeGlobalPartnerParameters() {
         if (checkActivityHandler("resetting global partner parameters", true)) {
-            activityHandler.resetGlobalPartnerParameters();
+            activityHandler.removeGlobalPartnerParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetGlobalPartnerParametersI();
+                activityHandler.removeGlobalPartnerParametersI();
             }
         });
     }

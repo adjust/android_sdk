@@ -57,9 +57,9 @@ public interface IActivityHandler {
 
     void removeGlobalPartnerParameter(String key);
 
-    void resetGlobalCallbackParameters();
+    void removeGlobalCallbackParameters();
 
-    void resetGlobalPartnerParameters();
+    void removeGlobalPartnerParameters();
 
     void teardown();
 

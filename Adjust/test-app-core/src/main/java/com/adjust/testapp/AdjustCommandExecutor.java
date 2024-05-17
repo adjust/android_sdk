@@ -604,11 +604,11 @@ public class AdjustCommandExecutor {
     }
 
     private void resetSessionCallbackParameters() {
-        Adjust.resetGlobalCallbackParameters();
+        Adjust.removeGlobalCallbackParameters();
     }
 
     private void resetSessionPartnerParameters() {
-        Adjust.resetGlobalPartnerParameters();
+        Adjust.removeGlobalPartnerParameters();
     }
 
     private void setPushToken() {

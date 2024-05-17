@@ -215,17 +215,17 @@ public class Adjust {
     /**
      * Called to remove all added global callback parameters.
      */
-    public static void resetGlobalCallbackParameters() {
+    public static void removeGlobalCallbackParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetGlobalCallbackParameters();
+        adjustInstance.removeGlobalCallbackParameters();
     }
 
     /**
      * Called to remove all added global partner parameters.
      */
-    public static void resetGlobalPartnerParameters() {
+    public static void removeGlobalPartnerParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetGlobalPartnerParameters();
+        adjustInstance.removeGlobalPartnerParameters();
     }
 
     /**
