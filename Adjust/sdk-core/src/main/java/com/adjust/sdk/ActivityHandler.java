@@ -641,21 +641,21 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void resetGlobalCallbackParameters() {
+    public void removeGlobalCallbackParameters() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                resetGlobalCallbackParametersI();
+                removeGlobalCallbackParametersI();
             }
         });
     }
 
     @Override
-    public void resetGlobalPartnerParameters() {
+    public void removeGlobalPartnerParameters() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                resetGlobalPartnerParametersI();
+                removeGlobalPartnerParametersI();
             }
         });
     }
@@ -2393,7 +2393,7 @@ public class ActivityHandler implements IActivityHandler {
         writeGlobalPartnerParametersI();
     }
 
-    public void resetGlobalCallbackParametersI() {
+    public void removeGlobalCallbackParametersI() {
         if (globalParameters.callbackParameters == null) {
             logger.warn("Session Callback parameters are not set");
         }
@@ -2403,7 +2403,7 @@ public class ActivityHandler implements IActivityHandler {
         writeGlobalCallbackParametersI();
     }
 
-    public void resetGlobalPartnerParametersI() {
+    public void removeGlobalPartnerParametersI() {
         if (globalParameters.partnerParameters == null) {
             logger.warn("Session Partner parameters are not set");
         }

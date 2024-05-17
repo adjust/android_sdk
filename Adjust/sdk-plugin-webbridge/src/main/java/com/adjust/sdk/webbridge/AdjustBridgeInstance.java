@@ -574,7 +574,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        Adjust.resetGlobalCallbackParameters();
+        Adjust.removeGlobalCallbackParameters();
     }
 
     @JavascriptInterface
@@ -582,7 +582,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        Adjust.resetGlobalPartnerParameters();
+        Adjust.removeGlobalPartnerParameters();
     }
 
     @JavascriptInterface

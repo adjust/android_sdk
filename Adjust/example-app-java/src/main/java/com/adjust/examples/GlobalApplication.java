@@ -132,10 +132,10 @@ public class GlobalApplication extends Application {
         Adjust.removeGlobalPartnerParameter("sp_key");
 
         // Remove all session callback parameters.
-        Adjust.resetGlobalCallbackParameters();
+        Adjust.removeGlobalCallbackParameters();
 
         // Remove all global partner parameters.
-        Adjust.resetGlobalPartnerParameters();
+        Adjust.removeGlobalPartnerParameters();
 
         // Enable IMEI reading ONLY IF:
         // - IMEI plugin is added to your app.
