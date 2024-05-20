@@ -87,7 +87,7 @@ public class AdjustCommandExecutor {
                 case "thirdPartySharing" : thirdPartySharing(); break;
                 case "measurementConsent" : measurementConsent(); break;
                 case "trackAdRevenue" : trackAdRevenue(); break;
-                case "trackSubscription": trackSubscription(); break;
+                case "trackSubscription": trackPlayStoreSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
                 case "processDeeplink" : processDeeplink(); break;
                 case "enableCoppaCompliance" : enableCoppaCompliance(); break;
@@ -725,7 +725,7 @@ public class AdjustCommandExecutor {
         Adjust.trackAdRevenue(adjustAdRevenue);
     }
 
-    private void trackSubscription() {
+    private void trackPlayStoreSubscription() {
         long price = Long.parseLong(command.getFirstParameterValue("revenue"));
         String currency = command.getFirstParameterValue("currency");
         long purchaseTime = Long.parseLong(command.getFirstParameterValue("transactionDate"));

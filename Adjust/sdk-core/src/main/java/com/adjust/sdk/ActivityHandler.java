@@ -690,7 +690,7 @@ public class ActivityHandler implements IActivityHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                trackSubscriptionI(subscription);
+                trackPlayStoreSubscriptionI(subscription);
             }
         });
     }
@@ -2390,7 +2390,7 @@ public class ActivityHandler implements IActivityHandler {
         packageHandler.sendFirstPackage();
     }
 
-    private void trackSubscriptionI(final AdjustPlayStoreSubscription subscription) {
+    private void trackPlayStoreSubscriptionI(final AdjustPlayStoreSubscription subscription) {
         if (!checkActivityStateI(activityState)) { return; }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
