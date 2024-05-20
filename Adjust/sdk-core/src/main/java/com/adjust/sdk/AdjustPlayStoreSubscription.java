@@ -10,7 +10,6 @@ public class AdjustPlayStoreSubscription {
     private String orderId;         // [M] transaction_id
     private String signature;       // [M] receipt
     private String purchaseToken;   // [M] purchase_token
-    private String billingStore;    // [M] billing_store
     private long purchaseTime;      // [O] transaction_date
     private Map<String, String> callbackParameters; // [O] callback_params
     private Map<String, String> partnerParameters;  // [O] partner_params
@@ -32,7 +31,6 @@ public class AdjustPlayStoreSubscription {
 
         // default values
         this.purchaseTime = -1;
-        this.billingStore = "GooglePlay";
     }
 
     long getPrice() {
@@ -57,10 +55,6 @@ public class AdjustPlayStoreSubscription {
 
     String getSignature() {
         return signature;
-    }
-
-    String getBillingStore() {
-        return billingStore;
     }
 
     String getPurchaseToken() {

@@ -1092,7 +1092,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
 
         // subscription specific parameters
-        PackageBuilder.addString(parameters, "billing_store", subscription.getBillingStore());
         PackageBuilder.addString(parameters, "currency", subscription.getCurrency());
         PackageBuilder.addString(parameters, "product_id", subscription.getSku());
         PackageBuilder.addString(parameters, "purchase_token", subscription.getPurchaseToken());
