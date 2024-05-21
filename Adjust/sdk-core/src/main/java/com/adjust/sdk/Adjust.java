@@ -91,13 +91,13 @@ public class Adjust {
      *
      * @return boolean indicating whether SDK is enabled or not
      */
-    public static void isEnabled(final OnIsEnabledListener isEnabledListener) {
+    public static void isEnabled(final OnIsEnabledListener isEnabledListener, final Context context) {
         if (isEnabledListener == null) {
             AdjustFactory.getLogger().error("Callback for getting isEnabled can't be null");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.isEnabled(isEnabledListener);
+        adjustInstance.isEnabled(isEnabledListener, context);
     }
 
     /**
