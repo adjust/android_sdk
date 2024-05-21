@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     btnEnableDisableSDK.setText(R.string.txt_enable_sdk);
                 }
             }
-        });
+        }, getApplicationContext());
 
     }
 
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                     ((Button) v).setText(R.string.txt_disable_sdk);
                 }
             }
-        });
+        }, getApplicationContext());
 
     }
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
             }
-        });
+        }, getApplicationContext());
 
     }
 

@@ -9,6 +9,7 @@
 
 package com.adjust.sdk;
 
+import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ENCODING;
 
 import android.content.Context;
@@ -720,5 +721,18 @@ public class Util {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeMeta
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerMeta)
                 && Util.equalBoolean(referrerDetails.isClick, activityState.isClickMeta);
+    }
+
+    public static boolean isEnabledFromActivityStateFile(final Context context) {
+        ActivityState activityState = Util.readObject(
+                context,
+                Constants.ACTIVITY_STATE_FILENAME,
+                "Activity state",
+                ActivityState.class);
+        if (activityState == null) {
+            return true;
+        } else {
+            return activityState.enabled;
+        }
     }
 }

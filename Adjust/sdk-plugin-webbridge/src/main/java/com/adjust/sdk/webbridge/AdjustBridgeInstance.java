@@ -478,7 +478,7 @@ public class AdjustBridgeInstance {
             public void onIsEnabledRead(boolean isEnabled) {
                 AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
             }
-        });
+        }, application.getApplicationContext());
     }
 
 //    @JavascriptInterface
