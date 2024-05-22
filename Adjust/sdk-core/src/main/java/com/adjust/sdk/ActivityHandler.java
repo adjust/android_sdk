@@ -814,10 +814,6 @@ public class ActivityHandler implements IActivityHandler {
 
         deviceInfo = new DeviceInfo(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Event buffering is enabled");
-        }
-
         deviceInfo.reloadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
         if (deviceInfo.playAdId == null) {
             if (!Util.canReadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled)) {
@@ -1471,11 +1467,7 @@ public class ActivityHandler implements IActivityHandler {
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", eventPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
 
         // if it is in the background and it can send, start the background timer
         if (adjustConfig.sendInBackground && internalState.isInBackground()) {
@@ -2036,11 +2028,8 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         resumeSendingI();
-
-        // if event buffering is not enabled
-        if (!adjustConfig.eventBufferingEnabled ||
-                // or if it's the first launch and it hasn't received the session response
-                (internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()))
+        // if it's the first launch and it hasn't received the session response
+        if ((internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()))
         {
             // try to send
             packageHandler.sendFirstPackage();
@@ -2304,11 +2293,7 @@ public class ActivityHandler implements IActivityHandler {
         // If push token was cached, remove it.
         SharedPreferencesManager.getDefaultInstance(getContext()).removePushToken();
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", infoPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
     }
 
     private void gdprForgetMeI() {
@@ -2329,11 +2314,7 @@ public class ActivityHandler implements IActivityHandler {
         // If GDPR choice was cached, remove it.
         SharedPreferencesManager.getDefaultInstance(getContext()).removeGdprForgetMe();
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", gdprPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
     }
 
     private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
@@ -2354,11 +2335,7 @@ public class ActivityHandler implements IActivityHandler {
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
         packageHandler.addPackage(activityPackage);
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
     }
 
     private void trackMeasurementConsentI(final boolean consentMeasurement) {
@@ -2378,11 +2355,7 @@ public class ActivityHandler implements IActivityHandler {
                 packageBuilder.buildMeasurementConsentPackage(consentMeasurement);
         packageHandler.addPackage(activityPackage);
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
     }
 
     private void trackAdRevenueI(AdjustAdRevenue adjustAdRevenue) {
@@ -2506,11 +2479,7 @@ public class ActivityHandler implements IActivityHandler {
 
         writeActivityStateI();
 
-        if (adjustConfig.eventBufferingEnabled) {
-            logger.info("Buffered event %s", activityPackage.getSuffix());
-        } else {
-            packageHandler.sendFirstPackage();
-        }
+        packageHandler.sendFirstPackage();
     }
 
     private void gotOptOutResponseI() {

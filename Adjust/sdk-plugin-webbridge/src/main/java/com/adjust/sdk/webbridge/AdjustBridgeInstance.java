@@ -141,7 +141,6 @@ public class AdjustBridgeInstance {
             Object appTokenField = jsonAdjustConfig.get("appToken");
             Object environmentField = jsonAdjustConfig.get("environment");
             Object allowSuppressLogLevelField = jsonAdjustConfig.get("allowSuppressLogLevel");
-            Object eventBufferingEnabledField = jsonAdjustConfig.get("eventBufferingEnabled");
             Object sendInBackgroundField = jsonAdjustConfig.get("sendInBackground");
             Object logLevelField = jsonAdjustConfig.get("logLevel");
             Object sdkPrefixField = jsonAdjustConfig.get("sdkPrefix");
@@ -177,12 +176,6 @@ public class AdjustBridgeInstance {
 
             if (!adjustConfig.isValid()) {
                 return;
-            }
-
-            // Event buffering
-            Boolean eventBufferingEnabled = AdjustBridgeUtil.fieldToBoolean(eventBufferingEnabledField);
-            if (eventBufferingEnabled != null) {
-                adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
             }
 
             // Send in the background

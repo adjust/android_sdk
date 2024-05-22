@@ -17,7 +17,6 @@ public class AdjustConfig {
     String environment;
     String processName;
     String sdkPrefix;
-    boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
     Class deepLinkComponent;
@@ -81,18 +80,10 @@ public class AdjustConfig {
         this.environment = environment;
 
         // default values
-        this.eventBufferingEnabled = false;
         this.sendInBackground = false;
         this.preinstallTrackingEnabled = false;
     }
 
-    public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
-        if (eventBufferingEnabled == null) {
-            this.eventBufferingEnabled = false;
-            return;
-        }
-        this.eventBufferingEnabled = eventBufferingEnabled;
-    }
 
     public void setSendInBackground(boolean sendInBackground) {
         this.sendInBackground = sendInBackground;
@@ -225,10 +216,6 @@ public class AdjustConfig {
 
     public String getSdkPrefix() {
         return sdkPrefix;
-    }
-
-    public boolean isEventBufferingEnabled() {
-        return eventBufferingEnabled;
     }
 
     public String getDefaultTracker() {
