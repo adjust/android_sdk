@@ -123,12 +123,12 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "setReferrer"                    : this.setReferrer(command.params); break;
         case "setOfflineMode"                 : this.setOfflineMode(command.params); break;
         case "sendFirstPackages"              : this.sendFirstPackages(command.params); break;
-        case "addSessionCallbackParameter"    : this.addSessionCallbackParameter(command.params); break;
-        case "addSessionPartnerParameter"     : this.addSessionPartnerParameter(command.params); break;
-        case "removeSessionCallbackParameter" : this.removeSessionCallbackParameter(command.params); break;
-        case "removeSessionPartnerParameter"  : this.removeSessionPartnerParameter(command.params); break;
-        case "resetSessionCallbackParameters" : this.resetSessionCallbackParameters(command.params); break;
-        case "resetSessionPartnerParameters"  : this.resetSessionPartnerParameters(command.params); break;
+        case "addGlobalCallbackParameter"     : this.addGlobalCallbackParameter(command.params); break;
+        case "addGlobalPartnerParameter"      : this.addGlobalPartnerParameter(command.params); break;
+        case "removeGlobalCallbackParameter"  : this.removeGlobalCallbackParameter(command.params); break;
+        case "removeGlobalPartnerParameter"   : this.removeGlobalPartnerParameter(command.params); break;
+        case "removeGlobalCallbackParameters" : this.removeGlobalCallbackParameters(command.params); break;
+        case "removeGlobalPartnerParameters"  : this.removeGlobalPartnerParameters(command.params); break;
         case "setPushToken"                   : this.setPushToken(command.params); break;
         case "openDeeplink"                   : this.openDeeplink(command.params); break;
         case "sendReferrer"                   : this.sendReferrer(command.params); break;
@@ -562,54 +562,54 @@ AdjustCommandExecutor.prototype.measurementConsent = function(params) {
     Adjust.trackMeasurementConsent(isEnabled);
 }
 
-AdjustCommandExecutor.prototype.addSessionCallbackParameter = function(params) {
+AdjustCommandExecutor.prototype.addGlobalCallbackParameter = function(params) {
     var list = getValueFromKey(params, "KeyValue");
 
     for (var i = 0; i < list.length; i = i+2){
         var key = list[i];
         var value = list[i+1];
 
-        Adjust.addSessionCallbackParameter(key, value);
+        Adjust.addGlobalCallbackParameter(key, value);
     }
 };
 
-AdjustCommandExecutor.prototype.addSessionPartnerParameter = function(params) {
+AdjustCommandExecutor.prototype.addGlobalPartnerParameter = function(params) {
     var list = getValueFromKey(params, "KeyValue");
 
     for (var i = 0; i < list.length; i = i+2){
         var key = list[i];
         var value = list[i+1];
 
-        Adjust.addSessionPartnerParameter(key, value);
+        Adjust.addGlobalPartnerParameter(key, value);
     }
 };
 
-AdjustCommandExecutor.prototype.removeSessionCallbackParameter = function(params) {
+AdjustCommandExecutor.prototype.removeGlobalCallbackParameter = function(params) {
     if ('key' in params) {
         var list = getValueFromKey(params, 'key');
 
         for (var i = 0; i < list.length; i++) {
-            Adjust.removeSessionCallbackParameter(list[i]);
+            Adjust.removeGlobalCallbackParameter(list[i]);
         }
     }
 };
 
-AdjustCommandExecutor.prototype.removeSessionPartnerParameter = function(params) {
+AdjustCommandExecutor.prototype.removeGlobalPartnerParameter = function(params) {
     if ('key' in params) {
         var list = getValueFromKey(params, 'key');
 
         for (var i = 0; i < list.length; i++) {
-            Adjust.removeSessionPartnerParameter(list[i]);
+            Adjust.removeGlobalPartnerParameter(list[i]);
         }
     }
 };
 
-AdjustCommandExecutor.prototype.resetSessionCallbackParameters = function(params) {
-    Adjust.resetSessionCallbackParameters();
+AdjustCommandExecutor.prototype.removeGlobalCallbackParameters = function(params) {
+    Adjust.removeGlobalCallbackParameters();
 };
 
-AdjustCommandExecutor.prototype.resetSessionPartnerParameters = function(params) {
-    Adjust.resetSessionPartnerParameters();
+AdjustCommandExecutor.prototype.removeGlobalPartnerParameters = function(params) {
+    Adjust.removeSessionPartnerParameters();
 };
 
 AdjustCommandExecutor.prototype.setPushToken = function(params) {

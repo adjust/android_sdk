@@ -570,7 +570,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void resetGlobalCallbackParameters() {
+    public void removeGlobalCallbackParameters() {
         if (!isInitialized()) {
             return;
         }
@@ -578,7 +578,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void resetGlobalPartnerParameters() {
+    public void removeGlobalPartnerParameters() {
         if (!isInitialized()) {
             return;
         }

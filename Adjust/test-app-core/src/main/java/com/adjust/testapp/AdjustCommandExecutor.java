@@ -74,12 +74,12 @@ public class AdjustCommandExecutor {
                 case "setReferrer": setReferrer(); break;
                 case "setOfflineMode": setOfflineMode(); break;
                 case "sendFirstPackages": sendFirstPackages(); break;
-                case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
-                case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
-                case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
-                case "removeSessionPartnerParameter": removeSessionPartnerParameter(); break;
-                case "resetSessionCallbackParameters": resetSessionCallbackParameters(); break;
-                case "resetSessionPartnerParameters": resetSessionPartnerParameters(); break;
+                case "addGlobalCallbackParameter": addGlobalCallbackParameter(); break;
+                case "addGlobalPartnerParameter": addGlobalPartnerParameter(); break;
+                case "removeGlobalCallbackParameter": removeGlobalCallbackParameter(); break;
+                case "removeGlobalPartnerParameter": removeGlobalPartnerParameter(); break;
+                case "removeGlobalCallbackParameters": removeGlobalCallbackParameters(); break;
+                case "removeGlobalPartnerParameters": removeGlobalPartnerParameters(); break;
                 case "setPushToken": setPushToken(); break;
                 // case "teardown": teardown(); break;
                 case "openDeeplink": openDeeplink(); break;
@@ -561,7 +561,7 @@ public class AdjustCommandExecutor {
         Adjust.sendFirstPackages();
     }
 
-    private void addSessionCallbackParameter() {
+    private void addGlobalCallbackParameter() {
         if (command.containsParameter("KeyValue")) {
             List<String> keyValuePairs = command.parameters.get("KeyValue");
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
@@ -572,7 +572,7 @@ public class AdjustCommandExecutor {
         }
     }
 
-    private void addSessionPartnerParameter() {
+    private void addGlobalPartnerParameter() {
         if (command.containsParameter("KeyValue")) {
             List<String> keyValuePairs = command.parameters.get("KeyValue");
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
@@ -583,7 +583,7 @@ public class AdjustCommandExecutor {
         }
     }
 
-    private void removeSessionCallbackParameter() {
+    private void removeGlobalCallbackParameter() {
         if (command.containsParameter("key")) {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
@@ -593,7 +593,7 @@ public class AdjustCommandExecutor {
         }
     }
 
-    private void removeSessionPartnerParameter() {
+    private void removeGlobalPartnerParameter() {
         if (command.containsParameter("key")) {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
@@ -603,11 +603,11 @@ public class AdjustCommandExecutor {
         }
     }
 
-    private void resetSessionCallbackParameters() {
+    private void removeGlobalCallbackParameters() {
         Adjust.removeGlobalCallbackParameters();
     }
 
-    private void resetSessionPartnerParameters() {
+    private void removeGlobalPartnerParameters() {
         Adjust.removeGlobalPartnerParameters();
     }
 
