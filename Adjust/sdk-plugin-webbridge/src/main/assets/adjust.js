@@ -81,12 +81,6 @@ var Adjust = {
         }
     },
 
-    sendFirstPackages: function() {
-        if (AdjustBridge) {
-            AdjustBridge.sendFirstPackages();
-        }
-    },
-
     addGlobalCallbackParameter: function(key, value) {
         if (AdjustBridge) {
             AdjustBridge.addGlobalCallbackParameter(key, value);

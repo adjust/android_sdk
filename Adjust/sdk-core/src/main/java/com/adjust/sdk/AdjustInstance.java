@@ -282,16 +282,6 @@ public class AdjustInstance {
     }
 
     /**
-     * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
-     */
-    public void sendFirstPackages() {
-        if (!checkActivityHandler("sendFirstPackages")) {
-            return;
-        }
-        activityHandler.sendFirstPackages();
-    }
-
-    /**
      * Called to add global callback parameter that will be sent with each session and event.
      *
      * @param key   Global callback parameter key
@@ -408,19 +398,6 @@ public class AdjustInstance {
         }
         activityHandler.teardown();
         activityHandler = null;
-    }
-
-    /**
-     * Called to set user's push notifications token.
-     *
-     * @param token Push notifications token
-     */
-    public void setPushToken(final String token) {
-        if (!checkActivityHandler("push token", true)) {
-            this.pushToken = token;
-        } else {
-            activityHandler.setPushToken(token, false);
-        }
     }
 
     /**

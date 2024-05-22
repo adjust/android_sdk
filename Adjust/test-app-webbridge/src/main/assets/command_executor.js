@@ -122,7 +122,6 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "setEnabled"                     : this.setEnabled(command.params); break;
         case "setReferrer"                    : this.setReferrer(command.params); break;
         case "setOfflineMode"                 : this.setOfflineMode(command.params); break;
-        case "sendFirstPackages"              : this.sendFirstPackages(command.params); break;
         case "addGlobalCallbackParameter"     : this.addGlobalCallbackParameter(command.params); break;
         case "addGlobalPartnerParameter"      : this.addGlobalPartnerParameter(command.params); break;
         case "removeGlobalCallbackParameter"  : this.removeGlobalCallbackParameter(command.params); break;
@@ -296,12 +295,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
             var externalDeviceId = getFirstParameterValue(params, 'externalDeviceId');
             adjustConfig.setExternalDeviceId(externalDeviceId);
         }
-
-    if ('delayStart' in params) {
-        var delayStartS = getFirstParameterValue(params, 'delayStart');
-        var delayStart = parseFloat(delayStartS);
-        adjustConfig.setDelayStart(delayStart);
-    }
 
     if ('needsCost' in params) {
         var needsCostS = getFirstParameterValue(params, 'needsCost');
@@ -517,10 +510,6 @@ AdjustCommandExecutor.prototype.setEnabled = function(params) {
 AdjustCommandExecutor.prototype.setOfflineMode = function(params) {
     var enabled = getFirstParameterValue(params, "enabled") == 'true';
     Adjust.setOfflineMode(enabled);
-};
-
-AdjustCommandExecutor.prototype.sendFirstPackages = function(params) {
-    Adjust.sendFirstPackages();
 };
 
 AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {

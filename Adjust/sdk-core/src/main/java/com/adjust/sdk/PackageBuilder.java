@@ -90,8 +90,8 @@ public class PackageBuilder {
         this.playStoreKidsAppEnabled = sharedPreferencesManager.getPlayStoreKidsApp();
     }
 
-    ActivityPackage buildSessionPackage(boolean isInDelay) {
-        Map<String, String> parameters = getSessionParameters(isInDelay);
+    ActivityPackage buildSessionPackage() {
+        Map<String, String> parameters = getSessionParameters();
         ActivityPackage sessionPackage = getDefaultActivityPackage(ActivityKind.SESSION);
         sessionPackage.setPath("/session");
         sessionPackage.setSuffix("");
@@ -100,18 +100,16 @@ public class PackageBuilder {
         return sessionPackage;
     }
 
-    ActivityPackage buildEventPackage(AdjustEvent event, boolean isInDelay) {
-        Map<String, String> parameters = getEventParameters(event, isInDelay);
+    ActivityPackage buildEventPackage(AdjustEvent event) {
+        Map<String, String> parameters = getEventParameters(event);
         ActivityPackage eventPackage = getDefaultActivityPackage(ActivityKind.EVENT);
         eventPackage.setPath("/event");
         eventPackage.setSuffix(getEventSuffix(event));
 
         eventPackage.setParameters(parameters);
 
-        if (isInDelay) {
-            eventPackage.setCallbackParameters(event.callbackParameters);
-            eventPackage.setPartnerParameters(event.partnerParameters);
-        }
+        eventPackage.setCallbackParameters(event.callbackParameters);
+        eventPackage.setPartnerParameters(event.partnerParameters);
 
         return eventPackage;
     }
@@ -187,24 +185,22 @@ public class PackageBuilder {
         return activityPackage;
     }
 
-    ActivityPackage buildAdRevenuePackage(AdjustAdRevenue adjustAdRevenue, boolean isInDelay) {
-        Map<String, String> parameters = getAdRevenueParameters(adjustAdRevenue, isInDelay);
+    ActivityPackage buildAdRevenuePackage(AdjustAdRevenue adjustAdRevenue) {
+        Map<String, String> parameters = getAdRevenueParameters(adjustAdRevenue);
         ActivityPackage adRevenuePackage = getDefaultActivityPackage(ActivityKind.AD_REVENUE);
         adRevenuePackage.setPath("/ad_revenue");
         adRevenuePackage.setSuffix("");
 
         adRevenuePackage.setParameters(parameters);
 
-        if (isInDelay) {
-            adRevenuePackage.setCallbackParameters(adjustAdRevenue.callbackParameters);
-            adRevenuePackage.setPartnerParameters(adjustAdRevenue.partnerParameters);
-        }
+        adRevenuePackage.setCallbackParameters(adjustAdRevenue.callbackParameters);
+        adRevenuePackage.setPartnerParameters(adjustAdRevenue.partnerParameters);
 
         return adRevenuePackage;
     }
 
-    ActivityPackage buildSubscriptionPackage(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
-        Map<String, String> parameters = getSubscriptionParameters(subscription, isInDelay);
+    ActivityPackage buildSubscriptionPackage(AdjustPlayStoreSubscription subscription) {
+        Map<String, String> parameters = getSubscriptionParameters(subscription);
         ActivityPackage subscriptionPackage = getDefaultActivityPackage(ActivityKind.SUBSCRIPTION);
         subscriptionPackage.setPath("/v2/purchase");
         subscriptionPackage.setSuffix("");
@@ -224,7 +220,7 @@ public class PackageBuilder {
         return purchaseVerificationPackage;
     }
 
-    private Map<String, String> getSessionParameters(boolean isInDelay) {
+    private Map<String, String> getSessionParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
@@ -240,10 +236,8 @@ public class PackageBuilder {
         }
 
         // Callback and partner parameters.
-        if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
-            PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
-        }
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
@@ -314,7 +308,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    public Map<String, String> getEventParameters(AdjustEvent event, boolean isInDelay) {
+    public Map<String, String> getEventParameters(AdjustEvent event) {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
@@ -330,10 +324,8 @@ public class PackageBuilder {
         }
 
         // Callback and partner parameters.
-        if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, event.callbackParameters, "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, event.partnerParameters, "Partner"));
-        }
+        PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, event.callbackParameters, "Callback"));
+        PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, event.partnerParameters, "Partner"));
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
@@ -835,7 +827,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue, boolean isInDelay) {
+    private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue) {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
@@ -851,10 +843,8 @@ public class PackageBuilder {
         }
 
         // Callback and partner parameters.
-        if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
-        }
+        PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"));
+        PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
@@ -932,7 +922,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription, boolean isInDelay) {
+    private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription) {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
@@ -966,10 +956,8 @@ public class PackageBuilder {
         }
 
         // Callback and partner parameters.
-        if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, subscription.getPartnerParameters(), "Partner"));
-        }
+        PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"));
+        PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, subscription.getPartnerParameters(), "Partner"));
 
         // Rest of the parameters.
         PackageBuilder.addString(parameters, "api_level", deviceInfo.apiLevel);

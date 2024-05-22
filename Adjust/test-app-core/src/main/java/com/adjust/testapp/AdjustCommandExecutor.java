@@ -73,7 +73,6 @@ public class AdjustCommandExecutor {
                 case "setEnabled": setEnabled(); break;
                 case "setReferrer": setReferrer(); break;
                 case "setOfflineMode": setOfflineMode(); break;
-                case "sendFirstPackages": sendFirstPackages(); break;
                 case "addGlobalCallbackParameter": addGlobalCallbackParameter(); break;
                 case "addGlobalPartnerParameter": addGlobalPartnerParameter(); break;
                 case "removeGlobalCallbackParameter": removeGlobalCallbackParameter(); break;
@@ -277,12 +276,6 @@ public class AdjustCommandExecutor {
 //            adjustConfig.setExternalDeviceId(externalDeviceId);
 //        }
 
-
-        if (command.containsParameter("delayStart")) {
-            String delayStartS = command.getFirstParameterValue("delayStart");
-            double delayStart = Double.parseDouble(delayStartS);
-            adjustConfig.setDelayStart(delayStart);
-        }
 
         if (command.containsParameter("needsCost")) {
             String needsCostS = command.getFirstParameterValue("needsCost");
@@ -555,10 +548,6 @@ public class AdjustCommandExecutor {
     private void setOfflineMode() {
         Boolean enabled = Boolean.valueOf(command.getFirstParameterValue("enabled"));
         Adjust.setOfflineMode(enabled);
-    }
-
-    private void sendFirstPackages() {
-        Adjust.sendFirstPackages();
     }
 
     private void addGlobalCallbackParameter() {
