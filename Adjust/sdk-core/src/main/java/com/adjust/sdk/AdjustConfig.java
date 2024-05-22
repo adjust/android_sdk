@@ -27,7 +27,6 @@ public class AdjustConfig {
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
     OnDeeplinkResponseListener onDeeplinkResponseListener;
     boolean sendInBackground;
-    Double delayStart;
     AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
     String pushToken;
@@ -141,15 +140,6 @@ public class AdjustConfig {
 
     public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
         this.onDeeplinkResponseListener = onDeeplinkResponseListener;
-    }
-
-    public void setDelayStart(double delayStart) {
-        this.delayStart = delayStart;
-    }
-
-    @Deprecated
-    public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {
-        logger.warn("This method has been deprecated and shouldn't be used anymore");
     }
 
     public void setExternalDeviceId(String externalDeviceId) {
@@ -275,10 +265,6 @@ public class AdjustConfig {
 
     public boolean isSendInBackground() {
         return sendInBackground;
-    }
-
-    public Double getDelayStart() {
-        return delayStart;
     }
 
     public AdjustInstance.PreLaunchActions getPreLaunchActions() {

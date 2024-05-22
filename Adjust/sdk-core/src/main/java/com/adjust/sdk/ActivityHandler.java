@@ -68,7 +68,6 @@ public class ActivityHandler implements IActivityHandler {
     private ILogger logger;
     private TimerCycle foregroundTimer;
     private TimerOnce backgroundTimer;
-    private TimerOnce delayStartTimer;
     private InternalState internalState;
     private String basePath;
     private String gdprPath;
@@ -92,9 +91,6 @@ public class ActivityHandler implements IActivityHandler {
         }
         if (foregroundTimer != null) {
             foregroundTimer.teardown();
-        }
-        if (delayStartTimer != null) {
-            delayStartTimer.teardown();
         }
         if (executor != null) {
             executor.teardown();
@@ -129,7 +125,6 @@ public class ActivityHandler implements IActivityHandler {
         foregroundTimer = null;
         executor = null;
         backgroundTimer = null;
-        delayStartTimer = null;
         internalState = null;
         deviceInfo = null;
         adjustConfig = null;
@@ -152,7 +147,6 @@ public class ActivityHandler implements IActivityHandler {
         boolean enabled;
         boolean offline;
         boolean background;
-        boolean delayStart;
         boolean updatePackages;
         boolean firstLaunch;
         boolean sessionResponseProcessed;
@@ -181,14 +175,6 @@ public class ActivityHandler implements IActivityHandler {
 
         public boolean isInForeground() {
             return !background;
-        }
-
-        public boolean isInDelayedStart() {
-            return delayStart;
-        }
-
-        public boolean isNotInDelayedStart() {
-            return !delayStart;
         }
 
         public boolean itHasToUpdatePackages() {
@@ -237,8 +223,6 @@ public class ActivityHandler implements IActivityHandler {
         internalState.offline = adjustConfig.startOffline;
         // in the background by default
         internalState.background = true;
-        // delay start not configured by default
-        internalState.delayStart = false;
         // does not need to update packages by default
         internalState.updatePackages = false;
         // does not have the session response by default
@@ -327,8 +311,6 @@ public class ActivityHandler implements IActivityHandler {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                delayStartI();
-
                 stopBackgroundTimerI();
 
                 startForegroundTimerI();
@@ -586,16 +568,6 @@ public class ActivityHandler implements IActivityHandler {
             @Override
             public void run() {
                 launchPurchaseVerificationResponseTasksI(purchaseVerificationResponseData);
-            }
-        });
-    }
-
-    @Override
-    public void sendFirstPackages () {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                sendFirstPackagesI();
             }
         });
     }
@@ -950,21 +922,6 @@ public class ActivityHandler implements IActivityHandler {
                     backgroundTimerFired();
                 }
             }, BACKGROUND_TIMER_NAME);
-        }
-
-        // configure delay start timer
-        if (internalState.hasFirstSdkStartNotOcurred() &&
-                adjustConfig.delayStart != null &&
-                adjustConfig.delayStart > 0.0)
-        {
-            logger.info("Delay start configured");
-            internalState.delayStart = true;
-            delayStartTimer = new TimerOnce(new Runnable() {
-                @Override
-                public void run() {
-                    sendFirstPackages();
-                }
-            }, DELAY_START_TIMER_NAME);
         }
 
         IActivityPackageSender packageHandlerActivitySender =
@@ -1523,7 +1480,7 @@ public class ActivityHandler implements IActivityHandler {
 
         PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
         eventBuilder.internalState = internalState;
-        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, internalState.isInDelayedStart());
+        ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
 
         if (adjustConfig.eventBufferingEnabled) {
@@ -2163,7 +2120,7 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
                 globalParameters, now);
         builder.internalState = internalState;
-        ActivityPackage sessionPackage = builder.buildSessionPackage(internalState.isInDelayedStart());
+        ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -2227,63 +2184,6 @@ public class ActivityHandler implements IActivityHandler {
         if (toSendI()) {
             packageHandler.sendFirstPackage();
         }
-    }
-
-    private void delayStartI() {
-        // it's not configured to start delayed or already finished
-        if (internalState.isNotInDelayedStart()) {
-            return;
-        }
-
-        // the delay has already started
-        if (isToUpdatePackagesI()) {
-            return;
-        }
-
-        // check against max start delay
-        double delayStartSeconds = adjustConfig.delayStart != null ? adjustConfig.delayStart : 0.0;
-        long maxDelayStartMilli = AdjustFactory.getMaxDelayStart();
-
-        long delayStartMilli = (long)(delayStartSeconds * 1000);
-        if (delayStartMilli > maxDelayStartMilli) {
-            double maxDelayStartSeconds = maxDelayStartMilli / 1000;
-            String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
-            String maxDelayStartFormatted = Util.SecondsDisplayFormat.format(maxDelayStartSeconds);
-
-            logger.warn("Delay start of %s seconds bigger than max allowed value of %s seconds", delayStartFormatted, maxDelayStartFormatted);
-            delayStartMilli = maxDelayStartMilli;
-            delayStartSeconds = maxDelayStartSeconds;
-        }
-
-        String delayStartFormatted = Util.SecondsDisplayFormat.format(delayStartSeconds);
-        logger.info("Waiting %s seconds before starting first session", delayStartFormatted);
-
-        delayStartTimer.startIn(delayStartMilli);
-
-        internalState.updatePackages = true;
-
-        if (activityState != null) {
-            activityState.updatePackages = true;
-            writeActivityStateI();
-        }
-    }
-
-    private void sendFirstPackagesI() {
-        if (internalState.isNotInDelayedStart()) {
-            logger.info("Start delay expired or never configured");
-            return;
-        }
-
-        // update packages in queue
-        updatePackagesI();
-        // no longer is in delay start
-        internalState.delayStart = false;
-        // cancel possible still running timer if it was called by user
-        delayStartTimer.cancel();
-        // and release timer
-        delayStartTimer = null;
-        // update the status and try to send first package
-        updateHandlersStatusAndSendI();
     }
 
     private void updatePackagesI() {
@@ -2527,7 +2427,7 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
         packageBuilder.internalState = internalState;
 
-        ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue, internalState.isInDelayedStart());
+        ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue);
         packageHandler.addPackage(adRevenuePackage);
         packageHandler.sendFirstPackage();
     }
@@ -2542,7 +2442,7 @@ public class ActivityHandler implements IActivityHandler {
         PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
         packageBuilder.internalState = internalState;
 
-        ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
+        ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription);
         packageHandler.addPackage(subscriptionPackage);
         packageHandler.sendFirstPackage();
     }
@@ -2826,8 +2726,7 @@ public class ActivityHandler implements IActivityHandler {
         }
         // other handlers are paused if either:
         return internalState.isOffline()    ||      // it's offline
-                !isEnabledI()               ||      // is disabled
-                internalState.isInDelayedStart();   // is in delayed start
+                !isEnabledI();                      // is disabled
     }
 
     private boolean toSendI() {

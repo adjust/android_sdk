@@ -156,7 +156,6 @@ public class AdjustBridgeInstance {
             Object sessionFailureCallbackNameField = jsonAdjustConfig.get("sessionFailureCallbackName");
             Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
-            Object delayStartField = jsonAdjustConfig.get("delayStart");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
@@ -311,12 +310,6 @@ public class AdjustBridgeInstance {
                         return shouldDeferredDeeplinkBeLaunched;
                     }
                 });
-            }
-
-            // Delay start
-            Double delayStart = AdjustBridgeUtil.fieldToDouble(delayStartField);
-            if (delayStart != null) {
-                adjustConfig.setDelayStart(delayStart);
             }
 
             // Check Pixel Default Event Token
@@ -527,14 +520,6 @@ public class AdjustBridgeInstance {
         if (isOffline != null) {
             Adjust.setOfflineMode(isOffline);
         }
-    }
-
-    @JavascriptInterface
-    public void sendFirstPackages() {
-        if (!isInitialized()) {
-            return;
-        }
-        Adjust.sendFirstPackages();
     }
 
     @JavascriptInterface

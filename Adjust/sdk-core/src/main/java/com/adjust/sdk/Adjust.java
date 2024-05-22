@@ -163,14 +163,6 @@ public class Adjust {
     }
 
     /**
-     * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
-     */
-    public static void sendFirstPackages() {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendFirstPackages();
-    }
-
-    /**
      * Called to add global callback parameter that will be sent with each session and event.
      *
      * @param key   Global callback parameter key
@@ -226,17 +218,6 @@ public class Adjust {
     public static void removeGlobalPartnerParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.removeGlobalPartnerParameters();
-    }
-
-    /**
-     * Called to set user's push notifications token.
-     *
-     * @param token Push notifications token
-     * @deprecated use {@link #setPushToken(String, Context)} instead.
-     */
-    public static void setPushToken(String token) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setPushToken(token);
     }
 
     /**
