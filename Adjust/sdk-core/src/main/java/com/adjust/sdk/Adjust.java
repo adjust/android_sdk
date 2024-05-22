@@ -441,6 +441,17 @@ public class Adjust {
     }
 
     /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event     AdjustEvent object to be tracked
+     * @param callback  Callback to obtain verification results
+     */
+    public static void verifyAndTrack(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.verifyAndTrack(event, callback);
+    }
+
+    /**
      * Used for testing purposes only. Do NOT use this method.
      *
      * @param testOptions Adjust integration tests options

@@ -784,6 +784,26 @@ public class AdjustInstance {
     }
 
     /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event    AdjustEvent to be tracked
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyAndTrack(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyAndTrack")) {
+            if (callback != null) {
+                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                        "not_verified",
+                        100,
+                        "SDK needs to be initialized before making purchase verification request");
+                callback.onVerificationFinished(result);
+            }
+            return;
+        }
+        activityHandler.verifyAndTrack(event, callback);
+    }
+
+    /**
      * Used for testing purposes only. Do NOT use this method.
      *
      * @param testOptions Adjust integration tests options
