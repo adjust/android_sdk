@@ -165,7 +165,7 @@ public class AdjustBridgeInstance {
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
-            Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
+            Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
@@ -350,9 +350,9 @@ public class AdjustBridgeInstance {
             }
 
             // read device info once
-            Boolean readDeviceInfoOnceEnabled = AdjustBridgeUtil.fieldToBoolean(readDeviceInfoOnceEnabledField);
-            if (readDeviceInfoOnceEnabled != null) {
-                adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
+            Boolean shouldReadDeviceIdsOnce = AdjustBridgeUtil.fieldToBoolean(shouldReadDeviceIdsOnceField);
+            if (shouldReadDeviceIdsOnce != null) {
+                adjustConfig.readDeviceIdsOnce(shouldReadDeviceIdsOnce);
             }
 
             Integer eventDeduplicationIdsMaxSize = AdjustBridgeUtil.fieldToInteger(eventDeduplicationIdsMaxSizeField);
