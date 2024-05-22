@@ -18,8 +18,6 @@ public interface IPackageHandler {
 
     void resumeSending();
 
-    void updatePackages(GlobalParameters globalParameters);
-
     void flush();
 
     void teardown();
