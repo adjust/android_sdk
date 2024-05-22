@@ -11,6 +11,7 @@ import android.widget.Toast
 
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustEvent
+import com.adjust.sdk.OnIsEnabledListener
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,11 +32,13 @@ class MainActivity : AppCompatActivity() {
     public override fun onResume() {
         super.onResume()
 
-        if (Adjust.isEnabled()) {
-            btnEnableDisableSDK!!.setText(R.string.txt_disable_sdk)
-        } else {
-            btnEnableDisableSDK!!.setText(R.string.txt_enable_sdk)
-        }
+        Adjust.isEnabled(this, OnIsEnabledListener {
+            if (it) {
+                btnEnableDisableSDK!!.setText(R.string.txt_disable_sdk)
+            } else {
+                btnEnableDisableSDK!!.setText(R.string.txt_enable_sdk)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -103,23 +106,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onEnableDisableSDKClick(v: View) {
-        if (Adjust.isEnabled()) {
-            Adjust.setEnabled(false)
-            (v as Button).setText(R.string.txt_enable_sdk)
-        } else {
-            Adjust.setEnabled(true)
-            (v as Button).setText(R.string.txt_disable_sdk)
-        }
+        Adjust.isEnabled(this, OnIsEnabledListener {
+            if (it) {
+                Adjust.setEnabled(false)
+                (v as Button).setText(R.string.txt_enable_sdk)
+            } else {
+                Adjust.setEnabled(true)
+                (v as Button).setText(R.string.txt_disable_sdk)
+            }
+        })
     }
 
     fun onIsSDKEnabledClick(v: View) {
-        if (Adjust.isEnabled()) {
-            Toast.makeText(applicationContext, R.string.txt_sdk_is_enabled,
-                    Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(applicationContext, R.string.txt_sdk_is_disabled,
-                    Toast.LENGTH_SHORT).show()
-        }
+        Adjust.isEnabled(this,OnIsEnabledListener {
+            if (it) {
+                Toast.makeText(applicationContext, R.string.txt_sdk_is_enabled,
+                        Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(applicationContext, R.string.txt_sdk_is_disabled,
+                        Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     fun onFireIntentClick(v: View) {
