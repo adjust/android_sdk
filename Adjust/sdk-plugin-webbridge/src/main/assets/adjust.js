@@ -87,39 +87,39 @@ var Adjust = {
         }
     },
 
-    addSessionCallbackParameter: function(key, value) {
+    addGlobalCallbackParameter: function(key, value) {
         if (AdjustBridge) {
-            AdjustBridge.addSessionCallbackParameter(key, value);
+            AdjustBridge.addGlobalCallbackParameter(key, value);
         }
     },
 
-    addSessionPartnerParameter: function(key, value) {
+    addGlobalPartnerParameter: function(key, value) {
         if (AdjustBridge) {
-            AdjustBridge.addSessionPartnerParameter(key, value);
+            AdjustBridge.addGlobalPartnerParameter(key, value);
         }
     },
 
-    removeSessionCallbackParameter: function(key) {
+    removeGlobalCallbackParameter: function(key) {
         if (AdjustBridge) {
-            AdjustBridge.removeSessionCallbackParameter(key);
+            AdjustBridge.removeGlobalCallbackParameter(key);
         }
     },
 
-    removeSessionPartnerParameter: function(key) {
+    removeGlobalPartnerParameter: function(key) {
         if (AdjustBridge) {
-            AdjustBridge.removeSessionPartnerParameter(key);
+            AdjustBridge.removeGlobalPartnerParameter(key);
         }
     },
 
-    resetSessionCallbackParameters: function() {
+    removeGlobalCallbackParameters: function() {
         if (AdjustBridge) {
-            AdjustBridge.resetSessionCallbackParameters();
+            AdjustBridge.removeGlobalCallbackParameters();
         }
     },
 
-    resetSessionPartnerParameters: function() {
+    removeGlobalPartnerParameters: function() {
         if (AdjustBridge) {
-            AdjustBridge.resetSessionPartnerParameters();
+            AdjustBridge.removeGlobalPartnerParameters();
         }
     },
 
