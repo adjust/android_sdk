@@ -538,7 +538,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void addSessionCallbackParameter(String key, String value) {
+    public void addGlobalCallbackParameter(String key, String value) {
         if (!isInitialized()) {
             return;
         }
@@ -546,7 +546,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void addSessionPartnerParameter(String key, String value) {
+    public void addGlobalPartnerParameter(String key, String value) {
         if (!isInitialized()) {
             return;
         }
@@ -554,7 +554,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void removeSessionCallbackParameter(String key) {
+    public void removeGlobalCallbackParameter(String key) {
         if (!isInitialized()) {
             return;
         }
@@ -562,7 +562,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void removeSessionPartnerParameter(String key) {
+    public void removeGlobalPartnerParameter(String key) {
         if (!isInitialized()) {
             return;
         }
@@ -570,7 +570,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void resetSessionCallbackParameters() {
+    public void resetGlobalCallbackParameters() {
         if (!isInitialized()) {
             return;
         }
@@ -578,7 +578,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void resetSessionPartnerParameters() {
+    public void resetGlobalPartnerParameters() {
         if (!isInitialized()) {
             return;
         }
