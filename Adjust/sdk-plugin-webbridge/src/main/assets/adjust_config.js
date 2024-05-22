@@ -44,7 +44,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.preinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
     this.fbAppId = null;
-    this.readDeviceInfoOnceEnabled = null;
+    this.shouldReadDeviceIdsOnce = null;
     this.eventDeduplicationIdsMaxSize = null;
 }
 
@@ -212,8 +212,8 @@ AdjustConfig.prototype.setFbAppId = function(fbAppId) {
     this.fbAppId = fbAppId;
 };
 
-AdjustConfig.prototype.setReadDeviceInfoOnceEnabled = function(isEnabled) {
-    this.readDeviceInfoOnceEnabled = isEnabled;
+AdjustConfig.prototype.readDeviceIdsOnce = function(isEnabled) {
+    this.shouldReadDeviceIdsOnce = isEnabled;
 };
 
 AdjustConfig.prototype.setEventDeduplicationIdsMaxSize = function(eventDeduplicationIdsMaxSize) {

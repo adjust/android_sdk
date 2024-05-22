@@ -65,7 +65,7 @@ class DeviceInfo {
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     private boolean playIdsReadOnce = false;
-    private boolean otherDeviceInfoParamsReadOnce = false;
+    private boolean otherDeviceIdsParamsReadOnce = false;
     String androidId;
     String fbAttributionId;
     String clientSdk;
@@ -140,7 +140,7 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
-        if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
+        if (playIdsReadOnce && adjustConfig.shouldReadDeviceIdsOnce) {
             if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
                 playAdId = null;
                 isTrackingEnabled = null;
@@ -250,7 +250,7 @@ class DeviceInfo {
     void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
                                      final boolean coppaEnabled,
                                      final ILogger logger) {
-        if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
+        if (adjustConfig.shouldReadDeviceIdsOnce && otherDeviceIdsParamsReadOnce) {
             return;
         }
 
@@ -262,7 +262,7 @@ class DeviceInfo {
         mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
         mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
 
-        otherDeviceInfoParamsReadOnce = true;
+        otherDeviceIdsParamsReadOnce = true;
     }
     public static void getFireAdvertisingIdBypassConditions(ContentResolver contentResolver, OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
         UtilDeviceIds.getFireAdvertisingIdAsync(contentResolver, onAmazonAdIdReadListener);
