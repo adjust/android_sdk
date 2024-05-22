@@ -815,6 +815,16 @@ public class ActivityHandler
     }
 
     @Override
+    public void verifyAndTrack(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                verifyAndTrackI(event, callback);
+            }
+        });
+    }
+
+    @Override
     public void setCoppaCompliance(final boolean enabled) {
         executor.submit(new Runnable() {
             @Override
@@ -2574,6 +2584,75 @@ public class ActivityHandler
             return;
         }
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
+    }
+
+    private void verifyAndTrackI(final AdjustEvent event, final OnPurchaseVerificationFinishedListener callback) {
+        if (callback == null) {
+            logger.warn("Purchase verification aborted because verification callback is null");
+            return;
+        }
+        // from this moment on we know that we can ping client callback in case of error
+        if (adjustConfig.urlStrategy != null &&
+                (adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_EU) ||
+                        adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_US) ||
+                        adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_TR))) {
+            logger.warn("Purchase verification not available for data residency users right now");
+            return;
+        }
+        if (!checkActivityStateI(activityState)) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    102,
+                    "Purchase verification aborted because SDK is still not initialized");
+            callback.onVerificationFinished(result);
+            logger.warn("Purchase verification aborted because SDK is still not initialized");
+            return;
+        }
+        if (!isEnabledI()) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    103,
+                    "Purchase verification aborted because SDK is disabled");
+            callback.onVerificationFinished(result);
+            logger.warn("Purchase verification aborted because SDK is disabled");
+            return;
+        }
+        if (activityState.isGdprForgotten) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    104,
+                    "Purchase verification aborted because user is GDPR forgotten");
+            callback.onVerificationFinished(result);
+            logger.warn("Purchase verification aborted because user is GDPR forgotten");
+            return;
+        }
+        if (event == null) {
+            logger.warn("Purchase verification aborted because event instance is null");
+            AdjustPurchaseVerificationResult verificationResult =
+                    new AdjustPurchaseVerificationResult(
+                            "not_verified",
+                            106,
+                            "Purchase verification aborted because event instance is null");
+            callback.onVerificationFinished(verificationResult);
+            return;
+        }
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(event, callback);
+        if (verificationPackage == null) {
+            logger.warn("Purchase verification aborted because verification package is null");
+            AdjustPurchaseVerificationResult verificationResult =
+                    new AdjustPurchaseVerificationResult(
+                            "not_verified",
+                            107,
+                            "Purchase verification aborted because verification package is null");
+            callback.onVerificationFinished(verificationResult);
+            return;
+        }
+        purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
+        // TODO: TBD if this is the right timing
+        trackEventI(event);
     }
 
     private void setCoppaComplianceI(final boolean coppaEnabled) {
