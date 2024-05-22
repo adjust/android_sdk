@@ -71,9 +71,6 @@ class GlobalApplication : Application() {
         // Enable event buffering.
         // config.setEventBufferingEnabled(true);
 
-        // Delay first session.
-        // config.setDelayStart(7);
-
         // Allow tracking preinstall
         // config.setPreinstallTrackingEnabled(true);
 
@@ -109,9 +106,6 @@ class GlobalApplication : Application() {
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config)
-
-        // Abort delay for the first session introduced with setDelayStart method.
-        // Adjust.sendFirstPackages();
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.

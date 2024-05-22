@@ -47,8 +47,6 @@ public interface IActivityHandler {
 
     void setAskingAttribution(boolean askingAttribution);
 
-    void sendFirstPackages();
-
     void addGlobalCallbackParameter(String key, String value);
 
     void addGlobalPartnerParameter(String key, String value);

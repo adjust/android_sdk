@@ -111,9 +111,6 @@ public class GlobalApplication extends Application {
         // Enable event buffering.
         // config.setEventBufferingEnabled(true);
 
-        // Delay first session.
-        // config.setDelayStart(7);
-
         // Allow tracking preinstall
         // config.setPreinstallTrackingEnabled(true);
 
@@ -171,9 +168,6 @@ public class GlobalApplication extends Application {
 
             }
         });
-
-        // Abort delay for the first session introduced with setDelayStart method.
-        // Adjust.sendFirstPackages();
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.

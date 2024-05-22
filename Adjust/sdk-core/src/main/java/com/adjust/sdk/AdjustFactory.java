@@ -24,7 +24,6 @@ public class AdjustFactory {
     private static BackoffStrategy sdkClickBackoffStrategy = null;
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static BackoffStrategy installSessionBackoffStrategy = null;
-    private static long maxDelayStart = -1;
     private static String baseUrl = null;
     private static String gdprUrl = null;
     private static String subscriptionUrl = null;
@@ -170,13 +169,6 @@ public class AdjustFactory {
 
         purchaseVerificationHandler.init(activityHandler, startsSending, packageHandlerActivityPackageSender);
         return purchaseVerificationHandler;
-    }
-
-    public static long getMaxDelayStart() {
-        if (maxDelayStart == -1) {
-            return Constants.ONE_SECOND * 10; // 10 seconds
-        }
-        return maxDelayStart;
     }
 
     public static String getBaseUrl() {
@@ -326,7 +318,6 @@ public class AdjustFactory {
         subsessionInterval = -1;
         sdkClickBackoffStrategy = null;
         packageHandlerBackoffStrategy = null;
-        maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
         subscriptionUrl = Constants.SUBSCRIPTION_URL;
