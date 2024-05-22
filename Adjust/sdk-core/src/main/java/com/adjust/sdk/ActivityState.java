@@ -35,7 +35,6 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("timeSpent", long.class),
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
-            new ObjectStreamField("updatePackages", boolean.class),
             new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class),
             new ObjectStreamField("adid", String.class),
@@ -87,8 +86,6 @@ public class ActivityState implements Serializable, Cloneable {
     protected long lastActivity;    // all times in milliseconds since 1970
 
     protected long lastInterval;
-
-    protected boolean updatePackages;
 
     protected LinkedList<String> orderIds;
 
@@ -143,7 +140,6 @@ public class ActivityState implements Serializable, Cloneable {
         timeSpent = -1; // this information will be collected and attached to the next session
         lastActivity = -1;
         lastInterval = -1;
-        updatePackages = false;
         orderIds = null;
         pushToken = null;
         adid = null;
@@ -234,7 +230,6 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(sessionLength, otherActivityState.sessionLength)) return false;
         if (!Util.equalLong(timeSpent, otherActivityState.timeSpent)) return false;
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval)) return false;
-        if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages)) return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
         if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
         if (!Util.equalString(adid, otherActivityState.adid)) return false;
@@ -282,7 +277,6 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashLong(sessionLength, hashCode);
         hashCode = Util.hashLong(timeSpent, hashCode);
         hashCode = Util.hashLong(lastInterval, hashCode);
-        hashCode = Util.hashBoolean(updatePackages, hashCode);
         hashCode = Util.hashObject(orderIds, hashCode);
         hashCode = Util.hashString(pushToken, hashCode);
         hashCode = Util.hashString(adid, hashCode);
@@ -334,7 +328,6 @@ public class ActivityState implements Serializable, Cloneable {
         isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
-        updatePackages = Util.readBooleanField(fields, "updatePackages", false);
         orderIds = Util.readObjectField(fields, "orderIds", null);
         pushToken = Util.readStringField(fields, "pushToken", null);
         adid = Util.readStringField(fields, "adid", null);

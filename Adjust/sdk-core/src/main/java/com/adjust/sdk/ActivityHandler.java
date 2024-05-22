@@ -147,7 +147,6 @@ public class ActivityHandler implements IActivityHandler {
         boolean enabled;
         boolean offline;
         boolean background;
-        boolean updatePackages;
         boolean firstLaunch;
         boolean sessionResponseProcessed;
         boolean firstSdkStart;
@@ -175,10 +174,6 @@ public class ActivityHandler implements IActivityHandler {
 
         public boolean isInForeground() {
             return !background;
-        }
-
-        public boolean itHasToUpdatePackages() {
-            return updatePackages;
         }
 
         public boolean isFirstLaunch() {
@@ -223,8 +218,6 @@ public class ActivityHandler implements IActivityHandler {
         internalState.offline = adjustConfig.startOffline;
         // in the background by default
         internalState.background = true;
-        // does not need to update packages by default
-        internalState.updatePackages = false;
         // does not have the session response by default
         internalState.sessionResponseProcessed = false;
         // does not have first start by default
@@ -808,7 +801,6 @@ public class ActivityHandler implements IActivityHandler {
 
         if (internalState.hasFirstSdkStartOcurred()) {
             internalState.enabled = activityState.enabled;
-            internalState.updatePackages = activityState.updatePackages;
             internalState.firstLaunch = false;
         } else {
             internalState.firstLaunch = true; // first launch if activity state is null
@@ -983,10 +975,6 @@ public class ActivityHandler implements IActivityHandler {
                 this,
                 toSendI(true),
                 purchaseVerificationHandlerActivitySender);
-
-        if (isToUpdatePackagesI()) {
-            updatePackagesI();
-        }
 
         installReferrer = new InstallReferrer(adjustConfig.context, new InstallReferrerReadListener() {
             @Override
@@ -1270,7 +1258,6 @@ public class ActivityHandler implements IActivityHandler {
 
         activityState.resetSessionAttributes(now);
         activityState.enabled = internalState.isEnabled();
-        activityState.updatePackages = internalState.itHasToUpdatePackages();
 
         writeActivityStateI();
         sharedPreferencesManager.removePushToken();
@@ -2178,25 +2165,6 @@ public class ActivityHandler implements IActivityHandler {
     private void backgroundTimerFiredI() {
         if (toSendI()) {
             packageHandler.sendFirstPackage();
-        }
-    }
-
-    private void updatePackagesI() {
-        // update activity packages
-        packageHandler.updatePackages(globalParameters);
-        // no longer needs to update packages
-        internalState.updatePackages = false;
-        if (activityState != null) {
-            activityState.updatePackages = false;
-            writeActivityStateI();
-        }
-    }
-
-    private boolean isToUpdatePackagesI() {
-        if (activityState != null) {
-            return activityState.updatePackages;
-        } else {
-            return internalState.itHasToUpdatePackages();
         }
     }
 
