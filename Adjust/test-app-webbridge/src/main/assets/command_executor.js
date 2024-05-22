@@ -609,7 +609,7 @@ AdjustCommandExecutor.prototype.removeGlobalCallbackParameters = function(params
 };
 
 AdjustCommandExecutor.prototype.removeGlobalPartnerParameters = function(params) {
-    Adjust.removeSessionPartnerParameters();
+    Adjust.removeGlobalPartnerParameters();
 };
 
 AdjustCommandExecutor.prototype.setPushToken = function(params) {
