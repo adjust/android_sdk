@@ -92,7 +92,7 @@ public class Adjust {
      * @param context Application context
      * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public static void isEnabled( final Context context, final OnIsEnabledListener isEnabledListener) {
+    public static void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
         if (context == null) {
             AdjustFactory.getLogger().error("null context");
             return;
@@ -103,7 +103,7 @@ public class Adjust {
         }
 
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.isEnabled(extractApplicationContext(context),isEnabledListener);
+        adjustInstance.isEnabled(extractApplicationContext(context), isEnabledListener);
     }
 
     /**

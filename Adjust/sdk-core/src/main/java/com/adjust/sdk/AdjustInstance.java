@@ -154,7 +154,7 @@ public class AdjustInstance {
      * @param context Application context
      * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public void isEnabled( final Context context, final OnIsEnabledListener isEnabledListener) {
+    public void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
         if (!checkActivityHandler("isEnabled")) {
             isEnabledListener.onIsEnabledRead(Util.isEnabledFromActivityStateFile(context));
             return;
