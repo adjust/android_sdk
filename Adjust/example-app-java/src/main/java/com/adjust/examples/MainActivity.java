@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(this,new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEnableDisableSDKClick(View v) {
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(this,new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onIsSDKEnabledClick(View v) {
 
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(this,new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {

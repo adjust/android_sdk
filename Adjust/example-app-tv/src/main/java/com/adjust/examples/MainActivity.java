@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(this, new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
                     btnEnableDisableSDK.setText(R.string.txt_enable_sdk);
                 }
             }
-        }, getApplicationContext());
+        });
 
     }
 
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEnableDisableSDKClick(View v) {
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled( getApplicationContext(),new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
@@ -107,12 +107,12 @@ public class MainActivity extends AppCompatActivity {
                     ((Button) v).setText(R.string.txt_disable_sdk);
                 }
             }
-        }, getApplicationContext());
+        });
 
     }
 
     public void onIsSDKEnabledClick(View v) {
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(getApplicationContext(),new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                 }
             }
-        }, getApplicationContext());
+        });
 
     }
 

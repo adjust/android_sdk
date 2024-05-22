@@ -487,12 +487,12 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        Adjust.isEnabled(new OnIsEnabledListener() {
+        Adjust.isEnabled(application.getApplicationContext(),new OnIsEnabledListener() {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 AdjustBridgeUtil.execSingleValueCallback(webView, callback, String.valueOf(isEnabled));
             }
-        }, application.getApplicationContext());
+        });
     }
 
 //    @JavascriptInterface

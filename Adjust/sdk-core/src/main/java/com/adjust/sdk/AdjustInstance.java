@@ -151,9 +151,10 @@ public class AdjustInstance {
     /**
      * Get information if SDK is enabled or not.
      *
-     * @return boolean indicating whether SDK is enabled or not
+     * @param context Application context
+     * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public void isEnabled(final OnIsEnabledListener isEnabledListener, final Context context) {
+    public void isEnabled( final Context context, final OnIsEnabledListener isEnabledListener) {
         if (!checkActivityHandler("isEnabled")) {
             isEnabledListener.onIsEnabledRead(Util.isEnabledFromActivityStateFile(context));
             return;
