@@ -3,6 +3,8 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
+import com.adjust.sdk.scheduler.AsyncTaskExecutor;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -156,7 +158,17 @@ public class AdjustInstance {
      */
     public void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
         if (!checkActivityHandler("isEnabled")) {
-            isEnabledListener.onIsEnabledRead(Util.isEnabledFromActivityStateFile(context));
+            new AsyncTaskExecutor<Context,Boolean>(){
+                @Override
+                protected Boolean doInBackground(Context... contexts) {
+                    return Util.isEnabledFromActivityStateFile(contexts[0]);
+                }
+
+                @Override
+                protected void onPostExecute(Boolean isEnabled) {
+                    isEnabledListener.onIsEnabledRead(isEnabled);
+                }
+            }.execute(context);
             return;
         }
         activityHandler.isEnabled(isEnabledListener);
