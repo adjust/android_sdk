@@ -199,17 +199,17 @@ public class PackageHandler implements IPackageHandler,
     }
 
     @Override
-    public void updatePackages(SessionParameters sessionParameters) {
-        final SessionParameters sessionParametersCopy;
-        if (sessionParameters != null) {
-            sessionParametersCopy = sessionParameters.deepCopy();
+    public void updatePackages(GlobalParameters globalParameters) {
+        final GlobalParameters globalParametersCopy;
+        if (globalParameters != null) {
+            globalParametersCopy = globalParameters.deepCopy();
         } else {
-            sessionParametersCopy = null;
+            globalParametersCopy = null;
         }
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                updatePackagesI(sessionParametersCopy);
+                updatePackagesI(globalParametersCopy);
             }
         });
     }
@@ -288,25 +288,25 @@ public class PackageHandler implements IPackageHandler,
         sendFirstI();
     }
 
-    public void updatePackagesI(SessionParameters sessionParameters) {
-        if (sessionParameters == null) {
+    public void updatePackagesI(GlobalParameters globalParameters) {
+        if (globalParameters == null) {
             return;
         }
 
         logger.debug("Updating package handler queue");
-        logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
-        logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
+        logger.verbose("Session callback parameters: %s", globalParameters.callbackParameters);
+        logger.verbose("Session partner parameters: %s", globalParameters.partnerParameters);
 
         for (ActivityPackage activityPackage : packageQueue) {
             Map<String, String> parameters = activityPackage.getParameters();
             // callback parameters
-            Map<String, String> mergedCallbackParameters = Util.mergeParameters(sessionParameters.callbackParameters,
+            Map<String, String> mergedCallbackParameters = Util.mergeParameters(globalParameters.callbackParameters,
                     activityPackage.getCallbackParameters(),
                     "Callback");
 
             PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, mergedCallbackParameters);
             // partner parameters
-            Map<String, String> mergedPartnerParameters = Util.mergeParameters(sessionParameters.partnerParameters,
+            Map<String, String> mergedPartnerParameters = Util.mergeParameters(globalParameters.partnerParameters,
                     activityPackage.getPartnerParameters(),
                     "Partner");
 

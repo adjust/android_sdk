@@ -538,51 +538,51 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void addSessionCallbackParameter(String key, String value) {
+    public void addGlobalCallbackParameter(String key, String value) {
         if (!isInitialized()) {
             return;
         }
-        Adjust.addSessionCallbackParameter(key, value);
+        Adjust.addGlobalCallbackParameter(key, value);
     }
 
     @JavascriptInterface
-    public void addSessionPartnerParameter(String key, String value) {
+    public void addGlobalPartnerParameter(String key, String value) {
         if (!isInitialized()) {
             return;
         }
-        Adjust.addSessionPartnerParameter(key, value);
+        Adjust.addGlobalPartnerParameter(key, value);
     }
 
     @JavascriptInterface
-    public void removeSessionCallbackParameter(String key) {
+    public void removeGlobalCallbackParameter(String key) {
         if (!isInitialized()) {
             return;
         }
-        Adjust.removeSessionCallbackParameter(key);
+        Adjust.removeGlobalCallbackParameter(key);
     }
 
     @JavascriptInterface
-    public void removeSessionPartnerParameter(String key) {
+    public void removeGlobalPartnerParameter(String key) {
         if (!isInitialized()) {
             return;
         }
-        Adjust.removeSessionPartnerParameter(key);
+        Adjust.removeGlobalPartnerParameter(key);
     }
 
     @JavascriptInterface
-    public void resetSessionCallbackParameters() {
+    public void removeGlobalCallbackParameters() {
         if (!isInitialized()) {
             return;
         }
-        Adjust.resetSessionCallbackParameters();
+        Adjust.removeGlobalCallbackParameters();
     }
 
     @JavascriptInterface
-    public void resetSessionPartnerParameters() {
+    public void removeGlobalPartnerParameters() {
         if (!isInitialized()) {
             return;
         }
-        Adjust.resetSessionPartnerParameters();
+        Adjust.removeGlobalPartnerParameters();
     }
 
     @JavascriptInterface

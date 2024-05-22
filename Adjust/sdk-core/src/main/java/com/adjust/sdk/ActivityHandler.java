@@ -43,8 +43,8 @@ import static com.adjust.sdk.Constants.REFERRER_API_META;
 import static com.adjust.sdk.Constants.REFERRER_API_SAMSUNG;
 import static com.adjust.sdk.Constants.REFERRER_API_VIVO;
 import static com.adjust.sdk.Constants.REFERRER_API_XIAOMI;
-import static com.adjust.sdk.Constants.SESSION_CALLBACK_PARAMETERS_FILENAME;
-import static com.adjust.sdk.Constants.SESSION_PARTNER_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.GLOBAL_CALLBACK_PARAMETERS_FILENAME;
+import static com.adjust.sdk.Constants.GLOBAL_PARTNER_PARAMETERS_FILENAME;
 
 public class ActivityHandler implements IActivityHandler {
     private static long FOREGROUND_TIMER_INTERVAL;
@@ -58,9 +58,9 @@ public class ActivityHandler implements IActivityHandler {
     private static final String FOREGROUND_TIMER_NAME = "Foreground timer";
     private static final String BACKGROUND_TIMER_NAME = "Background timer";
     private static final String DELAY_START_TIMER_NAME = "Delay Start timer";
-    private static final String SESSION_CALLBACK_PARAMETERS_NAME = "Session Callback parameters";
-    private static final String SESSION_PARTNER_PARAMETERS_NAME = "Session Partner parameters";
-    private static final String SESSION_PARAMETERS_NAME = "Session parameters";
+    private static final String GLOBAL_CALLBACK_PARAMETERS_NAME = "Global Callback parameters";
+    private static final String GLOBAL_PARTNER_PARAMETERS_NAME = "Global Partner parameters";
+    private static final String GLOBAL_PARAMETERS_NAME = "Global parameters";
 
     private ThreadExecutor executor;
     private IPackageHandler packageHandler;
@@ -80,7 +80,7 @@ public class ActivityHandler implements IActivityHandler {
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
     private IPurchaseVerificationHandler purchaseVerificationHandler;
-    private SessionParameters sessionParameters;
+    private GlobalParameters globalParameters;
     private InstallReferrer installReferrer;
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
@@ -111,18 +111,18 @@ public class ActivityHandler implements IActivityHandler {
         if (purchaseVerificationHandler != null) {
             purchaseVerificationHandler.teardown();
         }
-        if (sessionParameters != null) {
-            if (sessionParameters.callbackParameters != null) {
-                sessionParameters.callbackParameters.clear();
+        if (globalParameters != null) {
+            if (globalParameters.callbackParameters != null) {
+                globalParameters.callbackParameters.clear();
             }
-            if (sessionParameters.partnerParameters != null) {
-                sessionParameters.partnerParameters.clear();
+            if (globalParameters.partnerParameters != null) {
+                globalParameters.partnerParameters.clear();
             }
         }
 
         teardownActivityStateS();
         teardownAttributionS();
-        teardownAllSessionParametersS();
+        teardownAllGlobalParametersS();
 
         packageHandler = null;
         logger = null;
@@ -136,14 +136,14 @@ public class ActivityHandler implements IActivityHandler {
         attributionHandler = null;
         sdkClickHandler = null;
         purchaseVerificationHandler = null;
-        sessionParameters = null;
+        globalParameters = null;
     }
 
     static void deleteState(Context context) {
         deleteActivityState(context);
         deleteAttribution(context);
-        deleteSessionCallbackParameters(context);
-        deleteSessionPartnerParameters(context);
+        deleteGlobalCallbackParameters(context);
+        deleteGlobalPartnerParameters(context);
 
         SharedPreferencesManager.getDefaultInstance(context).clear();
     }
@@ -272,8 +272,8 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public SessionParameters getSessionParameters() {
-        return sessionParameters;
+    public GlobalParameters getGlobalParameters() {
+        return globalParameters;
     }
 
     @Override
@@ -601,61 +601,61 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @Override
-    public void addSessionCallbackParameter(final String key, final String value) {
+    public void addGlobalCallbackParameter(final String key, final String value) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                addSessionCallbackParameterI(key, value);
+                addGlobalCallbackParameterI(key, value);
             }
         });
     }
 
     @Override
-    public void addSessionPartnerParameter(final String key, final String value) {
+    public void addGlobalPartnerParameter(final String key, final String value) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                addSessionPartnerParameterI(key, value);
+                addGlobalPartnerParameterI(key, value);
             }
         });
     }
 
     @Override
-    public void removeSessionCallbackParameter(final String key) {
+    public void removeGlobalCallbackParameter(final String key) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                removeSessionCallbackParameterI(key);
+                removeGlobalCallbackParameterI(key);
             }
         });
     }
 
     @Override
-    public void removeSessionPartnerParameter(final String key) {
+    public void removeGlobalPartnerParameter(final String key) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                removeSessionPartnerParameterI(key);
+                removeGlobalPartnerParameterI(key);
             }
         });
     }
 
     @Override
-    public void resetSessionCallbackParameters() {
+    public void removeGlobalCallbackParameters() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                resetSessionCallbackParametersI();
+                removeGlobalCallbackParametersI();
             }
         });
     }
 
     @Override
-    public void resetSessionPartnerParameters() {
+    public void removeGlobalPartnerParameters() {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                resetSessionPartnerParametersI();
+                removeGlobalPartnerParametersI();
             }
         });
     }
@@ -821,9 +821,9 @@ public class ActivityHandler implements IActivityHandler {
         readAttributionI(adjustConfig.context);
         readActivityStateI(adjustConfig.context);
 
-        sessionParameters = new SessionParameters();
-        readSessionCallbackParametersI(adjustConfig.context);
-        readSessionPartnerParametersI(adjustConfig.context);
+        globalParameters = new GlobalParameters();
+        readGlobalCallbackParametersI(adjustConfig.context);
+        readGlobalPartnerParametersI(adjustConfig.context);
 
         if (adjustConfig.startEnabled != null) {
             adjustConfig.preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
@@ -1521,7 +1521,7 @@ public class ActivityHandler implements IActivityHandler {
         activityState.eventCount++;
         updateActivityStateI(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event, internalState.isInDelayedStart());
         packageHandler.addPackage(eventPackage);
 
@@ -2037,7 +2037,7 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                globalParameters);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
@@ -2070,7 +2070,7 @@ public class ActivityHandler implements IActivityHandler {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                globalParameters);
 
         if (sdkClickPackage == null) {
             return;
@@ -2147,17 +2147,17 @@ public class ActivityHandler implements IActivityHandler {
         return context.deleteFile(ATTRIBUTION_FILENAME);
     }
 
-    public static boolean deleteSessionCallbackParameters(Context context) {
-        return context.deleteFile(SESSION_CALLBACK_PARAMETERS_FILENAME);
+    public static boolean deleteGlobalCallbackParameters(Context context) {
+        return context.deleteFile(GLOBAL_CALLBACK_PARAMETERS_FILENAME);
     }
 
-    public static boolean deleteSessionPartnerParameters(Context context) {
-        return context.deleteFile(SESSION_PARTNER_PARAMETERS_FILENAME);
+    public static boolean deleteGlobalPartnerParameters(Context context) {
+        return context.deleteFile(GLOBAL_PARTNER_PARAMETERS_FILENAME);
     }
 
     private void transferSessionPackageI(long now) {
         PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
-                sessionParameters, now);
+                globalParameters, now);
         ActivityPackage sessionPackage = builder.buildSessionPackage(internalState.isInDelayedStart());
         packageHandler.addPackage(sessionPackage);
         packageHandler.sendFirstPackage();
@@ -2283,7 +2283,7 @@ public class ActivityHandler implements IActivityHandler {
 
     private void updatePackagesI() {
         // update activity packages
-        packageHandler.updatePackages(sessionParameters);
+        packageHandler.updatePackages(globalParameters);
         // no longer needs to update packages
         internalState.updatePackages = false;
         if (activityState != null) {
@@ -2300,15 +2300,15 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    public void addSessionCallbackParameterI(String key, String value) {
-        if (!Util.isValidParameter(key, "key", "Session Callback")) return;
-        if (!Util.isValidParameter(value, "value", "Session Callback")) return;
+    public void addGlobalCallbackParameterI(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Global Callback")) return;
+        if (!Util.isValidParameter(value, "value", "Global Callback")) return;
 
-        if (sessionParameters.callbackParameters == null) {
-            sessionParameters.callbackParameters = new LinkedHashMap<String, String>();
+        if (globalParameters.callbackParameters == null) {
+            globalParameters.callbackParameters = new LinkedHashMap<String, String>();
         }
 
-        String oldValue = sessionParameters.callbackParameters.get(key);
+        String oldValue = globalParameters.callbackParameters.get(key);
 
         if (value.equals(oldValue)) {
             logger.verbose("Key %s already present with the same value", key);
@@ -2319,20 +2319,20 @@ public class ActivityHandler implements IActivityHandler {
             logger.warn("Key %s will be overwritten", key);
         }
 
-        sessionParameters.callbackParameters.put(key, value);
+        globalParameters.callbackParameters.put(key, value);
 
-        writeSessionCallbackParametersI();
+        writeGlobalCallbackParametersI();
     }
 
-    public void addSessionPartnerParameterI(String key, String value) {
-        if (!Util.isValidParameter(key, "key", "Session Partner")) return;
-        if (!Util.isValidParameter(value, "value", "Session Partner")) return;
+    public void addGlobalPartnerParameterI(String key, String value) {
+        if (!Util.isValidParameter(key, "key", "Global Partner")) return;
+        if (!Util.isValidParameter(value, "value", "Global Partner")) return;
 
-        if (sessionParameters.partnerParameters == null) {
-            sessionParameters.partnerParameters = new LinkedHashMap<String, String>();
+        if (globalParameters.partnerParameters == null) {
+            globalParameters.partnerParameters = new LinkedHashMap<String, String>();
         }
 
-        String oldValue = sessionParameters.partnerParameters.get(key);
+        String oldValue = globalParameters.partnerParameters.get(key);
 
         if (value.equals(oldValue)) {
             logger.verbose("Key %s already present with the same value", key);
@@ -2343,20 +2343,20 @@ public class ActivityHandler implements IActivityHandler {
             logger.warn("Key %s will be overwritten", key);
         }
 
-        sessionParameters.partnerParameters.put(key, value);
+        globalParameters.partnerParameters.put(key, value);
 
-        writeSessionPartnerParametersI();
+        writeGlobalPartnerParametersI();
     }
 
-    public void removeSessionCallbackParameterI(String key) {
+    public void removeGlobalCallbackParameterI(String key) {
         if (!Util.isValidParameter(key, "key", "Session Callback")) return;
 
-        if (sessionParameters.callbackParameters == null) {
+        if (globalParameters.callbackParameters == null) {
             logger.warn("Session Callback parameters are not set");
             return;
         }
 
-        String oldValue = sessionParameters.callbackParameters.remove(key);
+        String oldValue = globalParameters.callbackParameters.remove(key);
 
         if (oldValue == null) {
             logger.warn("Key %s does not exist", key);
@@ -2365,18 +2365,18 @@ public class ActivityHandler implements IActivityHandler {
 
         logger.debug("Key %s will be removed", key);
 
-        writeSessionCallbackParametersI();
+        writeGlobalCallbackParametersI();
     }
 
-    public void removeSessionPartnerParameterI(String key) {
+    public void removeGlobalPartnerParameterI(String key) {
         if (!Util.isValidParameter(key, "key", "Session Partner")) return;
 
-        if (sessionParameters.partnerParameters == null) {
+        if (globalParameters.partnerParameters == null) {
             logger.warn("Session Partner parameters are not set");
             return;
         }
 
-        String oldValue = sessionParameters.partnerParameters.remove(key);
+        String oldValue = globalParameters.partnerParameters.remove(key);
 
         if (oldValue == null) {
             logger.warn("Key %s does not exist", key);
@@ -2385,27 +2385,27 @@ public class ActivityHandler implements IActivityHandler {
 
         logger.debug("Key %s will be removed", key);
 
-        writeSessionPartnerParametersI();
+        writeGlobalPartnerParametersI();
     }
 
-    public void resetSessionCallbackParametersI() {
-        if (sessionParameters.callbackParameters == null) {
+    public void removeGlobalCallbackParametersI() {
+        if (globalParameters.callbackParameters == null) {
             logger.warn("Session Callback parameters are not set");
         }
 
-        sessionParameters.callbackParameters = null;
+        globalParameters.callbackParameters = null;
 
-        writeSessionCallbackParametersI();
+        writeGlobalCallbackParametersI();
     }
 
-    public void resetSessionPartnerParametersI() {
-        if (sessionParameters.partnerParameters == null) {
+    public void removeGlobalPartnerParametersI() {
+        if (globalParameters.partnerParameters == null) {
             logger.warn("Session Partner parameters are not set");
         }
 
-        sessionParameters.partnerParameters = null;
+        globalParameters.partnerParameters = null;
 
-        writeSessionPartnerParametersI();
+        writeGlobalPartnerParametersI();
     }
 
     private void setPushTokenI(String token) {
@@ -2421,7 +2421,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
         packageHandler.addPackage(infoPackage);
@@ -2445,7 +2445,7 @@ public class ActivityHandler implements IActivityHandler {
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder gdprPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder gdprPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage gdprPackage = gdprPackageBuilder.buildGdprPackage();
         packageHandler.addPackage(gdprPackage);
@@ -2471,7 +2471,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+                adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
@@ -2494,7 +2494,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, sessionParameters, now);
+                adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage activityPackage =
                 packageBuilder.buildMeasurementConsentPackage(consentMeasurement);
@@ -2515,7 +2515,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
 
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue, internalState.isInDelayedStart());
         packageHandler.addPackage(adRevenuePackage);
@@ -2529,7 +2529,7 @@ public class ActivityHandler implements IActivityHandler {
 
         long now = System.currentTimeMillis();
 
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription, internalState.isInDelayedStart());
         packageHandler.addPackage(subscriptionPackage);
@@ -2588,7 +2588,7 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, sessionParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
         ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(purchase, callback);
         if (verificationPackage == null) {
             logger.warn("Purchase verification aborted because verification package is null");
@@ -2616,7 +2616,7 @@ public class ActivityHandler implements IActivityHandler {
 
         final long now = System.currentTimeMillis();
         final PackageBuilder packageBuilder = new PackageBuilder(
-          adjustConfig, deviceInfo, activityState, sessionParameters, now);
+          adjustConfig, deviceInfo, activityState, globalParameters, now);
 
         final ActivityPackage activityPackage =
           packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
@@ -2661,28 +2661,28 @@ public class ActivityHandler implements IActivityHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private void readSessionCallbackParametersI(Context context) {
+    private void readGlobalCallbackParametersI(Context context) {
         try {
-            sessionParameters.callbackParameters = Util.readObject(context,
-                    SESSION_CALLBACK_PARAMETERS_FILENAME,
-                    SESSION_CALLBACK_PARAMETERS_NAME,
+            globalParameters.callbackParameters = Util.readObject(context,
+                    GLOBAL_CALLBACK_PARAMETERS_FILENAME,
+                    GLOBAL_CALLBACK_PARAMETERS_NAME,
                     (Class<Map<String,String>>)(Class)Map.class);
         } catch (Exception e) {
-            logger.error("Failed to read %s file (%s)", SESSION_CALLBACK_PARAMETERS_NAME, e.getMessage());
-            sessionParameters.callbackParameters = null;
+            logger.error("Failed to read %s file (%s)", GLOBAL_CALLBACK_PARAMETERS_NAME, e.getMessage());
+            globalParameters.callbackParameters = null;
         }
     }
 
     @SuppressWarnings("unchecked")
-    private void readSessionPartnerParametersI(Context context) {
+    private void readGlobalPartnerParametersI(Context context) {
         try {
-            sessionParameters.partnerParameters = Util.readObject(context,
-                    SESSION_PARTNER_PARAMETERS_FILENAME,
-                    SESSION_PARTNER_PARAMETERS_NAME,
+            globalParameters.partnerParameters = Util.readObject(context,
+                    GLOBAL_PARTNER_PARAMETERS_FILENAME,
+                    GLOBAL_PARTNER_PARAMETERS_NAME,
                     (Class<Map<String,String>>)(Class)Map.class);
         } catch (Exception e) {
-            logger.error("Failed to read %s file (%s)", SESSION_PARTNER_PARAMETERS_NAME, e.getMessage());
-            sessionParameters.partnerParameters = null;
+            logger.error("Failed to read %s file (%s)", GLOBAL_PARTNER_PARAMETERS_NAME, e.getMessage());
+            globalParameters.partnerParameters = null;
         }
     }
 
@@ -2722,30 +2722,30 @@ public class ActivityHandler implements IActivityHandler {
         }
     }
 
-    private void writeSessionCallbackParametersI() {
-        synchronized (SessionParameters.class) {
-            if (sessionParameters == null) {
+    private void writeGlobalCallbackParametersI() {
+        synchronized (GlobalParameters.class) {
+            if (globalParameters == null) {
                 return;
             }
-            Util.writeObject(sessionParameters.callbackParameters, adjustConfig.context, SESSION_CALLBACK_PARAMETERS_FILENAME, SESSION_CALLBACK_PARAMETERS_NAME);
+            Util.writeObject(globalParameters.callbackParameters, adjustConfig.context, GLOBAL_CALLBACK_PARAMETERS_FILENAME, GLOBAL_CALLBACK_PARAMETERS_NAME);
         }
     }
 
-    private void writeSessionPartnerParametersI() {
-        synchronized (SessionParameters.class) {
-            if (sessionParameters == null) {
+    private void writeGlobalPartnerParametersI() {
+        synchronized (GlobalParameters.class) {
+            if (globalParameters == null) {
                 return;
             }
-            Util.writeObject(sessionParameters.partnerParameters, adjustConfig.context, SESSION_PARTNER_PARAMETERS_FILENAME, SESSION_PARTNER_PARAMETERS_NAME);
+            Util.writeObject(globalParameters.partnerParameters, adjustConfig.context, GLOBAL_PARTNER_PARAMETERS_FILENAME, GLOBAL_PARTNER_PARAMETERS_NAME);
         }
     }
 
-    private void teardownAllSessionParametersS() {
-        synchronized (SessionParameters.class) {
-            if (sessionParameters == null) {
+    private void teardownAllGlobalParametersS() {
+        synchronized (GlobalParameters.class) {
+            if (globalParameters == null) {
                 return;
             }
-            sessionParameters = null;
+            globalParameters = null;
         }
     }
 

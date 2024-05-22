@@ -176,9 +176,9 @@ public class Adjust {
      * @param key   Global callback parameter key
      * @param value Global callback parameter value
      */
-    public static void addSessionCallbackParameter(String key, String value) {
+    public static void addGlobalCallbackParameter(String key, String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.addSessionCallbackParameter(key, value);
+        adjustInstance.addGlobalCallbackParameter(key, value);
     }
 
     /**
@@ -187,9 +187,9 @@ public class Adjust {
      * @param key   Global partner parameter key
      * @param value Global partner parameter value
      */
-    public static void addSessionPartnerParameter(String key, String value) {
+    public static void addGlobalPartnerParameter(String key, String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.addSessionPartnerParameter(key, value);
+        adjustInstance.addGlobalPartnerParameter(key, value);
     }
 
     /**
@@ -197,9 +197,9 @@ public class Adjust {
      *
      * @param key Global callback parameter key
      */
-    public static void removeSessionCallbackParameter(String key) {
+    public static void removeGlobalCallbackParameter(String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.removeSessionCallbackParameter(key);
+        adjustInstance.removeGlobalCallbackParameter(key);
     }
 
     /**
@@ -207,25 +207,25 @@ public class Adjust {
      *
      * @param key Global partner parameter key
      */
-    public static void removeSessionPartnerParameter(String key) {
+    public static void removeGlobalPartnerParameter(String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.removeSessionPartnerParameter(key);
+        adjustInstance.removeGlobalPartnerParameter(key);
     }
 
     /**
      * Called to remove all added global callback parameters.
      */
-    public static void resetSessionCallbackParameters() {
+    public static void removeGlobalCallbackParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetSessionCallbackParameters();
+        adjustInstance.removeGlobalCallbackParameters();
     }
 
     /**
      * Called to remove all added global partner parameters.
      */
-    public static void resetSessionPartnerParameters() {
+    public static void removeGlobalPartnerParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetSessionPartnerParameters();
+        adjustInstance.removeGlobalPartnerParameters();
     }
 
     /**

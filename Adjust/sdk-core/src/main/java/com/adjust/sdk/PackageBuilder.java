@@ -22,7 +22,7 @@ public class PackageBuilder {
     private DeviceInfo deviceInfo;
     private AdjustConfig adjustConfig;
     private ActivityStateCopy activityStateCopy;
-    private SessionParameters sessionParameters;
+    private GlobalParameters globalParameters;
 
     long clickTimeInSeconds = -1;
     long clickTimeInMilliseconds = -1;
@@ -72,13 +72,13 @@ public class PackageBuilder {
     PackageBuilder(AdjustConfig adjustConfig,
                    DeviceInfo deviceInfo,
                    ActivityState activityState,
-                   SessionParameters sessionParameters,
+                   GlobalParameters globalParameters,
                    long createdAt) {
         this.createdAt = createdAt;
         this.deviceInfo = deviceInfo;
         this.adjustConfig = adjustConfig;
         this.activityStateCopy = new ActivityStateCopy(activityState);
-        this.sessionParameters = sessionParameters;
+        this.globalParameters = globalParameters;
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.context);
 
@@ -241,8 +241,8 @@ public class PackageBuilder {
 
         // Callback and partner parameters.
         if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", this.sessionParameters.callbackParameters);
-            PackageBuilder.addMapJson(parameters, "partner_params", this.sessionParameters.partnerParameters);
+            PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+            PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
         }
 
         // Device identifiers.
@@ -331,8 +331,8 @@ public class PackageBuilder {
 
         // Callback and partner parameters.
         if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.sessionParameters.callbackParameters, event.callbackParameters, "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.sessionParameters.partnerParameters, event.partnerParameters, "Partner"));
+            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, event.callbackParameters, "Callback"));
+            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, event.partnerParameters, "Partner"));
         }
 
         // Device identifiers.
@@ -508,7 +508,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "app_token", adjustConfig.appToken);
         PackageBuilder.addString(parameters, "app_version", deviceInfo.appVersion);
         PackageBuilder.addBoolean(parameters, "attribution_deeplink", true);
-        PackageBuilder.addMapJson(parameters, "callback_params", this.sessionParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
         PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
         PackageBuilder.addDateInSeconds(parameters, "click_time", clickTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "click_time_server", clickTimeServerInSeconds);
@@ -545,7 +545,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "os_version", deviceInfo.osVersion);
         PackageBuilder.addString(parameters, "package_name", deviceInfo.packageName);
         PackageBuilder.addMapJson(parameters, "params", extraParameters);
-        PackageBuilder.addMapJson(parameters, "partner_params", this.sessionParameters.partnerParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
         PackageBuilder.addString(parameters, "raw_referrer", rawReferrer);
         PackageBuilder.addString(parameters, "referrer", referrer);
@@ -852,8 +852,8 @@ public class PackageBuilder {
 
         // Callback and partner parameters.
         if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.sessionParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.sessionParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
+            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"));
+            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
         }
 
         // Device identifiers.
@@ -967,8 +967,8 @@ public class PackageBuilder {
 
         // Callback and partner parameters.
         if (!isInDelay) {
-            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.sessionParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"));
-            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.sessionParameters.partnerParameters, subscription.getPartnerParameters(), "Partner"));
+            PackageBuilder.addMapJson(parameters, "callback_params", Util.mergeParameters(this.globalParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"));
+            PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, subscription.getPartnerParameters(), "Partner"));
         }
 
         // Rest of the parameters.

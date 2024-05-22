@@ -47,8 +47,8 @@ public interface Constants {
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
-    String SESSION_CALLBACK_PARAMETERS_FILENAME = "AdjustSessionCallbackParameters";
-    String SESSION_PARTNER_PARAMETERS_FILENAME = "AdjustSessionPartnerParameters";
+    String GLOBAL_CALLBACK_PARAMETERS_FILENAME = "AdjustGlobalCallbackParameters";
+    String GLOBAL_PARTNER_PARAMETERS_FILENAME = "AdjustGlobalPartnerParameters";
 
     String MALFORMED = "malformed";
     String SMALL = "small";

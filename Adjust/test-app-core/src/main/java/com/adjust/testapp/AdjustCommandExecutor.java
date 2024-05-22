@@ -32,9 +32,6 @@ import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import com.adjust.test_options.TestConnectionOptions;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,12 +74,12 @@ public class AdjustCommandExecutor {
                 case "setReferrer": setReferrer(); break;
                 case "setOfflineMode": setOfflineMode(); break;
                 case "sendFirstPackages": sendFirstPackages(); break;
-                case "addSessionCallbackParameter": addSessionCallbackParameter(); break;
-                case "addSessionPartnerParameter": addSessionPartnerParameter(); break;
-                case "removeSessionCallbackParameter": removeSessionCallbackParameter(); break;
-                case "removeSessionPartnerParameter": removeSessionPartnerParameter(); break;
-                case "resetSessionCallbackParameters": resetSessionCallbackParameters(); break;
-                case "resetSessionPartnerParameters": resetSessionPartnerParameters(); break;
+                case "addGlobalCallbackParameter": addGlobalCallbackParameter(); break;
+                case "addGlobalPartnerParameter": addGlobalPartnerParameter(); break;
+                case "removeGlobalCallbackParameter": removeGlobalCallbackParameter(); break;
+                case "removeGlobalPartnerParameter": removeGlobalPartnerParameter(); break;
+                case "removeGlobalCallbackParameters": removeGlobalCallbackParameters(); break;
+                case "removeGlobalPartnerParameters": removeGlobalPartnerParameters(); break;
                 case "setPushToken": setPushToken(); break;
                 // case "teardown": teardown(); break;
                 case "openDeeplink": openDeeplink(); break;
@@ -564,54 +561,54 @@ public class AdjustCommandExecutor {
         Adjust.sendFirstPackages();
     }
 
-    private void addSessionCallbackParameter() {
+    private void addGlobalCallbackParameter() {
         if (command.containsParameter("KeyValue")) {
             List<String> keyValuePairs = command.parameters.get("KeyValue");
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
                 String key = keyValuePairs.get(i);
                 String value = keyValuePairs.get(i+1);
-                Adjust.addSessionCallbackParameter(key, value);
+                Adjust.addGlobalCallbackParameter(key, value);
             }
         }
     }
 
-    private void addSessionPartnerParameter() {
+    private void addGlobalPartnerParameter() {
         if (command.containsParameter("KeyValue")) {
             List<String> keyValuePairs = command.parameters.get("KeyValue");
             for (int i = 0; i<keyValuePairs.size() ; i = i+2) {
                 String key = keyValuePairs.get(i);
                 String value = keyValuePairs.get(i+1);
-                Adjust.addSessionPartnerParameter(key, value);
+                Adjust.addGlobalPartnerParameter(key, value);
             }
         }
     }
 
-    private void removeSessionCallbackParameter() {
+    private void removeGlobalCallbackParameter() {
         if (command.containsParameter("key")) {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
                 String key = keys.get(i);
-                Adjust.removeSessionCallbackParameter(key);
+                Adjust.removeGlobalCallbackParameter(key);
             }
         }
     }
 
-    private void removeSessionPartnerParameter() {
+    private void removeGlobalPartnerParameter() {
         if (command.containsParameter("key")) {
             List<String> keys = command.parameters.get("key");
             for (int i = 0; i<keys.size() ; i = i+1) {
                 String key = keys.get(i);
-                Adjust.removeSessionPartnerParameter(key);
+                Adjust.removeGlobalPartnerParameter(key);
             }
         }
     }
 
-    private void resetSessionCallbackParameters() {
-        Adjust.resetSessionCallbackParameters();
+    private void removeGlobalCallbackParameters() {
+        Adjust.removeGlobalCallbackParameters();
     }
 
-    private void resetSessionPartnerParameters() {
-        Adjust.resetSessionPartnerParameters();
+    private void removeGlobalPartnerParameters() {
+        Adjust.removeGlobalPartnerParameters();
     }
 
     private void setPushToken() {

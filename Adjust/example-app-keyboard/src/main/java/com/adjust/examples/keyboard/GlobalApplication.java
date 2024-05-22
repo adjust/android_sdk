@@ -110,24 +110,24 @@ public class GlobalApplication extends Application {
         // config.setDelayStart(7);
 
         // Add session callback parameters.
-        Adjust.addSessionCallbackParameter("sc_foo", "sc_bar");
-        Adjust.addSessionCallbackParameter("sc_key", "sc_value");
+        Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar");
+        Adjust.addGlobalCallbackParameter("sc_key", "sc_value");
 
-        // Add session partner parameters.
-        Adjust.addSessionPartnerParameter("sp_foo", "sp_bar");
-        Adjust.addSessionPartnerParameter("sp_key", "sp_value");
+        // Add global partner parameters.
+        Adjust.addGlobalPartnerParameter("sp_foo", "sp_bar");
+        Adjust.addGlobalPartnerParameter("sp_key", "sp_value");
 
         // Remove session callback parameters.
-        Adjust.removeSessionCallbackParameter("sc_foo");
+        Adjust.removeGlobalCallbackParameter("sc_foo");
 
-        // Remove session partner parameters.
-        Adjust.removeSessionPartnerParameter("sp_key");
+        // Remove global partner parameters.
+        Adjust.removeGlobalPartnerParameter("sp_key");
 
         // Remove all session callback parameters.
-        Adjust.resetSessionCallbackParameters();
+        Adjust.removeGlobalCallbackParameters();
 
-        // Remove all session partner parameters.
-        Adjust.resetSessionPartnerParameters();
+        // Remove all global partner parameters.
+        Adjust.removeGlobalPartnerParameters();
 
         // Enable IMEI reading ONLY IF:
         // - IMEI plugin is added to your app.

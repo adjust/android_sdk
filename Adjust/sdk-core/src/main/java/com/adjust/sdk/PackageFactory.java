@@ -24,7 +24,7 @@ public class PackageFactory {
                                                               final ActivityState activityState,
                                                               final AdjustConfig adjustConfig,
                                                               final DeviceInfo deviceInfo,
-                                                              final SessionParameters sessionParameters) {
+                                                              final GlobalParameters globalParameters) {
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return null;
         }
@@ -56,7 +56,7 @@ public class PackageFactory {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                globalParameters);
 
         if (clickPackageBuilder == null) {
             return null;
@@ -76,7 +76,7 @@ public class PackageFactory {
                                                               final ActivityState activityState,
                                                               final AdjustConfig adjustConfig,
                                                               final DeviceInfo deviceInfo,
-                                                              final SessionParameters sessionParameters) {
+                                                              final GlobalParameters globalParameters) {
         if (url == null) {
             return null;
         }
@@ -114,7 +114,7 @@ public class PackageFactory {
                 activityState,
                 adjustConfig,
                 deviceInfo,
-                sessionParameters);
+                globalParameters);
 
         if (clickPackageBuilder == null) {
             return null;
@@ -133,14 +133,14 @@ public class PackageFactory {
                                                                       final ActivityState activityState,
                                                                       final AdjustConfig adjustConfig,
                                                                       final DeviceInfo deviceInfo,
-                                                                      final SessionParameters sessionParameters) {
+                                                                      final GlobalParameters globalParameters) {
         long now = System.currentTimeMillis();
 
         PackageBuilder clickPackageBuilder = new PackageBuilder(
                 adjustConfig,
                 deviceInfo,
                 activityState,
-                sessionParameters,
+                globalParameters,
                 now);
 
         clickPackageBuilder.referrer = referrerDetails.installReferrer;
@@ -163,7 +163,7 @@ public class PackageFactory {
                                                                  final ActivityState activityState,
                                                                  final AdjustConfig adjustConfig,
                                                                  final DeviceInfo deviceInfo,
-                                                                 final SessionParameters sessionParameters) {
+                                                                 final GlobalParameters globalParameters) {
         if (preinstallPayload == null || preinstallPayload.length() == 0) {
             return null;
         }
@@ -174,7 +174,7 @@ public class PackageFactory {
                 adjustConfig,
                 deviceInfo,
                 activityState,
-                sessionParameters,
+                globalParameters,
                 now);
 
         clickPackageBuilder.preinstallPayload = preinstallPayload;
@@ -190,7 +190,7 @@ public class PackageFactory {
             final ActivityState activityState,
             final AdjustConfig adjustConfig,
             final DeviceInfo deviceInfo,
-            final SessionParameters sessionParameters) {
+            final GlobalParameters globalParameters) {
         if (queryList == null) {
             return null;
         }
@@ -220,7 +220,7 @@ public class PackageFactory {
                 adjustConfig,
                 deviceInfo,
                 activityState,
-                sessionParameters,
+                globalParameters,
                 now);
 
         builder.extraParameters = queryStringParameters;

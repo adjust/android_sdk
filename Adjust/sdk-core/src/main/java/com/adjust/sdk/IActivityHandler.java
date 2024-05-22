@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 /**
  * Created by pfms on 15/12/14.
  */
@@ -51,17 +49,17 @@ public interface IActivityHandler {
 
     void sendFirstPackages();
 
-    void addSessionCallbackParameter(String key, String value);
+    void addGlobalCallbackParameter(String key, String value);
 
-    void addSessionPartnerParameter(String key, String value);
+    void addGlobalPartnerParameter(String key, String value);
 
-    void removeSessionCallbackParameter(String key);
+    void removeGlobalCallbackParameter(String key);
 
-    void removeSessionPartnerParameter(String key);
+    void removeGlobalPartnerParameter(String key);
 
-    void resetSessionCallbackParameters();
+    void removeGlobalCallbackParameters();
 
-    void resetSessionPartnerParameters();
+    void removeGlobalPartnerParameters();
 
     void teardown();
 
@@ -95,5 +93,5 @@ public interface IActivityHandler {
 
     ActivityState getActivityState();
 
-    SessionParameters getSessionParameters();
+    GlobalParameters getGlobalParameters();
 }
