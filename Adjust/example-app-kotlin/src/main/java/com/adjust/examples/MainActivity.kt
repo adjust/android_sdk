@@ -118,7 +118,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun onIsSDKEnabledClick(v: View) {
-        Adjust.isEnabled(this,OnIsEnabledListener {
+        Adjust.isEnabled(this, OnIsEnabledListener {
             if (it) {
                 Toast.makeText(applicationContext, R.string.txt_sdk_is_enabled,
                         Toast.LENGTH_SHORT).show()
