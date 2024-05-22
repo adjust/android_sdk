@@ -19,7 +19,6 @@ function AdjustConfig(appToken, environment, legacy) {
         }
     }
 
-    this.eventBufferingEnabled = null;
     this.sendInBackground = null;
     this.logLevel = null;
     this.sdkPrefix = null;
@@ -70,10 +69,6 @@ AdjustConfig.LogLevelSuppress = 'SUPPRESS',
 
 AdjustConfig.prototype.getBridge = function() {
     return this.bridge;
-};
-
-AdjustConfig.prototype.setEventBufferingEnabled = function(isEnabled) {
-    this.eventBufferingEnabled = isEnabled;
 };
 
 AdjustConfig.prototype.setSendInBackground = function(isEnabled) {

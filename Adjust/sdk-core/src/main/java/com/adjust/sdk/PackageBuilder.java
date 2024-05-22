@@ -275,7 +275,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
@@ -365,7 +364,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
         PackageBuilder.addString(parameters, "event_callback_id", event.callbackId);
         PackageBuilder.addLong(parameters, "event_count", activityStateCopy.eventCount);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "event_token", event.eventToken);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
@@ -439,7 +437,6 @@ public class PackageBuilder {
         PackageBuilder.addDateInMilliseconds(parameters, "created_at", createdAt);
         PackageBuilder.addBoolean(parameters, "needs_cost", adjustConfig.needsCost);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "push_token", activityStateCopy.pushToken);
@@ -517,7 +514,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addBoolean(parameters, "google_play_instant", googlePlayInstant);
@@ -608,7 +604,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "initiated_by", initiatedBy);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -670,7 +665,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
@@ -744,7 +738,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
@@ -810,7 +803,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "device_type", deviceInfo.deviceType);
         PackageBuilder.addLong(parameters, "ui_mode", deviceInfo.uiMode);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
         PackageBuilder.addString(parameters, "os_name", deviceInfo.osName);
@@ -882,7 +874,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
@@ -977,7 +968,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
@@ -1070,7 +1060,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "display_height", deviceInfo.displayHeight);
         PackageBuilder.addString(parameters, "display_width", deviceInfo.displayWidth);
         PackageBuilder.addString(parameters, "environment", adjustConfig.environment);
-        PackageBuilder.addBoolean(parameters, "event_buffering_enabled", adjustConfig.eventBufferingEnabled);
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
