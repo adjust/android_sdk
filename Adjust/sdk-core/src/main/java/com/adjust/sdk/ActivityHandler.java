@@ -417,6 +417,7 @@ public class ActivityHandler implements IActivityHandler {
         });
     }
 
+    @Override
     public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
