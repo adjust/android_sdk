@@ -283,11 +283,6 @@ public class AdjustCommandExecutor {
             adjustConfig.setNeedsCost(needsCost);
         }
 
-        if (command.containsParameter("eventBufferingEnabled")) {
-            String eventBufferingEnabledS = command.getFirstParameterValue("eventBufferingEnabled");
-            boolean eventBufferingEnabled = "true".equals(eventBufferingEnabledS);
-            adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
-        }
 
         if (command.containsParameter("sendInBackground")) {
             String sendInBackgroundS = command.getFirstParameterValue("sendInBackground");

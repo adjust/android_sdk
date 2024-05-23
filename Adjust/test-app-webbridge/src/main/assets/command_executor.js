@@ -302,12 +302,6 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setNeedsCost(needsCost);
     }
 
-    if ('eventBufferingEnabled' in params) {
-        var eventBufferingEnabledS = getFirstParameterValue(params, 'eventBufferingEnabled');
-        var eventBufferingEnabled = eventBufferingEnabledS == 'true';
-        adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
-    }
-
     if ('sendInBackground' in params) {
         var sendInBackgroundS = getFirstParameterValue(params, 'sendInBackground');
         var sendInBackground = sendInBackgroundS == 'true';

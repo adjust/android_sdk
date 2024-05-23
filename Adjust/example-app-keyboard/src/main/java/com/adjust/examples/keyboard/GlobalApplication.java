@@ -103,9 +103,6 @@ public class GlobalApplication extends Application {
         // Allow to send in the background.
         config.setSendInBackground(true);
 
-        // Enable event buffering.
-        // config.setEventBufferingEnabled(true);
-
         // Add session callback parameters.
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar");
         Adjust.addGlobalCallbackParameter("sc_key", "sc_value");

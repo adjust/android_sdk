@@ -68,8 +68,6 @@ class GlobalApplication : Application() {
         // Allow to send in the background.
         config.setSendInBackground(true)
 
-        // Enable event buffering.
-        // config.setEventBufferingEnabled(true);
 
         // Allow tracking preinstall
         // config.setPreinstallTrackingEnabled(true);
