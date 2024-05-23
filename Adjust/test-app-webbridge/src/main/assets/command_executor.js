@@ -606,11 +606,6 @@ AdjustCommandExecutor.prototype.setPushToken = function(params) {
     Adjust.setPushToken(token);
 };
 
-AdjustCommandExecutor.prototype.openDeeplink = function(params) {
-    var deeplink = getFirstParameterValue(params, "deeplink");
-    Adjust.appWillOpenUrl(deeplink);
-};
-
 AdjustCommandExecutor.prototype.sendReferrer = function(params) {
     var referrer = getFirstParameterValue(params, 'referrer');
     Adjust.setReferrer(referrer);

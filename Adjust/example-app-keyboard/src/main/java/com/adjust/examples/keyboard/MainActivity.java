@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.appWillOpenUrl(data, getApplicationContext());
+        Adjust.processDeeplink(data, getApplicationContext());
     }
 
     @Override

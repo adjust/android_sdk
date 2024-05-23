@@ -15,7 +15,7 @@ class ServiceActivity : AppCompatActivity() {
 
         val intent = intent
         val data = intent.data
-        Adjust.appWillOpenUrl(data, applicationContext)
+        Adjust.processDeeplink(data, applicationContext)
     }
 
     fun onServiceClick(v: View) {

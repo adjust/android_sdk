@@ -49,22 +49,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d("testappwebbridge", "loadUrl, exception: " + e.getMessage());
             e.printStackTrace();
         }
-
-        // Check if deferred deep link was received
-        Intent intent = getIntent();
-        Uri deeplinkData = intent.getData();
-        if (deeplinkData != null) {
-            Adjust.appWillOpenUrl(deeplinkData, getApplicationContext());
-        }
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-
-        Uri deeplink = intent.getData();
-        if (deeplink != null) {
-            Adjust.appWillOpenUrl(deeplink, getApplicationContext());
-        }
     }
 }

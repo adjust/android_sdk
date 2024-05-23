@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         val intent = intent
         val data = intent.data
-        Adjust.appWillOpenUrl(data, applicationContext)
+        Adjust.processDeeplink(data, applicationContext)
 
         // Adjust UI according to SDK state.
         btnEnableDisableSDK = findViewById<View>(R.id.btnEnableDisableSDK) as Button
