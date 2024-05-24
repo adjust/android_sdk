@@ -28,6 +28,7 @@ import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnIsEnabledListener;
+import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
@@ -54,6 +55,8 @@ public class AdjustBridgeInstance {
     private boolean isInitialized = false;
     private boolean shouldDeferredDeeplinkBeLaunched = true;
     private FacebookSDKJSInterface facebookSDKJSInterface = null;
+
+    private String adjustSdkPrefix = null;
 
     AdjustBridgeInstance() {}
 
@@ -209,6 +212,7 @@ public class AdjustBridgeInstance {
             String sdkPrefix = AdjustBridgeUtil.fieldToString(sdkPrefixField);
             if (sdkPrefix != null) {
                 adjustConfig.setSdkPrefix(sdkPrefix);
+                adjustSdkPrefix = sdkPrefix;
             }
 
             // Main process name
@@ -711,8 +715,19 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public String getSdkVersion() {
-        return Adjust.getSdkVersion();
+    public void getSdkVersion(final String callback) {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.getSdkVersion(new OnSdkVersionReadListener() {
+            @Override
+            public void onSdkVersionRead(String sdkVersion) {
+                if (adjustSdkPrefix != null && adjustSdkPrefix.length() > 0) {
+                    sdkVersion = adjustSdkPrefix + "@" + sdkVersion;
+                }
+                AdjustBridgeUtil.execSingleValueCallback(webView, callback, sdkVersion);
+            }
+        });
     }
 
     @JavascriptInterface

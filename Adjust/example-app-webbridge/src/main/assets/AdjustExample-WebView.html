@@ -169,6 +169,14 @@
                         alert('Ad Id:\n' + adid);
                     });
                 }
+
+                var btnGetSdkVersion = document.getElementById('btnGetSdkVersion')
+                btnGetSdkVersion.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getSdkVersion(function (sdkVersion) {
+                        alert('SDK version:\n' + sdkVersion);
+                    });
+                }
             }
         </script>
         <div id='buttons'>
@@ -207,6 +215,9 @@
             </div>
             <div style="width:400px;height:35px;text-align:center;">
                 <button id='btnGetAmazonId'>Get Amazon Ad Id</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetSdkVersion'>Get SDK version</button>
             </div>
         </div>
     </body>
