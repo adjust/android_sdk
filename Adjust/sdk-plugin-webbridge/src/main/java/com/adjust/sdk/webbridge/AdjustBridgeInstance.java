@@ -27,6 +27,7 @@ import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
