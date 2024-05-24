@@ -351,8 +351,8 @@ public class AdjustBridgeInstance {
 
             // read device info once
             Boolean shouldReadDeviceIdsOnce = AdjustBridgeUtil.fieldToBoolean(shouldReadDeviceIdsOnceField);
-            if (shouldReadDeviceIdsOnce != null) {
-                adjustConfig.readDeviceIdsOnce(shouldReadDeviceIdsOnce);
+            if (shouldReadDeviceIdsOnce != null && shouldReadDeviceIdsOnce.booleanValue()) {
+                adjustConfig.readDeviceIdsOnce();
             }
 
             Integer eventDeduplicationIdsMaxSize = AdjustBridgeUtil.fieldToInteger(eventDeduplicationIdsMaxSizeField);

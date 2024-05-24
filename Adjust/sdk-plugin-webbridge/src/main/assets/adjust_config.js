@@ -212,8 +212,8 @@ AdjustConfig.prototype.setFbAppId = function(fbAppId) {
     this.fbAppId = fbAppId;
 };
 
-AdjustConfig.prototype.readDeviceIdsOnce = function(isEnabled) {
-    this.shouldReadDeviceIdsOnce = isEnabled;
+AdjustConfig.prototype.readDeviceIdsOnce = function() {
+    this.shouldReadDeviceIdsOnce = true;
 };
 
 AdjustConfig.prototype.setEventDeduplicationIdsMaxSize = function(eventDeduplicationIdsMaxSize) {
