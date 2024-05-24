@@ -83,6 +83,7 @@ public class AdjustConfig {
         // default values
         this.sendInBackground = false;
         this.preinstallTrackingEnabled = false;
+        this.shouldReadDeviceIdsOnce = false;
     }
 
 
@@ -179,8 +180,8 @@ public class AdjustConfig {
         this.urlStrategy = urlStrategy;
     }
 
-    public void readDeviceIdsOnce(boolean shouldReadDeviceIdsOnce) {
-        this.shouldReadDeviceIdsOnce = shouldReadDeviceIdsOnce;
+    public void readDeviceIdsOnce() {
+        this.shouldReadDeviceIdsOnce = true;
     }
 
     public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
