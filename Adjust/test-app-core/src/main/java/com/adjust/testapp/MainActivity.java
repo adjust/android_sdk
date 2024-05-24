@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.test.TestLibrary;
 
 public class MainActivity extends AppCompatActivity {
@@ -38,6 +39,12 @@ public class MainActivity extends AppCompatActivity {
     private void startTestSession() {
         // testLibrary.addTestDirectory("current/gdpr");
 
-        testLibrary.startTestSession(Adjust.getSdkVersion());
+        Adjust.getSdkVersion(new OnSdkVersionReadListener() {
+            @Override
+            public void onSdkVersionRead(String sdkVersion) {
+                testLibrary.startTestSession(sdkVersion);
+            }
+        });
+
     }
 }

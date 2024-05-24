@@ -551,10 +551,10 @@ public class AdjustInstance {
     /**
      * Called to get native SDK version string.
      *
-     * @return Native SDK version string.
+     * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
-    public String getSdkVersion() {
-        return Util.getSdkVersion();
+    public void getSdkVersion(OnSdkVersionReadListener onSdkVersionReadListener) {
+        onSdkVersionReadListener.onSdkVersionRead(Util.getSdkVersion());
     }
 
     /**

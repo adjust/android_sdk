@@ -238,11 +238,21 @@ var Adjust = {
         }
     },
 
-    getSdkVersion: function () {
+    getSdkVersion: function (callback) {
         if (AdjustBridge) {
-             return this.getSdkPrefix() + '@' + AdjustBridge.getSdkVersion();
-        } else {
-            return undefined;
+                if (typeof callback === 'string' || callback instanceof String) {
+                    this.getSdkVersionCallbackName = callback;
+                } else {
+                    this.getSdkVersionCallbackName = 'Adjust.adjust_getSdkVersionCallback';
+                    this.getSdkVersionCallbackFunction = callback;
+                }
+                AdjustBridge.getSdkVersion(this.getSdkVersionCallbackName);
+            }
+    },
+
+    adjust_getSdkVersionCallback: function (sdkVersion) {
+        if (AdjustBridge && this.getSdkVersionCallbackFunction) {
+            this.getSdkVersionCallbackFunction(sdkVersion);
         }
     },
 
@@ -269,5 +279,7 @@ var Adjust = {
         this.getAmazonIdCallbackSuccessFunction = undefined;
         this.getAmazonIdCallbackFailName = undefined;
         this.getAmazonIdCallbackFailFunction = undefined;
+        this.getSdkVersionCallbackFunction = undefined;
+        this.getSdkVersionCallbackName = undefined;
     },
 };
