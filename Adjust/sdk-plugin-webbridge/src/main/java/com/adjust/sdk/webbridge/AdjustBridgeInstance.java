@@ -495,20 +495,6 @@ public class AdjustBridgeInstance {
         });
     }
 
-//    @JavascriptInterface
-//    public boolean isEnabled() {
-//        if (!isInitialized()) {
-//            return false;
-//        }
-//
-//         Adjust.isEnabled(new OnIsEnabledListener() {
-//            @Override
-//            public void onIsEnabledRead(boolean isEnabled) {
-//
-//            }
-//        });
-//    }
-
     @JavascriptInterface
     public void appWillOpenUrl(String deeplinkString) {
         if (!isInitialized()) {
