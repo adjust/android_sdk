@@ -33,7 +33,7 @@ public class AdjustXiaomiReferrer {
          @Override
          protected XiaomiInstallReferrerResult doInBackground(Context[] contexts) {
             try {
-               return XiaomiReferrerClient.getReferrer(context, AdjustFactory.getLogger(),2000);
+               return XiaomiReferrerClient.getReferrer(context, AdjustFactory.getLogger(),3000);
             } catch (Exception exception) {
                return new XiaomiInstallReferrerResult(exception.getMessage());
             }
@@ -46,10 +46,10 @@ public class AdjustXiaomiReferrer {
                   onXiaomiInstallReferrerReadListener.onXiaomiInstallReferrerRead(xiaomiInstallReferrerResult.xiaomiInstallReferrerDetails);
                } else if (xiaomiInstallReferrerResult.error != null) {
                   onXiaomiInstallReferrerReadListener.onFail(xiaomiInstallReferrerResult.error);
-               }else {
+               } else {
                   onXiaomiInstallReferrerReadListener.onFail("XiaomiReferrer getInstallReferrer: xiaomiInstallReferrerDetails is null");
                }
-            }else {
+            } else {
                onXiaomiInstallReferrerReadListener.onFail("XiaomiReferrer getInstallReferrer: xiaomiInstallReferrerResult is null");
             }
          }
