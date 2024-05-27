@@ -43,7 +43,7 @@ public class AdjustMetaReferrer {
                   onMetaInstallReferrerReadListener.onFail("Meta Install Referrer details null");
                }
             } else {
-               onMetaInstallReferrerReadListener.onFail("Meta Install Referrer details null");
+               onMetaInstallReferrerReadListener.onFail("Meta Install Referrer result null");
             }
          }
       }.execute(context);
