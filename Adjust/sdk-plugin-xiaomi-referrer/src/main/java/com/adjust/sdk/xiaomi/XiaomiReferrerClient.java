@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 public class XiaomiReferrerClient {
 
-    public static GetAppsReferrerDetails getReferrer(Context context, final ILogger logger, long maxWaitTimeInMilli) {
+    public static XiaomiInstallReferrerResult getReferrer(Context context, final ILogger logger, long maxWaitTimeInMilli) {
         try {
             final GetAppsReferrerClient referrerClient = new GetAppsReferrerClient.Builder(context).build();
-            final BlockingQueue<GetAppsReferrerDetails> referrerDetailsHolder = new LinkedBlockingQueue<GetAppsReferrerDetails>(1);
+            final BlockingQueue<XiaomiInstallReferrerResult> referrerDetailsHolder = new LinkedBlockingQueue<XiaomiInstallReferrerResult>(1);
             referrerClient.startConnection(new GetAppsReferrerStateListener() {
                 @Override
                 public void onGetAppsReferrerSetupFinished(int responseCode) {
@@ -25,21 +25,29 @@ public class XiaomiReferrerClient {
                         switch (responseCode) {
                             case GetAppsReferrerResponse.OK:
                                 try {
-                                    GetAppsReferrerDetails getAppsReferrerDetails = referrerClient.getInstallReferrer();
-                                    referrerDetailsHolder.offer(getAppsReferrerDetails);
+                                    XiaomiInstallReferrerDetails xiaomiInstallReferrerDetails = new XiaomiInstallReferrerDetails(referrerClient.getInstallReferrer());
+                                    referrerDetailsHolder.offer(new XiaomiInstallReferrerResult(xiaomiInstallReferrerDetails));
                                 } catch (Exception e) {
-                                    logger.error("XiaomiReferrer getInstallReferrer: " + e.getMessage());
+                                    String message = "XiaomiReferrer getInstallReferrer: " + e.getMessage();
+                                    logger.error(message);
+                                    referrerDetailsHolder.offer(new XiaomiInstallReferrerResult(message));
                                 }
                                 break;
                             case GetAppsReferrerResponse.FEATURE_NOT_SUPPORTED:
-                                logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: FEATURE_NOT_SUPPORTED");
+                                String message = "XiaomiReferrer onGetAppsReferrerSetupFinished: FEATURE_NOT_SUPPORTED";
+                                logger.info(message);
+                                referrerDetailsHolder.offer(new XiaomiInstallReferrerResult(message));
                                 break;
                             case GetAppsReferrerResponse.SERVICE_UNAVAILABLE:
-                                logger.info("XiaomiReferrer onGetAppsReferrerSetupFinished: SERVICE_UNAVAILABLE");
+                                String message1 = "XiaomiReferrer onGetAppsReferrerSetupFinished: SERVICE_UNAVAILABLE";
+                                logger.info(message1);
+                                referrerDetailsHolder.offer(new XiaomiInstallReferrerResult(message1));
                                 break;
                         }
                     } catch (Exception e) {
-                        logger.error("XiaomiReferrer onGetAppsReferrerSetupFinished: " + e.getMessage());
+                        String message = "XiaomiReferrer onGetAppsReferrerSetupFinished: " + e.getMessage();
+                        logger.error(message);
+                        referrerDetailsHolder.offer(new XiaomiInstallReferrerResult(message));
                     }
                 }
 
@@ -52,8 +60,7 @@ public class XiaomiReferrerClient {
 
         } catch (Exception e) {
             logger.error("Exception while getting referrer: ", e.getMessage());
+            return new XiaomiInstallReferrerResult(e.getMessage());
         }
-
-        return null;
     }
 }
