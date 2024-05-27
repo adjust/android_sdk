@@ -39,7 +39,11 @@ public class AdjustVivoReferrer {
                   onVivoInstallReferrerReadListener.onVivoInstallReferrerRead(vivoInstallReferrerResult.vivoInstallReferrerDetails);
                } else if (vivoInstallReferrerResult.error != null) {
                   onVivoInstallReferrerReadListener.onFail(vivoInstallReferrerResult.error);
+               } else {
+                  onVivoInstallReferrerReadListener.onFail("VivoReferrer getInstallReferrer: xiaomiInstallReferrerDetails is null");
                }
+            } else {
+               onVivoInstallReferrerReadListener.onFail("VivoReferrer getInstallReferrer: vivoInstallReferrerResult is null");
             }
          }
       }.execute(context);
