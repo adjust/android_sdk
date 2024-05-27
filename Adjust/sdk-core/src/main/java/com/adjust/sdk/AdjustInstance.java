@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
@@ -554,7 +556,12 @@ public class AdjustInstance {
      * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
     public void getSdkVersion(OnSdkVersionReadListener onSdkVersionReadListener) {
-        onSdkVersionReadListener.onSdkVersionRead(Util.getSdkVersion());
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                onSdkVersionReadListener.onSdkVersionRead(Util.getSdkVersion());
+            }
+        });
     }
 
     /**
