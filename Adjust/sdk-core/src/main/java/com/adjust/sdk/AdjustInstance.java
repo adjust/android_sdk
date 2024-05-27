@@ -3,6 +3,8 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
+import com.adjust.sdk.scheduler.AsyncTaskExecutor;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -151,13 +153,25 @@ public class AdjustInstance {
     /**
      * Get information if SDK is enabled or not.
      *
-     * @return boolean indicating whether SDK is enabled or not
+     * @param context Application context
+     * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public boolean isEnabled() {
+    public void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
         if (!checkActivityHandler("isEnabled")) {
-            return isInstanceEnabled();
+            new AsyncTaskExecutor<Context,Boolean>(){
+                @Override
+                protected Boolean doInBackground(Context... contexts) {
+                    return Util.isEnabledFromActivityStateFile(contexts[0]);
+                }
+
+                @Override
+                protected void onPostExecute(Boolean isEnabled) {
+                    isEnabledListener.onIsEnabledRead(isEnabled);
+                }
+            }.execute(context);
+            return;
         }
-        return activityHandler.isEnabled();
+        activityHandler.isEnabled(isEnabledListener);
     }
 
     /**

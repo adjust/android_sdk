@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
+import com.adjust.sdk.OnIsEnabledListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
@@ -37,12 +38,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Adjust.isEnabled(this, new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                if (isEnabled) {
+                    btnEnableDisableSDK.setText(R.string.txt_disable_sdk);
+                } else {
+                    btnEnableDisableSDK.setText(R.string.txt_enable_sdk);
+                }
+            }
+        });
 
-        if (Adjust.isEnabled()) {
-            btnEnableDisableSDK.setText(R.string.txt_disable_sdk);
-        } else {
-            btnEnableDisableSDK.setText(R.string.txt_enable_sdk);
-        }
     }
 
     public void onTrackSimpleEventClick(View v) {
@@ -90,23 +96,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onEnableDisableSDKClick(View v) {
-        if (Adjust.isEnabled()) {
-            Adjust.setEnabled(false);
-            ((Button) v).setText(R.string.txt_enable_sdk);
-        } else {
-            Adjust.setEnabled(true);
-            ((Button) v).setText(R.string.txt_disable_sdk);
-        }
+        Adjust.isEnabled( getApplicationContext(),new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                if (isEnabled) {
+                    Adjust.setEnabled(false);
+                    ((Button) v).setText(R.string.txt_enable_sdk);
+                } else {
+                    Adjust.setEnabled(true);
+                    ((Button) v).setText(R.string.txt_disable_sdk);
+                }
+            }
+        });
+
     }
 
     public void onIsSDKEnabledClick(View v) {
-        if (Adjust.isEnabled()) {
-            Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_enabled,
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_disabled,
-                    Toast.LENGTH_SHORT).show();
-        }
+        Adjust.isEnabled(getApplicationContext(),new OnIsEnabledListener() {
+            @Override
+            public void onIsEnabledRead(boolean isEnabled) {
+                if (isEnabled) {
+                    Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_enabled,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), R.string.txt_sdk_is_disabled,
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     public void onServiceActivityClick(View v) {

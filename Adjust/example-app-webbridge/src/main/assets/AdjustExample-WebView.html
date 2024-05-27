@@ -138,7 +138,9 @@
                 var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')
                 btnIsSdkEnabled.onclick = function(e) {
                     e.preventDefault();
-                    alert('Is SDK enabled? ' + Adjust.isEnabled());
+                    Adjust.isEnabled(function (isEnabled){
+                        alert('Is SDK enabled? ' + isEnabled);
+                    });
                 }
 
                 var btnGetGoogleAdId = document.getElementById('btnGetGoogleAdId')
@@ -152,9 +154,8 @@
                 var btnGetAmazonId = document.getElementById('btnGetAmazonId')
                 btnGetAmazonId.onclick = function(e) {
                     e.preventDefault();
-                    Adjust.getAmazonAdId(function (gpsAdid) {
-                        alert('Amazon Ad Id:\n' + gpsAdid);
-                        alert('Message:\n' + message);
+                    Adjust.getAmazonAdId(function (amazonAdid) {
+                        alert('Amazon Ad Id:\n' + amazonAdid);
                     },
                     function (message) {
                         alert('Message:\n' + message);
