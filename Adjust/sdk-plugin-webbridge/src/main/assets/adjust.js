@@ -111,12 +111,6 @@ var Adjust = {
         }
     },
 
-    setPushToken: function(token) {
-        if (AdjustBridge) {
-            AdjustBridge.setPushToken(token);
-        }
-    },
-
     gdprForgetMe: function() {
         if (AdjustBridge) {
             AdjustBridge.gdprForgetMe();
