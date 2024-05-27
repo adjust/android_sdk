@@ -12,16 +12,16 @@ public class Util {
          return null;
       }
 
-      GetAppsReferrerDetails getAppsReferrerDetails = XiaomiReferrerClient.getReferrer(context, logger, 3000);
-      if (getAppsReferrerDetails == null) {
+      XiaomiInstallReferrerDetails xiaomiInstallReferrerDetails = XiaomiReferrerClient.getReferrer(context, logger, 3000).xiaomiInstallReferrerDetails;
+      if (xiaomiInstallReferrerDetails == null) {
          return null;
       }
 
-      return new ReferrerDetails(getAppsReferrerDetails.getInstallReferrer(),
-                                 getAppsReferrerDetails.getReferrerClickTimestampSeconds(),
-                                 getAppsReferrerDetails.getInstallBeginTimestampSeconds(),
-                                 getAppsReferrerDetails.getReferrerClickTimestampServerSeconds(),
-                                 getAppsReferrerDetails.getInstallBeginTimestampServerSeconds(),
-                                 getAppsReferrerDetails.getInstallVersion(), null, null);
+      return new ReferrerDetails(xiaomiInstallReferrerDetails.installReferrer,
+                                 xiaomiInstallReferrerDetails.referrerClickTimestampSeconds,
+                                 xiaomiInstallReferrerDetails.installBeginTimestampSeconds,
+                                 xiaomiInstallReferrerDetails.referrerClickTimestampServerSeconds,
+                                 xiaomiInstallReferrerDetails.installBeginTimestampServerSeconds,
+                                 xiaomiInstallReferrerDetails.installVersion, null, null);
    }
 }
