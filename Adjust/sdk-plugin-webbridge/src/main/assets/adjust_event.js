@@ -4,7 +4,6 @@ function AdjustEvent(eventToken) {
     this.currency = null;
     this.callbackParameters = [];
     this.partnerParameters = [];
-    this.orderId = null;
     this.deduplicationId = null;
     this.callbackId = null;
 }
@@ -22,10 +21,6 @@ AdjustEvent.prototype.addCallbackParameter = function(key, value) {
 AdjustEvent.prototype.addPartnerParameter = function(key, value) {
     this.partnerParameters.push(key);
     this.partnerParameters.push(value);
-};
-
-AdjustEvent.prototype.setOrderId = function(orderId) {
-    this.orderId = orderId;
 };
 
 AdjustEvent.prototype.setDeduplicationId = function(deduplicationId) {
