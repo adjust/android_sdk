@@ -383,7 +383,6 @@ public class AdjustBridgeInstance {
             Object currencyField = jsonAdjustEvent.get("currency");
             Object callbackParametersField = jsonAdjustEvent.get("callbackParameters");
             Object partnerParametersField = jsonAdjustEvent.get("partnerParameters");
-            Object orderIdField = jsonAdjustEvent.get("orderId");
             Object deduplicationIdField = jsonAdjustEvent.get("deduplicationId");
             Object callbackIdField = jsonAdjustEvent.get("callbackId");
 
@@ -419,12 +418,6 @@ public class AdjustBridgeInstance {
                     String value = partnerParameters[i+1];
                     adjustEvent.addPartnerParameter(key, value);
                 }
-            }
-
-            // Order id
-            String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
-            if (orderId != null) {
-                adjustEvent.setOrderId(orderId);
             }
 
             // Revenue deduplication
