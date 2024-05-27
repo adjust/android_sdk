@@ -41,7 +41,6 @@ function AdjustConfig(appToken, environment, legacy) {
     this.deferredDeeplinkCallbackFunction = null;
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
-    this.urlStrategy = null;
     this.preinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
     this.fbAppId = null;
@@ -51,14 +50,6 @@ function AdjustConfig(appToken, environment, legacy) {
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
 AdjustConfig.EnvironmentProduction = 'production';
-
-AdjustConfig.UrlStrategyIndia = "url_strategy_india";
-AdjustConfig.UrlStrategyChina = "url_strategy_china";
-AdjustConfig.UrlStrategyCn = "url_strategy_cn";
-AdjustConfig.UrlStrategyCnOnly = "url_strategy_cn_only";
-AdjustConfig.DataResidencyEU = "data_residency_eu";
-AdjustConfig.DataResidencyTR = "data_residency_tr";
-AdjustConfig.DataResidencyUS = "data_residency_us";
 
 AdjustConfig.LogLevelVerbose = 'VERBOSE',
 AdjustConfig.LogLevelDebug = 'DEBUG',
@@ -207,10 +198,6 @@ AdjustConfig.prototype.setFbPixelDefaultEventToken = function(fbPixelDefaultEven
 AdjustConfig.prototype.addFbPixelMapping = function(fbEventNameKey, adjEventTokenValue) {
     this.fbPixelMapping.push(fbEventNameKey);
     this.fbPixelMapping.push(adjEventTokenValue);
-};
-
-AdjustConfig.prototype.setUrlStrategy = function(urlStrategy) {
-    this.urlStrategy = urlStrategy;
 };
 
 AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackingEnabled) {

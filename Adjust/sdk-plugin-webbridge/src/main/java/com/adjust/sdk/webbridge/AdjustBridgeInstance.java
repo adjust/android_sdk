@@ -158,7 +158,6 @@ public class AdjustBridgeInstance {
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
-            Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
@@ -325,12 +324,6 @@ public class AdjustBridgeInstance {
                 }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance.configureFbPixel: %s", e.getMessage());
-            }
-
-            // Set url strategy
-            String urlStrategy = AdjustBridgeUtil.fieldToString(urlStrategyField);
-            if (urlStrategy != null) {
-                adjustConfig.setUrlStrategy(urlStrategy);
             }
 
             // Preinstall tracking
@@ -559,15 +552,6 @@ public class AdjustBridgeInstance {
             return;
         }
         Adjust.removeGlobalPartnerParameters();
-    }
-
-    @JavascriptInterface
-    public void setPushToken(String pushToken) {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.setPushToken(pushToken, application.getApplicationContext());
     }
 
     @JavascriptInterface
