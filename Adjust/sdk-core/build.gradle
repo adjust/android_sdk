@@ -41,6 +41,15 @@ if (localPropsFile.exists()) {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    /*
+     * according to https://developer.android.com/studio/write/annotations
+     *  If you use annotations in your own library module,
+     *  the annotations are included as part of the Android Archive (AAR) artifact
+     *  in XML format in the annotations.zip file.
+     *  Adding the androidx.annotation dependency doesn't introduce a dependency
+     *  for any downstream users of your library.
+     */
+    implementation 'androidx.annotation:annotation:1.8.0'
 }
 
 task adjustCoreAarRelease(type: Copy) {

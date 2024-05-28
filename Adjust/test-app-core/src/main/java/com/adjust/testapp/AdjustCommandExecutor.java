@@ -1,5 +1,8 @@
 package com.adjust.testapp;
 
+import static com.adjust.testapp.MainActivity.baseUrl;
+import static com.adjust.testapp.MainActivity.gdprUrl;
+
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -14,19 +17,19 @@ import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustPurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
-import com.adjust.sdk.AdjustPlayStoreSubscription;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
-import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
@@ -35,9 +38,6 @@ import com.adjust.test_options.TestConnectionOptions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static com.adjust.testapp.MainActivity.baseUrl;
-import static com.adjust.testapp.MainActivity.gdprUrl;
 
 /**
  * Created by nonelse on 10.03.17.
@@ -165,6 +165,18 @@ public class AdjustCommandExecutor {
                 testOptions.noBackoffWait = noBackoffWaitBoolean;
             }
         }
+        if (command.containsParameter("doNotIgnoreSystemLifecycleBootstrap")) {
+            String doNotIgnoreSystemLifecycleBootstrapString =
+              command.getFirstParameterValue("doNotIgnoreSystemLifecycleBootstrap");
+            Boolean doNotIgnoreSystemLifecycleBootstrap =
+              Util.strictParseStringToBoolean(doNotIgnoreSystemLifecycleBootstrapString);
+            if (doNotIgnoreSystemLifecycleBootstrap != null
+              && doNotIgnoreSystemLifecycleBootstrap.booleanValue())
+            {
+                testOptions.ignoreSystemLifecycleBootstrap = false;
+            }
+        }
+
         boolean useTestConnectionOptions = false;
         if (command.containsParameter("teardown")) {
             List<String> teardownOptions = command.parameters.get("teardown");
