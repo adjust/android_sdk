@@ -26,6 +26,9 @@ import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by pfms on 17/12/14.
  */
@@ -61,6 +64,13 @@ public class GlobalApplication extends Application {
                 Log.d("example", "Event success data: " + eventSuccessResponseData.toString());
             }
         });
+
+        List<String> urlStrategy = new ArrayList<>();
+        urlStrategy.add("adjust.com");
+        urlStrategy.add("adjust.cn");
+        urlStrategy.add("eu.adjust.com");
+
+        config.setUrlStrategy(urlStrategy , false, false);
 
         // Set event failure tracking delegate.
         config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {

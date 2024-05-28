@@ -72,6 +72,8 @@
             adjustConfig.setSessionFailureCallback(sessionFailureCallback);
             adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
 
+<!--            adjustConfig.setUrlStrategy(['adjust.com','adjust.cn','eu.adjust.com'], true, true);-->
+
             Adjust.initSdk(adjustConfig);
 
             window.onload = function() {
