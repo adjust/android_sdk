@@ -5,7 +5,6 @@ import com.adjust.sdk.Constants;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class UrlStrategy {
@@ -13,6 +12,9 @@ public class UrlStrategy {
     private static final String GDPR_URL_WORLD = "https://gdpr.adjust.world";
     private static final String SUBSCRIPTION_URL_WORLD = "https://subscription.adjust.world";
     private static final String PURCHASE_VERIFICATION_URL_WORLD = "https://ssrv.adjust.world";
+
+    private final List<String> adjustUrlStrategy;
+    private final boolean useSubdomains;
 
     private final String baseUrlOverwrite;
     private final String gdprUrlOverwrite;
@@ -33,17 +35,20 @@ public class UrlStrategy {
                        final String subscriptionUrlOverwrite,
                        final String purchaseVerificationUrlOverwrite,
                        final List<String> adjustUrlStrategy,
-                       final Boolean useSubdomains)
+                       final boolean useSubdomains)
     {
+        this.adjustUrlStrategy = adjustUrlStrategy;
+        this.useSubdomains = useSubdomains;
+
         this.baseUrlOverwrite = baseUrlOverwrite;
         this.gdprUrlOverwrite = gdprUrlOverwrite;
         this.subscriptionUrlOverwrite = subscriptionUrlOverwrite;
         this.purchaseVerificationUrlOverwrite = purchaseVerificationUrlOverwrite;
 
-        baseUrlChoicesList = baseUrlChoices(adjustUrlStrategy, useSubdomains);
-        gdprUrlChoicesList = gdprUrlChoices(adjustUrlStrategy, useSubdomains);
-        subscriptionUrlChoicesList = subscriptionUrlChoices(adjustUrlStrategy, useSubdomains);
-        purchaseVerificationUrlChoicesList = purchaseVerificationUrlChoices(adjustUrlStrategy, useSubdomains);
+        baseUrlChoicesList = baseUrlChoices();
+        gdprUrlChoicesList = gdprUrlChoices();
+        subscriptionUrlChoicesList = subscriptionUrlChoices();
+        purchaseVerificationUrlChoicesList = purchaseVerificationUrlChoices();
 
         wasLastAttemptSuccess = false;
         choiceIndex = 0;
@@ -123,77 +128,71 @@ public class UrlStrategy {
         }
     }
 
-    private static List<String> baseUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
+    private List<String> baseUrlChoices() {
 
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
+        if (adjustUrlStrategy == null || adjustUrlStrategy.isEmpty()) {
             return Arrays.asList(Constants.BASE_URL,  BASE_URL_WORLD);
         }
-        if (useSubdomains != null && useSubdomains){
+        if (useSubdomains) {
             List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format(Constants.BASE_URL_FORMAT, url));
             }
             return baseUrls;
         }else {
             List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format("https://%s", url));
             }
             return baseUrls;
         }
     }
-    private static List<String> gdprUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
+    private List<String> gdprUrlChoices() {
+        if (adjustUrlStrategy == null || adjustUrlStrategy.isEmpty()) {
             return Arrays.asList(Constants.GDPR_URL,  GDPR_URL_WORLD);
         }
-        if (useSubdomains != null && useSubdomains){
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+        List<String> baseUrls = new ArrayList<>();
+        if (useSubdomains) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format(Constants.GDPR_URL_FORMAT, url));
             }
-            return baseUrls;
         }else {
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format("https://%s", url));
             }
-            return baseUrls;
         }
+        return baseUrls;
     }
-    private static List<String> subscriptionUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
+    private List<String> subscriptionUrlChoices() {
+        if (adjustUrlStrategy == null || adjustUrlStrategy.isEmpty()) {
             return Arrays.asList(Constants.SUBSCRIPTION_URL,  SUBSCRIPTION_URL_WORLD);
         }
-        if (useSubdomains != null && useSubdomains){
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+        List<String> baseUrls = new ArrayList<>();
+        if (useSubdomains) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format(Constants.SUBSCRIPTION_URL_FORMAT, url));
             }
-            return baseUrls;
         }else {
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format("https://%s", url));
             }
-            return baseUrls;
         }
+        return baseUrls;
     }
-    private static List<String> purchaseVerificationUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
+    private List<String> purchaseVerificationUrlChoices() {
+        if (adjustUrlStrategy == null || adjustUrlStrategy.isEmpty()) {
             return Arrays.asList(Constants.PURCHASE_VERIFICATION_URL, PURCHASE_VERIFICATION_URL_WORLD);
         }
-        if (useSubdomains != null && useSubdomains){
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+        List<String> baseUrls = new ArrayList<>();
+        if (useSubdomains){
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format(Constants.PURCHASE_VERIFICATION_URL_FORMAT, url));
             }
-            return baseUrls;
         }else {
-            List<String> baseUrls = new ArrayList<>();
-            for (String url : urlStrategy) {
+            for (String url : adjustUrlStrategy) {
                 baseUrls.add(String.format("https://%s", url));
             }
-            return baseUrls;
         }
+        return baseUrls;
     }
 }

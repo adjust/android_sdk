@@ -36,8 +36,8 @@ public class AdjustConfig {
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
     List<String> urlStrategy;
-    Boolean useSubdomains;
-    Boolean isDataResidency;
+    boolean useSubdomains;
+    boolean isDataResidency;
     String preinstallFilePath;
     String fbAppId;
     boolean shouldReadDeviceIdsOnce;
@@ -159,17 +159,9 @@ public class AdjustConfig {
         return true;
     }
 
-    public void setUrlStrategy(List<String> domains, Boolean useSubdomains ,Boolean isDataResidency) {
+    public void setUrlStrategy(List<String> domains, boolean useSubdomains, boolean isDataResidency) {
         if (domains == null || domains.isEmpty()) {
             logger.error("Invalid url strategy");
-            return;
-        }
-        if (useSubdomains == null) {
-            logger.error("useSubdomains cannot be null");
-            return;
-        }
-        if (isDataResidency == null) {
-            logger.error("isDataResidency cannot be null");
             return;
         }
         this.urlStrategy = domains;

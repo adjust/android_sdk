@@ -2511,8 +2511,13 @@ public class ActivityHandler
             return;
         }
         // from this moment on we know that we can ping client callback in case of error
-        if (adjustConfig.isDataResidency != null && adjustConfig.isDataResidency) {
+        if (adjustConfig.isDataResidency) {
             logger.warn("Purchase verification not available for data residency users right now");
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    109,
+                    "Purchase verification not available for data residency users right now");
+            callback.onVerificationFinished(result);
             return;
         }
         if (!checkActivityStateI(activityState)) {
