@@ -65,11 +65,12 @@ public class GlobalApplication extends Application {
             }
         });
 
+
+        // Set url strategy
 //        List<String> urlStrategy = new ArrayList<>();
 //        urlStrategy.add("adjust.com");
 //        urlStrategy.add("adjust.cn");
 //        urlStrategy.add("eu.adjust.com");
-//
 //        config.setUrlStrategy(urlStrategy , true, false);
 
         // Set event failure tracking delegate.

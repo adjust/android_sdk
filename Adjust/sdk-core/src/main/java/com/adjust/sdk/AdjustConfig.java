@@ -165,10 +165,12 @@ public class AdjustConfig {
             return;
         }
         if (useSubdomains == null) {
-            useSubdomains = false;
+            logger.error("useSubdomains cannot be null");
+            return;
         }
         if (isDataResidency == null) {
-            isDataResidency = false;
+            logger.error("isDataResidency cannot be null");
+            return;
         }
         this.urlStrategy = domains;
         this.useSubdomains = useSubdomains;
