@@ -303,6 +303,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -395,6 +399,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -447,6 +455,10 @@ public class PackageBuilder {
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -557,6 +569,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -618,6 +634,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -677,6 +697,10 @@ public class PackageBuilder {
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -751,6 +775,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -815,6 +843,10 @@ public class PackageBuilder {
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -998,6 +1030,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1094,6 +1130,10 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1179,6 +1219,10 @@ public class PackageBuilder {
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
+
+        // control params json
+        JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
+        PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
         injectFeatureFlagsWithParameters(parameters);
 
