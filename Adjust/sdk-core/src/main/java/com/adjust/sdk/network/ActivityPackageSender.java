@@ -36,6 +36,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -55,7 +56,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private IConnectionOptions connectionOptions;
     private Context context;
 
-    public ActivityPackageSender(final String adjustUrlStrategy,
+    public ActivityPackageSender(final List<String> adjustUrlStrategy,
+                                 final Boolean useSubdomains,
                                  final String basePath,
                                  final String gdprPath,
                                  final String subscriptionPath,
@@ -77,7 +79,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 AdjustFactory.getGdprUrl(),
                 AdjustFactory.getSubscriptionUrl(),
                 AdjustFactory.getPurchaseVerificationUrl(),
-                adjustUrlStrategy);
+                adjustUrlStrategy,
+                useSubdomains);
         httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();
         connectionOptions = AdjustFactory.getConnectionOptions();
     }

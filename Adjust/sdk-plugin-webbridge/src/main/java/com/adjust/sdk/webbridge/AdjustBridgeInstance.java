@@ -36,6 +36,10 @@ import com.adjust.sdk.OnSessionTrackingSucceededListener;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Created by uerceg on 22/07/16.
  */
@@ -162,6 +166,9 @@ public class AdjustBridgeInstance {
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
+            Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
+            Object useSubDomainField = jsonAdjustConfig.get("useSubDomain");
+            Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
@@ -329,6 +336,16 @@ public class AdjustBridgeInstance {
                 }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance.configureFbPixel: %s", e.getMessage());
+            }
+
+            // Set url strategy
+            String[] urlStrategyArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyField);
+            List<String> urlStrategy = Arrays.asList(urlStrategyArray);
+
+            Boolean useSubDomain = AdjustBridgeUtil.fieldToBoolean(useSubDomainField);
+            Boolean isDataResidency = AdjustBridgeUtil.fieldToBoolean(isDataResidencyField);
+            if (urlStrategy != null && !urlStrategy.isEmpty() && useSubDomain != null && isDataResidency != null) {
+                adjustConfig.setUrlStrategy(urlStrategy,useSubDomain,isDataResidency);
             }
 
             // Preinstall tracking

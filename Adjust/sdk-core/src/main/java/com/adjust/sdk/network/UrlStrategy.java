@@ -3,48 +3,16 @@ package com.adjust.sdk.network;
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.Constants;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_TR;
-import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_US;
-import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CHINA;
-import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CN;
-import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_CN_ONLY;
-import static com.adjust.sdk.AdjustConfig.URL_STRATEGY_INDIA;
-import static com.adjust.sdk.AdjustConfig.DATA_RESIDENCY_EU;
-
 public class UrlStrategy {
-    private static final String BASE_URL_INDIA = "https://app.adjust.net.in";
-    private static final String GDPR_URL_INDIA = "https://gdpr.adjust.net.in";
-    private static final String SUBSCRIPTION_URL_INDIA = "https://subscription.adjust.net.in";
-    private static final String PURCHASE_VERIFICATION_URL_INDIA = "https://ssrv.adjust.net.in";
-
-    private static final String BASE_URL_CHINA = "https://app.adjust.world";
-    private static final String GDPR_URL_CHINA = "https://gdpr.adjust.world";
-    private static final String SUBSCRIPTION_URL_CHINA = "https://subscription.adjust.world";
-    private static final String PURCHASE_VERIFICATION_URL_CHINA = "https://ssrv.adjust.world";
-
-    private static final String BASE_URL_CN = "https://app.adjust.cn";
-    private static final String GDPR_URL_CN = "https://gdpr.adjust.cn";
-    private static final String SUBSCRIPTION_URL_CN = "https://subscription.adjust.cn";
-    private static final String PURCHASE_VERIFICATION_URL_CN = "https://ssrv.adjust.cn";
-
-    private static final String BASE_URL_EU = "https://app.eu.adjust.com";
-    private static final String GDPR_URL_EU = "https://gdpr.eu.adjust.com";
-    private static final String SUBSCRIPTION_URL_EU = "https://subscription.eu.adjust.com";
-    private static final String PURCHASE_VERIFICATION_URL_EU = "https://ssrv.eu.adjust.com";
-
-    private static final String BASE_URL_TR = "https://app.tr.adjust.com";
-    private static final String GDPR_URL_TR = "https://gdpr.tr.adjust.com";
-    private static final String SUBSCRIPTION_URL_TR = "https://subscription.tr.adjust.com";
-    private static final String PURCHASE_VERIFICATION_URL_TR = "https://ssrv.tr.adjust.com";
-
-    private static final String BASE_URL_US = "https://app.us.adjust.com";
-    private static final String GDPR_URL_US = "https://gdpr.us.adjust.com";
-    private static final String SUBSCRIPTION_URL_US = "https://subscription.us.adjust.com";
-    private static final String PURCHASE_VERIFICATION_URL_US = "https://ssrv.us.adjust.com";
+    private static final String BASE_URL_WORLD = "https://app.adjust.world";
+    private static final String GDPR_URL_WORLD = "https://gdpr.adjust.world";
+    private static final String SUBSCRIPTION_URL_WORLD = "https://subscription.adjust.world";
+    private static final String PURCHASE_VERIFICATION_URL_WORLD = "https://ssrv.adjust.world";
 
     private final String baseUrlOverwrite;
     private final String gdprUrlOverwrite;
@@ -64,17 +32,18 @@ public class UrlStrategy {
                        final String gdprUrlOverwrite,
                        final String subscriptionUrlOverwrite,
                        final String purchaseVerificationUrlOverwrite,
-                       final String adjustUrlStrategy)
+                       final List<String> adjustUrlStrategy,
+                       final Boolean useSubdomains)
     {
         this.baseUrlOverwrite = baseUrlOverwrite;
         this.gdprUrlOverwrite = gdprUrlOverwrite;
         this.subscriptionUrlOverwrite = subscriptionUrlOverwrite;
         this.purchaseVerificationUrlOverwrite = purchaseVerificationUrlOverwrite;
 
-        baseUrlChoicesList = baseUrlChoices(adjustUrlStrategy);
-        gdprUrlChoicesList = gdprUrlChoices(adjustUrlStrategy);
-        subscriptionUrlChoicesList = subscriptionUrlChoices(adjustUrlStrategy);
-        purchaseVerificationUrlChoicesList = purchaseVerificationUrlChoices(adjustUrlStrategy);
+        baseUrlChoicesList = baseUrlChoices(adjustUrlStrategy, useSubdomains);
+        gdprUrlChoicesList = gdprUrlChoices(adjustUrlStrategy, useSubdomains);
+        subscriptionUrlChoicesList = subscriptionUrlChoices(adjustUrlStrategy, useSubdomains);
+        purchaseVerificationUrlChoicesList = purchaseVerificationUrlChoices(adjustUrlStrategy, useSubdomains);
 
         wasLastAttemptSuccess = false;
         choiceIndex = 0;
@@ -154,84 +123,77 @@ public class UrlStrategy {
         }
     }
 
-    private static List<String> baseUrlChoices(final String urlStrategy) {
-        if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
-            return Arrays.asList(BASE_URL_INDIA, Constants.BASE_URL);
-        } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
-            return Arrays.asList(BASE_URL_CHINA, Constants.BASE_URL);
-        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
-            return Arrays.asList(BASE_URL_CN, Constants.BASE_URL);
-        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
-            return Arrays.asList(BASE_URL_CN);
-        } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
-            return Collections.singletonList(BASE_URL_EU);
-        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
-            return Collections.singletonList(BASE_URL_TR);
-        } else if (DATA_RESIDENCY_US.equals(urlStrategy)) {
-            return Collections.singletonList(BASE_URL_US);
-        } else {
-            return Arrays.asList(Constants.BASE_URL, BASE_URL_INDIA, BASE_URL_CHINA);
+    private static List<String> baseUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
+
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            return Arrays.asList(Constants.BASE_URL,  BASE_URL_WORLD);
+        }
+        if (useSubdomains != null && useSubdomains){
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format(Constants.BASE_URL_FORMAT, url));
+            }
+            return baseUrls;
+        }else {
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format("https://%s", url));
+            }
+            return baseUrls;
         }
     }
-    private static List<String> gdprUrlChoices(final String urlStrategy) {
-        if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
-            return Arrays.asList(GDPR_URL_INDIA, Constants.GDPR_URL);
-        } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
-            return Arrays.asList(GDPR_URL_CHINA, Constants.GDPR_URL);
-        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
-            return Arrays.asList(GDPR_URL_CN, Constants.GDPR_URL);
-        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
-            return Arrays.asList(GDPR_URL_CN);
-        } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
-            return Collections.singletonList(GDPR_URL_EU);
-        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
-            return Collections.singletonList(GDPR_URL_TR);
-        } else if (DATA_RESIDENCY_US.equals(urlStrategy)) {
-            return Collections.singletonList(GDPR_URL_US);
-        } else {
-            return Arrays.asList(Constants.GDPR_URL, GDPR_URL_INDIA, GDPR_URL_CHINA);
+    private static List<String> gdprUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            return Arrays.asList(Constants.GDPR_URL,  GDPR_URL_WORLD);
+        }
+        if (useSubdomains != null && useSubdomains){
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format(Constants.GDPR_URL_FORMAT, url));
+            }
+            return baseUrls;
+        }else {
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format("https://%s", url));
+            }
+            return baseUrls;
         }
     }
-    private static List<String> subscriptionUrlChoices(final String urlStrategy) {
-        if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
-            return Arrays.asList(SUBSCRIPTION_URL_INDIA, Constants.SUBSCRIPTION_URL);
-        } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
-            return Arrays.asList(SUBSCRIPTION_URL_CHINA, Constants.SUBSCRIPTION_URL);
-        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
-            return Arrays.asList(SUBSCRIPTION_URL_CN, Constants.SUBSCRIPTION_URL);
-        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
-            return Arrays.asList(SUBSCRIPTION_URL_CN);
-        } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
-            return Collections.singletonList(SUBSCRIPTION_URL_EU);
-        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
-            return Collections.singletonList(SUBSCRIPTION_URL_TR);
-        } else if (DATA_RESIDENCY_US.equals(urlStrategy)) {
-            return Collections.singletonList(SUBSCRIPTION_URL_US);
-        } else {
-            return Arrays.asList(Constants.SUBSCRIPTION_URL,
-                    SUBSCRIPTION_URL_INDIA,
-                    SUBSCRIPTION_URL_CHINA);
+    private static List<String> subscriptionUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            return Arrays.asList(Constants.SUBSCRIPTION_URL,  SUBSCRIPTION_URL_WORLD);
+        }
+        if (useSubdomains != null && useSubdomains){
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format(Constants.SUBSCRIPTION_URL_FORMAT, url));
+            }
+            return baseUrls;
+        }else {
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format("https://%s", url));
+            }
+            return baseUrls;
         }
     }
-    private static List<String> purchaseVerificationUrlChoices(final String urlStrategy) {
-        if (URL_STRATEGY_INDIA.equals(urlStrategy)) {
-            return Arrays.asList(PURCHASE_VERIFICATION_URL_INDIA, Constants.PURCHASE_VERIFICATION_URL);
-        } else if (URL_STRATEGY_CHINA.equals(urlStrategy)) {
-            return Arrays.asList(PURCHASE_VERIFICATION_URL_CHINA, Constants.PURCHASE_VERIFICATION_URL);
-        } else if (URL_STRATEGY_CN.equals(urlStrategy)) {
-            return Arrays.asList(PURCHASE_VERIFICATION_URL_CN, Constants.PURCHASE_VERIFICATION_URL);
-        } else if (URL_STRATEGY_CN_ONLY.equals(urlStrategy)) {
-            return Arrays.asList(PURCHASE_VERIFICATION_URL_CN);
-        } else if (DATA_RESIDENCY_EU.equals(urlStrategy)) {
-            return Collections.singletonList(PURCHASE_VERIFICATION_URL_EU);
-        } else if (DATA_RESIDENCY_TR.equals(urlStrategy)) {
-            return Collections.singletonList(PURCHASE_VERIFICATION_URL_TR);
-        } else if (DATA_RESIDENCY_US.equals(urlStrategy)) {
-            return Collections.singletonList(PURCHASE_VERIFICATION_URL_US);
-        } else {
-            return Arrays.asList(Constants.PURCHASE_VERIFICATION_URL,
-                    PURCHASE_VERIFICATION_URL_INDIA,
-                    PURCHASE_VERIFICATION_URL_CHINA);
+    private static List<String> purchaseVerificationUrlChoices(final List<String> urlStrategy,final Boolean useSubdomains) {
+        if (urlStrategy == null || urlStrategy.isEmpty()) {
+            return Arrays.asList(Constants.PURCHASE_VERIFICATION_URL, PURCHASE_VERIFICATION_URL_WORLD);
+        }
+        if (useSubdomains != null && useSubdomains){
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format(Constants.PURCHASE_VERIFICATION_URL_FORMAT, url));
+            }
+            return baseUrls;
+        }else {
+            List<String> baseUrls = new ArrayList<>();
+            for (String url : urlStrategy) {
+                baseUrls.add(String.format("https://%s", url));
+            }
+            return baseUrls;
         }
     }
 }
