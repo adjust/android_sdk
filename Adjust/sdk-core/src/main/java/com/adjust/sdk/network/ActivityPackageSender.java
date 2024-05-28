@@ -56,7 +56,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private Context context;
 
     public ActivityPackageSender(final List<String> adjustUrlStrategy,
-                                 final Boolean useSubdomains,
+                                 final boolean useSubdomains,
                                  final String basePath,
                                  final String gdprPath,
                                  final String subscriptionPath,
