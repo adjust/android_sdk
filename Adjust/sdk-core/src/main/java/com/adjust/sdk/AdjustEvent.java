@@ -152,4 +152,69 @@ public class AdjustEvent {
         }
         return true;
     }
+
+    public static Builder Builder(String eventToken) {
+        return new Builder(eventToken);
+    }
+
+    public static class Builder {
+        public Builder(String eventToken) {
+            event = new AdjustEvent(eventToken);
+        }
+
+        private static AdjustEvent event = null;
+
+        public Builder setRevenue(double revenue, String currency) {
+            event.setRevenue(revenue, currency);
+            return this;
+        }
+
+        public Builder addCallbackParameter(String key, String value) {
+            event.addCallbackParameter(key, value);
+            return this;
+        }
+
+        public Builder addCallbackParameterMap(Map<String, String> parameters) {
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                event.addCallbackParameter(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
+        public Builder addPartnerParameter(String key, String value) {
+            event.addPartnerParameter(key, value);
+            return this;
+        }
+
+        public Builder addPartnerParameterMap(Map<String, String> parameters) {
+            for (Map.Entry<String, String> entry : parameters.entrySet()) {
+                event.addPartnerParameter(entry.getKey(), entry.getValue());
+            }
+            return this;
+        }
+
+        public Builder setOrderId(String orderId) {
+            event.setOrderId(orderId);
+            return this;
+        }
+
+        public Builder setCallbackId(String callbackId) {
+            event.setCallbackId(callbackId);
+            return this;
+        }
+
+        public Builder setProductId(String productId) {
+            event.setProductId(productId);
+            return this;
+        }
+
+        public Builder setPurchaseToken(String purchaseToken) {
+            event.setPurchaseToken(purchaseToken);
+            return this;
+        }
+
+        public AdjustEvent build() {
+            return event;
+        }
+    }
 }

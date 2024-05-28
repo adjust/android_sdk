@@ -454,4 +454,146 @@ public class AdjustConfig {
         logger.error("Unknown environment '%s'", environment);
         return false;
     }
+
+    public static Builder Builder(Context context, String appToken, String environment) {
+        return new Builder(context, appToken, environment);
+    }
+
+    public static class Builder {
+
+        public Builder(Context context, String appToken, String environment) {
+            adjustConfig = new AdjustConfig(context, appToken, environment);
+        }
+
+        public AdjustConfig build() {
+            return adjustConfig;
+        }
+
+        private static AdjustConfig adjustConfig = null;
+
+        public Builder setEventBufferingEnabled(boolean eventBufferingEnabled) {
+            adjustConfig.setEventBufferingEnabled(eventBufferingEnabled);
+            return this;
+        }
+
+        public Builder setSendInBackground(boolean sendInBackground) {
+            adjustConfig.setSendInBackground(sendInBackground);
+            return this;
+        }
+
+        public Builder setLogLevel(LogLevel logLevel) {
+            adjustConfig.setLogLevel(logLevel);
+            return this;
+        }
+
+        public Builder setDefaultTracker(String defaultTracker) {
+            adjustConfig.setDefaultTracker(defaultTracker);
+            return this;
+        }
+
+        public Builder setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
+            adjustConfig.setOnAttributionChangedListener(onAttributionChangedListener);
+            return this;
+        }
+
+        public Builder setDeviceKnown(boolean deviceKnown) {
+            adjustConfig.setDeviceKnown(deviceKnown);
+            return this;
+        }
+
+        public Builder setDeepLinkComponent(Class deepLinkComponent) {
+            adjustConfig.setDeepLinkComponent(deepLinkComponent);
+            return this;
+        }
+
+        public Builder setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
+            adjustConfig.setOnEventTrackingSucceededListener(onEventTrackingSucceededListener);
+            return this;
+        }
+
+        public Builder setOnEventTrackingFailedListener(OnEventTrackingFailedListener onEventTrackingFailedListener) {
+            adjustConfig.setOnEventTrackingFailedListener(onEventTrackingFailedListener);
+            return this;
+        }
+
+        public Builder setOnSessionTrackingSucceededListener(OnSessionTrackingSucceededListener onSessionTrackingSucceededListener) {
+            adjustConfig.setOnSessionTrackingSucceededListener(onSessionTrackingSucceededListener);
+            return this;
+        }
+
+        public Builder setOnSessionTrackingFailedListener(OnSessionTrackingFailedListener onSessionTrackingFailedListener) {
+            adjustConfig.setOnSessionTrackingFailedListener(onSessionTrackingFailedListener);
+            return this;
+        }
+
+        public Builder setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
+            adjustConfig.setOnDeeplinkResponseListener(onDeeplinkResponseListener);
+            return this;
+        }
+
+        public Builder setDelayStart(double delayStart) {
+            adjustConfig.setDelayStart(delayStart);
+            return this;
+        }
+
+        public Builder setUserAgent(String userAgent) {
+            adjustConfig.setUserAgent(userAgent);
+            return this;
+        }
+
+        public Builder setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
+            adjustConfig.setAppSecret(secretId, info1, info2, info3, info4);
+            return this;
+        }
+
+        public Builder setExternalDeviceId(String externalDeviceId) {
+            adjustConfig.setExternalDeviceId(externalDeviceId);
+            return this;
+        }
+
+        public Builder setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
+            adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
+            return this;
+        }
+
+        public Builder setPreinstallFilePath(String preinstallFilePath) {
+            adjustConfig.setPreinstallFilePath(preinstallFilePath);
+            return this;
+        }
+
+        public Builder setNeedsCost(boolean needsCost) {
+            adjustConfig.setNeedsCost(needsCost);
+            return this;
+        }
+
+        public Builder setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled) {
+            adjustConfig.setPlayStoreKidsAppEnabled(playStoreKidsAppEnabled);
+            return this;
+        }
+
+        public Builder setCoppaCompliantEnabled(boolean coppaCompliantEnabled) {
+            adjustConfig.setCoppaCompliantEnabled(coppaCompliantEnabled);
+            return this;
+        }
+
+        public Builder setFinalAttributionEnabled(boolean finalAttributionEnabled){
+            adjustConfig.setFinalAttributionEnabled(finalAttributionEnabled);
+            return this;
+        }
+
+        public Builder setFbAppId(String fbAppId){
+            adjustConfig.setFbAppId(fbAppId);
+            return this;
+        }
+
+        public Builder setUrlStrategy(String urlStrategy){
+            adjustConfig.setUrlStrategy(urlStrategy);
+            return this;
+        }
+
+        public Builder setReadDeviceInfoOnceEnabled(boolean readDeviceInfoOnceEnabled){
+            adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
+            return this;
+        }
+    }
 }

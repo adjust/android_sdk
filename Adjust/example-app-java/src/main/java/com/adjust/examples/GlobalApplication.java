@@ -33,58 +33,46 @@ public class GlobalApplication extends Application {
         String appToken = "2fm9gkqubvpc";
         String environment = AdjustConfig.ENVIRONMENT_SANDBOX;
 
-        AdjustConfig config = new AdjustConfig(this, appToken, environment);
-
-        // Change the log level.
-        config.setLogLevel(LogLevel.VERBOSE);
-
-        // Set attribution delegate.
-        config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+//        AdjustConfig config = new AdjustConfig(this, appToken, environment);
+        AdjustConfig config = AdjustConfig.Builder(this,appToken,environment).setLogLevel(
+                LogLevel.VERBOSE
+        ).setOnAttributionChangedListener(new OnAttributionChangedListener() {
             @Override
             public void onAttributionChanged(AdjustAttribution attribution) {
                 Log.d("example", "Attribution callback called!");
                 Log.d("example", "Attribution: " + attribution.toString());
             }
-        });
-
-        // Set event success tracking delegate.
-        config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+        }).setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
             @Override
             public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                 Log.d("example", "Event success callback called!");
                 Log.d("example", "Event success data: " + eventSuccessResponseData.toString());
             }
-        });
-
-        // Set event failure tracking delegate.
-        config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+        }).setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
             public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                 Log.d("example", "Event failure callback called!");
                 Log.d("example", "Event failure data: " + eventFailureResponseData.toString());
             }
-        });
-
-        // Set session success tracking delegate.
-        config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+        }).setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+            @Override
+            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+                Log.d("example", "Event failure callback called!");
+                Log.d("example", "Event failure data: " + eventFailureResponseData.toString());
+            }
+        }).setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
             @Override
             public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                 Log.d("example", "Session success callback called!");
                 Log.d("example", "Session success data: " + sessionSuccessResponseData.toString());
             }
-        });
-
-        // Set session failure tracking delegate.
-        config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+        }).setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
             @Override
-            public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+            public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
                 Log.d("example", "Session failure callback called!");
-                Log.d("example", "Session failure data: " + sessionFailureResponseData.toString());
+                Log.d("example", "Session failure data: " + failureResponseData.toString());
             }
-        });
-
-        // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        }).setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
                 Log.d("example", "Deferred deep link callback called!");
@@ -92,7 +80,67 @@ public class GlobalApplication extends Application {
 
                 return true;
             }
-        });
+        }).setSendInBackground(true)
+                .build();
+
+        // Change the log level.
+//        config.setLogLevel(LogLevel.VERBOSE);
+
+        // Set attribution delegate.
+//        config.setOnAttributionChangedListener(new OnAttributionChangedListener() {
+//            @Override
+//            public void onAttributionChanged(AdjustAttribution attribution) {
+//                Log.d("example", "Attribution callback called!");
+//                Log.d("example", "Attribution: " + attribution.toString());
+//            }
+//        });
+
+        // Set event success tracking delegate.
+//        config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
+//            @Override
+//            public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+//                Log.d("example", "Event success callback called!");
+//                Log.d("example", "Event success data: " + eventSuccessResponseData.toString());
+//            }
+//        });
+
+        // Set event failure tracking delegate.
+//        config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
+//            @Override
+//            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+//                Log.d("example", "Event failure callback called!");
+//                Log.d("example", "Event failure data: " + eventFailureResponseData.toString());
+//            }
+//        });
+
+        // Set session success tracking delegate.
+//        config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
+//            @Override
+//            public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+//                Log.d("example", "Session success callback called!");
+//                Log.d("example", "Session success data: " + sessionSuccessResponseData.toString());
+//            }
+//        });
+
+        // Set session failure tracking delegate.
+//        config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
+//            @Override
+//            public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+//                Log.d("example", "Session failure callback called!");
+//                Log.d("example", "Session failure data: " + sessionFailureResponseData.toString());
+//            }
+//        });
+
+        // Evaluate deferred deep link to be launched.
+//        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+//            @Override
+//            public boolean launchReceivedDeeplink(Uri deeplink) {
+//                Log.d("example", "Deferred deep link callback called!");
+//                Log.d("example", "Deep link URL: " + deeplink);
+//
+//                return true;
+//            }
+//        });
 
         // Set default tracker.
         // config.setDefaultTracker("{YourDefaultTracker}");
@@ -101,7 +149,7 @@ public class GlobalApplication extends Application {
         // config.setProcessName("com.adjust.examples");
 
         // Allow to send in the background.
-        config.setSendInBackground(true);
+//        config.setSendInBackground(true);
 
         // Enable event buffering.
         // config.setEventBufferingEnabled(true);
