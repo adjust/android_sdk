@@ -2,6 +2,7 @@ package com.adjust.testapp;
 
 import static com.adjust.testapp.MainActivity.baseUrl;
 import static com.adjust.testapp.MainActivity.gdprUrl;
+import static com.adjust.testapp.MainActivity.testLibrary;
 
 import android.content.Context;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
@@ -94,6 +96,7 @@ public class AdjustCommandExecutor {
                 case "disableCoppaCompliance" : disableCoppaCompliance(); break;
                 case "enablePlayStoreKidsApp" : enablePlayStoreKidsApp(); break;
                 case "disablePlayStoreKidsApp" : disablePlayStoreKidsApp(); break;
+                case "attributionGetter" : attributionGetter(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -823,6 +826,37 @@ public class AdjustCommandExecutor {
 
     private void disablePlayStoreKidsApp() {
         Adjust.disablePlayStoreKidsApp(context.getApplicationContext());
+    }
+
+    private void attributionGetter() {
+        Adjust.getAttribution(context, attribution -> {
+            Map<String, String> fields = new HashMap<>();
+            if (attribution.trackerToken != null)
+                fields.put("tracker_token", attribution.trackerToken);
+            if (attribution.trackerName != null)
+                fields.put("tracker_name", attribution.trackerName);
+            if (attribution.network != null)
+                fields.put("network", attribution.network);
+            if (attribution.campaign != null)
+                fields.put("campaign", attribution.campaign);
+            if (attribution.adgroup != null)
+                fields.put("adgroup", attribution.adgroup);
+            if (attribution.creative != null)
+                fields.put("creative", attribution.creative);
+            if (attribution.clickLabel != null)
+                fields.put("click_label", attribution.clickLabel);
+            if (attribution.costType != null)
+                fields.put("cost_type", attribution.costType);
+            if (attribution.costAmount != null)
+                fields.put("cost_amount", attribution.costAmount.toString());
+            if (attribution.costCurrency != null)
+                fields.put("cost_currency", attribution.costCurrency);
+            if (attribution.fbInstallReferrer != null)
+                fields.put("fb_install_referrer", attribution.fbInstallReferrer);
+
+            MainActivity.testLibrary.setInfoToSend(fields);
+            MainActivity.testLibrary.sendInfoToServer(basePath);
+        });
     }
 
 /*
