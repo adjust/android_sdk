@@ -316,13 +316,16 @@ public class Adjust {
      * @param context        Application context
      * @param onDeviceIdRead Callback to get triggered once identifier is obtained
      */
-    public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
+    public static void getGoogleAdId(final Context context,final OnDeviceIdsRead onDeviceIdRead) {
+        if (onDeviceIdRead == null) {
+            AdjustFactory.getLogger().error("onDeviceIdRead cannot be null");
+            return;
         }
-
-        Util.getGoogleAdId(appContext, onDeviceIdRead);
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
+        Util.getGoogleAdId(context.getApplicationContext(), onDeviceIdRead);
     }
 
     /**
@@ -382,7 +385,15 @@ public class Adjust {
      * @param context Application context
      * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
      */
-    public static void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+    public static void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        if (onGooglePlayInstallReferrerReadListener == null) {
+            AdjustFactory.getLogger().error("onGooglePlayInstallReferrerReadListener cannot be null");
+            return;
+        }
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
     }
@@ -406,7 +417,15 @@ public class Adjust {
      * @param purchase  AdjustPurchase object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyPurchase(final AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
+    public static void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+        if (callback == null) {
+            AdjustFactory.getLogger().error("callback cannot be null");
+            return;
+        }
+        if (purchase == null) {
+            AdjustFactory.getLogger().error("purchase cannot be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.verifyPurchase(purchase, callback);
     }
