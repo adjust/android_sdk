@@ -55,7 +55,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private IConnectionOptions connectionOptions;
     private Context context;
 
-    public ActivityPackageSender(final List<String> adjustUrlStrategy,
+    public ActivityPackageSender(final List<String> urlStrategyDomains,
                                  final boolean useSubdomains,
                                  final String basePath,
                                  final String gdprPath,
@@ -78,7 +78,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 AdjustFactory.getGdprUrl(),
                 AdjustFactory.getSubscriptionUrl(),
                 AdjustFactory.getPurchaseVerificationUrl(),
-                adjustUrlStrategy,
+                urlStrategyDomains,
                 useSubdomains);
         httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();
         connectionOptions = AdjustFactory.getConnectionOptions();

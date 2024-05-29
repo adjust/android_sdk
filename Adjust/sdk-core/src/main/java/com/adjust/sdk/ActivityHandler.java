@@ -951,7 +951,7 @@ public class ActivityHandler
 
         IActivityPackageSender packageHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
                         adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
@@ -967,7 +967,7 @@ public class ActivityHandler
 
         IActivityPackageSender attributionHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
                         adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
@@ -983,7 +983,7 @@ public class ActivityHandler
 
         IActivityPackageSender sdkClickHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
                         adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
@@ -999,7 +999,7 @@ public class ActivityHandler
 
         IActivityPackageSender purchaseVerificationHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
                         adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
