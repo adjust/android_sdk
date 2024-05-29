@@ -37,7 +37,7 @@ public class AdjustConfig {
     String urlStrategy;
     String preinstallFilePath;
     String fbAppId;
-    boolean readDeviceInfoOnceEnabled;
+    boolean shouldReadDeviceIdsOnce;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     Integer eventDeduplicationIdsMaxSize;
@@ -83,6 +83,7 @@ public class AdjustConfig {
         // default values
         this.sendInBackground = false;
         this.preinstallTrackingEnabled = false;
+        this.shouldReadDeviceIdsOnce = false;
     }
 
 
@@ -179,8 +180,8 @@ public class AdjustConfig {
         this.urlStrategy = urlStrategy;
     }
 
-    public void setReadDeviceInfoOnceEnabled(boolean readDeviceInfoOnceEnabled) {
-        this.readDeviceInfoOnceEnabled = readDeviceInfoOnceEnabled;
+    public void readDeviceIdsOnce() {
+        this.shouldReadDeviceIdsOnce = true;
     }
 
     public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
@@ -307,8 +308,8 @@ public class AdjustConfig {
         return fbAppId;
     }
 
-    public boolean isReadDeviceInfoOnceEnabled() {
-        return readDeviceInfoOnceEnabled;
+    public boolean shouldReadDeviceIdsOnce() {
+        return shouldReadDeviceIdsOnce;
     }
 
     private void setLogLevel(LogLevel logLevel, String environment) {
