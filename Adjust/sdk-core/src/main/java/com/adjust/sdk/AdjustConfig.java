@@ -40,6 +40,7 @@ public class AdjustConfig {
     boolean readDeviceInfoOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    Integer eventDeduplicationIdsMaxSize;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -182,6 +183,10 @@ public class AdjustConfig {
         this.readDeviceInfoOnceEnabled = readDeviceInfoOnceEnabled;
     }
 
+    public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
+        this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
+    }
+
     public String getBasePath() {
         return basePath;
     }
@@ -228,6 +233,10 @@ public class AdjustConfig {
 
     public Class getDeepLinkComponent() {
         return deepLinkComponent;
+    }
+
+    public Integer getEventDeduplicationIdsMaxSize() {
+        return eventDeduplicationIdsMaxSize;
     }
 
     public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {

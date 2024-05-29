@@ -20,7 +20,7 @@ import java.util.LinkedList;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private static final int ORDER_ID_MAXCOUNT = 10;
+    private static final int EVENT_DEDUPLICATION_IDS_MAX_SIZE = 10;
     private transient ILogger logger;
     @SuppressWarnings("unchecked")
     private static final ObjectStreamField[] serialPersistentFields = {
@@ -87,7 +87,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     protected long lastInterval;
 
-    protected LinkedList<String> orderIds;
+    protected LinkedList<String> eventDeduplicationIds;
+    protected int eventDeduplicationIdsMaxSize;
 
     protected String pushToken;
     protected String adid;
@@ -140,7 +141,7 @@ public class ActivityState implements Serializable, Cloneable {
         timeSpent = -1; // this information will be collected and attached to the next session
         lastActivity = -1;
         lastInterval = -1;
-        orderIds = null;
+        eventDeduplicationIds = null;
         pushToken = null;
         adid = null;
         clickTime = 0;
@@ -170,6 +171,7 @@ public class ActivityState implements Serializable, Cloneable {
         installReferrerMeta = null;
         clickTimeMeta = 0;
         isClickMeta = null;
+        eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -180,22 +182,32 @@ public class ActivityState implements Serializable, Cloneable {
         lastInterval = -1;
     }
 
-    protected void addOrderId(String orderId) {
-        if (orderIds == null) {
-            orderIds = new LinkedList<String>();
+    protected void addDeduplicationId(String deduplicationId) {
+        if (eventDeduplicationIdsMaxSize == 0) {
+            return;
         }
 
-        if (orderIds.size() >= ORDER_ID_MAXCOUNT) {
-            orderIds.removeLast();
+        if (eventDeduplicationIds == null) {
+            eventDeduplicationIds = new LinkedList<String>();
+        } else {
+            while (eventDeduplicationIds.size() >= eventDeduplicationIdsMaxSize) {
+                eventDeduplicationIds.removeLast();
+            }
         }
-        orderIds.addFirst(orderId);
+        eventDeduplicationIds.addFirst(deduplicationId);
     }
 
-    protected boolean findOrderId(String orderId) {
-        if (orderIds == null) {
+    protected boolean eventDeduplicationIdExists(String deduplicationId) {
+        if (eventDeduplicationIds == null) {
             return false;
         }
-        return orderIds.contains(orderId);
+        return eventDeduplicationIds.contains(deduplicationId);
+    }
+
+    protected void setEventDeduplicationIdsMaxSize(Integer size) {
+        if (size != null && size >= 0) {
+            eventDeduplicationIdsMaxSize = size;
+        }
     }
 
     public boolean isCoppaEnabled() {
@@ -230,7 +242,7 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(sessionLength, otherActivityState.sessionLength)) return false;
         if (!Util.equalLong(timeSpent, otherActivityState.timeSpent)) return false;
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval)) return false;
-        if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
+        if (!Util.equalObject(eventDeduplicationIds, otherActivityState.eventDeduplicationIds)) return false;
         if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
         if (!Util.equalString(adid, otherActivityState.adid)) return false;
         if (!Util.equalLong(clickTime, otherActivityState.clickTime)) return false;
@@ -277,7 +289,7 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashLong(sessionLength, hashCode);
         hashCode = Util.hashLong(timeSpent, hashCode);
         hashCode = Util.hashLong(lastInterval, hashCode);
-        hashCode = Util.hashObject(orderIds, hashCode);
+        hashCode = Util.hashObject(eventDeduplicationIds, hashCode);
         hashCode = Util.hashString(pushToken, hashCode);
         hashCode = Util.hashString(adid, hashCode);
         hashCode = Util.hashLong(clickTime, hashCode);
@@ -328,7 +340,7 @@ public class ActivityState implements Serializable, Cloneable {
         isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
-        orderIds = Util.readObjectField(fields, "orderIds", null);
+        eventDeduplicationIds = Util.readObjectField(fields, "orderIds", null);
         pushToken = Util.readStringField(fields, "pushToken", null);
         adid = Util.readStringField(fields, "adid", null);
 
@@ -369,6 +381,8 @@ public class ActivityState implements Serializable, Cloneable {
         if (uuid == null) {
             uuid = Util.createUuid();
         }
+
+        eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {

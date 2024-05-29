@@ -308,6 +308,12 @@ AdjustCommandExecutor.prototype.config = function(params) {
         adjustConfig.setSendInBackground(sendInBackground);
     }
 
+    if ('eventDeduplicationIdsMaxSize' in params) {
+        var eventDeduplicationIdsMaxSizeS = getFirstParameterValue(params, 'eventDeduplicationIdsMaxSize');
+        var eventDeduplicationIdsMaxSize = parseInt(eventDeduplicationIdsMaxSizeS);
+        adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
+    }
+
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
         adjustConfig.setAttributionCallback(function(attribution) {
@@ -451,6 +457,11 @@ AdjustCommandExecutor.prototype.event = function(params) {
     if ('orderId' in params) {
         var orderId = getFirstParameterValue(params, 'orderId');
         adjustEvent.setOrderId(orderId);
+    }
+
+    if ('deduplicationId' in params) {
+        var deduplicationId = getFirstParameterValue(params, 'deduplicationId');
+        adjustEvent.setDeduplicationId(deduplicationId);
     }
 
     if ('callbackId' in params) {

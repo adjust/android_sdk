@@ -163,6 +163,7 @@ public class AdjustBridgeInstance {
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object readDeviceInfoOnceEnabledField = jsonAdjustConfig.get("readDeviceInfoOnceEnabled");
+            Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -356,6 +357,11 @@ public class AdjustBridgeInstance {
                 adjustConfig.setReadDeviceInfoOnceEnabled(readDeviceInfoOnceEnabled);
             }
 
+            Integer eventDeduplicationIdsMaxSize = AdjustBridgeUtil.fieldToInteger(eventDeduplicationIdsMaxSizeField);
+            if (eventDeduplicationIdsMaxSize != null) {
+                adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
+            }
+
             // Manually call onResume() because web view initialisation will happen a bit delayed.
             // With this delay, it will miss lifecycle callback onResume() initial firing.
             Adjust.onCreate(adjustConfig);
@@ -385,6 +391,7 @@ public class AdjustBridgeInstance {
             Object callbackParametersField = jsonAdjustEvent.get("callbackParameters");
             Object partnerParametersField = jsonAdjustEvent.get("partnerParameters");
             Object orderIdField = jsonAdjustEvent.get("orderId");
+            Object deduplicationIdField = jsonAdjustEvent.get("deduplicationId");
             Object callbackIdField = jsonAdjustEvent.get("callbackId");
 
             String eventToken = AdjustBridgeUtil.fieldToString(eventTokenField);
@@ -421,10 +428,16 @@ public class AdjustBridgeInstance {
                 }
             }
 
-            // Revenue deduplication
+            // Order id
             String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
             if (orderId != null) {
                 adjustEvent.setOrderId(orderId);
+            }
+
+            // Revenue deduplication
+            String deduplicationId = AdjustBridgeUtil.fieldToString(deduplicationIdField);
+            if (deduplicationId != null) {
+                adjustEvent.setDeduplicationId(deduplicationId);
             }
 
             // Callback id
