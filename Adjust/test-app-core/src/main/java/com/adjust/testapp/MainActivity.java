@@ -30,14 +30,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        testLibrary = new TestLibrary(baseUrl, controlUrl, new CommandListener(this.getApplicationContext()));
+        testLibrary = new TestLibrary(baseUrl, controlUrl, this.getApplicationContext(),
+          new CommandListener(this.getApplicationContext()));
         // testLibrary.doNotExitAfterEnd();
 
         startTestSession();
     }
 
     private void startTestSession() {
-        // testLibrary.addTestDirectory("current/gdpr");
+        //testLibrary.addTestDirectory("app-secret");
+        //testLibrary.addTest("Test_Event_Params");
 
         Adjust.getSdkVersion(new OnSdkVersionReadListener() {
             @Override

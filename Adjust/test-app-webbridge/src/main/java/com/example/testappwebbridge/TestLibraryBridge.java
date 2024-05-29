@@ -40,7 +40,7 @@ public class TestLibraryBridge {
     }
 
     private static void initTestLibrary() {
-        TestLibraryBridge.testLibrary = new TestLibrary(baseUrl, controlUrl, new ICommandRawJsonListener() {
+        TestLibraryBridge.testLibrary = new TestLibrary(baseUrl, controlUrl, application, new ICommandRawJsonListener() {
             @Override
             public void executeCommand(String json) {
                 Log.d("testappwebbridge", String.format("execRawTestCommandCallback %s, %d", json, order));
