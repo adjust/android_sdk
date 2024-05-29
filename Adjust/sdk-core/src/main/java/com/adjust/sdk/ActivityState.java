@@ -35,7 +35,7 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("timeSpent", long.class),
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
-            new ObjectStreamField("eventDeduplicationIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
+            new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class),
             new ObjectStreamField("adid", String.class),
             new ObjectStreamField("clickTime", long.class),
@@ -340,10 +340,7 @@ public class ActivityState implements Serializable, Cloneable {
         isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
-        eventDeduplicationIds = Util.readObjectField(fields, "eventDeduplicationIds", null);
-        if (eventDeduplicationIds == null) {
-            eventDeduplicationIds = Util.readObjectField(fields, "orderIds", null);
-        }
+        eventDeduplicationIds = Util.readObjectField(fields, "orderIds", null);
         pushToken = Util.readStringField(fields, "pushToken", null);
         adid = Util.readStringField(fields, "adid", null);
 
