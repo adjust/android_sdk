@@ -365,11 +365,15 @@ public class Adjust {
     /**
      * Called to get user's current attribution value.
      *
-     * @return AdjustAttribution object with current attribution value
+     *  @param attributionReadListener Callback to get triggered once attribution is obtained
      */
-    public static AdjustAttribution getAttribution() {
+    public static void getAttribution(final OnAttributionReadListener attributionReadListener) {
+        if (attributionReadListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting attribution can't be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getAttribution();
+        adjustInstance.getAttribution(attributionReadListener);
     }
 
     /**

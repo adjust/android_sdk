@@ -18,6 +18,7 @@ import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
+import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
@@ -143,6 +144,17 @@ public class GlobalApplication extends Application {
 
         // Initialise the adjust SDK.
         Adjust.onCreate(config);
+
+
+
+
+        Adjust.getAttribution(new OnAttributionReadListener() {
+            @Override
+            public void onAttributionRead(AdjustAttribution attribution) {
+                Log.d("example", "Attribution callback called!");
+                Log.d("example", "Attribution: " + attribution.toString());
+            }
+        });
 
         // Get the adid.
         Adjust.getAdid(new OnAdidReadListener() {

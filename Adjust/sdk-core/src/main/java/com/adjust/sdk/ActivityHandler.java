@@ -89,6 +89,7 @@ public class ActivityHandler
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     private SystemLifecycle systemLifecycle;
+    private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
 
     @Override
     public void teardown() {
@@ -491,12 +492,30 @@ public class ActivityHandler
             return false;
         }
 
+        if (! cachedAttributionReadCallbacks.isEmpty()) {
+            final ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacksCopy =
+                    new ArrayList<>(cachedAttributionReadCallbacks);
+
+            cachedAttributionReadCallbacks.clear();
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAttributionReadListener onAttributionReadListener : cachedAttributionReadCallbacksCopy) {
+                        if (onAttributionReadListener != null) {
+                            onAttributionReadListener.onAttributionRead(attribution);
+                        }
+                    }
+                }
+            });
+        }
+
         if (attribution.equals(this.attribution)) {
             return false;
         }
 
         this.attribution = attribution;
         writeAttributionI();
+
         return true;
     }
 
@@ -772,8 +791,17 @@ public class ActivityHandler
     }
 
     @Override
-    public AdjustAttribution getAttribution() {
-        return attribution;
+    public void getAttribution(OnAttributionReadListener onAttributionReadListener) {
+        if (attribution != null) {
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    onAttributionReadListener.onAttributionRead(attribution);
+                }
+            });
+        }else {
+            cachedAttributionReadCallbacks.add(onAttributionReadListener);
+        }
     }
 
     @Override
@@ -890,29 +918,8 @@ public class ActivityHandler
             this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
         }
 
-        cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
-        adjustConfig.cachedAdidReadCallbacks.clear();
-
-        if (! cachedAdidReadCallbacks.isEmpty()
-          && activityState != null
-          && activityState.adid != null)
-        {
-            final ArrayList<OnAdidReadListener> cachedAdidReadCallbacksCopy =
-              new ArrayList<>(cachedAdidReadCallbacks);
-            final String adidCopy = activityState.adid;
-
-            cachedAdidReadCallbacks.clear();
-            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
-                @Override
-                public void run() {
-                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacksCopy) {
-                        if (onAdidReadListener != null) {
-                            onAdidReadListener.onAdidRead(adidCopy);
-                        }
-                    }
-                }
-            });
-        }
+        handleAdidCallbackI();
+        handleAttributionCallbackI();
 
         // GDPR
         if (internalState.hasFirstSdkStartOcurred()) {
@@ -1019,6 +1026,57 @@ public class ActivityHandler
         sendReftagReferrerI();
 
         bootstrapLifecycleI();
+    }
+
+    private void handleAttributionCallbackI() {
+        cachedAttributionReadCallbacks.addAll(adjustConfig.cachedAttributionReadCallbacks);
+        adjustConfig.cachedAttributionReadCallbacks.clear();
+
+        if (! cachedAttributionReadCallbacks.isEmpty()
+                && attribution != null)
+        {
+            final ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacksCopy =
+                    new ArrayList<>(cachedAttributionReadCallbacks);
+            final AdjustAttribution attributionCopy = attribution;
+
+            cachedAttributionReadCallbacks.clear();
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAttributionReadListener onAttributionReadListener : cachedAttributionReadCallbacksCopy) {
+                        if (onAttributionReadListener != null) {
+                            onAttributionReadListener.onAttributionRead(attributionCopy);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    private void handleAdidCallbackI() {
+        cachedAdidReadCallbacks.addAll(adjustConfig.cachedAdidReadCallbacks);
+        adjustConfig.cachedAdidReadCallbacks.clear();
+
+        if (! cachedAdidReadCallbacks.isEmpty()
+          && activityState != null
+          && activityState.adid != null)
+        {
+            final ArrayList<OnAdidReadListener> cachedAdidReadCallbacksCopy =
+              new ArrayList<>(cachedAdidReadCallbacks);
+            final String adidCopy = activityState.adid;
+
+            cachedAdidReadCallbacks.clear();
+            new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (OnAdidReadListener onAdidReadListener : cachedAdidReadCallbacksCopy) {
+                        if (onAdidReadListener != null) {
+                            onAdidReadListener.onAdidRead(adidCopy);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     private void bootstrapLifecycleI() {
