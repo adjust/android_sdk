@@ -139,6 +139,7 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "disableCoppaCompliance"         : this.disableCoppaCompliance(command.params); break;
         case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsApp(command.params); break;
         case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsApp(command.params); break;
+        case "attributionGetter"              : this.attributionGetter(command.params); break;
         break;
     }
 
@@ -625,6 +626,25 @@ AdjustCommandExecutor.prototype.enablePlayStoreKidsApp = function(params) {
 
 AdjustCommandExecutor.prototype.disablePlayStoreKidsApp = function(params) {
         Adjust.disablePlayStoreKidsApp();
+};
+
+AdjustCommandExecutor.prototype.attributionGetter = function(params) {
+        var basePath = this.basePath;
+        Adjust.getAttribution(function(attribution) {
+            TestLibrary.addInfoToSend("tracker_token", attribution.trackerToken);
+            TestLibrary.addInfoToSend("tracker_name", attribution.trackerName);
+            TestLibrary.addInfoToSend("network", attribution.network);
+            TestLibrary.addInfoToSend("campaign", attribution.campaign);
+            TestLibrary.addInfoToSend("adgroup", attribution.adgroup);
+            TestLibrary.addInfoToSend("creative", attribution.creative);
+            TestLibrary.addInfoToSend("click_label", attribution.clickLabel);
+            TestLibrary.addInfoToSend("cost_type", attribution.costType);
+            TestLibrary.addInfoToSend("cost_amount", attribution.costAmount);
+            TestLibrary.addInfoToSend("cost_currency", attribution.costCurrency);
+            TestLibrary.addInfoToSend("fb_install_referrer", attribution.fbInstallReferrer);
+
+            TestLibrary.sendInfoToServer(basePath);
+        });
 };
 
 //Util
