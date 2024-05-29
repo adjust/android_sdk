@@ -158,7 +158,6 @@ public class AdjustBridgeInstance {
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
-            Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
@@ -327,12 +326,6 @@ public class AdjustBridgeInstance {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance.configureFbPixel: %s", e.getMessage());
             }
 
-            // Set url strategy
-            String urlStrategy = AdjustBridgeUtil.fieldToString(urlStrategyField);
-            if (urlStrategy != null) {
-                adjustConfig.setUrlStrategy(urlStrategy);
-            }
-
             // Preinstall tracking
             Boolean preinstallTrackingEnabled = AdjustBridgeUtil.fieldToBoolean(preinstallTrackingEnabledField);
             if (preinstallTrackingEnabled != null) {
@@ -390,7 +383,6 @@ public class AdjustBridgeInstance {
             Object currencyField = jsonAdjustEvent.get("currency");
             Object callbackParametersField = jsonAdjustEvent.get("callbackParameters");
             Object partnerParametersField = jsonAdjustEvent.get("partnerParameters");
-            Object orderIdField = jsonAdjustEvent.get("orderId");
             Object deduplicationIdField = jsonAdjustEvent.get("deduplicationId");
             Object callbackIdField = jsonAdjustEvent.get("callbackId");
 
@@ -426,12 +418,6 @@ public class AdjustBridgeInstance {
                     String value = partnerParameters[i+1];
                     adjustEvent.addPartnerParameter(key, value);
                 }
-            }
-
-            // Order id
-            String orderId = AdjustBridgeUtil.fieldToString(orderIdField);
-            if (orderId != null) {
-                adjustEvent.setOrderId(orderId);
             }
 
             // Revenue deduplication
@@ -559,15 +545,6 @@ public class AdjustBridgeInstance {
             return;
         }
         Adjust.removeGlobalPartnerParameters();
-    }
-
-    @JavascriptInterface
-    public void setPushToken(String pushToken) {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.setPushToken(pushToken, application.getApplicationContext());
     }
 
     @JavascriptInterface

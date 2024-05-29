@@ -454,11 +454,6 @@ AdjustCommandExecutor.prototype.event = function(params) {
         }
     }
 
-    if ('orderId' in params) {
-        var orderId = getFirstParameterValue(params, 'orderId');
-        adjustEvent.setOrderId(orderId);
-    }
-
     if ('deduplicationId' in params) {
         var deduplicationId = getFirstParameterValue(params, 'deduplicationId');
         adjustEvent.setDeduplicationId(deduplicationId);
