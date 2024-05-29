@@ -558,7 +558,7 @@ public class AdjustInstance {
      *
      * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
-    public void getSdkVersion(OnSdkVersionReadListener onSdkVersionReadListener) {
+    public void getSdkVersion(final OnSdkVersionReadListener onSdkVersionReadListener) {
         new AsyncTaskExecutor<Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
@@ -579,10 +579,6 @@ public class AdjustInstance {
      * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
      */
     public void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
-        if (onGooglePlayInstallReferrerReadListener == null) {
-            AdjustFactory.getLogger().error("OnGooglePlayInstallReferrerReadListener can not be null");
-            return;
-        }
         InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
             @Override
             public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
@@ -756,15 +752,13 @@ public class AdjustInstance {
      * @param purchase AdjustPurchase object to be verified
      * @param callback Callback to be pinged with the verification results
      */
-    public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
+    public void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
-            if (callback != null) {
-                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
-                        "not_verified",
-                        100,
-                        "SDK needs to be initialized before making purchase verification request");
-                callback.onVerificationFinished(result);
-            }
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    100,
+                    "SDK needs to be initialized before making purchase verification request");
+            callback.onVerificationFinished(result);
             return;
         }
         activityHandler.verifyPurchase(purchase, callback);
