@@ -88,7 +88,7 @@ public class ActivityState implements Serializable, Cloneable {
     protected long lastInterval;
 
     protected LinkedList<String> eventDeduplicationIds;
-    protected int eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
+    protected int eventDeduplicationIdsMaxSize;
 
     protected String pushToken;
     protected String adid;
@@ -171,6 +171,7 @@ public class ActivityState implements Serializable, Cloneable {
         installReferrerMeta = null;
         clickTimeMeta = 0;
         isClickMeta = null;
+        eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
     }
 
     protected void resetSessionAttributes(long now) {
