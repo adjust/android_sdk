@@ -829,7 +829,7 @@ public class AdjustCommandExecutor {
     }
 
     private void attributionGetter() {
-        Adjust.getAttribution(context, attribution -> {
+        Adjust.getAttribution(attribution -> {
             Map<String, String> fields = new HashMap<>();
             if (attribution.trackerToken != null)
                 fields.put("tracker_token", attribution.trackerToken);

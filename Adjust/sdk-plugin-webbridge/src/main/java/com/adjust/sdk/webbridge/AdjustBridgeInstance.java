@@ -712,7 +712,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        Adjust.getAttribution(application, new OnAttributionReadListener() {
+        Adjust.getAttribution(new OnAttributionReadListener() {
             @Override
             public void onAttributionRead(AdjustAttribution attribution) {
                 AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
