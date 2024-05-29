@@ -556,12 +556,17 @@ public class AdjustInstance {
      * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
     public void getSdkVersion(OnSdkVersionReadListener onSdkVersionReadListener) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
+        new AsyncTaskExecutor<Void, String>() {
             @Override
-            public void run() {
-                onSdkVersionReadListener.onSdkVersionRead(Util.getSdkVersion());
+            protected String doInBackground(Void... voids) {
+                return Util.getSdkVersion();
             }
-        });
+
+            @Override
+            protected void onPostExecute(String sdkVersion) {
+                onSdkVersionReadListener.onSdkVersionRead(sdkVersion);
+            }
+        }.execute();
     }
 
     /**
