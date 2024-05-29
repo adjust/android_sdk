@@ -35,7 +35,7 @@ public class AdjustConfig {
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
-    List<String> urlStrategy;
+    List<String> urlStrategyDomains;
     boolean useSubdomains;
     boolean isDataResidency;
     String preinstallFilePath;
@@ -164,7 +164,7 @@ public class AdjustConfig {
             logger.error("Invalid url strategy");
             return;
         }
-        this.urlStrategy = domains;
+        this.urlStrategyDomains = domains;
         this.useSubdomains = useSubdomains;
         this.isDataResidency = isDataResidency;
     }
@@ -285,8 +285,8 @@ public class AdjustConfig {
         return needsCost;
     }
 
-    public List<String> getUrlStrategy() {
-        return urlStrategy;
+    public List<String> getUrlStrategyDomains() {
+        return urlStrategyDomains;
     }
 
     public String getPreinstallFilePath() {
