@@ -33,6 +33,8 @@ public interface Constants {
     String SUBSCRIPTION_URL_FORMAT = "https://subscription.%s";
     String PURCHASE_VERIFICATION_URL_FORMAT = "https://ssrv.%s";
 
+    String BASE_URL_NO_SUB_DOMAIN_FORMAT = "https://%s";
+
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
     String CLIENT_SDK = "android5.0.0";
