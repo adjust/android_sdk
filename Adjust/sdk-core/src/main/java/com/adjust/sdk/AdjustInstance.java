@@ -2,6 +2,8 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
@@ -551,10 +553,20 @@ public class AdjustInstance {
     /**
      * Called to get native SDK version string.
      *
-     * @return Native SDK version string.
+     * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
-    public String getSdkVersion() {
-        return Util.getSdkVersion();
+    public void getSdkVersion(OnSdkVersionReadListener onSdkVersionReadListener) {
+        new AsyncTaskExecutor<Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                return Util.getSdkVersion();
+            }
+
+            @Override
+            protected void onPostExecute(String sdkVersion) {
+                onSdkVersionReadListener.onSdkVersionRead(sdkVersion);
+            }
+        }.execute();
     }
 
     /**

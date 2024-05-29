@@ -385,11 +385,15 @@ public class Adjust {
     /**
      * Called to get native SDK version string.
      *
-     * @return Native SDK version string.
+     * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained
      */
-    public static String getSdkVersion() {
+    public static void getSdkVersion(final OnSdkVersionReadListener onSdkVersionReadListener) {
+        if (onSdkVersionReadListener == null) {
+            AdjustFactory.getLogger().error("onSdkVersionReadListener cannot be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getSdkVersion();
+        adjustInstance.getSdkVersion(onSdkVersionReadListener);
     }
 
     /**
