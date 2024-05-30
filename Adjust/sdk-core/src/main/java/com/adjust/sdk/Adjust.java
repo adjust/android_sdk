@@ -150,13 +150,20 @@ public class Adjust {
     }
 
     /**
-     * Called to set SDK to offline or online mode.
+     * Called to set SDK to offline mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public static void setOfflineMode(boolean enabled) {
+    public static void switchToOfflineMode() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setOfflineMode(enabled);
+        adjustInstance.switchToOfflineMode();
+    }
+    /**
+     * Called to set SDK to online mode.
+     *
+     */
+    public static void switchBackToOnlineMode() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.switchBackToOnlineMode();
     }
 
     /**

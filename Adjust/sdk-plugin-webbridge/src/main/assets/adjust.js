@@ -69,9 +69,15 @@ var Adjust = {
         }
     },
 
-    setOfflineMode: function(isOffline) {
+    switchToOfflineMode: function() {
         if (AdjustBridge) {
-            AdjustBridge.setOfflineMode(isOffline);
+            AdjustBridge.switchToOfflineMode();
+        }
+    },
+
+    switchBackToOnlineMode: function() {
+        if (AdjustBridge) {
+            AdjustBridge.switchBackToOnlineMode();
         }
     },
 

@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
@@ -276,13 +274,24 @@ public class AdjustInstance {
     /**
      * Called to set SDK to offline or online mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public void setOfflineMode(final boolean enabled) {
-        if (!checkActivityHandler(enabled, "offline mode", "online mode")) {
-            this.startOffline = enabled;
+    public void switchToOfflineMode() {
+        if (!checkActivityHandler(true, "offline mode", "online mode")) {
+            this.startOffline = true;
         } else {
-            activityHandler.setOfflineMode(enabled);
+            activityHandler.setOfflineMode(true);
+        }
+    }
+
+    /**
+     * Called to set SDK to online or online mode.
+     *
+     */
+    public void switchBackToOnlineMode() {
+        if (!checkActivityHandler(false, "offline mode", "online mode")) {
+            this.startOffline = false;
+        } else {
+            activityHandler.setOfflineMode(false);
         }
     }
 

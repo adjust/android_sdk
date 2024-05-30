@@ -195,7 +195,7 @@ public class GlobalApplication extends Application {
         });
 
         // Put the SDK in offline mode.
-        // Adjust.setOfflineMode(true);
+        // Adjust.switchToOfflineMode();
 
         // Disable the SDK
         // Adjust.setEnabled(false);

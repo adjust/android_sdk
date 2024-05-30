@@ -97,10 +97,10 @@ class MainActivity : AppCompatActivity() {
 
     fun onEnableDisableOfflineModeClick(v: View) {
         if ((v as Button).text == applicationContext.resources.getString(R.string.txt_enable_offline_mode)) {
-            Adjust.setOfflineMode(true)
+            Adjust.switchToOfflineMode()
             v.setText(R.string.txt_disable_offline_mode)
         } else {
-            Adjust.setOfflineMode(false)
+            Adjust.switchBackToOnlineMode()
             v.setText(R.string.txt_enable_offline_mode)
         }
     }
