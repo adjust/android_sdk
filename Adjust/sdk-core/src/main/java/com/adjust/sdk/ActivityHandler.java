@@ -2154,12 +2154,9 @@ public class ActivityHandler
         }
 
         resumeSendingI();
-        // if it's the first launch and it hasn't received the session response
-        if ((internalState.isFirstLaunch() && internalState.hasSessionResponseNotBeenProcessed()))
-        {
-            // try to send
-            packageHandler.sendFirstPackage();
-        }
+
+        // try to send
+        packageHandler.sendFirstPackage();
     }
 
     private void pauseSendingI() {
