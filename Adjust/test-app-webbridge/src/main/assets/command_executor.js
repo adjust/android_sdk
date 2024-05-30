@@ -510,7 +510,11 @@ AdjustCommandExecutor.prototype.setEnabled = function(params) {
 
 AdjustCommandExecutor.prototype.setOfflineMode = function(params) {
     var enabled = getFirstParameterValue(params, "enabled") == 'true';
-    Adjust.setOfflineMode(enabled);
+    if (enabled){
+        Adjust.switchToOfflineMode()
+    }else{
+        Adjust.switchBackToOnlineMode()
+    }
 };
 
 AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {

@@ -128,7 +128,7 @@ public class GlobalApplication extends Application {
         registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
 
         // Put the SDK in offline mode.
-        // Adjust.setOfflineMode(true);
+        // Adjust.switchToOfflineMode();
 
         // Disable the SDK
         // Adjust.setEnabled(false);

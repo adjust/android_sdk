@@ -30,7 +30,6 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
-import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
@@ -495,14 +494,19 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void setOfflineMode(String isOfflineString) {
+    public void switchToOfflineMode() {
         if (!isInitialized()) {
             return;
         }
-        Boolean isOffline = AdjustBridgeUtil.fieldToBoolean(isOfflineString);
-        if (isOffline != null) {
-            Adjust.setOfflineMode(isOffline);
+        Adjust.switchToOfflineMode();
+    }
+
+    @JavascriptInterface
+    public void switchBackToOnlineMode() {
+        if (!isInitialized()) {
+            return;
         }
+        Adjust.switchBackToOnlineMode();
     }
 
     @JavascriptInterface
