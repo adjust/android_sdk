@@ -134,7 +134,7 @@ public class PackageHandler implements IPackageHandler,
             scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
-                    sendNextI();
+                    sendNextI(responseData.continueIn);
                 }
             });
 
@@ -258,16 +258,32 @@ public class PackageHandler implements IPackageHandler,
         return sendingParameters;
     }
 
-    private void sendNextI() {
+    private void sendNextI(Long previousResponseContinueIn) {
         if (packageQueue.isEmpty()) {
             return;
         }
 
         packageQueue.remove(0);
         writePackageQueueI();
-        isSending.set(false);
-        logger.verbose("Package handler can send");
-        sendFirstI();
+
+        if (previousResponseContinueIn != null) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    logger.verbose("Package handler finished waiting to continue");
+                    isSending.set(false);
+                    sendFirstPackage();
+                }
+            };
+
+            logger.verbose("Waiting for %d seconds before continuing for next package in continue_in", previousResponseContinueIn / 1000.0);
+            scheduler.schedule(runnable, previousResponseContinueIn);
+
+        } else {
+            logger.verbose("Package handler can send");
+            isSending.set(false);
+            sendFirstI();
+        }
     }
 
     private void flushI() {
