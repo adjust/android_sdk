@@ -1,11 +1,11 @@
 var Adjust = {
-    onCreate: function (adjustConfig) {
+    initSdk: function (adjustConfig) {
         if (adjustConfig && !adjustConfig.getSdkPrefix()) {
             adjustConfig.setSdkPrefix(this.getSdkPrefix());
         }
         this.adjustConfig = adjustConfig;
         if (AdjustBridge) {
-            AdjustBridge.onCreate(JSON.stringify(adjustConfig));
+            AdjustBridge.initSdk(JSON.stringify(adjustConfig));
         }
     },
 
@@ -31,9 +31,15 @@ var Adjust = {
         }
     },
 
-    setEnabled: function (enabled) {
+    enable: function () {
         if (AdjustBridge) {
-            AdjustBridge.setEnabled(enabled);
+            AdjustBridge.enable();
+        }
+    },
+
+    disable: function () {
+        if (AdjustBridge) {
+            AdjustBridge.disable();
         }
     },
 
@@ -69,9 +75,15 @@ var Adjust = {
         }
     },
 
-    setOfflineMode: function(isOffline) {
+    switchToOfflineMode: function() {
         if (AdjustBridge) {
-            AdjustBridge.setOfflineMode(isOffline);
+            AdjustBridge.switchToOfflineMode();
+        }
+    },
+
+    switchBackToOnlineMode: function() {
+        if (AdjustBridge) {
+            AdjustBridge.switchBackToOnlineMode();
         }
     },
 

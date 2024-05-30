@@ -2,7 +2,6 @@ package com.adjust.testapp;
 
 import static com.adjust.testapp.MainActivity.baseUrl;
 import static com.adjust.testapp.MainActivity.gdprUrl;
-import static com.adjust.testapp.MainActivity.testLibrary;
 
 import android.content.Context;
 import android.net.Uri;
@@ -27,7 +26,6 @@ import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
@@ -464,7 +462,7 @@ public class AdjustCommandExecutor {
         AdjustConfig adjustConfig = savedConfigs.get(configNumber);
 
         //adjustConfig.setBasePath(basePath);
-        Adjust.onCreate(adjustConfig);
+        Adjust.initSdk(adjustConfig);
 
         this.savedConfigs.remove(0);
     }
@@ -561,12 +559,20 @@ public class AdjustCommandExecutor {
 
     private void setEnabled() {
         Boolean enabled = Boolean.valueOf(command.getFirstParameterValue("enabled"));
-        Adjust.setEnabled(enabled);
+        if (enabled){
+            Adjust.enable();
+        }else {
+            Adjust.disable();
+        }
     }
 
     private void setOfflineMode() {
         Boolean enabled = Boolean.valueOf(command.getFirstParameterValue("enabled"));
-        Adjust.setOfflineMode(enabled);
+        if (enabled) {
+            Adjust.switchToOfflineMode();
+        }else {
+            Adjust.switchBackToOnlineMode();
+        }
     }
 
     private void addGlobalCallbackParameter() {

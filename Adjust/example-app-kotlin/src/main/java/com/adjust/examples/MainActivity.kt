@@ -97,10 +97,10 @@ class MainActivity : AppCompatActivity() {
 
     fun onEnableDisableOfflineModeClick(v: View) {
         if ((v as Button).text == applicationContext.resources.getString(R.string.txt_enable_offline_mode)) {
-            Adjust.setOfflineMode(true)
+            Adjust.switchToOfflineMode()
             v.setText(R.string.txt_disable_offline_mode)
         } else {
-            Adjust.setOfflineMode(false)
+            Adjust.switchBackToOnlineMode()
             v.setText(R.string.txt_enable_offline_mode)
         }
     }
@@ -108,10 +108,10 @@ class MainActivity : AppCompatActivity() {
     fun onEnableDisableSDKClick(v: View) {
         Adjust.isEnabled(this, OnIsEnabledListener {
             if (it) {
-                Adjust.setEnabled(false)
+                Adjust.disable()
                 (v as Button).setText(R.string.txt_enable_sdk)
             } else {
-                Adjust.setEnabled(true)
+                Adjust.enable()
                 (v as Button).setText(R.string.txt_disable_sdk)
             }
         })

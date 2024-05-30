@@ -6,7 +6,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,10 +14,7 @@ import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustEvent;
-import com.adjust.sdk.AdjustPurchase;
-import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.OnIsEnabledListener;
-import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String EVENT_TOKEN_SIMPLE = "g3mfiw";
@@ -115,10 +111,10 @@ public class MainActivity extends AppCompatActivity {
     public void onEnableDisableOfflineModeClick(View v) {
         if (((Button) v).getText().equals(
                 getApplicationContext().getResources().getString(R.string.txt_enable_offline_mode))) {
-            Adjust.setOfflineMode(true);
+            Adjust.switchToOfflineMode();
             ((Button) v).setText(R.string.txt_disable_offline_mode);
         } else {
-            Adjust.setOfflineMode(false);
+            Adjust.switchBackToOnlineMode();
             ((Button) v).setText(R.string.txt_enable_offline_mode);
         }
     }
@@ -128,10 +124,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
-                    Adjust.setEnabled(false);
+                    Adjust.disable();
                     ((Button) v).setText(R.string.txt_enable_sdk);
                 } else {
-                    Adjust.setEnabled(true);
+                    Adjust.enable();
                     ((Button) v).setText(R.string.txt_disable_sdk);
                 }
             }

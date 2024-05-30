@@ -87,25 +87,25 @@
                 var btnEnableOfflineMode = document.getElementById('btnEnableOfflineMode')
                 btnEnableOfflineMode.onclick = function(e) {
                     e.preventDefault();
-                    Adjust.setOfflineMode(true);
+                    Adjust.switchToOfflineMode();
                 }
 
                 var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
                 btnDisableOfflineMode.onclick = function(e) {
                     e.preventDefault();
-                    Adjust.setOfflineMode(false);
+                    Adjust.switchBackToOnlineMode();
                 }
 
                 var btnEnableSdk = document.getElementById('btnEnableSdk')
                 btnEnableSdk.onclick = function(e) {
                     e.preventDefault()
-                    Adjust.setEnabled(true)
+                    Adjust.enable()
                 }
 
                 var btnDisableSdk = document.getElementById('btnDisableSdk')
                 btnDisableSdk.onclick = function(e) {
                     e.preventDefault();
-                    Adjust.setEnabled(false);
+                    Adjust.disable();
                 }
 
                 var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')

@@ -143,7 +143,7 @@ public class GlobalApplication extends Application {
         // AdjustOaid.readOaid();
 
         // Initialise the adjust SDK.
-        Adjust.onCreate(config);
+        Adjust.initSdk(config);
 
 
 
@@ -195,10 +195,10 @@ public class GlobalApplication extends Application {
         });
 
         // Put the SDK in offline mode.
-        // Adjust.setOfflineMode(true);
+        // Adjust.switchToOfflineMode();
 
         // Disable the SDK
-        // Adjust.setEnabled(false);
+        // Adjust.disable();
 
         // Send push notification token.
         // Adjust.setPushToken("token");

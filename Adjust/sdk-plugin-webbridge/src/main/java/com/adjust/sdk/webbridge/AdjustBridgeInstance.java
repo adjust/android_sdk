@@ -30,7 +30,6 @@ import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
-import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
@@ -130,7 +129,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void onCreate(String adjustConfigString) {
+    public void initSdk(String adjustConfigString) {
         // Initialise SDK only if it's not already initialised.
         if (isInitialized) {
             AdjustBridgeUtil.getLogger().warn("Adjust bridge is already initialized. Ignoring further attempts");
@@ -363,7 +362,7 @@ public class AdjustBridgeInstance {
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
             // With this delay, it will miss lifecycle callback onResume() initial firing.
-            Adjust.onCreate(adjustConfig);
+            Adjust.initSdk(adjustConfig);
             Adjust.onResume();
 
             isInitialized = true;
@@ -463,14 +462,19 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void setEnabled(String isEnabledString) {
+    public void enable() {
         if (!isInitialized()) {
             return;
         }
-        Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledString);
-        if (isEnabled != null) {
-            Adjust.setEnabled(isEnabled);
+        Adjust.enable();
+    }
+
+    @JavascriptInterface
+    public void disable() {
+        if (!isInitialized()) {
+            return;
         }
+        Adjust.disable();
     }
 
     @JavascriptInterface
@@ -495,14 +499,19 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void setOfflineMode(String isOfflineString) {
+    public void switchToOfflineMode() {
         if (!isInitialized()) {
             return;
         }
-        Boolean isOffline = AdjustBridgeUtil.fieldToBoolean(isOfflineString);
-        if (isOffline != null) {
-            Adjust.setOfflineMode(isOffline);
+        Adjust.switchToOfflineMode();
+    }
+
+    @JavascriptInterface
+    public void switchBackToOnlineMode() {
+        if (!isInitialized()) {
+            return;
         }
+        Adjust.switchBackToOnlineMode();
     }
 
     @JavascriptInterface

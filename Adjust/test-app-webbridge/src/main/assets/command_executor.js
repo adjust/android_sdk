@@ -409,7 +409,7 @@ AdjustCommandExecutor.prototype.start = function(params) {
     }
 
     var adjustConfig = this.savedConfigs[configNumber];
-    Adjust.onCreate(adjustConfig);
+    Adjust.initSdk(adjustConfig);
 
     delete this.savedConfigs[0];
 };
@@ -505,12 +505,20 @@ AdjustCommandExecutor.prototype.resume = function(params) {
 
 AdjustCommandExecutor.prototype.setEnabled = function(params) {
     var enabled = getFirstParameterValue(params, "enabled") == 'true';
-    Adjust.setEnabled(enabled);
+    if(enabled){
+        Adjust.enable();
+    }else{
+        Adjust.disable();
+    }
 };
 
 AdjustCommandExecutor.prototype.setOfflineMode = function(params) {
     var enabled = getFirstParameterValue(params, "enabled") == 'true';
-    Adjust.setOfflineMode(enabled);
+    if (enabled){
+        Adjust.switchToOfflineMode()
+    }else{
+        Adjust.switchBackToOnlineMode()
+    }
 };
 
 AdjustCommandExecutor.prototype.gdprForgetMe = function(params) {

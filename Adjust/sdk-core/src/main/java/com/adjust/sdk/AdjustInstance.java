@@ -2,8 +2,6 @@ package com.adjust.sdk;
 
 import android.net.Uri;
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
@@ -80,7 +78,7 @@ public class AdjustInstance {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public void onCreate(final AdjustConfig adjustConfig) {
+    public void initSdk(final AdjustConfig adjustConfig) {
         if (adjustConfig == null) {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return;
@@ -143,14 +141,23 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public void setEnabled(final boolean enabled) {
-        this.startEnabled = enabled;
-        if (checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
-            activityHandler.setEnabled(enabled);
+    public void enable() {
+        this.startEnabled = true;
+        if (checkActivityHandler(true, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(true);
+        }
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public void disable() {
+        this.startEnabled = false;
+        if (checkActivityHandler(false, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(false);
         }
     }
 
@@ -276,13 +283,24 @@ public class AdjustInstance {
     /**
      * Called to set SDK to offline or online mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public void setOfflineMode(final boolean enabled) {
-        if (!checkActivityHandler(enabled, "offline mode", "online mode")) {
-            this.startOffline = enabled;
+    public void switchToOfflineMode() {
+        if (!checkActivityHandler(true, "offline mode", "online mode")) {
+            this.startOffline = true;
         } else {
-            activityHandler.setOfflineMode(enabled);
+            activityHandler.setOfflineMode(true);
+        }
+    }
+
+    /**
+     * Called to set SDK to online or online mode.
+     *
+     */
+    public void switchBackToOnlineMode() {
+        if (!checkActivityHandler(false, "offline mode", "online mode")) {
+            this.startOffline = false;
+        } else {
+            activityHandler.setOfflineMode(false);
         }
     }
 

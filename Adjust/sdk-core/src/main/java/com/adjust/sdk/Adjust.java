@@ -45,9 +45,9 @@ public class Adjust {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public static void onCreate(AdjustConfig adjustConfig) {
+    public static void initSdk(AdjustConfig adjustConfig) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.onCreate(adjustConfig);
+        adjustInstance.initSdk(adjustConfig);
     }
 
     /**
@@ -77,13 +77,20 @@ public class Adjust {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public static void setEnabled(boolean enabled) {
+    public static void enable() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setEnabled(enabled);
+        adjustInstance.enable();
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public static void disable() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.disable();
     }
 
     /**
@@ -150,13 +157,20 @@ public class Adjust {
     }
 
     /**
-     * Called to set SDK to offline or online mode.
+     * Called to set SDK to offline mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public static void setOfflineMode(boolean enabled) {
+    public static void switchToOfflineMode() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setOfflineMode(enabled);
+        adjustInstance.switchToOfflineMode();
+    }
+    /**
+     * Called to set SDK to online mode.
+     *
+     */
+    public static void switchBackToOnlineMode() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.switchBackToOnlineMode();
     }
 
     /**
@@ -419,11 +433,7 @@ public class Adjust {
      */
     public static void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
-            AdjustFactory.getLogger().error("callback cannot be null");
-            return;
-        }
-        if (purchase == null) {
-            AdjustFactory.getLogger().error("purchase cannot be null");
+            AdjustFactory.getLogger().error("Purchase verification aborted because verification callback is null");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();

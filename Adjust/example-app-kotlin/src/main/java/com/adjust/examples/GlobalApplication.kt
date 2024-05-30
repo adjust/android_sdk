@@ -103,17 +103,17 @@ class GlobalApplication : Application() {
         // AdjustOaid.readOaid()
 
         // Initialise the adjust SDK.
-        Adjust.onCreate(config)
+        Adjust.initSdk(config)
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.
         registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
 
         // Put the SDK in offline mode.
-        // Adjust.setOfflineMode(true);
+        // Adjust.switchToOfflineMode();
 
         // Disable the SDK
-        // Adjust.setEnabled(false);
+        // Adjust.disable();
 
         // Send push notification token.
         // Adjust.setPushToken("token");

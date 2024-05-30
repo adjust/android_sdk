@@ -42,10 +42,10 @@ public class ServiceExample extends Service {
         Log.d("example", "ServiceExample onStartCommand");
 
         if (flip) {
-            Adjust.setEnabled(false);
+            Adjust.disable();
             flip = false;
         } else {
-            Adjust.setEnabled(true);
+            Adjust.enable();
             flip = true;
         }
 
