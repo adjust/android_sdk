@@ -443,11 +443,7 @@ public class Adjust {
      */
     public static void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
-            AdjustFactory.getLogger().error("callback cannot be null");
-            return;
-        }
-        if (purchase == null) {
-            AdjustFactory.getLogger().error("purchase cannot be null");
+            AdjustFactory.getLogger().error("Purchase verification aborted because verification callback is null");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
