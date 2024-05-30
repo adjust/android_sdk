@@ -771,7 +771,7 @@ public class AdjustInstance {
      * @param purchase AdjustPurchase object to be verified
      * @param callback Callback to be pinged with the verification results
      */
-    public void verifyPlayStorePurchase(final AdjustPurchase purchase,
+    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
                                         final OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
             AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(

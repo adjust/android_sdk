@@ -1,10 +1,10 @@
 package com.adjust.sdk;
 
-public class AdjustPurchase {
+public class AdjustPlayStorePurchase {
         private final String productId;
         private final String purchaseToken;
 
-    public AdjustPurchase(final String productId, final String purchaseToken) {
+    public AdjustPlayStorePurchase(final String productId, final String purchaseToken) {
         this.productId = productId;
         this.purchaseToken = purchaseToken;
     }

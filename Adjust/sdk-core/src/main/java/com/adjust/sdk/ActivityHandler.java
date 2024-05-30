@@ -805,7 +805,7 @@ public class ActivityHandler
     }
 
     @Override
-    public void verifyPlayStorePurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -2504,7 +2504,7 @@ public class ActivityHandler
         packageHandler.sendFirstPackage();
     }
 
-    private void verifyPlayStorePurchaseI(final AdjustPurchase purchase,
+    private void verifyPlayStorePurchaseI(final AdjustPlayStorePurchase purchase,
                                           final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
             logger.warn("Purchase verification aborted because verification callback is null");
