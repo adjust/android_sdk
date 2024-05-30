@@ -771,7 +771,8 @@ public class AdjustInstance {
      * @param purchase AdjustPurchase object to be verified
      * @param callback Callback to be pinged with the verification results
      */
-    public void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                        final OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyPurchase")) {
             AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
                     "not_verified",
@@ -780,7 +781,27 @@ public class AdjustInstance {
             callback.onVerificationFinished(result);
             return;
         }
-        activityHandler.verifyPurchase(purchase, callback);
+        activityHandler.verifyPlayStorePurchase(purchase, callback);
+    }
+
+    /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event    AdjustEvent to be tracked
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyAndTrack")) {
+            if (callback != null) {
+                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                        "not_verified",
+                        100,
+                        "SDK needs to be initialized before making purchase verification request");
+                callback.onVerificationFinished(result);
+            }
+            return;
+        }
+        activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**

@@ -431,13 +431,25 @@ public class Adjust {
      * @param purchase  AdjustPurchase object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+    public static void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                               final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
             AdjustFactory.getLogger().error("Purchase verification aborted because verification callback is null");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.verifyPurchase(purchase, callback);
+        adjustInstance.verifyPlayStorePurchase(purchase, callback);
+    }
+
+    /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event     AdjustEvent object to be tracked
+     * @param callback  Callback to obtain verification results
+     */
+    public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**

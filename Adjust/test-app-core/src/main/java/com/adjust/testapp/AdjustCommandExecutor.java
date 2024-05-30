@@ -18,7 +18,7 @@ import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustPlayStoreSubscription;
-import com.adjust.sdk.AdjustPurchase;
+import com.adjust.sdk.AdjustPlayStorePurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
@@ -793,8 +793,8 @@ public class AdjustCommandExecutor {
         String purchaseToken = command.getFirstParameterValue("purchaseToken");
 
         final String localBasePath = basePath;
-        AdjustPurchase purchase = new AdjustPurchase(sku, purchaseToken);
-        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+        AdjustPlayStorePurchase purchase = new AdjustPlayStorePurchase(sku, purchaseToken);
+        Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
             @Override
             public void onVerificationFinished(AdjustPurchaseVerificationResult result) {
                 MainActivity.testLibrary.addInfoToSend("verification_status", result.getVerificationStatus());
