@@ -2655,7 +2655,6 @@ public class ActivityHandler
             return;
         }
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
-        // TODO: TBD if this is the right timing
         trackEventI(event);
     }
 
