@@ -805,11 +805,11 @@ public class ActivityHandler
     }
 
     @Override
-    public void verifyPurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+    public void verifyPlayStorePurchase(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                verifyPurchaseI(purchase, callback);
+                verifyPlayStorePurchaseI(purchase, callback);
             }
         });
     }
@@ -2515,7 +2515,8 @@ public class ActivityHandler
         packageHandler.sendFirstPackage();
     }
 
-    private void verifyPurchaseI(final AdjustPurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
+    private void verifyPlayStorePurchaseI(final AdjustPurchase purchase,
+                                          final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
             logger.warn("Purchase verification aborted because verification callback is null");
             return;
@@ -2595,6 +2596,11 @@ public class ActivityHandler
         // from this moment on we know that we can ping client callback in case of error
         if (adjustConfig.isDataResidency) {
             logger.warn("Purchase verification not available for data residency users right now");
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    109,
+                    "Purchase verification not available for data residency users right now");
+            callback.onVerificationFinished(result);
             return;
         }
         if (!checkActivityStateI(activityState)) {
