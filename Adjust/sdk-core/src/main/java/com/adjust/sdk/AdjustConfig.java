@@ -3,6 +3,7 @@ package com.adjust.sdk;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by pfms on 06/11/14.
@@ -34,7 +35,9 @@ public class AdjustConfig {
     String externalDeviceId;
     boolean preinstallTrackingEnabled;
     Boolean needsCost;
-    String urlStrategy;
+    List<String> urlStrategyDomains;
+    boolean useSubdomains;
+    boolean isDataResidency;
     String preinstallFilePath;
     String fbAppId;
     boolean shouldReadDeviceIdsOnce;
@@ -45,14 +48,6 @@ public class AdjustConfig {
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
-
-    public static final String URL_STRATEGY_INDIA = "url_strategy_india";
-    public static final String URL_STRATEGY_CHINA = "url_strategy_china";
-    public static final String URL_STRATEGY_CN = "url_strategy_cn";
-    public static final String URL_STRATEGY_CN_ONLY = "url_strategy_cn_only";
-    public static final String DATA_RESIDENCY_EU = "data_residency_eu";
-    public static final String DATA_RESIDENCY_TR = "data_residency_tr";
-    public static final String DATA_RESIDENCY_US = "data_residency_us";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
@@ -164,21 +159,14 @@ public class AdjustConfig {
         return true;
     }
 
-    public void setUrlStrategy(String urlStrategy) {
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
+    public void setUrlStrategy(List<String> domains, boolean useSubdomains, boolean isDataResidency) {
+        if (domains == null || domains.isEmpty()) {
             logger.error("Invalid url strategy");
             return;
         }
-        if (!urlStrategy.equals(URL_STRATEGY_INDIA)
-                && !urlStrategy.equals(URL_STRATEGY_CHINA)
-                && !urlStrategy.equals(URL_STRATEGY_CN)
-                && !urlStrategy.equals(URL_STRATEGY_CN_ONLY)
-                && !urlStrategy.equals(DATA_RESIDENCY_EU)
-                && !urlStrategy.equals(DATA_RESIDENCY_TR)
-                && !urlStrategy.equals(DATA_RESIDENCY_US)) {
-            logger.warn("Unrecognised url strategy %s", urlStrategy);
-        }
-        this.urlStrategy = urlStrategy;
+        this.urlStrategyDomains = domains;
+        this.useSubdomains = useSubdomains;
+        this.isDataResidency = isDataResidency;
     }
 
     public void readDeviceIdsOnce() {
@@ -297,8 +285,8 @@ public class AdjustConfig {
         return needsCost;
     }
 
-    public String getUrlStrategy() {
-        return urlStrategy;
+    public List<String> getUrlStrategyDomains() {
+        return urlStrategyDomains;
     }
 
     public String getPreinstallFilePath() {

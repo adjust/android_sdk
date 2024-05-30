@@ -951,7 +951,8 @@ public class ActivityHandler
 
         IActivityPackageSender packageHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
+                        adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
@@ -966,7 +967,8 @@ public class ActivityHandler
 
         IActivityPackageSender attributionHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
+                        adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
@@ -981,7 +983,8 @@ public class ActivityHandler
 
         IActivityPackageSender sdkClickHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
+                        adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
@@ -996,7 +999,8 @@ public class ActivityHandler
 
         IActivityPackageSender purchaseVerificationHandlerActivitySender =
                 new ActivityPackageSender(
-                        adjustConfig.urlStrategy,
+                        adjustConfig.urlStrategyDomains,
+                        adjustConfig.useSubdomains,
                         adjustConfig.basePath,
                         adjustConfig.gdprPath,
                         adjustConfig.subscriptionPath,
@@ -2496,11 +2500,13 @@ public class ActivityHandler
             return;
         }
         // from this moment on we know that we can ping client callback in case of error
-        if (adjustConfig.urlStrategy != null &&
-                (adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_EU) ||
-                        adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_US) ||
-                                adjustConfig.urlStrategy.equals(AdjustConfig.DATA_RESIDENCY_TR))) {
+        if (adjustConfig.isDataResidency) {
             logger.warn("Purchase verification not available for data residency users right now");
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    109,
+                    "Purchase verification not available for data residency users right now");
+            callback.onVerificationFinished(result);
             return;
         }
         if (!checkActivityStateI(activityState)) {
