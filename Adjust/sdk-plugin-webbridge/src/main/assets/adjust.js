@@ -31,9 +31,15 @@ var Adjust = {
         }
     },
 
-    setEnabled: function (enabled) {
+    enable: function () {
         if (AdjustBridge) {
-            AdjustBridge.setEnabled(enabled);
+            AdjustBridge.enable();
+        }
+    },
+
+    disable: function () {
+        if (AdjustBridge) {
+            AdjustBridge.disable();
         }
     },
 

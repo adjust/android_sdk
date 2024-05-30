@@ -462,14 +462,19 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void setEnabled(String isEnabledString) {
+    public void enable() {
         if (!isInitialized()) {
             return;
         }
-        Boolean isEnabled = AdjustBridgeUtil.fieldToBoolean(isEnabledString);
-        if (isEnabled != null) {
-            Adjust.setEnabled(isEnabled);
+        Adjust.enable();
+    }
+
+    @JavascriptInterface
+    public void disable() {
+        if (!isInitialized()) {
+            return;
         }
+        Adjust.disable();
     }
 
     @JavascriptInterface

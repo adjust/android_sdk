@@ -141,14 +141,23 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public void setEnabled(final boolean enabled) {
-        this.startEnabled = enabled;
-        if (checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
-            activityHandler.setEnabled(enabled);
+    public void enable() {
+        this.startEnabled = true;
+        if (checkActivityHandler(true, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(true);
+        }
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public void disable() {
+        this.startEnabled = false;
+        if (checkActivityHandler(false, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(false);
         }
     }
 

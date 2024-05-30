@@ -77,13 +77,20 @@ public class Adjust {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public static void setEnabled(boolean enabled) {
+    public static void enable() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setEnabled(enabled);
+        adjustInstance.enable();
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public static void disable() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.disable();
     }
 
     /**

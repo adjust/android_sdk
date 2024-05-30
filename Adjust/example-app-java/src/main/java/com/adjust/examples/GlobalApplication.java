@@ -198,7 +198,7 @@ public class GlobalApplication extends Application {
         // Adjust.switchToOfflineMode();
 
         // Disable the SDK
-        // Adjust.setEnabled(false);
+        // Adjust.disable();
 
         // Send push notification token.
         // Adjust.setPushToken("token");

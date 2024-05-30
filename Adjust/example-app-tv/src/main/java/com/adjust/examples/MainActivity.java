@@ -100,10 +100,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onIsEnabledRead(boolean isEnabled) {
                 if (isEnabled) {
-                    Adjust.setEnabled(false);
+                    Adjust.disable();
                     ((Button) v).setText(R.string.txt_enable_sdk);
                 } else {
-                    Adjust.setEnabled(true);
+                    Adjust.enable();
                     ((Button) v).setText(R.string.txt_disable_sdk);
                 }
             }

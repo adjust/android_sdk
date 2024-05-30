@@ -108,10 +108,10 @@ class MainActivity : AppCompatActivity() {
     fun onEnableDisableSDKClick(v: View) {
         Adjust.isEnabled(this, OnIsEnabledListener {
             if (it) {
-                Adjust.setEnabled(false)
+                Adjust.disable()
                 (v as Button).setText(R.string.txt_enable_sdk)
             } else {
-                Adjust.setEnabled(true)
+                Adjust.enable()
                 (v as Button).setText(R.string.txt_disable_sdk)
             }
         })
