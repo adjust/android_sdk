@@ -794,7 +794,7 @@ public class AdjustCommandExecutor {
 
         final String localBasePath = basePath;
         AdjustPurchase purchase = new AdjustPurchase(sku, purchaseToken);
-        Adjust.verifyPurchase(purchase, new OnPurchaseVerificationFinishedListener() {
+        Adjust.verifyPlayStorePurchase(purchase, new OnPurchaseVerificationFinishedListener() {
             @Override
             public void onVerificationFinished(AdjustPurchaseVerificationResult result) {
                 MainActivity.testLibrary.addInfoToSend("verification_status", result.getVerificationStatus());
