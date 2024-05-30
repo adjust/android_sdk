@@ -559,7 +559,11 @@ public class AdjustCommandExecutor {
 
     private void setEnabled() {
         Boolean enabled = Boolean.valueOf(command.getFirstParameterValue("enabled"));
-        Adjust.setEnabled(enabled);
+        if (enabled){
+            Adjust.enable();
+        }else {
+            Adjust.disable();
+        }
     }
 
     private void setOfflineMode() {
