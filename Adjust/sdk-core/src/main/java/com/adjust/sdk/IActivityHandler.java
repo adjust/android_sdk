@@ -74,7 +74,7 @@ public interface IActivityHandler {
 
     void trackPlayStoreSubscription(AdjustPlayStoreSubscription subscription);
 
-    void verifyPlayStorePurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback);
+    void verifyPlayStorePurchase(AdjustPlayStorePurchase purchase, OnPurchaseVerificationFinishedListener callback);
 
     void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
 

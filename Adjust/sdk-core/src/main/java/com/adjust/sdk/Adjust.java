@@ -441,7 +441,7 @@ public class Adjust {
      * @param purchase  AdjustPurchase object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyPlayStorePurchase(final AdjustPurchase purchase,
+    public static void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
                                                final OnPurchaseVerificationFinishedListener callback) {
         if (callback == null) {
             AdjustFactory.getLogger().error("Purchase verification aborted because verification callback is null");

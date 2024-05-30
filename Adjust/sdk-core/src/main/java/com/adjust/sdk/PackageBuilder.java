@@ -211,7 +211,7 @@ public class PackageBuilder {
         return subscriptionPackage;
     }
 
-    ActivityPackage buildVerificationPackage(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
+    ActivityPackage buildVerificationPackage(AdjustPlayStorePurchase purchase, OnPurchaseVerificationFinishedListener callback) {
         Map<String, String> parameters = getVerificationParameters(purchase);
         ActivityPackage purchaseVerificationPackage = getDefaultActivityPackage(ActivityKind.PURCHASE_VERIFICATION);
         purchaseVerificationPackage.setPath("/verify");
@@ -1151,7 +1151,7 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private Map<String, String> getVerificationParameters(AdjustPurchase purchase) {
+    private Map<String, String> getVerificationParameters(AdjustPlayStorePurchase purchase) {
         Map<String, String> parameters = new HashMap<String, String>();
 
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
