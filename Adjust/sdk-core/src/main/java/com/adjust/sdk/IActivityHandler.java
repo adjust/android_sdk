@@ -76,7 +76,7 @@ public interface IActivityHandler {
 
     void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback);
 
-    void verifyAndTrack(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
+    void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
 
     void setCoppaCompliance(boolean enabled);
 

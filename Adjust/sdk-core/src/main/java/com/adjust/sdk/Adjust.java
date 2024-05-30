@@ -446,9 +446,9 @@ public class Adjust {
      * @param event     AdjustEvent object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyAndTrack(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+    public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.verifyAndTrack(event, callback);
+        adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**

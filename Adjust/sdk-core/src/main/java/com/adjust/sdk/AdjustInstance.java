@@ -789,7 +789,7 @@ public class AdjustInstance {
      * @param event    AdjustEvent to be tracked
      * @param callback Callback to be pinged with the verification results
      */
-    public void verifyAndTrack(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+    public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
         if (!checkActivityHandler("verifyAndTrack")) {
             if (callback != null) {
                 AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
@@ -800,7 +800,7 @@ public class AdjustInstance {
             }
             return;
         }
-        activityHandler.verifyAndTrack(event, callback);
+        activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**
