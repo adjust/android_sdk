@@ -462,7 +462,7 @@ public class AdjustCommandExecutor {
         AdjustConfig adjustConfig = savedConfigs.get(configNumber);
 
         //adjustConfig.setBasePath(basePath);
-        Adjust.onCreate(adjustConfig);
+        Adjust.initSdk(adjustConfig);
 
         this.savedConfigs.remove(0);
     }

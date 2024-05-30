@@ -72,7 +72,7 @@
             adjustConfig.setSessionFailureCallback(sessionFailureCallback);
             adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
 
-            Adjust.onCreate(adjustConfig);
+            Adjust.initSdk(adjustConfig);
 
             window.onload = function() {
                 var btnTrackSimpleEvent = document.getElementById('btnTrackSimpleEvent')
@@ -120,7 +120,7 @@
                 var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
                 btnDisableOfflineMode.onclick = function(e) {
                     e.preventDefault();
-                    Adjust.switchToOnlineMode();
+                    Adjust.switchBackToOnlineMode();
                 }
 
                 var btnEnableSdk = document.getElementById('btnEnableSdk')

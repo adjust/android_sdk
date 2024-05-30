@@ -45,9 +45,9 @@ public class Adjust {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public static void onCreate(AdjustConfig adjustConfig) {
+    public static void initSdk(AdjustConfig adjustConfig) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.onCreate(adjustConfig);
+        adjustInstance.initSdk(adjustConfig);
     }
 
     /**

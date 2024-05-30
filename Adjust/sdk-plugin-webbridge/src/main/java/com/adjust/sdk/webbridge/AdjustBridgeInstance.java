@@ -129,7 +129,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void onCreate(String adjustConfigString) {
+    public void initSdk(String adjustConfigString) {
         // Initialise SDK only if it's not already initialised.
         if (isInitialized) {
             AdjustBridgeUtil.getLogger().warn("Adjust bridge is already initialized. Ignoring further attempts");
@@ -362,7 +362,7 @@ public class AdjustBridgeInstance {
 
             // Manually call onResume() because web view initialisation will happen a bit delayed.
             // With this delay, it will miss lifecycle callback onResume() initial firing.
-            Adjust.onCreate(adjustConfig);
+            Adjust.initSdk(adjustConfig);
             Adjust.onResume();
 
             isInitialized = true;
