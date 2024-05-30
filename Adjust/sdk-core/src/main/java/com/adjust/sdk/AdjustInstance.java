@@ -78,7 +78,7 @@ public class AdjustInstance {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public void onCreate(final AdjustConfig adjustConfig) {
+    public void initSdk(final AdjustConfig adjustConfig) {
         if (adjustConfig == null) {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return;

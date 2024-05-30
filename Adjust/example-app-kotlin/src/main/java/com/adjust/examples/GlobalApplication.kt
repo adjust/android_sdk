@@ -103,7 +103,7 @@ class GlobalApplication : Application() {
         // AdjustOaid.readOaid()
 
         // Initialise the adjust SDK.
-        Adjust.onCreate(config)
+        Adjust.initSdk(config)
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.

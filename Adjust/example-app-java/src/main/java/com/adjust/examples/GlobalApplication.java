@@ -143,7 +143,7 @@ public class GlobalApplication extends Application {
         // AdjustOaid.readOaid();
 
         // Initialise the adjust SDK.
-        Adjust.onCreate(config);
+        Adjust.initSdk(config);
 
 
 

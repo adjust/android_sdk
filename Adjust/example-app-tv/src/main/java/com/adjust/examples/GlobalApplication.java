@@ -121,7 +121,7 @@ public class GlobalApplication extends Application {
         Adjust.removeGlobalPartnerParameters();
 
         // Initialise the adjust SDK.
-        Adjust.onCreate(config);
+        Adjust.initSdk(config);
 
         // Register onResume and onPause events of all activities
         // for applications with minSdkVersion >= 14.

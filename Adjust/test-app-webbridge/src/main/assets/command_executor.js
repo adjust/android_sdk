@@ -409,7 +409,7 @@ AdjustCommandExecutor.prototype.start = function(params) {
     }
 
     var adjustConfig = this.savedConfigs[configNumber];
-    Adjust.onCreate(adjustConfig);
+    Adjust.initSdk(adjustConfig);
 
     delete this.savedConfigs[0];
 };
