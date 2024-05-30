@@ -266,7 +266,7 @@ public class PackageHandler implements IPackageHandler,
         packageQueue.remove(0);
         writePackageQueueI();
 
-        if (previousResponseContinueIn != null) {
+        if (previousResponseContinueIn != null && previousResponseContinueIn > 0) {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
