@@ -13,6 +13,16 @@ public class AdjustSigner {
     private AdjustSigner() {
     }
 
+    public static boolean isPresent() {
+        getSignerInstance();
+
+        if (signerInstance != null) {
+            return true;
+        }
+
+        return false;
+    }
+
     public static void onResume(ILogger logger){
         getSignerInstance();
 

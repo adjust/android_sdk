@@ -79,6 +79,10 @@ public class AdjustInstance {
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
     public void initSdk(final AdjustConfig adjustConfig) {
+        if (!AdjustSigner.isPresent()) {
+            AdjustFactory.getLogger().error("Missing signature library, SDK can't be initialised");
+            return;
+        }
         if (adjustConfig == null) {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return;
