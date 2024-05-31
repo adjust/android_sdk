@@ -1842,8 +1842,8 @@ public class ActivityHandler
                     return;
                 }
                 boolean toLaunchDeeplink = true;
-                if (adjustConfig.onDeeplinkResponseListener != null) {
-                    toLaunchDeeplink = adjustConfig.onDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
+                if (adjustConfig.onDeferredDeeplinkResponseListener != null) {
+                    toLaunchDeeplink = adjustConfig.onDeferredDeeplinkResponseListener.launchReceivedDeeplink(deeplink);
                 }
                 if (toLaunchDeeplink) {
                     launchDeeplinkMain(deeplinkIntent, deeplink);
