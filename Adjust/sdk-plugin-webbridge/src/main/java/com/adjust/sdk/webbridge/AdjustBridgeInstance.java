@@ -24,7 +24,7 @@ import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnAttributionReadListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
@@ -38,7 +38,6 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by uerceg on 22/07/16.
@@ -58,7 +57,7 @@ public class AdjustBridgeInstance {
     private WebView webView;
     private Application application;
     private boolean isInitialized = false;
-    private boolean shouldDeferredDeeplinkBeLaunched = true;
+    private boolean isOpeningDeferredDeeplinkEnabled = true;
     private FacebookSDKJSInterface facebookSDKJSInterface = null;
 
     private String adjustSdkPrefix = null;
@@ -150,26 +149,26 @@ public class AdjustBridgeInstance {
             Object appTokenField = jsonAdjustConfig.get("appToken");
             Object environmentField = jsonAdjustConfig.get("environment");
             Object allowSuppressLogLevelField = jsonAdjustConfig.get("allowSuppressLogLevel");
-            Object sendInBackgroundField = jsonAdjustConfig.get("sendInBackground");
+            Object isSendingInBackgroundEnabledField = jsonAdjustConfig.get("isSendingInBackgroundEnabled");
             Object logLevelField = jsonAdjustConfig.get("logLevel");
             Object sdkPrefixField = jsonAdjustConfig.get("sdkPrefix");
             Object processNameField = jsonAdjustConfig.get("processName");
             Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
             Object externalDeviceIdField = jsonAdjustConfig.get("externalDeviceId");
             Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
-            Object needsCostField = jsonAdjustConfig.get("needsCost");
+            Object isCostDataInAttributionEnabledField = jsonAdjustConfig.get("isCostDataInAttributionEnabled");
             Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
             Object eventFailureCallbackNameField = jsonAdjustConfig.get("eventFailureCallbackName");
             Object sessionSuccessCallbackNameField = jsonAdjustConfig.get("sessionSuccessCallbackName");
             Object sessionFailureCallbackNameField = jsonAdjustConfig.get("sessionFailureCallbackName");
-            Object openDeferredDeeplinkField = jsonAdjustConfig.get("openDeferredDeeplink");
+            Object isOpeningDeferredDeeplinkEnabledField = jsonAdjustConfig.get("isOpeningDeferredDeeplinkEnabled");
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
             Object useSubDomainField = jsonAdjustConfig.get("useSubDomain");
             Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
-            Object preinstallTrackingEnabledField = jsonAdjustConfig.get("preinstallTrackingEnabled");
+            Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
@@ -191,9 +190,11 @@ public class AdjustBridgeInstance {
             }
 
             // Send in the background
-            Boolean sendInBackground = AdjustBridgeUtil.fieldToBoolean(sendInBackgroundField);
-            if (sendInBackground != null) {
-                adjustConfig.setSendInBackground(sendInBackground);
+            Boolean isSendingInBackgroundEnabled = AdjustBridgeUtil.fieldToBoolean(isSendingInBackgroundEnabledField);
+            if (isSendingInBackgroundEnabled != null) {
+                if (isSendingInBackgroundEnabled) {
+                    adjustConfig.enableSendingInBackground();
+                }
             }
 
             // Log level
@@ -253,9 +254,11 @@ public class AdjustBridgeInstance {
             }
 
             // Needs cost
-            Boolean needsCost = AdjustBridgeUtil.fieldToBoolean(needsCostField);
-            if (needsCost != null) {
-                adjustConfig.setNeedsCost(needsCost);
+            Boolean isCostDataInAttributionEnabled = AdjustBridgeUtil.fieldToBoolean(isCostDataInAttributionEnabledField);
+            if (isCostDataInAttributionEnabled != null) {
+                if (isCostDataInAttributionEnabled) {
+                    adjustConfig.enableCostDataInAttribution();
+                }
             }
 
             // Event success callback
@@ -301,19 +304,19 @@ public class AdjustBridgeInstance {
             }
 
             // Should deferred deep link be opened?
-            Boolean openDeferredDeeplink = AdjustBridgeUtil.fieldToBoolean(openDeferredDeeplinkField);
-            if (openDeferredDeeplink != null) {
-                shouldDeferredDeeplinkBeLaunched = openDeferredDeeplink;
+            Boolean isOpeningDeferredDeeplinkEnabledObject = AdjustBridgeUtil.fieldToBoolean(isOpeningDeferredDeeplinkEnabledField);
+            if (isOpeningDeferredDeeplinkEnabledObject != null) {
+                isOpeningDeferredDeeplinkEnabled = isOpeningDeferredDeeplinkEnabledObject;
             }
 
             // Deferred deeplink callback
             final String deferredDeeplinkCallbackName = AdjustBridgeUtil.fieldToString(deferredDeeplinkCallbackNameField);
             if (deferredDeeplinkCallbackName != null) {
-                adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                     @Override
                     public boolean launchReceivedDeeplink(Uri deeplink) {
                         AdjustBridgeUtil.execSingleValueCallback(webView, deferredDeeplinkCallbackName, deeplink.toString());
-                        return shouldDeferredDeeplinkBeLaunched;
+                        return isOpeningDeferredDeeplinkEnabled;
                     }
                 });
             }
@@ -349,9 +352,11 @@ public class AdjustBridgeInstance {
             }
 
             // Preinstall tracking
-            Boolean preinstallTrackingEnabled = AdjustBridgeUtil.fieldToBoolean(preinstallTrackingEnabledField);
-            if (preinstallTrackingEnabled != null) {
-                adjustConfig.setPreinstallTrackingEnabled(preinstallTrackingEnabled);
+            Boolean isPreinstallTrackingEnabled = AdjustBridgeUtil.fieldToBoolean(isPreinstallTrackingEnabledField);
+            if (isPreinstallTrackingEnabled != null) {
+                if (isPreinstallTrackingEnabled) {
+                    adjustConfig.enablePreinstallTracking();
+                }
             }
 
             // Preinstall secondary file path
@@ -369,7 +374,7 @@ public class AdjustBridgeInstance {
             // read device info once
             Boolean shouldReadDeviceIdsOnce = AdjustBridgeUtil.fieldToBoolean(shouldReadDeviceIdsOnceField);
             if (shouldReadDeviceIdsOnce != null && shouldReadDeviceIdsOnce.booleanValue()) {
-                adjustConfig.readDeviceIdsOnce();
+                adjustConfig.enableDeviceIdsReadingOnce();
             }
 
             Integer eventDeduplicationIdsMaxSize = AdjustBridgeUtil.fieldToInteger(eventDeduplicationIdsMaxSizeField);
@@ -755,9 +760,6 @@ public class AdjustBridgeInstance {
         Adjust.getSdkVersion(new OnSdkVersionReadListener() {
             @Override
             public void onSdkVersionRead(String sdkVersion) {
-                if (adjustSdkPrefix != null && adjustSdkPrefix.length() > 0) {
-                    sdkVersion = adjustSdkPrefix + "@" + sdkVersion;
-                }
                 AdjustBridgeUtil.execSingleValueCallback(webView, callback, sdkVersion);
             }
         });
@@ -771,7 +773,7 @@ public class AdjustBridgeInstance {
     @JavascriptInterface
     public void teardown() {
         isInitialized = false;
-        shouldDeferredDeeplinkBeLaunched = true;
+        isOpeningDeferredDeeplinkEnabled = true;
     }
 
     public void setWebView(WebView webView) {

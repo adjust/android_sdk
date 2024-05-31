@@ -1,9 +1,7 @@
 package com.adjust.examples;
 
-import android.app.Activity;
 import android.app.Application;
 import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 
 import com.adjust.sdk.Adjust;
@@ -11,15 +9,15 @@ import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
+import com.adjust.sdk.AdjustSessionFailure;
+import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-import com.adjust.sdk.AdjustSessionFailure;
-import com.adjust.sdk.AdjustSessionSuccess;
 
 public class GlobalApplication extends Application {
     @Override
@@ -81,7 +79,7 @@ public class GlobalApplication extends Application {
         });
 
         // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
                 Log.d("example", "Deferred deep link callback called!");
@@ -98,7 +96,7 @@ public class GlobalApplication extends Application {
         // config.setProcessName("com.adjust.examples");
 
         // Allow to send in the background.
-        config.setSendInBackground(true);
+        config.enableSendingInBackground();
 
         // Add session callback parameters.
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar");
@@ -123,10 +121,6 @@ public class GlobalApplication extends Application {
         // Initialise the adjust SDK.
         Adjust.initSdk(config);
 
-        // Register onResume and onPause events of all activities
-        // for applications with minSdkVersion >= 14.
-        registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-
         // Put the SDK in offline mode.
         // Adjust.switchToOfflineMode();
 
@@ -137,36 +131,4 @@ public class GlobalApplication extends Application {
         // Adjust.setPushToken("token");
     }
 
-    // You can use this class if your app is for Android 4.0 or higher
-    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-        }
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-        }
-    }
 }

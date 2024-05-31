@@ -27,7 +27,7 @@ import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
@@ -284,23 +284,20 @@ public class AdjustCommandExecutor {
             adjustConfig.setDefaultTracker(defaultTracker);
         }
 
-//        if (command.containsParameter("externalDeviceId")) {
-//            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
-//            adjustConfig.setExternalDeviceId(externalDeviceId);
-//        }
-
-
         if (command.containsParameter("needsCost")) {
-            String needsCostS = command.getFirstParameterValue("needsCost");
-            boolean needsCost = "true".equals(needsCostS);
-            adjustConfig.setNeedsCost(needsCost);
+            String isCostDataInAttributionEnabledS = command.getFirstParameterValue("needsCost");
+            boolean isCostDataInAttributionEnabled = "true".equals(isCostDataInAttributionEnabledS);
+            if (isCostDataInAttributionEnabled) {
+                adjustConfig.enableCostDataInAttribution();
+            }
         }
 
-
         if (command.containsParameter("sendInBackground")) {
-            String sendInBackgroundS = command.getFirstParameterValue("sendInBackground");
-            boolean sendInBackground = "true".equals(sendInBackgroundS);
-            adjustConfig.setSendInBackground(sendInBackground);
+            String isSendingInBackgroundEnabledS = command.getFirstParameterValue("sendInBackground");
+            boolean isSendingInBackgroundEnabled = "true".equals(isSendingInBackgroundEnabledS);
+            if (isSendingInBackgroundEnabled) {
+                adjustConfig.enableSendingInBackground();
+            }
         }
 
         if (command.containsParameter("eventDeduplicationIdsMaxSize")) {
@@ -315,7 +312,7 @@ public class AdjustCommandExecutor {
         }
 
         if(command.containsParameter("deferredDeeplinkCallback")) {
-            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                 @Override
                 public boolean launchReceivedDeeplink(Uri deeplink) {
                     if (deeplink == null) {
@@ -439,7 +436,7 @@ public class AdjustCommandExecutor {
             String launchDeferredDeeplinkS = command.getFirstParameterValue("deferredDeeplinkCallback");
             final boolean launchDeferredDeeplink = "true".equals(launchDeferredDeeplinkS);
             final String localBasePath = basePath;
-            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                 @Override
                 public boolean launchReceivedDeeplink(Uri deeplink) {
                     Log.d("TestApp", "deferred_deep_link = " + deeplink.toString());

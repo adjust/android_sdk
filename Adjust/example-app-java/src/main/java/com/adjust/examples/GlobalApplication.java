@@ -19,21 +19,17 @@ import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnAttributionReadListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by pfms on 17/12/14.
  */
 public class GlobalApplication extends Application {
-
     @Override
     public void onCreate() {
         super.onCreate();
@@ -65,14 +61,6 @@ public class GlobalApplication extends Application {
             }
         });
 
-
-        // Set url strategy
-//        List<String> urlStrategy = new ArrayList<>();
-//        urlStrategy.add("adjust.com");
-//        urlStrategy.add("adjust.cn");
-//        urlStrategy.add("eu.adjust.com");
-//        config.setUrlStrategy(urlStrategy , true, false);
-
         // Set event failure tracking delegate.
         config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
@@ -101,7 +89,7 @@ public class GlobalApplication extends Application {
         });
 
         // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
                 Log.d("example", "Deferred deep link callback called!");
@@ -111,17 +99,8 @@ public class GlobalApplication extends Application {
             }
         });
 
-        // Set default tracker.
-        // config.setDefaultTracker("{YourDefaultTracker}");
-
-        // Set process name.
-        // config.setProcessName("com.adjust.examples");
-
         // Allow to send in the background.
-        config.setSendInBackground(true);
-
-        // Allow tracking preinstall
-        // config.setPreinstallTrackingEnabled(true);
+        config.enableSendingInBackground();
 
         // Add session callback parameters.
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar");
@@ -155,96 +134,5 @@ public class GlobalApplication extends Application {
 
         // Initialise the adjust SDK.
         Adjust.initSdk(config);
-
-
-
-
-        Adjust.getAttribution(new OnAttributionReadListener() {
-            @Override
-            public void onAttributionRead(AdjustAttribution attribution) {
-                Log.d("example", "Attribution callback called!");
-                Log.d("example", "Attribution: " + attribution.toString());
-            }
-        });
-
-        // Get the adid.
-        Adjust.getAdid(new OnAdidReadListener() {
-            @Override
-            public void onAdidRead(String adid) {
-                Log.d("example", "Adid callback called!");
-                Log.d("example", "Adid: " + adid);
-            }
-        });
-
-        Adjust.getGooglePlayInstallReferrer(this, new OnGooglePlayInstallReferrerReadListener() {
-            @Override
-            public void onInstallReferrerRead(GooglePlayInstallReferrerDetails referrerDetails) {
-                Log.d("example", "referrerApi : " + referrerDetails.toString());
-            }
-
-            @Override
-            public void onFailure(String message) {
-                Log.d("example", "failed : " + message);
-
-            }
-        });
-
-        // Register onResume and onPause events of all activities
-        // for applications with minSdkVersion >= 14.
-        registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-
-        Adjust.getAmazonAdId(this, new OnAmazonAdIdReadListener() {
-            @Override
-            public void onAmazonAdIdRead(String amazonAdId) {
-                Log.d("example", "amazonAdId : " + amazonAdId);
-            }
-
-            @Override
-            public void onFail(String message) {
-                Log.d("example", "failed : " + message);
-            }
-        });
-
-        // Put the SDK in offline mode.
-        // Adjust.switchToOfflineMode();
-
-        // Disable the SDK
-        // Adjust.disable();
-
-        // Send push notification token.
-        // Adjust.setPushToken("token");
-    }
-
-    // You can use this class if your app is for Android 4.0 or higher
-    private static final class AdjustLifecycleCallbacks implements ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-        }
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-        }
     }
 }
