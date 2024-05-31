@@ -259,19 +259,19 @@ var Adjust = {
 
     getSdkVersion: function (callback) {
         if (AdjustBridge) {
-                if (typeof callback === 'string' || callback instanceof String) {
-                    this.getSdkVersionCallbackName = callback;
-                } else {
-                    this.getSdkVersionCallbackName = 'Adjust.adjust_getSdkVersionCallback';
-                    this.getSdkVersionCallbackFunction = callback;
-                }
-                AdjustBridge.getSdkVersion(this.getSdkVersionCallbackName);
+            if (typeof callback === 'string' || callback instanceof String) {
+                this.getSdkVersionCallbackName = callback;
+            } else {
+                this.getSdkVersionCallbackName = 'Adjust.adjust_getSdkVersionCallback';
+                this.getSdkVersionCallbackFunction = callback;
             }
+            AdjustBridge.getSdkVersion(this.getSdkVersionCallbackName);
+        }
     },
 
     adjust_getSdkVersionCallback: function (sdkVersion) {
         if (AdjustBridge && this.getSdkVersionCallbackFunction) {
-            this.getSdkVersionCallbackFunction(sdkVersion);
+            this.getSdkVersionCallbackFunction(this.getSdkPrefix() + '@' + sdkVersion);
         }
     },
 
