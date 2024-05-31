@@ -25,7 +25,7 @@ public class AdjustConfig {
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
-    OnDeeplinkResponseListener onDeeplinkResponseListener;
+    OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener;
     boolean sendInBackground;
     AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
@@ -107,10 +107,6 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
-    public void setDeepLinkComponent(Class deepLinkComponent) {
-        this.deepLinkComponent = deepLinkComponent;
-    }
-
     public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
         this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
     }
@@ -127,8 +123,8 @@ public class AdjustConfig {
         this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
     }
 
-    public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
-        this.onDeeplinkResponseListener = onDeeplinkResponseListener;
+    public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener) {
+        this.onDeferredDeeplinkResponseListener = onDeferredDeeplinkResponseListener;
     }
 
     public void setExternalDeviceId(String externalDeviceId) {
@@ -245,8 +241,8 @@ public class AdjustConfig {
         return onSessionTrackingFailedListener;
     }
 
-    public OnDeeplinkResponseListener getOnDeeplinkResponseListener() {
-        return onDeeplinkResponseListener;
+    public OnDeferredDeeplinkResponseListener getOnDeeplinkResponseListener() {
+        return onDeferredDeeplinkResponseListener;
     }
 
     public boolean isSendInBackground() {

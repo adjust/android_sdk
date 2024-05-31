@@ -5,6 +5,6 @@ import android.net.Uri;
 /**
  * Created by pfms on 22/03/16.
  */
-public interface OnDeeplinkResponseListener {
+public interface OnDeferredDeeplinkResponseListener {
     boolean launchReceivedDeeplink(Uri deeplink);
 }

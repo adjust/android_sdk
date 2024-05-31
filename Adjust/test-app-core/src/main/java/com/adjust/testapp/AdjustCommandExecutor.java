@@ -27,7 +27,7 @@ import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
@@ -315,7 +315,7 @@ public class AdjustCommandExecutor {
         }
 
         if(command.containsParameter("deferredDeeplinkCallback")) {
-            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                 @Override
                 public boolean launchReceivedDeeplink(Uri deeplink) {
                     if (deeplink == null) {
@@ -439,7 +439,7 @@ public class AdjustCommandExecutor {
             String launchDeferredDeeplinkS = command.getFirstParameterValue("deferredDeeplinkCallback");
             final boolean launchDeferredDeeplink = "true".equals(launchDeferredDeeplinkS);
             final String localBasePath = basePath;
-            adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+            adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                 @Override
                 public boolean launchReceivedDeeplink(Uri deeplink) {
                     Log.d("TestApp", "deferred_deep_link = " + deeplink.toString());

@@ -52,7 +52,7 @@ class GlobalApplication : Application() {
         }
 
         // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener { deeplink ->
+        config.setOnDeferredDeeplinkResponseListener { deeplink ->
             Log.d("example", "Deferred deep link callback called!")
             Log.d("example", "Deep link URL: $deeplink")
 

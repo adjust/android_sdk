@@ -24,7 +24,7 @@ import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnAttributionReadListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
@@ -38,7 +38,6 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by uerceg on 22/07/16.
@@ -309,7 +308,7 @@ public class AdjustBridgeInstance {
             // Deferred deeplink callback
             final String deferredDeeplinkCallbackName = AdjustBridgeUtil.fieldToString(deferredDeeplinkCallbackNameField);
             if (deferredDeeplinkCallbackName != null) {
-                adjustConfig.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                adjustConfig.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
                     @Override
                     public boolean launchReceivedDeeplink(Uri deeplink) {
                         AdjustBridgeUtil.execSingleValueCallback(webView, deferredDeeplinkCallbackName, deeplink.toString());

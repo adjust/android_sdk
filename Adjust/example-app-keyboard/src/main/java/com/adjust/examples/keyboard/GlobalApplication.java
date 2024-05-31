@@ -13,7 +13,7 @@ import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -84,7 +84,7 @@ public class GlobalApplication extends Application {
         });
 
         // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
                 Log.d("example", "Deferred deep link callback called!");

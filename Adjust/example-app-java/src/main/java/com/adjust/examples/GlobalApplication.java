@@ -19,15 +19,12 @@ import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnAttributionReadListener;
-import com.adjust.sdk.OnDeeplinkResponseListener;
+import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
 import com.adjust.sdk.OnGooglePlayInstallReferrerReadListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pfms on 17/12/14.
@@ -101,7 +98,7 @@ public class GlobalApplication extends Application {
         });
 
         // Evaluate deferred deep link to be launched.
-        config.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+        config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
                 Log.d("example", "Deferred deep link callback called!");
