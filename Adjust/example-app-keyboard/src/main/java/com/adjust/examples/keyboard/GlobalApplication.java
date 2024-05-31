@@ -101,7 +101,7 @@ public class GlobalApplication extends Application {
         // config.setProcessName("com.adjust.examples");
 
         // Allow to send in the background.
-        config.setSendInBackground(true);
+        config.enableSendingInBackground(true);
 
         // Add session callback parameters.
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar");

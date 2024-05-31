@@ -209,34 +209,35 @@ var Adjust = {
         }
     },
 
-        getAmazonAdId: function (callbackSuccess,callbackFail) {
-             if (AdjustBridge) {
-                    if (typeof callbackSuccess === 'string' || callbackSuccess instanceof String) {
-                        this.getAmazonIdCallbackSuccessName = callbackSuccess;
-                    } else {
-                        this.getAmazonIdCallbackSuccessName = 'Adjust.adjust_getAmazonIdCallbackSuccess';
-                        this.getAmazonIdCallbackSuccessFunction = callbackSuccess;
-                    }
-                    if (typeof callbackFail === 'string' || callbackFail instanceof String) {
-                        this.getAmazonIdCallbackFailName = callbackFail;
-                    } else {
-                        this.getAmazonIdCallbackFailName = 'Adjust.adjust_getAmazonIdCallbackFail';
-                        this.getAmazonIdCallbackFailFunction = callbackFail;
-                    }
-                    AdjustBridge.getAmazonAdId(this.getAmazonIdCallbackSuccessName,this.getAmazonIdCallbackFailName);
+    getAmazonAdId: function (callbackSuccess,callbackFail) {
+         if (AdjustBridge) {
+                if (typeof callbackSuccess === 'string' || callbackSuccess instanceof String) {
+                    this.getAmazonIdCallbackSuccessName = callbackSuccess;
+                } else {
+                    this.getAmazonIdCallbackSuccessName = 'Adjust.adjust_getAmazonIdCallbackSuccess';
+                    this.getAmazonIdCallbackSuccessFunction = callbackSuccess;
                 }
-        },
+                if (typeof callbackFail === 'string' || callbackFail instanceof String) {
+                    this.getAmazonIdCallbackFailName = callbackFail;
+                } else {
+                    this.getAmazonIdCallbackFailName = 'Adjust.adjust_getAmazonIdCallbackFail';
+                    this.getAmazonIdCallbackFailFunction = callbackFail;
+                }
+                AdjustBridge.getAmazonAdId(this.getAmazonIdCallbackSuccessName,this.getAmazonIdCallbackFailName);
+            }
+    },
 
-        adjust_getAmazonIdCallbackSuccess: function (amazonId) {
-            if (AdjustBridge && this.getAmazonIdCallbackSuccessFunction) {
-                this.getAmazonIdCallbackSuccessFunction(amazonId);
-            }
-        },
-        adjust_getAmazonIdCallbackFail: function (message) {
-            if (AdjustBridge && this.getAmazonIdCallbackFailFunction) {
-                this.getAmazonIdCallbackFailName(message);
-            }
-        },
+    adjust_getAmazonIdCallbackSuccess: function (amazonId) {
+        if (AdjustBridge && this.getAmazonIdCallbackSuccessFunction) {
+            this.getAmazonIdCallbackSuccessFunction(amazonId);
+        }
+    },
+
+    adjust_getAmazonIdCallbackFail: function (message) {
+        if (AdjustBridge && this.getAmazonIdCallbackFailFunction) {
+            this.getAmazonIdCallbackFailName(message);
+        }
+    },
 
     getAttribution: function (callback) {
      if (AdjustBridge) {

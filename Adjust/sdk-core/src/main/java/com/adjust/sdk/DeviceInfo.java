@@ -140,7 +140,7 @@ class DeviceInfo {
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
-        if (playIdsReadOnce && adjustConfig.shouldReadDeviceIdsOnce) {
+        if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
             if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
                 playAdId = null;
                 isTrackingEnabled = null;
@@ -250,7 +250,7 @@ class DeviceInfo {
     void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
                                      final boolean coppaEnabled,
                                      final ILogger logger) {
-        if (adjustConfig.shouldReadDeviceIdsOnce && otherDeviceIdsParamsReadOnce) {
+        if (adjustConfig.isDeviceIdsReadingOnceEnabled && otherDeviceIdsParamsReadOnce) {
             return;
         }
 
