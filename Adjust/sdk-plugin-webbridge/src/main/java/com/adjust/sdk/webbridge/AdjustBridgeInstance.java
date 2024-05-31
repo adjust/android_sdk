@@ -760,9 +760,6 @@ public class AdjustBridgeInstance {
         Adjust.getSdkVersion(new OnSdkVersionReadListener() {
             @Override
             public void onSdkVersionRead(String sdkVersion) {
-                if (adjustSdkPrefix != null && adjustSdkPrefix.length() > 0) {
-                    sdkVersion = adjustSdkPrefix + "@" + sdkVersion;
-                }
                 AdjustBridgeUtil.execSingleValueCallback(webView, callback, sdkVersion);
             }
         });
