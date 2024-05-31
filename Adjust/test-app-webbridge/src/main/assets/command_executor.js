@@ -293,9 +293,9 @@ AdjustCommandExecutor.prototype.config = function(params) {
     }
 
     if ('externalDeviceId' in params) {
-            var externalDeviceId = getFirstParameterValue(params, 'externalDeviceId');
-            adjustConfig.setExternalDeviceId(externalDeviceId);
-        }
+        var externalDeviceId = getFirstParameterValue(params, 'externalDeviceId');
+        adjustConfig.setExternalDeviceId(externalDeviceId);
+    }
 
     if ('needsCost' in params) {
         var isCostDataInAttributionEnabledS = getFirstParameterValue(params, 'needsCost');
