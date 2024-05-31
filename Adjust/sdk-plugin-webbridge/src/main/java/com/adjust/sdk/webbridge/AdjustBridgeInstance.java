@@ -304,9 +304,9 @@ public class AdjustBridgeInstance {
             }
 
             // Should deferred deep link be opened?
-            Boolean isOpeningDeferredDeeplinkEnabled = AdjustBridgeUtil.fieldToBoolean(isOpeningDeferredDeeplinkEnabledField);
-            if (isOpeningDeferredDeeplinkEnabled != null) {
-                this.isOpeningDeferredDeeplinkEnabled = isOpeningDeferredDeeplinkEnabled;
+            Boolean isOpeningDeferredDeeplinkEnabledObject = AdjustBridgeUtil.fieldToBoolean(isOpeningDeferredDeeplinkEnabledField);
+            if (isOpeningDeferredDeeplinkEnabledObject != null) {
+                isOpeningDeferredDeeplinkEnabled = isOpeningDeferredDeeplinkEnabledObject;
             }
 
             // Deferred deeplink callback
