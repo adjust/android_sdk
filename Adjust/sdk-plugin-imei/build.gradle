@@ -106,7 +106,12 @@ afterEvaluate {
 
         repositories {
             maven {
-                url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
+                    println "Using Maven SNAPSHOT repository for publishing"
+                    url "https://oss.sonatype.org/content/repositories/snapshots/"
+                } else {
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                }
                 if (project.hasProperty("sonatypeUsername")) {
                     credentials {
                         username sonatypeUsername
