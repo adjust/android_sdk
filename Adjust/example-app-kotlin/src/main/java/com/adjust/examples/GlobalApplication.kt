@@ -1,8 +1,6 @@
 package com.adjust.examples
 
-import android.app.Activity
 import android.app.Application
-import android.os.Bundle
 import android.util.Log
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
@@ -59,18 +57,8 @@ class GlobalApplication : Application() {
             true
         }
 
-        // Set default tracker.
-        // config.setDefaultTracker("{YourDefaultTracker}");
-
-        // Set process name.
-        // config.setProcessName("com.adjust.examples");
-
         // Allow to send in the background.
-        config.setSendInBackground(true)
-
-
-        // Allow tracking preinstall
-        // config.setPreinstallTrackingEnabled(true);
+        config.enableSendingInBackground()
 
         // Add session callback parameters.
         Adjust.addGlobalCallbackParameter("sc_foo", "sc_bar")
@@ -104,40 +92,5 @@ class GlobalApplication : Application() {
 
         // Initialise the adjust SDK.
         Adjust.initSdk(config)
-
-        // Register onResume and onPause events of all activities
-        // for applications with minSdkVersion >= 14.
-        registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
-
-        // Put the SDK in offline mode.
-        // Adjust.switchToOfflineMode();
-
-        // Disable the SDK
-        // Adjust.disable();
-
-        // Send push notification token.
-        // Adjust.setPushToken("token");
-
-    }
-
-    // You can use this class if your app is for Android 4.0 or higher
-    private class AdjustLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
-        override fun onActivityResumed(activity: Activity) {
-            Adjust.onResume()
-        }
-
-        override fun onActivityPaused(activity: Activity) {
-            Adjust.onPause()
-        }
-
-        override fun onActivityStopped(activity: Activity) {}
-
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-
-        override fun onActivityDestroyed(activity: Activity) {}
-
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-
-        override fun onActivityStarted(activity: Activity) {}
     }
 }

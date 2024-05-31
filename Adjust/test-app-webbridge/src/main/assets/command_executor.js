@@ -298,15 +298,19 @@ AdjustCommandExecutor.prototype.config = function(params) {
         }
 
     if ('needsCost' in params) {
-        var needsCostS = getFirstParameterValue(params, 'needsCost');
-        var needsCost = needsCostS == 'true';
-        adjustConfig.setNeedsCost(needsCost);
+        var isCostDataInAttributionEnabledS = getFirstParameterValue(params, 'needsCost');
+        var isCostDataInAttributionEnabled = isCostDataInAttributionEnabledS == 'true';
+        if (isCostDataInAttributionEnabled == true) {
+            adjustConfig.enableCostDataInAttribution();
+        }
     }
 
     if ('sendInBackground' in params) {
-        var sendInBackgroundS = getFirstParameterValue(params, 'sendInBackground');
-        var sendInBackground = sendInBackgroundS == 'true';
-        adjustConfig.setSendInBackground(sendInBackground);
+        var isSendingInBackgroundEnabledS = getFirstParameterValue(params, 'sendInBackground');
+        var isSendingInBackgroundEnabled = isSendingInBackgroundEnabledS == 'true';
+        if (isSendingInBackgroundEnabled == true) {
+            adjustConfig.enableSendingInBackground();
+        }
     }
 
     if ('eventDeduplicationIdsMaxSize' in params) {
@@ -390,9 +394,12 @@ AdjustCommandExecutor.prototype.config = function(params) {
 
     if ('deferredDeeplinkCallback' in params) {
         var basePath = this.basePath;
-        var openDeeplinkS = getFirstParameterValue(params, 'deferredDeeplinkCallback');
-        var openDeeplink = openDeeplinkS == 'true';
-        adjustConfig.setOpenDeferredDeeplink(openDeeplink);
+        var isOpeningDeferredDeeplinkEnabledS = getFirstParameterValue(params, 'deferredDeeplinkCallback');
+        var isOpeningDeferredDeeplinkEnabled = isOpeningDeferredDeeplinkEnabledS == 'true';
+        if (isOpeningDeferredDeeplinkEnabled == false) {
+            adjustConfig.disableDeferredDeeplinkOpening();
+        }
+
         adjustConfig.setDeferredDeeplinkCallback(function(deeplink) {
             TestLibrary.addInfoToSend("deeplink", deeplink);
             TestLibrary.sendInfoToServer(basePath);

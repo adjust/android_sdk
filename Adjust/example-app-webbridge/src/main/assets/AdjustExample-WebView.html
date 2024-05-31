@@ -62,8 +62,6 @@
 
             var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
             adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
-            // adjustConfig.setOpenDeferredDeeplink(true);
-            // adjustConfig.setSendInBackground(true);
 
             adjustConfig.setAttributionCallback(attributionCallback);
             adjustConfig.setEventSuccessCallback(eventSuccessCallback);
@@ -71,8 +69,6 @@
             adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
             adjustConfig.setSessionFailureCallback(sessionFailureCallback);
             adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
-
-<!--            adjustConfig.setUrlStrategy(['adjust.com','adjust.cn','eu.adjust.com'], true, true);-->
 
             Adjust.initSdk(adjustConfig);
 

@@ -948,7 +948,7 @@ public class ActivityHandler
                 }, FOREGROUND_TIMER_START, FOREGROUND_TIMER_INTERVAL, FOREGROUND_TIMER_NAME);
 
         // create background timer
-        if (adjustConfig.sendInBackground) {
+        if (adjustConfig.isSendingInBackgroundEnabled) {
             logger.info("Send in background configured");
 
             backgroundTimer = new TimerOnce(new Runnable() {
@@ -1122,7 +1122,7 @@ public class ActivityHandler
         // sending preinstall referrer doesn't require preinstall tracking flag to be enabled
         sendPreinstallReferrerI();
 
-        if (!adjustConfig.preinstallTrackingEnabled) return;
+        if (!adjustConfig.isPreinstallTrackingEnabled) return;
         if (internalState.hasPreinstallBeenRead()) return;
 
         if (deviceInfo.packageName == null || deviceInfo.packageName.isEmpty()) {
@@ -1595,7 +1595,7 @@ public class ActivityHandler
         packageHandler.sendFirstPackage();
 
         // if it is in the background and it can send, start the background timer
-        if (adjustConfig.sendInBackground && internalState.isInBackground()) {
+        if (adjustConfig.isSendingInBackgroundEnabled && internalState.isInBackground()) {
             startBackgroundTimerI();
         }
 
@@ -1853,15 +1853,9 @@ public class ActivityHandler
 
     private Intent createDeeplinkIntentI(Uri deeplink) {
         Intent mapIntent;
-        if (adjustConfig.deepLinkComponent == null) {
-            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink);
-        } else {
-            mapIntent = new Intent(Intent.ACTION_VIEW, deeplink, adjustConfig.context, adjustConfig.deepLinkComponent);
-        }
+        mapIntent = new Intent(Intent.ACTION_VIEW, deeplink);
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         mapIntent.setPackage(adjustConfig.context.getPackageName());
-
         return mapIntent;
     }
 
@@ -2862,7 +2856,7 @@ public class ActivityHandler
         }
 
         // has the option to send in the background -> is to send
-        if (adjustConfig.sendInBackground) {
+        if (adjustConfig.isSendingInBackgroundEnabled) {
             return true;
         }
 

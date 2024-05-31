@@ -20,27 +20,26 @@ public class AdjustConfig {
     String sdkPrefix;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
     OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener;
-    boolean sendInBackground;
+    boolean isSendingInBackgroundEnabled;
     AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
     String pushToken;
     Boolean startEnabled;
     boolean startOffline;
     String externalDeviceId;
-    boolean preinstallTrackingEnabled;
-    Boolean needsCost;
+    boolean isPreinstallTrackingEnabled;
+    boolean isCostDataInAttributionEnabled;
     List<String> urlStrategyDomains;
     boolean useSubdomains;
     boolean isDataResidency;
     String preinstallFilePath;
     String fbAppId;
-    boolean shouldReadDeviceIdsOnce;
+    boolean isDeviceIdsReadingOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
     ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     Integer eventDeduplicationIdsMaxSize;
@@ -77,18 +76,18 @@ public class AdjustConfig {
         this.environment = environment;
 
         // default values
-        this.sendInBackground = false;
-        this.preinstallTrackingEnabled = false;
-        this.shouldReadDeviceIdsOnce = false;
-    }
-
-
-    public void setSendInBackground(boolean sendInBackground) {
-        this.sendInBackground = sendInBackground;
+        this.isSendingInBackgroundEnabled = false;
+        this.isPreinstallTrackingEnabled = false;
+        this.isDeviceIdsReadingOnceEnabled = false;
+        this.isCostDataInAttributionEnabled = false;
     }
 
     public void setLogLevel(LogLevel logLevel) {
         setLogLevel(logLevel, environment);
+    }
+
+    private void setLogLevel(LogLevel logLevel, String environment) {
+        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
 
     public void setSdkPrefix(String sdkPrefix) {
@@ -101,6 +100,48 @@ public class AdjustConfig {
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
+    }
+
+    public void setExternalDeviceId(String externalDeviceId) {
+        this.externalDeviceId = externalDeviceId;
+    }
+
+    public void setPreinstallFilePath(String preinstallFilePath) {
+        this.preinstallFilePath = preinstallFilePath;
+    }
+
+    public void setFbAppId(String fbAppId) {
+        this.fbAppId = fbAppId;
+    }
+
+    public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
+        this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
+    }
+
+    public void setUrlStrategy(List<String> domains, boolean useSubdomains, boolean isDataResidency) {
+        if (domains == null || domains.isEmpty()) {
+            logger.error("Invalid URL strategy domains array");
+            return;
+        }
+        this.urlStrategyDomains = domains;
+        this.useSubdomains = useSubdomains;
+        this.isDataResidency = isDataResidency;
+    }
+
+    public void enablePreinstallTracking() {
+        this.isPreinstallTrackingEnabled = true;
+    }
+
+    public void enableCostDataInAttribution() {
+        this.isCostDataInAttributionEnabled = true;
+    }
+
+    public void enableSendingInBackground() {
+        this.isSendingInBackgroundEnabled = true;
+    }
+
+    public void enableDeviceIdsReadingOnce() {
+        this.isDeviceIdsReadingOnceEnabled = true;
     }
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
@@ -125,52 +166,6 @@ public class AdjustConfig {
 
     public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener) {
         this.onDeferredDeeplinkResponseListener = onDeferredDeeplinkResponseListener;
-    }
-
-    public void setExternalDeviceId(String externalDeviceId) {
-        this.externalDeviceId = externalDeviceId;
-    }
-
-    public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
-        this.preinstallTrackingEnabled = preinstallTrackingEnabled;
-    }
-
-    public void setPreinstallFilePath(String preinstallFilePath) {
-        this.preinstallFilePath = preinstallFilePath;
-    }
-
-    public void setNeedsCost(boolean needsCost) {
-        this.needsCost = needsCost;
-    }
-
-    public void setFbAppId(String fbAppId) {
-        this.fbAppId = fbAppId;
-    }
-
-    public boolean isValid() {
-        if (!checkAppToken(appToken)) return false;
-        if (!checkEnvironment(environment)) return false;
-        if (!checkContext(context)) return false;
-
-        return true;
-    }
-
-    public void setUrlStrategy(List<String> domains, boolean useSubdomains, boolean isDataResidency) {
-        if (domains == null || domains.isEmpty()) {
-            logger.error("Invalid url strategy");
-            return;
-        }
-        this.urlStrategyDomains = domains;
-        this.useSubdomains = useSubdomains;
-        this.isDataResidency = isDataResidency;
-    }
-
-    public void readDeviceIdsOnce() {
-        this.shouldReadDeviceIdsOnce = true;
-    }
-
-    public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
-        this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
     }
 
     public String getBasePath() {
@@ -213,16 +208,56 @@ public class AdjustConfig {
         return defaultTracker;
     }
 
-    public OnAttributionChangedListener getOnAttributionChangedListener() {
-        return onAttributionChangedListener;
+    public String getPushToken() {
+        return pushToken;
     }
 
-    public Class getDeepLinkComponent() {
-        return deepLinkComponent;
+    public Boolean getStartEnabled() {
+        return startEnabled;
+    }
+
+    public boolean isStartOffline() {
+        return startOffline;
+    }
+
+    public String getExternalDeviceId() {
+        return externalDeviceId;
+    }
+
+    public boolean isPreinstallTrackingEnabled() {
+        return isPreinstallTrackingEnabled;
+    }
+
+    public Boolean getCostDataInAttributionEnabled() {
+        return isCostDataInAttributionEnabled;
+    }
+
+    public boolean isSendingInBackgroundEnabled() {
+        return isSendingInBackgroundEnabled;
     }
 
     public Integer getEventDeduplicationIdsMaxSize() {
         return eventDeduplicationIdsMaxSize;
+    }
+
+    public List<String> getUrlStrategyDomains() {
+        return urlStrategyDomains;
+    }
+
+    public String getPreinstallFilePath() {
+        return preinstallFilePath;
+    }
+
+    public String getFbAppId() {
+        return fbAppId;
+    }
+
+    public boolean isDeviceIdsReadingOnceEnabled() {
+        return isDeviceIdsReadingOnceEnabled;
+    }
+
+    public OnAttributionChangedListener getOnAttributionChangedListener() {
+        return onAttributionChangedListener;
     }
 
     public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {
@@ -245,60 +280,12 @@ public class AdjustConfig {
         return onDeferredDeeplinkResponseListener;
     }
 
-    public boolean isSendInBackground() {
-        return sendInBackground;
-    }
-
     public AdjustInstance.PreLaunchActions getPreLaunchActions() {
         return preLaunchActions;
     }
 
     public ILogger getLogger() {
         return logger;
-    }
-
-    public String getPushToken() {
-        return pushToken;
-    }
-
-    public Boolean getStartEnabled() {
-        return startEnabled;
-    }
-
-    public boolean isStartOffline() {
-        return startOffline;
-    }
-
-    public String getExternalDeviceId() {
-        return externalDeviceId;
-    }
-
-    public boolean isPreinstallTrackingEnabled() {
-        return preinstallTrackingEnabled;
-    }
-
-    public Boolean getNeedsCost() {
-        return needsCost;
-    }
-
-    public List<String> getUrlStrategyDomains() {
-        return urlStrategyDomains;
-    }
-
-    public String getPreinstallFilePath() {
-        return preinstallFilePath;
-    }
-
-    public String getFbAppId() {
-        return fbAppId;
-    }
-
-    public boolean shouldReadDeviceIdsOnce() {
-        return shouldReadDeviceIdsOnce;
-    }
-
-    private void setLogLevel(LogLevel logLevel, String environment) {
-        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
 
     private boolean checkContext(Context context) {
@@ -351,5 +338,18 @@ public class AdjustConfig {
 
         logger.error("Unknown environment '%s'", environment);
         return false;
+    }
+
+    public boolean isValid() {
+        if (!checkAppToken(appToken)) {
+            return false;
+        }
+        if (!checkEnvironment(environment)) {
+            return false;
+        }
+        if (!checkContext(context)) {
+            return false;
+        }
+        return true;
     }
 }

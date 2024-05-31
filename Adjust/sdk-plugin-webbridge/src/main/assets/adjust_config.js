@@ -19,7 +19,7 @@ function AdjustConfig(appToken, environment, legacy) {
         }
     }
 
-    this.sendInBackground = null;
+    this.isSendingInBackgroundEnabled = null;
     this.logLevel = null;
     this.sdkPrefix = null;
     this.processName = null;
@@ -27,7 +27,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.externalDeviceId = null;
     this.attributionCallbackName = null;
     this.attributionCallbackFunction = null;
-    this.needsCost = null;
+    this.isCostDataInAttributionEnabled = null;
     this.eventSuccessCallbackName = null;
     this.eventSuccessCallbackFunction = null;
     this.eventFailureCallbackName = null;
@@ -36,7 +36,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.sessionSuccessCallbackFunction = null;
     this.sessionFailureCallbackName = null;
     this.sessionFailureCallbackFunction = null;
-    this.openDeferredDeeplink = null;
+    this.isOpeningDeferredDeeplinkEnabled = null;
     this.deferredDeeplinkCallbackName = null;
     this.deferredDeeplinkCallbackFunction = null;
     this.fbPixelDefaultEventToken = null;
@@ -44,7 +44,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.urlStrategy = [];
     this.useSubDomain = null;
     this.isDataResidency = null;
-    this.preinstallTrackingEnabled = null;
+    this.isPreinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
     this.fbAppId = null;
     this.shouldReadDeviceIdsOnce = null;
@@ -66,8 +66,8 @@ AdjustConfig.prototype.getBridge = function() {
     return this.bridge;
 };
 
-AdjustConfig.prototype.setSendInBackground = function(isEnabled) {
-    this.sendInBackground = isEnabled;
+AdjustConfig.prototype.enableSendingInBackground = function() {
+    this.isSendingInBackgroundEnabled = true;
 };
 
 AdjustConfig.prototype.setLogLevel = function(logLevel) {
@@ -109,8 +109,8 @@ AdjustConfig.prototype.adjust_attributionCallback = function(attribution) {
     }
 };
 
-AdjustConfig.prototype.setNeedsCost = function(needsCost) {
-    this.needsCost = needsCost;
+AdjustConfig.prototype.enableCostDataInAttribution = function() {
+    this.isCostDataInAttributionEnabled = true;
 };
 
 AdjustConfig.prototype.setEventSuccessCallback = function(callback) {
@@ -173,8 +173,8 @@ AdjustConfig.prototype.adjust_sessionFailureCallback = function(sessionFailure) 
     }
 };
 
-AdjustConfig.prototype.setOpenDeferredDeeplink = function(shouldOpen) {
-    this.openDeferredDeeplink = shouldOpen;
+AdjustConfig.prototype.disableDeferredDeeplinkOpening = function() {
+    this.isOpeningDeferredDeeplinkEnabled = false;
 };
 
 AdjustConfig.prototype.setDeferredDeeplinkCallback = function(callback) {
@@ -209,8 +209,8 @@ AdjustConfig.prototype.setUrlStrategy = function(urlStrategy, useSubDomain , isD
     this.isDataResidency = isDataResidency;
 };
 
-AdjustConfig.prototype.setPreinstallTrackingEnabled = function(preinstallTrackingEnabled) {
-    this.preinstallTrackingEnabled = preinstallTrackingEnabled;
+AdjustConfig.prototype.enablePreinstallTracking = function() {
+    this.isPreinstallTrackingEnabled = true;
 };
 
 AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {

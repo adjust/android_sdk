@@ -284,23 +284,20 @@ public class AdjustCommandExecutor {
             adjustConfig.setDefaultTracker(defaultTracker);
         }
 
-//        if (command.containsParameter("externalDeviceId")) {
-//            String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
-//            adjustConfig.setExternalDeviceId(externalDeviceId);
-//        }
-
-
         if (command.containsParameter("needsCost")) {
-            String needsCostS = command.getFirstParameterValue("needsCost");
-            boolean needsCost = "true".equals(needsCostS);
-            adjustConfig.setNeedsCost(needsCost);
+            String isCostDataInAttributionEnabledS = command.getFirstParameterValue("needsCost");
+            boolean isCostDataInAttributionEnabled = "true".equals(isCostDataInAttributionEnabledS);
+            if (isCostDataInAttributionEnabled) {
+                adjustConfig.enableCostDataInAttribution();
+            }
         }
 
-
         if (command.containsParameter("sendInBackground")) {
-            String sendInBackgroundS = command.getFirstParameterValue("sendInBackground");
-            boolean sendInBackground = "true".equals(sendInBackgroundS);
-            adjustConfig.setSendInBackground(sendInBackground);
+            String isSendingInBackgroundEnabledS = command.getFirstParameterValue("sendInBackground");
+            boolean isSendingInBackgroundEnabled = "true".equals(isSendingInBackgroundEnabledS);
+            if (isSendingInBackgroundEnabled) {
+                adjustConfig.enableSendingInBackground();
+            }
         }
 
         if (command.containsParameter("eventDeduplicationIdsMaxSize")) {
