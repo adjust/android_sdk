@@ -412,16 +412,6 @@ public class Adjust {
         adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
     }
     /**
-     * Called to get Google Install Referrer.
-     *
-     * @param context Application context
-     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
-     */
-    public static void getGooglePlayInstallReferrer(Context context, OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
-    }
-    /**
      * Called to get native SDK version string.
      *
      * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained
