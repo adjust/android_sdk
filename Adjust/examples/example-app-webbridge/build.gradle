@@ -32,5 +32,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-appset:16.0.2'
 
     implementation project(':sdk-core')
-    implementation project(':sdk-plugin-webbridge')
+    implementation project(':plugins:sdk-plugin-webbridge')
 }

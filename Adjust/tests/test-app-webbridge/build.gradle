@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
 
     implementation project(':sdk-core')
-    implementation project(':sdk-plugin-webbridge')
-    implementation project(':test-options')
-    implementation project(':test-library')
+    implementation project(':plugins:sdk-plugin-webbridge')
+    implementation project(':tests:test-options')
+    implementation project(':tests:test-library')
 }
