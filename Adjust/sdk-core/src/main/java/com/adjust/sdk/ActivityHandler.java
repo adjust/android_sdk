@@ -1549,14 +1549,15 @@ public class ActivityHandler implements IActivityHandler {
 
         if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
             if (cachedDeeplinkResolutionCallback != null) {
+                OnDeeplinkResolvedListener onDeeplinkResolvedListener = cachedDeeplinkResolutionCallback;
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
-                        cachedDeeplinkResolutionCallback.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
-                        cachedDeeplinkResolutionCallback = null;
+                        onDeeplinkResolvedListener.onDeeplinkResolved(sdkClickResponseData.resolvedDeeplink);
                     }
                 };
                 handler.post(runnable);
+                cachedDeeplinkResolutionCallback = null;
             }
         }
     }
