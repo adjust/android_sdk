@@ -1548,8 +1548,9 @@ public class ActivityHandler implements IActivityHandler {
         }
 
         if (!TextUtils.isEmpty(sdkClickResponseData.resolvedDeeplink)) {
-            if (cachedDeeplinkResolutionCallback != null) {
-                OnDeeplinkResolvedListener onDeeplinkResolvedListener = cachedDeeplinkResolutionCallback;
+            OnDeeplinkResolvedListener onDeeplinkResolvedListener = cachedDeeplinkResolutionCallback;
+            cachedDeeplinkResolutionCallback = null;
+            if (onDeeplinkResolvedListener != null) {
                 Runnable runnable = new Runnable() {
                     @Override
                     public void run() {
@@ -1557,7 +1558,6 @@ public class ActivityHandler implements IActivityHandler {
                     }
                 };
                 handler.post(runnable);
-                cachedDeeplinkResolutionCallback = null;
             }
         }
     }
