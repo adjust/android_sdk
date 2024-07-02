@@ -1,3 +1,9 @@
+### Version 4.38.5 (2nd July 2024)
+#### Fixed
+- Fixed occasional crash while invoking deeplink resolution callback.
+
+---
+
 ### Version 4.38.4 (14th May 2024)
 #### Added
 - Added sending of the additional SDK observability parameters for debugging purposes.

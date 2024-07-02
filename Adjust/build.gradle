@@ -9,7 +9,7 @@ ext {
     coreMinSdkVersion = 9
     coreCompileSdkVersion = 34
     coreTargetSdkVersion = 34
-    coreVersionName = '4.38.4'
+    coreVersionName = '4.38.5'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 17
     samsungReferrerMinSdkVersion = 18
