@@ -73,36 +73,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onTrackSimpleEventClick(View v) {
-        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
-
-        Adjust.trackEvent(event);
+//        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_SIMPLE);
+//
+//        Adjust.trackEvent(event);
+        Adjust.trackEvent(AdjustEvent.Builder(EVENT_TOKEN_SIMPLE).build());
     }
 
     public void onTrackRevenueEventClick(View v) {
-        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
-
-        // Add revenue 1 cent of an euro.
-        event.setRevenue(0.01, "EUR");
-
-        Adjust.trackEvent(event);
+//        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_REVENUE);
+//
+//        // Add revenue 1 cent of an euro.
+//        event.setRevenue(0.01, "EUR");
+//
+//        Adjust.trackEvent(event);
+        Adjust.trackEvent(AdjustEvent.Builder(EVENT_TOKEN_REVENUE).setRevenue(0.01, "EUR").build());
     }
 
     public void onTrackCallbackEventClick(View v) {
-        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
-
-        // Add callback parameters to this parameter.
-        event.addCallbackParameter("key", "value");
-
-        Adjust.trackEvent(event);
+//        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_CALLBACK);
+//
+//        // Add callback parameters to this parameter.
+//        event.addCallbackParameter("key", "value");
+//
+//        Adjust.trackEvent(event);
+        Adjust.trackEvent(AdjustEvent.Builder(EVENT_TOKEN_CALLBACK).addCallbackParameter("key", "value").build());
     }
 
     public void onTrackPartnerEventClick(View v) {
-        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
-
-        // Add partner parameters to this parameter.
-        event.addPartnerParameter("foo", "bar");
-
-        Adjust.trackEvent(event);
+//        AdjustEvent event = new AdjustEvent(EVENT_TOKEN_PARTNER);
+//
+//        // Add partner parameters to this parameter.
+//        event.addPartnerParameter("foo", "bar");
+//
+//        Adjust.trackEvent(event);
+        Adjust.trackEvent(AdjustEvent.Builder(EVENT_TOKEN_PARTNER).addPartnerParameter("foo", "bar").build());
     }
 
     public void onEnableDisableOfflineModeClick(View v) {
