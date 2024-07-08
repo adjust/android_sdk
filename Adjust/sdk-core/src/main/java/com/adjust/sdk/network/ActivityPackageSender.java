@@ -103,12 +103,10 @@ public class ActivityPackageSender implements IActivityPackageSender {
     public ResponseData sendActivityPackageSync(final ActivityPackage activityPackage,
                                                 final Map<String, String> sendingParameters)
     {
-        Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
-
         boolean retryToSend;
         ResponseData responseData;
         do {
-            addErrorParameters(activityPackage, sendingParameters);
+            Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
 
             responseData =
                     ResponseData.buildResponseData(activityPackage, sendingParameters, signedParameters);
