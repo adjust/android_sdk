@@ -155,10 +155,10 @@ public class Util {
     /**
      * Called to get value of Google Play Advertising Identifier.
      *
-     * @param context        Application context
-     * @param onDeviceIdRead Callback to get triggered once identifier is obtained
+     * @param context                  Application context
+     * @param onGoogleAdIdReadListener Callback to get triggered once identifier is obtained
      */
-    public static void getGoogleAdId(final Context context, final OnDeviceIdsRead onDeviceIdRead) {
+    public static void getGoogleAdId(final Context context, final OnGoogleAdIdReadListener onGoogleAdIdReadListener) {
         new AsyncTaskExecutor<Context, String>() {
             @Override
             protected String doInBackground(Context... params) {
@@ -171,8 +171,8 @@ public class Util {
 
             @Override
             protected void onPostExecute(String playAdiId) {
-                if (onDeviceIdRead != null) {
-                    onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+                if (onGoogleAdIdReadListener != null) {
+                    onGoogleAdIdReadListener.onGoogleAdIdRead(playAdiId);
                 }
             }
         }.execute(context);

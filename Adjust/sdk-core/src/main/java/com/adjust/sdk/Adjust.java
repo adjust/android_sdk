@@ -327,19 +327,19 @@ public class Adjust {
     /**
      * Called to get value of Google Play Advertising Identifier.
      *
-     * @param context        Application context
-     * @param onDeviceIdRead Callback to get triggered once identifier is obtained
+     * @param context                  Application context
+     * @param onGoogleAdIdReadListener Callback to get triggered once identifier is obtained
      */
-    public static void getGoogleAdId(final Context context,final OnDeviceIdsRead onDeviceIdRead) {
-        if (onDeviceIdRead == null) {
-            AdjustFactory.getLogger().error("onDeviceIdRead cannot be null");
+    public static void getGoogleAdId(final Context context,final OnGoogleAdIdReadListener onGoogleAdIdReadListener) {
+        if (onGoogleAdIdReadListener == null) {
+            AdjustFactory.getLogger().error("onGoogleAdIdReadListener cannot be null");
             return;
         }
         if (context == null) {
             AdjustFactory.getLogger().error("null context");
             return;
         }
-        Util.getGoogleAdId(context.getApplicationContext(), onDeviceIdRead);
+        Util.getGoogleAdId(context.getApplicationContext(), onGoogleAdIdReadListener);
     }
 
     /**
