@@ -32,7 +32,7 @@ public class UtilNetworking {
                                                final String clientSdk)
             {
                 connection.setRequestProperty("Client-SDK", clientSdk);
-                connection.setRequestProperty("Beta-Version", "1");
+                connection.setRequestProperty("Beta-Version", "2");
                 connection.setConnectTimeout(Constants.ONE_MINUTE);
                 connection.setReadTimeout(Constants.ONE_MINUTE);
             }
