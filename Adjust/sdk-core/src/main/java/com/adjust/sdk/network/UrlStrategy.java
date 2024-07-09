@@ -17,10 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 
 public class UrlStrategy {
-    private static final String BASE_URL_WORLD = "https://app.adjust.world";
-    private static final String GDPR_URL_WORLD = "https://gdpr.adjust.world";
-    private static final String SUBSCRIPTION_URL_WORLD = "https://subscription.adjust.world";
-    private static final String PURCHASE_VERIFICATION_URL_WORLD = "https://ssrv.adjust.world";
+    private static final String BASE_URL_IO = "https://app.adjust.io";
+    private static final String GDPR_URL_IO = "https://gdpr.adjust.io";
+    private static final String SUBSCRIPTION_URL_IO = "https://subscription.adjust.io";
+    private static final String PURCHASE_VERIFICATION_URL_IO = "https://ssrv.adjust.io";
 
     private final List<String> urlStrategyDomains;
     private final boolean useSubdomains;
@@ -140,7 +140,7 @@ public class UrlStrategy {
     private List<String> baseUrlChoices() {
 
         if (urlStrategyDomains == null || urlStrategyDomains.isEmpty()) {
-            return Arrays.asList(BASE_URL,  BASE_URL_WORLD);
+            return Arrays.asList(BASE_URL, BASE_URL_IO);
         }
         if (useSubdomains) {
             List<String> baseUrls = new ArrayList<>();
@@ -158,7 +158,7 @@ public class UrlStrategy {
     }
     private List<String> gdprUrlChoices() {
         if (urlStrategyDomains == null || urlStrategyDomains.isEmpty()) {
-            return Arrays.asList(GDPR_URL,  GDPR_URL_WORLD);
+            return Arrays.asList(GDPR_URL, GDPR_URL_IO);
         }
         List<String> baseUrls = new ArrayList<>();
         if (useSubdomains) {
@@ -174,7 +174,7 @@ public class UrlStrategy {
     }
     private List<String> subscriptionUrlChoices() {
         if (urlStrategyDomains == null || urlStrategyDomains.isEmpty()) {
-            return Arrays.asList(SUBSCRIPTION_URL,  SUBSCRIPTION_URL_WORLD);
+            return Arrays.asList(SUBSCRIPTION_URL, SUBSCRIPTION_URL_IO);
         }
         List<String> baseUrls = new ArrayList<>();
         if (useSubdomains) {
@@ -190,7 +190,7 @@ public class UrlStrategy {
     }
     private List<String> purchaseVerificationUrlChoices() {
         if (urlStrategyDomains == null || urlStrategyDomains.isEmpty()) {
-            return Arrays.asList(PURCHASE_VERIFICATION_URL, PURCHASE_VERIFICATION_URL_WORLD);
+            return Arrays.asList(PURCHASE_VERIFICATION_URL, PURCHASE_VERIFICATION_URL_IO);
         }
         List<String> baseUrls = new ArrayList<>();
         if (useSubdomains){
