@@ -203,6 +203,8 @@ public class AdjustInstance {
             return;
         }
 
+        cacheDeeplink(url, context);
+
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processDeeplink", true)) {
             saveDeeplink(url, clickTime, context);
@@ -225,6 +227,8 @@ public class AdjustInstance {
             processDeeplink(url, context);
             return;
         }
+
+        cacheDeeplink(url, context);
 
         // if deep link processing is triggered prior to SDK being initialized
         long clickTime = System.currentTimeMillis();
@@ -627,6 +631,70 @@ public class AdjustInstance {
     }
 
     /**
+     * Verify in app purchase from Google Play.
+     *
+     * @param purchase AdjustPurchase object to be verified
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                        final OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyPurchase")) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    100,
+                    "SDK needs to be initialized before making purchase verification request");
+            callback.onVerificationFinished(result);
+            return;
+        }
+        activityHandler.verifyPlayStorePurchase(purchase, callback);
+    }
+
+    /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event    AdjustEvent to be tracked
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyAndTrack")) {
+            if (callback != null) {
+                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                        "not_verified",
+                        100,
+                        "SDK needs to be initialized before making purchase verification request");
+                callback.onVerificationFinished(result);
+            }
+            return;
+        }
+        activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
+    }
+
+    /**
+     * Called to get last opened deeplink.
+     *
+     * @param context Application context
+     * @param onLastDeeplinkReadListener Callback to obtain last opened deeplink.
+     */
+    public void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener) {
+        new AsyncTaskExecutor<Void, Uri>() {
+            @Override
+            protected Uri doInBackground(Void... voids) {
+                String cachedDeeplink = getCachedDeeplink(context);
+                try {
+                    return Uri.parse(cachedDeeplink);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Uri deeplink) {
+                onLastDeeplinkReadListener.onLastDeeplinkRead(deeplink);
+            }
+        }.execute();
+    }
+
+    /**
      * Check if ActivityHandler instance is set or not.
      *
      * @return boolean indicating whether ActivityHandler instance is set or not
@@ -731,6 +799,25 @@ public class AdjustInstance {
     }
 
     /**
+     * Cache deep link to shared preferences.
+     *
+     * @param deeplink  Deeplink Uri object
+     * @param context   Application context
+     */
+    private void cacheDeeplink(final Uri deeplink, final Context context) {
+        SharedPreferencesManager.getDefaultInstance(context).cacheDeeplink(deeplink);
+    }
+
+    /**
+     * Get cached deeplink from shared preferences.
+     *
+     * @param context   Application context
+     */
+    private String getCachedDeeplink(final Context context) {
+        return SharedPreferencesManager.getDefaultInstance(context).getCachedDeeplink();
+    }
+
+    /**
      * Flag stored referrers as still not sent.
      *
      * @param context Application context
@@ -766,45 +853,6 @@ public class AdjustInstance {
      */
     private boolean isInstanceEnabled() {
         return this.startEnabled == null || this.startEnabled;
-    }
-
-    /**
-     * Verify in app purchase from Google Play.
-     *
-     * @param purchase AdjustPurchase object to be verified
-     * @param callback Callback to be pinged with the verification results
-     */
-    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
-                                        final OnPurchaseVerificationFinishedListener callback) {
-        if (!checkActivityHandler("verifyPurchase")) {
-            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
-                    "not_verified",
-                    100,
-                    "SDK needs to be initialized before making purchase verification request");
-            callback.onVerificationFinished(result);
-            return;
-        }
-        activityHandler.verifyPlayStorePurchase(purchase, callback);
-    }
-
-    /**
-     * Verify in app purchase from Google Play and track Adjust event associated with it.
-     *
-     * @param event    AdjustEvent to be tracked
-     * @param callback Callback to be pinged with the verification results
-     */
-    public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
-        if (!checkActivityHandler("verifyAndTrack")) {
-            if (callback != null) {
-                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
-                        "not_verified",
-                        100,
-                        "SDK needs to be initialized before making purchase verification request");
-                callback.onVerificationFinished(result);
-            }
-            return;
-        }
-        activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**

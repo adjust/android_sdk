@@ -409,6 +409,26 @@ public class Adjust {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
     }
+
+    /**
+     * Called to get last opened deeplink.
+     *
+     * @param context Application context
+     * @param onLastDeeplinkReadListener Callback to obtain last opened deeplink.
+     */
+    public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener) {
+        if (onLastDeeplinkReadListener == null) {
+            AdjustFactory.getLogger().error("onLastDeeplinkReadListener cannot be null");
+            return;
+        }
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getLastDeeplink(context, onLastDeeplinkReadListener);
+    }
+
     /**
      * Called to get native SDK version string.
      *

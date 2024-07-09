@@ -42,6 +42,8 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
 
+    private static final String PREFS_KEY_DEEPLINK_URL_CACHED = "deeplink_url_cached";
+
     private static final String PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS
             = "preinstall_payload_read_status";
 
@@ -396,6 +398,18 @@ public class SharedPreferencesManager {
     public synchronized void removeDeeplink() {
         remove(PREFS_KEY_DEEPLINK_URL);
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
+    }
+
+    public synchronized void cacheDeeplink(final Uri deeplink) {
+        if (deeplink == null) {
+            return;
+        }
+
+        saveString(PREFS_KEY_DEEPLINK_URL_CACHED, deeplink.toString());
+    }
+
+    public synchronized String getCachedDeeplink() {
+        return getString(PREFS_KEY_DEEPLINK_URL_CACHED);
     }
 
     /**
