@@ -336,7 +336,7 @@ public class Adjust {
             return;
         }
         if (context == null) {
-            AdjustFactory.getLogger().error("null context");
+            AdjustFactory.getLogger().error("getGoogleAdId: null context");
             return;
         }
         Util.getGoogleAdId(context.getApplicationContext(), onGoogleAdIdReadListener);
@@ -356,9 +356,7 @@ public class Adjust {
         Context appContext = extractApplicationContext(context);
 
         if (appContext == null) {
-            String message = "null context";
-            AdjustFactory.getLogger().error(message);
-            onAmazonAdIdReadListener.onFail(message);
+            AdjustFactory.getLogger().error("getAmazonAdId: null context");
             return;
         }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();

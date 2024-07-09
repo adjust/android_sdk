@@ -546,7 +546,7 @@ class DeviceInfo {
 
         private static void getFireAdvertisingIdAsync(final ContentResolver contentResolver,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
             if (contentResolver == null) {
-                onAmazonAdIdReadListener.onFail("contentResolver could not be retrieved");
+                AdjustFactory.getLogger().error("contentResolver could not be retrieved");
                 return;
             }
             try {
@@ -554,7 +554,7 @@ class DeviceInfo {
                 String amazonAdId = Settings.Secure.getString(contentResolver, "advertising_id");
                 onAmazonAdIdReadListener.onAmazonAdIdRead(amazonAdId);
             } catch (Exception ex) {
-                onAmazonAdIdReadListener.onFail(ex.getMessage());
+                AdjustFactory.getLogger().error(ex.getMessage());
             }
         }
 
