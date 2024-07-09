@@ -12,6 +12,8 @@ public class Util {
             return null;
         }
 
+        logger.info("getSamsungInstallReferrerDetails invoked");
+
         SamsungInstallReferrerResult referrerResult =
                 SamsungReferrerClient.getReferrer(context, logger, 2000);
         if (referrerResult == null) {

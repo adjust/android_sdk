@@ -10,6 +10,9 @@ public class Util {
         if (!AdjustHuaweiReferrer.shouldReadHuaweiReferrer) {
             return null;
         }
+
+        logger.info("getHuaweiAdsInstallReferrerDetails invoked");
+
         HuaweiInstallReferrerResult huaweiInstallReferrerResult = HuaweiReferrerClient.getHuaweiAdsInstallReferrer(context, logger);
         if (huaweiInstallReferrerResult == null) {
             return null;
@@ -28,6 +31,8 @@ public class Util {
         if (!AdjustHuaweiReferrer.shouldReadHuaweiReferrer) {
             return null;
         }
+
+        logger.info("getHuaweiAppGalleryInstallReferrerDetails invoked");
 
         HuaweiInstallReferrerResult huaweiInstallReferrerResult = HuaweiReferrerClient.getHuaweiAppGalleryInstallReferrer(context, logger);
         if (huaweiInstallReferrerResult == null) {

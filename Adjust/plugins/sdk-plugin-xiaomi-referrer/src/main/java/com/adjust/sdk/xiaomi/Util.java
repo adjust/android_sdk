@@ -12,6 +12,8 @@ public class Util {
          return null;
       }
 
+      logger.info("getXiaomiInstallReferrerDetails invoked");
+
       XiaomiInstallReferrerDetails xiaomiInstallReferrerDetails = XiaomiReferrerClient.getReferrer(context, logger, 3000).xiaomiInstallReferrerDetails;
       if (xiaomiInstallReferrerDetails == null) {
          return null;

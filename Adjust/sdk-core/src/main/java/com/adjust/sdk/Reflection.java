@@ -68,7 +68,6 @@ public class Reflection {
                     new Class[]{Context.class, String.class, ILogger.class},
                     context, fbAppId, logger);
         } catch (Exception e) {
-            logger.info("invoke getMetaInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -81,7 +80,6 @@ public class Reflection {
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke getHuaweiAdsInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -94,7 +92,6 @@ public class Reflection {
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke getHuaweiAppGalleryInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -107,7 +104,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getSamsungInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -120,7 +116,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getXiaomiInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -133,7 +128,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getVivoInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -166,11 +160,10 @@ public class Reflection {
         String googleAdId = null;
         try {
             googleAdId = (String) invokeStaticMethod("com.adjust.sdk.samsung.clouddev.Util",
-                    "getGoogleAdId",
+                    "getGoogleAdIdInCloudEnvironment",
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke getGoogleAdId : " + e.getMessage());
         }
         return googleAdId;
     }
@@ -183,7 +176,6 @@ public class Reflection {
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke isAppRunningInCloudEnvironment : " + e.getMessage());
         }
         return isCloudEnvironment;
     }

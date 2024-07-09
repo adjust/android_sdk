@@ -11,6 +11,8 @@ public class Util {
          return null;
       }
 
+      logger.info("getVivoInstallReferrerDetails invoked");
+
       VivoInstallReferrerResult vivoInstallReferrerResult = VivoReferrerClient.getReferrer(context, logger);
       if (vivoInstallReferrerResult.vivoInstallReferrerDetails == null) {
          return null;
