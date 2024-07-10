@@ -25,9 +25,9 @@ import com.adjust.sdk.OnAmazonAdIdReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnAttributionReadListener;
 import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
-import com.adjust.sdk.OnDeviceIdsRead;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnGoogleAdIdReadListener;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
@@ -699,7 +699,7 @@ public class AdjustBridgeInstance {
         if (!isInitialized()) {
             return;
         }
-        Adjust.getGoogleAdId(application.getApplicationContext(), new OnDeviceIdsRead() {
+        Adjust.getGoogleAdId(application.getApplicationContext(), new OnGoogleAdIdReadListener() {
             @Override
             public void onGoogleAdIdRead(String googleAdId) {
                 AdjustBridgeUtil.execSingleValueCallback(webView, callback, googleAdId);
@@ -708,7 +708,7 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void getAmazonAdId(final String callbackSuccess,final String callbackFail) {
+    public void getAmazonAdId(final String callbackSuccess) {
         if (!isInitialized()) {
             return;
         }
@@ -716,11 +716,6 @@ public class AdjustBridgeInstance {
             @Override
             public void onAmazonAdIdRead(String adid) {
                 AdjustBridgeUtil.execSingleValueCallback(webView, callbackSuccess, adid);
-            }
-
-            @Override
-            public void onFail(String message) {
-                AdjustBridgeUtil.execSingleValueCallback(webView, callbackFail, null);
             }
         });
     }

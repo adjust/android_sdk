@@ -217,25 +217,13 @@ var Adjust = {
                     this.getAmazonIdCallbackSuccessName = 'Adjust.adjust_getAmazonIdCallbackSuccess';
                     this.getAmazonIdCallbackSuccessFunction = callbackSuccess;
                 }
-                if (typeof callbackFail === 'string' || callbackFail instanceof String) {
-                    this.getAmazonIdCallbackFailName = callbackFail;
-                } else {
-                    this.getAmazonIdCallbackFailName = 'Adjust.adjust_getAmazonIdCallbackFail';
-                    this.getAmazonIdCallbackFailFunction = callbackFail;
-                }
-                AdjustBridge.getAmazonAdId(this.getAmazonIdCallbackSuccessName,this.getAmazonIdCallbackFailName);
+                AdjustBridge.getAmazonAdId(this.getAmazonIdCallbackSuccessName);
             }
     },
 
     adjust_getAmazonIdCallbackSuccess: function (amazonId) {
         if (AdjustBridge && this.getAmazonIdCallbackSuccessFunction) {
             this.getAmazonIdCallbackSuccessFunction(amazonId);
-        }
-    },
-
-    adjust_getAmazonIdCallbackFail: function (message) {
-        if (AdjustBridge && this.getAmazonIdCallbackFailFunction) {
-            this.getAmazonIdCallbackFailName(message);
         }
     },
 
@@ -298,8 +286,6 @@ var Adjust = {
         this.getAttributionCallbackFunction = undefined;
         this.getAmazonIdCallbackSuccessName = undefined;
         this.getAmazonIdCallbackSuccessFunction = undefined;
-        this.getAmazonIdCallbackFailName = undefined;
-        this.getAmazonIdCallbackFailFunction = undefined;
         this.getSdkVersionCallbackFunction = undefined;
         this.getSdkVersionCallbackName = undefined;
     },
