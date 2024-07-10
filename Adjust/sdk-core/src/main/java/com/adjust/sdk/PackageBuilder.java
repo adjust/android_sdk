@@ -51,7 +51,6 @@ public class PackageBuilder {
         int sessionCount = -1;
         int subsessionCount = -1;
         long timeSpent = -1;
-        long lastInterval = -1;
         long sessionLength = -1;
         String uuid = null;
         String pushToken = null;
@@ -64,7 +63,6 @@ public class PackageBuilder {
             this.sessionCount = activityState.sessionCount;
             this.subsessionCount = activityState.subsessionCount;
             this.timeSpent = activityState.timeSpent;
-            this.lastInterval = activityState.lastInterval;
             this.sessionLength = activityState.sessionLength;
             this.uuid = activityState.uuid;
             this.pushToken = activityState.pushToken;
@@ -293,7 +291,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -550,7 +547,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "install_version", installVersion);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -925,7 +921,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -1023,7 +1018,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -1118,7 +1112,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
@@ -1208,7 +1201,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
         PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
-        PackageBuilder.addDuration(parameters, "last_interval", activityStateCopy.lastInterval);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
         PackageBuilder.addBoolean(parameters, "needs_response_details", true);
