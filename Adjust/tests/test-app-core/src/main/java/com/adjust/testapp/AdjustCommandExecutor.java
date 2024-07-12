@@ -92,8 +92,8 @@ public class AdjustCommandExecutor {
                 case "processDeeplink" : processDeeplink(); break;
                 case "enableCoppaCompliance" : enableCoppaCompliance(); break;
                 case "disableCoppaCompliance" : disableCoppaCompliance(); break;
-                case "enablePlayStoreKidsApp" : enablePlayStoreKidsApp(); break;
-                case "disablePlayStoreKidsApp" : disablePlayStoreKidsApp(); break;
+                case "enablePlayStoreKidsApp" : enablePlayStoreKidsCompliance(); break;
+                case "disablePlayStoreKidsApp" : disablePlayStoreKidsCompliance(); break;
                 case "attributionGetter" : attributionGetter(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
@@ -823,12 +823,12 @@ public class AdjustCommandExecutor {
         Adjust.disableCoppaCompliance(context.getApplicationContext());
     }
 
-    private void enablePlayStoreKidsApp() {
-        Adjust.enablePlayStoreKidsApp(context.getApplicationContext());
+    private void enablePlayStoreKidsCompliance() {
+        Adjust.enablePlayStoreKidsCompliance(context.getApplicationContext());
     }
 
-    private void disablePlayStoreKidsApp() {
-        Adjust.disablePlayStoreKidsApp(context.getApplicationContext());
+    private void disablePlayStoreKidsCompliance() {
+        Adjust.disablePlayStoreKidsCompliance(context.getApplicationContext());
     }
 
     private void attributionGetter() {

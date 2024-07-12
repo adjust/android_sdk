@@ -677,21 +677,21 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
-    public void enablePlayStoreKidsApp() {
+    public void enablePlayStoreKidsCompliance() {
         if (!isInitialized()) {
             return;
         }
 
-        Adjust.enablePlayStoreKidsApp(application.getApplicationContext());
+        Adjust.enablePlayStoreKidsCompliance(application.getApplicationContext());
     }
 
     @JavascriptInterface
-    public void disablePlayStoreKidsApp() {
+    public void disablePlayStoreKidsCompliance() {
         if (!isInitialized()) {
             return;
         }
 
-        Adjust.disablePlayStoreKidsApp(application.getApplicationContext());
+        Adjust.disablePlayStoreKidsCompliance(application.getApplicationContext());
     }
 
     @JavascriptInterface

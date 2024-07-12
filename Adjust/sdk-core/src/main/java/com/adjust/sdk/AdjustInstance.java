@@ -540,7 +540,7 @@ public class AdjustInstance {
      *
      * @param context Application context
      */
-    public void enablePlayStoreKidsApp(Context context) {
+    public void enablePlayStoreKidsCompliance(Context context) {
         savePlayStoreKidsApp(true, context);
     }
 
@@ -549,7 +549,7 @@ public class AdjustInstance {
      *
      * @param context Application context
      */
-    public void disablePlayStoreKidsApp(Context context) {
+    public void disablePlayStoreKidsCompliance(Context context) {
         savePlayStoreKidsApp(false, context);
     }
 

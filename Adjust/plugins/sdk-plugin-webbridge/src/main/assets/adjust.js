@@ -153,15 +153,15 @@ var Adjust = {
         }
     },
 
-    enablePlayStoreKidsApp: function () {
+    enablePlayStoreKidsCompliance: function () {
         if (AdjustBridge) {
-            AdjustBridge.enablePlayStoreKidsApp();
+            AdjustBridge.enablePlayStoreKidsCompliance();
         }
     },
 
-    disablePlayStoreKidsApp: function () {
+    disablePlayStoreKidsCompliance: function () {
         if (AdjustBridge) {
-            AdjustBridge.disablePlayStoreKidsApp();
+            AdjustBridge.disablePlayStoreKidsCompliance();
         }
     },
 

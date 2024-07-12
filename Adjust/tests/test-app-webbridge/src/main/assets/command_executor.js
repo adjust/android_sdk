@@ -137,8 +137,8 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
         case "enableCoppaCompliance"          : this.enableCoppaCompliance(command.params); break;
         case "disableCoppaCompliance"         : this.disableCoppaCompliance(command.params); break;
-        case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsApp(command.params); break;
-        case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsApp(command.params); break;
+        case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsCompliance(command.params); break;
+        case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsCompliance(command.params); break;
         case "attributionGetter"              : this.attributionGetter(command.params); break;
         break;
     }
@@ -635,12 +635,12 @@ AdjustCommandExecutor.prototype.disableCoppaCompliance = function(params) {
         Adjust.disableCoppaCompliance();
 };
 
-AdjustCommandExecutor.prototype.enablePlayStoreKidsApp = function(params) {
-        Adjust.enablePlayStoreKidsApp();
+AdjustCommandExecutor.prototype.enablePlayStoreKidsCompliance = function(params) {
+        Adjust.enablePlayStoreKidsCompliance();
 };
 
-AdjustCommandExecutor.prototype.disablePlayStoreKidsApp = function(params) {
-        Adjust.disablePlayStoreKidsApp();
+AdjustCommandExecutor.prototype.disablePlayStoreKidsCompliance = function(params) {
+        Adjust.disablePlayStoreKidsCompliance();
 };
 
 AdjustCommandExecutor.prototype.attributionGetter = function(params) {

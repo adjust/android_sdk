@@ -309,9 +309,9 @@ public class Adjust {
      *
      * @param context Application context
      */
-    public static void enablePlayStoreKidsApp(final Context context) {
+    public static void enablePlayStoreKidsCompliance(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.enablePlayStoreKidsApp(context);
+        adjustInstance.enablePlayStoreKidsCompliance(context);
     }
 
     /**
@@ -319,9 +319,9 @@ public class Adjust {
      *
      * @param context Application context
      */
-    public static void disablePlayStoreKidsApp(final Context context) {
+    public static void disablePlayStoreKidsCompliance(final Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disablePlayStoreKidsApp(context);
+        adjustInstance.disablePlayStoreKidsCompliance(context);
     }
 
     /**
