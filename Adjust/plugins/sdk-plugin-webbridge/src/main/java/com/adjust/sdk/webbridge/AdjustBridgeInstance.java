@@ -265,7 +265,7 @@ public class AdjustBridgeInstance {
             final String eventSuccessCallbackName = AdjustBridgeUtil.fieldToString(eventSuccessCallbackNameField);
             if (eventSuccessCallbackName != null) {
                 adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
-                    public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+                    public void onEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                         AdjustBridgeUtil.execEventSuccessCallbackCommand(webView, eventSuccessCallbackName, eventSuccessResponseData);
                     }
                 });
@@ -275,7 +275,7 @@ public class AdjustBridgeInstance {
             final String eventFailureCallbackName = AdjustBridgeUtil.fieldToString(eventFailureCallbackNameField);
             if (eventFailureCallbackName != null) {
                 adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
-                    public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+                    public void onEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                         AdjustBridgeUtil.execEventFailureCallbackCommand(webView, eventFailureCallbackName, eventFailureResponseData);
                     }
                 });
@@ -286,7 +286,7 @@ public class AdjustBridgeInstance {
             if (sessionSuccessCallbackName != null) {
                 adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                     @Override
-                    public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+                    public void onSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                         AdjustBridgeUtil.execSessionSuccessCallbackCommand(webView, sessionSuccessCallbackName, sessionSuccessResponseData);
                     }
                 });
@@ -297,7 +297,7 @@ public class AdjustBridgeInstance {
             if (sessionFailureCallbackName != null) {
                 adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                     @Override
-                    public void onFinishedSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
+                    public void onSessionTrackingFailed(AdjustSessionFailure failureResponseData) {
                         AdjustBridgeUtil.execSessionFailureCallbackCommand(webView, sessionFailureCallbackName, failureResponseData);
                     }
                 });

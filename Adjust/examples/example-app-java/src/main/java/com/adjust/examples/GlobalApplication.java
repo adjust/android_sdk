@@ -55,7 +55,7 @@ public class GlobalApplication extends Application {
         // Set event success tracking delegate.
         config.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
             @Override
-            public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+            public void onEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                 Log.d("example", "Event success callback called!");
                 Log.d("example", "Event success data: " + eventSuccessResponseData.toString());
             }
@@ -64,7 +64,7 @@ public class GlobalApplication extends Application {
         // Set event failure tracking delegate.
         config.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
             @Override
-            public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+            public void onEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                 Log.d("example", "Event failure callback called!");
                 Log.d("example", "Event failure data: " + eventFailureResponseData.toString());
             }
@@ -73,7 +73,7 @@ public class GlobalApplication extends Application {
         // Set session success tracking delegate.
         config.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
             @Override
-            public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+            public void onSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                 Log.d("example", "Session success callback called!");
                 Log.d("example", "Session success data: " + sessionSuccessResponseData.toString());
             }
@@ -82,7 +82,7 @@ public class GlobalApplication extends Application {
         // Set session failure tracking delegate.
         config.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
             @Override
-            public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+            public void onSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
                 Log.d("example", "Session failure callback called!");
                 Log.d("example", "Session failure data: " + sessionFailureResponseData.toString());
             }

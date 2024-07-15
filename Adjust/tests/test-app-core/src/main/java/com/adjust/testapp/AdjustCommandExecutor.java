@@ -358,7 +358,7 @@ public class AdjustCommandExecutor {
             final String localBasePath = basePath;
             adjustConfig.setOnSessionTrackingSucceededListener(new OnSessionTrackingSucceededListener() {
                 @Override
-                public void onFinishedSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
+                public void onSessionTrackingSucceeded(AdjustSessionSuccess sessionSuccessResponseData) {
                     Log.d("TestApp", "session_success = " + sessionSuccessResponseData.toString());
 
                     MainActivity.testLibrary.addInfoToSend("message", sessionSuccessResponseData.message);
@@ -376,7 +376,7 @@ public class AdjustCommandExecutor {
             final String localBasePath = basePath;
             adjustConfig.setOnSessionTrackingFailedListener(new OnSessionTrackingFailedListener() {
                 @Override
-                public void onFinishedSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
+                public void onSessionTrackingFailed(AdjustSessionFailure sessionFailureResponseData) {
                     Log.d("TestApp", "session_fail = " + sessionFailureResponseData.toString());
 
                     MainActivity.testLibrary.addInfoToSend("message", sessionFailureResponseData.message);
@@ -395,7 +395,7 @@ public class AdjustCommandExecutor {
             final String localBasePath = basePath;
             adjustConfig.setOnEventTrackingSucceededListener(new OnEventTrackingSucceededListener() {
                 @Override
-                public void onFinishedEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
+                public void onEventTrackingSucceeded(AdjustEventSuccess eventSuccessResponseData) {
                     Log.d("TestApp", "event_success = " + eventSuccessResponseData.toString());
 
                     MainActivity.testLibrary.addInfoToSend("message", eventSuccessResponseData.message);
@@ -415,7 +415,7 @@ public class AdjustCommandExecutor {
             final String localBasePath = basePath;
             adjustConfig.setOnEventTrackingFailedListener(new OnEventTrackingFailedListener() {
                 @Override
-                public void onFinishedEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
+                public void onEventTrackingFailed(AdjustEventFailure eventFailureResponseData) {
                     Log.d("TestApp", "event_fail = " + eventFailureResponseData.toString());
 
                     MainActivity.testLibrary.addInfoToSend("message", eventFailureResponseData.message);

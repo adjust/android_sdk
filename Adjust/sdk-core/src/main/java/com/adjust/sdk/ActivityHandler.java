@@ -1622,7 +1622,7 @@ public class ActivityHandler
                     if (adjustConfig.onEventTrackingSucceededListener == null) {
                         return;
                     }
-                    adjustConfig.onEventTrackingSucceededListener.onFinishedEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
+                    adjustConfig.onEventTrackingSucceededListener.onEventTrackingSucceeded(eventResponseData.getSuccessResponseData());
                 }
             };
             handler.post(runnable);
@@ -1642,7 +1642,7 @@ public class ActivityHandler
                     if (adjustConfig.onEventTrackingFailedListener == null) {
                         return;
                     }
-                    adjustConfig.onEventTrackingFailedListener.onFinishedEventTrackingFailed(eventResponseData.getFailureResponseData());
+                    adjustConfig.onEventTrackingFailedListener.onEventTrackingFailed(eventResponseData.getFailureResponseData());
                 }
             };
             handler.post(runnable);
@@ -1730,7 +1730,7 @@ public class ActivityHandler
                     if (adjustConfig.onSessionTrackingSucceededListener == null) {
                         return;
                     }
-                    adjustConfig.onSessionTrackingSucceededListener.onFinishedSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
+                    adjustConfig.onSessionTrackingSucceededListener.onSessionTrackingSucceeded(sessionResponseData.getSuccessResponseData());
                 }
             };
             handler.post(runnable);
@@ -1750,7 +1750,7 @@ public class ActivityHandler
                     if (adjustConfig.onSessionTrackingFailedListener == null) {
                         return;
                     }
-                    adjustConfig.onSessionTrackingFailedListener.onFinishedSessionTrackingFailed(sessionResponseData.getFailureResponseData());
+                    adjustConfig.onSessionTrackingFailedListener.onSessionTrackingFailed(sessionResponseData.getFailureResponseData());
                 }
             };
             handler.post(runnable);
