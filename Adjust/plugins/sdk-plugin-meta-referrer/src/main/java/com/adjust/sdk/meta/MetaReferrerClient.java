@@ -24,6 +24,11 @@ public class MetaReferrerClient {
     private static final String INSTAGRAM_REFERRER_PROVIDER_AUTHORITY = "com.instagram.contentprovider.InstallReferrerProvider";
 
     /**
+     * FBLite install referrer provider content authority.
+     */
+    private static final String FBLITE_REFERRER_PROVIDER_AUTHORITY = "com.facebook.lite.provider.InstallReferrerProvider";
+
+    /**
      * Meta referrer content provider install referrer column name.
      */
     private static final String COLUMN_INSTALL_REFERRER = "install_referrer";
@@ -73,8 +78,12 @@ public class MetaReferrerClient {
                 providerUri = Uri.parse("content://" + FACEBOOK_REFERRER_PROVIDER_AUTHORITY + "/" + fbAppId);
             } else if (resolveContentProvider(context, INSTAGRAM_REFERRER_PROVIDER_AUTHORITY)) {
                 providerUri = Uri.parse("content://" + INSTAGRAM_REFERRER_PROVIDER_AUTHORITY + "/" + fbAppId);
+            } else if (resolveContentProvider(context, FBLITE_REFERRER_PROVIDER_AUTHORITY)) {
+                providerUri = Uri.parse("content://" + FBLITE_REFERRER_PROVIDER_AUTHORITY + "/" + fbAppId);
             } else {
-                return new MetaInstallReferrerResult("Failed to find Meta Install Referrer content provider");
+                errorMessage = "Failed to find Meta Install Referrer content provider";
+                logger.debug(errorMessage);
+                return new MetaInstallReferrerResult(errorMessage);
             }
 
             ContentResolver contentResolver = context.getContentResolver();

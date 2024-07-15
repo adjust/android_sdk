@@ -5,4 +5,7 @@
     <queries>
         <package android:name="com.instagram.android" />
     </queries>
+    <queries>
+        <package android:name="com.facebook.lite" />
+    </queries>
 </manifest>
