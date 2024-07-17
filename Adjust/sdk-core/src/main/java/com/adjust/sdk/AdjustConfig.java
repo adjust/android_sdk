@@ -168,22 +168,6 @@ public class AdjustConfig {
         this.onDeferredDeeplinkResponseListener = onDeferredDeeplinkResponseListener;
     }
 
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public String getGdprPath() {
-        return gdprPath;
-    }
-
-    public String getSubscriptionPath() {
-        return subscriptionPath;
-    }
-
-    public String getPurchaseVerificationPath() {
-        return purchaseVerificationPath;
-    }
-
     public Context getContext() {
         return context;
     }
@@ -206,18 +190,6 @@ public class AdjustConfig {
 
     public String getDefaultTracker() {
         return defaultTracker;
-    }
-
-    public String getPushToken() {
-        return pushToken;
-    }
-
-    public Boolean getStartEnabled() {
-        return startEnabled;
-    }
-
-    public boolean isStartOffline() {
-        return startOffline;
     }
 
     public String getExternalDeviceId() {
@@ -278,10 +250,6 @@ public class AdjustConfig {
 
     public OnDeferredDeeplinkResponseListener getOnDeeplinkResponseListener() {
         return onDeferredDeeplinkResponseListener;
-    }
-
-    public AdjustInstance.PreLaunchActions getPreLaunchActions() {
-        return preLaunchActions;
     }
 
     public ILogger getLogger() {
