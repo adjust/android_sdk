@@ -41,42 +41,6 @@ public class AdjustAttribution implements Serializable {
     public String costCurrency;
     public String fbInstallReferrer;
 
-    public static AdjustAttribution fromJson(JSONObject jsonObject, String adid, String sdkPlatform) {
-        if (jsonObject == null) return null;
-
-        AdjustAttribution attribution = new AdjustAttribution();
-
-        if ("unity".equals(sdkPlatform)) {
-            // Unity platform.
-            attribution.trackerToken = jsonObject.optString("tracker_token", "");
-            attribution.trackerName = jsonObject.optString("tracker_name", "");
-            attribution.network = jsonObject.optString("network", "");
-            attribution.campaign = jsonObject.optString("campaign", "");
-            attribution.adgroup = jsonObject.optString("adgroup", "");
-            attribution.creative = jsonObject.optString("creative", "");
-            attribution.clickLabel = jsonObject.optString("click_label", "");
-            attribution.costType = jsonObject.optString("cost_type", "");
-            attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
-            attribution.costCurrency = jsonObject.optString("cost_currency", "");
-            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer", "");
-        } else {
-            // Rest of all platforms.
-            attribution.trackerToken = jsonObject.optString("tracker_token");
-            attribution.trackerName = jsonObject.optString("tracker_name");
-            attribution.network = jsonObject.optString("network");
-            attribution.campaign = jsonObject.optString("campaign");
-            attribution.adgroup = jsonObject.optString("adgroup");
-            attribution.creative = jsonObject.optString("creative");
-            attribution.clickLabel = jsonObject.optString("click_label");
-            attribution.costType = jsonObject.optString("cost_type");
-            attribution.costAmount = jsonObject.optDouble("cost_amount");
-            attribution.costCurrency = jsonObject.optString("cost_currency");
-            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer");
-        }
-
-        return attribution;
-    }
-
     @Override
     public boolean equals(Object other) {
         if (other == this) return true;

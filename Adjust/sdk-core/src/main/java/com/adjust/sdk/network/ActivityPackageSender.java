@@ -594,9 +594,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         responseData.continueIn = UtilNetworking.extractJsonLong(jsonResponse, "continue_in");
 
         JSONObject attributionJson = jsonResponse.optJSONObject("attribution");
-        responseData.attribution = AdjustAttribution.fromJson(
+        responseData.attribution = Util.attributionFromJson(
                 attributionJson,
-                responseData.adid,
                 Util.getSdkPrefixPlatform(clientSdk));
 
         responseData.resolvedDeeplink = UtilNetworking.extractJsonString(jsonResponse,"resolved_click_url");

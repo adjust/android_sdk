@@ -22,6 +22,8 @@ import android.os.LocaleList;
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
 
+import org.json.JSONObject;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.Closeable;
@@ -740,5 +742,44 @@ public class Util {
         } else {
             return activityState.enabled;
         }
+    }
+
+    public static AdjustAttribution attributionFromJson(final JSONObject jsonObject,
+                                                        final String sdkPlatform) {
+        if (jsonObject == null) {
+            return null;
+        }
+
+        AdjustAttribution attribution = new AdjustAttribution();
+
+        if ("unity".equals(sdkPlatform)) {
+            // Unity platform.
+            attribution.trackerToken = jsonObject.optString("tracker_token", "");
+            attribution.trackerName = jsonObject.optString("tracker_name", "");
+            attribution.network = jsonObject.optString("network", "");
+            attribution.campaign = jsonObject.optString("campaign", "");
+            attribution.adgroup = jsonObject.optString("adgroup", "");
+            attribution.creative = jsonObject.optString("creative", "");
+            attribution.clickLabel = jsonObject.optString("click_label", "");
+            attribution.costType = jsonObject.optString("cost_type", "");
+            attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
+            attribution.costCurrency = jsonObject.optString("cost_currency", "");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer", "");
+        } else {
+            // Rest of all platforms.
+            attribution.trackerToken = jsonObject.optString("tracker_token");
+            attribution.trackerName = jsonObject.optString("tracker_name");
+            attribution.network = jsonObject.optString("network");
+            attribution.campaign = jsonObject.optString("campaign");
+            attribution.adgroup = jsonObject.optString("adgroup");
+            attribution.creative = jsonObject.optString("creative");
+            attribution.clickLabel = jsonObject.optString("click_label");
+            attribution.costType = jsonObject.optString("cost_type");
+            attribution.costAmount = jsonObject.optDouble("cost_amount");
+            attribution.costCurrency = jsonObject.optString("cost_currency");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer");
+        }
+
+        return attribution;
     }
 }
