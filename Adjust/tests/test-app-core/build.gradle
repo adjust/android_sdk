@@ -1,5 +1,11 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
 android {
     compileSdk 34
 
@@ -24,6 +30,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation 'com.google.android.gms:play-services-ads-identifier:17.1.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
+    implementation 'com.adjust.signature:adjust-android-signature:3+'
 
     implementation project(':sdk-core')
     implementation project(':tests:test-options')
