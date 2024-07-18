@@ -1824,6 +1824,12 @@ public class ActivityHandler
             }
         };
         handler.post(runnable);
+
+        if (purchaseVerificationResponseData.activityPackage != null &&
+          purchaseVerificationResponseData.activityPackage.event != null)
+        {
+            this.trackEventI(purchaseVerificationResponseData.activityPackage.event);
+        }
     }
 
     private void prepareDeeplinkI(final Uri deeplink, final Handler handler) {
@@ -2645,8 +2651,8 @@ public class ActivityHandler
             callback.onVerificationFinished(verificationResult);
             return;
         }
+        verificationPackage.event = event;
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
-        trackEventI(event);
     }
 
     private void setCoppaComplianceI(final boolean coppaEnabled) {

@@ -72,6 +72,8 @@ public class ActivityPackage implements Serializable {
     private int lastErrorCode;
     private double waitBeforeSendTimeSeconds;
 
+    public transient AdjustEvent event;
+
     public String getPath() {
         return path;
     }

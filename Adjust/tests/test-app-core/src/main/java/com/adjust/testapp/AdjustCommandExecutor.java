@@ -89,6 +89,7 @@ public class AdjustCommandExecutor {
                 case "trackAdRevenue" : trackAdRevenue(); break;
                 case "trackSubscription": trackPlayStoreSubscription(); break;
                 case "verifyPurchase": verifyPurchase(); break;
+                case "verifyTrack": verifyTrack(); break;
                 case "processDeeplink" : processDeeplink(); break;
                 case "enableCoppaCompliance" : enableCoppaCompliance(); break;
                 case "disableCoppaCompliance" : disableCoppaCompliance(); break;
@@ -800,6 +801,27 @@ public class AdjustCommandExecutor {
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         });
+    }
+
+    private void verifyTrack() {
+        event();
+        int eventNumber = 0;
+        if (command.parameters.containsKey("eventName")) {
+            String eventName = command.getFirstParameterValue("eventName");
+            eventNumber = Integer.parseInt(eventName.substring(eventName.length() - 1));
+        }
+
+        AdjustEvent adjustEvent = savedEvents.get(eventNumber);
+        final String localBasePath = basePath;
+
+        Adjust.verifyAndTrackPlayStorePurchase(adjustEvent, result -> {
+            MainActivity.testLibrary.addInfoToSend("verification_status", result.getVerificationStatus());
+            MainActivity.testLibrary.addInfoToSend("code", String.valueOf(result.getCode()));
+            MainActivity.testLibrary.addInfoToSend("message", result.getMessage());
+            MainActivity.testLibrary.sendInfoToServer(localBasePath);
+        });
+
+        this.savedEvents.remove(0);
     }
 
     private void processDeeplink() {
