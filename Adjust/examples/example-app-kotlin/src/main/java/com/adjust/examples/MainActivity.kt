@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.Toast
 
 import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustDeeplink
 import com.adjust.sdk.AdjustEvent
 import com.adjust.sdk.OnIsEnabledListener
 
@@ -23,7 +24,8 @@ class MainActivity : AppCompatActivity() {
 
         val intent = intent
         val data = intent.data
-        Adjust.processDeeplink(data, applicationContext)
+        val adjustDeeplink = AdjustDeeplink(data);
+        Adjust.processDeeplink(adjustDeeplink, applicationContext)
 
         // Adjust UI according to SDK state.
         btnEnableDisableSDK = findViewById<View>(R.id.btnEnableDisableSDK) as Button

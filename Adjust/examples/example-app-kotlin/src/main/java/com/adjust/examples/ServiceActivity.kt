@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 
 import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustDeeplink
 
 class ServiceActivity : AppCompatActivity() {
 
@@ -15,7 +16,8 @@ class ServiceActivity : AppCompatActivity() {
 
         val intent = intent
         val data = intent.data
-        Adjust.processDeeplink(data, applicationContext)
+        val adjustDeeplink = AdjustDeeplink(data);
+        Adjust.processDeeplink(adjustDeeplink, applicationContext)
     }
 
     fun onServiceClick(v: View) {
