@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
 import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.test.TestLibrary;
 
@@ -22,11 +23,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Check if deferred deep link was received
+        // Check if deferred deeplink was received
         Intent intent = getIntent();
         Uri deeplinkData = intent.getData();
         if (deeplinkData != null) {
-            Adjust.processDeeplink(deeplinkData, getApplicationContext());
+            AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplinkData);
+            Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
             return;
         }
 

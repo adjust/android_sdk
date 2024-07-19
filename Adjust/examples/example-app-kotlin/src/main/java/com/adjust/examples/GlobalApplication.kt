@@ -49,10 +49,10 @@ class GlobalApplication : Application() {
             Log.d("example", "Session failure data: $sessionFailureResponseData")
         }
 
-        // Evaluate deferred deep link to be launched.
+        // Evaluate deferred deeplink to be launched.
         config.setOnDeferredDeeplinkResponseListener { deeplink ->
-            Log.d("example", "Deferred deep link callback called!")
-            Log.d("example", "Deep link URL: $deeplink")
+            Log.d("example", "Deferred deeplink callback called!")
+            Log.d("example", "Deeplink URL: $deeplink")
 
             true
         }

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.OnIsEnabledListener;
 
@@ -31,7 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.processDeeplink(data, getApplicationContext());
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+        Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
 
         // Adjust UI according to SDK state.
         btnEnableDisableSDK = (Button) findViewById(R.id.btnEnableDisableSDK);

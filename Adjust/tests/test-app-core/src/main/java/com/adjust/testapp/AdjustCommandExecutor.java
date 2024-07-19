@@ -14,6 +14,7 @@ import com.adjust.sdk.Adjust;
 import com.adjust.sdk.AdjustAdRevenue;
 import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustConfig;
+import com.adjust.sdk.AdjustDeeplink;
 import com.adjust.sdk.AdjustEvent;
 import com.adjust.sdk.AdjustEventFailure;
 import com.adjust.sdk.AdjustEventSuccess;
@@ -640,7 +641,8 @@ public class AdjustCommandExecutor {
     private void openDeeplink() {
         String deeplink = command.getFirstParameterValue("deeplink");
 
-        Adjust.processDeeplink(Uri.parse(deeplink), this.context);
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
+        Adjust.processDeeplink(adjustDeeplink, this.context);
     }
 
     private void sendReferrer() {
@@ -828,7 +830,8 @@ public class AdjustCommandExecutor {
         String deeplink = command.getFirstParameterValue("deeplink");
         Uri deeplinkUri = Uri.parse(deeplink);
         final String localBasePath = basePath;
-        Adjust.processAndResolveDeeplink(deeplinkUri, context, new OnDeeplinkResolvedListener() {
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(deeplinkUri);
+        Adjust.processAndResolveDeeplink(adjustDeeplink, context, new OnDeeplinkResolvedListener() {
             @Override
             public void onDeeplinkResolved(String resolvedLink) {
                 MainActivity.testLibrary.addInfoToSend("resolved_link", resolvedLink);

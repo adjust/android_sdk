@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
 
 public class ServiceActivity extends AppCompatActivity {
 
@@ -19,7 +20,8 @@ public class ServiceActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.processDeeplink(data, getApplicationContext());
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+        Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
     }
 
     public void onServiceClick(View v) {

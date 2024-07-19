@@ -303,7 +303,7 @@ public class AdjustBridgeInstance {
                 });
             }
 
-            // Should deferred deep link be opened?
+            // Should deferred deeplink be opened?
             Boolean isOpeningDeferredDeeplinkEnabledObject = AdjustBridgeUtil.fieldToBoolean(isOpeningDeferredDeeplinkEnabledField);
             if (isOpeningDeferredDeeplinkEnabledObject != null) {
                 isOpeningDeferredDeeplinkEnabled = isOpeningDeferredDeeplinkEnabledObject;

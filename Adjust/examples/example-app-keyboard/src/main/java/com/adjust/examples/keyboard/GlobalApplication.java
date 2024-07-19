@@ -81,12 +81,12 @@ public class GlobalApplication extends Application {
             }
         });
 
-        // Evaluate deferred deep link to be launched.
+        // Evaluate deferred deeplink to be launched.
         config.setOnDeferredDeeplinkResponseListener(new OnDeferredDeeplinkResponseListener() {
             @Override
             public boolean launchReceivedDeeplink(Uri deeplink) {
-                Log.d("example", "Deferred deep link callback called!");
-                Log.d("example", "Deep link URL: " + deeplink);
+                Log.d("example", "Deferred deeplink callback called!");
+                Log.d("example", "Deeplink URL: " + deeplink);
 
                 return true;
             }

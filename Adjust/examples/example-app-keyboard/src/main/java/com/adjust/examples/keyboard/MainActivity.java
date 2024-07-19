@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.adjust.sdk.Adjust;
+import com.adjust.sdk.AdjustDeeplink;
 import com.adjust.sdk.AdjustEvent;
 
 public class MainActivity extends AppCompatActivity {
@@ -24,7 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Uri data = intent.getData();
-        Adjust.processDeeplink(data, getApplicationContext());
+        AdjustDeeplink adjustDeeplink = new AdjustDeeplink(data);
+        Adjust.processDeeplink(adjustDeeplink, getApplicationContext());
     }
 
     @Override

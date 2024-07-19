@@ -190,56 +190,63 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to process deep link.
+     * Called to process deeplink.
      *
-     * @param url     Deep link URL to process
+     * @param adjustDeeplink     Deeplink object to process
      * @param context Application context
      */
-    public void processDeeplink(final Uri url, final Context context) {
-        // Check for deep link validity. If invalid, return.
-        if (url == null || url.toString().length() == 0) {
+    public void processDeeplink(final AdjustDeeplink adjustDeeplink, final Context context) {
+        // Check for deeplink validity. If invalid, return.
+        if (adjustDeeplink == null || !adjustDeeplink.isValid()) {
             AdjustFactory.getLogger().warn(
-                    "Skipping deep link processing (null or empty)");
+                    "Skipping deeplink processing (null or empty)");
             return;
         }
 
-        cacheDeeplink(url, context);
+        cacheDeeplink(adjustDeeplink.url, context);
 
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processDeeplink", true)) {
-            saveDeeplink(url, clickTime, context);
+            saveDeeplink(adjustDeeplink.url, clickTime, context);
             return;
         }
 
-        activityHandler.processDeeplink(url, clickTime);
+        activityHandler.processDeeplink(adjustDeeplink.url, clickTime);
     }
 
     /**
-     * Process the deep link that has opened an app and potentially get a resolved link.
+     * Process the deeplink that has opened an app and potentially get a resolved link.
      *
-     * @param url      Deep link URL to process
-     * @param callback Callback where either resolved or echoed deep link will be sent.
+     * @param adjustDeeplink      Deeplink object to process
+     * @param callback Callback where either resolved or echoed deeplink will be sent.
      * @param context  Application context
      */
-    public void processAndResolveDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
-        // if resolution result is not wanted, fallback to default method
-        if (callback == null) {
-            processDeeplink(url, context);
+    public void processAndResolveDeeplink(AdjustDeeplink adjustDeeplink, Context context, OnDeeplinkResolvedListener callback) {
+        // Check for deeplink validity. If invalid, return.
+        if (adjustDeeplink == null || !adjustDeeplink.isValid()) {
+            AdjustFactory.getLogger().warn(
+                    "Skipping deeplink processing (null or empty)");
             return;
         }
 
-        cacheDeeplink(url, context);
+        // if resolution result is not wanted, fallback to default method
+        if (callback == null) {
+            processDeeplink(adjustDeeplink, context);
+            return;
+        }
 
-        // if deep link processing is triggered prior to SDK being initialized
+        cacheDeeplink(adjustDeeplink.url, context);
+
+        // if deeplink processing is triggered prior to SDK being initialized
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processAndResolveDeeplink", true)) {
-            saveDeeplink(url, clickTime, context);
+            saveDeeplink(adjustDeeplink.url, clickTime, context);
             this.cachedDeeplinkResolutionCallback = callback;
             return;
         }
 
-        // if deep link processing was triggered with SDK being initialized
-        activityHandler.processAndResolveDeeplink(url, clickTime, callback);
+        // if deeplink processing was triggered with SDK being initialized
+        activityHandler.processAndResolveDeeplink(adjustDeeplink.url, clickTime, callback);
     }
 
     /**
@@ -788,7 +795,7 @@ public class AdjustInstance {
     }
 
     /**
-     * Save deep link to shared preferences.
+     * Save deeplink to shared preferences.
      *
      * @param deeplink  Deeplink Uri object
      * @param clickTime Time when processDeeplink(Uri, Context) method was called
@@ -799,7 +806,7 @@ public class AdjustInstance {
     }
 
     /**
-     * Cache deep link to shared preferences.
+     * Cache deeplink to shared preferences.
      *
      * @param deeplink  Deeplink Uri object
      * @param context   Application context

@@ -923,7 +923,7 @@ public class ActivityHandler
             }
         }
 
-        // cached deep link resolution callback
+        // cached deeplink resolution callback
         if (this.cachedDeeplinkResolutionCallback == null) {
             this.cachedDeeplinkResolutionCallback = adjustConfig.cachedDeeplinkResolutionCallback;
         }
@@ -1386,7 +1386,7 @@ public class ActivityHandler
         sharedPreferencesManager.removePushToken();
         sharedPreferencesManager.removeGdprForgetMe();
 
-        // check for cached deep links
+        // check for cached deeplinks
         processCachedDeeplinkI();
 
         // don't check attribution right after first sdk start
@@ -1875,12 +1875,12 @@ public class ActivityHandler
 
         // Start an activity if it's safe
         if (!isIntentSafe) {
-            logger.error("Unable to open deferred deep link (%s)", deeplink);
+            logger.error("Unable to open deferred deeplink (%s)", deeplink);
             return;
         }
 
         // add it to the handler queue
-        logger.info("Open deferred deep link (%s)", deeplink);
+        logger.info("Open deferred deeplink (%s)", deeplink);
         adjustConfig.context.startActivity(deeplinkIntent);
     }
 
