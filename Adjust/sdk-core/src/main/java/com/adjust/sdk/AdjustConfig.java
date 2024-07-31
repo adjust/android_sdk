@@ -39,6 +39,7 @@ public class AdjustConfig {
     boolean isDataResidency;
     String preinstallFilePath;
     boolean coppaComplianceEnabled;
+    boolean playStoreKidsComplianceEnabled;
     String fbAppId;
     boolean isDeviceIdsReadingOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
@@ -81,6 +82,8 @@ public class AdjustConfig {
         this.isPreinstallTrackingEnabled = false;
         this.isDeviceIdsReadingOnceEnabled = false;
         this.isCostDataInAttributionEnabled = false;
+        this.coppaComplianceEnabled = false;
+        this.playStoreKidsComplianceEnabled = false;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -115,8 +118,8 @@ public class AdjustConfig {
         this.coppaComplianceEnabled = true;
     }
 
-    public void disableCoppaCompliance() {
-        this.coppaComplianceEnabled = false;
+    public void enablePlayStoreKidsCompliance() {
+        this.playStoreKidsComplianceEnabled = true;
     }
 
     public void setFbAppId(String fbAppId) {
@@ -231,6 +234,10 @@ public class AdjustConfig {
 
     public boolean isCoppaComplianceEnabled() {
         return coppaComplianceEnabled;
+    }
+
+    public boolean isPlayStoreKidsComplianceEnabled() {
+        return playStoreKidsComplianceEnabled;
     }
 
     public String getFbAppId() {

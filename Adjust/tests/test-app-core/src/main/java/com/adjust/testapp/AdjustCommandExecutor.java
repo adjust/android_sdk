@@ -92,8 +92,6 @@ public class AdjustCommandExecutor {
                 case "verifyPurchase": verifyPurchase(); break;
                 case "verifyTrack": verifyTrack(); break;
                 case "processDeeplink" : processDeeplink(); break;
-                case "enablePlayStoreKidsApp" : enablePlayStoreKidsCompliance(); break;
-                case "disablePlayStoreKidsApp" : disablePlayStoreKidsCompliance(); break;
                 case "attributionGetter" : attributionGetter(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
@@ -316,8 +314,14 @@ public class AdjustCommandExecutor {
             boolean coppaCompliant = "true".equals(coppaCompliantS);
             if (coppaCompliant) {
                 adjustConfig.enableCoppaCompliance();
-            } else {
-                adjustConfig.disableCoppaCompliance();
+            }
+        }
+
+        if (command.containsParameter("playStoreKids")) {
+            String playStoreKidsS = command.getFirstParameterValue("playStoreKids");
+            boolean playStoreKids = "true".equals(playStoreKidsS);
+            if (playStoreKids) {
+                adjustConfig.enablePlayStoreKidsCompliance();
             }
         }
 
@@ -846,14 +850,6 @@ public class AdjustCommandExecutor {
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         });
-    }
-
-    private void enablePlayStoreKidsCompliance() {
-        Adjust.enablePlayStoreKidsCompliance(context.getApplicationContext());
-    }
-
-    private void disablePlayStoreKidsCompliance() {
-        Adjust.disablePlayStoreKidsCompliance(context.getApplicationContext());
     }
 
     private void attributionGetter() {

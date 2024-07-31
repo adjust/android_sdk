@@ -171,6 +171,7 @@ public class AdjustBridgeInstance {
             Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
             Object coppaComplianceEnabledField = jsonAdjustConfig.get("coppaComplianceEnabled");
+            Object playStoreKidsComplianceEnabledField = jsonAdjustConfig.get("playStoreKidsComplianceEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
@@ -371,8 +372,14 @@ public class AdjustBridgeInstance {
             if (coppaCompliantEnabled != null) {
                 if (coppaCompliantEnabled) {
                     adjustConfig.enableCoppaCompliance();
-                } else {
-                    adjustConfig.disableCoppaCompliance();
+                }
+            }
+
+            // PlayStore Kids compliance
+            Boolean playStoreKidsComplianceEnabled = AdjustBridgeUtil.fieldToBoolean(playStoreKidsComplianceEnabledField);
+            if (playStoreKidsComplianceEnabled != null) {
+                if (playStoreKidsComplianceEnabled) {
+                    adjustConfig.enablePlayStoreKidsCompliance();
                 }
             }
 
@@ -667,24 +674,6 @@ public class AdjustBridgeInstance {
         if (consentMeasurement != null) {
             Adjust.trackMeasurementConsent(consentMeasurement);
         }
-    }
-
-    @JavascriptInterface
-    public void enablePlayStoreKidsCompliance() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.enablePlayStoreKidsCompliance(application.getApplicationContext());
-    }
-
-    @JavascriptInterface
-    public void disablePlayStoreKidsCompliance() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.disablePlayStoreKidsCompliance(application.getApplicationContext());
     }
 
     @JavascriptInterface

@@ -285,26 +285,6 @@ public class Adjust {
     }
 
     /**
-     * Called to enable Google Play Store Kids app setting.
-     *
-     * @param context Application context
-     */
-    public static void enablePlayStoreKidsCompliance(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.enablePlayStoreKidsCompliance(context);
-    }
-
-    /**
-     * Called to disable Google Play Store Kids app setting.
-     *
-     * @param context Application context
-     */
-    public static void disablePlayStoreKidsCompliance(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disablePlayStoreKidsCompliance(context);
-    }
-
-    /**
      * Called to get value of Google Play Advertising Identifier.
      *
      * @param context                  Application context

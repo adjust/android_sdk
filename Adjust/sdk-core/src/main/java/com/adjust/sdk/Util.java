@@ -660,12 +660,12 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
-        return !adjustConfig.coppaComplianceEnabled && !playStoreKidsAppEnabled;
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
-        return !adjustConfig.coppaComplianceEnabled && !playStoreKidsAppEnabled;
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {

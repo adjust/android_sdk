@@ -141,18 +141,6 @@ var Adjust = {
         }
     },
 
-    enablePlayStoreKidsCompliance: function () {
-        if (AdjustBridge) {
-            AdjustBridge.enablePlayStoreKidsCompliance();
-        }
-    },
-
-    disablePlayStoreKidsCompliance: function () {
-        if (AdjustBridge) {
-            AdjustBridge.disablePlayStoreKidsCompliance();
-        }
-    },
-
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {

@@ -135,8 +135,6 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "thirdPartySharing"              : this.thirdPartySharing(command.params); break;
         case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
-        case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsCompliance(command.params); break;
-        case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsCompliance(command.params); break;
         case "attributionGetter"              : this.attributionGetter(command.params); break;
         break;
     }
@@ -318,10 +316,20 @@ AdjustCommandExecutor.prototype.config = function(params) {
     }
 
     if ('coppaCompliant' in params) {
-         var coppaCompliantS = getFirstParameterValue(params, 'coppaCompliant');
-         var coppaCompliant = coppaCompliantS == 'true';
-         adjustConfig.setCoppaCompliantEnabled(coppaCompliant);
-     }
+        var coppaCompliantS = getFirstParameterValue(params, 'coppaCompliant');
+        var coppaCompliant = coppaCompliantS == 'true';
+        if (coppaCompliant == true) {
+            adjustConfig.enableCoppaCompliance();
+        }
+    }
+
+    if ('playStoreKids' in params) {
+        var playStoreKidsS = getFirstParameterValue(params, 'playStoreKids');
+        var playStoreKids = playStoreKidsS == 'true';
+        if (playStoreKids == true) {
+            adjustConfig.enablePlayStoreKidsCompliance();
+        }
+    }
 
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;

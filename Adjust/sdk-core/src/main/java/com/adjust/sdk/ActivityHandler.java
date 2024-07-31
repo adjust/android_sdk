@@ -867,20 +867,18 @@ public class ActivityHandler
 
         readConfigFile(adjustConfig.context);
 
-        boolean playStoreKidsAppEnabled = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getPlayStoreKidsApp();
+        deviceInfo = new DeviceInfo(adjustConfig);
 
-        deviceInfo = new DeviceInfo(adjustConfig, playStoreKidsAppEnabled);
-
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
-            if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+            if (!Util.canReadPlayIds(adjustConfig)) {
                 logger.info("Cannot read Google Play Services Advertising ID with COPPA or play store kids app enabled");
             } else {
                 logger.warn("Unable to get Google Play Services Advertising ID at start time");
             }
 
             if (deviceInfo.androidId == null) {
-                if (! Util.canReadNonPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+                if (! Util.canReadNonPlayIds(adjustConfig)) {
                     logger.info("Cannot read non Play IDs with COPPA or play store kids app enabled");
                 } else {
                     logger.error("Unable to get any Device IDs. Please check if Proguard is correctly set with Adjust SDK");

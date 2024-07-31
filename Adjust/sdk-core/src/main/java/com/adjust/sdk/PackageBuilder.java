@@ -43,8 +43,6 @@ public class PackageBuilder {
     Boolean isClick;
     ActivityHandler.InternalState internalState;
 
-    boolean playStoreKidsAppEnabled;
-
     static class ActivityStateCopy {
         int eventCount = -1;
         int sessionCount = -1;
@@ -78,10 +76,6 @@ public class PackageBuilder {
         this.adjustConfig = adjustConfig;
         this.activityStateCopy = new ActivityStateCopy(activityState);
         this.globalParameters = globalParameters;
-
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.context);
-
-        this.playStoreKidsAppEnabled = sharedPreferencesManager.getPlayStoreKidsApp();
     }
 
     ActivityPackage buildSessionPackage() {
@@ -245,7 +239,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -258,7 +252,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -335,7 +329,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, event.partnerParameters, "Partner"));
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -348,7 +342,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -427,7 +421,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -440,7 +434,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -484,7 +478,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -497,7 +491,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -596,7 +590,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -609,7 +603,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -661,7 +655,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -674,7 +668,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -739,7 +733,7 @@ public class PackageBuilder {
                 adjustThirdPartySharing.partnerSharingSettings);
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -752,7 +746,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -808,7 +802,7 @@ public class PackageBuilder {
                 consentMeasurement ? "enable" : "disable");
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -821,7 +815,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -875,7 +869,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -888,7 +882,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -968,7 +962,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -981,7 +975,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1067,7 +1061,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -1079,7 +1073,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1156,7 +1150,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -1168,7 +1162,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1247,7 +1241,7 @@ public class PackageBuilder {
                 PackageBuilder.addBoolean(parameters, "background", true);
             }
         }
-        if (playStoreKidsAppEnabled) {
+        if (adjustConfig.playStoreKidsComplianceEnabled) {
             PackageBuilder.addLong(parameters, "ff_play_store_kids_app", 1);
         }
     }
@@ -1387,8 +1381,8 @@ public class PackageBuilder {
                 && !parameters.containsKey("device_ids")) {
             if (adjustConfig.coppaComplianceEnabled) {
                 logger.info("Missing Device IDs. COPPA enabled.");
-            } else if (playStoreKidsAppEnabled) {
-                logger.info("Missing Device IDs. Play store kids app enabled.");
+            } else if (adjustConfig.playStoreKidsComplianceEnabled) {
+                logger.info("Missing Device IDs. Play store kids compliance enabled.");
             } else {
                 logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");
             }

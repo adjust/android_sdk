@@ -101,7 +101,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
 
-    DeviceInfo(AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
+    DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -134,14 +134,14 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+        if (Util.canReadPlayIds(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
+    void reloadPlayIds(final AdjustConfig adjustConfig) {
         if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
-            if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+            if (!Util.canReadPlayIds(adjustConfig)) {
                 playAdId = null;
                 isTrackingEnabled = null;
                 playAdIdSource = null;
@@ -155,7 +155,7 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+        if (!Util.canReadPlayIds(adjustConfig)) {
             return;
         }
 
@@ -234,8 +234,8 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
-        if (!Util.canReadNonPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
+        if (!Util.canReadNonPlayIds(adjustConfig)) {
             return;
         }
 

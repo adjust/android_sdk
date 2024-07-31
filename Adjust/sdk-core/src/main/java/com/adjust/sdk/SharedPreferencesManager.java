@@ -50,8 +50,6 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER
             = "preinstall_system_installer_referrer";
 
-    private static final String PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED = "play_store_kids_app_enabled";
-
     private static final String PREFS_KEY_CONTROL_PARAMS = "control_params";
 
     /**
@@ -425,31 +423,6 @@ public class SharedPreferencesManager {
      */
     public synchronized long getPreinstallPayloadReadStatus() {
         return getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0);
-    }
-
-    /**
-     * Save Google Play Store Kids app state to shared preferences.
-     *
-     * @param enabled boolean indicating should GPSKA be enabled (true) or not (false)
-     */
-    public synchronized void savePlayStoreKidsApp(final boolean enabled) {
-        saveBoolean(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED, enabled);
-    }
-
-    /**
-     * Get Google Play Store Kids app from shared preferences.
-     *
-     * @return Google Play Store Kids app setting
-     */
-    public synchronized boolean getPlayStoreKidsApp() {
-        return getBoolean(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED, false);
-    }
-
-    /**
-     * Remove Google Play Store Kids app settings from shared preferences.
-     */
-    public synchronized void removePlayStoreKidsApp() {
-        remove(PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED);
     }
 
     /**

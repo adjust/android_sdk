@@ -511,24 +511,6 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to enable Google Play Store Kids app setting.
-     *
-     * @param context Application context
-     */
-    public void enablePlayStoreKidsCompliance(Context context) {
-        savePlayStoreKidsApp(true, context);
-    }
-
-    /**
-     * Called to disable Google Play Store Kids app setting.
-     *
-     * @param context Application context
-     */
-    public void disablePlayStoreKidsCompliance(Context context) {
-        savePlayStoreKidsApp(false, context);
-    }
-
-    /**
      * Called to get value of unique Adjust device identifier.
      *
      * @param onAdidReadListener Callback to get triggered once identifier is obtained.
@@ -799,16 +781,6 @@ public class AdjustInstance {
      */
     private void setSendingReferrersAsNotSent(final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
-    }
-
-    /**
-     * Save Google play store kids app settings to shared preferences.
-     *
-     * @param enabled boolean indicating should GPSKA be enabled (true) or not (false)
-     * @param context Application context
-     */
-    private void savePlayStoreKidsApp(final boolean enabled, final Context context) {
-        SharedPreferencesManager.getDefaultInstance(context).savePlayStoreKidsApp(enabled);
     }
 
     /**
