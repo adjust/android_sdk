@@ -33,7 +33,7 @@ public class AdjustConfig {
     boolean startOffline;
     String externalDeviceId;
     boolean isPreinstallTrackingEnabled;
-    boolean isCostDataInAttributionEnabled;
+    Boolean isCostDataInAttributionEnabled;
     List<String> urlStrategyDomains;
     boolean useSubdomains;
     boolean isDataResidency;
@@ -81,7 +81,6 @@ public class AdjustConfig {
         this.isSendingInBackgroundEnabled = false;
         this.isPreinstallTrackingEnabled = false;
         this.isDeviceIdsReadingOnceEnabled = false;
-        this.isCostDataInAttributionEnabled = false;
         this.coppaComplianceEnabled = false;
         this.playStoreKidsComplianceEnabled = false;
     }
