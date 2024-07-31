@@ -504,7 +504,7 @@ class DeviceInfo {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
@@ -513,7 +513,7 @@ class DeviceInfo {
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
@@ -521,7 +521,7 @@ class DeviceInfo {
         }
         private static String getFireAdvertisingId(final AdjustConfig adjustConfig)
         {
-            if (adjustConfig.coppaComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
@@ -555,7 +555,7 @@ class DeviceInfo {
         }
 
         private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
