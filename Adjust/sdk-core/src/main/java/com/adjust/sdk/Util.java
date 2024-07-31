@@ -9,7 +9,6 @@
 
 package com.adjust.sdk;
 
-import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ENCODING;
 
 import android.content.Context;
@@ -661,12 +660,12 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
-        return !coppaEnabled && !playStoreKidsAppEnabled;
+    public static boolean canReadPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
+        return !adjustConfig.coppaComplianceEnabled && !playStoreKidsAppEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
-        return !coppaEnabled && !playStoreKidsAppEnabled;
+    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
+        return !adjustConfig.coppaComplianceEnabled && !playStoreKidsAppEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {

@@ -101,7 +101,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
 
-    DeviceInfo(AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
+    DeviceInfo(AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
         Context context = adjustConfig.context;
         Resources resources = context.getResources();
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
@@ -134,14 +134,14 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
+        if (Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
+    void reloadPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
         if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
-            if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
+            if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
                 playAdId = null;
                 isTrackingEnabled = null;
                 playAdIdSource = null;
@@ -155,7 +155,7 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        if (!Util.canReadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
+        if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
             return;
         }
 
@@ -234,8 +234,8 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean coppaEnabled, boolean playStoreKidsAppEnabled) {
-        if (!Util.canReadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled)) {
+    void reloadNonPlayIds(final AdjustConfig adjustConfig, boolean playStoreKidsAppEnabled) {
+        if (!Util.canReadNonPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
             return;
         }
 
@@ -248,16 +248,15 @@ class DeviceInfo {
     }
 
     void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
-                                     final boolean coppaEnabled,
                                      final ILogger logger) {
         if (adjustConfig.isDeviceIdsReadingOnceEnabled && otherDeviceIdsParamsReadOnce) {
             return;
         }
 
-        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, coppaEnabled, logger);
-        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, coppaEnabled, logger);
-        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig, coppaEnabled);
-        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig, coppaEnabled);
+        imeiParameters = UtilDeviceIds.getImeiParameters(adjustConfig, logger);
+        oaidParameters = UtilDeviceIds.getOaidParameters(adjustConfig, logger);
+        fireAdId = UtilDeviceIds.getFireAdvertisingId(adjustConfig);
+        fireTrackingEnabled = UtilDeviceIds.getFireTrackingEnabled(adjustConfig);
         connectivityType = UtilDeviceIds.getConnectivityType(adjustConfig.context, logger);
         mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
         mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
@@ -503,29 +502,26 @@ class DeviceInfo {
 
     private static class UtilDeviceIds {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
-                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            if (isCoppaEnabled) {
+            if (adjustConfig.coppaComplianceEnabled) {
                 return null;
             }
 
             return Reflection.getImeiParameters(adjustConfig.context, logger);
         }
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
-                                                             final boolean isCoppaEnabled,
                                                              final ILogger logger)
         {
-            if (isCoppaEnabled) {
+            if (adjustConfig.coppaComplianceEnabled) {
                 return null;
             }
 
             return Reflection.getOaidParameters(adjustConfig.context, logger);
         }
-        private static String getFireAdvertisingId(final AdjustConfig adjustConfig,
-                                                   final boolean isCoppaEnabled)
+        private static String getFireAdvertisingId(final AdjustConfig adjustConfig)
         {
-            if (isCoppaEnabled) {
+            if (adjustConfig.coppaComplianceEnabled) {
                 return null;
             }
 
@@ -558,8 +554,8 @@ class DeviceInfo {
             }
         }
 
-        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig, final boolean isCoppaEnabled) {
-            if (isCoppaEnabled) {
+        private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
+            if (adjustConfig.coppaComplianceEnabled) {
                 return null;
             }
 

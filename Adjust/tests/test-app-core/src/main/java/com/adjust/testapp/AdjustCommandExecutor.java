@@ -92,8 +92,6 @@ public class AdjustCommandExecutor {
                 case "verifyPurchase": verifyPurchase(); break;
                 case "verifyTrack": verifyTrack(); break;
                 case "processDeeplink" : processDeeplink(); break;
-                case "enableCoppaCompliance" : enableCoppaCompliance(); break;
-                case "disableCoppaCompliance" : disableCoppaCompliance(); break;
                 case "enablePlayStoreKidsApp" : enablePlayStoreKidsCompliance(); break;
                 case "disablePlayStoreKidsApp" : disablePlayStoreKidsCompliance(); break;
                 case "attributionGetter" : attributionGetter(); break;
@@ -311,6 +309,16 @@ public class AdjustCommandExecutor {
         if (command.containsParameter("externalDeviceId")) {
             String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
             adjustConfig.setExternalDeviceId(externalDeviceId);
+        }
+
+        if (command.containsParameter("coppaCompliant")) {
+            String coppaCompliantS = command.getFirstParameterValue("coppaCompliant");
+            boolean coppaCompliant = "true".equals(coppaCompliantS);
+            if (coppaCompliant) {
+                adjustConfig.enableCoppaCompliance();
+            } else {
+                adjustConfig.disableCoppaCompliance();
+            }
         }
 
         if(command.containsParameter("deferredDeeplinkCallback")) {
@@ -838,14 +846,6 @@ public class AdjustCommandExecutor {
                 MainActivity.testLibrary.sendInfoToServer(localBasePath);
             }
         });
-    }
-
-    private void enableCoppaCompliance() {
-        Adjust.enableCoppaCompliance(context.getApplicationContext());
-    }
-
-    private void disableCoppaCompliance() {
-        Adjust.disableCoppaCompliance(context.getApplicationContext());
     }
 
     private void enablePlayStoreKidsCompliance() {

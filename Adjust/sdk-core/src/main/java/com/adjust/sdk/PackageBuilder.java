@@ -43,7 +43,6 @@ public class PackageBuilder {
     Boolean isClick;
     ActivityHandler.InternalState internalState;
 
-    boolean coppaEnabled;
     boolean playStoreKidsAppEnabled;
 
     static class ActivityStateCopy {
@@ -82,11 +81,6 @@ public class PackageBuilder {
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(adjustConfig.context);
 
-        if (activityState != null) {
-            this.coppaEnabled = activityState.isCoppaEnabled();
-        } else {
-            this.coppaEnabled = sharedPreferencesManager.getCoppaCompliance();
-        }
         this.playStoreKidsAppEnabled = sharedPreferencesManager.getPlayStoreKidsApp();
     }
 
@@ -234,7 +228,7 @@ public class PackageBuilder {
     private Map<String, String> getSessionParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -251,7 +245,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -264,7 +258,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -324,7 +318,7 @@ public class PackageBuilder {
     public Map<String, String> getEventParameters(AdjustEvent event) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -341,7 +335,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, event.partnerParameters, "Partner"));
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -354,7 +348,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -420,7 +414,7 @@ public class PackageBuilder {
     private Map<String, String> getInfoParameters(String source) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -433,7 +427,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -446,7 +440,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -477,7 +471,7 @@ public class PackageBuilder {
     private Map<String, String> getClickParameters(String source) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -490,7 +484,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -503,7 +497,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -589,7 +583,7 @@ public class PackageBuilder {
     private Map<String, String> getAttributionParameters(String initiatedBy) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -602,7 +596,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -615,7 +609,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -654,7 +648,7 @@ public class PackageBuilder {
     private Map<String, String> getGdprParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -667,7 +661,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -680,7 +674,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -720,7 +714,7 @@ public class PackageBuilder {
     {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -745,7 +739,7 @@ public class PackageBuilder {
                 adjustThirdPartySharing.partnerSharingSettings);
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -758,7 +752,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -797,7 +791,7 @@ public class PackageBuilder {
     {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -814,7 +808,7 @@ public class PackageBuilder {
                 consentMeasurement ? "enable" : "disable");
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -827,7 +821,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -864,7 +858,7 @@ public class PackageBuilder {
     private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -881,7 +875,7 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_params", Util.mergeParameters(this.globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -894,7 +888,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -961,7 +955,7 @@ public class PackageBuilder {
     private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -974,7 +968,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -987,7 +981,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1060,7 +1054,7 @@ public class PackageBuilder {
     private Map<String, String> getVerificationParameters(AdjustPlayStorePurchase purchase) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -1073,7 +1067,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -1085,7 +1079,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1149,7 +1143,7 @@ public class PackageBuilder {
     private Map<String, String> getVerificationParameters(AdjustEvent event) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, coppaEnabled, logger);
+        deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
         if (deviceInfo.imeiParameters != null) {
@@ -1162,7 +1156,7 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
         PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
         PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
@@ -1174,7 +1168,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig, coppaEnabled, playStoreKidsAppEnabled);
+            deviceInfo.reloadNonPlayIds(adjustConfig, playStoreKidsAppEnabled);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1241,7 +1235,7 @@ public class PackageBuilder {
     }
 
     private void injectFeatureFlagsWithParameters(Map<String, String> parameters) {
-        if (coppaEnabled) {
+        if (adjustConfig.coppaComplianceEnabled) {
             PackageBuilder.addLong(parameters, "ff_coppa", 1);
         }
 
@@ -1391,7 +1385,7 @@ public class PackageBuilder {
                 && !parameters.containsKey("imeis")
                 && !parameters.containsKey("meids")
                 && !parameters.containsKey("device_ids")) {
-            if (coppaEnabled) {
+            if (adjustConfig.coppaComplianceEnabled) {
                 logger.info("Missing Device IDs. COPPA enabled.");
             } else if (playStoreKidsAppEnabled) {
                 logger.info("Missing Device IDs. Play store kids app enabled.");

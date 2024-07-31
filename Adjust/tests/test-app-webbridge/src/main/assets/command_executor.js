@@ -135,8 +135,6 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "thirdPartySharing"              : this.thirdPartySharing(command.params); break;
         case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
-        case "enableCoppaCompliance"          : this.enableCoppaCompliance(command.params); break;
-        case "disableCoppaCompliance"         : this.disableCoppaCompliance(command.params); break;
         case "enablePlayStoreKidsApp"         : this.enablePlayStoreKidsCompliance(command.params); break;
         case "disablePlayStoreKidsApp"        : this.disablePlayStoreKidsCompliance(command.params); break;
         case "attributionGetter"              : this.attributionGetter(command.params); break;
@@ -318,6 +316,12 @@ AdjustCommandExecutor.prototype.config = function(params) {
         var eventDeduplicationIdsMaxSize = parseInt(eventDeduplicationIdsMaxSizeS);
         adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
     }
+
+    if ('coppaCompliant' in params) {
+         var coppaCompliantS = getFirstParameterValue(params, 'coppaCompliant');
+         var coppaCompliant = coppaCompliantS == 'true';
+         adjustConfig.setCoppaCompliantEnabled(coppaCompliant);
+     }
 
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
@@ -625,14 +629,6 @@ AdjustCommandExecutor.prototype.setPushToken = function(params) {
 AdjustCommandExecutor.prototype.sendReferrer = function(params) {
     var referrer = getFirstParameterValue(params, 'referrer');
     Adjust.setReferrer(referrer);
-};
-
-AdjustCommandExecutor.prototype.enableCoppaCompliance = function(params) {
-        Adjust.enableCoppaCompliance();
-};
-
-AdjustCommandExecutor.prototype.disableCoppaCompliance = function(params) {
-        Adjust.disableCoppaCompliance();
 };
 
 AdjustCommandExecutor.prototype.enablePlayStoreKidsCompliance = function(params) {

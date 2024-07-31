@@ -285,26 +285,6 @@ public class Adjust {
     }
 
     /**
-     * Called to enable COPPA compliance.
-     *
-     * @param context Application context
-     */
-    public static void enableCoppaCompliance(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.enableCoppaCompliance(context);
-    }
-
-    /**
-     * Called to disable COPPA compliance.
-     *
-     * @param context Application context
-     */
-    public static void disableCoppaCompliance(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disableCoppaCompliance(context);
-    }
-
-    /**
      * Called to enable Google Play Store Kids app setting.
      *
      * @param context Application context

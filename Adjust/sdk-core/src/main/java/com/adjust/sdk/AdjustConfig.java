@@ -38,6 +38,7 @@ public class AdjustConfig {
     boolean useSubdomains;
     boolean isDataResidency;
     String preinstallFilePath;
+    boolean coppaComplianceEnabled;
     String fbAppId;
     boolean isDeviceIdsReadingOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
@@ -108,6 +109,14 @@ public class AdjustConfig {
 
     public void setPreinstallFilePath(String preinstallFilePath) {
         this.preinstallFilePath = preinstallFilePath;
+    }
+
+    public void enableCoppaCompliance() {
+        this.coppaComplianceEnabled = true;
+    }
+
+    public void disableCoppaCompliance() {
+        this.coppaComplianceEnabled = false;
     }
 
     public void setFbAppId(String fbAppId) {
@@ -218,6 +227,10 @@ public class AdjustConfig {
 
     public String getPreinstallFilePath() {
         return preinstallFilePath;
+    }
+
+    public boolean isCoppaComplianceEnabled() {
+        return coppaComplianceEnabled;
     }
 
     public String getFbAppId() {

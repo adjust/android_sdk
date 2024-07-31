@@ -46,6 +46,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.isDataResidency = null;
     this.isPreinstallTrackingEnabled = null;
     this.preinstallFilePath = null;
+    this.coppaComplianceEnabled = null;
     this.fbAppId = null;
     this.shouldReadDeviceIdsOnce = null;
     this.eventDeduplicationIdsMaxSize = null;
@@ -215,6 +216,14 @@ AdjustConfig.prototype.enablePreinstallTracking = function() {
 
 AdjustConfig.prototype.setPreinstallFilePath = function(preinstallFilePath) {
     this.preinstallFilePath = preinstallFilePath;
+};
+
+AdjustConfig.prototype.enableCoppaCompliance = function() {
+     this.coppaComplianceEnabled = true;
+};
+
+AdjustConfig.prototype.disableCoppaCompliance = function() {
+     this.coppaComplianceEnabled = false;
 };
 
 AdjustConfig.prototype.setFbAppId = function(fbAppId) {

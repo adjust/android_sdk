@@ -825,15 +825,6 @@ public class ActivityHandler
     }
 
     @Override
-    public void setCoppaCompliance(final boolean enabled) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                setCoppaComplianceI(enabled);
-            }
-        });
-    }
-
     public InternalState getInternalState() {
         return internalState;
     }
@@ -876,21 +867,20 @@ public class ActivityHandler
 
         readConfigFile(adjustConfig.context);
 
-        boolean coppaEnabledInState = activityState != null && activityState.isCoppaEnabled();
         boolean playStoreKidsAppEnabled = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getPlayStoreKidsApp();
 
-        deviceInfo = new DeviceInfo(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
+        deviceInfo = new DeviceInfo(adjustConfig, playStoreKidsAppEnabled);
 
-        deviceInfo.reloadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled);
+        deviceInfo.reloadPlayIds(adjustConfig, playStoreKidsAppEnabled);
         if (deviceInfo.playAdId == null) {
-            if (!Util.canReadPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled)) {
+            if (!Util.canReadPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
                 logger.info("Cannot read Google Play Services Advertising ID with COPPA or play store kids app enabled");
             } else {
                 logger.warn("Unable to get Google Play Services Advertising ID at start time");
             }
 
             if (deviceInfo.androidId == null) {
-                if (! Util.canReadNonPlayIds(adjustConfig, coppaEnabledInState, playStoreKidsAppEnabled)) {
+                if (! Util.canReadNonPlayIds(adjustConfig, playStoreKidsAppEnabled)) {
                     logger.info("Cannot read non Play IDs with COPPA or play store kids app enabled");
                 } else {
                     logger.error("Unable to get any Device IDs. Please check if Proguard is correctly set with Adjust SDK");
@@ -1282,20 +1272,6 @@ public class ActivityHandler
         }
     }
 
-    private void processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI() {
-        for (final Object adjustThirdPartySharingOrCoppa :
-                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray) {
-            if (adjustThirdPartySharingOrCoppa instanceof AdjustThirdPartySharing) {
-                trackThirdPartySharingI((AdjustThirdPartySharing) adjustThirdPartySharingOrCoppa);
-            } else if (adjustThirdPartySharingOrCoppa instanceof Boolean) {
-                setCoppaComplianceI(((Boolean)adjustThirdPartySharingOrCoppa).booleanValue());
-            } else {
-                processCoppaComplianceI();
-            }
-        }
-        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray.clear();
-    }
-
     private void startI() {
         // check if it's the first sdk start
         if (internalState.hasFirstSdkStartNotOcurred()) {
@@ -1304,7 +1280,11 @@ public class ActivityHandler
             return;
         } else {
             // check if third party sharing request came, then send it first
-            processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
+            for (AdjustThirdPartySharing adjustThirdPartySharing :
+                    adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+            {
+                trackThirdPartySharingI(adjustThirdPartySharing);
+            }
 
             if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                 trackMeasurementConsentI(
@@ -1355,12 +1335,14 @@ public class ActivityHandler
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                // methods below need to be executed in this order
-                // first call is processing pre-init actions queue
-                // second call is making sure to process cached and not processed pre-init action
-                // from the previous run (if any)
-                processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
                 processCoppaComplianceI();
+
+                // check if third party sharing request came, then send it first
+                for (AdjustThirdPartySharing adjustThirdPartySharing :
+                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+                {
+                    trackThirdPartySharingI(adjustThirdPartySharing);
+                }
 
                 if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
@@ -1918,12 +1900,13 @@ public class ActivityHandler
             if (sharedPreferencesManager.getGdprForgetMe()) {
                 gdprForgetMeI();
             } else {
-                // preLaunchAdjustThirdPartySharing should be done *before* coppaCompliance
-                //  since it will check for coppaCompliance inside it
-                processPreLaunchAdjustThirdPartySharingAndCoppaComplianceI();
-
                 processCoppaComplianceI();
 
+                for (AdjustThirdPartySharing adjustThirdPartySharing :
+                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
+                {
+                    trackThirdPartySharingI(adjustThirdPartySharing);
+                }
                 if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
                     trackMeasurementConsentI(
                             adjustConfig.preLaunchActions.
@@ -2448,7 +2431,10 @@ public class ActivityHandler
         }
         if (!isEnabledI()) { return; }
         if (activityState.isGdprForgotten) { return; }
-
+        if (adjustConfig.coppaComplianceEnabled) {
+            logger.warn("Calling third party sharing API not allowed when COPPA enabled");
+            return;
+        }
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, globalParameters, now);
@@ -2653,30 +2639,6 @@ public class ActivityHandler
         }
         verificationPackage.event = event;
         purchaseVerificationHandler.sendPurchaseVerificationPackage(verificationPackage);
-    }
-
-    private void setCoppaComplianceI(final boolean coppaEnabled) {
-        if (activityState == null) { return; }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
-
-        activityState.setCoppa(coppaEnabled);
-
-        // third party sharing is disabled when coppa is enabled and vice-versa
-        final boolean tpsEnabled = !coppaEnabled;
-        final AdjustThirdPartySharing adjustThirdPartySharing = new AdjustThirdPartySharing(tpsEnabled);
-
-        final long now = System.currentTimeMillis();
-        final PackageBuilder packageBuilder = new PackageBuilder(
-          adjustConfig, deviceInfo, activityState, globalParameters, now);
-
-        final ActivityPackage activityPackage =
-          packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
-        packageHandler.addPackage(activityPackage);
-
-        writeActivityStateI();
-
-        packageHandler.sendFirstPackage();
     }
 
     private void gotOptOutResponseI() {
@@ -2981,20 +2943,57 @@ public class ActivityHandler
     }
 
     private void processCoppaComplianceI() {
+        if (!adjustConfig.coppaComplianceEnabled) {
+            resetThirdPartySharingCoppaActivityStateI();
+            return;
+        }
+
+        disableThirdPartySharingForCoppaEnabledI();
+    }
+
+    private void disableThirdPartySharingForCoppaEnabledI() {
+        if (!shouldDisableThirdPartySharingWhenCoppaEnabled()) {
+            return;
+        }
+
+        activityState.isThirdPartySharingDisabledForCoppa = true;
+        writeActivityStateI();
+        AdjustThirdPartySharing adjustThirdPartySharing =
+                new AdjustThirdPartySharing(false);
+
+        long now = System.currentTimeMillis();
+        PackageBuilder packageBuilder = new PackageBuilder(
+                adjustConfig, deviceInfo, activityState, globalParameters, now);
+
+        ActivityPackage activityPackage =
+                packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);
+        packageHandler.addPackage(activityPackage);
+
+        packageHandler.sendFirstPackage();
+    }
+
+    private void resetThirdPartySharingCoppaActivityStateI() {
+
         if (activityState == null) { return; }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
-
-        boolean coppaEnabled =
-                SharedPreferencesManager.getDefaultInstance(getContext()).getCoppaCompliance();
-
-        if (activityState.isCoppaEnabled() && coppaEnabled) {
-            return;
+        if (activityState.isThirdPartySharingDisabledForCoppa) {
+            activityState.isThirdPartySharingDisabledForCoppa = false;
+            writeActivityStateI();
         }
-        if (!activityState.isCoppaEnabled() && !coppaEnabled) {
-            return;
+    }
+
+    private boolean shouldDisableThirdPartySharingWhenCoppaEnabled() {
+        if (activityState == null) {
+            return false;
         }
 
-        setCoppaComplianceI(coppaEnabled);
+        if (!isEnabledI()) {
+            return false;
+        }
+
+        if (activityState.isGdprForgotten) {
+            return false;
+        }
+
+        return !activityState.isThirdPartySharingDisabledForCoppa;
     }
 }

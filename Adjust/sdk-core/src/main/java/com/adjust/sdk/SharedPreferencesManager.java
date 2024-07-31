@@ -50,8 +50,6 @@ public class SharedPreferencesManager {
     private static final String PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER
             = "preinstall_system_installer_referrer";
 
-    private static final String PREFS_KEY_COPPA_COMPLIANCE_ENABLED = "coppa_compliant_enabled";
-
     private static final String PREFS_KEY_PLAY_STORE_KIDS_APP_ENABLED = "play_store_kids_app_enabled";
 
     private static final String PREFS_KEY_CONTROL_PARAMS = "control_params";
@@ -427,31 +425,6 @@ public class SharedPreferencesManager {
      */
     public synchronized long getPreinstallPayloadReadStatus() {
         return getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0);
-    }
-
-    /**
-     * Save coppa compliance state to shared preferences.
-     *
-     * @param enabled boolean indicating should COPPA be enabled (true) or not (false)
-     */
-    public synchronized void saveCoppaCompliance(final boolean enabled) {
-        saveBoolean(PREFS_KEY_COPPA_COMPLIANCE_ENABLED, enabled);
-    }
-
-    /**
-     * Get coppa compliance from shared preferences.
-     *
-     * @return Coppa compliant state
-     */
-    public synchronized boolean getCoppaCompliance() {
-        return getBoolean(PREFS_KEY_COPPA_COMPLIANCE_ENABLED, false);
-    }
-
-    /**
-     * Remove coppa compliance from shared preferences.
-     */
-    public synchronized void removeCoppaCompliance() {
-        remove(PREFS_KEY_COPPA_COMPLIANCE_ENABLED);
     }
 
     /**

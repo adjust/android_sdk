@@ -170,6 +170,7 @@ public class AdjustBridgeInstance {
             Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
             Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
+            Object coppaComplianceEnabledField = jsonAdjustConfig.get("coppaComplianceEnabled");
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
@@ -363,6 +364,16 @@ public class AdjustBridgeInstance {
             String preinstallFilePath = AdjustBridgeUtil.fieldToString(preinstallFilePathField);
             if (preinstallFilePath != null) {
                 adjustConfig.setPreinstallFilePath(preinstallFilePath);
+            }
+
+            // Coppa compliance
+            Boolean coppaCompliantEnabled = AdjustBridgeUtil.fieldToBoolean(coppaComplianceEnabledField);
+            if (coppaCompliantEnabled != null) {
+                if (coppaCompliantEnabled) {
+                    adjustConfig.enableCoppaCompliance();
+                } else {
+                    adjustConfig.disableCoppaCompliance();
+                }
             }
 
             // FB App ID
@@ -656,24 +667,6 @@ public class AdjustBridgeInstance {
         if (consentMeasurement != null) {
             Adjust.trackMeasurementConsent(consentMeasurement);
         }
-    }
-
-    @JavascriptInterface
-    public void enableCoppaCompliance() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.enableCoppaCompliance(application.getApplicationContext());
-    }
-
-    @JavascriptInterface
-    public void disableCoppaCompliance() {
-        if (!isInitialized()) {
-            return;
-        }
-
-        Adjust.disableCoppaCompliance(application.getApplicationContext());
     }
 
     @JavascriptInterface

@@ -141,18 +141,6 @@ var Adjust = {
         }
     },
 
-    enableCoppaCompliance: function () {
-        if (AdjustBridge) {
-            AdjustBridge.enableCoppaCompliance();
-        }
-    },
-
-    disableCoppaCompliance: function () {
-        if (AdjustBridge) {
-            AdjustBridge.disableCoppaCompliance();
-        }
-    },
-
     enablePlayStoreKidsCompliance: function () {
         if (AdjustBridge) {
             AdjustBridge.enablePlayStoreKidsCompliance();
