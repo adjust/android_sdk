@@ -639,14 +639,6 @@ AdjustCommandExecutor.prototype.sendReferrer = function(params) {
     Adjust.setReferrer(referrer);
 };
 
-AdjustCommandExecutor.prototype.enablePlayStoreKidsCompliance = function(params) {
-        Adjust.enablePlayStoreKidsCompliance();
-};
-
-AdjustCommandExecutor.prototype.disablePlayStoreKidsCompliance = function(params) {
-        Adjust.disablePlayStoreKidsCompliance();
-};
-
 AdjustCommandExecutor.prototype.attributionGetter = function(params) {
         var basePath = this.basePath;
         Adjust.getAttribution(function(attribution) {
