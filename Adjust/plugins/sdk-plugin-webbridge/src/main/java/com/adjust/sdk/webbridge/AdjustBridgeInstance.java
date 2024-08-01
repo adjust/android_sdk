@@ -136,7 +136,7 @@ public class AdjustBridgeInstance {
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
             Object urlStrategyDomainsField = jsonAdjustConfig.get("urlStrategyDomains");
-            Object useSubDomainField = jsonAdjustConfig.get("useSubDomain");
+            Object useSubdomainsField = jsonAdjustConfig.get("useSubdomains");
             Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
             Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
             Object preinstallFilePathField = jsonAdjustConfig.get("preinstallFilePath");
@@ -317,10 +317,10 @@ public class AdjustBridgeInstance {
             String[] urlStrategyDomainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyDomainsField);
             List<String> urlStrategyDomains = Arrays.asList(urlStrategyDomainsArray);
 
-            Boolean useSubDomain = AdjustBridgeUtil.fieldToBoolean(useSubDomainField);
+            Boolean useSubdomains = AdjustBridgeUtil.fieldToBoolean(useSubdomainsField);
             Boolean isDataResidency = AdjustBridgeUtil.fieldToBoolean(isDataResidencyField);
-            if (urlStrategyDomains != null && !urlStrategyDomains.isEmpty() && useSubDomain != null && isDataResidency != null) {
-                adjustConfig.setUrlStrategy(urlStrategyDomains,useSubDomain,isDataResidency);
+            if (urlStrategyDomains != null && !urlStrategyDomains.isEmpty() && useSubdomains != null && isDataResidency != null) {
+                adjustConfig.setUrlStrategy(urlStrategyDomains,useSubdomains,isDataResidency);
             }
 
             // Preinstall tracking
