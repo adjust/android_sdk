@@ -314,13 +314,13 @@ public class AdjustBridgeInstance {
             }
 
             // Set url strategy
-            String[] domainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyDomainsField);
-            List<String> domains = Arrays.asList(domainsArray);
+            String[] urlStrategyDomainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyDomainsField);
+            List<String> urlStrategyDomains = Arrays.asList(urlStrategyDomainsArray);
 
             Boolean useSubDomain = AdjustBridgeUtil.fieldToBoolean(useSubDomainField);
             Boolean isDataResidency = AdjustBridgeUtil.fieldToBoolean(isDataResidencyField);
-            if (domains != null && !domains.isEmpty() && useSubDomain != null && isDataResidency != null) {
-                adjustConfig.setUrlStrategy(domains,useSubDomain,isDataResidency);
+            if (urlStrategyDomains != null && !urlStrategyDomains.isEmpty() && useSubDomain != null && isDataResidency != null) {
+                adjustConfig.setUrlStrategy(urlStrategyDomains,useSubDomain,isDataResidency);
             }
 
             // Preinstall tracking
