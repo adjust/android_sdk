@@ -41,7 +41,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.deferredDeeplinkCallbackFunction = null;
     this.fbPixelDefaultEventToken = null;
     this.fbPixelMapping = [];
-    this.urlStrategy = [];
+    this.domains = [];
     this.useSubDomain = null;
     this.isDataResidency = null;
     this.isPreinstallTrackingEnabled = null;
@@ -205,8 +205,8 @@ AdjustConfig.prototype.addFbPixelMapping = function(fbEventNameKey, adjEventToke
     this.fbPixelMapping.push(adjEventTokenValue);
 };
 
-AdjustConfig.prototype.setUrlStrategy = function(urlStrategy, useSubDomain , isDataResidency) {
-    this.urlStrategy = urlStrategy;
+AdjustConfig.prototype.setUrlStrategy = function(domains, useSubDomain , isDataResidency) {
+    this.domains = domains;
     this.useSubDomain = useSubDomain;
     this.isDataResidency = isDataResidency;
 };

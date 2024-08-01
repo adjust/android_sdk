@@ -69,36 +69,6 @@ public class AdjustBridgeInstance {
         setWebView(webView);
     }
 
-    // Automatically subscribe to Android lifecycle callbacks to properly handle session tracking.
-    // This requires user to have minimal supported API level set to 14.
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private static final class AdjustLifecycleCallbacks implements Application.ActivityLifecycleCallbacks {
-        @Override
-        public void onActivityResumed(Activity activity) {
-            Adjust.onResume();
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-            Adjust.onPause();
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {}
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {}
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
-
-        @Override
-        public void onActivityStarted(Activity activity) {}
-    }
-
     private boolean isInitialized() {
         if (webView == null) {
             AdjustBridgeUtil.getLogger().error("Webview missing. Call AdjustBridge.setWebView before");
@@ -165,7 +135,7 @@ public class AdjustBridgeInstance {
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
-            Object urlStrategyField = jsonAdjustConfig.get("urlStrategy");
+            Object domainsField = jsonAdjustConfig.get("domains");
             Object useSubDomainField = jsonAdjustConfig.get("useSubDomain");
             Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
             Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
@@ -344,13 +314,13 @@ public class AdjustBridgeInstance {
             }
 
             // Set url strategy
-            String[] urlStrategyArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyField);
-            List<String> urlStrategy = Arrays.asList(urlStrategyArray);
+            String[] domainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) domainsField);
+            List<String> domains = Arrays.asList(domainsArray);
 
             Boolean useSubDomain = AdjustBridgeUtil.fieldToBoolean(useSubDomainField);
             Boolean isDataResidency = AdjustBridgeUtil.fieldToBoolean(isDataResidencyField);
-            if (urlStrategy != null && !urlStrategy.isEmpty() && useSubDomain != null && isDataResidency != null) {
-                adjustConfig.setUrlStrategy(urlStrategy,useSubDomain,isDataResidency);
+            if (domains != null && !domains.isEmpty() && useSubDomain != null && isDataResidency != null) {
+                adjustConfig.setUrlStrategy(domains,useSubDomain,isDataResidency);
             }
 
             // Preinstall tracking
@@ -400,15 +370,10 @@ public class AdjustBridgeInstance {
                 adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
             }
 
-            // Manually call onResume() because web view initialisation will happen a bit delayed.
-            // With this delay, it will miss lifecycle callback onResume() initial firing.
             Adjust.initSdk(adjustConfig);
-            Adjust.onResume();
 
             isInitialized = true;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-                application.registerActivityLifecycleCallbacks(new AdjustLifecycleCallbacks());
-            }
+
         } catch (Exception e) {
             AdjustFactory.getLogger().error("AdjustBridgeInstance onCreate: %s", e.getMessage());
         }
