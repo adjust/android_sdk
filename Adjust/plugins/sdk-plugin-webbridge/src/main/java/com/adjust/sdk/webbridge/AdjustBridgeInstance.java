@@ -135,7 +135,7 @@ public class AdjustBridgeInstance {
             Object deferredDeeplinkCallbackNameField = jsonAdjustConfig.get("deferredDeeplinkCallbackName");
             Object fbPixelDefaultEventTokenField = jsonAdjustConfig.get("fbPixelDefaultEventToken");
             Object fbPixelMappingField = jsonAdjustConfig.get("fbPixelMapping");
-            Object domainsField = jsonAdjustConfig.get("domains");
+            Object urlStrategyDomainsField = jsonAdjustConfig.get("urlStrategyDomains");
             Object useSubDomainField = jsonAdjustConfig.get("useSubDomain");
             Object isDataResidencyField = jsonAdjustConfig.get("isDataResidency");
             Object isPreinstallTrackingEnabledField = jsonAdjustConfig.get("isPreinstallTrackingEnabled");
@@ -314,7 +314,7 @@ public class AdjustBridgeInstance {
             }
 
             // Set url strategy
-            String[] domainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) domainsField);
+            String[] domainsArray = AdjustBridgeUtil.jsonArrayToArray((JSONArray) urlStrategyDomainsField);
             List<String> domains = Arrays.asList(domainsArray);
 
             Boolean useSubDomain = AdjustBridgeUtil.fieldToBoolean(useSubDomainField);
