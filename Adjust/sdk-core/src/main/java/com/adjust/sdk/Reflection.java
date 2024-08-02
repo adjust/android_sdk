@@ -60,6 +60,42 @@ public class Reflection {
         }
     }
 
+    public static ReferrerDetails getMetaReferrer(Context context, String fbAppId, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.meta.Util",
+                    "getMetaInstallReferrerDetails",
+                    new Class[]{Context.class, String.class, ILogger.class},
+                    context, fbAppId, logger);
+        } catch (Exception e) {
+        }
+        return referrerDetails;
+    }
+
+    public static ReferrerDetails getHuaweiAdsReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.huawei.Util",
+                    "getHuaweiAdsInstallReferrerDetails",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+        }
+        return referrerDetails;
+    }
+
+    public static ReferrerDetails getHuaweiAppGalleryReferrer(Context context, ILogger logger) {
+        ReferrerDetails referrerDetails = null;
+        try {
+            referrerDetails = (ReferrerDetails) invokeStaticMethod("com.adjust.sdk.huawei.Util",
+                    "getHuaweiAppGalleryInstallReferrerDetails",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+        }
+        return referrerDetails;
+    }
+
     public static ReferrerDetails getSamsungReferrer(Context context, ILogger logger) {
         ReferrerDetails referrerDetails = null;
         try {
@@ -68,7 +104,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getSamsungInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -81,7 +116,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getXiaomiInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -94,7 +128,6 @@ public class Reflection {
                                                                    new Class[]{Context.class, ILogger.class},
                                                                    context, logger);
         } catch (Exception e) {
-            logger.info("invoke getVivoInstallReferrerDetails : " + e.getMessage());
         }
         return referrerDetails;
     }
@@ -127,11 +160,10 @@ public class Reflection {
         String googleAdId = null;
         try {
             googleAdId = (String) invokeStaticMethod("com.adjust.sdk.samsung.clouddev.Util",
-                    "getGoogleAdId",
+                    "getGoogleAdIdInCloudEnvironment",
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke getGoogleAdId : " + e.getMessage());
         }
         return googleAdId;
     }
@@ -144,7 +176,6 @@ public class Reflection {
                     new Class[]{Context.class, ILogger.class},
                     context, logger);
         } catch (Exception e) {
-            logger.info("invoke isAppRunningInCloudEnvironment : " + e.getMessage());
         }
         return isCloudEnvironment;
     }

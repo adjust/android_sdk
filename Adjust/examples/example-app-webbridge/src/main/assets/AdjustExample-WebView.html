@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+    <head>
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+	    <style type='text/css'>
+            html { font-family:Helvetica; color:#222; }
+            h1 { color:steelblue; font-size:24px; margin-top:24px; }
+            button { margin:0 3px 10px; font-size:12px; }
+            .logLine { border-bottom:1px solid #ccc; padding:4px 2px; font-family:courier; font-size:11px; }
+	    </style>
+        <script type="text/javascript" src="adjust_event.js"></script>
+        <script type="text/javascript" src="adjust_third_party_sharing.js"></script>
+        <script type="text/javascript" src="adjust_config.js"></script>
+        <script type="text/javascript" src="adjust.js"></script>
+    </head>
+    <body>
+        <h1 style="width:400px;height:35px;text-align:center;">Adjust Web View SDK Demo App</h1>
+        <script language="javascript">
+            window.onerror = function(err) { }
+
+		    function attributionCallback(attribution) {
+                alert('Tracker token = ' + attribution.trackerToken + '\n' +
+                      'Tracker name = ' + attribution.trackerName + '\n' +
+                      'Network = ' + attribution.network + '\n' +
+                      'Campaign = ' + attribution.campaign + '\n' +
+                      'Adgroup = ' + attribution.adgroup + '\n' +
+                      'Creative = ' + attribution.creative + '\n' +
+                      'Click label = ' + attribution.clickLabel);
+            }
+
+            function eventSuccessCallback(eventSuccess) {
+                alert('Message = ' + eventSuccess.message + '\n' +
+                      'Timestamp = ' + eventSuccess.timestamp + '\n' +
+                      'Adid = ' + eventSuccess.adid + '\n' +
+                      'Event token = ' + eventSuccess.eventToken);
+            }
+
+            function eventFailureCallback(eventFailure) {
+                alert('Message = ' + eventFailure.message + '\n' +
+                      'Timestamp = ' + eventFailure.timestamp + '\n' +
+                      'Adid = ' + eventFailure.adid + '\n' +
+                      'Event token = ' + eventFailure.eventToken + '\n' +
+                      'Will retry = ' + eventFailure.willRetry);
+            }
+
+            function sessionSuccessCallback(sessionSuccess) {
+                alert('Message = ' + sessionSuccess.message + '\n' +
+                      'Timestamp = ' + sessionSuccess.timestamp + '\n' +
+                      'Adid = ' + sessionSuccess.adid);
+            }
+
+            function sessionFailureCallback(sessionFailure) {
+                alert('Message = ' + sessionFailure.message + '\n' +
+                      'Timestamp = ' + sessionFailure.timestamp + '\n' +
+                      'Adid = ' + sessionFailure.adid + '\n' +
+                      'Will retry = ' + sessionFailure.willRetry);
+            }
+
+            function deferredDeeplinkCallback(deferredDeeplink) {
+                alert('Deferred deeplink content:\n' + deferredDeeplink);
+            }
+
+            var adjustConfig = new AdjustConfig('2fm9gkqubvpc', AdjustConfig.EnvironmentSandbox);
+            adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
+
+            adjustConfig.setAttributionCallback(attributionCallback);
+            adjustConfig.setEventSuccessCallback(eventSuccessCallback);
+            adjustConfig.setEventFailureCallback(eventFailureCallback);
+            adjustConfig.setSessionSuccessCallback(sessionSuccessCallback);
+            adjustConfig.setSessionFailureCallback(sessionFailureCallback);
+            adjustConfig.setDeferredDeeplinkCallback(deferredDeeplinkCallback);
+
+            Adjust.initSdk(adjustConfig);
+
+            window.onload = function() {
+                var btnTrackSimpleEvent = document.getElementById('btnTrackSimpleEvent')
+                btnTrackSimpleEvent.onclick = function(e) {
+                    e.preventDefault();
+                    var adjustEvent = new AdjustEvent('g3mfiw');
+                    Adjust.trackEvent(adjustEvent);
+                }
+
+                var btnTrackRevenueEvent = document.getElementById('btnTrackRevenueEvent')
+                btnTrackRevenueEvent.onclick = function(e) {
+                    e.preventDefault()
+                    var adjustEvent = new AdjustEvent('a4fd35');
+                    adjustEvent.setRevenue(0.01, 'EUR');
+                    Adjust.trackEvent(adjustEvent);
+                }
+
+                var btnTrackCallbackEvent = document.getElementById('btnTrackCallbackEvent')
+                btnTrackCallbackEvent.onclick = function(e) {
+                    e.preventDefault();
+                    var adjustEvent = new AdjustEvent('34vgg9');
+                    adjustEvent.addCallbackParameter('key', 'value');
+                    adjustEvent.addCallbackParameter('x', 'y');
+                    adjustEvent.addCallbackParameter('key', 'lock');
+                    Adjust.trackEvent(adjustEvent);
+                }
+
+                var btnTrackPartnerEvent = document.getElementById('btnTrackPartnerEvent')
+                btnTrackPartnerEvent.onclick = function(e) {
+                    e.preventDefault()
+                    var adjustEvent = new AdjustEvent('w788qs');
+                    adjustEvent.addPartnerParameter('foo', 'bar');
+                    adjustEvent.addPartnerParameter('x', 'y');
+                    adjustEvent.addPartnerParameter('foo', 'foot');
+                    adjustEvent.addPartnerParameter('x', 'z');
+                    Adjust.trackEvent(adjustEvent);
+                }
+
+                var btnEnableOfflineMode = document.getElementById('btnEnableOfflineMode')
+                btnEnableOfflineMode.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.switchToOfflineMode();
+                }
+
+                var btnDisableOfflineMode = document.getElementById('btnDisableOfflineMode')
+                btnDisableOfflineMode.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.switchBackToOnlineMode();
+                }
+
+                var btnEnableSdk = document.getElementById('btnEnableSdk')
+                btnEnableSdk.onclick = function(e) {
+                    e.preventDefault()
+                    Adjust.enable();
+                }
+
+                var btnDisableSdk = document.getElementById('btnDisableSdk')
+                btnDisableSdk.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.disable();
+                }
+
+                var btnIsSdkEnabled = document.getElementById('btnIsSdkEnabled')
+                btnIsSdkEnabled.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.isEnabled(function (isEnabled){
+                        alert('Is SDK enabled? ' + isEnabled);
+                    });
+                }
+
+                var btnGetGoogleAdId = document.getElementById('btnGetGoogleAdId')
+                btnGetGoogleAdId.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getGoogleAdId(function (gpsAdid) {
+                        alert('Google Play Ad Id:\n' + gpsAdid);
+                    });
+                }
+
+                var btnGetAmazonId = document.getElementById('btnGetAmazonId')
+                btnGetAmazonId.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getAmazonAdId(function (amazonAdid) {
+                        alert('Amazon Ad Id:\n' + amazonAdid);
+                    },
+                    function (message) {
+                        alert('Message:\n' + message);
+                    });
+                }
+
+                var btnGetAdId = document.getElementById('btnGetAdId')
+                btnGetAdId.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getAdid(function (adid) {
+                        alert('Ad Id:\n' + adid);
+                    });
+                }
+
+                var btnGetSdkVersion = document.getElementById('btnGetSdkVersion')
+                btnGetSdkVersion.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getSdkVersion(function (sdkVersion) {
+                        alert('SDK version:\n' + sdkVersion);
+                    });
+                }
+
+                var btnGetAttribution = document.getElementById('btnGetAttribution')
+                btnGetAttribution.onclick = function(e) {
+                    e.preventDefault();
+                    Adjust.getAttribution(function (attribution) {
+                        alert('Tracker token = ' + attribution.trackerToken + '\n' +
+                              'Tracker name = ' + attribution.trackerName + '\n' +
+                              'Network = ' + attribution.network + '\n' +
+                              'Campaign = ' + attribution.campaign + '\n' +
+                              'Adgroup = ' + attribution.adgroup + '\n' +
+                              'Creative = ' + attribution.creative + '\n' +
+                              'Click label = ' + attribution.clickLabel);
+                    });
+                }
+            }
+        </script>
+        <div id='buttons'>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackSimpleEvent'>Track Simple event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackRevenueEvent'>Track Revenue event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackCallbackEvent'>Track Callback event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnTrackPartnerEvent'>Track Partner event</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableOfflineMode'>Enable Offline mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableOfflineMode'>Disable Offline mode</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnEnableSdk'>Enable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnDisableSdk'>Disable SDK</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnIsSdkEnabled'>Is SDK Enabled?</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetGoogleAdId'>Get Google Ad Id</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetAdId'>Get Adjust Identifier</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetAmazonId'>Get Amazon Ad Id</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetSdkVersion'>Get SDK version</button>
+            </div>
+            <div style="width:400px;height:35px;text-align:center;">
+                <button id='btnGetAttribution'>Get Attribution</button>
+            </div>
+        </div>
+    </body>
+</html>

@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.adjust.sdk.Constants.CALLBACK_PARAMETERS;
-import static com.adjust.sdk.Constants.PARTNER_PARAMETERS;
 
 // persistent
 public class PackageHandler implements IPackageHandler,
@@ -140,7 +138,7 @@ public class PackageHandler implements IPackageHandler,
             scheduler.submit(new Runnable() {
                 @Override
                 public void run() {
-                    sendNextI();
+                    sendNextI(responseData.continueIn);
                 }
             });
 
@@ -172,8 +170,9 @@ public class PackageHandler implements IPackageHandler,
             }
         };
 
-        if (responseData.activityPackage == null) {
-            runnable.run();
+        if (responseData.retryIn != null) {
+            long retryIn = responseData.retryIn;
+            scheduler.schedule(runnable, retryIn);
             return;
         }
 
@@ -183,8 +182,7 @@ public class PackageHandler implements IPackageHandler,
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(context);
 
         if (responseData.activityPackage.getActivityKind() ==
-                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked())
-        {
+                ActivityKind.SESSION && !sharedPreferencesManager.getInstallTracked()) {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategyForInstallSession);
         } else {
             waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
@@ -210,22 +208,6 @@ public class PackageHandler implements IPackageHandler,
     @Override
     public void resumeSending() {
         paused = false;
-    }
-
-    @Override
-    public void updatePackages(SessionParameters sessionParameters) {
-        final SessionParameters sessionParametersCopy;
-        if (sessionParameters != null) {
-            sessionParametersCopy = sessionParameters.deepCopy();
-        } else {
-            sessionParametersCopy = null;
-        }
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                updatePackagesI(sessionParametersCopy);
-            }
-        });
     }
 
     @Override
@@ -304,7 +286,7 @@ public class PackageHandler implements IPackageHandler,
         return sendingParameters;
     }
 
-    private void sendNextI() {
+    private void sendNextI(Long previousResponseContinueIn) {
         isRetrying = false;
         retryStartedAtTimeMilliSeconds = 0;
 
@@ -317,37 +299,25 @@ public class PackageHandler implements IPackageHandler,
 
         packageQueue.remove(0);
         writePackageQueueI();
-        isSending.set(false);
-        logger.verbose("Package handler can send");
-        sendFirstI();
-    }
 
-    public void updatePackagesI(SessionParameters sessionParameters) {
-        if (sessionParameters == null) {
-            return;
+        if (previousResponseContinueIn != null && previousResponseContinueIn > 0) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    logger.verbose("Package handler finished waiting to continue");
+                    isSending.set(false);
+                    sendFirstPackage();
+                }
+            };
+
+            logger.verbose("Waiting for %d seconds before continuing for next package in continue_in", previousResponseContinueIn / 1000.0);
+            scheduler.schedule(runnable, previousResponseContinueIn);
+
+        } else {
+            logger.verbose("Package handler can send");
+            isSending.set(false);
+            sendFirstI();
         }
-
-        logger.debug("Updating package handler queue");
-        logger.verbose("Session callback parameters: %s", sessionParameters.callbackParameters);
-        logger.verbose("Session partner parameters: %s", sessionParameters.partnerParameters);
-
-        for (ActivityPackage activityPackage : packageQueue) {
-            Map<String, String> parameters = activityPackage.getParameters();
-            // callback parameters
-            Map<String, String> mergedCallbackParameters = Util.mergeParameters(sessionParameters.callbackParameters,
-                    activityPackage.getCallbackParameters(),
-                    "Callback");
-
-            PackageBuilder.addMapJson(parameters, CALLBACK_PARAMETERS, mergedCallbackParameters);
-            // partner parameters
-            Map<String, String> mergedPartnerParameters = Util.mergeParameters(sessionParameters.partnerParameters,
-                    activityPackage.getPartnerParameters(),
-                    "Partner");
-
-            PackageBuilder.addMapJson(parameters, PARTNER_PARAMETERS, mergedPartnerParameters);
-        }
-
-        writePackageQueueI();
     }
 
     private void flushI() {

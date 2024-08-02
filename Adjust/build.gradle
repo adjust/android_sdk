@@ -6,13 +6,13 @@ subprojects {
 
 ext {
     // Android config.
-    coreMinSdkVersion = 9
+    coreMinSdkVersion = 21
     coreCompileSdkVersion = 34
     coreTargetSdkVersion = 34
-    coreVersionName = '4.38.5'
+    coreVersionName = '5.0.0'
     defaultVersionCode = 1
-    webbridgeMinSdkVersion = 17
-    samsungReferrerMinSdkVersion = 18
+    webbridgeMinSdkVersion = 21
+    samsungReferrerMinSdkVersion = 21
     vivoReferrerMinSdkVersion = 23
     samsungCloudDevMinSdkVersion = 23
 

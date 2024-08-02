@@ -18,8 +18,6 @@ public interface IPackageHandler {
 
     void resumeSending();
 
-    void updatePackages(SessionParameters sessionParameters);
-
     void flush();
 
     void teardown();

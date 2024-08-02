@@ -10,7 +10,6 @@
 package com.adjust.sdk;
 
 import static com.adjust.sdk.Constants.ENCODING;
-import static com.adjust.sdk.Constants.SHA256;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -21,6 +20,8 @@ import android.os.LocaleList;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 import com.adjust.sdk.scheduler.SingleThreadFutureScheduler;
+
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -152,7 +153,13 @@ public class Util {
         return null;
     }
 
-    public static void getGoogleAdId(Context context, final OnDeviceIdsRead onDeviceIdRead) {
+    /**
+     * Called to get value of Google Play Advertising Identifier.
+     *
+     * @param context                  Application context
+     * @param onGoogleAdIdReadListener Callback to get triggered once identifier is obtained
+     */
+    public static void getGoogleAdId(final Context context, final OnGoogleAdIdReadListener onGoogleAdIdReadListener) {
         new AsyncTaskExecutor<Context, String>() {
             @Override
             protected String doInBackground(Context... params) {
@@ -165,8 +172,8 @@ public class Util {
 
             @Override
             protected void onPostExecute(String playAdiId) {
-                if (onDeviceIdRead != null) {
-                    onDeviceIdRead.onGoogleAdIdRead(playAdiId);
+                if (onGoogleAdIdReadListener != null) {
+                    onGoogleAdIdReadListener.onGoogleAdIdRead(playAdiId);
                 }
             }
         }.execute(context);
@@ -403,10 +410,6 @@ public class Util {
             return 37 * hashCode;
         }
         return 37 * hashCode + value.hashCode();
-    }
-
-    public static String sha256(final String text) {
-        return hash(text, SHA256);
     }
 
     public static String hash(final String text, final String method) {
@@ -658,32 +661,12 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        if (adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
-
-        if (adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
     }
 
     public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (adjustConfig.playStoreKidsAppEnabled) {
-            return false;
-        }
-
-        if (adjustConfig.coppaCompliantEnabled) {
-            return false;
-        }
-
-        return true;
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
     }
-
-
-
-
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();
@@ -745,5 +728,57 @@ public class Util {
         return referrerDetails.referrerClickTimestampSeconds == activityState.clickTimeMeta
                 && Util.equalString(referrerDetails.installReferrer, activityState.installReferrerMeta)
                 && Util.equalBoolean(referrerDetails.isClick, activityState.isClickMeta);
+    }
+
+    public static boolean isEnabledFromActivityStateFile(final Context context) {
+        ActivityState activityState = Util.readObject(
+                context,
+                Constants.ACTIVITY_STATE_FILENAME,
+                "Activity state",
+                ActivityState.class);
+        if (activityState == null) {
+            return true;
+        } else {
+            return activityState.enabled;
+        }
+    }
+
+    public static AdjustAttribution attributionFromJson(final JSONObject jsonObject,
+                                                        final String sdkPlatform) {
+        if (jsonObject == null) {
+            return null;
+        }
+
+        AdjustAttribution attribution = new AdjustAttribution();
+
+        if ("unity".equals(sdkPlatform)) {
+            // Unity platform.
+            attribution.trackerToken = jsonObject.optString("tracker_token", "");
+            attribution.trackerName = jsonObject.optString("tracker_name", "");
+            attribution.network = jsonObject.optString("network", "");
+            attribution.campaign = jsonObject.optString("campaign", "");
+            attribution.adgroup = jsonObject.optString("adgroup", "");
+            attribution.creative = jsonObject.optString("creative", "");
+            attribution.clickLabel = jsonObject.optString("click_label", "");
+            attribution.costType = jsonObject.optString("cost_type", "");
+            attribution.costAmount = jsonObject.optDouble("cost_amount", 0);
+            attribution.costCurrency = jsonObject.optString("cost_currency", "");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer", "");
+        } else {
+            // Rest of all platforms.
+            attribution.trackerToken = jsonObject.optString("tracker_token");
+            attribution.trackerName = jsonObject.optString("tracker_name");
+            attribution.network = jsonObject.optString("network");
+            attribution.campaign = jsonObject.optString("campaign");
+            attribution.adgroup = jsonObject.optString("adgroup");
+            attribution.creative = jsonObject.optString("creative");
+            attribution.clickLabel = jsonObject.optString("click_label");
+            attribution.costType = jsonObject.optString("cost_type");
+            attribution.costAmount = jsonObject.optDouble("cost_amount");
+            attribution.costCurrency = jsonObject.optString("cost_currency");
+            attribution.fbInstallReferrer = jsonObject.optString("fb_install_referrer");
+        }
+
+        return attribution;
     }
 }

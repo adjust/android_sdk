@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -37,18 +38,19 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_GDPR_FORGET_ME = "gdpr_forget_me";
 
-    private static final String PREFS_KEY_DISABLE_THIRD_PARTY_SHARING
-            = "disable_third_party_sharing";
-
     private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
 
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
+
+    private static final String PREFS_KEY_DEEPLINK_URL_CACHED = "deeplink_url_cached";
 
     private static final String PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS
             = "preinstall_payload_read_status";
 
     private static final String PREFS_KEY_PREINSTALL_SYSTEM_INSTALLER_REFERRER
             = "preinstall_system_installer_referrer";
+
+    private static final String PREFS_KEY_CONTROL_PARAMS = "control_params";
 
     /**
      * Index for raw referrer string content in saved JSONArray object.
@@ -372,18 +374,6 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void setDisableThirdPartySharing() {
-        saveBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, true);
-    }
-
-    public synchronized boolean getDisableThirdPartySharing() {
-        return getBoolean(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING, false);
-    }
-
-    public synchronized void removeDisableThirdPartySharing() {
-        remove(PREFS_KEY_DISABLE_THIRD_PARTY_SHARING);
-    }
-
     public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {
         if (deeplink == null) {
             return;
@@ -406,6 +396,18 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
     }
 
+    public synchronized void cacheDeeplink(final Uri deeplink) {
+        if (deeplink == null) {
+            return;
+        }
+
+        saveString(PREFS_KEY_DEEPLINK_URL_CACHED, deeplink.toString());
+    }
+
+    public synchronized String getCachedDeeplink() {
+        return getString(PREFS_KEY_DEEPLINK_URL_CACHED);
+    }
+
     /**
      * Save information that preinstall tracker has been tracked to shared preferences.
      */
@@ -421,6 +423,37 @@ public class SharedPreferencesManager {
      */
     public synchronized long getPreinstallPayloadReadStatus() {
         return getLong(PREFS_KEY_PREINSTALL_PAYLOAD_READ_STATUS, 0);
+    }
+
+    /**
+     * Save control params json to shared preferences.
+     *
+     * @param controlParams Control params json to be saved
+     */
+    public synchronized void saveControlParams(final JSONObject controlParams) {
+        try {
+            saveString(PREFS_KEY_CONTROL_PARAMS, controlParams.toString());
+        } catch (Throwable t) {
+        }
+    }
+
+    /**
+     * Get saved control params json object.
+     *
+     * @return JSONObject containing control params information. Defaults to null if not found.
+     */
+    public synchronized JSONObject getControlParamsJson() {
+        String controlParamsString = getString(PREFS_KEY_CONTROL_PARAMS);
+
+        if (controlParamsString != null) {
+            try {
+                return new JSONObject(controlParamsString);
+            } catch (JSONException e) {
+            } catch (Throwable t) {
+            }
+        }
+
+        return null;
     }
 
     /**

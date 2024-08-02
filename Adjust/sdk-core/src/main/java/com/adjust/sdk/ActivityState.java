@@ -20,14 +20,13 @@ import java.util.LinkedList;
 
 public class ActivityState implements Serializable, Cloneable {
     private static final long serialVersionUID = 9039439291143138148L;
-    private static final int ORDER_ID_MAXCOUNT = 10;
+    private static final int EVENT_DEDUPLICATION_IDS_MAX_SIZE = 10;
     private transient ILogger logger;
     @SuppressWarnings("unchecked")
     private static final ObjectStreamField[] serialPersistentFields = {
             new ObjectStreamField("uuid", String.class),
             new ObjectStreamField("enabled", boolean.class),
             new ObjectStreamField("isGdprForgotten", boolean.class),
-            new ObjectStreamField("isThirdPartySharingDisabled", boolean.class),
             new ObjectStreamField("askingAttribution", boolean.class),
             new ObjectStreamField("eventCount", int.class),
             new ObjectStreamField("sessionCount", int.class),
@@ -36,7 +35,6 @@ public class ActivityState implements Serializable, Cloneable {
             new ObjectStreamField("timeSpent", long.class),
             new ObjectStreamField("lastActivity", long.class),
             new ObjectStreamField("lastInterval", long.class),
-            new ObjectStreamField("updatePackages", boolean.class),
             new ObjectStreamField("orderIds", (Class<LinkedList<String>>)(Class) LinkedList.class),
             new ObjectStreamField("pushToken", String.class),
             new ObjectStreamField("adid", String.class),
@@ -74,7 +72,6 @@ public class ActivityState implements Serializable, Cloneable {
     protected String uuid;
     protected boolean enabled;
     protected boolean isGdprForgotten;
-    protected boolean isThirdPartySharingDisabled;
     protected boolean isThirdPartySharingDisabledForCoppa;
     protected boolean askingAttribution;
 
@@ -90,9 +87,8 @@ public class ActivityState implements Serializable, Cloneable {
 
     protected long lastInterval;
 
-    protected boolean updatePackages;
-
     protected LinkedList<String> orderIds;
+    protected int eventDeduplicationIdsMaxSize;
 
     protected String pushToken;
     protected String adid;
@@ -136,7 +132,6 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.createUuid();
         enabled = true;
         isGdprForgotten = false;
-        isThirdPartySharingDisabled = false;
         isThirdPartySharingDisabledForCoppa = false;
         askingAttribution = false;
         eventCount = 0; // no events yet
@@ -146,7 +141,6 @@ public class ActivityState implements Serializable, Cloneable {
         timeSpent = -1; // this information will be collected and attached to the next session
         lastActivity = -1;
         lastInterval = -1;
-        updatePackages = false;
         orderIds = null;
         pushToken = null;
         adid = null;
@@ -177,6 +171,7 @@ public class ActivityState implements Serializable, Cloneable {
         installReferrerMeta = null;
         clickTimeMeta = 0;
         isClickMeta = null;
+        eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
     }
 
     protected void resetSessionAttributes(long now) {
@@ -187,22 +182,32 @@ public class ActivityState implements Serializable, Cloneable {
         lastInterval = -1;
     }
 
-    protected void addOrderId(String orderId) {
+    protected void addDeduplicationId(String deduplicationId) {
+        if (eventDeduplicationIdsMaxSize == 0) {
+            return;
+        }
+
         if (orderIds == null) {
             orderIds = new LinkedList<String>();
+        } else {
+            while (orderIds.size() >= eventDeduplicationIdsMaxSize) {
+                orderIds.removeLast();
+            }
         }
-
-        if (orderIds.size() >= ORDER_ID_MAXCOUNT) {
-            orderIds.removeLast();
-        }
-        orderIds.addFirst(orderId);
+        orderIds.addFirst(deduplicationId);
     }
 
-    protected boolean findOrderId(String orderId) {
+    protected boolean eventDeduplicationIdExists(String deduplicationId) {
         if (orderIds == null) {
             return false;
         }
-        return orderIds.contains(orderId);
+        return orderIds.contains(deduplicationId);
+    }
+
+    protected void setEventDeduplicationIdsMaxSize(Integer size) {
+        if (size != null && size >= 0) {
+            eventDeduplicationIdsMaxSize = size;
+        }
     }
 
     @Override
@@ -223,7 +228,6 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalString(uuid, otherActivityState.uuid)) return false;
         if (!Util.equalBoolean(enabled, otherActivityState.enabled)) return false;
         if (!Util.equalBoolean(isGdprForgotten, otherActivityState.isGdprForgotten)) return false;
-        if (!Util.equalBoolean(isThirdPartySharingDisabled, otherActivityState.isThirdPartySharingDisabled)) return false;
         if (!Util.equalBoolean(isThirdPartySharingDisabledForCoppa, otherActivityState.isThirdPartySharingDisabledForCoppa)) return false;
         if (!Util.equalBoolean(askingAttribution, otherActivityState.askingAttribution)) return false;
         if (!Util.equalInt(eventCount, otherActivityState.eventCount)) return false;
@@ -232,7 +236,6 @@ public class ActivityState implements Serializable, Cloneable {
         if (!Util.equalLong(sessionLength, otherActivityState.sessionLength)) return false;
         if (!Util.equalLong(timeSpent, otherActivityState.timeSpent)) return false;
         if (!Util.equalLong(lastInterval, otherActivityState.lastInterval)) return false;
-        if (!Util.equalBoolean(updatePackages, otherActivityState.updatePackages)) return false;
         if (!Util.equalObject(orderIds, otherActivityState.orderIds)) return false;
         if (!Util.equalString(pushToken, otherActivityState.pushToken)) return false;
         if (!Util.equalString(adid, otherActivityState.adid)) return false;
@@ -272,7 +275,6 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashString(uuid, hashCode);
         hashCode = Util.hashBoolean(enabled, hashCode);
         hashCode = Util.hashBoolean(isGdprForgotten, hashCode);
-        hashCode = Util.hashBoolean(isThirdPartySharingDisabled, hashCode);
         hashCode = Util.hashBoolean(isThirdPartySharingDisabledForCoppa, hashCode);
         hashCode = Util.hashBoolean(askingAttribution, hashCode);
         hashCode = 37 * hashCode + eventCount;
@@ -281,7 +283,6 @@ public class ActivityState implements Serializable, Cloneable {
         hashCode = Util.hashLong(sessionLength, hashCode);
         hashCode = Util.hashLong(timeSpent, hashCode);
         hashCode = Util.hashLong(lastInterval, hashCode);
-        hashCode = Util.hashBoolean(updatePackages, hashCode);
         hashCode = Util.hashObject(orderIds, hashCode);
         hashCode = Util.hashString(pushToken, hashCode);
         hashCode = Util.hashString(adid, hashCode);
@@ -330,11 +331,9 @@ public class ActivityState implements Serializable, Cloneable {
         uuid = Util.readStringField(fields, "uuid", null);
         enabled = Util.readBooleanField(fields, "enabled", true);
         isGdprForgotten = Util.readBooleanField(fields, "isGdprForgotten", false);
-        isThirdPartySharingDisabled = Util.readBooleanField(fields, "isThirdPartySharingDisabled", false);
         isThirdPartySharingDisabledForCoppa = Util.readBooleanField(fields, "isThirdPartySharingDisabledForCoppa", false);
         askingAttribution = Util.readBooleanField(fields, "askingAttribution", false);
 
-        updatePackages = Util.readBooleanField(fields, "updatePackages", false);
         orderIds = Util.readObjectField(fields, "orderIds", null);
         pushToken = Util.readStringField(fields, "pushToken", null);
         adid = Util.readStringField(fields, "adid", null);
@@ -376,6 +375,8 @@ public class ActivityState implements Serializable, Cloneable {
         if (uuid == null) {
             uuid = Util.createUuid();
         }
+
+        eventDeduplicationIdsMaxSize = EVENT_DEDUPLICATION_IDS_MAX_SIZE;
     }
 
     private void writeObject(ObjectOutputStream stream) throws IOException {

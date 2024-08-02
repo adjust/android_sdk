@@ -16,14 +16,9 @@ import javax.net.ssl.HttpsURLConnection;
  */
 
 public class UtilNetworking {
-    private static String userAgent;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
-    }
-
-    public static void setUserAgent(String userAgent) {
-        UtilNetworking.userAgent = userAgent;
     }
 
     public interface IConnectionOptions {
@@ -37,13 +32,10 @@ public class UtilNetworking {
                                                final String clientSdk)
             {
                 connection.setRequestProperty("Client-SDK", clientSdk);
+                // in case of beta release, specify beta version here
+                // connection.setRequestProperty("Beta-Version", "2");
                 connection.setConnectTimeout(Constants.ONE_MINUTE);
                 connection.setReadTimeout(Constants.ONE_MINUTE);
-
-                if (userAgent != null) {
-                    connection.setRequestProperty("User-Agent", userAgent);
-                }
-
             }
         };
     }

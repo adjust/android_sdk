@@ -13,6 +13,7 @@ public class AdjustEvent {
     Map<String, String> callbackParameters;
     Map<String, String> partnerParameters;
     String orderId;
+    String deduplicationId;
     String callbackId;
     String productId;
     String purchaseToken;
@@ -66,6 +67,10 @@ public class AdjustEvent {
         this.orderId = orderId;
     }
 
+    public void setDeduplicationId(String deduplicationId) {
+        this.deduplicationId = deduplicationId;
+    }
+
     public void setCallbackId(String callbackId) {
         this.callbackId = callbackId;
     }
@@ -104,6 +109,10 @@ public class AdjustEvent {
 
     public String getOrderId() {
         return orderId;
+    }
+
+    public String getDeduplicationId() {
+        return deduplicationId;
     }
 
     public String getCallbackId() {

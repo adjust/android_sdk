@@ -65,7 +65,7 @@ class DeviceInfo {
     Boolean isTrackingEnabled;
     private boolean nonGoogleIdsReadOnce = false;
     private boolean playIdsReadOnce = false;
-    private boolean otherDeviceInfoParamsReadOnce = false;
+    private boolean otherDeviceIdsParamsReadOnce = false;
     String androidId;
     String fbAttributionId;
     String clientSdk;
@@ -92,7 +92,6 @@ class DeviceInfo {
     int uiMode;
     String appSetId;
     boolean isGooglePlayGamesForPC;
-    Boolean isSamsungCloudEnvironment;
 
     Map<String, String> imeiParameters;
     Map<String, String> oaidParameters;
@@ -135,37 +134,41 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
-            isSamsungCloudEnvironment = true;
-            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
-            playAdIdSource = "samsung_cloud_sdk";
-        }
         if (Util.canReadPlayIds(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
-        if (isSamsungCloudEnvironment != null && isSamsungCloudEnvironment) {
+        if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
+            if (!Util.canReadPlayIds(adjustConfig)) {
+                playAdId = null;
+                isTrackingEnabled = null;
+                playAdIdSource = null;
+                playAdIdAttempt = -1;
+            }
             return;
         }
-
-        if (!Util.canReadPlayIds(adjustConfig)) {
-            return;
-        }
-
-        if (playIdsReadOnce && adjustConfig.readDeviceInfoOnceEnabled) {
-            return;
-        }
-
-        Context context = adjustConfig.context;
-        String previousPlayAdId = playAdId;
-        Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         playAdId = null;
         isTrackingEnabled = null;
         playAdIdSource = null;
         playAdIdAttempt = -1;
+
+        if (!Util.canReadPlayIds(adjustConfig)) {
+            return;
+        }
+
+        Context context = adjustConfig.context;
+
+        if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
+            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            playAdIdSource = "samsung_cloud_sdk";
+            playIdsReadOnce = true;
+        }
+
+        String previousPlayAdId = playAdId;
+        Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         // attempt connecting to Google Play Service by own
         for (int serviceAttempt = 1; serviceAttempt <= 3; serviceAttempt += 1) {
@@ -244,8 +247,9 @@ class DeviceInfo {
         nonGoogleIdsReadOnce = true;
     }
 
-    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig, final ILogger logger) {
-        if (adjustConfig.readDeviceInfoOnceEnabled && otherDeviceInfoParamsReadOnce) {
+    void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
+                                     final ILogger logger) {
+        if (adjustConfig.isDeviceIdsReadingOnceEnabled && otherDeviceIdsParamsReadOnce) {
             return;
         }
 
@@ -257,10 +261,10 @@ class DeviceInfo {
         mcc = UtilDeviceIds.getMcc(adjustConfig.context, logger);
         mnc = UtilDeviceIds.getMnc(adjustConfig.context, logger);
 
-        otherDeviceInfoParamsReadOnce = true;
+        otherDeviceIdsParamsReadOnce = true;
     }
-    public static String getFireAdvertisingIdBypassConditions(ContentResolver contentResolver) {
-        return UtilDeviceIds.getFireAdvertisingId(contentResolver);
+    public static void getFireAdvertisingIdBypassConditions(ContentResolver contentResolver, OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        UtilDeviceIds.getFireAdvertisingIdAsync(contentResolver, onAmazonAdIdReadListener);
     }
 
     private String getPackageName(Context context) {
@@ -500,7 +504,7 @@ class DeviceInfo {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
@@ -509,14 +513,15 @@ class DeviceInfo {
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaCompliantEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
             return Reflection.getOaidParameters(adjustConfig.context, logger);
         }
-        private static String getFireAdvertisingId(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+        private static String getFireAdvertisingId(final AdjustConfig adjustConfig)
+        {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
@@ -534,13 +539,29 @@ class DeviceInfo {
             }
             return null;
         }
+
+        private static void getFireAdvertisingIdAsync(final ContentResolver contentResolver,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+            if (contentResolver == null) {
+                AdjustFactory.getLogger().error("contentResolver could not be retrieved");
+                return;
+            }
+            try {
+                // get advertising
+                String amazonAdId = Settings.Secure.getString(contentResolver, "advertising_id");
+                onAmazonAdIdReadListener.onAmazonAdIdRead(amazonAdId);
+            } catch (Exception ex) {
+                AdjustFactory.getLogger().error(ex.getMessage());
+            }
+        }
+
         private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaCompliantEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
                 return null;
             }
 
             return getFireTrackingEnabled(adjustConfig.context.getContentResolver());
         }
+
         private static Boolean getFireTrackingEnabled(final ContentResolver contentResolver) {
             try {
                 // get user's tracking preference

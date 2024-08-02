@@ -3,8 +3,6 @@ package com.adjust.sdk;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONObject;
-
 import java.util.Map;
 
 /**
@@ -34,7 +32,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:4.38.5";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:5.0.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -47,9 +45,9 @@ public class Adjust {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public static void onCreate(AdjustConfig adjustConfig) {
+    public static void initSdk(AdjustConfig adjustConfig) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.onCreate(adjustConfig);
+        adjustInstance.initSdk(adjustConfig);
     }
 
     /**
@@ -79,23 +77,40 @@ public class Adjust {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public static void setEnabled(boolean enabled) {
+    public static void enable() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setEnabled(enabled);
+        adjustInstance.enable();
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public static void disable() {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.disable();
     }
 
     /**
      * Get information if SDK is enabled or not.
      *
-     * @return boolean indicating whether SDK is enabled or not
+     * @param context Application context
+     * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public static boolean isEnabled() {
+    public static void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
+        if (isEnabledListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting isEnabled can't be null");
+            return;
+        }
+
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.isEnabled();
+        adjustInstance.isEnabled(extractApplicationContext(context), isEnabledListener);
     }
 
     /**
@@ -108,39 +123,26 @@ public class Adjust {
     }
 
     /**
-     * Called to process deep link.
+     * Called to process deeplink.
      *
-     * @param url Deep link URL to process
-     *
-     * @deprecated Use {@link #appWillOpenUrl(Uri, Context)}} instead.
+     * @param adjustDeeplink Deeplink object to process
+     * @param context Application context
      */
-    @Deprecated
-    public static void appWillOpenUrl(Uri url) {
+    public static void processDeeplink(AdjustDeeplink adjustDeeplink, Context context) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url);
+        adjustInstance.processDeeplink(adjustDeeplink, extractApplicationContext(context));
     }
 
     /**
-     * Called to process deep link.
+     * Process the deeplink that has opened an app and potentially get a resolved link.
      *
-     * @param url Deep link URL to process
+     * @param adjustDeeplink Deeplink object to process
+     * @param callback  Callback where either resolved or echoed deeplink will be sent.
      * @param context Application context
      */
-    public static void appWillOpenUrl(Uri url, Context context) {
+    public static void processAndResolveDeeplink(AdjustDeeplink adjustDeeplink, Context context, OnDeeplinkResolvedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.appWillOpenUrl(url, extractApplicationContext(context));
-    }
-
-    /**
-     * Process the deep link that has opened an app and potentially get a resolved link.
-     *
-     * @param url Deep link URL to process
-     * @param callback  Callback where either resolved or echoed deep link will be sent.
-     * @param context Application context
-     */
-    public static void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.processDeeplink(url, extractApplicationContext(context), callback);
+        adjustInstance.processAndResolveDeeplink(adjustDeeplink, extractApplicationContext(context), callback);
     }
 
     /**
@@ -155,21 +157,20 @@ public class Adjust {
     }
 
     /**
-     * Called to set SDK to offline or online mode.
+     * Called to set SDK to offline mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public static void setOfflineMode(boolean enabled) {
+    public static void switchToOfflineMode() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setOfflineMode(enabled);
+        adjustInstance.switchToOfflineMode();
     }
-
     /**
-     * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
+     * Called to set SDK to online mode.
+     *
      */
-    public static void sendFirstPackages() {
+    public static void switchBackToOnlineMode() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.sendFirstPackages();
+        adjustInstance.switchBackToOnlineMode();
     }
 
     /**
@@ -178,9 +179,9 @@ public class Adjust {
      * @param key   Global callback parameter key
      * @param value Global callback parameter value
      */
-    public static void addSessionCallbackParameter(String key, String value) {
+    public static void addGlobalCallbackParameter(String key, String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.addSessionCallbackParameter(key, value);
+        adjustInstance.addGlobalCallbackParameter(key, value);
     }
 
     /**
@@ -189,9 +190,9 @@ public class Adjust {
      * @param key   Global partner parameter key
      * @param value Global partner parameter value
      */
-    public static void addSessionPartnerParameter(String key, String value) {
+    public static void addGlobalPartnerParameter(String key, String value) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.addSessionPartnerParameter(key, value);
+        adjustInstance.addGlobalPartnerParameter(key, value);
     }
 
     /**
@@ -199,9 +200,9 @@ public class Adjust {
      *
      * @param key Global callback parameter key
      */
-    public static void removeSessionCallbackParameter(String key) {
+    public static void removeGlobalCallbackParameter(String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.removeSessionCallbackParameter(key);
+        adjustInstance.removeGlobalCallbackParameter(key);
     }
 
     /**
@@ -209,36 +210,25 @@ public class Adjust {
      *
      * @param key Global partner parameter key
      */
-    public static void removeSessionPartnerParameter(String key) {
+    public static void removeGlobalPartnerParameter(String key) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.removeSessionPartnerParameter(key);
+        adjustInstance.removeGlobalPartnerParameter(key);
     }
 
     /**
      * Called to remove all added global callback parameters.
      */
-    public static void resetSessionCallbackParameters() {
+    public static void removeGlobalCallbackParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetSessionCallbackParameters();
+        adjustInstance.removeGlobalCallbackParameters();
     }
 
     /**
      * Called to remove all added global partner parameters.
      */
-    public static void resetSessionPartnerParameters() {
+    public static void removeGlobalPartnerParameters() {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.resetSessionPartnerParameters();
-    }
-
-    /**
-     * Called to set user's push notifications token.
-     *
-     * @param token Push notifications token
-     * @deprecated use {@link #setPushToken(String, Context)} instead.
-     */
-    public static void setPushToken(String token) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.setPushToken(token);
+        adjustInstance.removeGlobalPartnerParameters();
     }
 
     /**
@@ -262,16 +252,6 @@ public class Adjust {
         adjustInstance.gdprForgetMe(extractApplicationContext(context));
     }
 
-    /**
-     * Called to disable the third party sharing.
-     *
-     * @param context Application context
-     */
-    public static void disableThirdPartySharing(final Context context) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.disableThirdPartySharing(extractApplicationContext(context));
-    }
-
     public static void trackThirdPartySharing(
             final AdjustThirdPartySharing adjustThirdPartySharing)
     {
@@ -282,17 +262,6 @@ public class Adjust {
     public static void trackMeasurementConsent(final boolean consentMeasurement) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.trackMeasurementConsent(consentMeasurement);
-    }
-
-    /**
-     * Track ad revenue from a source provider
-     *
-     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
-     * @param payload JsonObject content of the ad revenue information
-     */
-    public static void trackAdRevenue(final String source, final JSONObject payload) {
-        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.trackAdRevenue(source, payload);
     }
 
     /**
@@ -318,61 +287,120 @@ public class Adjust {
     /**
      * Called to get value of Google Play Advertising Identifier.
      *
-     * @param context        Application context
-     * @param onDeviceIdRead Callback to get triggered once identifier is obtained
+     * @param context                  Application context
+     * @param onGoogleAdIdReadListener Callback to get triggered once identifier is obtained
      */
-    public static void getGoogleAdId(Context context, OnDeviceIdsRead onDeviceIdRead) {
-        Context appContext = null;
-        if (context != null) {
-            appContext = context.getApplicationContext();
+    public static void getGoogleAdId(final Context context,final OnGoogleAdIdReadListener onGoogleAdIdReadListener) {
+        if (onGoogleAdIdReadListener == null) {
+            AdjustFactory.getLogger().error("onGoogleAdIdReadListener cannot be null");
+            return;
         }
-
-        Util.getGoogleAdId(appContext, onDeviceIdRead);
+        if (context == null) {
+            AdjustFactory.getLogger().error("getGoogleAdId: null context");
+            return;
+        }
+        Util.getGoogleAdId(context.getApplicationContext(), onGoogleAdIdReadListener);
     }
 
     /**
      * Called to get value of Amazon Advertising Identifier.
      *
-     * @param context Application context
-     * @return Amazon Advertising Identifier
+     * @param context                  Application context
+     * @param onAmazonAdIdReadListener Callback to get triggered once identifier is obtained
      */
-    public static String getAmazonAdId(final Context context) {
-        Context appContext = extractApplicationContext(context);
-        if (appContext != null) {
-            return DeviceInfo.getFireAdvertisingIdBypassConditions(appContext.getContentResolver());
+    public static void getAmazonAdId(final Context context,final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        if (onAmazonAdIdReadListener == null) {
+            AdjustFactory.getLogger().error("onAmazonAdIdReadListener cannot be null");
+            return;
         }
+        Context appContext = extractApplicationContext(context);
 
-        return null;
+        if (appContext == null) {
+            AdjustFactory.getLogger().error("getAmazonAdId: null context");
+            return;
+        }
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getAmazonAdId(appContext, onAmazonAdIdReadListener);
     }
 
     /**
      * Called to get value of unique Adjust device identifier.
      *
-     * @return Unique Adjust device indetifier
+     * @param onAdidReadListener Callback to get triggered once identifier is obtained.
      */
-    public static String getAdid() {
+    public static void getAdid(final OnAdidReadListener onAdidReadListener) {
+        if (onAdidReadListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting adid can't be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getAdid();
+        adjustInstance.getAdid(onAdidReadListener);
     }
 
     /**
      * Called to get user's current attribution value.
      *
-     * @return AdjustAttribution object with current attribution value
+     *  @param attributionReadListener Callback to get triggered once attribution is obtained
      */
-    public static AdjustAttribution getAttribution() {
+    public static void getAttribution(final OnAttributionReadListener attributionReadListener) {
+        if (attributionReadListener == null) {
+            AdjustFactory.getLogger().error("Callback for getting attribution can't be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getAttribution();
+        adjustInstance.getAttribution(attributionReadListener);
+    }
+
+    /**
+     * Called to get Google Install Referrer.
+     *
+     * @param context Application context
+     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
+     */
+    public static void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        if (onGooglePlayInstallReferrerReadListener == null) {
+            AdjustFactory.getLogger().error("onGooglePlayInstallReferrerReadListener cannot be null");
+            return;
+        }
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getGooglePlayInstallReferrer(context ,onGooglePlayInstallReferrerReadListener);
+    }
+
+    /**
+     * Called to get last opened deeplink.
+     *
+     * @param context Application context
+     * @param onLastDeeplinkReadListener Callback to obtain last opened deeplink.
+     */
+    public static void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener) {
+        if (onLastDeeplinkReadListener == null) {
+            AdjustFactory.getLogger().error("onLastDeeplinkReadListener cannot be null");
+            return;
+        }
+        if (context == null) {
+            AdjustFactory.getLogger().error("null context");
+            return;
+        }
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getLastDeeplink(context, onLastDeeplinkReadListener);
     }
 
     /**
      * Called to get native SDK version string.
      *
-     * @return Native SDK version string.
+     * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained
      */
-    public static String getSdkVersion() {
+    public static void getSdkVersion(final OnSdkVersionReadListener onSdkVersionReadListener) {
+        if (onSdkVersionReadListener == null) {
+            AdjustFactory.getLogger().error("onSdkVersionReadListener cannot be null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        return adjustInstance.getSdkVersion();
+        adjustInstance.getSdkVersion(onSdkVersionReadListener);
     }
 
     /**
@@ -381,9 +409,25 @@ public class Adjust {
      * @param purchase  AdjustPurchase object to be tracked
      * @param callback  Callback to obtain verification results
      */
-    public static void verifyPurchase(final AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
+    public static void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                               final OnPurchaseVerificationFinishedListener callback) {
+        if (callback == null) {
+            AdjustFactory.getLogger().error("Purchase verification aborted because verification callback is null");
+            return;
+        }
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
-        adjustInstance.verifyPurchase(purchase, callback);
+        adjustInstance.verifyPlayStorePurchase(purchase, callback);
+    }
+
+    /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event     AdjustEvent object to be tracked
+     * @param callback  Callback to obtain verification results
+     */
+    public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
     /**

@@ -28,9 +28,16 @@ public interface Constants {
     String SUBSCRIPTION_URL = "https://subscription.adjust.com";
     String PURCHASE_VERIFICATION_URL = "https://ssrv.adjust.com";
 
+    String BASE_URL_FORMAT = "https://app.%s";
+    String GDPR_URL_FORMAT = "https://gdpr.%s";
+    String SUBSCRIPTION_URL_FORMAT = "https://subscription.%s";
+    String PURCHASE_VERIFICATION_URL_FORMAT = "https://ssrv.%s";
+
+    String BASE_URL_NO_SUB_DOMAIN_FORMAT = "https://%s";
+
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android4.38.5";
+    String CLIENT_SDK = "android5.0.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -47,8 +54,8 @@ public interface Constants {
 
     String ACTIVITY_STATE_FILENAME = "AdjustIoActivityState";
     String ATTRIBUTION_FILENAME = "AdjustAttribution";
-    String SESSION_CALLBACK_PARAMETERS_FILENAME = "AdjustSessionCallbackParameters";
-    String SESSION_PARTNER_PARAMETERS_FILENAME = "AdjustSessionPartnerParameters";
+    String GLOBAL_CALLBACK_PARAMETERS_FILENAME = "AdjustGlobalCallbackParameters";
+    String GLOBAL_PARTNER_PARAMETERS_FILENAME = "AdjustGlobalPartnerParameters";
 
     String MALFORMED = "malformed";
     String SMALL = "small";
@@ -62,7 +69,6 @@ public interface Constants {
     String REFERRER = "referrer";
 
     String ENCODING = "UTF-8";
-    String SHA256 = "SHA-256";
     int MINIMAL_ERROR_STATUS_CODE = 400;
 
     String CALLBACK_PARAMETERS = "callback_params";

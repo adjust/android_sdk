@@ -2,6 +2,7 @@ package com.adjust.sdk;
 
 import android.content.Context;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,60 +18,37 @@ public class AdjustConfig {
     String environment;
     String processName;
     String sdkPrefix;
-    boolean eventBufferingEnabled;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
-    Boolean deviceKnown;
-    Class deepLinkComponent;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
     OnSessionTrackingFailedListener onSessionTrackingFailedListener;
-    OnDeeplinkResponseListener onDeeplinkResponseListener;
-    boolean sendInBackground;
-    Double delayStart;
+    OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener;
+    boolean isSendingInBackgroundEnabled;
     AdjustInstance.PreLaunchActions preLaunchActions;
     ILogger logger;
-    String userAgent;
     String pushToken;
     Boolean startEnabled;
     boolean startOffline;
-    String secretId;
-    String appSecret;
     String externalDeviceId;
-    boolean preinstallTrackingEnabled;
-    Boolean needsCost;
-    String urlStrategy;
+    boolean isPreinstallTrackingEnabled;
+    Boolean isCostDataInAttributionEnabled;
+    List<String> urlStrategyDomains;
+    boolean useSubdomains;
+    boolean isDataResidency;
     String preinstallFilePath;
-    boolean playStoreKidsAppEnabled;
-    boolean coppaCompliantEnabled;
-    boolean finalAttributionEnabled;
+    boolean coppaComplianceEnabled;
+    boolean playStoreKidsComplianceEnabled;
     String fbAppId;
-    boolean readDeviceInfoOnceEnabled;
+    boolean isDeviceIdsReadingOnceEnabled;
     OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
+    ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    Integer eventDeduplicationIdsMaxSize;
+    ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
-
-    public static final String URL_STRATEGY_INDIA = "url_strategy_india";
-    public static final String URL_STRATEGY_CHINA = "url_strategy_china";
-    public static final String URL_STRATEGY_CN = "url_strategy_cn";
-    public static final String URL_STRATEGY_CN_ONLY = "url_strategy_cn_only";
-    public static final String DATA_RESIDENCY_EU = "data_residency_eu";
-    public static final String DATA_RESIDENCY_TR = "data_residency_tr";
-    public static final String DATA_RESIDENCY_US = "data_residency_us";
-
-    public static final String AD_REVENUE_APPLOVIN_MAX = "applovin_max_sdk";
-    public static final String AD_REVENUE_MOPUB = "mopub";
-    public static final String AD_REVENUE_ADMOB = "admob_sdk";
-    public static final String AD_REVENUE_IRONSOURCE = "ironsource_sdk";
-    public static final String AD_REVENUE_ADMOST = "admost_sdk";
-    public static final String AD_REVENUE_UNITY = "unity_sdk";
-    public static final String AD_REVENUE_HELIUM_CHARTBOOST = "helium_chartboost_sdk";
-    public static final String AD_REVENUE_SOURCE_PUBLISHER = "publisher_sdk";
-    public static final String AD_REVENUE_TOPON = "topon_sdk";
-    public static final String AD_REVENUE_ADX = "adx_sdk";
-    public static final String AD_REVENUE_TRADPLUS = "tradplus_sdk";
 
     public AdjustConfig(Context context, String appToken, String environment) {
         init(context, appToken, environment, false);
@@ -100,47 +78,85 @@ public class AdjustConfig {
         this.environment = environment;
 
         // default values
-        this.eventBufferingEnabled = false;
-        this.sendInBackground = false;
-        this.preinstallTrackingEnabled = false;
-    }
-
-    public void setEventBufferingEnabled(Boolean eventBufferingEnabled) {
-        if (eventBufferingEnabled == null) {
-            this.eventBufferingEnabled = false;
-            return;
-        }
-        this.eventBufferingEnabled = eventBufferingEnabled;
-    }
-
-    public void setSendInBackground(boolean sendInBackground) {
-        this.sendInBackground = sendInBackground;
+        this.isSendingInBackgroundEnabled = false;
+        this.isPreinstallTrackingEnabled = false;
+        this.isDeviceIdsReadingOnceEnabled = false;
+        this.coppaComplianceEnabled = false;
+        this.playStoreKidsComplianceEnabled = false;
     }
 
     public void setLogLevel(LogLevel logLevel) {
         setLogLevel(logLevel, environment);
     }
 
+    private void setLogLevel(LogLevel logLevel, String environment) {
+        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
+    }
+
     public void setSdkPrefix(String sdkPrefix) {
         this.sdkPrefix = sdkPrefix;
     }
 
-    public void setProcessName(String processName) { this.processName = processName; }
+    public void setProcessName(String processName) {
+        this.processName = processName;
+    }
 
     public void setDefaultTracker(String defaultTracker) {
         this.defaultTracker = defaultTracker;
     }
 
+    public void setExternalDeviceId(String externalDeviceId) {
+        this.externalDeviceId = externalDeviceId;
+    }
+
+    public void setPreinstallFilePath(String preinstallFilePath) {
+        this.preinstallFilePath = preinstallFilePath;
+    }
+
+    public void enableCoppaCompliance() {
+        this.coppaComplianceEnabled = true;
+    }
+
+    public void enablePlayStoreKidsCompliance() {
+        this.playStoreKidsComplianceEnabled = true;
+    }
+
+    public void setFbAppId(String fbAppId) {
+        this.fbAppId = fbAppId;
+    }
+
+    public void setEventDeduplicationIdsMaxSize(Integer eventDeduplicationIdsMaxSize) {
+        this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
+    }
+
+    public void setUrlStrategy(List<String> domains, boolean useSubdomains, boolean isDataResidency) {
+        if (domains == null || domains.isEmpty()) {
+            logger.error("Invalid URL strategy domains array");
+            return;
+        }
+        this.urlStrategyDomains = domains;
+        this.useSubdomains = useSubdomains;
+        this.isDataResidency = isDataResidency;
+    }
+
+    public void enablePreinstallTracking() {
+        this.isPreinstallTrackingEnabled = true;
+    }
+
+    public void enableCostDataInAttribution() {
+        this.isCostDataInAttributionEnabled = true;
+    }
+
+    public void enableSendingInBackground() {
+        this.isSendingInBackgroundEnabled = true;
+    }
+
+    public void enableDeviceIdsReadingOnce() {
+        this.isDeviceIdsReadingOnceEnabled = true;
+    }
+
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
         this.onAttributionChangedListener = onAttributionChangedListener;
-    }
-
-    public void setDeviceKnown(boolean deviceKnown) {
-        this.deviceKnown = deviceKnown;
-    }
-
-    public void setDeepLinkComponent(Class deepLinkComponent) {
-        this.deepLinkComponent = deepLinkComponent;
     }
 
     public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
@@ -159,104 +175,8 @@ public class AdjustConfig {
         this.onSessionTrackingFailedListener = onSessionTrackingFailedListener;
     }
 
-    public void setOnDeeplinkResponseListener(OnDeeplinkResponseListener onDeeplinkResponseListener) {
-        this.onDeeplinkResponseListener = onDeeplinkResponseListener;
-    }
-
-    public void setDelayStart(double delayStart) {
-        this.delayStart = delayStart;
-    }
-
-    public void setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
-    }
-
-    public void setAppSecret(long secretId, long info1, long info2, long info3, long info4) {
-        this.secretId = Util.formatString("%d", secretId);
-        this.appSecret = Util.formatString("%d%d%d%d", info1, info2, info3, info4);
-    }
-
-    @Deprecated
-    public void setReadMobileEquipmentIdentity(boolean readMobileEquipmentIdentity) {
-        logger.warn("This method has been deprecated and shouldn't be used anymore");
-    }
-
-    public void setExternalDeviceId(String externalDeviceId) {
-        this.externalDeviceId = externalDeviceId;
-    }
-
-    public void setPreinstallTrackingEnabled(boolean preinstallTrackingEnabled) {
-        this.preinstallTrackingEnabled = preinstallTrackingEnabled;
-    }
-
-    public void setPreinstallFilePath(String preinstallFilePath) {
-        this.preinstallFilePath = preinstallFilePath;
-    }
-
-    public void setNeedsCost(boolean needsCost) {
-        this.needsCost = needsCost;
-    }
-
-    public void setPlayStoreKidsAppEnabled(boolean playStoreKidsAppEnabled) {
-        this.playStoreKidsAppEnabled = playStoreKidsAppEnabled;
-    }
-
-    public void setCoppaCompliantEnabled(boolean coppaCompliantEnabled) {
-        this.coppaCompliantEnabled = coppaCompliantEnabled;
-    }
-
-    public void setFinalAttributionEnabled(boolean finalAttributionEnabled) {
-        this.finalAttributionEnabled = finalAttributionEnabled;
-    }
-
-    public void setFbAppId(String fbAppId) {
-        this.fbAppId = fbAppId;
-    }
-
-    public boolean isValid() {
-        if (!checkAppToken(appToken)) return false;
-        if (!checkEnvironment(environment)) return false;
-        if (!checkContext(context)) return false;
-
-        return true;
-    }
-
-    public void setUrlStrategy(String urlStrategy) {
-        if (urlStrategy == null || urlStrategy.isEmpty()) {
-            logger.error("Invalid url strategy");
-            return;
-        }
-        if (!urlStrategy.equals(URL_STRATEGY_INDIA)
-                && !urlStrategy.equals(URL_STRATEGY_CHINA)
-                && !urlStrategy.equals(URL_STRATEGY_CN)
-                && !urlStrategy.equals(URL_STRATEGY_CN_ONLY)
-                && !urlStrategy.equals(DATA_RESIDENCY_EU)
-                && !urlStrategy.equals(DATA_RESIDENCY_TR)
-                && !urlStrategy.equals(DATA_RESIDENCY_US))
-        {
-            logger.warn("Unrecognised url strategy %s", urlStrategy);
-        }
-        this.urlStrategy = urlStrategy;
-    }
-
-    public void setReadDeviceInfoOnceEnabled(boolean readDeviceInfoOnceEnabled) {
-        this.readDeviceInfoOnceEnabled = readDeviceInfoOnceEnabled;
-    }
-
-    public String getBasePath() {
-        return basePath;
-    }
-
-    public String getGdprPath() {
-        return gdprPath;
-    }
-
-    public String getSubscriptionPath() {
-        return subscriptionPath;
-    }
-
-    public String getPurchaseVerificationPath() {
-        return purchaseVerificationPath;
+    public void setOnDeferredDeeplinkResponseListener(OnDeferredDeeplinkResponseListener onDeferredDeeplinkResponseListener) {
+        this.onDeferredDeeplinkResponseListener = onDeferredDeeplinkResponseListener;
     }
 
     public Context getContext() {
@@ -279,24 +199,56 @@ public class AdjustConfig {
         return sdkPrefix;
     }
 
-    public boolean isEventBufferingEnabled() {
-        return eventBufferingEnabled;
-    }
-
     public String getDefaultTracker() {
         return defaultTracker;
     }
 
+    public String getExternalDeviceId() {
+        return externalDeviceId;
+    }
+
+    public boolean isPreinstallTrackingEnabled() {
+        return isPreinstallTrackingEnabled;
+    }
+
+    public Boolean getCostDataInAttributionEnabled() {
+        return isCostDataInAttributionEnabled;
+    }
+
+    public boolean isSendingInBackgroundEnabled() {
+        return isSendingInBackgroundEnabled;
+    }
+
+    public Integer getEventDeduplicationIdsMaxSize() {
+        return eventDeduplicationIdsMaxSize;
+    }
+
+    public List<String> getUrlStrategyDomains() {
+        return urlStrategyDomains;
+    }
+
+    public String getPreinstallFilePath() {
+        return preinstallFilePath;
+    }
+
+    public boolean isCoppaComplianceEnabled() {
+        return coppaComplianceEnabled;
+    }
+
+    public boolean isPlayStoreKidsComplianceEnabled() {
+        return playStoreKidsComplianceEnabled;
+    }
+
+    public String getFbAppId() {
+        return fbAppId;
+    }
+
+    public boolean isDeviceIdsReadingOnceEnabled() {
+        return isDeviceIdsReadingOnceEnabled;
+    }
+
     public OnAttributionChangedListener getOnAttributionChangedListener() {
         return onAttributionChangedListener;
-    }
-
-    public Boolean getDeviceKnown() {
-        return deviceKnown;
-    }
-
-    public Class getDeepLinkComponent() {
-        return deepLinkComponent;
     }
 
     public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {
@@ -315,92 +267,12 @@ public class AdjustConfig {
         return onSessionTrackingFailedListener;
     }
 
-    public OnDeeplinkResponseListener getOnDeeplinkResponseListener() {
-        return onDeeplinkResponseListener;
-    }
-
-    public boolean isSendInBackground() {
-        return sendInBackground;
-    }
-
-    public Double getDelayStart() {
-        return delayStart;
-    }
-
-    public AdjustInstance.PreLaunchActions getPreLaunchActions() {
-        return preLaunchActions;
+    public OnDeferredDeeplinkResponseListener getOnDeeplinkResponseListener() {
+        return onDeferredDeeplinkResponseListener;
     }
 
     public ILogger getLogger() {
         return logger;
-    }
-
-    public String getUserAgent() {
-        return userAgent;
-    }
-
-    public String getPushToken() {
-        return pushToken;
-    }
-
-    public Boolean getStartEnabled() {
-        return startEnabled;
-    }
-
-    public boolean isStartOffline() {
-        return startOffline;
-    }
-
-    public String getSecretId() {
-        return secretId;
-    }
-
-    public String getAppSecret() {
-        return appSecret;
-    }
-
-    public String getExternalDeviceId() {
-        return externalDeviceId;
-    }
-
-    public boolean isPreinstallTrackingEnabled() {
-        return preinstallTrackingEnabled;
-    }
-
-    public Boolean getNeedsCost() {
-        return needsCost;
-    }
-
-    public String getUrlStrategy() {
-        return urlStrategy;
-    }
-
-    public String getPreinstallFilePath() {
-        return preinstallFilePath;
-    }
-
-    public boolean isPlayStoreKidsAppEnabled() {
-        return playStoreKidsAppEnabled;
-    }
-
-    public boolean isCoppaCompliantEnabled() {
-        return coppaCompliantEnabled;
-    }
-
-    public boolean isFinalAttributionEnabled() {
-        return finalAttributionEnabled;
-    }
-
-    public String getFbAppId() {
-        return fbAppId;
-    }
-
-    public boolean isReadDeviceInfoOnceEnabled() {
-        return readDeviceInfoOnceEnabled;
-    }
-
-    private void setLogLevel(LogLevel logLevel, String environment) {
-        logger.setLogLevel(logLevel, AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment));
     }
 
     private boolean checkContext(Context context) {
@@ -453,5 +325,18 @@ public class AdjustConfig {
 
         logger.error("Unknown environment '%s'", environment);
         return false;
+    }
+
+    public boolean isValid() {
+        if (!checkAppToken(appToken)) {
+            return false;
+        }
+        if (!checkEnvironment(environment)) {
+            return false;
+        }
+        if (!checkContext(context)) {
+            return false;
+        }
+        return true;
     }
 }

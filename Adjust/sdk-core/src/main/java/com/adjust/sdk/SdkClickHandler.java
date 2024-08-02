@@ -73,6 +73,8 @@ public class SdkClickHandler implements ISdkClickHandler {
 
     private IActivityPackageSender activityPackageSender;
 
+    private long lastPackageRetryInMilli = 0L;
+
     /**
      * SdkClickHandler constructor.
      *
@@ -177,7 +179,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                                 activityHandler.getActivityState(),
                                 activityHandler.getAdjustConfig(),
                                 activityHandler.getDeviceInfo(),
-                                activityHandler.getSessionParameters(),
+                                activityHandler.getGlobalParameters(),
                                 activityHandler.getInternalState());
 
                         // Send referrer sdk_click package.
@@ -215,7 +217,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                         activityHandler.getActivityState(),
                         activityHandler.getAdjustConfig(),
                         activityHandler.getDeviceInfo(),
-                        activityHandler.getSessionParameters());
+                        activityHandler.getGlobalParameters());
 
                 // Send preinstall info sdk_click package.
                 sendSdkClick(sdkClickPackage);
@@ -289,18 +291,12 @@ public class SdkClickHandler implements ISdkClickHandler {
             }
         };
 
-        if (retries <= 0) {
+        long waitTimeMilliSeconds = waitTime(retries);
+        if (waitTimeMilliSeconds > 0) {
+            scheduler.schedule(runnable, waitTimeMilliSeconds);
+        } else {
             runnable.run();
-            return;
         }
-
-        long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-        double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
-        String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-
-        logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
-
-        scheduler.schedule(runnable, waitTimeMilliSeconds);
     }
 
     /**
@@ -366,9 +362,11 @@ public class SdkClickHandler implements ISdkClickHandler {
         SdkClickResponseData sdkClickResponseData = (SdkClickResponseData)responseData;
 
         if (sdkClickResponseData.willRetry) {
-            retrySendingI(sdkClickPackage);
+            retrySendingI(sdkClickPackage, sdkClickResponseData.retryIn);
             return;
         }
+
+        lastPackageRetryInMilli = 0L;
 
         if (activityHandler == null) {
             return;
@@ -439,11 +437,16 @@ public class SdkClickHandler implements ISdkClickHandler {
      * Retry sending of the sdk_click package passed as the parameter (runs within scheduled executor).
      *
      * @param sdkClickPackage sdk_click package to be retried.
+     * @param retryIn
      */
-    private void retrySendingI(final ActivityPackage sdkClickPackage) {
-        int retries = sdkClickPackage.increaseRetries();
+    private void retrySendingI(final ActivityPackage sdkClickPackage, Long retryIn) {
+        if (retryIn != null && retryIn > 0) {
+            lastPackageRetryInMilli = retryIn;
+        } else {
+            int retries = sdkClickPackage.increaseRetries();
 
-        logger.error("Retrying sdk_click package for the %d time", retries);
+            logger.error("Retrying sdk_click package for the %d time", retries);
+        }
 
         sendSdkClick(sdkClickPackage);
     }
@@ -464,4 +467,26 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         logger.error(finalMessage);
     }
+
+    /**
+     * calculate wait time (runs within scheduled executor).
+     * @param retries count of retries
+     * @return calculated wait time depends on the number of retry in and backoff strategy
+     */
+    private long waitTime(int retries) {
+        if (lastPackageRetryInMilli > 0) {
+            return lastPackageRetryInMilli;
+        }
+
+        if (retries > 0) {
+            long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
+            double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
+            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
+            logger.verbose("Waiting for %s seconds before retrying sdk_click for the %d time", secondsString, retries);
+            return waitTimeMilliSeconds;
+        }
+
+        return 0L;
+    }
+
 }

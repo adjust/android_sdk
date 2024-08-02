@@ -24,7 +24,6 @@ public class AdjustFactory {
     private static BackoffStrategy sdkClickBackoffStrategy = null;
     private static BackoffStrategy packageHandlerBackoffStrategy = null;
     private static BackoffStrategy installSessionBackoffStrategy = null;
-    private static long maxDelayStart = -1;
     private static String baseUrl = null;
     private static String gdprUrl = null;
     private static String subscriptionUrl = null;
@@ -32,6 +31,7 @@ public class AdjustFactory {
     private static UtilNetworking.IConnectionOptions connectionOptions = null;
     private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
     private static boolean tryInstallReferrer = true;
+    private static boolean ignoreSystemLifecycleBootstrap = false;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -172,13 +172,6 @@ public class AdjustFactory {
         return purchaseVerificationHandler;
     }
 
-    public static long getMaxDelayStart() {
-        if (maxDelayStart == -1) {
-            return Constants.ONE_SECOND * 10; // 10 seconds
-        }
-        return maxDelayStart;
-    }
-
     public static String getBaseUrl() {
         return AdjustFactory.baseUrl;
     }
@@ -287,12 +280,13 @@ public class AdjustFactory {
         AdjustFactory.tryInstallReferrer = tryInstallReferrer;
     }
 
-    public static void enableSigning() {
-        AdjustSigner.enableSigning(getLogger());
+    public static void setIgnoreSystemLifecycleBootstrap(
+      final boolean ignoreSystemLifecycleBootstrap)
+    {
+        AdjustFactory.ignoreSystemLifecycleBootstrap = ignoreSystemLifecycleBootstrap;
     }
-
-    public static void disableSigning() {
-        AdjustSigner.disableSigning(getLogger());
+    public static boolean isSystemLifecycleBootstrapIgnored() {
+        return AdjustFactory.ignoreSystemLifecycleBootstrap;
     }
 
     private static String byte2HexFormatted(byte[] arr) {
@@ -334,7 +328,6 @@ public class AdjustFactory {
         subsessionInterval = -1;
         sdkClickBackoffStrategy = null;
         packageHandlerBackoffStrategy = null;
-        maxDelayStart = -1;
         baseUrl = Constants.BASE_URL;
         gdprUrl = Constants.GDPR_URL;
         subscriptionUrl = Constants.SUBSCRIPTION_URL;

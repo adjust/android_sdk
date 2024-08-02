@@ -3,7 +3,7 @@ package com.adjust.sdk;
 import android.net.Uri;
 import android.content.Context;
 
-import org.json.JSONObject;
+import com.adjust.sdk.scheduler.AsyncTaskExecutor;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -51,6 +51,8 @@ public class AdjustInstance {
 
     private OnDeeplinkResolvedListener cachedDeeplinkResolutionCallback;
 
+    private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
+    private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     /**
      * Base path for Adjust packages.
      */
@@ -76,7 +78,11 @@ public class AdjustInstance {
      *
      * @param adjustConfig AdjustConfig object used for SDK initialisation
      */
-    public void onCreate(final AdjustConfig adjustConfig) {
+    public void initSdk(final AdjustConfig adjustConfig) {
+        if (!AdjustSigner.isPresent()) {
+            AdjustFactory.getLogger().error("Missing signature library, SDK can't be initialised");
+            return;
+        }
         if (adjustConfig == null) {
             AdjustFactory.getLogger().error("AdjustConfig missing");
             return;
@@ -99,6 +105,8 @@ public class AdjustInstance {
         adjustConfig.subscriptionPath = this.subscriptionPath;
         adjustConfig.purchaseVerificationPath = this.purchaseVerificationPath;
         adjustConfig.cachedDeeplinkResolutionCallback = cachedDeeplinkResolutionCallback;
+        adjustConfig.cachedAdidReadCallbacks = cachedAdidReadCallbacks;
+        adjustConfig.cachedAttributionReadCallbacks = cachedAttributionReadCallbacks;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -137,89 +145,108 @@ public class AdjustInstance {
     }
 
     /**
-     * Called to disable/enable SDK.
+     * Called to enable SDK.
      *
-     * @param enabled boolean indicating whether SDK should be enabled or disabled
      */
-    public void setEnabled(final boolean enabled) {
-        this.startEnabled = enabled;
-        if (checkActivityHandler(enabled, "enabled mode", "disabled mode")) {
-            activityHandler.setEnabled(enabled);
+    public void enable() {
+        this.startEnabled = true;
+        if (checkActivityHandler(true, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(true);
+        }
+    }
+    /**
+     * Called to disable SDK.
+     *
+     */
+    public void disable() {
+        this.startEnabled = false;
+        if (checkActivityHandler(false, "enabled mode", "disabled mode")) {
+            activityHandler.setEnabled(false);
         }
     }
 
     /**
      * Get information if SDK is enabled or not.
      *
-     * @return boolean indicating whether SDK is enabled or not
+     * @param context Application context
+     * @param isEnabledListener Callback to get triggered once information is obtained
      */
-    public boolean isEnabled() {
+    public void isEnabled(final Context context, final OnIsEnabledListener isEnabledListener) {
         if (!checkActivityHandler("isEnabled")) {
-            return isInstanceEnabled();
-        }
-        return activityHandler.isEnabled();
-    }
+            new AsyncTaskExecutor<Context,Boolean>(){
+                @Override
+                protected Boolean doInBackground(Context... contexts) {
+                    return Util.isEnabledFromActivityStateFile(contexts[0]);
+                }
 
-    /**
-     * Called to process deep link.
-     *
-     * @param url Deep link URL to process
-     */
-    public void appWillOpenUrl(final Uri url) {
-        if (!checkActivityHandler("appWillOpenUrl")) {
+                @Override
+                protected void onPostExecute(Boolean isEnabled) {
+                    isEnabledListener.onIsEnabledRead(isEnabled);
+                }
+            }.execute(context);
             return;
         }
-        long clickTime = System.currentTimeMillis();
-        activityHandler.readOpenUrl(url, clickTime);
+        activityHandler.isEnabled(isEnabledListener);
     }
 
     /**
-     * Called to process deep link.
+     * Called to process deeplink.
      *
-     * @param url     Deep link URL to process
+     * @param adjustDeeplink     Deeplink object to process
      * @param context Application context
      */
-    public void appWillOpenUrl(final Uri url, final Context context) {
-        // Check for deep link validity. If invalid, return.
-        if (url == null || url.toString().length() == 0) {
+    public void processDeeplink(final AdjustDeeplink adjustDeeplink, final Context context) {
+        // Check for deeplink validity. If invalid, return.
+        if (adjustDeeplink == null || !adjustDeeplink.isValid()) {
             AdjustFactory.getLogger().warn(
-                    "Skipping deep link processing (null or empty)");
+                    "Skipping deeplink processing (null or empty)");
             return;
         }
 
-        long clickTime = System.currentTimeMillis();
-        if (!checkActivityHandler("appWillOpenUrl", true)) {
-            saveDeeplink(url, clickTime, context);
-            return;
-        }
+        cacheDeeplink(adjustDeeplink.url, context);
 
-        activityHandler.readOpenUrl(url, clickTime);
-    }
-
-    /**
-     * Process the deep link that has opened an app and potentially get a resolved link.
-     *
-     * @param url Deep link URL to process
-     * @param callback  Callback where either resolved or echoed deep link will be sent.
-     * @param context Application context
-     */
-    public void processDeeplink(Uri url, Context context, OnDeeplinkResolvedListener callback) {
-        // if resolution result is not wanted, fallback to default method
-        if (callback == null) {
-            appWillOpenUrl(url, context);
-            return;
-        }
-
-        // if deep link processing is triggered prior to SDK being initialized
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processDeeplink", true)) {
-            saveDeeplink(url, clickTime, context);
+            saveDeeplink(adjustDeeplink.url, clickTime, context);
+            return;
+        }
+
+        activityHandler.processDeeplink(adjustDeeplink.url, clickTime);
+    }
+
+    /**
+     * Process the deeplink that has opened an app and potentially get a resolved link.
+     *
+     * @param adjustDeeplink      Deeplink object to process
+     * @param callback Callback where either resolved or echoed deeplink will be sent.
+     * @param context  Application context
+     */
+    public void processAndResolveDeeplink(AdjustDeeplink adjustDeeplink, Context context, OnDeeplinkResolvedListener callback) {
+        // Check for deeplink validity. If invalid, return.
+        if (adjustDeeplink == null || !adjustDeeplink.isValid()) {
+            AdjustFactory.getLogger().warn(
+                    "Skipping deeplink processing (null or empty)");
+            return;
+        }
+
+        // if resolution result is not wanted, fallback to default method
+        if (callback == null) {
+            processDeeplink(adjustDeeplink, context);
+            return;
+        }
+
+        cacheDeeplink(adjustDeeplink.url, context);
+
+        // if deeplink processing is triggered prior to SDK being initialized
+        long clickTime = System.currentTimeMillis();
+        if (!checkActivityHandler("processAndResolveDeeplink", true)) {
+            saveDeeplink(adjustDeeplink.url, clickTime, context);
             this.cachedDeeplinkResolutionCallback = callback;
             return;
         }
 
-        // if deep link processing was triggered with SDK being initialized
-        activityHandler.readOpenUrl(url, clickTime, callback);
+        // if deeplink processing was triggered with SDK being initialized
+        activityHandler.processAndResolveDeeplink(adjustDeeplink.url, clickTime, callback);
     }
 
     /**
@@ -249,8 +276,8 @@ public class AdjustInstance {
     /**
      * Called to process preinstall payload information sent with SYSTEM_INSTALLER_REFERRER intent.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     public void sendPreinstallReferrer(final String referrer, final Context context) {
         // Check for referrer validity. If invalid, return.
@@ -271,24 +298,25 @@ public class AdjustInstance {
     /**
      * Called to set SDK to offline or online mode.
      *
-     * @param enabled boolean indicating should SDK be in offline mode (true) or not (false)
      */
-    public void setOfflineMode(final boolean enabled) {
-        if (!checkActivityHandler(enabled, "offline mode", "online mode")) {
-            this.startOffline = enabled;
+    public void switchToOfflineMode() {
+        if (!checkActivityHandler(true, "offline mode", "online mode")) {
+            this.startOffline = true;
         } else {
-            activityHandler.setOfflineMode(enabled);
+            activityHandler.setOfflineMode(true);
         }
     }
 
     /**
-     * Called if SDK initialisation was delayed and you would like to stop waiting for timer.
+     * Called to set SDK to online or online mode.
+     *
      */
-    public void sendFirstPackages() {
-        if (!checkActivityHandler("sendFirstPackages")) {
-            return;
+    public void switchBackToOnlineMode() {
+        if (!checkActivityHandler(false, "offline mode", "online mode")) {
+            this.startOffline = false;
+        } else {
+            activityHandler.setOfflineMode(false);
         }
-        activityHandler.sendFirstPackages();
     }
 
     /**
@@ -297,16 +325,16 @@ public class AdjustInstance {
      * @param key   Global callback parameter key
      * @param value Global callback parameter value
      */
-    public void addSessionCallbackParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session callback parameter", true)) {
-            activityHandler.addSessionCallbackParameter(key, value);
+    public void addGlobalCallbackParameter(final String key, final String value) {
+        if (checkActivityHandler("adding global callback parameter", true)) {
+            activityHandler.addGlobalCallbackParameter(key, value);
             return;
         }
 
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.addSessionCallbackParameterI(key, value);
+                activityHandler.addGlobalCallbackParameterI(key, value);
             }
         });
     }
@@ -317,15 +345,15 @@ public class AdjustInstance {
      * @param key   Global partner parameter key
      * @param value Global partner parameter value
      */
-    public void addSessionPartnerParameter(final String key, final String value) {
-        if (checkActivityHandler("adding session partner parameter", true)) {
-            activityHandler.addSessionPartnerParameter(key, value);
+    public void addGlobalPartnerParameter(final String key, final String value) {
+        if (checkActivityHandler("adding global partner parameter", true)) {
+            activityHandler.addGlobalPartnerParameter(key, value);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.addSessionPartnerParameterI(key, value);
+                activityHandler.addGlobalPartnerParameterI(key, value);
             }
         });
     }
@@ -335,15 +363,15 @@ public class AdjustInstance {
      *
      * @param key Global callback parameter key
      */
-    public void removeSessionCallbackParameter(final String key) {
-        if (checkActivityHandler("removing session callback parameter", true)) {
-            activityHandler.removeSessionCallbackParameter(key);
+    public void removeGlobalCallbackParameter(final String key) {
+        if (checkActivityHandler("removing global callback parameter", true)) {
+            activityHandler.removeGlobalCallbackParameter(key);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.removeSessionCallbackParameterI(key);
+                activityHandler.removeGlobalCallbackParameterI(key);
             }
         });
     }
@@ -353,15 +381,15 @@ public class AdjustInstance {
      *
      * @param key Global partner parameter key
      */
-    public void removeSessionPartnerParameter(final String key) {
-        if (checkActivityHandler("removing session partner parameter", true)) {
-            activityHandler.removeSessionPartnerParameter(key);
+    public void removeGlobalPartnerParameter(final String key) {
+        if (checkActivityHandler("removing global partner parameter", true)) {
+            activityHandler.removeGlobalPartnerParameter(key);
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.removeSessionPartnerParameterI(key);
+                activityHandler.removeGlobalPartnerParameterI(key);
             }
         });
     }
@@ -369,15 +397,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global callback parameters.
      */
-    public void resetSessionCallbackParameters() {
-        if (checkActivityHandler("resetting session callback parameters", true)) {
-            activityHandler.resetSessionCallbackParameters();
+    public void removeGlobalCallbackParameters() {
+        if (checkActivityHandler("resetting global callback parameters", true)) {
+            activityHandler.removeGlobalCallbackParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetSessionCallbackParametersI();
+                activityHandler.removeGlobalCallbackParametersI();
             }
         });
     }
@@ -385,15 +413,15 @@ public class AdjustInstance {
     /**
      * Called to remove all added global partner parameters.
      */
-    public void resetSessionPartnerParameters() {
-        if (checkActivityHandler("resetting session partner parameters", true)) {
-            activityHandler.resetSessionPartnerParameters();
+    public void removeGlobalPartnerParameters() {
+        if (checkActivityHandler("resetting global partner parameters", true)) {
+            activityHandler.removeGlobalPartnerParameters();
             return;
         }
         preLaunchActions.preLaunchActionsArray.add(new IRunActivityHandler() {
             @Override
             public void run(final ActivityHandler activityHandler) {
-                activityHandler.resetSessionPartnerParametersI();
+                activityHandler.removeGlobalPartnerParametersI();
             }
         });
     }
@@ -408,19 +436,6 @@ public class AdjustInstance {
         }
         activityHandler.teardown();
         activityHandler = null;
-    }
-
-    /**
-     * Called to set user's push notifications token.
-     *
-     * @param token Push notifications token
-     */
-    public void setPushToken(final String token) {
-        if (!checkActivityHandler("push token", true)) {
-            this.pushToken = token;
-        } else {
-            activityHandler.setPushToken(token, false);
-        }
     }
 
     /**
@@ -452,20 +467,6 @@ public class AdjustInstance {
         }
     }
 
-    /**
-     * Called to disable the third party sharing.
-     *
-     * @param context Application context
-     */
-    public void disableThirdPartySharing(final Context context) {
-        if (!checkActivityHandler("disable third party sharing", true)) {
-            saveDisableThirdPartySharing(context);
-            return;
-        }
-
-        activityHandler.disableThirdPartySharing();
-    }
-
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
         if (!checkActivityHandler("third party sharing", true)) {
             preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
@@ -482,19 +483,6 @@ public class AdjustInstance {
         }
 
         activityHandler.trackMeasurementConsent(consentMeasurement);
-    }
-
-    /**
-     * Track ad revenue from a source provider
-     *
-     * @param source Source of ad revenue information, see AdjustConfig.AD_REVENUE_* for some possible sources
-     * @param adRevenueJson JsonObject content of the ad revenue information
-     */
-    public void trackAdRevenue(String source, JSONObject adRevenueJson) {
-        if (!checkActivityHandler("trackAdRevenue")) {
-            return;
-        }
-        activityHandler.trackAdRevenue(source, adRevenueJson);
     }
 
     /**
@@ -525,34 +513,142 @@ public class AdjustInstance {
     /**
      * Called to get value of unique Adjust device identifier.
      *
-     * @return Unique Adjust device indetifier
+     * @param onAdidReadListener Callback to get triggered once identifier is obtained.
      */
-    public String getAdid() {
+    public void getAdid(OnAdidReadListener onAdidReadListener) {
         if (!checkActivityHandler("getAdid")) {
-            return null;
+            cachedAdidReadCallbacks.add(onAdidReadListener);
+            return;
         }
-        return activityHandler.getAdid();
+        activityHandler.getAdid(onAdidReadListener);
     }
 
     /**
      * Called to get user's current attribution value.
      *
-     * @return AdjustAttribution object with current attribution value
+     * @param attributionReadListener Callback to get triggered once attribution is obtained.
      */
-    public AdjustAttribution getAttribution() {
+    public void getAttribution(OnAttributionReadListener attributionReadListener) {
         if (!checkActivityHandler("getAttribution")) {
-            return null;
+            cachedAttributionReadCallbacks.add(attributionReadListener);
+            return;
         }
-        return activityHandler.getAttribution();
+        activityHandler.getAttribution(attributionReadListener);
     }
 
     /**
      * Called to get native SDK version string.
      *
-     * @return Native SDK version string.
+     * @param onSdkVersionReadListener Callback to get triggered once SDK version is obtained.
      */
-    public String getSdkVersion() {
-        return Util.getSdkVersion();
+    public void getSdkVersion(final OnSdkVersionReadListener onSdkVersionReadListener) {
+        new AsyncTaskExecutor<Void, String>() {
+            @Override
+            protected String doInBackground(Void... voids) {
+                return Util.getSdkVersion();
+            }
+
+            @Override
+            protected void onPostExecute(String sdkVersion) {
+                onSdkVersionReadListener.onSdkVersionRead(sdkVersion);
+            }
+        }.execute();
+    }
+
+    /**
+     * Called to get Google Install Referrer.
+     *
+     * @param context Application context
+     * @param onGooglePlayInstallReferrerReadListener Callback to obtain install referrer.
+     */
+    public void getGooglePlayInstallReferrer(final Context context, final OnGooglePlayInstallReferrerReadListener onGooglePlayInstallReferrerReadListener) {
+        InstallReferrer installReferrer = new InstallReferrer(context, new InstallReferrerReadListener() {
+            @Override
+            public void onInstallReferrerRead(ReferrerDetails referrerDetails, String referrerApi) {
+                onGooglePlayInstallReferrerReadListener.onInstallReferrerRead(new GooglePlayInstallReferrerDetails(referrerDetails));
+            }
+
+            @Override
+            public void onFail(String message) {
+                onGooglePlayInstallReferrerReadListener.onFail(message);
+            }
+        });
+        installReferrer.startConnection();
+    }
+
+
+    /**
+     * Called to get value of Amazon Advertising Identifier.
+     *
+     * @param context                  Application context
+     * @param onAmazonAdIdReadListener Callback to get triggered once identifier is obtained
+     */
+    public void getAmazonAdId(final Context context, final OnAmazonAdIdReadListener onAmazonAdIdReadListener) {
+        DeviceInfo.getFireAdvertisingIdBypassConditions(context.getContentResolver(),onAmazonAdIdReadListener);
+    }
+
+    /**
+     * Verify in app purchase from Google Play.
+     *
+     * @param purchase AdjustPurchase object to be verified
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
+                                        final OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyPurchase")) {
+            AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                    "not_verified",
+                    100,
+                    "SDK needs to be initialized before making purchase verification request");
+            callback.onVerificationFinished(result);
+            return;
+        }
+        activityHandler.verifyPlayStorePurchase(purchase, callback);
+    }
+
+    /**
+     * Verify in app purchase from Google Play and track Adjust event associated with it.
+     *
+     * @param event    AdjustEvent to be tracked
+     * @param callback Callback to be pinged with the verification results
+     */
+    public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
+        if (!checkActivityHandler("verifyAndTrack")) {
+            if (callback != null) {
+                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
+                        "not_verified",
+                        100,
+                        "SDK needs to be initialized before making purchase verification request");
+                callback.onVerificationFinished(result);
+            }
+            return;
+        }
+        activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
+    }
+
+    /**
+     * Called to get last opened deeplink.
+     *
+     * @param context Application context
+     * @param onLastDeeplinkReadListener Callback to obtain last opened deeplink.
+     */
+    public void getLastDeeplink(final Context context, final OnLastDeeplinkReadListener onLastDeeplinkReadListener) {
+        new AsyncTaskExecutor<Void, Uri>() {
+            @Override
+            protected Uri doInBackground(Void... voids) {
+                String cachedDeeplink = getCachedDeeplink(context);
+                try {
+                    return Uri.parse(cachedDeeplink);
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Uri deeplink) {
+                onLastDeeplinkReadListener.onLastDeeplinkRead(deeplink);
+            }
+        }.execute();
     }
 
     /**
@@ -622,8 +718,8 @@ public class AdjustInstance {
     /**
      * Save preinstall referrer to shared preferences.
      *
-     * @param referrer    Preinstall referrer content
-     * @param context     Application context
+     * @param referrer Preinstall referrer content
+     * @param context  Application context
      */
     private void savePreinstallReferrer(final String referrer, final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).savePreinstallReferrer(referrer);
@@ -649,23 +745,33 @@ public class AdjustInstance {
     }
 
     /**
-     * Save disable third party sharing choice to shared preferences.
-     *
-     * @param context Application context
-     */
-    private void saveDisableThirdPartySharing(final Context context) {
-        SharedPreferencesManager.getDefaultInstance(context).setDisableThirdPartySharing();
-    }
-
-    /**
-     * Save deep link to shared preferences.
+     * Save deeplink to shared preferences.
      *
      * @param deeplink  Deeplink Uri object
-     * @param clickTime Time when appWillOpenUrl(Uri, Context) method was called
+     * @param clickTime Time when processDeeplink(Uri, Context) method was called
      * @param context   Application context
      */
     private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
+    }
+
+    /**
+     * Cache deeplink to shared preferences.
+     *
+     * @param deeplink  Deeplink Uri object
+     * @param context   Application context
+     */
+    private void cacheDeeplink(final Uri deeplink, final Context context) {
+        SharedPreferencesManager.getDefaultInstance(context).cacheDeeplink(deeplink);
+    }
+
+    /**
+     * Get cached deeplink from shared preferences.
+     *
+     * @param context   Application context
+     */
+    private String getCachedDeeplink(final Context context) {
+        return SharedPreferencesManager.getDefaultInstance(context).getCachedDeeplink();
     }
 
     /**
@@ -684,26 +790,6 @@ public class AdjustInstance {
      */
     private boolean isInstanceEnabled() {
         return this.startEnabled == null || this.startEnabled;
-    }
-
-    /**
-     * Verify in app purchase from Google Play.
-     *
-     * @param purchase  AdjustPurchase object to be verified
-     * @param callback  Callback to be pinged with the verification results
-     */
-    public void verifyPurchase(AdjustPurchase purchase, OnPurchaseVerificationFinishedListener callback) {
-        if (!checkActivityHandler("verifyPurchase")) {
-            if (callback != null) {
-                AdjustPurchaseVerificationResult result = new AdjustPurchaseVerificationResult(
-                        "not_verified",
-                        100,
-                        "SDK needs to be initialized before making purchase verification request");
-                callback.onVerificationFinished(result);
-            }
-            return;
-        }
-        activityHandler.verifyPurchase(purchase, callback);
     }
 
     /**
@@ -755,11 +841,9 @@ public class AdjustInstance {
             AdjustFactory.setPackageHandlerBackoffStrategy(BackoffStrategy.NO_WAIT);
             AdjustFactory.setSdkClickBackoffStrategy(BackoffStrategy.NO_WAIT);
         }
-        if (testOptions.enableSigning != null && testOptions.enableSigning) {
-            AdjustFactory.enableSigning();
-        }
-        if (testOptions.disableSigning != null && testOptions.disableSigning) {
-            AdjustFactory.disableSigning();
+        if (testOptions.ignoreSystemLifecycleBootstrap != null) {
+            AdjustFactory.setIgnoreSystemLifecycleBootstrap(
+              testOptions.ignoreSystemLifecycleBootstrap.booleanValue());
         }
     }
 }

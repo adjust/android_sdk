@@ -1,0 +1,228 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/staging/"
+    }
+}
+
+android {
+    compileSdk rootProject.ext.coreCompileSdkVersion
+
+    publishing {
+        multipleVariants {
+            allVariants()
+            withJavadocJar()
+        }
+    }
+    defaultConfig {
+        minSdkVersion rootProject.ext.vivoReferrerMinSdkVersion
+        targetSdkVersion rootProject.ext.coreTargetSdkVersion
+    }
+    namespace 'com.adjust.sdk.vivo'
+}
+
+dependencies {
+//    compileOnly files('libs/galaxyapps_sdk_referrer-release-v2.0.aar')
+
+    // Add SDK via module.
+    compileOnly project(':sdk-core')
+    // Add SDK via Maven.
+    // implementation 'com.adjust.sdk:adjust-android:5.0.0'
+}
+
+// read local properties
+File localPropsFile = project.rootProject.file('local.properties')
+if (localPropsFile.exists()) {
+    Properties p = new Properties()
+    new FileInputStream(localPropsFile).withCloseable { is ->
+        p.load(is)
+    }
+    p.each { name, value ->
+        ext[name] = value
+    }
+}
+
+task adjustVivoReferrerPluginAar(type: Copy) {
+    dependsOn 'assembleRelease'
+
+    from('build/outputs/aar/')
+    include 'sdk-plugin-vivo-referrer-release.aar'
+    destinationDir file('build/libs/')
+    rename 'sdk-plugin-vivo-referrer-release.aar', "${project.name}.aar"
+
+}
+
+task adjustVivoReferrerPluginJar(type: Jar) {
+    dependsOn 'packageReleaseAssets'
+    dependsOn 'compileReleaseJavaWithJavac'
+
+    from('build/intermediates/library_assets/release/packageReleaseAssets/out/') {
+        into('assets')
+    }
+    from('build/intermediates/javac/release/classes/')
+
+    archiveFileName = project.provider { "${project.name}.jar" }
+}
+
+
+task adjustVivoReferrerPluginSourcesJar(type: Jar) {
+    setArchiveClassifier('sources')
+    from android.sourceSets.main.java.srcDirs
+}
+
+artifacts {
+    archives adjustVivoReferrerPluginJar
+    archives adjustVivoReferrerPluginSourcesJar
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+/*
+            mavenAndroidVivoReferrerJar(MavenPublication) {
+                customizePomForJar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-vivo-referrer'
+                version rootProject.ext.coreVersionName
+
+                artifact adjustVivoReferrerPluginJar
+                artifact adjustVivoReferrerPluginSourcesJar
+            }
+*/
+            mavenAndroidVivoReferrerAar(MavenPublication) {
+                customizePomForAar(pom)
+                groupId rootProject.ext.adjustGroupId
+                artifactId 'adjust-android-vivo-referrer'
+                version rootProject.ext.coreVersionName
+
+                artifact("$buildDir/outputs/aar/sdk-plugin-vivo-referrer-release.aar") {
+                    builtBy tasks.getByPath("adjustVivoReferrerPluginAar")
+                }
+                artifact adjustVivoReferrerPluginSourcesJar
+            }
+        }
+
+        repositories {
+            maven {
+                if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
+                    println "Using Maven SNAPSHOT repository for publishing"
+                    url "https://oss.sonatype.org/content/repositories/snapshots/"
+                } else {
+                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                }
+                if (project.hasProperty("sonatypeUsername")) {
+                    credentials {
+                        username sonatypeUsername
+                        password sonatypePassword
+                    }
+                }
+            }
+        }
+    }
+    signing {
+//        sign publishing.publications.mavenAndroidVivoReferrerJar
+        sign publishing.publications.mavenAndroidVivoReferrerAar
+    }
+}
+
+def customizePomForJar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Vivo Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Vivo Referrer plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+def customizePomForAar(pom) {
+    pom.withXml {
+        def root = asNode()
+
+        // Add all items necessary for maven central publication.
+        root.children().last() + {
+            resolveStrategy = Closure.DELEGATE_FIRST
+            description 'The Vivo Referrer plugin for Adjust SDK for Android'
+            name 'Adjust Android SDK Vivo Referrer plugin'
+            url 'https://github.com/adjust/android_sdk'
+
+            organization {
+                name 'adjust GmbH'
+                url 'http://www.adjust.com'
+            }
+            licenses {
+                license {
+                    name 'MIT License'
+                    url 'http://www.opensource.org/licenses/mit-license.php'
+                }
+            }
+            scm {
+                url 'git@github.com:adjust/android_sdk.git'
+                connection 'scm:git:git@github.com:adjust/android_sdk.git'
+                developerConnection 'scm:git:git@github.com:adjust/android_sdk.git'
+            }
+            developers {
+                developer {
+                    name 'Pedro Silva'
+                    email 'pedro@adjust.com'
+                }
+                developer {
+                    name 'Ugljesa Erceg'
+                    email 'ugljesa@adjust.com'
+                }
+            }
+        }
+    }
+}
+
+model {
+//    tasks.generatePomFileForMavenAndroidVivoReferrerJarPublication {
+//        destination = file("${project.buildDir}/generated-pom.xml")
+//    }
+    /* TODO check if/how to replace this tasks
+    tasks.publishMavenAndroidVivoReferrerPublicationToMavenLocal {
+        dependsOn project.tasks.signArchives
+    }
+    tasks.publishMavenAndroidVivoReferrerPublicationToMavenRepository {
+        dependsOn project.tasks.signArchives
+    }
+    */
+    tasks.generatePomFileForMavenAndroidVivoReferrerAarPublication {
+        destination = file("${project.buildDir}/generated-pom.xml")
+    }
+}
+
+
