@@ -33,4 +33,5 @@ dependencies {
 
     implementation project(':sdk-core')
     implementation project(':plugins:sdk-plugin-webbridge')
+    implementation 'com.adjust.signature:adjust-android-signature:3+'
 }
