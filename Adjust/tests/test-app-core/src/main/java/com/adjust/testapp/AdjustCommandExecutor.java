@@ -31,6 +31,7 @@ import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
 import com.adjust.sdk.OnEventTrackingFailedListener;
 import com.adjust.sdk.OnEventTrackingSucceededListener;
+import com.adjust.sdk.OnLastDeeplinkReadListener;
 import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
@@ -93,6 +94,7 @@ public class AdjustCommandExecutor {
                 case "verifyTrack": verifyTrack(); break;
                 case "processDeeplink" : processDeeplink(); break;
                 case "attributionGetter" : attributionGetter(); break;
+                case "getLastDeeplink" : getLastDeeplink(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -880,6 +882,17 @@ public class AdjustCommandExecutor {
 
             MainActivity.testLibrary.setInfoToSend(fields);
             MainActivity.testLibrary.sendInfoToServer(basePath);
+        });
+    }
+
+    private void getLastDeeplink() {
+        final String localBasePath = basePath;
+        Adjust.getLastDeeplink(context, new OnLastDeeplinkReadListener() {
+            @Override
+            public void onLastDeeplinkRead(Uri deeplink) {
+                MainActivity.testLibrary.addInfoToSend("last_deeplink", deeplink == null ? "" : deeplink.toString());
+                MainActivity.testLibrary.sendInfoToServer(localBasePath);
+            }
         });
     }
 
