@@ -14,11 +14,19 @@ AdjustEvent.prototype.setRevenue = function(revenue, currency) {
 };
 
 AdjustEvent.prototype.addCallbackParameter = function(key, value) {
+    if (typeof key !== 'string' || typeof value !== 'string') {
+        console.log('Passed key or value is not of string type');
+        return;
+    }
     this.callbackParameters.push(key);
     this.callbackParameters.push(value);
 };
 
 AdjustEvent.prototype.addPartnerParameter = function(key, value) {
+    if (typeof key !== 'string' || typeof value !== 'string') {
+        console.log('Passed key or value is not of string type');
+        return;
+    }
     this.partnerParameters.push(key);
     this.partnerParameters.push(value);
 };
