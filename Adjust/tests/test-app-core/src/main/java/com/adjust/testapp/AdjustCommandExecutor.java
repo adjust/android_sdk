@@ -267,7 +267,7 @@ public class AdjustCommandExecutor {
                     break;
                 case "assert": logLevel = LogLevel.ASSERT;
                     break;
-                case "suppress": logLevel = LogLevel.SUPRESS;
+                case "suppress": logLevel = LogLevel.SUPPRESS;
                     break;
             }
             Log.d("TestApp", logLevel.toString());

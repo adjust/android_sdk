@@ -1,10 +1,7 @@
 package com.adjust.sdk.webbridge;
 
-import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.app.Activity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.app.Application;
@@ -185,7 +182,7 @@ public class AdjustBridgeInstance {
                 } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_ASSERT)) {
                     adjustConfig.setLogLevel(LogLevel.ASSERT);
                 } else if (logLevelString.equalsIgnoreCase(LOG_LEVEL_SUPPRESS)) {
-                    adjustConfig.setLogLevel(LogLevel.SUPRESS);
+                    adjustConfig.setLogLevel(LogLevel.SUPPRESS);
                 }
             }
 
