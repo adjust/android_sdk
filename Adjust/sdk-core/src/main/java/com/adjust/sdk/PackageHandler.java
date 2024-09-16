@@ -193,7 +193,10 @@ public class PackageHandler implements IPackageHandler,
 
         totalWaitTimeSeconds += waitTimeSeconds;
 
-        logger.verbose("Waiting for %s seconds before retrying the %d time", secondsString, retries);
+        logger.verbose("Waiting for %s seconds before retrying %s for the %d time",
+                secondsString,
+                responseData.activityPackage.getActivityKind().toString(),
+                retries);
         scheduler.schedule(runnable, waitTimeMilliSeconds);
         responseData.activityPackage.setWaitBeforeSendTimeSeconds(responseData.activityPackage.getWaitBeforeSendTimeSeconds() + waitTimeSeconds);
     }
