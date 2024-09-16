@@ -417,8 +417,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 sendingParameters,
                 signedParameters);
 
-        logger.debug("Post body: %s", postBodyString);
-
         if (postBodyString == null) {
             return null;
         }
