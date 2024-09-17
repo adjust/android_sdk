@@ -6,7 +6,7 @@ function AdjustThirdPartySharing(isEnabled) {
 
 AdjustThirdPartySharing.prototype.addGranularOption = function(partnerName, key, value) {
     if (typeof partnerName !== 'string' || typeof key !== 'string' || typeof value !== 'string') {
-        console.log('Passed partnerName, key or value is not of string type');
+        console.log('[Adjust]: Passed partnerName, key or value is not of string type');
         return;
     }
     this.granularOptions.push(partnerName);
@@ -16,7 +16,7 @@ AdjustThirdPartySharing.prototype.addGranularOption = function(partnerName, key,
 
 AdjustThirdPartySharing.prototype.addPartnerSharingSetting = function(partnerName, key, value) {
     if (typeof partnerName !== 'string' || typeof key !== 'string' || typeof value !== 'boolean') {
-        console.log('Passed partnerName or key is not of string type or value is not of boolean type');
+        console.log('[Adjust]: Passed partnerName or key is not of string type or value is not of boolean type');
         return;
     }
     this.partnerSharingSettings.push(partnerName);

@@ -90,7 +90,7 @@ var Adjust = {
     addGlobalCallbackParameter: function(key, value) {
         if (AdjustBridge) {
             if (typeof key !== 'string' || typeof value !== 'string') {
-                console.log('Passed key or value is not of string type');
+                console.log('[Adjust]: Passed key or value is not of string type');
                 return;
             }
             AdjustBridge.addGlobalCallbackParameter(key, value);
@@ -100,7 +100,7 @@ var Adjust = {
     addGlobalPartnerParameter: function(key, value) {
         if (AdjustBridge) {
             if (typeof key !== 'string' || typeof value !== 'string') {
-                console.log('Passed key or value is not of string type');
+                console.log('[Adjust]: Passed key or value is not of string type');
                 return;
             }
             AdjustBridge.addGlobalPartnerParameter(key, value);
@@ -110,7 +110,7 @@ var Adjust = {
     removeGlobalCallbackParameter: function(key) {
         if (AdjustBridge) {
             if (typeof key !== 'string') {
-                console.log('Passed key is not of string type');
+                console.log('[Adjust]: Passed key is not of string type');
                 return;
             }
             AdjustBridge.removeGlobalCallbackParameter(key);
@@ -120,7 +120,7 @@ var Adjust = {
     removeGlobalPartnerParameter: function(key) {
         if (AdjustBridge) {
             if (typeof key !== 'string') {
-                console.log('Passed key is not of string type');
+                console.log('[Adjust]: Passed key is not of string type');
                 return;
             }
             AdjustBridge.removeGlobalPartnerParameter(key);
