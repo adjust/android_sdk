@@ -1,3 +1,13 @@
+### Version 5.0.1 (18th September 2024)
+#### Fixed
+- Fixed ANR while reading referrer from Shared Preferences during SDK initialization. 
+
+#### Changed
+- Added input parameter validations in certain public Webbrdige APIs.
+- Updated log messages to add more clarity and other improvements.
+
+---
+
 ### Version 5.0.0 (2nd August 2024)
 
 We're excited to release our major new SDK version (v5). Among many internal improvements, our spoofing protection solution is now included out of the box, reinforcing our commitment to accurate, actionable, and fraud-free data.
