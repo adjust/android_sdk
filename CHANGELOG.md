@@ -1,10 +1,11 @@
 ### Version 5.0.1 (18th September 2024)
 #### Fixed
-- Fixed ANR while reading referrer from Shared Preferences during SDK initialization. 
+- Fixed ANR while reading install referrer from Shared Preferences during SDK initialization.
+- Fixed typo in `SUPPRESS` log level constant and renamed it from `SUPRESS to SUPPRESS` (https://github.com/adjust/android_sdk/issues/613).
 
 #### Changed
-- Added input parameter validations in certain public Webbrdige APIs.
-- Updated log messages to add more clarity and other improvements.
+- Added validation when passing callback / partner parameters and third party sharing granular options / partner sharing setting parameters in web bridge.
+- Updated some log messages to add more clarity.
 
 ---
 
