@@ -89,24 +89,40 @@ var Adjust = {
 
     addGlobalCallbackParameter: function(key, value) {
         if (AdjustBridge) {
+            if (typeof key !== 'string' || typeof value !== 'string') {
+                console.log('[Adjust]: Passed key or value is not of string type');
+                return;
+            }
             AdjustBridge.addGlobalCallbackParameter(key, value);
         }
     },
 
     addGlobalPartnerParameter: function(key, value) {
         if (AdjustBridge) {
+            if (typeof key !== 'string' || typeof value !== 'string') {
+                console.log('[Adjust]: Passed key or value is not of string type');
+                return;
+            }
             AdjustBridge.addGlobalPartnerParameter(key, value);
         }
     },
 
     removeGlobalCallbackParameter: function(key) {
         if (AdjustBridge) {
+            if (typeof key !== 'string') {
+                console.log('[Adjust]: Passed key is not of string type');
+                return;
+            }
             AdjustBridge.removeGlobalCallbackParameter(key);
         }
     },
 
     removeGlobalPartnerParameter: function(key) {
         if (AdjustBridge) {
+            if (typeof key !== 'string') {
+                console.log('[Adjust]: Passed key is not of string type');
+                return;
+            }
             AdjustBridge.removeGlobalPartnerParameter(key);
         }
     },
@@ -243,7 +259,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge5.0.0';
+            return 'web-bridge5.0.1';
         }
     },
 

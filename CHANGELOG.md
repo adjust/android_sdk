@@ -1,3 +1,14 @@
+### Version 5.0.1 (18th September 2024)
+#### Fixed
+- Fixed ANR while reading install referrer from Shared Preferences during SDK initialization.
+- Fixed typo in `SUPPRESS` log level constant and renamed it from `SUPRESS to SUPPRESS` (https://github.com/adjust/android_sdk/issues/613).
+
+#### Changed
+- Added validation when passing callback / partner parameters and third party sharing granular options / partner sharing setting parameters in web bridge.
+- Updated some log messages to add more clarity.
+
+---
+
 ### Version 5.0.0 (2nd August 2024)
 
 We're excited to release our major new SDK version (v5). Among many internal improvements, our spoofing protection solution is now included out of the box, reinforcing our commitment to accurate, actionable, and fraud-free data.

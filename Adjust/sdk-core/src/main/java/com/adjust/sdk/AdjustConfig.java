@@ -63,7 +63,7 @@ public class AdjustConfig {
         logger = AdjustFactory.getLogger();
         // default values
         if (allowSuppressLogLevel && AdjustConfig.ENVIRONMENT_PRODUCTION.equals(environment)) {
-            setLogLevel(LogLevel.SUPRESS, environment);
+            setLogLevel(LogLevel.SUPPRESS, environment);
         } else {
             setLogLevel(LogLevel.INFO, environment);
         }

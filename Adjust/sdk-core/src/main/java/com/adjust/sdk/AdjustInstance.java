@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.content.Context;
 
 import com.adjust.sdk.scheduler.AsyncTaskExecutor;
+import com.adjust.sdk.scheduler.SingleThreadCachedScheduler;
+import com.adjust.sdk.scheduler.ThreadExecutor;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -780,7 +782,8 @@ public class AdjustInstance {
      * @param context Application context
      */
     private void setSendingReferrersAsNotSent(final Context context) {
-        SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent();
+        ThreadExecutor executor = new SingleThreadCachedScheduler("AdjustInstance");
+        executor.submit(() ->  SharedPreferencesManager.getDefaultInstance(context).setSendingReferrersAsNotSent());
     }
 
     /**
