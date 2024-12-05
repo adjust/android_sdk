@@ -1,3 +1,9 @@
+### Version 5.0.2 (5th December 2024)
+#### Changed
+- Switched to depending on a specific version of the signature library.
+
+---
+
 ### Version 5.0.1 (18th September 2024)
 #### Fixed
 - Fixed ANR while reading install referrer from Shared Preferences during SDK initialization.
