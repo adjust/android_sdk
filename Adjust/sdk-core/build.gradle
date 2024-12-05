@@ -220,7 +220,7 @@ def customizePomForAar(pom) {
                 dependency {
                     groupId 'com.adjust.signature'
                     artifactId 'adjust-android-signature'
-                    version '[3.20.0, 4.0.0)'
+                    version '3.35.0'
                     scope 'compile'
                 }
             }
