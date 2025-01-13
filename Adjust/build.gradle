@@ -7,8 +7,8 @@ subprojects {
 ext {
     // Android config.
     coreMinSdkVersion = 21
-    coreCompileSdkVersion = 34
-    coreTargetSdkVersion = 34
+    coreCompileSdkVersion = 35
+    coreTargetSdkVersion = 35
     coreVersionName = '5.0.2'
     defaultVersionCode = 1
     webbridgeMinSdkVersion = 21
