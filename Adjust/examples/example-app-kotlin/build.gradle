@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 android {
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
 
@@ -23,6 +23,11 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
     namespace 'com.adjust.examples'
 }
 
