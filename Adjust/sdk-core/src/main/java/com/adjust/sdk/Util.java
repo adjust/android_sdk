@@ -751,6 +751,8 @@ public class Util {
 
         AdjustAttribution attribution = new AdjustAttribution();
 
+        attribution.jsonResponse = jsonObject.toString();
+
         if ("unity".equals(sdkPlatform)) {
             // Unity platform.
             attribution.trackerToken = jsonObject.optString("tracker_token", "");
