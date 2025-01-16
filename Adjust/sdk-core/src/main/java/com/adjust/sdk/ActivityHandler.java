@@ -451,7 +451,7 @@ public class ActivityHandler
     @Override
     public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
-        new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+        executor.submit(new Runnable() {
             @Override
             public void run() {
                 processDeeplinkI(url, clickTime);
