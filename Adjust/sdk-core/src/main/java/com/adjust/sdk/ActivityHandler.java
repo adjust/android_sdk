@@ -422,7 +422,7 @@ public class ActivityHandler
 
     @Override
     public void isEnabled(OnIsEnabledListener onIsEnabledListener) {
-        executor.submit(new Runnable() {
+        new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 onIsEnabledListener.onIsEnabledRead(isEnabledI());
@@ -451,7 +451,7 @@ public class ActivityHandler
     @Override
     public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
-        executor.submit(new Runnable() {
+        new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
                 processDeeplinkI(url, clickTime);
