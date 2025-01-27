@@ -364,7 +364,7 @@ public class AdjustCommandExecutor {
                     if (attribution.costAmount != null) fields.put("cost_amount", attribution.costAmount.toString());
                     if (attribution.costCurrency != null) fields.put("cost_currency", attribution.costCurrency);
                     if (attribution.fbInstallReferrer != null) fields.put("fb_install_referrer", attribution.fbInstallReferrer);
-                    if (attribution.jsonResponse != null) fields.put("jsonResponse", attribution.jsonResponse);
+                    if (attribution.jsonResponse != null) fields.put("json_response", attribution.jsonResponse);
                     MainActivity.testLibrary.setInfoToSend(fields);
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }
@@ -881,7 +881,7 @@ public class AdjustCommandExecutor {
             if (attribution.fbInstallReferrer != null)
                 fields.put("fb_install_referrer", attribution.fbInstallReferrer);
             if (attribution.jsonResponse != null)
-                fields.put("jsonResponse", attribution.jsonResponse);
+                fields.put("json_response", attribution.jsonResponse);
 
             MainActivity.testLibrary.setInfoToSend(fields);
             MainActivity.testLibrary.sendInfoToServer(basePath);
