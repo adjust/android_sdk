@@ -9,7 +9,7 @@ repositories {
 }
 
 android {
-    compileSdkVersion rootProject.ext.coreCompileSdkVersion
+    compileSdk rootProject.ext.coreCompileSdkVersion
     publishing {
         multipleVariants {
             allVariants()
@@ -27,7 +27,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:5.0.2'
+    // implementation 'com.adjust.sdk:adjust-android:5.1.0'
 }
 
 // read local properties

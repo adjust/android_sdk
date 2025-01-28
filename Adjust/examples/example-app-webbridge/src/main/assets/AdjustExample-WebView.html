@@ -25,7 +25,8 @@
                       'Campaign = ' + attribution.campaign + '\n' +
                       'Adgroup = ' + attribution.adgroup + '\n' +
                       'Creative = ' + attribution.creative + '\n' +
-                      'Click label = ' + attribution.clickLabel);
+                      'Click label = ' + attribution.clickLabel + '\n' +
+                      'Json response = ' + JSON.stringify(attribution.jsonResponse));
             }
 
             function eventSuccessCallback(eventSuccess) {
@@ -186,7 +187,8 @@
                               'Campaign = ' + attribution.campaign + '\n' +
                               'Adgroup = ' + attribution.adgroup + '\n' +
                               'Creative = ' + attribution.creative + '\n' +
-                              'Click label = ' + attribution.clickLabel);
+                              'Click label = ' + attribution.clickLabel + '\n' +
+                              'Json response = ' + JSON.stringify(attribution.jsonResponse));
                     });
                 }
             }

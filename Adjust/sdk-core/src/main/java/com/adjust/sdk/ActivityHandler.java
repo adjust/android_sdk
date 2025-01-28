@@ -212,23 +212,28 @@ public class ActivityHandler
 
     // region SystemLifecycleCallback
     @Override public void onActivityLifecycle(final boolean foregroundOrElseBackground) {
-        executor.submit(() -> {
-            if (internalState.foregroundOrElseBackground != null
-              && internalState.foregroundOrElseBackground.booleanValue()
-                == foregroundOrElseBackground)
-            {
-                return;
-            }
-            // received foregroundOrElseBackground is strictly different from internal state one
+        try {
+            executor.submit(() -> {
+                if (internalState.foregroundOrElseBackground != null
+                        && internalState.foregroundOrElseBackground.booleanValue()
+                        == foregroundOrElseBackground) {
+                    return;
+                }
+                // received foregroundOrElseBackground is strictly different from internal state one
 
-            this.internalState.foregroundOrElseBackground = foregroundOrElseBackground;
+                this.internalState.foregroundOrElseBackground = foregroundOrElseBackground;
 
-            if (foregroundOrElseBackground) {
-                onResumeI();
-            } else {
-                onPauseI();
+                if (foregroundOrElseBackground) {
+                    onResumeI();
+                } else {
+                    onPauseI();
+                }
+            });
+        } catch (Exception e) {
+            if (logger != null) {
+                logger.error("Exception while executing onActivityLifecycle task");
             }
-        });
+        }
     }
     // endregion
 
@@ -420,8 +425,12 @@ public class ActivityHandler
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                onIsEnabledListener.onIsEnabledRead(isEnabledI());
-            }
+                new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        onIsEnabledListener.onIsEnabledRead(isEnabledI());
+                    }
+                });            }
         });
     }
 

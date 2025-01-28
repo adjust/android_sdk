@@ -27,6 +27,7 @@ public class AdjustAttribution implements Serializable {
             new ObjectStreamField("costAmount", Double.class),
             new ObjectStreamField("costCurrency", String.class),
             new ObjectStreamField("fbInstallReferrer", String.class),
+            new ObjectStreamField("jsonResponse", String.class),
     };
 
     public String trackerToken;
@@ -40,6 +41,7 @@ public class AdjustAttribution implements Serializable {
     public Double costAmount;
     public String costCurrency;
     public String fbInstallReferrer;
+    public String jsonResponse;
 
     @Override
     public boolean equals(Object other) {
@@ -76,6 +78,7 @@ public class AdjustAttribution implements Serializable {
         if (costAmount != null) fields.put("costAmount", costAmount.toString());
         if (costCurrency != null) fields.put("costCurrency", costCurrency);
         if (fbInstallReferrer != null) fields.put("fbInstallReferrer", fbInstallReferrer);
+        if (jsonResponse != null) fields.put("jsonResponse", jsonResponse);
 
         return fields;
     }

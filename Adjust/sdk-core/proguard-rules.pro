@@ -16,7 +16,7 @@
 #   public *;
 #}
 -keep public class com.adjust.sdk.** { *; }
--keep class com.adjust.sdk.DeviceInfo**
+-keep class com.adjust.sdk.**
 -keepclassmembers class com.adjust.sdk.DeviceInfo** {*;}
 -keep class com.google.android.gms.common.ConnectionResult {
     int SUCCESS;
