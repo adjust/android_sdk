@@ -1,3 +1,9 @@
+### Version 5.1.0 (28th January 2025)
+#### Added
+- Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found. Equivalently, one can also find `jsonResponse` field being part of the attribution instance in the web bridge API.
+
+---
+
 ### Version 5.0.2 (5th December 2024)
 #### Changed
 - Switched to depending on a specific version of the signature library.
