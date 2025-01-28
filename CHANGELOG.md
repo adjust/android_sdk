@@ -2,6 +2,14 @@
 #### Added
 - Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found. Equivalently, one can also find `jsonResponse` field being part of the attribution instance in the web bridge API.
 
+#### Fixed
+- Fixed occasional NPE occurrences when app was entering background (https://github.com/adjust/android_sdk/issues/630).
+
+#### Changed
+- Updated Gradle version to 8.8.0.
+- Updated the Adjust Signature library version to 3.35.2.
+- Updated `isEnabled` listener to be invoked from the main thread.
+
 ---
 
 ### Version 5.0.2 (5th December 2024)
