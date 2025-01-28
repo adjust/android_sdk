@@ -26,7 +26,7 @@
                       'Adgroup = ' + attribution.adgroup + '\n' +
                       'Creative = ' + attribution.creative + '\n' +
                       'Click label = ' + attribution.clickLabel + '\n' +
-                      'Json response = ' + attribution.jsonResponse);
+                      'Json response = ' + JSON.stringify(attribution.jsonResponse));
             }
 
             function eventSuccessCallback(eventSuccess) {
@@ -188,7 +188,7 @@
                               'Adgroup = ' + attribution.adgroup + '\n' +
                               'Creative = ' + attribution.creative + '\n' +
                               'Click label = ' + attribution.clickLabel + '\n' +
-                              'Json response = ' + attribution.jsonResponse);
+                              'Json response = ' + JSON.stringify(attribution.jsonResponse));
                     });
                 }
             }
