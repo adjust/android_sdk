@@ -40,6 +40,8 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_DEEPLINK_URL = "deeplink_url";
 
+    private static final String PREFS_KEY_DEEPLINK_REFERRER = "deeplink_referrer";
+
     private static final String PREFS_KEY_DEEPLINK_CLICK_TIME = "deeplink_click_time";
 
     private static final String PREFS_KEY_DEEPLINK_URL_CACHED = "deeplink_url_cached";
@@ -374,17 +376,26 @@ public class SharedPreferencesManager {
         remove(PREFS_KEY_GDPR_FORGET_ME);
     }
 
-    public synchronized void saveDeeplink(final Uri deeplink, final long clickTime) {
+    public synchronized void saveDeeplink(final AdjustDeeplink deeplink, final long clickTime) {
         if (deeplink == null) {
             return;
         }
 
-        saveString(PREFS_KEY_DEEPLINK_URL, deeplink.toString());
+        if (deeplink.url == null) {
+            return;
+        }
+
+        saveString(PREFS_KEY_DEEPLINK_URL, deeplink.url.toString());
+        saveString(PREFS_KEY_DEEPLINK_REFERRER, deeplink.referrer);
         saveLong(PREFS_KEY_DEEPLINK_CLICK_TIME, clickTime);
     }
 
     public synchronized String getDeeplinkUrl() {
         return getString(PREFS_KEY_DEEPLINK_URL);
+    }
+
+    public synchronized String getDeeplinkReferrer() {
+        return getString(PREFS_KEY_DEEPLINK_REFERRER);
     }
 
     public synchronized long getDeeplinkClickTime() {
@@ -393,6 +404,7 @@ public class SharedPreferencesManager {
 
     public synchronized void removeDeeplink() {
         remove(PREFS_KEY_DEEPLINK_URL);
+        remove(PREFS_KEY_DEEPLINK_REFERRER);
         remove(PREFS_KEY_DEEPLINK_CLICK_TIME);
     }
 

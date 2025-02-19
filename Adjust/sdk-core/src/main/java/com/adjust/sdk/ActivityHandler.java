@@ -443,22 +443,22 @@ public class ActivityHandler
     }
 
     @Override
-    public void processDeeplink(final Uri url, final long clickTime) {
+    public void processDeeplink(final Uri url, String referrer, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, clickTime);
+                processDeeplinkI(url, referrer, clickTime);
             }
         });
     }
 
     @Override
-    public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(final Uri url, final String referrer, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, clickTime);
+                processDeeplinkI(url, referrer, clickTime);
             }
         });
     }
@@ -1540,6 +1540,7 @@ public class ActivityHandler
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
+        String cachedDeeplinkReferrer = sharedPreferencesManager.getDeeplinkReferrer();
         long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
 
         if (cachedDeeplinkUrl == null) {
@@ -1549,7 +1550,7 @@ public class ActivityHandler
             return;
         }
 
-        processDeeplink(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
+        processDeeplink(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkReferrer, cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -2110,7 +2111,7 @@ public class ActivityHandler
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void processDeeplinkI(Uri url, long clickTime) {
+    private void processDeeplinkI(Uri url, String referrer, long clickTime) {
         if (!isEnabledI()) {
             return;
         }
@@ -2122,6 +2123,7 @@ public class ActivityHandler
 
         ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
                 url,
+                referrer,
                 clickTime,
                 activityState,
                 adjustConfig,
