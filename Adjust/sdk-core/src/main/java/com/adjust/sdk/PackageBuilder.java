@@ -306,6 +306,17 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        if (deviceInfo.storeInfoApi != null) {
+            PackageBuilder.addString(parameters, "store_a", deviceInfo.storeInfoApi.storeType);
+            PackageBuilder.addString(parameters, "app_id_a", deviceInfo.storeInfoApi.appId);
+        }
+        if (deviceInfo.storeInfoMetadata != null) {
+            PackageBuilder.addString(parameters, "store_m", deviceInfo.storeInfoMetadata.storeType);
+            PackageBuilder.addString(parameters, "app_id_m", deviceInfo.storeInfoMetadata.appId);
+        }
+        PackageBuilder.addString(parameters, "store_s", deviceInfo.storeIdSystem);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);

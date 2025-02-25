@@ -100,6 +100,9 @@ class DeviceInfo {
     int connectivityType;
     String mcc;
     String mnc;
+    AdjustStoreInfo storeInfoApi;
+    AdjustStoreInfo storeInfoMetadata;
+    String storeIdSystem;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -137,6 +140,9 @@ class DeviceInfo {
         if (Util.canReadPlayIds(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
+        storeInfoApi = StoreInfoUtil.getStoreInfoFromApi(adjustConfig);
+        storeInfoMetadata = StoreInfoUtil.getStoreInfoFromMetadata(context);
+        storeIdSystem = StoreInfoUtil.getStoreIdFromSystem(context);
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
