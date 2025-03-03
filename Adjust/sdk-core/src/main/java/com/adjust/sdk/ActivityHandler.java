@@ -443,7 +443,7 @@ public class ActivityHandler
     }
 
     @Override
-    public void processDeeplink(final Uri url, String referrer, final long clickTime) {
+    public void processDeeplink(final Uri url, Uri referrer, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -453,7 +453,7 @@ public class ActivityHandler
     }
 
     @Override
-    public void processAndResolveDeeplink(final Uri url, final String referrer, final long clickTime, final OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(final Uri url, final Uri referrer, final long clickTime, final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
@@ -1550,7 +1550,7 @@ public class ActivityHandler
             return;
         }
 
-        processDeeplink(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkReferrer, cachedDeeplinkClickTime);
+        processDeeplink(Uri.parse(cachedDeeplinkUrl), Uri.parse(cachedDeeplinkReferrer), cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -2111,7 +2111,7 @@ public class ActivityHandler
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void processDeeplinkI(Uri url, String referrer, long clickTime) {
+    private void processDeeplinkI(Uri url, Uri referrer, long clickTime) {
         if (!isEnabledI()) {
             return;
         }

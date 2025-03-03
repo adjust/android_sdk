@@ -74,7 +74,7 @@ public class PackageFactory {
     }
 
     public static ActivityPackage buildDeeplinkSdkClickPackage(final Uri url,
-                                                               final String referrer,
+                                                               final Uri referrer,
                                                                final long clickTime,
                                                                final ActivityState activityState,
                                                                final AdjustConfig adjustConfig,
@@ -126,8 +126,11 @@ public class PackageFactory {
         }
 
         clickPackageBuilder.deeplink = url.toString();
-        clickPackageBuilder.referrer = referrer;
         clickPackageBuilder.clickTimeInMilliseconds = clickTime;
+
+        if (referrer != null) {
+            clickPackageBuilder.referrer = referrer.toString();
+        }
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.DEEPLINK);
 

@@ -658,7 +658,7 @@ public class AdjustCommandExecutor {
         String referrer = command.getFirstParameterValue("referrer");
 
         AdjustDeeplink adjustDeeplink = new AdjustDeeplink(Uri.parse(deeplink));
-        adjustDeeplink.setReferrer(referrer);
+        adjustDeeplink.setReferrer(Uri.parse(referrer));
 
         Adjust.processDeeplink(adjustDeeplink, this.context);
     }

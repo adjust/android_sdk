@@ -22,9 +22,9 @@ public interface IActivityHandler {
     boolean isEnabled();
     void isEnabled(OnIsEnabledListener onIsEnabledListener);
 
-    void processDeeplink(Uri url, String referrer, long clickTime);
+    void processDeeplink(Uri url, Uri referrer, long clickTime);
 
-    void processAndResolveDeeplink(Uri url, String referrer, long clickTime, OnDeeplinkResolvedListener callback);
+    void processAndResolveDeeplink(Uri url, Uri referrer, long clickTime, OnDeeplinkResolvedListener callback);
 
     boolean updateAttributionI(AdjustAttribution attribution);
 

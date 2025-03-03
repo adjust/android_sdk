@@ -386,8 +386,11 @@ public class SharedPreferencesManager {
         }
 
         saveString(PREFS_KEY_DEEPLINK_URL, deeplink.url.toString());
-        saveString(PREFS_KEY_DEEPLINK_REFERRER, deeplink.referrer);
         saveLong(PREFS_KEY_DEEPLINK_CLICK_TIME, clickTime);
+
+        if (deeplink.referrer != null) {
+            saveString(PREFS_KEY_DEEPLINK_REFERRER, deeplink.referrer.toString());
+        }
     }
 
     public synchronized String getDeeplinkUrl() {

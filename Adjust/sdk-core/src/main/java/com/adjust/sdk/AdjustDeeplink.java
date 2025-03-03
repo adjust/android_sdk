@@ -4,7 +4,7 @@ import android.net.Uri;
 
 public class AdjustDeeplink {
     Uri url;
-    String referrer;
+    Uri referrer;
 
     public AdjustDeeplink(Uri url) {
         this.url = url;
@@ -17,7 +17,7 @@ public class AdjustDeeplink {
         return true;
     }
 
-    public void setReferrer(String referrer) {
+    public void setReferrer(Uri referrer) {
         this.referrer = referrer;
     }
 
@@ -25,7 +25,7 @@ public class AdjustDeeplink {
         return url;
     }
 
-    public String getReferrer() {
+    public Uri getReferrer() {
         return referrer;
     }
 }
