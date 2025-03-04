@@ -307,15 +307,7 @@ public class PackageBuilder {
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
         // store info
-        if (deviceInfo.storeInfoApi != null) {
-            PackageBuilder.addString(parameters, "store_a", deviceInfo.storeInfoApi.storeType);
-            PackageBuilder.addString(parameters, "app_id_a", deviceInfo.storeInfoApi.appId);
-        }
-        if (deviceInfo.storeInfoMetadata != null) {
-            PackageBuilder.addString(parameters, "store_m", deviceInfo.storeInfoMetadata.storeType);
-            PackageBuilder.addString(parameters, "app_id_m", deviceInfo.storeInfoMetadata.appId);
-        }
-        PackageBuilder.addString(parameters, "store_s", deviceInfo.storeIdSystem);
+        injectStoreInfoToParameters(parameters);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -413,6 +405,9 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -469,6 +464,9 @@ public class PackageBuilder {
         // control params json
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
+        // store info
+        injectStoreInfoToParameters(parameters);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -581,6 +579,9 @@ public class PackageBuilder {
         // control params json
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
+
+        // store info
+        injectStoreInfoToParameters(parameters);
 
         injectFeatureFlagsWithParameters(parameters);
 
@@ -954,6 +955,9 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1053,6 +1057,9 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1142,6 +1149,9 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1230,6 +1240,9 @@ public class PackageBuilder {
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1262,6 +1275,18 @@ public class PackageBuilder {
         if (firstSessionDelayManager.wasSet()) {
             PackageBuilder.addBoolean(parameters, "ff_first_session_delay", true);
         }
+    }
+
+    private void injectStoreInfoToParameters(Map<String, String> parameters) {
+        if (deviceInfo.storeInfoApi != null) {
+            PackageBuilder.addString(parameters, "store_a", deviceInfo.storeInfoApi.storeType);
+            PackageBuilder.addString(parameters, "app_id_a", deviceInfo.storeInfoApi.appId);
+        }
+        if (deviceInfo.storeInfoMetadata != null) {
+            PackageBuilder.addString(parameters, "store_m", deviceInfo.storeInfoMetadata.storeType);
+            PackageBuilder.addString(parameters, "app_id_m", deviceInfo.storeInfoMetadata.appId);
+        }
+        PackageBuilder.addString(parameters, "store_s", deviceInfo.storeIdSystem);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {
