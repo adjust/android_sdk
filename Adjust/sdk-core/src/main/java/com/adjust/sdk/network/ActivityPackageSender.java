@@ -106,6 +106,8 @@ public class ActivityPackageSender implements IActivityPackageSender {
         boolean retryToSend;
         ResponseData responseData;
         do {
+            updateSendingParameters(sendingParameters);
+
             Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
 
             responseData =
@@ -117,6 +119,13 @@ public class ActivityPackageSender implements IActivityPackageSender {
         } while (retryToSend);
 
         return responseData;
+    }
+
+    private void updateSendingParameters(Map<String, String> sendingParameters) {
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
+        logger.debug("Adding sent_at: " + dateString);
     }
 
     private Map<String, String> signParameters(final ActivityPackage activityPackage,
