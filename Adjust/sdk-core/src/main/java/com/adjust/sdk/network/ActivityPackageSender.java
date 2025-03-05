@@ -125,7 +125,6 @@ public class ActivityPackageSender implements IActivityPackageSender {
         long now = System.currentTimeMillis();
         String dateString = Util.dateFormatter.format(now);
         PackageBuilder.addString(sendingParameters, "sent_at", dateString);
-        logger.debug("Adding sent_at: " + dateString);
     }
 
     private Map<String, String> signParameters(final ActivityPackage activityPackage,
