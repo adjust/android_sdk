@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
@@ -143,6 +144,8 @@ public class AdjustBridgeInstance {
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
+            Object storeInfoTypeField = jsonAdjustConfig.get("storeInfoType");
+            Object storeInfoAppIdField = jsonAdjustConfig.get("storeInfoAppId");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -374,6 +377,14 @@ public class AdjustBridgeInstance {
                 if (isFirstSessionDelayEnabled) {
                     adjustConfig.enableFirstSessionDelay();
                 }
+            }
+
+            // store info
+            String storeInfoType = AdjustBridgeUtil.fieldToString(storeInfoTypeField);
+            String storeInfoAppId = AdjustBridgeUtil.fieldToString(storeInfoAppIdField);
+            if (storeInfoType != null || storeInfoAppId != null) {
+                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeInfoType, storeInfoAppId);
+                adjustConfig.setAdjustStoreInfo(adjustStoreInfo);
             }
 
             Adjust.initSdk(adjustConfig);
