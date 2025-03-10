@@ -24,7 +24,7 @@ public class StoreInfoUtil {
         }
     }
 
-    public static AdjustStoreInfo getStoreInfoFromMetadata(final Context context) {
+    public static AdjustStoreInfo getStoreInfoFromManifest(final Context context) {
         try {
             ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle metaData = applicationInfo.metaData;

@@ -101,7 +101,7 @@ class DeviceInfo {
     String mcc;
     String mnc;
     AdjustStoreInfo storeInfoApi;
-    AdjustStoreInfo storeInfoMetadata;
+    AdjustStoreInfo storeInfoManifest;
     String storeIdSystem;
 
     DeviceInfo(AdjustConfig adjustConfig) {
@@ -141,7 +141,7 @@ class DeviceInfo {
             appSetId = Reflection.getAppSetId(context);
         }
         storeInfoApi = StoreInfoUtil.getStoreInfoFromApi(adjustConfig);
-        storeInfoMetadata = StoreInfoUtil.getStoreInfoFromMetadata(context);
+        storeInfoManifest = StoreInfoUtil.getStoreInfoFromManifest(context);
         storeIdSystem = StoreInfoUtil.getStoreIdFromSystem(context);
     }
 

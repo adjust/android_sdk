@@ -1258,14 +1258,14 @@ public class PackageBuilder {
 
     private void injectStoreInfoToParameters(Map<String, String> parameters) {
         if (deviceInfo.storeInfoApi != null) {
-            PackageBuilder.addString(parameters, "store_a", deviceInfo.storeInfoApi.storeType);
-            PackageBuilder.addString(parameters, "app_id_a", deviceInfo.storeInfoApi.appId);
+            PackageBuilder.addString(parameters, "store_api", deviceInfo.storeInfoApi.storeType);
+            PackageBuilder.addString(parameters, "app_id_api", deviceInfo.storeInfoApi.appId);
         }
-        if (deviceInfo.storeInfoMetadata != null) {
-            PackageBuilder.addString(parameters, "store_m", deviceInfo.storeInfoMetadata.storeType);
-            PackageBuilder.addString(parameters, "app_id_m", deviceInfo.storeInfoMetadata.appId);
+        if (deviceInfo.storeInfoManifest != null) {
+            PackageBuilder.addString(parameters, "store_manifest", deviceInfo.storeInfoManifest.storeType);
+            PackageBuilder.addString(parameters, "app_id_manifest", deviceInfo.storeInfoManifest.appId);
         }
-        PackageBuilder.addString(parameters, "store_s", deviceInfo.storeIdSystem);
+        PackageBuilder.addString(parameters, "store_system", deviceInfo.storeIdSystem);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {
