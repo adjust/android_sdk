@@ -213,7 +213,7 @@ public class AdjustInstance {
             return;
         }
 
-        activityHandler.processDeeplink(adjustDeeplink.url, adjustDeeplink.referrer, clickTime);
+        activityHandler.processDeeplink(adjustDeeplink, clickTime);
     }
 
     /**
@@ -248,7 +248,7 @@ public class AdjustInstance {
         }
 
         // if deeplink processing was triggered with SDK being initialized
-        activityHandler.processAndResolveDeeplink(adjustDeeplink.url, adjustDeeplink.referrer, clickTime, callback);
+        activityHandler.processAndResolveDeeplink(adjustDeeplink, clickTime, callback);
     }
 
     /**

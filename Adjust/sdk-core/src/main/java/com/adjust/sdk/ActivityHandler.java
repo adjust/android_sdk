@@ -443,22 +443,24 @@ public class ActivityHandler
     }
 
     @Override
-    public void processDeeplink(final Uri url, Uri referrer, final long clickTime) {
+    public void processDeeplink(final AdjustDeeplink deeplink, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, referrer, clickTime);
+                processDeeplinkI(deeplink, clickTime);
             }
         });
     }
 
     @Override
-    public void processAndResolveDeeplink(final Uri url, final Uri referrer, final long clickTime, final OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(final AdjustDeeplink deeplink,
+                                          final long clickTime,
+                                          final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, referrer, clickTime);
+                processDeeplinkI(deeplink, clickTime);
             }
         });
     }
@@ -1550,7 +1552,9 @@ public class ActivityHandler
             return;
         }
 
-        processDeeplink(Uri.parse(cachedDeeplinkUrl), Uri.parse(cachedDeeplinkReferrer), cachedDeeplinkClickTime);
+        AdjustDeeplink deeplink = new AdjustDeeplink(Uri.parse(cachedDeeplinkUrl));
+        deeplink.setReferrer(Uri.parse(cachedDeeplinkReferrer));
+        processDeeplink(deeplink, cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -2111,19 +2115,24 @@ public class ActivityHandler
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void processDeeplinkI(Uri url, Uri referrer, long clickTime) {
+    private void processDeeplinkI(AdjustDeeplink deeplink, long clickTime) {
         if (!isEnabledI()) {
             return;
         }
+        if (deeplink == null) {
+            return;
+        }
 
-        if (Util.isUrlFilteredOut(url)) {
-            logger.debug("Deeplink (" + url.toString() + ") processing skipped");
+        if (Util.isUrlFilteredOut(deeplink.getUrl())) {
+            if (deeplink.getUrl() != null) {
+                logger.debug("Deeplink (" + deeplink.getUrl().toString() + ") processing skipped");
+            }
             return;
         }
 
         ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
-                url,
-                referrer,
+                deeplink.getUrl(),
+                deeplink.getReferrer(),
                 clickTime,
                 activityState,
                 adjustConfig,
