@@ -130,7 +130,9 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private Map<String, String> signParameters(final ActivityPackage activityPackage,
                                                final Map<String, String> sendingParameters) {
         Map<String, String> packageParams = new HashMap<>(activityPackage.getParameters());
-        packageParams.putAll(sendingParameters);
+        if (sendingParameters != null) {
+            packageParams.putAll(sendingParameters);
+        }
 
         Map<String, String> extraParams = new HashMap<>();
 

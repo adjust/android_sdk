@@ -234,11 +234,9 @@ public class AttributionHandler implements IAttributionHandler,
         ActivityPackage attributionPackage = buildAndGetAttributionPackage(activityHandlerWeakRef.get().getInternalState());
         logger.verbose("%s", attributionPackage.getExtendedString());
 
-        Map<String, String> sendingParameters = new HashMap<>();
-
         activityPackageSender.sendActivityPackage(
                 attributionPackage,
-                sendingParameters,
+                null,
                 this);
     }
 
