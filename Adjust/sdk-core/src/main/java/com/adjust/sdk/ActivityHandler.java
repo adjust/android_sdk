@@ -1553,7 +1553,9 @@ public class ActivityHandler
         }
 
         AdjustDeeplink deeplink = new AdjustDeeplink(Uri.parse(cachedDeeplinkUrl));
-        deeplink.setReferrer(Uri.parse(cachedDeeplinkReferrer));
+        if (cachedDeeplinkReferrer != null) {
+            deeplink.setReferrer(Uri.parse(cachedDeeplinkReferrer));
+        }
         processDeeplink(deeplink, cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
