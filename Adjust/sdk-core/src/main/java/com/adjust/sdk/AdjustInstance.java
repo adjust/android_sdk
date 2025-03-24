@@ -209,11 +209,11 @@ public class AdjustInstance {
 
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processDeeplink", true)) {
-            saveDeeplink(adjustDeeplink.url, clickTime, context);
+            saveDeeplink(adjustDeeplink, clickTime, context);
             return;
         }
 
-        activityHandler.processDeeplink(adjustDeeplink.url, clickTime);
+        activityHandler.processDeeplink(adjustDeeplink, clickTime);
     }
 
     /**
@@ -242,13 +242,13 @@ public class AdjustInstance {
         // if deeplink processing is triggered prior to SDK being initialized
         long clickTime = System.currentTimeMillis();
         if (!checkActivityHandler("processAndResolveDeeplink", true)) {
-            saveDeeplink(adjustDeeplink.url, clickTime, context);
+            saveDeeplink(adjustDeeplink, clickTime, context);
             this.cachedDeeplinkResolutionCallback = callback;
             return;
         }
 
         // if deeplink processing was triggered with SDK being initialized
-        activityHandler.processAndResolveDeeplink(adjustDeeplink.url, clickTime, callback);
+        activityHandler.processAndResolveDeeplink(adjustDeeplink, clickTime, callback);
     }
 
     /**
@@ -753,7 +753,7 @@ public class AdjustInstance {
      * @param clickTime Time when processDeeplink(Uri, Context) method was called
      * @param context   Application context
      */
-    private void saveDeeplink(final Uri deeplink, final long clickTime, final Context context) {
+    private void saveDeeplink(final AdjustDeeplink deeplink, final long clickTime, final Context context) {
         SharedPreferencesManager.getDefaultInstance(context).saveDeeplink(deeplink, clickTime);
     }
 

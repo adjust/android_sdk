@@ -1247,6 +1247,9 @@ public class PackageBuilder {
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {
+        if (parameters == null) {
+            return;
+        }
         if (TextUtils.isEmpty(value)) {
             return;
         }
@@ -1254,6 +1257,9 @@ public class PackageBuilder {
     }
 
     public static void addBoolean(Map<String, String> parameters, String key, Boolean value) {
+        if (parameters == null) {
+            return;
+        }
         if (value == null) {
             return;
         }
@@ -1262,6 +1268,9 @@ public class PackageBuilder {
     }
 
     static void addJsonObject(Map<String, String> parameters, String key, JSONObject jsonObject) {
+        if (parameters == null) {
+            return;
+        }
         if (jsonObject == null) {
             return;
         }
@@ -1270,6 +1279,9 @@ public class PackageBuilder {
     }
 
     static void addMapJson(Map<String, String> parameters, String key, Map map) {
+        if (parameters == null) {
+            return;
+        }
         if (map == null) {
             return;
         }
@@ -1283,6 +1295,9 @@ public class PackageBuilder {
     }
 
     public static void addLong(Map<String, String> parameters, String key, long value) {
+        if (parameters == null) {
+            return;
+        }
         if (value < 0) {
             return;
         }
@@ -1291,6 +1306,9 @@ public class PackageBuilder {
     }
 
     public static void addDouble(Map<String, String> parameters, String key, double value) {
+        if (parameters == null) {
+            return;
+        }
         if (value < 0.0) {
             return;
         }
@@ -1299,6 +1317,9 @@ public class PackageBuilder {
     }
 
     private static void addDateInMilliseconds(Map<String, String> parameters, String key, long value) {
+        if (parameters == null) {
+            return;
+        }
         if (value <= 0) {
             return;
         }
@@ -1307,6 +1328,9 @@ public class PackageBuilder {
     }
 
     private static void addDateInSeconds(Map<String, String> parameters, String key, long value) {
+        if (parameters == null) {
+            return;
+        }
         if (value <= 0) {
             return;
         }
@@ -1315,6 +1339,9 @@ public class PackageBuilder {
     }
 
     private static void addDate(Map<String, String> parameters, String key, Date value) {
+        if (parameters == null) {
+            return;
+        }
         if (value == null) {
             return;
         }
@@ -1323,6 +1350,9 @@ public class PackageBuilder {
     }
 
     private static void addDuration(Map<String, String> parameters, String key, long durationInMilliSeconds) {
+        if (parameters == null) {
+            return;
+        }
         if (durationInMilliSeconds < 0) {
             return;
         }
@@ -1331,6 +1361,9 @@ public class PackageBuilder {
     }
 
     private static void addDouble(Map<String, String> parameters, String key, Double value) {
+        if (parameters == null) {
+            return;
+        }
         if (value == null) {
             return;
         }
@@ -1339,6 +1372,9 @@ public class PackageBuilder {
     }
 
     private static void addDoubleWithoutRounding(Map<String, String> parameters, String key, Double value) {
+        if (parameters == null) {
+            return;
+        }
         if (value == null) {
             return;
         }
@@ -1347,6 +1383,9 @@ public class PackageBuilder {
     }
 
     private static void addInteger(Map<String, String> parameters, String key, Integer value) {
+        if (parameters == null) {
+            return;
+        }
         if (value == null) {
             return;
         }

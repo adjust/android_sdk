@@ -1,3 +1,9 @@
+### Version 5.2.0 (24th March 2025)
+#### Added
+- Added ability to send organic search referrer together with deep link.
+
+---
+
 ### Version 5.1.0 (28th January 2025)
 #### Added
 - Added `jsonResponse` field (JSON string) to `AdjustAttribution` where every key-value pair sent by the backend as part of the attribution response can be found. Equivalently, one can also find `jsonResponse` field being part of the attribution instance in the web bridge API.

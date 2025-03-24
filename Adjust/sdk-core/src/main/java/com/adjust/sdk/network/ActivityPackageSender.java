@@ -106,10 +106,12 @@ public class ActivityPackageSender implements IActivityPackageSender {
         boolean retryToSend;
         ResponseData responseData;
         do {
-            Map<String, String> signedParameters = signParameters(activityPackage, sendingParameters);
+            Map<String, String> updatedSendingParameters = updateSendingParameters(sendingParameters);
+
+            Map<String, String> signedParameters = signParameters(activityPackage, updatedSendingParameters);
 
             responseData =
-                    ResponseData.buildResponseData(activityPackage, sendingParameters, signedParameters);
+                    ResponseData.buildResponseData(activityPackage, updatedSendingParameters, signedParameters);
 
             tryToGetResponse(responseData);
 
@@ -119,10 +121,23 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return responseData;
     }
 
+    private Map<String, String> updateSendingParameters(Map<String, String> sendingParameters) {
+        Map<String, String> updatedSendingParameters = sendingParameters;
+        if (updatedSendingParameters == null) {
+            updatedSendingParameters = new HashMap<String, String>();
+        }
+        long now = System.currentTimeMillis();
+        String dateString = Util.dateFormatter.format(now);
+        PackageBuilder.addString(updatedSendingParameters, "sent_at", dateString);
+        return updatedSendingParameters;
+    }
+
     private Map<String, String> signParameters(final ActivityPackage activityPackage,
                                                final Map<String, String> sendingParameters) {
         Map<String, String> packageParams = new HashMap<>(activityPackage.getParameters());
-        packageParams.putAll(sendingParameters);
+        if (sendingParameters != null) {
+            packageParams.putAll(sendingParameters);
+        }
 
         Map<String, String> extraParams = new HashMap<>();
 

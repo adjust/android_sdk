@@ -234,23 +234,10 @@ public class AttributionHandler implements IAttributionHandler,
         ActivityPackage attributionPackage = buildAndGetAttributionPackage(activityHandlerWeakRef.get().getInternalState());
         logger.verbose("%s", attributionPackage.getExtendedString());
 
-        Map<String, String> sendingParameters = generateSendingParametersI();
-
         activityPackageSender.sendActivityPackage(
                 attributionPackage,
-                sendingParameters,
+                null,
                 this);
-    }
-
-    private Map<String, String> generateSendingParametersI() {
-        HashMap<String, String> sendingParameters = new HashMap<>();
-
-        long now = System.currentTimeMillis();
-        String dateString = Util.dateFormatter.format(now);
-
-        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
-
-        return sendingParameters;
     }
 
     private ActivityPackage buildAndGetAttributionPackage(ActivityHandler.InternalState internalState) {

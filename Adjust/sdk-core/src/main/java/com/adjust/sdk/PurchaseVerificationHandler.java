@@ -238,9 +238,6 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
     }
     private Map<String, String> generateSendingParametersI() {
         HashMap<String, String> sendingParameters = new HashMap<>();
-        long now = System.currentTimeMillis();
-        String dateString = Util.dateFormatter.format(now);
-        PackageBuilder.addString(sendingParameters, "sent_at", dateString);
         int queueSize = packageQueue.size() - 1;
         if (queueSize > 0) {
             PackageBuilder.addLong(sendingParameters, "queue_size", queueSize);

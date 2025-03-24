@@ -443,22 +443,24 @@ public class ActivityHandler
     }
 
     @Override
-    public void processDeeplink(final Uri url, final long clickTime) {
+    public void processDeeplink(final AdjustDeeplink deeplink, final long clickTime) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, clickTime);
+                processDeeplinkI(deeplink, clickTime);
             }
         });
     }
 
     @Override
-    public void processAndResolveDeeplink(final Uri url, final long clickTime, final OnDeeplinkResolvedListener callback) {
+    public void processAndResolveDeeplink(final AdjustDeeplink deeplink,
+                                          final long clickTime,
+                                          final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                processDeeplinkI(url, clickTime);
+                processDeeplinkI(deeplink, clickTime);
             }
         });
     }
@@ -1540,6 +1542,7 @@ public class ActivityHandler
 
         SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getDefaultInstance(getContext());
         String cachedDeeplinkUrl = sharedPreferencesManager.getDeeplinkUrl();
+        String cachedDeeplinkReferrer = sharedPreferencesManager.getDeeplinkReferrer();
         long cachedDeeplinkClickTime = sharedPreferencesManager.getDeeplinkClickTime();
 
         if (cachedDeeplinkUrl == null) {
@@ -1549,7 +1552,11 @@ public class ActivityHandler
             return;
         }
 
-        processDeeplink(Uri.parse(cachedDeeplinkUrl), cachedDeeplinkClickTime);
+        AdjustDeeplink deeplink = new AdjustDeeplink(Uri.parse(cachedDeeplinkUrl));
+        if (cachedDeeplinkReferrer != null) {
+            deeplink.setReferrer(Uri.parse(cachedDeeplinkReferrer));
+        }
+        processDeeplink(deeplink, cachedDeeplinkClickTime);
 
         sharedPreferencesManager.removeDeeplink();
     }
@@ -2110,18 +2117,24 @@ public class ActivityHandler
         return referrerDetails.installReferrer.length() != 0;
     }
 
-    private void processDeeplinkI(Uri url, long clickTime) {
+    private void processDeeplinkI(AdjustDeeplink deeplink, long clickTime) {
         if (!isEnabledI()) {
             return;
         }
+        if (deeplink == null) {
+            return;
+        }
 
-        if (Util.isUrlFilteredOut(url)) {
-            logger.debug("Deeplink (" + url.toString() + ") processing skipped");
+        if (Util.isUrlFilteredOut(deeplink.getUrl())) {
+            if (deeplink.getUrl() != null) {
+                logger.debug("Deeplink (" + deeplink.getUrl().toString() + ") processing skipped");
+            }
             return;
         }
 
         ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
-                url,
+                deeplink.getUrl(),
+                deeplink.getReferrer(),
                 clickTime,
                 activityState,
                 adjustConfig,
