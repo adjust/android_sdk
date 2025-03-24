@@ -1,19 +1,19 @@
 package com.adjust.sdk;
 
 public class AdjustStoreInfo {
-    String storeType;
-    String appId;
+    String storeName;
+    String storeAppId;
 
-    public AdjustStoreInfo(String storeType, String appId) {
-        this.storeType = storeType;
-        this.appId = appId;
+    public AdjustStoreInfo(String storeName, String storeAppId) {
+        this.storeName = storeName;
+        this.storeAppId = storeAppId;
     }
 
-    public String getStoreType() {
-        return storeType;
+    public String getStoreName() {
+        return storeName;
     }
 
-    public String getAppId() {
-        return appId;
+    public String getStoreAppId() {
+        return storeAppId;
     }
 }

@@ -24,28 +24,24 @@ public class StoreInfoUtil {
         }
     }
 
-    public static AdjustStoreInfo getStoreInfoFromManifest(final Context context) {
+    public static AdjustStoreInfo getStoreInfoFromClient(final AdjustConfig adjustConfig, final Context context) {
         try {
             ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle metaData = applicationInfo.metaData;
             if (metaData == null) {
-                return null;
+                return adjustConfig.adjustStoreInfo;
             }
 
-            String storeType = metaData.getString("ADJUST_STORE_TYPE");
+            String storeName = metaData.getString("ADJUST_STORE_NAME");
+            if (storeName == null || storeName.isEmpty()) {
+                return adjustConfig.adjustStoreInfo;
+            }
+
             String storeAppId = metaData.getString("ADJUST_STORE_APP_ID");
 
-            if (storeType == null || storeAppId == null) {
-                return null;
-            }
-
-            return new AdjustStoreInfo(storeType, storeAppId);
+            return new AdjustStoreInfo(storeName, storeAppId);
         } catch (Exception e) {
-            return null;
+            return adjustConfig.adjustStoreInfo;
         }
-    }
-
-    public static AdjustStoreInfo getStoreInfoFromApi(final AdjustConfig adjustConfig) {
-        return adjustConfig.adjustStoreInfo;
     }
 }
