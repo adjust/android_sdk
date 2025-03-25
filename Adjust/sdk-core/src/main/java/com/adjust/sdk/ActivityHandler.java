@@ -216,7 +216,7 @@ public class ActivityHandler
     // region SystemLifecycleCallback
     @Override public void onActivityLifecycle(final boolean foregroundOrElseBackground) {
         try {
-            executor.submit(() -> {
+            firstSessionDelayManager.apiAction(() -> {
                 if (internalState.foregroundOrElseBackground != null
                         && internalState.foregroundOrElseBackground.booleanValue()
                         == foregroundOrElseBackground) {
@@ -364,17 +364,14 @@ public class ActivityHandler
 
     @Override
     public void trackEvent(final AdjustEvent event) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                if (internalState.hasFirstSdkStartNotOcurred()) {
-                    logger.warn("Event tracked before first activity resumed.\n" +
-                            "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
-                            "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
-                    startI();
-                }
-                trackEventI(event);
+        firstSessionDelayManager.apiAction(() -> {
+            if (internalState.hasFirstSdkStartNotOcurred()) {
+                logger.warn("Event tracked before first activity resumed.\n" +
+                  "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
+                  "Please check https://github.com/adjust/android_sdk#can-i-trigger-an-event-at-application-launch for more information.");
+                startI();
             }
+            trackEventI(event);
         });
     }
 
@@ -405,22 +402,12 @@ public class ActivityHandler
 
     @Override
     public void setEnabled(final boolean enabled) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                setEnabledI(enabled);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> setEnabledI(enabled));
     }
 
     @Override
     public void setOfflineMode(final boolean offline) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                setOfflineModeI(offline);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> setOfflineModeI(offline));
     }
 
     @Override
@@ -429,17 +416,10 @@ public class ActivityHandler
     }
 
     @Override
-    public void isEnabled(OnIsEnabledListener onIsEnabledListener) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        onIsEnabledListener.onIsEnabledRead(isEnabledI());
-                    }
-                });            }
-        });
+    public void isEnabled(final OnIsEnabledListener onIsEnabledListener) {
+        firstSessionDelayManager.apiAction(() ->
+          new Handler(adjustConfig.context.getMainLooper()).post(
+            () -> onIsEnabledListener.onIsEnabledRead(isEnabledI())));
     }
 
     private boolean isEnabledI() {
@@ -452,12 +432,7 @@ public class ActivityHandler
 
     @Override
     public void processDeeplink(final AdjustDeeplink deeplink, final long clickTime) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                processDeeplinkI(deeplink, clickTime);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> processDeeplinkI(deeplink, clickTime));
     }
 
     @Override
@@ -465,12 +440,7 @@ public class ActivityHandler
                                           final long clickTime,
                                           final OnDeeplinkResolvedListener callback) {
         this.cachedDeeplinkResolutionCallback = callback;
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                processDeeplinkI(deeplink, clickTime);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> processDeeplinkI(deeplink, clickTime));
     }
 
     private void updateAdidI(final String adid) {
@@ -550,22 +520,12 @@ public class ActivityHandler
 
     @Override
     public void sendReftagReferrer() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                sendReftagReferrerI();
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> sendReftagReferrerI());
     }
 
     @Override
     public void sendPreinstallReferrer() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                sendPreinstallReferrerI();
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> sendPreinstallReferrerI());
     }
 
     @Override
@@ -631,122 +591,82 @@ public class ActivityHandler
 
     @Override
     public void addGlobalCallbackParameter(final String key, final String value) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                addGlobalCallbackParameterI(key, value);
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.addGlobalCallbackParameterI(key, value));
     }
 
     @Override
     public void addGlobalPartnerParameter(final String key, final String value) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                addGlobalPartnerParameterI(key, value);
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.addGlobalPartnerParameterI(key, value));
     }
 
     @Override
     public void removeGlobalCallbackParameter(final String key) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                removeGlobalCallbackParameterI(key);
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.removeGlobalCallbackParameterI(key));
     }
 
     @Override
     public void removeGlobalPartnerParameter(final String key) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                removeGlobalPartnerParameterI(key);
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.removeGlobalPartnerParameterI(key));
     }
 
     @Override
     public void removeGlobalCallbackParameters() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                removeGlobalCallbackParametersI();
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.removeGlobalCallbackParametersI());
     }
 
     @Override
     public void removeGlobalPartnerParameters() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                removeGlobalPartnerParametersI();
-            }
-        });
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.removeGlobalPartnerParametersI());
     }
 
     @Override
     public void setPushToken(final String token, final boolean preSaved) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                if (!preSaved) {
-                    SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(token);
-                }
+        firstSessionDelayManager.apiAction(() -> {
+            if (!preSaved) {
+                SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(token);
+            }
 
-                if (internalState.hasFirstSdkStartNotOcurred()) {
-                    // No install has been tracked so far.
-                    // Push token is saved, ready for the session package to pick it up.
-                    return;
-                } else {
-                    setPushTokenI(token);
-                }
+            if (internalState.hasFirstSdkStartNotOcurred()) {
+                // No install has been tracked so far.
+                // Push token is saved, ready for the session package to pick it up.
+                return;
+            } else {
+                setPushTokenI(token);
             }
         });
     }
 
     @Override
     public void gdprForgetMe() {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                gdprForgetMeI();
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> gdprForgetMeI());
     }
 
     @Override
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
-        executor.submit(() -> tryTrackThirdPartySharingI(adjustThirdPartySharing));
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.tryTrackThirdPartySharingI(adjustThirdPartySharing));
     }
 
     @Override
     public void trackMeasurementConsent(final boolean consentMeasurement) {
-        executor.submit(() -> tryTrackMeasurementConsentI(consentMeasurement));
+        firstSessionDelayManager.preLaunchAction(activityHandler ->
+          activityHandler.tryTrackMeasurementConsentI(consentMeasurement));
     }
 
     @Override
     public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                trackAdRevenueI(adjustAdRevenue);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> trackAdRevenueI(adjustAdRevenue));
     }
 
     @Override
     public void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                trackPlayStoreSubscriptionI(subscription);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> trackPlayStoreSubscriptionI(subscription));
     }
 
     @Override
@@ -815,22 +735,12 @@ public class ActivityHandler
 
     @Override
     public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase, final OnPurchaseVerificationFinishedListener callback) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                verifyPlayStorePurchaseI(purchase, callback);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> verifyPlayStorePurchaseI(purchase, callback));
     }
 
     @Override
     public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                verifyAndTrackPlayStorePurchaseI(event, callback);
-            }
-        });
+        firstSessionDelayManager.apiAction(() -> verifyAndTrackPlayStorePurchaseI(event, callback));
     }
 
     @Override

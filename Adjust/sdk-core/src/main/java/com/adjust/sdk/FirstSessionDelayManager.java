@@ -74,7 +74,7 @@ class FirstSessionDelayManager {
         activityHandler.getAdjustConfig().externalDeviceId = externalDeviceId;
     }
 
-    public void apiActionWithBlock(final Runnable runnable) {
+    public void apiAction(final Runnable runnable) {
         if ("started".equals(delayStatus)) {
             apiActions.add(runnable);
         } else {
@@ -82,7 +82,7 @@ class FirstSessionDelayManager {
         }
     }
 
-    public void preLaunchActionWithBlock(final IRunActivityHandler runnableAH) {
+    public void preLaunchAction(final IRunActivityHandler runnableAH) {
         if ("started".equals(delayStatus)) {
             activityHandler.getAdjustConfig().preLaunchActions.preLaunchActionsArray.add(runnableAH);
         } else {
