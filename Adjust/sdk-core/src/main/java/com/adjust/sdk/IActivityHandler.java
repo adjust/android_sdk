@@ -78,6 +78,12 @@ public interface IActivityHandler {
 
     void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
 
+    void stopFirstSessionDelay();
+
+    void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled);
+
+    void setExternalDeviceIdInDelay(final String externalDeviceId);
+
     void gotOptOutResponse();
 
     Context getContext();

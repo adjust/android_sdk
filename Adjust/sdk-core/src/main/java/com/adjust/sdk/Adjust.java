@@ -430,6 +430,20 @@ public class Adjust {
         adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
+    public static void stopFirstSessionDelay() {
+        Adjust.getDefaultInstance().stopFirstSessionDelay();
+    }
+
+    public static void enableCoppaComplianceInDelay() {
+        Adjust.getDefaultInstance().enableCoppaComplianceInDelay();
+    }
+    public static void disableCoppaComplianceInDelay() {
+        Adjust.getDefaultInstance().disableCoppaComplianceInDelay();
+    }
+    public static void setExternalDeviceIdInDelay(final String externalDeviceId) {
+        Adjust.getDefaultInstance().setExternalDeviceIdInDelay(externalDeviceId);
+    }
+
     /**
      * Used for testing purposes only. Do NOT use this method.
      *

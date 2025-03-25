@@ -79,7 +79,7 @@ public class ActivityHandler
     private String subscriptionPath;
 
     private DeviceInfo deviceInfo;
-    AdjustConfig adjustConfig; // always valid after construction
+    private AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
@@ -265,7 +265,7 @@ public class ActivityHandler
         cachedAdjustThirdPartySharingArray = null;
         cachedLastMeasurementConsentTrack = null;
 
-        firstSessionDelayManager = new FirstSessionDelayManager(this, internalState.isFirstLaunch());
+        firstSessionDelayManager = new FirstSessionDelayManager(this);
 
         firstSessionDelayManager.delayOrInit(() -> initI());
     }
@@ -831,6 +831,21 @@ public class ActivityHandler
                 verifyAndTrackPlayStorePurchaseI(event, callback);
             }
         });
+    }
+
+    @Override
+    public void stopFirstSessionDelay() {
+        firstSessionDelayManager.stopFirstSessionDelay();
+    }
+
+    @Override
+    public void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled) {
+        firstSessionDelayManager.setCoppaComplianceInDelay(isCoppaComplianceEnabled);
+    }
+
+    @Override
+    public void setExternalDeviceIdInDelay(final String externalDeviceId) {
+        firstSessionDelayManager.setExternalDeviceIdInDelay(externalDeviceId);
     }
 
     @Override

@@ -10,14 +10,14 @@ class FirstSessionDelayManager {
     private Runnable initBlock;
 
     public FirstSessionDelayManager(
-      final ActivityHandler activityHandler,
-      final boolean isFirstLaunch)
+      final ActivityHandler activityHandler)
     {
         this.activityHandler = activityHandler;
 
         apiActions = new ArrayList<>();
 
-        boolean delayFirstSession = isFirstLaunch && activityHandler.adjustConfig.isFirstSessionDelayEnabled;
+        boolean delayFirstSession = activityHandler.getInternalState().isFirstLaunch()
+          && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled;
 
         if (delayFirstSession) {
             delayStatus = "notStarted";
@@ -63,7 +63,7 @@ class FirstSessionDelayManager {
             return;
         }
 
-        activityHandler.adjustConfig.coppaComplianceEnabled = isCoppaComplianceEnabled;
+        activityHandler.getAdjustConfig().coppaComplianceEnabled = isCoppaComplianceEnabled;
     }
 
     public void setExternalDeviceIdInDelay(final String externalDeviceId) {
@@ -71,7 +71,7 @@ class FirstSessionDelayManager {
             return;
         }
 
-        activityHandler.adjustConfig.externalDeviceId = externalDeviceId;
+        activityHandler.getAdjustConfig().externalDeviceId = externalDeviceId;
     }
 
     public void apiActionWithBlock(final Runnable runnable) {
@@ -84,7 +84,7 @@ class FirstSessionDelayManager {
 
     public void preLaunchActionWithBlock(final IRunActivityHandler runnableAH) {
         if ("started".equals(delayStatus)) {
-            activityHandler.adjustConfig.preLaunchActions.preLaunchActionsArray.add(runnableAH);
+            activityHandler.getAdjustConfig().preLaunchActions.preLaunchActionsArray.add(runnableAH);
         } else {
             activityHandler.executor.submit(() -> {
                 runnableAH.run(activityHandler);

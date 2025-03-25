@@ -626,6 +626,37 @@ public class AdjustInstance {
         activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
+    public void stopFirstSessionDelay() {
+        if (!checkActivityHandler("stopFirstSessionDelay")) {
+            return;
+        }
+
+        activityHandler.stopFirstSessionDelay();
+    }
+
+    public void enableCoppaComplianceInDelay() {
+        if (!checkActivityHandler("enableCoppaComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setCoppaComplianceInDelay(true);
+    }
+
+    public void disableCoppaComplianceInDelay() {
+        if (!checkActivityHandler("disableCoppaComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setCoppaComplianceInDelay(false);
+    }
+    public void setExternalDeviceIdInDelay(final String externalDeviceId) {
+        if (!checkActivityHandler("setExternalDeviceIdInDelay")) {
+            return;
+        }
+
+        activityHandler.setExternalDeviceIdInDelay(externalDeviceId);
+    }
+
     /**
      * Called to get last opened deeplink.
      *
