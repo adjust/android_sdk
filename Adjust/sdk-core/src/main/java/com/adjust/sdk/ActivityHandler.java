@@ -90,8 +90,9 @@ public class ActivityHandler
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     private SystemLifecycle systemLifecycle;
     private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
-    public List<AdjustThirdPartySharing> cachedAdjustThirdPartySharingArray;
-    public Boolean cachedLastMeasurementConsentTrack;
+    private List<AdjustThirdPartySharing> cachedAdjustThirdPartySharingArray;
+    private Boolean cachedLastMeasurementConsentTrack;
+    private FirstSessionDelayManager firstSessionDelayManager;
 
     @Override
     public void teardown() {

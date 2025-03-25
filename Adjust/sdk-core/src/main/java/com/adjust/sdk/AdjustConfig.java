@@ -46,6 +46,7 @@ public class AdjustConfig {
     ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     Integer eventDeduplicationIdsMaxSize;
     ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
+    boolean isFirstSessionDelayEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -83,6 +84,7 @@ public class AdjustConfig {
         this.isDeviceIdsReadingOnceEnabled = false;
         this.coppaComplianceEnabled = false;
         this.playStoreKidsComplianceEnabled = false;
+        this.isFirstSessionDelayEnabled = false;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -153,6 +155,10 @@ public class AdjustConfig {
 
     public void enableDeviceIdsReadingOnce() {
         this.isDeviceIdsReadingOnceEnabled = true;
+    }
+
+    public void enableFirstSessionDelay() {
+        this.isFirstSessionDelayEnabled = true;
     }
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
