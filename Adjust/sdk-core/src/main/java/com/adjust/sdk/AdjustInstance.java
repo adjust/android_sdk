@@ -19,13 +19,9 @@ import java.util.ArrayList;
 public class AdjustInstance {
     public static class PreLaunchActions {
         public List<IRunActivityHandler> preLaunchActionsArray;
-        public List<AdjustThirdPartySharing> preLaunchAdjustThirdPartySharingArray;
-        public Boolean lastMeasurementConsentTracked;
 
         public PreLaunchActions() {
             preLaunchActionsArray = new ArrayList<>();
-            preLaunchAdjustThirdPartySharingArray = new ArrayList<>();
-            lastMeasurementConsentTracked = null;
         }
     }
 
@@ -471,7 +467,8 @@ public class AdjustInstance {
 
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
         if (!checkActivityHandler("third party sharing", true)) {
-            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
+            preLaunchActions.preLaunchActionsArray.add(activityHandlerInner ->
+              activityHandlerInner.tryTrackThirdPartySharingI(adjustThirdPartySharing));
             return;
         }
 
@@ -480,7 +477,8 @@ public class AdjustInstance {
 
     public void trackMeasurementConsent(final boolean consentMeasurement) {
         if (!checkActivityHandler("measurement consent", true)) {
-            preLaunchActions.lastMeasurementConsentTracked = consentMeasurement;
+            preLaunchActions.preLaunchActionsArray.add(activityHandlerInner ->
+              activityHandlerInner.tryTrackMeasurementConsentI(consentMeasurement));
             return;
         }
 

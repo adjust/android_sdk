@@ -90,6 +90,8 @@ public class ActivityHandler
     private ArrayList<OnAdidReadListener> cachedAdidReadCallbacks = new ArrayList<>();
     private SystemLifecycle systemLifecycle;
     private ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
+    public List<AdjustThirdPartySharing> cachedAdjustThirdPartySharingArray;
+    public Boolean cachedLastMeasurementConsentTrack;
 
     @Override
     public void teardown() {
@@ -258,6 +260,9 @@ public class ActivityHandler
         internalState.firstSdkStart = false;
         // preinstall has not been read by default
         internalState.preinstallHasBeenRead = false;
+
+        cachedAdjustThirdPartySharingArray = null;
+        cachedLastMeasurementConsentTrack = null;
 
         executor.submit(() -> initI());
     }
@@ -713,22 +718,12 @@ public class ActivityHandler
 
     @Override
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                trackThirdPartySharingI(adjustThirdPartySharing);
-            }
-        });
+        executor.submit(() -> tryTrackThirdPartySharingI(adjustThirdPartySharing));
     }
 
     @Override
     public void trackMeasurementConsent(final boolean consentMeasurement) {
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                trackMeasurementConsentI(consentMeasurement);
-            }
-        });
+        executor.submit(() -> tryTrackMeasurementConsentI(consentMeasurement));
     }
 
     @Override
@@ -1289,21 +1284,7 @@ public class ActivityHandler
             return;
         } else {
             // check if third party sharing request came, then send it first
-            for (AdjustThirdPartySharing adjustThirdPartySharing :
-                    adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-            {
-                trackThirdPartySharingI(adjustThirdPartySharing);
-            }
-
-            if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
-                trackMeasurementConsentI(
-                        adjustConfig.preLaunchActions.
-                                lastMeasurementConsentTracked.booleanValue());
-            }
-
-            adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
-                    new ArrayList<>();
-            adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
+            processPreLaunchArraysI();
         }
 
         // it shouldn't start if it was disabled after a first session
@@ -1346,23 +1327,7 @@ public class ActivityHandler
             } else {
                 processCoppaComplianceI();
 
-                // check if third party sharing request came, then send it first
-                for (AdjustThirdPartySharing adjustThirdPartySharing :
-                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-                {
-                    trackThirdPartySharingI(adjustThirdPartySharing);
-                }
-
-                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
-                    trackMeasurementConsentI(
-                            adjustConfig.preLaunchActions.
-                                    lastMeasurementConsentTracked.booleanValue());
-                }
-
-                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
-                        new ArrayList<>();
-                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
-
+                processPreLaunchArraysI();
 
                 activityState.sessionCount = 1; // this is the first session
                 transferSessionPackageI(now);
@@ -1916,20 +1881,7 @@ public class ActivityHandler
             } else {
                 processCoppaComplianceI();
 
-                for (AdjustThirdPartySharing adjustThirdPartySharing :
-                        adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray)
-                {
-                    trackThirdPartySharingI(adjustThirdPartySharing);
-                }
-                if (adjustConfig.preLaunchActions.lastMeasurementConsentTracked != null) {
-                    trackMeasurementConsentI(
-                            adjustConfig.preLaunchActions.
-                                    lastMeasurementConsentTracked.booleanValue());
-                }
-
-                adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray =
-                        new ArrayList<>();
-                adjustConfig.preLaunchActions.lastMeasurementConsentTracked = null;
+                processPreLaunchArraysI();
             }
 
             // check if install was tracked
@@ -1947,6 +1899,19 @@ public class ActivityHandler
                 "Resuming handlers due to SDK being enabled");
     }
 
+    private void processPreLaunchArraysI() {
+        if (cachedAdjustThirdPartySharingArray != null && canTrackThirdPartySharingI()) {
+            for (AdjustThirdPartySharing adjustThirdPartySharing : cachedAdjustThirdPartySharingArray) {
+                trackThirdPartySharingI(adjustThirdPartySharing);
+            }
+        }
+        cachedAdjustThirdPartySharingArray = null;
+
+        if (cachedLastMeasurementConsentTrack != null && canTrackMeasurementConsentI()) {
+            trackMeasurementConsentI(cachedLastMeasurementConsentTrack.booleanValue());
+        }
+        cachedLastMeasurementConsentTrack = null;
+    }
 
     private void checkAfterNewStartI() {
         checkAfterNewStartI(SharedPreferencesManager.getDefaultInstance(getContext()));
@@ -2443,18 +2408,32 @@ public class ActivityHandler
         packageHandler.sendFirstPackage();
     }
 
-    private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
-        if (!checkActivityStateI(activityState)) {
-            adjustConfig.preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(
-                    adjustThirdPartySharing);
+    public void tryTrackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
+        if (canTrackThirdPartySharingI()) {
+            trackThirdPartySharingI(adjustThirdPartySharing);
             return;
         }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
+
+        if (cachedAdjustThirdPartySharingArray == null) {
+            cachedAdjustThirdPartySharingArray = new ArrayList<>();
+        }
+
+        cachedAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
+    }
+
+    private boolean canTrackThirdPartySharingI() {
+        if (!checkActivityStateI(activityState)) {return false;}
+        if (!isEnabledI()) { return false; }
+        if (activityState.isGdprForgotten) { return false; }
         if (adjustConfig.coppaComplianceEnabled) {
             logger.warn("Calling third party sharing API not allowed when COPPA enabled");
-            return;
+            return false;
         }
+
+        return true;
+    }
+
+    private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, globalParameters, now);
@@ -2467,14 +2446,24 @@ public class ActivityHandler
         packageHandler.sendFirstPackage();
     }
 
-    private void trackMeasurementConsentI(final boolean consentMeasurement) {
-        if (!checkActivityStateI(activityState)) {
-            adjustConfig.preLaunchActions.lastMeasurementConsentTracked = consentMeasurement;
+    public void tryTrackMeasurementConsentI(final boolean consentMeasurement) {
+        if (canTrackMeasurementConsentI()) {
+            trackMeasurementConsentI(consentMeasurement);
             return;
         }
-        if (!isEnabledI()) { return; }
-        if (activityState.isGdprForgotten) { return; }
 
+        cachedLastMeasurementConsentTrack = consentMeasurement;
+    }
+
+    private boolean canTrackMeasurementConsentI() {
+        if (!checkActivityStateI(activityState)) { return false; }
+        if (!isEnabledI()) { return false; }
+        if (activityState.isGdprForgotten) { return false; }
+
+        return true;
+    }
+
+    private void trackMeasurementConsentI(final boolean consentMeasurement) {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
                 adjustConfig, deviceInfo, activityState, globalParameters, now);
