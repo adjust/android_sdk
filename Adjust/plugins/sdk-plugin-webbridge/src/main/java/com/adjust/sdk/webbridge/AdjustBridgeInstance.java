@@ -144,7 +144,7 @@ public class AdjustBridgeInstance {
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
-            Object storeInfoTypeField = jsonAdjustConfig.get("storeInfoType");
+            Object storeInfoNameField = jsonAdjustConfig.get("storeInfoName");
             Object storeInfoAppIdField = jsonAdjustConfig.get("storeInfoAppId");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
@@ -380,10 +380,10 @@ public class AdjustBridgeInstance {
             }
 
             // store info
-            String storeInfoType = AdjustBridgeUtil.fieldToString(storeInfoTypeField);
-            String storeInfoAppId = AdjustBridgeUtil.fieldToString(storeInfoAppIdField);
-            if (storeInfoType != null || storeInfoAppId != null) {
-                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeInfoType, storeInfoAppId);
+            String storeName = AdjustBridgeUtil.fieldToString(storeInfoNameField);
+            String storeAppId = AdjustBridgeUtil.fieldToString(storeInfoAppIdField);
+            if (storeName != null || storeAppId != null) {
+                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName, storeAppId);
                 adjustConfig.setAdjustStoreInfo(adjustStoreInfo);
             }
 
