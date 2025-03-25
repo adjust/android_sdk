@@ -67,7 +67,7 @@ public class ActivityHandler
     private static final String GLOBAL_PARTNER_PARAMETERS_NAME = "Global Partner parameters";
     private static final String GLOBAL_PARAMETERS_NAME = "Global parameters";
 
-    private ThreadExecutor executor;
+    ThreadExecutor executor;
     private IPackageHandler packageHandler;
     private ActivityState activityState;
     private ILogger logger;
@@ -79,7 +79,7 @@ public class ActivityHandler
     private String subscriptionPath;
 
     private DeviceInfo deviceInfo;
-    private AdjustConfig adjustConfig; // always valid after construction
+    AdjustConfig adjustConfig; // always valid after construction
     private AdjustAttribution attribution;
     private IAttributionHandler attributionHandler;
     private ISdkClickHandler sdkClickHandler;
@@ -265,7 +265,9 @@ public class ActivityHandler
         cachedAdjustThirdPartySharingArray = null;
         cachedLastMeasurementConsentTrack = null;
 
-        executor.submit(() -> initI());
+        firstSessionDelayManager = new FirstSessionDelayManager(this, internalState.isFirstLaunch());
+
+        firstSessionDelayManager.delayOrInit(() -> initI());
     }
 
     @Override
