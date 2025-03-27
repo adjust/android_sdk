@@ -7,7 +7,6 @@ class FirstSessionDelayManager {
     private final ActivityHandler activityHandler;
     private List<Runnable> apiActions;
     private String delayStatus;
-    private Runnable initBlock;
 
     public FirstSessionDelayManager(
       final ActivityHandler activityHandler)
@@ -15,7 +14,7 @@ class FirstSessionDelayManager {
         this.activityHandler = activityHandler;
 
         apiActions = new ArrayList<>();
-
+/*
         boolean delayFirstSession = activityHandler.getInternalState().isFirstLaunch()
           && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled;
 
@@ -24,41 +23,42 @@ class FirstSessionDelayManager {
         } else {
             delayStatus = "notSet";
         }
+
+ */
+        delayStatus = "beforeFileRead";
     }
 
-    public void stopFirstSessionDelay() {
+    public void stopFirstSessionDelayI() {
         if (!"started".equals(delayStatus)) {
             return;
         }
         delayStatus = "stopped";
 
-        activityHandler.executor.submit(() -> {
-            initBlock.run();
-            for (final Runnable apiAction : apiActions) {
-                apiAction.run();
-            }
-        });
+        activityHandler.initI();
+
+        for (final Runnable apiAction : apiActions) {
+            apiAction.run();
+        }
     }
 
-    public void delayOrInit(final Runnable initBlock) {
-        if ("notStarted".equals(delayStatus)) {
-            this.initBlock = initBlock;
+    public void activityStateFileReadI() {
+        boolean delayFirstSession = activityHandler.getActivityState() == null
+          && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled;
+
+        if (delayFirstSession) {
             delayStatus = "started";
             return;
         }
+        delayStatus = "notSet";
 
-        if ("notSet".equals(delayStatus)) {
-            activityHandler.executor.submit(() -> {
-                initBlock.run();
-                for (final Runnable apiAction : apiActions) {
-                    apiAction.run();
-                }
-            });
-            return;
+        activityHandler.initI();
+
+        for (final Runnable apiAction : apiActions) {
+            apiAction.run();
         }
     }
 
-    public void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled) {
+    public void setCoppaComplianceInDelayI(final boolean isCoppaComplianceEnabled) {
         if (!"started".equals(delayStatus)) {
             return;
         }
@@ -66,7 +66,7 @@ class FirstSessionDelayManager {
         activityHandler.getAdjustConfig().coppaComplianceEnabled = isCoppaComplianceEnabled;
     }
 
-    public void setExternalDeviceIdInDelay(final String externalDeviceId) {
+    public void setExternalDeviceIdInDelayI(final String externalDeviceId) {
         if (!"started".equals(delayStatus)) {
             return;
         }
@@ -74,21 +74,19 @@ class FirstSessionDelayManager {
         activityHandler.getAdjustConfig().externalDeviceId = externalDeviceId;
     }
 
-    public void apiAction(final Runnable runnable) {
+    public void apiActionI(final Runnable runnable) {
         if ("started".equals(delayStatus)) {
             apiActions.add(runnable);
         } else {
-            activityHandler.executor.submit(runnable);
+            runnable.run();
         }
     }
 
-    public void preLaunchAction(final IRunActivityHandler runnableAH) {
+    public void preLaunchActionI(final IRunActivityHandler runnableAH) {
         if ("started".equals(delayStatus)) {
             activityHandler.getAdjustConfig().preLaunchActions.preLaunchActionsArray.add(runnableAH);
         } else {
-            activityHandler.executor.submit(() -> {
-                runnableAH.run(activityHandler);
-            });
+            runnableAH.run(activityHandler);
         }
     }
 }
