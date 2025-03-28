@@ -626,12 +626,12 @@ public class AdjustInstance {
         activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
-    public void stopFirstSessionDelay() {
-        if (!checkActivityHandler("stopFirstSessionDelay")) {
+    public void endFirstSessionDelay() {
+        if (!checkActivityHandler("endFirstSessionDelay")) {
             return;
         }
 
-        activityHandler.stopFirstSessionDelay();
+        activityHandler.endFirstSessionDelay();
     }
 
     public void enableCoppaComplianceInDelay() {

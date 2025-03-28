@@ -95,7 +95,7 @@ public class AdjustCommandExecutor {
                 case "processDeeplink" : processDeeplink(); break;
                 case "attributionGetter" : attributionGetter(); break;
                 case "getLastDeeplink" : getLastDeeplink(); break;
-                case "stopFirstSessionDelay" : stopFirstSessionDelay(); break;
+                case "endFirstSessionDelay" : endFirstSessionDelay(); break;
                 case "coppaComplianceInDelay" : coppaComplianceInDelay(); break;
                 case "externalDeviceIdInDelay" : externalDeviceIdInDelay(); break;
                 //case "testBegin": testBegin(); break;
@@ -915,8 +915,8 @@ public class AdjustCommandExecutor {
         });
     }
 
-    private void stopFirstSessionDelay() {
-        Adjust.stopFirstSessionDelay();
+    private void endFirstSessionDelay() {
+        Adjust.endFirstSessionDelay();
     }
 
     private void coppaComplianceInDelay() {

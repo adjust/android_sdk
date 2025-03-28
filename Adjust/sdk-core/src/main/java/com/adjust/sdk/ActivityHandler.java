@@ -744,8 +744,8 @@ public class ActivityHandler
     }
 
     @Override
-    public void stopFirstSessionDelay() {
-        executor.submit(() -> firstSessionDelayManager.stopFirstSessionDelayI());
+    public void endFirstSessionDelay() {
+        executor.submit(() -> firstSessionDelayManager.endFirstSessionDelayI());
     }
 
     @Override

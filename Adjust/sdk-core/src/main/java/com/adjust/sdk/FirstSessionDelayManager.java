@@ -28,7 +28,7 @@ class FirstSessionDelayManager {
         delayStatus = "beforeFileRead";
     }
 
-    public void stopFirstSessionDelayI() {
+    public void endFirstSessionDelayI() {
         if (!"started".equals(delayStatus)) {
             return;
         }

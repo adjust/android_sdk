@@ -78,7 +78,7 @@ public interface IActivityHandler {
 
     void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
 
-    void stopFirstSessionDelay();
+    void endFirstSessionDelay();
 
     void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled);
 

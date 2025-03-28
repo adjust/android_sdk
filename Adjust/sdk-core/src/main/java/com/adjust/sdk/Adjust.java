@@ -430,8 +430,8 @@ public class Adjust {
         adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
-    public static void stopFirstSessionDelay() {
-        Adjust.getDefaultInstance().stopFirstSessionDelay();
+    public static void endFirstSessionDelay() {
+        Adjust.getDefaultInstance().endFirstSessionDelay();
     }
 
     public static void enableCoppaComplianceInDelay() {
