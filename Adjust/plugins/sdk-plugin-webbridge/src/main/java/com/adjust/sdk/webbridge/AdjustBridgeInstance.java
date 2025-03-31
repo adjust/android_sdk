@@ -382,8 +382,9 @@ public class AdjustBridgeInstance {
             // store info
             String storeName = AdjustBridgeUtil.fieldToString(storeInfoNameField);
             String storeAppId = AdjustBridgeUtil.fieldToString(storeInfoAppIdField);
-            if (storeName != null || storeAppId != null) {
-                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName, storeAppId);
+            if (storeName != null) {
+                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName);
+                adjustStoreInfo.setStoreAppId(storeAppId);
                 adjustConfig.setAdjustStoreInfo(adjustStoreInfo);
             }
 

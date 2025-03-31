@@ -39,7 +39,10 @@ public class StoreInfoUtil {
 
             String storeAppId = metaData.getString("ADJUST_STORE_APP_ID");
 
-            return new AdjustStoreInfo(storeName, storeAppId);
+            AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+            storeInfo.setStoreAppId(storeAppId);
+            return storeInfo;
+
         } catch (Exception e) {
             return adjustConfig.adjustStoreInfo;
         }
