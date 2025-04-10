@@ -25,7 +25,8 @@ public class PackageFactory {
                                                               final AdjustConfig adjustConfig,
                                                               final DeviceInfo deviceInfo,
                                                               final GlobalParameters globalParameters,
-                                                             final ActivityHandler.InternalState internalState) {
+                                                              final FirstSessionDelayManager firstSessionDelayManager,
+                                                              final ActivityHandler.InternalState internalState) {
         if (rawReferrer == null || rawReferrer.length() == 0) {
             return null;
         }
@@ -58,6 +59,7 @@ public class PackageFactory {
                 adjustConfig,
                 deviceInfo,
                 globalParameters,
+                firstSessionDelayManager,
                 internalState);
 
         if (clickPackageBuilder == null) {
@@ -80,6 +82,7 @@ public class PackageFactory {
                                                                final AdjustConfig adjustConfig,
                                                                final DeviceInfo deviceInfo,
                                                                final GlobalParameters globalParameters,
+                                                               final FirstSessionDelayManager firstSessionDelayManager,
                                                                final ActivityHandler.InternalState internalState) {
         if (url == null) {
             return null;
@@ -119,6 +122,7 @@ public class PackageFactory {
                 adjustConfig,
                 deviceInfo,
                 globalParameters,
+                firstSessionDelayManager,
                 internalState);
 
         if (clickPackageBuilder == null) {
@@ -143,6 +147,7 @@ public class PackageFactory {
                                                                       final AdjustConfig adjustConfig,
                                                                       final DeviceInfo deviceInfo,
                                                                       final GlobalParameters globalParameters,
+                                                                      final FirstSessionDelayManager firstSessionDelayManager,
                                                                       final ActivityHandler.InternalState internalState) {
         long now = System.currentTimeMillis();
 
@@ -151,6 +156,7 @@ public class PackageFactory {
                 deviceInfo,
                 activityState,
                 globalParameters,
+                firstSessionDelayManager,
                 now);
         clickPackageBuilder.internalState = internalState;
 
@@ -174,7 +180,8 @@ public class PackageFactory {
                                                                  final ActivityState activityState,
                                                                  final AdjustConfig adjustConfig,
                                                                  final DeviceInfo deviceInfo,
-                                                                 final GlobalParameters globalParameters) {
+                                                                 final GlobalParameters globalParameters,
+                                                                 final FirstSessionDelayManager firstSessionDelayManager) {
         if (preinstallPayload == null || preinstallPayload.length() == 0) {
             return null;
         }
@@ -186,6 +193,7 @@ public class PackageFactory {
                 deviceInfo,
                 activityState,
                 globalParameters,
+                firstSessionDelayManager,
                 now);
 
         clickPackageBuilder.preinstallPayload = preinstallPayload;
@@ -202,6 +210,7 @@ public class PackageFactory {
             final AdjustConfig adjustConfig,
             final DeviceInfo deviceInfo,
             final GlobalParameters globalParameters,
+            final FirstSessionDelayManager firstSessionDelayManager,
             final ActivityHandler.InternalState internalState) {
         if (queryList == null) {
             return null;
@@ -233,6 +242,7 @@ public class PackageFactory {
                 deviceInfo,
                 activityState,
                 globalParameters,
+                firstSessionDelayManager,
                 now);
 
         builder.internalState = internalState;

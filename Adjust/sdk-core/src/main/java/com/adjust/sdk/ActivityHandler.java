@@ -286,6 +286,11 @@ public class ActivityHandler
     }
 
     @Override
+    public FirstSessionDelayManager getFirstSessionDelayManager() {
+        return firstSessionDelayManager;
+    }
+
+    @Override
     public void init(AdjustConfig adjustConfig) {
         this.adjustConfig = adjustConfig;
     }
@@ -1473,7 +1478,8 @@ public class ActivityHandler
         activityState.eventCount++;
         updateActivityStateI(now);
 
-        PackageBuilder eventBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder eventBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         eventBuilder.internalState = internalState;
         ActivityPackage eventPackage = eventBuilder.buildEventPackage(event);
         packageHandler.addPackage(eventPackage);
@@ -1989,6 +1995,7 @@ public class ActivityHandler
                 adjustConfig,
                 deviceInfo,
                 globalParameters,
+                firstSessionDelayManager,
                 internalState);
 
         sdkClickHandler.sendSdkClick(sdkClickPackage);
@@ -2029,6 +2036,7 @@ public class ActivityHandler
                 adjustConfig,
                 deviceInfo,
                 globalParameters,
+                firstSessionDelayManager,
                 internalState);
 
         if (sdkClickPackage == null) {
@@ -2109,8 +2117,8 @@ public class ActivityHandler
     }
 
     private void transferSessionPackageI(long now) {
-        PackageBuilder builder = new PackageBuilder(adjustConfig, deviceInfo, activityState,
-                globalParameters, now);
+        PackageBuilder builder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         builder.internalState = internalState;
         ActivityPackage sessionPackage = builder.buildSessionPackage();
         packageHandler.addPackage(sessionPackage);
@@ -2299,7 +2307,8 @@ public class ActivityHandler
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder infoPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder infoPackageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         infoPackageBuilder.internalState = internalState;
 
         ActivityPackage infoPackage = infoPackageBuilder.buildInfoPackage(Constants.PUSH);
@@ -2320,7 +2329,8 @@ public class ActivityHandler
         writeActivityStateI();
 
         long now = System.currentTimeMillis();
-        PackageBuilder gdprPackageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder gdprPackageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         gdprPackageBuilder.internalState = internalState;
 
         ActivityPackage gdprPackage = gdprPackageBuilder.buildGdprPackage();
@@ -2360,7 +2370,7 @@ public class ActivityHandler
     private void trackThirdPartySharingI(final AdjustThirdPartySharing adjustThirdPartySharing) {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, globalParameters, now);
+                adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage =
@@ -2390,7 +2400,7 @@ public class ActivityHandler
     private void trackMeasurementConsentI(final boolean consentMeasurement) {
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, globalParameters, now);
+                adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         packageBuilder.internalState = internalState;
 
         ActivityPackage activityPackage =
@@ -2408,7 +2418,8 @@ public class ActivityHandler
 
         long now = System.currentTimeMillis();
 
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         packageBuilder.internalState = internalState;
 
         ActivityPackage adRevenuePackage = packageBuilder.buildAdRevenuePackage(adjustAdRevenue);
@@ -2423,7 +2434,8 @@ public class ActivityHandler
 
         long now = System.currentTimeMillis();
 
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         packageBuilder.internalState = internalState;
 
         ActivityPackage subscriptionPackage = packageBuilder.buildSubscriptionPackage(subscription);
@@ -2486,7 +2498,8 @@ public class ActivityHandler
         }
 
         long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         packageBuilder.internalState = internalState;
 
         ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(purchase, callback);
@@ -2558,7 +2571,8 @@ public class ActivityHandler
         }
 
         long now = System.currentTimeMillis();
-        PackageBuilder packageBuilder = new PackageBuilder(adjustConfig, deviceInfo, activityState, globalParameters, now);
+        PackageBuilder packageBuilder = new PackageBuilder(
+          adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
         ActivityPackage verificationPackage = packageBuilder.buildVerificationPackage(event, callback);
         if (verificationPackage == null) {
             logger.warn("Purchase verification aborted because verification package is null");
@@ -2893,7 +2907,7 @@ public class ActivityHandler
 
         long now = System.currentTimeMillis();
         PackageBuilder packageBuilder = new PackageBuilder(
-                adjustConfig, deviceInfo, activityState, globalParameters, now);
+                adjustConfig, deviceInfo, activityState, globalParameters, firstSessionDelayManager, now);
 
         ActivityPackage activityPackage =
                 packageBuilder.buildThirdPartySharingPackage(adjustThirdPartySharing);

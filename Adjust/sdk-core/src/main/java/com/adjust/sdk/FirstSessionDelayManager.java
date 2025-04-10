@@ -89,4 +89,8 @@ class FirstSessionDelayManager {
             runnableAH.run(activityHandler);
         }
     }
+
+    public boolean wasSet() {
+        return ! "notSet".equals(delayStatus);
+    }
 }

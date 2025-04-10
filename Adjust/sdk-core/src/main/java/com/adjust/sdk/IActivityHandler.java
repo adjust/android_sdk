@@ -100,6 +100,8 @@ public interface IActivityHandler {
 
     GlobalParameters getGlobalParameters();
 
+    FirstSessionDelayManager getFirstSessionDelayManager();
+
     ActivityHandler.InternalState getInternalState();
 
 }
