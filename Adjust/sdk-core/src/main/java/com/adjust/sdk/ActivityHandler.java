@@ -204,7 +204,7 @@ public class ActivityHandler
     @Override public void onActivityLifecycle(final boolean foregroundOrElseBackground) {
         try {
             executor.submit(() -> {
-                firstSessionDelayManager.apiActionI(() -> {
+                firstSessionDelayManager.apiActionI("activity state", () -> {
                     if (internalState.foregroundOrElseBackground != null
                       && internalState.foregroundOrElseBackground.booleanValue()
                       == foregroundOrElseBackground) {
@@ -364,7 +364,7 @@ public class ActivityHandler
 
     @Override
     public void trackEvent(final AdjustEvent event) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> {
+        executor.submit(() -> firstSessionDelayManager.apiActionI("track event", () -> {
             if (activityState == null) {
                 logger.warn("Event tracked before first activity resumed.\n" +
                   "If it was triggered in the Application class, it might timestamp or even send an install long before the user opens the app.\n" +
@@ -402,13 +402,16 @@ public class ActivityHandler
 
     @Override
     public void setEnabled(final boolean enabled) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() ->
-          setEnabledI(enabled)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                (enabled ? "enable" : "disable"),
+                () -> setEnabledI(enabled)));
     }
 
     @Override
     public void setOfflineMode(final boolean offline) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> setOfflineModeI(offline)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                (offline ? "put SDK in offline mode" : "put SDK back to online mode"),
+                () -> setOfflineModeI(offline)));
     }
 
     @Override
@@ -418,8 +421,9 @@ public class ActivityHandler
 
     @Override
     public void isEnabled(final OnIsEnabledListener onIsEnabledListener) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() ->
-          new Handler(adjustConfig.context.getMainLooper()).post(
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "is SDK enabled",
+                () -> new Handler(adjustConfig.context.getMainLooper()).post(
             () -> onIsEnabledListener.onIsEnabledRead(isEnabledI()))));
     }
 
@@ -433,8 +437,9 @@ public class ActivityHandler
 
     @Override
     public void processDeeplink(final AdjustDeeplink deeplink, final long clickTime) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() ->
-          processDeeplinkI(deeplink, clickTime)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "process deep link",
+                () -> processDeeplinkI(deeplink, clickTime)));
     }
 
     @Override
@@ -443,7 +448,9 @@ public class ActivityHandler
                                           final OnDeeplinkResolvedListener callback)
     {
         this.cachedDeeplinkResolutionCallback = callback;
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> processDeeplinkI(deeplink, clickTime)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "process and resolve deep link",
+                () -> processDeeplinkI(deeplink, clickTime)));
     }
 
     private void updateAdidI(final String adid) {
@@ -523,12 +530,16 @@ public class ActivityHandler
 
     @Override
     public void sendReftagReferrer() {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> sendReftagReferrerI()));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "send referrer",
+                () -> sendReftagReferrerI()));
     }
 
     @Override
     public void sendPreinstallReferrer() {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> sendPreinstallReferrerI()));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "send preinstall referrer",
+                () -> sendPreinstallReferrerI()));
     }
 
     @Override
@@ -594,82 +605,107 @@ public class ActivityHandler
 
     @Override
     public void addGlobalCallbackParameter(final String key, final String value) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.addGlobalCallbackParameterI(key, value)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "add global callback parameter",
+                activityHandler ->
+                        activityHandler.addGlobalCallbackParameterI(key, value)));
     }
 
     @Override
     public void addGlobalPartnerParameter(final String key, final String value) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.addGlobalPartnerParameterI(key, value)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "add global partner parameter",
+                activityHandler ->
+                        activityHandler.addGlobalPartnerParameterI(key, value)));
     }
 
     @Override
     public void removeGlobalCallbackParameter(final String key) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.removeGlobalCallbackParameterI(key)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "remove global callback parameter",
+                activityHandler ->
+                        activityHandler.removeGlobalCallbackParameterI(key)));
     }
 
     @Override
     public void removeGlobalPartnerParameter(final String key) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.removeGlobalPartnerParameterI(key)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "remove global partner parameter",
+                activityHandler ->
+                        activityHandler.removeGlobalPartnerParameterI(key)));
     }
 
     @Override
     public void removeGlobalCallbackParameters() {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.removeGlobalCallbackParametersI()));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "remove global callback parameters",
+                activityHandler ->
+                        activityHandler.removeGlobalCallbackParametersI()));
     }
 
     @Override
     public void removeGlobalPartnerParameters() {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.removeGlobalPartnerParametersI()));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "remove global partner parameters",
+                activityHandler ->
+                        activityHandler.removeGlobalPartnerParametersI()));
     }
 
     @Override
     public void setPushToken(final String token, final boolean preSaved) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> {
-            if (!preSaved) {
-                SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(token);
-            }
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "set push token",
+                () -> {
+                    if (!preSaved) {
+                        SharedPreferencesManager.getDefaultInstance(getContext()).savePushToken(token);
+                    }
 
-            if (activityState == null) {
-                // No install has been tracked so far.
-                // Push token is saved, ready for the session package to pick it up.
-                return;
-            } else {
-                setPushTokenI(token);
-            }
-        }));
+                    if (activityState == null) {
+                        // No install has been tracked so far.
+                        // Push token is saved, ready for the session package to pick it up.
+                        return;
+                    } else {
+                        setPushTokenI(token);
+                    }
+                }
+        ));
     }
 
     @Override
     public void gdprForgetMe() {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> gdprForgetMeI()));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "GDPR forget device",
+                () -> gdprForgetMeI()));
     }
 
     @Override
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.tryTrackThirdPartySharingI(adjustThirdPartySharing)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "track third party sharing",
+                activityHandler ->
+                        activityHandler.tryTrackThirdPartySharingI(adjustThirdPartySharing)));
     }
 
     @Override
     public void trackMeasurementConsent(final boolean consentMeasurement) {
-        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(activityHandler ->
-          activityHandler.tryTrackMeasurementConsentI(consentMeasurement)));
+        executor.submit(() -> firstSessionDelayManager.preLaunchActionI(
+                "track measurement consent",
+                activityHandler ->
+                        activityHandler.tryTrackMeasurementConsentI(consentMeasurement)));
     }
 
     @Override
     public void trackAdRevenue(final AdjustAdRevenue adjustAdRevenue) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> trackAdRevenueI(adjustAdRevenue)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "track ad revenue",
+                () -> trackAdRevenueI(adjustAdRevenue)));
     }
 
     @Override
     public void trackPlayStoreSubscription(final AdjustPlayStoreSubscription subscription) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> trackPlayStoreSubscriptionI(subscription)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "track play store subscription",
+                () -> trackPlayStoreSubscriptionI(subscription)));
     }
 
     @Override
@@ -740,12 +776,16 @@ public class ActivityHandler
     public void verifyPlayStorePurchase(final AdjustPlayStorePurchase purchase,
                                         final OnPurchaseVerificationFinishedListener callback)
     {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> verifyPlayStorePurchaseI(purchase, callback)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "verify play store purchase",
+                () -> verifyPlayStorePurchaseI(purchase, callback)));
     }
 
     @Override
     public void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
-        executor.submit(() -> firstSessionDelayManager.apiActionI(() -> verifyAndTrackPlayStorePurchaseI(event, callback)));
+        executor.submit(() -> firstSessionDelayManager.apiActionI(
+                "verify and track play store purchase",
+                () -> verifyAndTrackPlayStorePurchaseI(event, callback)));
     }
 
     @Override

@@ -74,16 +74,20 @@ class FirstSessionDelayManager {
         activityHandler.getAdjustConfig().externalDeviceId = externalDeviceId;
     }
 
-    public void apiActionI(final Runnable runnable) {
+    public void apiActionI(final String message, final Runnable runnable) {
         if ("started".equals(delayStatus)) {
+            activityHandler.getAdjustConfig().getLogger().debug(
+                    "Enqueuing \"" + message + "\" action to be executed after first session delay ends");
             apiActions.add(runnable);
         } else {
             runnable.run();
         }
     }
 
-    public void preLaunchActionI(final IRunActivityHandler runnableAH) {
+    public void preLaunchActionI(final String message, final IRunActivityHandler runnableAH) {
         if ("started".equals(delayStatus)) {
+            activityHandler.getAdjustConfig().getLogger().debug(
+                    "Enqueuing \"" + message + "\" action to be executed after first session delay ends");
             activityHandler.getAdjustConfig().preLaunchActions.preLaunchActionsArray.add(runnableAH);
         } else {
             runnableAH.run(activityHandler);
