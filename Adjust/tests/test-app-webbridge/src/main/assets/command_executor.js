@@ -136,6 +136,9 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "measurementConsent"             : this.measurementConsent(command.params); break;
         case "trackAdRevenue"                 : this.trackAdRevenue(command.params); break;
         case "attributionGetter"              : this.attributionGetter(command.params); break;
+        case "endFirstSessionDelay"           : this.endFirstSessionDelay(command.params); break;
+        case "coppaComplianceInDelay"         : this.coppaComplianceInDelay(command.params); break;
+        case "externalDeviceIdInDelay"        : this.externalDeviceIdInDelay(command.params); break;
         break;
     }
 
@@ -328,6 +331,14 @@ AdjustCommandExecutor.prototype.config = function(params) {
         var playStoreKids = playStoreKidsS == 'true';
         if (playStoreKids == true) {
             adjustConfig.enablePlayStoreKidsCompliance();
+        }
+    }
+
+    if ('firstSessionDelayEnabled' in params) {
+        var firstSessionDelayEnabled = getFirstParameterValue(params, 'firstSessionDelayEnabled');
+        var firstSessionDelayEnabled = firstSessionDelayEnabledS == 'true';
+        if (firstSessionDelayEnabled == true) {
+            adjustConfig.enableFirstSessionDelay();
         }
     }
 
@@ -578,6 +589,24 @@ AdjustCommandExecutor.prototype.thirdPartySharing = function(params) {
 AdjustCommandExecutor.prototype.measurementConsent = function(params) {
     var isEnabled = getFirstParameterValue(params, "isEnabled") == 'true';
     Adjust.trackMeasurementConsent(isEnabled);
+}
+
+AdjustCommandExecutor.prototype.endFirstSessionDelay = function(params) {
+    Adjust.endFirstSessionDelay();
+}
+
+AdjustCommandExecutor.prototype.coppaComplianceInDelay = function(params) {
+    var enabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    if (enabled){
+        Adjust.enableCoppaCompliance()
+    }else{
+        Adjust.disableCoppaCompliance()
+    }
+}
+
+AdjustCommandExecutor.prototype.externalDeviceIdInDelay = function(params) {
+    var externalDeviceId = getFirstParameterValue(params, "externalDeviceId");
+    Adjust.setExternalDeviceId(externalDeviceId);
 }
 
 AdjustCommandExecutor.prototype.addGlobalCallbackParameter = function(params) {

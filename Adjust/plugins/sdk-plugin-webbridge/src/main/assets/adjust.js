@@ -157,6 +157,30 @@ var Adjust = {
         }
     },
 
+    endFirstSessionDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.endFirstSessionDelay();
+        }
+    },
+
+    enableCoppaComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.enableCoppaComplianceInDelay();
+        }
+    },
+
+    disableCoppaComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disableCoppaComplianceInDelay();
+        }
+    },
+
+    setExternalDeviceIdInDelay: function(externalDeviceId) {
+        if (AdjustBridge) {
+            AdjustBridge.setExternalDeviceIdInDelay(externalDeviceId);
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
