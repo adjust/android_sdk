@@ -336,7 +336,7 @@ AdjustCommandExecutor.prototype.config = function(params) {
     }
 
     if ('firstSessionDelayEnabled' in params) {
-        var firstSessionDelayEnabled = getFirstParameterValue(params, 'firstSessionDelayEnabled');
+        var firstSessionDelayEnabledS = getFirstParameterValue(params, 'firstSessionDelayEnabled');
         var firstSessionDelayEnabled = firstSessionDelayEnabledS == 'true';
         if (firstSessionDelayEnabled == true) {
             adjustConfig.enableFirstSessionDelay();
@@ -599,24 +599,24 @@ AdjustCommandExecutor.prototype.endFirstSessionDelay = function(params) {
 AdjustCommandExecutor.prototype.coppaComplianceInDelay = function(params) {
     var enabled = getFirstParameterValue(params, "isEnabled") == 'true';
     if (enabled){
-        Adjust.enableCoppaCompliance()
+        Adjust.enableCoppaComplianceInDelay()
     }else{
-        Adjust.disableCoppaCompliance()
+        Adjust.disableCoppaComplianceInDelay()
     }
 }
 
 AdjustCommandExecutor.prototype.playStoreKidsComplianceInDelay = function(params) {
     var enabled = getFirstParameterValue(params, "isEnabled") == 'true';
     if (enabled){
-        Adjust.enablePlayStoreKidsCompliance()
+        Adjust.enablePlayStoreKidsComplianceInDelay()
     }else{
-        Adjust.disablePlayStoreKidsCompliance()
+        Adjust.disablePlayStoreKidsComplianceInDelay()
     }
 }
 
 AdjustCommandExecutor.prototype.externalDeviceIdInDelay = function(params) {
     var externalDeviceId = getFirstParameterValue(params, "externalDeviceId");
-    Adjust.setExternalDeviceId(externalDeviceId);
+    Adjust.setExternalDeviceIdInDelay(externalDeviceId);
 }
 
 AdjustCommandExecutor.prototype.addGlobalCallbackParameter = function(params) {
