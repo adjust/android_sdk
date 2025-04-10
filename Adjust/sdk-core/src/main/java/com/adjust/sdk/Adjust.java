@@ -437,9 +437,19 @@ public class Adjust {
     public static void enableCoppaComplianceInDelay() {
         Adjust.getDefaultInstance().enableCoppaComplianceInDelay();
     }
+
     public static void disableCoppaComplianceInDelay() {
         Adjust.getDefaultInstance().disableCoppaComplianceInDelay();
     }
+
+    public static void enablePlayStoreKidsComplianceInDelay() {
+        Adjust.getDefaultInstance().enablePlayStoreKidsComplianceInDelay();
+    }
+
+    public static void disablePlayStoreKidsComplianceInDelay() {
+        Adjust.getDefaultInstance().disablePlayStoreKidsComplianceInDelay();
+    }
+
     public static void setExternalDeviceIdInDelay(final String externalDeviceId) {
         Adjust.getDefaultInstance().setExternalDeviceIdInDelay(externalDeviceId);
     }

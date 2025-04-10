@@ -82,6 +82,8 @@ public interface IActivityHandler {
 
     void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled);
 
+    void setPlayStoreKidsComplianceInDelay(final boolean isPlayStoreKidsComplianceEnabled);
+
     void setExternalDeviceIdInDelay(final String externalDeviceId);
 
     void gotOptOutResponse();

@@ -799,6 +799,11 @@ public class ActivityHandler
     }
 
     @Override
+    public void setPlayStoreKidsComplianceInDelay(final boolean isPlayStoreKidsComplianceEnabled) {
+        executor.submit(() -> firstSessionDelayManager.setPlayStoreKidsComplianceInDelayI(isPlayStoreKidsComplianceEnabled));;
+    }
+
+    @Override
     public void setExternalDeviceIdInDelay(final String externalDeviceId) {
         executor.submit(() -> firstSessionDelayManager.setExternalDeviceIdInDelayI(externalDeviceId));
     }

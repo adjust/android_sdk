@@ -66,6 +66,14 @@ class FirstSessionDelayManager {
         activityHandler.getAdjustConfig().coppaComplianceEnabled = isCoppaComplianceEnabled;
     }
 
+    public void setPlayStoreKidsComplianceInDelayI(final boolean isPlayStoreKidsComplianceEnabled) {
+        if (!"started".equals(delayStatus)) {
+            return;
+        }
+
+        activityHandler.getAdjustConfig().playStoreKidsComplianceEnabled = isPlayStoreKidsComplianceEnabled;
+    }
+
     public void setExternalDeviceIdInDelayI(final String externalDeviceId) {
         if (!"started".equals(delayStatus)) {
             return;

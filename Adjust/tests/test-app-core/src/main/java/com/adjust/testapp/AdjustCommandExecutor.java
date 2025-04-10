@@ -97,6 +97,7 @@ public class AdjustCommandExecutor {
                 case "getLastDeeplink" : getLastDeeplink(); break;
                 case "endFirstSessionDelay" : endFirstSessionDelay(); break;
                 case "coppaComplianceInDelay" : coppaComplianceInDelay(); break;
+                case "playStoreKidsComplianceInDelay" : playStoreKidsComplianceInDelay(); break;
                 case "externalDeviceIdInDelay" : externalDeviceIdInDelay(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
@@ -926,6 +927,16 @@ public class AdjustCommandExecutor {
         }
         if ("false".equals(isEnabledString)) {
             Adjust.disableCoppaComplianceInDelay();
+        }
+    }
+
+    private void playStoreKidsComplianceInDelay() {
+        String isEnabledString = command.getFirstParameterValue("isEnabled");
+        if ("true".equals(isEnabledString)) {
+            Adjust.enablePlayStoreKidsComplianceInDelay();
+        }
+        if ("false".equals(isEnabledString)) {
+            Adjust.disablePlayStoreKidsComplianceInDelay();
         }
     }
 

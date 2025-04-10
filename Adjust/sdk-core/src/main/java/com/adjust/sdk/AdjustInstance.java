@@ -649,6 +649,23 @@ public class AdjustInstance {
 
         activityHandler.setCoppaComplianceInDelay(false);
     }
+
+    public void enablePlayStoreKidsComplianceInDelay() {
+        if (!checkActivityHandler("enablePlayStoreKidsComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setPlayStoreKidsComplianceInDelay(true);
+    }
+
+    public void disablePlayStoreKidsComplianceInDelay() {
+        if (!checkActivityHandler("disablePlayStoreKidsComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setPlayStoreKidsComplianceInDelay(false);
+    }
+
     public void setExternalDeviceIdInDelay(final String externalDeviceId) {
         if (!checkActivityHandler("setExternalDeviceIdInDelay")) {
             return;

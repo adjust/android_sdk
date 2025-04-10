@@ -175,6 +175,18 @@ var Adjust = {
         }
     },
 
+    enablePlayStoreKidsComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.enablePlayStoreKidsComplianceInDelay();
+        }
+    },
+
+    disablePlayStoreKidsComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disablePlayStoreKidsComplianceInDelay();
+        }
+    },
+
     setExternalDeviceIdInDelay: function(externalDeviceId) {
         if (AdjustBridge) {
             AdjustBridge.setExternalDeviceIdInDelay(externalDeviceId);

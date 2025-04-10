@@ -672,6 +672,22 @@ public class AdjustBridgeInstance {
     }
 
     @JavascriptInterface
+    public void enablePlayStoreKidsComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.enablePlayStoreKidsComplianceInDelay();
+    }
+
+    @JavascriptInterface
+    public void disablePlayStoreKidsComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.disablePlayStoreKidsComplianceInDelay();
+    }
+
+    @JavascriptInterface
     public void setExternalDeviceIdInDelay(String externalDeviceId) {
         if (!isInitialized()) {
             return;

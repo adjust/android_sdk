@@ -138,6 +138,7 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "attributionGetter"              : this.attributionGetter(command.params); break;
         case "endFirstSessionDelay"           : this.endFirstSessionDelay(command.params); break;
         case "coppaComplianceInDelay"         : this.coppaComplianceInDelay(command.params); break;
+        case "playStoreKidsComplianceInDelay" : this.playStoreKidsComplianceInDelay(command.params); break;
         case "externalDeviceIdInDelay"        : this.externalDeviceIdInDelay(command.params); break;
         break;
     }
@@ -601,6 +602,15 @@ AdjustCommandExecutor.prototype.coppaComplianceInDelay = function(params) {
         Adjust.enableCoppaCompliance()
     }else{
         Adjust.disableCoppaCompliance()
+    }
+}
+
+AdjustCommandExecutor.prototype.playStoreKidsComplianceInDelay = function(params) {
+    var enabled = getFirstParameterValue(params, "isEnabled") == 'true';
+    if (enabled){
+        Adjust.enablePlayStoreKidsCompliance()
+    }else{
+        Adjust.disablePlayStoreKidsCompliance()
     }
 }
 
