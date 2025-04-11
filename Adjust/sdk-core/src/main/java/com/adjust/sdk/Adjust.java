@@ -439,7 +439,8 @@ public class Adjust {
     }
 
     /**
-     * Called to enable COPPA compliance while the SDK is in delayed first session state.
+     * Called to enable COPPA (Children's Online Privacy Protection Act) compliance
+     * for the application when is in first session delay.
      *
      */
     public static void enableCoppaComplianceInDelay() {
@@ -447,7 +448,8 @@ public class Adjust {
     }
 
     /**
-     * Called to disable COPPA compliance while the SDK is in delayed first session state.
+     * Called to disable COPPA (Children's Online Privacy Protection Act) compliance
+     * for the application when is in first session delay.
      *
      */
     public static void disableCoppaComplianceInDelay() {
@@ -455,7 +457,8 @@ public class Adjust {
     }
 
     /**
-     * Called to enable Play Store Kids compliance while the SDK is in delayed first session state.
+     * Called to enable Play Store Kids App compliance for the application
+     * when is in first session delay.
      *
      */
     public static void enablePlayStoreKidsComplianceInDelay() {
@@ -463,7 +466,8 @@ public class Adjust {
     }
 
     /**
-     * Called to disable Play Store Kids compliance while the SDK is in delayed first session state.
+     * Called to disable Play Store Kids App compliance for the application
+     * when is in first session delay.
      *
      */
     public static void disablePlayStoreKidsComplianceInDelay() {
@@ -471,7 +475,8 @@ public class Adjust {
     }
 
     /**
-     * Called to set external device ID while the SDK is in delayed first session state.
+     * Called to set a custom defined unique device ID (optional) when is in first session delay.
+     * Note: Make sure to have a UNIQUE external ID for each user / device.
      *
      * @param externalDeviceId   External device ID
      */
