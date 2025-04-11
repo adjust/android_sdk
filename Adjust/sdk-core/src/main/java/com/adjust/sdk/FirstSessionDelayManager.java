@@ -1,56 +1,63 @@
 package com.adjust.sdk;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
+@Retention(RetentionPolicy.SOURCE)
+@IntDef({
+  DelayState.BEFORE_FILE_READ,
+  DelayState.NOT_STARTED,
+  DelayState.NOT_SET,
+  DelayState.STARTED,
+  DelayState.ENDED
+})
+@interface DelayState {
+    int BEFORE_FILE_READ = 0;
+    int NOT_STARTED = 1;
+    int NOT_SET = 2;
+    int STARTED = 3;
+    int ENDED = 4;
+}
+
 class FirstSessionDelayManager {
     private final ActivityHandler activityHandler;
-    private List<Runnable> apiActions;
-    private String delayStatus;
+    private final List<Runnable> apiActions;
+    private @DelayState int delayState;
 
-    public FirstSessionDelayManager(
-      final ActivityHandler activityHandler)
-    {
+    public FirstSessionDelayManager(final ActivityHandler activityHandler) {
         this.activityHandler = activityHandler;
 
         apiActions = new ArrayList<>();
-/*
-        boolean delayFirstSession = activityHandler.getInternalState().isFirstLaunch()
-          && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled;
 
-        if (delayFirstSession) {
-            delayStatus = "notStarted";
-        } else {
-            delayStatus = "notSet";
-        }
-
- */
-        delayStatus = "beforeFileRead";
+        delayState = DelayState.BEFORE_FILE_READ;
     }
 
     public void endFirstSessionDelayI() {
-        if (!"started".equals(delayStatus)) {
+        if (delayState != DelayState.STARTED) {
             return;
         }
-        delayStatus = "stopped";
+        delayState = DelayState.ENDED;
 
-        activityHandler.initI();
-
-        for (final Runnable apiAction : apiActions) {
-            apiAction.run();
-        }
+        runInitActions();
     }
 
     public void activityStateFileReadI() {
-        boolean delayFirstSession = activityHandler.getActivityState() == null
-          && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled;
+        if (activityHandler.getActivityState() == null
+          && activityHandler.getAdjustConfig().isFirstSessionDelayEnabled)
+        {
+            delayState = DelayState.STARTED;
+        } else {
+            delayState = DelayState.NOT_SET;
 
-        if (delayFirstSession) {
-            delayStatus = "started";
-            return;
+            runInitActions();
         }
-        delayStatus = "notSet";
+    }
 
+    private void runInitActions() {
         activityHandler.initI();
 
         for (final Runnable apiAction : apiActions) {
@@ -59,7 +66,7 @@ class FirstSessionDelayManager {
     }
 
     public void setCoppaComplianceInDelayI(final boolean isCoppaComplianceEnabled) {
-        if (!"started".equals(delayStatus)) {
+        if (delayState != DelayState.STARTED) {
             return;
         }
 
@@ -67,7 +74,7 @@ class FirstSessionDelayManager {
     }
 
     public void setPlayStoreKidsComplianceInDelayI(final boolean isPlayStoreKidsComplianceEnabled) {
-        if (!"started".equals(delayStatus)) {
+        if (delayState != DelayState.STARTED) {
             return;
         }
 
@@ -75,7 +82,7 @@ class FirstSessionDelayManager {
     }
 
     public void setExternalDeviceIdInDelayI(final String externalDeviceId) {
-        if (!"started".equals(delayStatus)) {
+        if (delayState != DelayState.STARTED) {
             return;
         }
 
@@ -83,7 +90,7 @@ class FirstSessionDelayManager {
     }
 
     public void apiActionI(final String message, final Runnable runnable) {
-        if ("started".equals(delayStatus)) {
+        if (delayState == DelayState.STARTED) {
             activityHandler.getAdjustConfig().getLogger().debug(
                     "Enqueuing \"" + message + "\" action to be executed after first session delay ends");
             apiActions.add(runnable);
@@ -93,7 +100,7 @@ class FirstSessionDelayManager {
     }
 
     public void preLaunchActionI(final String message, final IRunActivityHandler runnableAH) {
-        if ("started".equals(delayStatus)) {
+        if (delayState == DelayState.STARTED) {
             activityHandler.getAdjustConfig().getLogger().debug(
                     "Enqueuing \"" + message + "\" action to be executed after first session delay ends");
             activityHandler.getAdjustConfig().preLaunchActions.preLaunchActionsArray.add(runnableAH);
@@ -103,6 +110,6 @@ class FirstSessionDelayManager {
     }
 
     public boolean wasSet() {
-        return ! "notSet".equals(delayStatus);
+        return delayState != DelayState.NOT_SET && delayState != DelayState.BEFORE_FILE_READ;
     }
 }
