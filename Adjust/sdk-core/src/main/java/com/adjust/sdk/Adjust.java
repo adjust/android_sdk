@@ -430,26 +430,51 @@ public class Adjust {
         adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
     }
 
+    /**
+     * Called to end the delay for first session to be sent to Adjust.
+     *
+     */
     public static void endFirstSessionDelay() {
         Adjust.getDefaultInstance().endFirstSessionDelay();
     }
 
+    /**
+     * Called to enable COPPA compliance while the SDK is in delayed first session state.
+     *
+     */
     public static void enableCoppaComplianceInDelay() {
         Adjust.getDefaultInstance().enableCoppaComplianceInDelay();
     }
 
+    /**
+     * Called to disable COPPA compliance while the SDK is in delayed first session state.
+     *
+     */
     public static void disableCoppaComplianceInDelay() {
         Adjust.getDefaultInstance().disableCoppaComplianceInDelay();
     }
 
+    /**
+     * Called to enable Play Store Kids compliance while the SDK is in delayed first session state.
+     *
+     */
     public static void enablePlayStoreKidsComplianceInDelay() {
         Adjust.getDefaultInstance().enablePlayStoreKidsComplianceInDelay();
     }
 
+    /**
+     * Called to disable Play Store Kids compliance while the SDK is in delayed first session state.
+     *
+     */
     public static void disablePlayStoreKidsComplianceInDelay() {
         Adjust.getDefaultInstance().disablePlayStoreKidsComplianceInDelay();
     }
 
+    /**
+     * Called to set external device ID while the SDK is in delayed first session state.
+     *
+     * @param externalDeviceId   External device ID
+     */
     public static void setExternalDeviceIdInDelay(final String externalDeviceId) {
         Adjust.getDefaultInstance().setExternalDeviceIdInDelay(externalDeviceId);
     }
