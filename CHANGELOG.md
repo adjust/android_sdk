@@ -1,3 +1,9 @@
+### Version 5.3.0 (16th April 2025)
+#### Added
+- Added ability to initialize the SDK for the first session in delayed mode. You can start the SDK in the delayed mode by calling the `enableFirstSessionDelay` method on your `AdjustConfig` instance. To end the delay, make sure to call `endFirstSessionDelay` method of `Adjust` instance.
+
+---
+
 ### Version 5.2.0 (24th March 2025)
 #### Added
 - Added ability to send organic search referrer together with deep link.
