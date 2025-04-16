@@ -51,6 +51,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.fbAppId = null;
     this.shouldReadDeviceIdsOnce = null;
     this.eventDeduplicationIdsMaxSize = null;
+    this.isFirstSessionDelayEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -237,4 +238,8 @@ AdjustConfig.prototype.readDeviceIdsOnce = function() {
 
 AdjustConfig.prototype.setEventDeduplicationIdsMaxSize = function(eventDeduplicationIdsMaxSize) {
     this.eventDeduplicationIdsMaxSize = eventDeduplicationIdsMaxSize;
+};
+
+AdjustConfig.prototype.enableFirstSessionDelay = function() {
+    this.isFirstSessionDelayEnabled = true;
 };

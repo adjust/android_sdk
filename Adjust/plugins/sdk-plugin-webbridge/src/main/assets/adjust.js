@@ -157,6 +157,42 @@ var Adjust = {
         }
     },
 
+    endFirstSessionDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.endFirstSessionDelay();
+        }
+    },
+
+    enableCoppaComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.enableCoppaComplianceInDelay();
+        }
+    },
+
+    disableCoppaComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disableCoppaComplianceInDelay();
+        }
+    },
+
+    enablePlayStoreKidsComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.enablePlayStoreKidsComplianceInDelay();
+        }
+    },
+
+    disablePlayStoreKidsComplianceInDelay: function() {
+        if (AdjustBridge) {
+            AdjustBridge.disablePlayStoreKidsComplianceInDelay();
+        }
+    },
+
+    setExternalDeviceIdInDelay: function(externalDeviceId) {
+        if (AdjustBridge) {
+            AdjustBridge.setExternalDeviceIdInDelay(externalDeviceId);
+        }
+    },
+
     getGoogleAdId: function (callback) {
         if (AdjustBridge) {
             if (typeof callback === 'string' || callback instanceof String) {
@@ -259,7 +295,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge5.2.0';
+            return 'web-bridge5.3.0';
         }
     },
 

@@ -248,6 +248,7 @@ public class AttributionHandler implements IAttributionHandler,
                 activityHandler.getDeviceInfo(),
                 activityHandler.getActivityState(),
                 activityHandler.getGlobalParameters(),
+                activityHandler.getFirstSessionDelayManager(),
                 now);
         packageBuilder.internalState = internalState;
 

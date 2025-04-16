@@ -78,6 +78,14 @@ public interface IActivityHandler {
 
     void verifyAndTrackPlayStorePurchase(AdjustEvent event, OnPurchaseVerificationFinishedListener callback);
 
+    void endFirstSessionDelay();
+
+    void setCoppaComplianceInDelay(final boolean isCoppaComplianceEnabled);
+
+    void setPlayStoreKidsComplianceInDelay(final boolean isPlayStoreKidsComplianceEnabled);
+
+    void setExternalDeviceIdInDelay(final String externalDeviceId);
+
     void gotOptOutResponse();
 
     Context getContext();
@@ -93,6 +101,8 @@ public interface IActivityHandler {
     ActivityState getActivityState();
 
     GlobalParameters getGlobalParameters();
+
+    FirstSessionDelayManager getFirstSessionDelayManager();
 
     ActivityHandler.InternalState getInternalState();
 

@@ -23,6 +23,7 @@ public class PackageBuilder {
     private AdjustConfig adjustConfig;
     private ActivityStateCopy activityStateCopy;
     private GlobalParameters globalParameters;
+    private FirstSessionDelayManager firstSessionDelayManager;
 
     long clickTimeInSeconds = -1;
     long clickTimeInMilliseconds = -1;
@@ -70,11 +71,13 @@ public class PackageBuilder {
                    DeviceInfo deviceInfo,
                    ActivityState activityState,
                    GlobalParameters globalParameters,
+                   FirstSessionDelayManager firstSessionDelayManager,
                    long createdAt) {
         this.createdAt = createdAt;
         this.deviceInfo = deviceInfo;
         this.adjustConfig = adjustConfig;
         this.activityStateCopy = new ActivityStateCopy(activityState);
+        this.firstSessionDelayManager = firstSessionDelayManager;
         this.globalParameters = globalParameters;
     }
 
@@ -1243,6 +1246,10 @@ public class PackageBuilder {
         }
         if (adjustConfig.playStoreKidsComplianceEnabled) {
             PackageBuilder.addLong(parameters, "ff_play_store_kids_app", 1);
+        }
+
+        if (firstSessionDelayManager.wasSet()) {
+            PackageBuilder.addBoolean(parameters, "ff_first_session_delay", true);
         }
     }
 

@@ -32,7 +32,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:5.2.0";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:5.3.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -428,6 +428,60 @@ public class Adjust {
     public static void verifyAndTrackPlayStorePurchase(final AdjustEvent event, OnPurchaseVerificationFinishedListener callback) {
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.verifyAndTrackPlayStorePurchase(event, callback);
+    }
+
+    /**
+     * Called to end the delay for first session to be sent to Adjust.
+     *
+     */
+    public static void endFirstSessionDelay() {
+        Adjust.getDefaultInstance().endFirstSessionDelay();
+    }
+
+    /**
+     * Called to enable COPPA (Children's Online Privacy Protection Act) compliance
+     * for the application when is in first session delay.
+     *
+     */
+    public static void enableCoppaComplianceInDelay() {
+        Adjust.getDefaultInstance().enableCoppaComplianceInDelay();
+    }
+
+    /**
+     * Called to disable COPPA (Children's Online Privacy Protection Act) compliance
+     * for the application when is in first session delay.
+     *
+     */
+    public static void disableCoppaComplianceInDelay() {
+        Adjust.getDefaultInstance().disableCoppaComplianceInDelay();
+    }
+
+    /**
+     * Called to enable Play Store Kids App compliance for the application
+     * when is in first session delay.
+     *
+     */
+    public static void enablePlayStoreKidsComplianceInDelay() {
+        Adjust.getDefaultInstance().enablePlayStoreKidsComplianceInDelay();
+    }
+
+    /**
+     * Called to disable Play Store Kids App compliance for the application
+     * when is in first session delay.
+     *
+     */
+    public static void disablePlayStoreKidsComplianceInDelay() {
+        Adjust.getDefaultInstance().disablePlayStoreKidsComplianceInDelay();
+    }
+
+    /**
+     * Called to set a custom defined unique device ID (optional) when is in first session delay.
+     * Note: Make sure to have a UNIQUE external ID for each user / device.
+     *
+     * @param externalDeviceId   External device ID
+     */
+    public static void setExternalDeviceIdInDelay(final String externalDeviceId) {
+        Adjust.getDefaultInstance().setExternalDeviceIdInDelay(externalDeviceId);
     }
 
     /**

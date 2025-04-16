@@ -95,6 +95,10 @@ public class AdjustCommandExecutor {
                 case "processDeeplink" : processDeeplink(); break;
                 case "attributionGetter" : attributionGetter(); break;
                 case "getLastDeeplink" : getLastDeeplink(); break;
+                case "endFirstSessionDelay" : endFirstSessionDelay(); break;
+                case "coppaComplianceInDelay" : coppaComplianceInDelay(); break;
+                case "playStoreKidsComplianceInDelay" : playStoreKidsComplianceInDelay(); break;
+                case "externalDeviceIdInDelay" : externalDeviceIdInDelay(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -462,6 +466,14 @@ public class AdjustCommandExecutor {
                     return launchDeferredDeeplink;
                 }
             });
+        }
+
+        if (command.containsParameter("firstSessionDelayEnabled")) {
+            String firstSessionDelayEnabledS = command.getFirstParameterValue("firstSessionDelayEnabled");
+            boolean firstSessionDelayEnabled = "true".equals(firstSessionDelayEnabledS);
+            if (firstSessionDelayEnabled) {
+                adjustConfig.enableFirstSessionDelay();
+            }
         }
     }
 
@@ -904,6 +916,34 @@ public class AdjustCommandExecutor {
         });
     }
 
+    private void endFirstSessionDelay() {
+        Adjust.endFirstSessionDelay();
+    }
+
+    private void coppaComplianceInDelay() {
+        String isEnabledString = command.getFirstParameterValue("isEnabled");
+        if ("true".equals(isEnabledString)) {
+            Adjust.enableCoppaComplianceInDelay();
+        }
+        if ("false".equals(isEnabledString)) {
+            Adjust.disableCoppaComplianceInDelay();
+        }
+    }
+
+    private void playStoreKidsComplianceInDelay() {
+        String isEnabledString = command.getFirstParameterValue("isEnabled");
+        if ("true".equals(isEnabledString)) {
+            Adjust.enablePlayStoreKidsComplianceInDelay();
+        }
+        if ("false".equals(isEnabledString)) {
+            Adjust.disablePlayStoreKidsComplianceInDelay();
+        }
+    }
+
+    private void externalDeviceIdInDelay() {
+        String externalDeviceId = command.getFirstParameterValue("externalDeviceId");
+        Adjust.setExternalDeviceIdInDelay(externalDeviceId);
+    }
 /*
     private void testBegin() {
         if (command.containsParameter("teardown")) {

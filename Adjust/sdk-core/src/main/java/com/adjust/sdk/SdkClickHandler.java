@@ -180,6 +180,7 @@ public class SdkClickHandler implements ISdkClickHandler {
                                 activityHandler.getAdjustConfig(),
                                 activityHandler.getDeviceInfo(),
                                 activityHandler.getGlobalParameters(),
+                                activityHandler.getFirstSessionDelayManager(),
                                 activityHandler.getInternalState());
 
                         // Send referrer sdk_click package.
@@ -217,7 +218,8 @@ public class SdkClickHandler implements ISdkClickHandler {
                         activityHandler.getActivityState(),
                         activityHandler.getAdjustConfig(),
                         activityHandler.getDeviceInfo(),
-                        activityHandler.getGlobalParameters());
+                        activityHandler.getGlobalParameters(),
+                        activityHandler.getFirstSessionDelayManager());
 
                 // Send preinstall info sdk_click package.
                 sendSdkClick(sdkClickPackage);

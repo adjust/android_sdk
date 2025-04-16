@@ -19,13 +19,9 @@ import java.util.ArrayList;
 public class AdjustInstance {
     public static class PreLaunchActions {
         public List<IRunActivityHandler> preLaunchActionsArray;
-        public List<AdjustThirdPartySharing> preLaunchAdjustThirdPartySharingArray;
-        public Boolean lastMeasurementConsentTracked;
 
         public PreLaunchActions() {
             preLaunchActionsArray = new ArrayList<>();
-            preLaunchAdjustThirdPartySharingArray = new ArrayList<>();
-            lastMeasurementConsentTracked = null;
         }
     }
 
@@ -471,7 +467,8 @@ public class AdjustInstance {
 
     public void trackThirdPartySharing(final AdjustThirdPartySharing adjustThirdPartySharing) {
         if (!checkActivityHandler("third party sharing", true)) {
-            preLaunchActions.preLaunchAdjustThirdPartySharingArray.add(adjustThirdPartySharing);
+            preLaunchActions.preLaunchActionsArray.add(activityHandlerInner ->
+              activityHandlerInner.tryTrackThirdPartySharingI(adjustThirdPartySharing));
             return;
         }
 
@@ -480,7 +477,8 @@ public class AdjustInstance {
 
     public void trackMeasurementConsent(final boolean consentMeasurement) {
         if (!checkActivityHandler("measurement consent", true)) {
-            preLaunchActions.lastMeasurementConsentTracked = consentMeasurement;
+            preLaunchActions.preLaunchActionsArray.add(activityHandlerInner ->
+              activityHandlerInner.tryTrackMeasurementConsentI(consentMeasurement));
             return;
         }
 
@@ -626,6 +624,54 @@ public class AdjustInstance {
             return;
         }
         activityHandler.verifyAndTrackPlayStorePurchase(event, callback);
+    }
+
+    public void endFirstSessionDelay() {
+        if (!checkActivityHandler("endFirstSessionDelay")) {
+            return;
+        }
+
+        activityHandler.endFirstSessionDelay();
+    }
+
+    public void enableCoppaComplianceInDelay() {
+        if (!checkActivityHandler("enableCoppaComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setCoppaComplianceInDelay(true);
+    }
+
+    public void disableCoppaComplianceInDelay() {
+        if (!checkActivityHandler("disableCoppaComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setCoppaComplianceInDelay(false);
+    }
+
+    public void enablePlayStoreKidsComplianceInDelay() {
+        if (!checkActivityHandler("enablePlayStoreKidsComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setPlayStoreKidsComplianceInDelay(true);
+    }
+
+    public void disablePlayStoreKidsComplianceInDelay() {
+        if (!checkActivityHandler("disablePlayStoreKidsComplianceInDelay")) {
+            return;
+        }
+
+        activityHandler.setPlayStoreKidsComplianceInDelay(false);
+    }
+
+    public void setExternalDeviceIdInDelay(final String externalDeviceId) {
+        if (!checkActivityHandler("setExternalDeviceIdInDelay")) {
+            return;
+        }
+
+        activityHandler.setExternalDeviceIdInDelay(externalDeviceId);
     }
 
     /**

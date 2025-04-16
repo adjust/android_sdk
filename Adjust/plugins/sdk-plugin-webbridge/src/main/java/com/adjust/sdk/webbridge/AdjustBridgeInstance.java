@@ -142,6 +142,7 @@ public class AdjustBridgeInstance {
             Object fbAppIdField = jsonAdjustConfig.get("fbAppId");
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
+            Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -365,6 +366,14 @@ public class AdjustBridgeInstance {
             Integer eventDeduplicationIdsMaxSize = AdjustBridgeUtil.fieldToInteger(eventDeduplicationIdsMaxSizeField);
             if (eventDeduplicationIdsMaxSize != null) {
                 adjustConfig.setEventDeduplicationIdsMaxSize(eventDeduplicationIdsMaxSize);
+            }
+
+            // First session delay
+            Boolean isFirstSessionDelayEnabled = AdjustBridgeUtil.fieldToBoolean(isFirstSessionDelayEnabledField);
+            if (isFirstSessionDelayEnabled != null) {
+                if (isFirstSessionDelayEnabled) {
+                    adjustConfig.enableFirstSessionDelay();
+                }
             }
 
             Adjust.initSdk(adjustConfig);
@@ -636,6 +645,54 @@ public class AdjustBridgeInstance {
         if (consentMeasurement != null) {
             Adjust.trackMeasurementConsent(consentMeasurement);
         }
+    }
+
+    @JavascriptInterface
+    public void endFirstSessionDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.endFirstSessionDelay();
+    }
+
+    @JavascriptInterface
+    public void enableCoppaComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.enableCoppaComplianceInDelay();
+    }
+
+    @JavascriptInterface
+    public void disableCoppaComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.disableCoppaComplianceInDelay();
+    }
+
+    @JavascriptInterface
+    public void enablePlayStoreKidsComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.enablePlayStoreKidsComplianceInDelay();
+    }
+
+    @JavascriptInterface
+    public void disablePlayStoreKidsComplianceInDelay() {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.disablePlayStoreKidsComplianceInDelay();
+    }
+
+    @JavascriptInterface
+    public void setExternalDeviceIdInDelay(String externalDeviceId) {
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.setExternalDeviceIdInDelay(externalDeviceId);
     }
 
     @JavascriptInterface
