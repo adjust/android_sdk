@@ -52,8 +52,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.shouldReadDeviceIdsOnce = null;
     this.eventDeduplicationIdsMaxSize = null;
     this.isFirstSessionDelayEnabled = null;
-    this.storeInfoName = null;
-    this.storeInfoAppId = null;
+    this.adjustStoreInfo = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -246,7 +245,6 @@ AdjustConfig.prototype.enableFirstSessionDelay = function() {
     this.isFirstSessionDelayEnabled = true;
 };
 
-AdjustConfig.prototype.setStoreInfo = function(storeName, storeAppId) {
-    this.storeInfoName = storeName;
-    this.storeInfoAppId = storeAppId;
+AdjustConfig.prototype.setStoreInfo = function(adjustStoreInfo) {
+    this.adjustStoreInfo = JSON.stringify(adjustStoreInfo);
 };
