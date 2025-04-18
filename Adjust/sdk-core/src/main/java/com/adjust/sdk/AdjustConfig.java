@@ -162,7 +162,7 @@ public class AdjustConfig {
         this.isFirstSessionDelayEnabled = true;
     }
 
-    public void setAdjustStoreInfo(AdjustStoreInfo adjustStoreInfo) {
+    public void setStoreInfo(AdjustStoreInfo adjustStoreInfo) {
         this.adjustStoreInfo = adjustStoreInfo;
     }
 
@@ -258,7 +258,7 @@ public class AdjustConfig {
         return isDeviceIdsReadingOnceEnabled;
     }
 
-    public AdjustStoreInfo getAdjustStoreInfo() {
+    public AdjustStoreInfo getStoreInfo() {
         return adjustStoreInfo;
     }
 
