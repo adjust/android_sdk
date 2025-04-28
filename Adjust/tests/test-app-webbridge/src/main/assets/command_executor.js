@@ -343,6 +343,18 @@ AdjustCommandExecutor.prototype.config = function(params) {
         }
     }
 
+    if ('storeName' in params) {
+        var storeInfo;
+        var storeName = getFirstParameterValue(params, 'storeName');
+        storeInfo = new AdjustStoreInfo(storeName);
+
+        if ('storeAppId' in params) {
+            var storeAppId = getFirstParameterValue(params, 'storeAppId');
+            storeInfo.setStoreAppId(storeAppId);
+        }
+        adjustConfig.setStoreInfo(storeInfo);
+    }
+
     if ('attributionCallbackSendAll' in params) {
         var basePath = this.basePath;
         adjustConfig.setAttributionCallback(function(attribution) {

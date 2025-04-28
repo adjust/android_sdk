@@ -23,6 +23,7 @@ import com.adjust.sdk.AdjustPlayStorePurchase;
 import com.adjust.sdk.AdjustPurchaseVerificationResult;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
@@ -329,6 +330,18 @@ public class AdjustCommandExecutor {
             if (playStoreKids) {
                 adjustConfig.enablePlayStoreKidsCompliance();
             }
+        }
+
+        if (command.containsParameter("storeName")) {
+            AdjustStoreInfo storeInfo;
+            String storeName = command.getFirstParameterValue("storeName");
+            storeInfo = new AdjustStoreInfo(storeName);
+
+            if (command.containsParameter("storeAppId")) {
+                String storeAppId = command.getFirstParameterValue("storeAppId");
+                storeInfo.setStoreAppId(storeAppId);
+            }
+            adjustConfig.setStoreInfo(storeInfo);
         }
 
         if(command.containsParameter("deferredDeeplinkCallback")) {
