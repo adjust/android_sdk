@@ -47,7 +47,7 @@ public class AdjustConfig {
     Integer eventDeduplicationIdsMaxSize;
     ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     boolean isFirstSessionDelayEnabled;
-    AdjustStoreInfo adjustStoreInfo;
+    AdjustStoreInfo storeInfo;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -162,8 +162,8 @@ public class AdjustConfig {
         this.isFirstSessionDelayEnabled = true;
     }
 
-    public void setStoreInfo(AdjustStoreInfo adjustStoreInfo) {
-        this.adjustStoreInfo = adjustStoreInfo;
+    public void setStoreInfo(AdjustStoreInfo storeInfo) {
+        this.storeInfo = storeInfo;
     }
 
     public void setOnAttributionChangedListener(OnAttributionChangedListener onAttributionChangedListener) {
@@ -259,7 +259,7 @@ public class AdjustConfig {
     }
 
     public AdjustStoreInfo getStoreInfo() {
-        return adjustStoreInfo;
+        return storeInfo;
     }
 
     public OnAttributionChangedListener getOnAttributionChangedListener() {

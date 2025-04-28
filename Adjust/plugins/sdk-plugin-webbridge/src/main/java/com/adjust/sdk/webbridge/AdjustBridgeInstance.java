@@ -144,7 +144,7 @@ public class AdjustBridgeInstance {
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
-            Object adjustStoreInfoField = jsonAdjustConfig.get("adjustStoreInfo");
+            Object storeInfoField = jsonAdjustConfig.get("storeInfo");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -379,23 +379,23 @@ public class AdjustBridgeInstance {
             }
 
             // store info
-            String adjustStoreInfoString = AdjustBridgeUtil.fieldToString(adjustStoreInfoField);
+            String storeInfoString = AdjustBridgeUtil.fieldToString(storeInfoField);
 
             try {
-                JSONObject jsonAdjustStoreInfo = new JSONObject(adjustStoreInfoString);
+                JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
 
-                Object storeNameField = jsonAdjustStoreInfo.get("storeName");
-                Object storeAppIdField = jsonAdjustStoreInfo.get("storeAppId");
+                Object storeNameField = jsonStoreInfo.get("storeName");
+                Object storeAppIdField = jsonStoreInfo.get("storeAppId");
 
                 String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
                 String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
-                AdjustStoreInfo adjustStoreInfo = new AdjustStoreInfo(storeName);
-                adjustStoreInfo.setStoreAppId(storeAppId);
+                AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+                storeInfo.setStoreAppId(storeAppId);
 
                 // set store info
-                adjustConfig.setStoreInfo(adjustStoreInfo);
+                adjustConfig.setStoreInfo(storeInfo);
             } catch (Exception e) {
-                AdjustFactory.getLogger().error("AdjustBridgeInstance adjustStoreInfo: %s", e.getMessage());
+                AdjustFactory.getLogger().error("AdjustBridgeInstance storeInfo: %s", e.getMessage());
             }
 
             Adjust.initSdk(adjustConfig);

@@ -29,12 +29,12 @@ public class StoreInfoUtil {
             ApplicationInfo applicationInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             Bundle metaData = applicationInfo.metaData;
             if (metaData == null) {
-                return adjustConfig.adjustStoreInfo;
+                return adjustConfig.storeInfo;
             }
 
             String storeName = metaData.getString("ADJUST_STORE_NAME");
             if (storeName == null || storeName.isEmpty()) {
-                return adjustConfig.adjustStoreInfo;
+                return adjustConfig.storeInfo;
             }
 
             String storeAppId = metaData.getString("ADJUST_STORE_APP_ID");
@@ -44,7 +44,7 @@ public class StoreInfoUtil {
             return storeInfo;
 
         } catch (Exception e) {
-            return adjustConfig.adjustStoreInfo;
+            return adjustConfig.storeInfo;
         }
     }
 }
