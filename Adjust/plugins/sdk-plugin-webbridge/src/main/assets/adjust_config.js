@@ -52,6 +52,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.shouldReadDeviceIdsOnce = null;
     this.eventDeduplicationIdsMaxSize = null;
     this.isFirstSessionDelayEnabled = null;
+    this.storeInfo = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -242,4 +243,8 @@ AdjustConfig.prototype.setEventDeduplicationIdsMaxSize = function(eventDeduplica
 
 AdjustConfig.prototype.enableFirstSessionDelay = function() {
     this.isFirstSessionDelayEnabled = true;
+};
+
+AdjustConfig.prototype.setStoreInfo = function(storeInfo) {
+    this.storeInfo = JSON.stringify(storeInfo);
 };

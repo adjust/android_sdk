@@ -306,6 +306,9 @@ public class PackageBuilder {
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
 
+        // store info
+        injectStoreInfoToParameters(parameters);
+
         injectFeatureFlagsWithParameters(parameters);
 
         checkDeviceIds(parameters);
@@ -1251,6 +1254,14 @@ public class PackageBuilder {
         if (firstSessionDelayManager.wasSet()) {
             PackageBuilder.addBoolean(parameters, "ff_first_session_delay", true);
         }
+    }
+
+    private void injectStoreInfoToParameters(Map<String, String> parameters) {
+        if (deviceInfo.storeInfoFromClient != null) {
+            PackageBuilder.addString(parameters, "store_name_from_client", deviceInfo.storeInfoFromClient.storeName);
+            PackageBuilder.addString(parameters, "store_app_id_from_client", deviceInfo.storeInfoFromClient.storeAppId);
+        }
+        PackageBuilder.addString(parameters, "store_name_from_system", deviceInfo.storeIdFromSystem);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {

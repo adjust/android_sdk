@@ -15,6 +15,7 @@ import com.adjust.sdk.AdjustEventSuccess;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
@@ -143,6 +144,7 @@ public class AdjustBridgeInstance {
             Object shouldReadDeviceIdsOnceField = jsonAdjustConfig.get("shouldReadDeviceIdsOnce");
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
+            Object storeInfoField = jsonAdjustConfig.get("storeInfo");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -374,6 +376,26 @@ public class AdjustBridgeInstance {
                 if (isFirstSessionDelayEnabled) {
                     adjustConfig.enableFirstSessionDelay();
                 }
+            }
+
+            // store info
+            String storeInfoString = AdjustBridgeUtil.fieldToString(storeInfoField);
+
+            try {
+                JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
+
+                Object storeNameField = jsonStoreInfo.get("storeName");
+                Object storeAppIdField = jsonStoreInfo.get("storeAppId");
+
+                String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
+                String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
+                AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+                storeInfo.setStoreAppId(storeAppId);
+
+                // set store info
+                adjustConfig.setStoreInfo(storeInfo);
+            } catch (Exception e) {
+                AdjustFactory.getLogger().error("AdjustBridgeInstance storeInfo: %s", e.getMessage());
             }
 
             Adjust.initSdk(adjustConfig);
