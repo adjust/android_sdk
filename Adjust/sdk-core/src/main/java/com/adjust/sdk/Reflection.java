@@ -72,6 +72,18 @@ public class Reflection {
         return referrerDetails;
     }
 
+    public static LicenseRequiredData getLicenseRequiredData(Context context, ILogger logger) {
+        LicenseRequiredData licenseRequiredData = null;
+        try {
+            licenseRequiredData = (LicenseRequiredData) invokeStaticMethod("com.adjust.sdk.lvl.Util",
+                    "getLicenseRequiredData",
+                    new Class[]{Context.class, ILogger.class},
+                    context, logger);
+        } catch (Exception e) {
+        }
+        return licenseRequiredData;
+    }
+
     public static ReferrerDetails getHuaweiAdsReferrer(Context context, ILogger logger) {
         ReferrerDetails referrerDetails = null;
         try {

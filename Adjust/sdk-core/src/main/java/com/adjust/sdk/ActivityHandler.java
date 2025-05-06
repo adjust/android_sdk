@@ -1365,6 +1365,7 @@ public class ActivityHandler
 
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
+            readLicenseVerificationData();
             readInstallReferrerMeta();
             readInstallReferrerHuaweiAds();
             readInstallReferrerHuaweiAppGallery();
@@ -1385,6 +1386,18 @@ public class ActivityHandler
                 ReferrerDetails referrerDetails = Reflection.getMetaReferrer(getContext(), adjustConfig.fbAppId, logger);
                 if (referrerDetails != null) {
                     sendInstallReferrer(referrerDetails, REFERRER_API_META);
+                }
+            }
+        });
+    }
+
+    private void readLicenseVerificationData() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger);
+                if (licenseRequiredData != null) {
+                    logger.info("licenseRequiredData: %s", licenseRequiredData.toString());
                 }
             }
         });
@@ -1921,6 +1934,7 @@ public class ActivityHandler
 
         // try to read and send the install referrer
         installReferrer.startConnection();
+        readLicenseVerificationData();
         readInstallReferrerMeta();
         readInstallReferrerHuaweiAds();
         readInstallReferrerHuaweiAppGallery();
