@@ -2073,6 +2073,22 @@ public class ActivityHandler
             return;
         }
 
+        if (Util.isUrlWithTrackerQueryParam(deeplink.getUrl())) {
+            final String resolvedLink = deeplink.getUrl().toString();
+            Handler handler = new Handler(adjustConfig.context.getMainLooper());
+            OnDeeplinkResolvedListener onDeeplinkResolvedListener = cachedDeeplinkResolutionCallback;
+            cachedDeeplinkResolutionCallback = null;
+            if (onDeeplinkResolvedListener != null) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        onDeeplinkResolvedListener.onDeeplinkResolved(resolvedLink);
+                    }
+                };
+                handler.post(runnable);
+            }
+        }
+
         ActivityPackage sdkClickPackage = PackageFactory.buildDeeplinkSdkClickPackage(
                 deeplink.getUrl(),
                 deeplink.getReferrer(),

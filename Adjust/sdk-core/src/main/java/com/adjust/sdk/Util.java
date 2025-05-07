@@ -623,6 +623,23 @@ public class Util {
         return false;
     }
 
+    public static boolean isUrlWithTrackerQueryParam(Uri url) {
+        try {
+            String trackerParam = url.getQueryParameter("adj_t");
+            if (trackerParam != null) {
+                return true;
+            }
+
+            trackerParam = url.getQueryParameter("adjust_t");
+            if (trackerParam != null) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+
+        return false;
+    }
+
     public static String getSdkVersion() {
         return Constants.CLIENT_SDK;
     }
