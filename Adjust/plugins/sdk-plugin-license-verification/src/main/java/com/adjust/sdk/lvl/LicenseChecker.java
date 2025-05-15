@@ -17,20 +17,19 @@ public class LicenseChecker {
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private ILicensingService mService;
-    private boolean mBound ;
+    private boolean mBound;
 
     public LicenseChecker(Context context, LicenseRawCallback callback) {
-        this.mContext = context.getApplicationContext();
+        this.mContext = context;
         this.mCallback = callback;
     }
 
-    public void checkAccess() {
+    public synchronized void checkAccess() {
         if (mBound) return;
-
         Log.d(TAG, "License check starts 1");
-        Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService.BIND");
+        Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
-        boolean isBind  = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
         Log.d(TAG, "License check bindService = " + isBind);
     }
 
@@ -76,7 +75,7 @@ public class LicenseChecker {
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
             Log.d(TAG, "Received license response");
             if (signedData != null && signature != null) {
-                mCallback.onLicenseDataReceived(signedData, signature,responseCode);
+                mCallback.onLicenseDataReceived(responseCode, signedData, signature);
             } else {
                 mCallback.onError(responseCode);
             }

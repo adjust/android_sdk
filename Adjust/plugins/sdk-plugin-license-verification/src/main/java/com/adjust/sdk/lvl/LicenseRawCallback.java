@@ -1,6 +1,6 @@
 package com.adjust.sdk.lvl;
 
 public interface LicenseRawCallback {
-    void onLicenseDataReceived(String signedData, String signature,int responseCode);
+    void onLicenseDataReceived(int responseCode, String signedData, String signature);
     void onError(int errorCode);
 }

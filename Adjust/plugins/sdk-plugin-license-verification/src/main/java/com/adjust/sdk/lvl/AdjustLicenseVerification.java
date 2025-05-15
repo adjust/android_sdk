@@ -17,7 +17,7 @@ public class AdjustLicenseVerification {
             BlockingQueue<LicenseRequiredData> licenseHolder = new LinkedBlockingQueue<LicenseRequiredData>(1);
             LicenseChecker checker = new LicenseChecker(context, new LicenseRawCallback() {
                 @Override
-                public void onLicenseDataReceived(String signedData, String signature, int responseCode) {
+                public void onLicenseDataReceived(int responseCode,String signedData, String signature) {
                     logger.info("license data received from server with code: " + responseCode );
                     licenseHolder.offer(new LicenseRequiredData(signedData, signature, responseCode));
                 }

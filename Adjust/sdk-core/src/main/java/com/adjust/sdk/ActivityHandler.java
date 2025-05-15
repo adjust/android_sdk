@@ -1397,7 +1397,7 @@ public class ActivityHandler
             public void run() {
                 LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger);
                 if (licenseRequiredData != null) {
-                    logger.info("licenseRequiredData: %s", licenseRequiredData.toString());
+                    logger.info("licenseRequiredData: %s", licenseRequiredData.getSignedData());
                 }
             }
         });
