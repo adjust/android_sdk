@@ -1395,9 +1395,9 @@ public class ActivityHandler
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger);
+                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.playAdId,deviceInfo.installTimeTimestamp);
                 if (licenseRequiredData != null) {
-                    logger.info("licenseRequiredData: %s", licenseRequiredData.getSignedData());
+                    logger.info("licenseRequiredData: signed data = \n %s ,\n response code : %d,\n signature : %s,", licenseRequiredData.getSignature(),licenseRequiredData.getResponseCode(),licenseRequiredData.getSignedData());
                 }
             }
         });

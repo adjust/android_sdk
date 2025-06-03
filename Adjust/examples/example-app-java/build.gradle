@@ -15,6 +15,7 @@ android {
         targetSdkVersion 36
         versionCode 1
         versionName "1.0"
+        applicationIdSuffix ".java"
     }
     buildTypes {
         release {

@@ -102,6 +102,7 @@ class DeviceInfo {
     String mnc;
     AdjustStoreInfo storeInfoFromClient;
     String storeIdFromSystem;
+    long installTimeTimestamp;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -134,6 +135,9 @@ class DeviceInfo {
         abi = getABI();
         buildName = getBuildName();
         appInstallTime = getAppInstallTime(packageInfo);
+        if (packageInfo != null){
+            installTimeTimestamp = packageInfo.firstInstallTime;
+        }
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
         if (Util.canReadPlayIds(adjustConfig)) {
