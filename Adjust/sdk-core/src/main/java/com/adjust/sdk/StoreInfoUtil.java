@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 public class StoreInfoUtil {
+    @SuppressWarnings("deprecation")
     public static String getStoreIdFromSystem(final Context context) {
         try {
             PackageManager packageManager = context.getPackageManager();

@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 36
     }
     namespace 'com.adjust.test_options'
 }
