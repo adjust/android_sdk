@@ -52,7 +52,7 @@ public class AdjustSigner {
                         context, packageParams, extraParams, outputParams);
 
             } catch (Exception e) {
-                logger.warn("Invoking Signer sign() for %s received an error [%s]", e.getMessage());
+                logger.warn("Invoking Signer sign() received an error [%s]", e.getMessage());
             }
         }
 
