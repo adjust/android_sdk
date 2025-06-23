@@ -1,3 +1,12 @@
+### Version 5.4.1 (23rd June 2025)
+#### Added
+- Optimized the logic behind the `processAndResolveDeeplink` method to immediately return links that have already been resolved.
+
+#### Changed
+- Updated the Adjust Signature library version to 3.47.0.
+
+---
+
 ### Version 5.4.0 (2nd May 2025)
 #### Added
 - Added support for configuring store information via the `AdjustStoreInfo` object. You can now specify the store name and store app ID using `setStoreInfo` method on your `AdjustConfig` instance. This enables the SDK to record the intended app store source during initialization.
