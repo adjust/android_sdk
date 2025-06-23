@@ -295,7 +295,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge5.4.0';
+            return 'web-bridge5.4.1';
         }
     },
 
