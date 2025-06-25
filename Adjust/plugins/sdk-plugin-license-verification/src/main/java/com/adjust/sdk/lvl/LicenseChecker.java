@@ -136,31 +136,11 @@ public class LicenseChecker {
         }
     }
 
-
-    public static long generateNonce(String deviceId, long installTimestamp) {
-        // Hash the device ID (ADID, UUID, etc.)
-        int deviceHash = deviceId != null ? deviceId.hashCode() : 0;
-
-        // Reduce timestamp (e.g., divide by 60 to get minutes)
-        long reducedTimestamp = (installTimestamp / 1000) % (1L << 24);  // 24 bits
-
-        // Pack into a long: [deviceHash: 32 bits][timestamp: 24 bits][spare: 8 bits]
-        long nonce = 0;
-        nonce |= (deviceHash & 0xFFFFFFFFL) << 32;
-        nonce |= (reducedTimestamp & 0xFFFFFFL) << 8;
-        nonce |= 0x01; // Version or flag, optional
-
-        return nonce;
-    }
-
     public static long generateNonce(long installTimestamp) {
-        // Reduce timestamp (e.g., seconds since epoch / 60 to reduce size)
-        long reducedTimestamp = (installTimestamp / 1000) % (1L << 24); // 24 bits
-
-        // Pack into a long: [reserved: 32 bits][timestamp: 24 bits][version/flags: 8 bits]
+        // Pack into a long:[timestamp: 56 bits][version/flags: 8 bits]
         long nonce = 0;
-        nonce |= (reducedTimestamp & 0xFFFFFFL) << 8;  // bits 8–31
-        nonce |= 0x01; // version in the lowest 8 bits
+        nonce |= (installTimestamp & 0xFFFFFFFFFFL) << 8;  // bits 8–31
+        nonce |= 0x02; // version in the lowest 8 bits
 
         return nonce;
     }
