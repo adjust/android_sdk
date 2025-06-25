@@ -6,55 +6,66 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
+import com.adjust.sdk.ILogger;
 import com.android.vending.licensing.ILicensingService;
 
 public class LicenseChecker {
-    private static final String TAG = "LicenseChecker";
     private static final String GOOGLE_PLAY_PACKAGE = "com.android.vending";
+
+    // Server response codes.
+    private static final int LICENSED = 0x0;
+    private static final int NOT_LICENSED = 0x1;
+    private static final int LICENSED_OLD_KEY = 0x2;
+    private static final int ERROR_NOT_MARKET_MANAGED = 0x3;
+    private static final int ERROR_SERVER_FAILURE = 0x4;
+    private static final int ERROR_OVER_QUOTA = 0x5;
+
+    private static final int ERROR_CONTACTING_SERVER = 0x101;
+    private static final int ERROR_INVALID_PACKAGE_NAME = 0x102;
+    private static final int ERROR_NON_MATCHING_UID = 0x103;
+
 
     private final Context mContext;
     private final LicenseRawCallback mCallback;
-    private String gpsAdid;
-    private long installTimeStamp;
+    private final ILogger logger;
+    private final long installTimeStamp;
     private ILicensingService mService;
     private boolean mBound;
 
     private static final int MAX_RETRIES = 3;
     private int retryCount = 0;
 
-    public LicenseChecker(Context context, LicenseRawCallback callback, String gpsAdid, long installTimeStamp) {
+    public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long installTimeStamp) {
         this.mContext = context;
         this.mCallback = callback;
-        this.gpsAdid = gpsAdid;
+        this.logger = logger;
         this.installTimeStamp = installTimeStamp;
     }
 
     public synchronized void checkAccess() {
         if (mBound) return;
-        Log.d(TAG, "License check starts 1");
+        logger.debug("License check starts 1");
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
         boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        Log.d(TAG, "License check bindService = " + isBind);
+        logger.debug("License check bindService = " + isBind);
     }
 
     private void executeLicenseCheck() {
         try {
-            Log.d(TAG, "License check connected" +", retryCount = " + retryCount);
+            logger.debug("License check connected" +", retryCount = " + retryCount);
             String packageName = mContext.getPackageName();
-            long nonce = generateNonce(gpsAdid, installTimeStamp);
+            long nonce = generateNonce(installTimeStamp);
 
-            Log.d(TAG, "License gpsAdid = " + gpsAdid);
-            Log.d(TAG, "License installTimeStamp = " + installTimeStamp);
-            Log.d(TAG, "License check nonce = " + nonce);
-            Log.d(TAG, "License check attempt #" + (retryCount + 1));
+            logger.debug("License installTimeStamp = " + installTimeStamp);
+            logger.debug("License check nonce = " + nonce);
+            logger.debug("License check attempt #" + (retryCount + 1));
 
             mService.checkLicense(nonce, packageName, new ResultListener());
 
         } catch (Exception e) {
-            Log.e(TAG, "License check failed", e);
+            logger.error("License check failed", e);
             mCallback.onError(-1);
         }
     }
@@ -72,14 +83,14 @@ public class LicenseChecker {
 
 
         public void onServiceDisconnected(ComponentName name) {
-            Log.d(TAG, "License check disconnected");
+            logger.debug("License check disconnected");
             mService = null;
             mBound = false;
         }
     };
 
     public void onDestroy() {
-        Log.d(TAG, "License check onDestroy");
+        logger.debug("License check onDestroy");
         if (mBound) {
             mContext.unbindService(mServiceConnection);
             mBound = false;
@@ -89,45 +100,38 @@ public class LicenseChecker {
     private class ResultListener extends com.android.vending.licensing.ILicenseResultListener.Stub {
         @Override
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
-            Log.d(TAG, "Received license response, code: " + responseCode);
+            logger.debug( "Received license response, code: " + responseCode);
 
             switch (responseCode) {
-                case 0: // LICENSED
-                case 2: // LICENSED_OLD_KEY
-                    retryCount = 0;
+                case NOT_LICENSED: // NOT_LICENSED
+                case ERROR_INVALID_PACKAGE_NAME: // INVALID_PACKAGE_NAME
+                case ERROR_NON_MATCHING_UID: // NON_MATCHING_UID
+                case ERROR_NOT_MARKET_MANAGED: // NOT_MARKET_MANAGED
+                    logger.warn("License check failed: " + responseCode);
+                    mCallback.onError(responseCode);
+                    return;
+
+                case ERROR_CONTACTING_SERVER: // CONTACTING_SERVER_ERROR
+                case ERROR_SERVER_FAILURE: // SERVER_FAILURE
+                case ERROR_OVER_QUOTA: // refusing to talk to this device, over quota
+                    if (++retryCount < MAX_RETRIES) {
+                        logger.warn("Retry attempt [%d] for response code [%d]" , retryCount, responseCode);
+                        executeLicenseCheck();
+                    } else {
+                        logger.error("License check failed after max retries");
+                        mCallback.onError(responseCode);
+                    }
+                    break;
+
+                case LICENSED: // LICENSED
+                case LICENSED_OLD_KEY: // LICENSED_OLD_KEY
+                default:
                     if (signedData != null && signature != null) {
                         mCallback.onLicenseDataReceived(responseCode, signedData, signature);
                     } else {
-                        Log.e(TAG, "Valid response code, but missing signed data or signature");
+                        logger.error("missing signed data or signature");
                         mCallback.onError(responseCode);
                     }
-                    break;
-
-                case 1: // NOT_LICENSED
-                case 6: // INVALID_PACKAGE_NAME
-                case 7: // NON_MATCHING_UID
-                    retryCount = 0;
-                    Log.w(TAG, "License check failed: " + responseCode);
-                    mCallback.onError(responseCode);
-                    break;
-
-                case 3: // SERVER_FAILURE
-                case 4: // RETRY
-                case 5: // CONTACTING_SERVER_ERROR
-                    if (++retryCount < MAX_RETRIES) {
-                        Log.w(TAG, "Temporary license error, retrying... Attempt " + retryCount);
-                        executeLicenseCheck();
-                    } else {
-                        Log.e(TAG, "License check failed after max retries");
-                        mCallback.onError(responseCode);
-                    }
-                    break;
-
-                default:
-                    retryCount = 0;
-                    Log.e(TAG, "Unexpected license response code: " + responseCode);
-                    mCallback.onError(responseCode);
-                    break;
             }
         }
     }
@@ -145,6 +149,18 @@ public class LicenseChecker {
         nonce |= (deviceHash & 0xFFFFFFFFL) << 32;
         nonce |= (reducedTimestamp & 0xFFFFFFL) << 8;
         nonce |= 0x01; // Version or flag, optional
+
+        return nonce;
+    }
+
+    public static long generateNonce(long installTimestamp) {
+        // Reduce timestamp (e.g., seconds since epoch / 60 to reduce size)
+        long reducedTimestamp = (installTimestamp / 1000) % (1L << 24); // 24 bits
+
+        // Pack into a long: [reserved: 32 bits][timestamp: 24 bits][version/flags: 8 bits]
+        long nonce = 0;
+        nonce |= (reducedTimestamp & 0xFFFFFFL) << 8;  // bits 8–31
+        nonce |= 0x01; // version in the lowest 8 bits
 
         return nonce;
     }

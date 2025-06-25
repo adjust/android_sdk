@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AdjustLicenseVerification {
 
-    public static LicenseRequiredData fetchLicenseDate(Context context, ILogger logger,String gpsAdid, long installTimeStamp) {
+    public static LicenseRequiredData fetchLicenseDate(Context context, ILogger logger, long installTimeStamp) {
         try {
             logger.info("start fetch license data");
             BlockingQueue<LicenseRequiredData> licenseHolder = new LinkedBlockingQueue<LicenseRequiredData>(1);
@@ -27,10 +27,10 @@ public class AdjustLicenseVerification {
                     logger.error("license error: " + errorCode );
                     licenseHolder.offer(new LicenseRequiredData(null, null, errorCode));
                 }
-            }, gpsAdid, installTimeStamp);
+            }, logger, installTimeStamp);
             logger.info("license check access");
             checker.checkAccess();
-            return licenseHolder.poll(10000, TimeUnit.MILLISECONDS);
+            return licenseHolder.poll(3000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             logger.error("license checker interrupted: ", e.getMessage());
             return null;

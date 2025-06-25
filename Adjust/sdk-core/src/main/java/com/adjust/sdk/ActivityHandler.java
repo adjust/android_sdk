@@ -556,6 +556,17 @@ public class ActivityHandler
     }
 
     @Override
+    public void sendLicenseVerificationData(final LicenseRequiredData licenseVerificationData) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendLicenseVerificationDataI(licenseVerificationData);
+            }
+        });
+    }
+
+
+    @Override
     public void launchEventResponseTasks(final EventResponseData eventResponseData) {
         executor.submit(new Runnable() {
             @Override
@@ -1365,13 +1376,14 @@ public class ActivityHandler
 
             // Try to check if there's new referrer information.
             installReferrer.startConnection();
-            readLicenseVerificationData();
             readInstallReferrerMeta();
             readInstallReferrerHuaweiAds();
             readInstallReferrerHuaweiAppGallery();
             readInstallReferrerSamsung();
             readInstallReferrerXiaomi();
             readInstallReferrerVivo();
+            readLicenseVerificationData();
+
 
             return;
         }
@@ -1392,12 +1404,19 @@ public class ActivityHandler
     }
 
     private void readLicenseVerificationData() {
+
         executor.submit(new Runnable() {
             @Override
             public void run() {
-                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.playAdId,deviceInfo.installTimeTimestamp);
+                if (SharedPreferencesManager
+                        .getDefaultInstance(getContext())
+                        .getLicenseVerificationTracked()){
+                    return;
+                }
+                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.installTimeTimestamp);
                 if (licenseRequiredData != null) {
                     logger.info("licenseRequiredData: signed data = \n %s ,\n response code : %d,\n signature : %s,", licenseRequiredData.getSignature(),licenseRequiredData.getResponseCode(),licenseRequiredData.getSignedData());
+                    sendLicenseVerificationData(licenseRequiredData);
                 }
             }
         });
@@ -1934,13 +1953,13 @@ public class ActivityHandler
 
         // try to read and send the install referrer
         installReferrer.startConnection();
-        readLicenseVerificationData();
         readInstallReferrerMeta();
         readInstallReferrerHuaweiAds();
         readInstallReferrerHuaweiAppGallery();
         readInstallReferrerSamsung();
         readInstallReferrerXiaomi();
         readInstallReferrerVivo();
+        readLicenseVerificationData();
     }
 
     private void setOfflineModeI(boolean offline) {
@@ -2069,6 +2088,28 @@ public class ActivityHandler
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
+    private void sendLicenseVerificationDataI(LicenseRequiredData licenseRequiredData) {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        if (!isValidLicenseData(licenseRequiredData)) {
+            return;
+        }
+
+        // Create sdk click
+        ActivityPackage sdkClickPackage = PackageFactory.buildLicenseVerificationSdkClickPackage(
+                licenseRequiredData,
+                activityState,
+                adjustConfig,
+                deviceInfo,
+                globalParameters,
+                firstSessionDelayManager,
+                internalState);
+
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
+    }
+
     private boolean isValidReferrerDetails(final ReferrerDetails referrerDetails) {
         if (referrerDetails == null) {
             return false;
@@ -2080,6 +2121,22 @@ public class ActivityHandler
 
         return referrerDetails.installReferrer.length() != 0;
     }
+
+    private boolean isValidLicenseData(final LicenseRequiredData licenseRequiredData) {
+        if (licenseRequiredData == null) {
+            return false;
+        }
+
+        if (licenseRequiredData.getSignedData() == null || licenseRequiredData.getSignature() == null) {
+            return false;
+        }
+
+        if (licenseRequiredData.getSignedData().isEmpty() || licenseRequiredData.getSignature().isEmpty()){
+            return false;
+        }
+         return true;
+    }
+
 
     private void processDeeplinkI(AdjustDeeplink deeplink, long clickTime) {
         if (!isEnabledI()) {

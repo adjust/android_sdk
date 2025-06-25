@@ -42,6 +42,7 @@ public interface Constants {
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
+    String LICENSE_VERIFICATION = "google_lvl";
     String REFERRER_API_GOOGLE = "google";
     String REFERRER_API_HUAWEI_ADS = "huawei_ads";
     String REFERRER_API_HUAWEI_APP_GALLERY = "huawei_app_gallery";

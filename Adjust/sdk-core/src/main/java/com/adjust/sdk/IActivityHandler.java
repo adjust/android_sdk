@@ -44,6 +44,8 @@ public interface IActivityHandler {
 
     void sendInstallReferrer(ReferrerDetails referrerDetails, String referrerApi);
 
+    void sendLicenseVerificationData(LicenseRequiredData licenseVerificationData);
+
     void setOfflineMode(boolean enabled);
 
     void setAskingAttribution(boolean askingAttribution);

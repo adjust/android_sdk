@@ -175,6 +175,31 @@ public class PackageFactory {
         return clickPackage;
     }
 
+    public static ActivityPackage buildLicenseVerificationSdkClickPackage(final LicenseRequiredData licenseRequiredData,
+                                                                          final ActivityState activityState,
+                                                                          final AdjustConfig adjustConfig,
+                                                                          final DeviceInfo deviceInfo,
+                                                                          final GlobalParameters globalParameters,
+                                                                          final FirstSessionDelayManager firstSessionDelayManager,
+                                                                          final ActivityHandler.InternalState internalState) {
+        long now = System.currentTimeMillis();
+
+        PackageBuilder clickPackageBuilder = new PackageBuilder(
+                adjustConfig,
+                deviceInfo,
+                activityState,
+                globalParameters,
+                firstSessionDelayManager,
+                now);
+        clickPackageBuilder.internalState = internalState;
+
+        clickPackageBuilder.licenseRequiredData = licenseRequiredData;
+
+        ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.LICENSE_VERIFICATION);
+
+        return clickPackage;
+    }
+
     public static ActivityPackage buildPreinstallSdkClickPackage(final String preinstallPayload,
                                                                  final String preinstallLocation,
                                                                  final ActivityState activityState,

@@ -54,6 +54,9 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_CONTROL_PARAMS = "control_params";
 
+    private static final String PREFS_KEY_LVL_TRACKED = "lvl_tracked";
+
+
     /**
      * Index for raw referrer string content in saved JSONArray object.
      */
@@ -469,6 +472,23 @@ public class SharedPreferencesManager {
         }
 
         return null;
+    }
+
+
+    /**
+     * Save information that license verification has been tracked to shared preferences.
+     */
+    public synchronized void setLicenseVerificationTracked() {
+        saveBoolean(PREFS_KEY_LVL_TRACKED, true);
+    }
+
+    /**
+     * Get information if license verification has been tracked from shared preferences. If no info, default to false.
+     *
+     * @return boolean indicating whether license verification has been tracked or not
+     */
+    public synchronized boolean getLicenseVerificationTracked() {
+        return getBoolean(PREFS_KEY_LVL_TRACKED, false);
     }
 
     /**

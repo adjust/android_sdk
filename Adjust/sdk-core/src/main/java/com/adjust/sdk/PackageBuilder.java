@@ -43,6 +43,7 @@ public class PackageBuilder {
     Map<String, String> extraParameters;
     Boolean isClick;
     ActivityHandler.InternalState internalState;
+    LicenseRequiredData licenseRequiredData;
 
     static class ActivityStateCopy {
         int eventCount = -1;
@@ -566,6 +567,11 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
+        if (licenseRequiredData != null) {
+            PackageBuilder.addInteger(parameters, "lvl_response_code", licenseRequiredData.getResponseCode());
+            PackageBuilder.addString(parameters, "lvl_signed_data", licenseRequiredData.getSignedData());
+            PackageBuilder.addString(parameters, "lvl_signature", licenseRequiredData.getSignature());
+        }
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);

@@ -72,13 +72,13 @@ public class Reflection {
         return referrerDetails;
     }
 
-    public static LicenseRequiredData getLicenseRequiredData(Context context, ILogger logger, String gpsAdid, long installTimeStamp) {
+    public static LicenseRequiredData getLicenseRequiredData(Context context, ILogger logger, long installTimeStamp) {
         LicenseRequiredData licenseRequiredData = null;
         try {
             licenseRequiredData = (LicenseRequiredData) invokeStaticMethod("com.adjust.sdk.lvl.Util",
                     "getLicenseRequiredData",
-                    new Class[]{Context.class, ILogger.class, String.class, long.class},
-                    context, logger, gpsAdid, installTimeStamp);
+                    new Class[]{Context.class, ILogger.class, long.class},
+                    context, logger, installTimeStamp);
         } catch (Exception e) {
         }
         return licenseRequiredData;
