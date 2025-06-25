@@ -140,7 +140,7 @@ public class LicenseChecker {
         // Pack into a long:[timestamp: 56 bits][version/flags: 8 bits]
         long nonce = 0;
         nonce |= (installTimestamp & 0xFFFFFFFFFFL) << 8;  // bits 8–31
-        nonce |= 0x02; // version in the lowest 8 bits
+        nonce |= 0x01; // version in the lowest 8 bits
 
         return nonce;
     }
