@@ -54,18 +54,12 @@ public class LicenseChecker {
 
     private void executeLicenseCheck() {
         try {
-            logger.debug("License check connected" +", retryCount = " + retryCount);
             String packageName = mContext.getPackageName();
             long nonce = generateNonce(installTimeStamp);
-
-            logger.debug("License installTimeStamp = " + installTimeStamp);
-            logger.debug("License check nonce = " + nonce);
-            logger.debug("License check attempt #" + (retryCount + 1));
-
             mService.checkLicense(nonce, packageName, new ResultListener());
 
         } catch (Exception e) {
-            logger.error("License check failed", e);
+            logger.error("License check failed", e.getMessage());
             mCallback.onError(-1);
         }
     }
@@ -83,14 +77,12 @@ public class LicenseChecker {
 
 
         public void onServiceDisconnected(ComponentName name) {
-            logger.debug("License check disconnected");
             mService = null;
             mBound = false;
         }
     };
 
     public void onDestroy() {
-        logger.debug("License check onDestroy");
         if (mBound) {
             mContext.unbindService(mServiceConnection);
             mBound = false;
@@ -100,7 +92,6 @@ public class LicenseChecker {
     private class ResultListener extends com.android.vending.licensing.ILicenseResultListener.Stub {
         @Override
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
-            logger.debug( "Received license response, code: " + responseCode);
 
             switch (responseCode) {
                 case NOT_LICENSED: // NOT_LICENSED

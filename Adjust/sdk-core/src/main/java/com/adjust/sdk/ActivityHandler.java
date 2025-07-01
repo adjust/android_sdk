@@ -1415,7 +1415,6 @@ public class ActivityHandler
                 }
                 LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.installTimeTimestamp);
                 if (licenseRequiredData != null) {
-                    logger.info("licenseRequiredData: signed data = \n %s ,\n response code : %d,\n signature : %s,", licenseRequiredData.getSignature(),licenseRequiredData.getResponseCode(),licenseRequiredData.getSignedData());
                     sendLicenseVerificationData(licenseRequiredData);
                 }
             }
