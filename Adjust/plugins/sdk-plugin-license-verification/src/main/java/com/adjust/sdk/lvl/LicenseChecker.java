@@ -57,7 +57,7 @@ public class LicenseChecker {
             mService.checkLicense(nonce, packageName, new ResultListener());
 
         } catch (Exception e) {
-            logger.error("License check failed", e.getMessage());
+            logger.error("[License Verification] License check failed", e.getMessage());
             mCallback.onError(-1);
         }
     }
@@ -96,19 +96,21 @@ public class LicenseChecker {
                 case ERROR_INVALID_PACKAGE_NAME: // INVALID_PACKAGE_NAME
                 case ERROR_NON_MATCHING_UID: // NON_MATCHING_UID
                 case ERROR_NOT_MARKET_MANAGED: // NOT_MARKET_MANAGED
-                    logger.warn("License check failed: " + responseCode);
+                    logger.warn("[LicenseVerification] License check failed: " + responseCode);
                     mCallback.onError(responseCode);
+                    onDestroy();
                     return;
 
                 case ERROR_CONTACTING_SERVER: // CONTACTING_SERVER_ERROR
                 case ERROR_SERVER_FAILURE: // SERVER_FAILURE
                 case ERROR_OVER_QUOTA: // refusing to talk to this device, over quota
                     if (++retryCount < MAX_RETRIES) {
-                        logger.warn("Retry attempt [%d] for response code [%d]" , retryCount, responseCode);
+                        logger.warn("[LicenseVerification] Retry attempt [%d] for response code [%d]" , retryCount, responseCode);
                         executeLicenseCheck();
                     } else {
-                        logger.error("License check failed after max retries");
+                        logger.error("[LicenseVerification] License check failed after max retries");
                         mCallback.onError(responseCode);
+                        onDestroy();
                     }
                     break;
 
@@ -118,9 +120,10 @@ public class LicenseChecker {
                     if (signedData != null && signature != null) {
                         mCallback.onLicenseDataReceived(responseCode, signedData, signature);
                     } else {
-                        logger.error("missing signed data or signature");
+                        logger.error("[LicenseVerification] missing signed data or signature");
                         mCallback.onError(responseCode);
                     }
+                    onDestroy();
             }
         }
     }

@@ -19,3 +19,15 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all classes in the LVL licensing AIDL package
+-keep class com.android.vending.licensing.** { *; }
+
+# Keep interface method signatures
+-keep interface com.android.vending.licensing.ILicensingService
+-keep interface com.android.vending.licensing.ILicenseResultListener
+
+# Prevent obfuscation of the stub classes used for IPC
+-keepclassmembers class * implements android.os.IInterface {
+    <methods>;
+}

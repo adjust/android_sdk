@@ -28,7 +28,7 @@ public class AdjustLicenseVerification {
             checker.checkAccess();
             return licenseHolder.poll(3000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            logger.error("License checker interrupted: ", e.getMessage());
+            logger.error("[LicenseVerification] License checker interrupted: ", e.getMessage());
             return null;
         }
     }
