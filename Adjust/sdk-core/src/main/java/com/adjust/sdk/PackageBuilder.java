@@ -281,7 +281,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -540,7 +540,7 @@ public class PackageBuilder {
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time_server", installBeginTimeServerInSeconds);
         PackageBuilder.addString(parameters, "install_version", installVersion);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -919,7 +919,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1016,7 +1016,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1110,7 +1110,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1199,7 +1199,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);

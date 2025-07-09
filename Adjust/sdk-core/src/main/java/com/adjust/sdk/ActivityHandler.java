@@ -1413,7 +1413,7 @@ public class ActivityHandler
                         .getLicenseVerificationTracked()){
                     return;
                 }
-                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.installTimeTimestamp);
+                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.appInstallTime);
                 if (licenseRequiredData != null) {
                     sendLicenseVerificationData(licenseRequiredData);
                 }

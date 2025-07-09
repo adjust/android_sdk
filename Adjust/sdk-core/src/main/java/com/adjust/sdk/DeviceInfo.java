@@ -87,7 +87,7 @@ class DeviceInfo {
     String hardwareName;
     String abi;
     String buildName;
-    String appInstallTime;
+    long appInstallTime;
     String appUpdateTime;
     int uiMode;
     String appSetId;
@@ -102,7 +102,6 @@ class DeviceInfo {
     String mnc;
     AdjustStoreInfo storeInfoFromClient;
     String storeIdFromSystem;
-    long installTimeTimestamp;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -135,9 +134,6 @@ class DeviceInfo {
         abi = getABI();
         buildName = getBuildName();
         appInstallTime = getAppInstallTime(packageInfo);
-        if (packageInfo != null){
-            installTimeTimestamp = packageInfo.firstInstallTime;
-        }
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
         if (Util.canReadPlayIds(adjustConfig)) {
@@ -492,12 +488,11 @@ class DeviceInfo {
         return SupportedABIS[0];
     }
 
-    private String getAppInstallTime(PackageInfo packageInfo) {
-        try {
-            return Util.dateFormatter.format(new Date(packageInfo.firstInstallTime));
-        } catch (Exception ex) {
-            return null;
+    private long getAppInstallTime(PackageInfo packageInfo) {
+        if (packageInfo == null){
+            return 0L;
         }
+        return packageInfo.firstInstallTime;
     }
 
     private String getAppUpdateTime(PackageInfo packageInfo) {
