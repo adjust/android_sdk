@@ -1404,7 +1404,6 @@ public class ActivityHandler
     }
 
     private void readLicenseVerificationData() {
-
         executor.submit(new Runnable() {
             @Override
             public void run() {
