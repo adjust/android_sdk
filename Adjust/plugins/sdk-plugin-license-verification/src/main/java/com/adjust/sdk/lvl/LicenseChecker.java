@@ -29,7 +29,7 @@ public class LicenseChecker {
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
-    private final long installTimeStamp;
+    private final long installTimestamp;
     private ILicensingService mService;
     private boolean mBound;
 
