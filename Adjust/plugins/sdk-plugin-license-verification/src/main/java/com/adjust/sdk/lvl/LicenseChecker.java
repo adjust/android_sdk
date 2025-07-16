@@ -44,7 +44,9 @@ public class LicenseChecker {
     }
 
     public synchronized void checkAccess() {
-        if (mBound) return;
+        if (mBound) {
+            return;
+        }
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
         mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
