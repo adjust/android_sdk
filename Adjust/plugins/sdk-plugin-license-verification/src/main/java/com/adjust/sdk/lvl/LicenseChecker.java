@@ -65,7 +65,6 @@ public class LicenseChecker {
     }
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
-
         public void onServiceConnected(ComponentName name, IBinder service) {
 
             mService = ILicensingService.Stub.asInterface(service);
