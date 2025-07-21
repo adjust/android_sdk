@@ -74,7 +74,6 @@ public class LicenseChecker {
             executeLicenseCheck();
         }
 
-
         public void onServiceDisconnected(ComponentName name) {
             mService = null;
             mBound = false;
