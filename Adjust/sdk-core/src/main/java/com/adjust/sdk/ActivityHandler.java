@@ -556,7 +556,7 @@ public class ActivityHandler
     }
 
     @Override
-    public void sendLicenseVerificationData(final LicenseRequiredData licenseVerificationData) {
+    public void sendLicenseVerificationData(final LicenseData licenseVerificationData) {
         executor.submit(new Runnable() {
             @Override
             public void run() {
@@ -1412,9 +1412,9 @@ public class ActivityHandler
                         .getLicenseVerificationTracked()){
                     return;
                 }
-                LicenseRequiredData licenseRequiredData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.appInstallTime);
-                if (licenseRequiredData != null) {
-                    sendLicenseVerificationData(licenseRequiredData);
+                LicenseData licenseData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.appInstallTime);
+                if (licenseData != null) {
+                    sendLicenseVerificationData(licenseData);
                 }
             }
         });
@@ -2086,18 +2086,18 @@ public class ActivityHandler
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
-    private void sendLicenseVerificationDataI(LicenseRequiredData licenseRequiredData) {
+    private void sendLicenseVerificationDataI(LicenseData licenseData) {
         if (!isEnabledI()) {
             return;
         }
 
-        if (!isValidLicenseData(licenseRequiredData)) {
+        if (licenseData == null || !licenseData.isValid()) {
             return;
         }
 
         // Create sdk click
         ActivityPackage sdkClickPackage = PackageFactory.buildLicenseVerificationSdkClickPackage(
-                licenseRequiredData,
+                licenseData,
                 activityState,
                 adjustConfig,
                 deviceInfo,
@@ -2118,21 +2118,6 @@ public class ActivityHandler
         }
 
         return referrerDetails.installReferrer.length() != 0;
-    }
-
-    private boolean isValidLicenseData(final LicenseRequiredData licenseRequiredData) {
-        if (licenseRequiredData == null) {
-            return false;
-        }
-
-        if (licenseRequiredData.getSignedData() == null || licenseRequiredData.getSignature() == null) {
-            return false;
-        }
-
-        if (licenseRequiredData.getSignedData().isEmpty() || licenseRequiredData.getSignature().isEmpty()){
-            return false;
-        }
-         return true;
     }
 
 

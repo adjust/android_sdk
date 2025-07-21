@@ -4,7 +4,6 @@ import android.content.Context;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -72,16 +71,16 @@ public class Reflection {
         return referrerDetails;
     }
 
-    public static LicenseRequiredData getLicenseRequiredData(Context context, ILogger logger, long installTimeStamp) {
-        LicenseRequiredData licenseRequiredData = null;
+    public static LicenseData getLicenseRequiredData(Context context, ILogger logger, long installTimeStamp) {
+        LicenseData licenseData = null;
         try {
-            licenseRequiredData = (LicenseRequiredData) invokeStaticMethod("com.adjust.sdk.lvl.Util",
+            licenseData = (LicenseData) invokeStaticMethod("com.adjust.sdk.lvl.Util",
                     "getLicenseRequiredData",
                     new Class[]{Context.class, ILogger.class, long.class},
                     context, logger, installTimeStamp);
         } catch (Exception e) {
         }
-        return licenseRequiredData;
+        return licenseData;
     }
 
     public static ReferrerDetails getHuaweiAdsReferrer(Context context, ILogger logger) {

@@ -175,7 +175,7 @@ public class PackageFactory {
         return clickPackage;
     }
 
-    public static ActivityPackage buildLicenseVerificationSdkClickPackage(final LicenseRequiredData licenseRequiredData,
+    public static ActivityPackage buildLicenseVerificationSdkClickPackage(final LicenseData licenseData,
                                                                           final ActivityState activityState,
                                                                           final AdjustConfig adjustConfig,
                                                                           final DeviceInfo deviceInfo,
@@ -193,7 +193,7 @@ public class PackageFactory {
                 now);
         clickPackageBuilder.internalState = internalState;
 
-        clickPackageBuilder.licenseRequiredData = licenseRequiredData;
+        clickPackageBuilder.licenseData = licenseData;
 
         ActivityPackage clickPackage = clickPackageBuilder.buildClickPackage(Constants.LICENSE_VERIFICATION);
 
