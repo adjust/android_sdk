@@ -52,17 +52,17 @@ if (localPropsFile.exists()) {
     }
 }
 
-task adjustLicenseVerificationPluginAar(type: Copy) {
+task adjustLvlPluginAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
-    include 'sdk-plugin-license-verification-release.aar'
+    include 'sdk-plugin-lvl-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-plugin-license-verification-release.aar', "${project.name}.aar"
+    rename 'sdk-plugin-lvl-release.aar', "${project.name}.aar"
 
 }
 
-task adjustLicenseVerificationPluginJar(type: Jar) {
+task adjustLvlPluginJar(type: Jar) {
     dependsOn 'packageReleaseAssets'
     dependsOn 'compileReleaseJavaWithJavac'
 
@@ -75,40 +75,40 @@ task adjustLicenseVerificationPluginJar(type: Jar) {
 }
 
 
-task adjustLicenseVerificationPluginSourcesJar(type: Jar) {
+task adjustLvlPluginSourcesJar(type: Jar) {
     setArchiveClassifier('sources')
     from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives adjustLicenseVerificationPluginJar
-    archives adjustLicenseVerificationPluginSourcesJar
+    archives adjustLvlPluginJar
+    archives adjustLvlPluginSourcesJar
 }
 
 afterEvaluate {
     publishing {
         publications {
 /*
-            mavenAndroidLicenseVerificationJar(MavenPublication) {
+            mavenAndroidLvlJar(MavenPublication) {
                 customizePomForJar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-license-verification'
                 version rootProject.ext.coreVersionName
 
-                artifact adjustLicenseVerificationPluginJar
-                artifact adjustLicenseVerificationPluginSourcesJar
+                artifact adjustLvlPluginJar
+                artifact adjustLvlPluginSourcesJar
             }
 */
-            mavenAndroidLicenseVerificationAar(MavenPublication) {
+            mavenAndroidLvlAar(MavenPublication) {
                 customizePomForAar(pom)
                 groupId rootProject.ext.adjustGroupId
                 artifactId 'adjust-android-license-verification'
                 version rootProject.ext.coreVersionName
 
-                artifact("$buildDir/outputs/aar/sdk-plugin-license-verification-release.aar") {
-                    builtBy tasks.getByPath("adjustLicenseVerificationPluginAar")
+                artifact("$buildDir/outputs/aar/sdk-plugin-lvl-release.aar") {
+                    builtBy tasks.getByPath("adjustLvlPluginAar")
                 }
-                artifact adjustLicenseVerificationPluginSourcesJar
+                artifact adjustLvlPluginSourcesJar
             }
         }
 
@@ -130,8 +130,8 @@ afterEvaluate {
         }
     }
     signing {
-//        sign publishing.publications.mavenAndroidLicenseVerificationJar
-        sign publishing.publications.mavenAndroidLicenseVerificationAar
+//        sign publishing.publications.mavenAndroidLvlJar
+        sign publishing.publications.mavenAndroidLvlAar
     }
 }
 
@@ -216,18 +216,18 @@ def customizePomForAar(pom) {
 }
 
 model {
-//    tasks.generatePomFileForMavenAndroidLicenseVerificationJarPublication {
+//    tasks.generatePomFileForMavenAndroidLvlJarPublication {
 //        destination = file("${project.buildDir}/generated-pom.xml")
 //    }
     /* TODO check if/how to replace this tasks
-    tasks.publishMavenAndroidLicenseVerificationPublicationToMavenLocal {
+    tasks.publishMavenAndroidLvlPublicationToMavenLocal {
         dependsOn project.tasks.signArchives
     }
-    tasks.publishMavenAndroidLicenseVerificationPublicationToMavenRepository {
+    tasks.publishMavenAndroidLvlPublicationToMavenRepository {
         dependsOn project.tasks.signArchives
     }
     */
-    tasks.generatePomFileForMavenAndroidLicenseVerificationAarPublication {
+    tasks.generatePomFileForMavenAndroidLvlAarPublication {
         destination = file("${project.buildDir}/generated-pom.xml")
     }
 }

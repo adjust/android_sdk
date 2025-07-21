@@ -40,7 +40,7 @@ public class LicenseChecker {
         this.mContext = context;
         this.mCallback = callback;
         this.logger = logger;
-        this.installTimeStamp = installTimeStamp;
+        this.installTimestamp = installTimeStamp;
     }
 
     public synchronized void checkAccess() {
@@ -55,7 +55,7 @@ public class LicenseChecker {
     private void executeLicenseCheck() {
         try {
             String packageName = mContext.getPackageName();
-            long nonce = generateNonce(installTimeStamp);
+            long nonce = generateNonce(installTimestamp);
             mService.checkLicense(nonce, packageName, new ResultListener());
 
         } catch (Exception e) {
