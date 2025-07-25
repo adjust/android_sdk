@@ -6,134 +6,99 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-
 import com.adjust.sdk.ILogger;
 import com.android.vending.licensing.ILicensingService;
 
 public class LicenseChecker {
     private static final String GOOGLE_PLAY_PACKAGE = "com.android.vending";
-
-    // Server response codes.
-    private static final int LICENSED = 0x0;
-    private static final int NOT_LICENSED = 0x1;
-    private static final int LICENSED_OLD_KEY = 0x2;
-    private static final int ERROR_NOT_MARKET_MANAGED = 0x3;
-    private static final int ERROR_SERVER_FAILURE = 0x4;
-    private static final int ERROR_OVER_QUOTA = 0x5;
-
-    private static final int ERROR_CONTACTING_SERVER = 0x101;
-    private static final int ERROR_INVALID_PACKAGE_NAME = 0x102;
-    private static final int ERROR_NON_MATCHING_UID = 0x103;
-
+    private static final String TAG = "LicenseChecker";
 
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
-    private final long installTimestamp;
+    private final long installTimeStamp;
+
     private ILicensingService mService;
     private boolean mBound;
-
-    private static final int MAX_RETRIES = 3;
     private int retryCount = 0;
+    private static final int MAX_RETRIES = 3;
 
     public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long installTimeStamp) {
         this.mContext = context;
         this.mCallback = callback;
         this.logger = logger;
-        this.installTimestamp = installTimeStamp;
+        this.installTimeStamp = installTimeStamp;
     }
 
     public synchronized void checkAccess() {
-        if (mBound) {
-            return;
-        }
+        if (mBound) return;
+        logger.debug(TAG, "License check starts");
+
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
-        mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        logger.debug(TAG, "bindService result: " + isBind);
     }
-
-    private void executeLicenseCheck() {
-        try {
-            String packageName = mContext.getPackageName();
-            long nonce = generateNonce(installTimestamp);
-            mService.checkLicense(nonce, packageName, new ResultListener());
-
-        } catch (Exception e) {
-            logger.error("[License Verification] License check failed", e.getMessage());
-            mCallback.onError(-1);
-        }
-    }
-
-    private final ServiceConnection mServiceConnection = new ServiceConnection() {
-        public void onServiceConnected(ComponentName name, IBinder service) {
-
-            mService = ILicensingService.Stub.asInterface(service);
-            mBound = true;
-
-            retryCount = 0; // Reset retry count on successful connection
-            executeLicenseCheck();
-        }
-
-        public void onServiceDisconnected(ComponentName name) {
-            mService = null;
-            mBound = false;
-        }
-    };
 
     public void onDestroy() {
+        logger.debug(TAG, "LicenseChecker destroyed");
         if (mBound) {
             mContext.unbindService(mServiceConnection);
             mBound = false;
         }
     }
 
+    private final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            logger.debug(TAG, "Service connected");
+            mService = ILicensingService.Stub.asInterface(service);
+            mBound = true;
+            retryCount = 0;
+            executeLicenseCheck();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            logger.debug(TAG, "Service disconnected");
+            mService = null;
+            mBound = false;
+        }
+    };
+
+    private void executeLicenseCheck() {
+        try {
+            String packageName = mContext.getPackageName();
+            long nonce = generateNonce(installTimeStamp);
+            logger.debug(TAG, "Generated nonce: " + nonce);
+
+            mService.checkLicense(nonce, packageName, new ResultListener());
+        } catch (Exception e) {
+            logger.error(TAG, "License check failed", e);
+            mCallback.onError(-1);
+        }
+    }
+
     private class ResultListener extends com.android.vending.licensing.ILicenseResultListener.Stub {
         @Override
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
+            logger.debug(TAG, "Received license response: " + responseCode);
 
-            switch (responseCode) {
-                case NOT_LICENSED: // NOT_LICENSED
-                case ERROR_INVALID_PACKAGE_NAME: // INVALID_PACKAGE_NAME
-                case ERROR_NON_MATCHING_UID: // NON_MATCHING_UID
-                case ERROR_NOT_MARKET_MANAGED: // NOT_MARKET_MANAGED
-                    logger.warn("[LicenseVerification] License check failed: " + responseCode);
-                    mCallback.onError(responseCode);
-                    onDestroy();
-                    return;
-
-                case ERROR_CONTACTING_SERVER: // CONTACTING_SERVER_ERROR
-                case ERROR_SERVER_FAILURE: // SERVER_FAILURE
-                case ERROR_OVER_QUOTA: // refusing to talk to this device, over quota
-                    if (++retryCount < MAX_RETRIES) {
-                        logger.warn("[LicenseVerification] Retry attempt [%d] for response code [%d]" , retryCount, responseCode);
-                        executeLicenseCheck();
-                    } else {
-                        logger.error("[LicenseVerification] License check failed after max retries");
-                        mCallback.onError(responseCode);
-                        onDestroy();
-                    }
-                    break;
-
-                case LICENSED: // LICENSED
-                case LICENSED_OLD_KEY: // LICENSED_OLD_KEY
-                default:
-                    if (signedData != null && signature != null) {
-                        mCallback.onLicenseDataReceived(responseCode, signedData, signature);
-                    } else {
-                        logger.error("[LicenseVerification] missing signed data or signature");
-                        mCallback.onError(responseCode);
-                    }
-                    onDestroy();
+            LicenseResponseHandler handler = new LicenseResponseHandler(mCallback, logger, MAX_RETRIES);
+            boolean shouldRetry = handler.handleResponse(responseCode, signedData, signature, retryCount);
+            if (shouldRetry) {
+                retryCount++;
+                logger.debug(TAG, "Retrying license check... Attempt " + retryCount);
+                executeLicenseCheck();
+            }else {
+                onDestroy();
             }
         }
     }
 
     public static long generateNonce(long installTimestamp) {
-        // Pack into a long:[timestamp: 56 bits][version/flags: 8 bits]
-        long nonce = 0;
-        nonce |= (installTimestamp & 0xFFFFFFFFFFL) << 8;  // bits 8–31
-        nonce |= 0x01; // version in the lowest 8 bits
-
+        long reducedTimestamp = (installTimestamp / 1000) % (1L << 56);
+        long nonce = (reducedTimestamp << 8) | 0x01;
         return nonce;
     }
 }

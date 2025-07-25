@@ -31,11 +31,23 @@ android {
     buildFeatures {
         aidl true
     }
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
 }
 
 dependencies {
+
     // Add SDK via module.
     compileOnly project(':sdk-core')
+    // Unit testing
+    // For unit tests
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.mockito:mockito-core:5.10.0'
+
+// For integration tests
+    testImplementation 'org.robolectric:robolectric:4.11.1'
+
     // Add SDK via Maven.
     // implementation 'com.adjust.sdk:adjust-android:5.3.0'
 }
