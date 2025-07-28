@@ -96,9 +96,21 @@ public class LicenseChecker {
         }
     }
 
+    /**
+     * Generates a 64-bit nonce with:
+     * - 56-bit reduced timestamp (in seconds) stored in bits 8–63
+     * - 8-bit reserved field in bits 0–7 (currently using 0x01 as version marker)
+     */
     public static long generateNonce(long installTimestamp) {
-        long reducedTimestamp = (installTimestamp / 1000) % (1L << 56);
-        long nonce = (reducedTimestamp << 8) | 0x01;
-        return nonce;
+        // Convert to seconds for compactness and to fit into 56 bits
+        long timestampInSeconds = installTimestamp / 1000;
+
+        // Mask to ensure we only keep the lowest 56 bits
+        long MASK_56_BITS = 0x00FFFFFFFFFFFFFFL;
+        long reducedTimestamp = timestampInSeconds & MASK_56_BITS;
+
+        // Shift timestamp to occupy bits 8–63, reserve LSB for flags/version
+        return (reducedTimestamp << 8) | 0x01;
     }
+
 }
