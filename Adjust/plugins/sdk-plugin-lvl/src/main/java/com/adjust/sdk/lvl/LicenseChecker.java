@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+
 import com.adjust.sdk.ILogger;
 import com.android.vending.licensing.ILicensingService;
 
 public class LicenseChecker {
     private static final String GOOGLE_PLAY_PACKAGE = "com.android.vending";
-    private static final String TAG = "LicenseChecker";
 
     private final Context mContext;
     private final LicenseRawCallback mCallback;
@@ -31,17 +31,19 @@ public class LicenseChecker {
     }
 
     public synchronized void checkAccess() {
-        if (mBound) return;
-        logger.debug(TAG, "License check starts");
+        if (mBound) {
+            return;
+        }
+        logger.debug("[LicenseVerification] License check starts");
 
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
         boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        logger.debug(TAG, "bindService result: " + isBind);
+        logger.debug("[LicenseVerification] bindService result: " + isBind);
     }
 
     public void onDestroy() {
-        logger.debug(TAG, "LicenseChecker destroyed");
+        logger.debug("[LicenseVerification] LicenseChecker destroyed");
         if (mBound) {
             mContext.unbindService(mServiceConnection);
             mBound = false;
@@ -51,7 +53,7 @@ public class LicenseChecker {
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            logger.debug(TAG, "Service connected");
+            logger.debug("[LicenseVerification] Service connected");
             mService = ILicensingService.Stub.asInterface(service);
             mBound = true;
             retryCount = 0;
@@ -60,7 +62,7 @@ public class LicenseChecker {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            logger.debug(TAG, "Service disconnected");
+            logger.debug("[LicenseVerification] Service disconnected");
             mService = null;
             mBound = false;
         }
@@ -70,11 +72,11 @@ public class LicenseChecker {
         try {
             String packageName = mContext.getPackageName();
             long nonce = generateNonce(timestamp);
-            logger.debug(TAG, "Generated nonce: " + nonce);
+            logger.debug("[LicenseVerification] Generated nonce: " + nonce);
 
             mService.checkLicense(nonce, packageName, new ResultListener());
         } catch (Exception e) {
-            logger.error(TAG, "License check failed", e);
+            logger.error("[LicenseVerification] License check failed", e);
             mCallback.onError(-1);
         }
     }
@@ -82,15 +84,15 @@ public class LicenseChecker {
     private class ResultListener extends com.android.vending.licensing.ILicenseResultListener.Stub {
         @Override
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
-            logger.debug(TAG, "Received license response: " + responseCode);
+            logger.debug("[LicenseVerification] Received license response: " + responseCode);
 
             LicenseResponseHandler handler = new LicenseResponseHandler(mCallback, logger, MAX_RETRIES);
             boolean shouldRetry = handler.handleResponse(responseCode, signedData, signature, retryCount);
             if (shouldRetry) {
                 retryCount++;
-                logger.debug(TAG, "Retrying license check... Attempt " + retryCount);
+                logger.debug("[LicenseVerification] Retrying license check... Attempt " + retryCount);
                 executeLicenseCheck();
-            }else {
+            } else {
                 onDestroy();
             }
         }
