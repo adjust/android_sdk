@@ -16,18 +16,18 @@ public class LicenseChecker {
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
-    private final long installTimestamp;
+    private final long timestamp;
 
     private ILicensingService mService;
     private boolean mBound;
     private int retryCount = 0;
     private static final int MAX_RETRIES = 3;
 
-    public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long installTimestamp) {
+    public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long timestamp) {
         this.mContext = context;
         this.mCallback = callback;
         this.logger = logger;
-        this.installTimestamp = installTimestamp;
+        this.timestamp = timestamp;
     }
 
     public synchronized void checkAccess() {
@@ -69,7 +69,7 @@ public class LicenseChecker {
     private void executeLicenseCheck() {
         try {
             String packageName = mContext.getPackageName();
-            long nonce = generateNonce(installTimestamp);
+            long nonce = generateNonce(timestamp);
             logger.debug(TAG, "Generated nonce: " + nonce);
 
             mService.checkLicense(nonce, packageName, new ResultListener());
@@ -101,9 +101,9 @@ public class LicenseChecker {
      * - 56-bit reduced timestamp (in seconds) stored in bits 8–63
      * - 8-bit reserved field in bits 0–7 (currently using 0x01 as version marker)
      */
-    public static long generateNonce(long installTimestamp) {
+    public static long generateNonce(long timestamp) {
         // Convert to seconds for compactness and to fit into 56 bits
-        long timestampInSeconds = installTimestamp / 1000;
+        long timestampInSeconds = timestamp / 1000;
 
         // Mask to ensure we only keep the lowest 56 bits
         long MASK_56_BITS = 0x00FFFFFFFFFFFFFFL;

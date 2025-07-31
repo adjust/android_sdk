@@ -7,7 +7,7 @@ import com.adjust.sdk.LicenseData;
 
 public class Util {
 
-    public synchronized static LicenseData getLicenseRequiredData(Context context, ILogger logger, long installTimestamp) {
-        return AdjustLicenseVerification.fetchLicenseDate(context, logger, installTimestamp);
+    public synchronized static LicenseData getLicenseRequiredData(Context context, ILogger logger, long timestamp) {
+        return AdjustLicenseVerification.fetchLicenseDate(context, logger, timestamp);
     }
 }
