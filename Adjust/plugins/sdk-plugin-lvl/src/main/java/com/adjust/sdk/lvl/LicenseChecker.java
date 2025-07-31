@@ -16,18 +16,18 @@ public class LicenseChecker {
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
-    private final long installTimeStamp;
+    private final long installTimestamp;
 
     private ILicensingService mService;
     private boolean mBound;
     private int retryCount = 0;
     private static final int MAX_RETRIES = 3;
 
-    public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long installTimeStamp) {
+    public LicenseChecker(Context context, LicenseRawCallback callback, ILogger logger, long installTimestamp) {
         this.mContext = context;
         this.mCallback = callback;
         this.logger = logger;
-        this.installTimeStamp = installTimeStamp;
+        this.installTimestamp = installTimestamp;
     }
 
     public synchronized void checkAccess() {
@@ -69,7 +69,7 @@ public class LicenseChecker {
     private void executeLicenseCheck() {
         try {
             String packageName = mContext.getPackageName();
-            long nonce = generateNonce(installTimeStamp);
+            long nonce = generateNonce(installTimestamp);
             logger.debug(TAG, "Generated nonce: " + nonce);
 
             mService.checkLicense(nonce, packageName, new ResultListener());
