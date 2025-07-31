@@ -16,7 +16,7 @@ public class LicenseCheckerNonceTest {
     @Test
     public void testGenerateNonce_timestampPacking_isCorrect() {
         long timestamp = 1720000000000L; // Epoch in ms
-        long expectedSeconds = (timestamp / 1000) & 0x00FFFFFFFFFFFFFFL;
+        long expectedSeconds =timestamp & 0x00FFFFFFFFFFFFFFL;
         long nonce = LicenseChecker.generateNonce(timestamp);
 
         long extractedSeconds = (nonce >>> 8); // remove version byte
@@ -32,20 +32,19 @@ public class LicenseCheckerNonceTest {
     @Test
     public void testGenerateNonce_nearLimit_doesNotOverflowSafe() {
         // Use a timestamp that still fits in millis without overflowing long
-        long safeSeconds = (1L << 53); // 53 bits (won't overflow when *1000)
-        long installTimeMillis = safeSeconds * 1000;
+        long safeMillis = (1L << 53); // 53 bits (won't overflow when *1000)
 
-        long nonce = LicenseChecker.generateNonce(installTimeMillis);
-        long extractedSeconds = nonce >>> 8;
+        long nonce = LicenseChecker.generateNonce(safeMillis);
+        long extractedMillis = nonce >>> 8;
 
-        assertEquals("Should safely extract 53-bit timestamp", safeSeconds, extractedSeconds);
+        assertEquals("Should safely extract 53-bit timestamp", safeMillis, extractedMillis);
     }
 
 
 
     @Test
     public void testGenerateNonce_truncatesIfAbove56Bits() {
-        long overMaxTimestampMs = ((1L << 56) + 9999L) * 1000; // milliseconds that overflow 56-bit seconds
+        long overMaxTimestampMs = ((1L << 56) + 9999L); // milliseconds that overflow 56-bit seconds
 
         long nonce = LicenseChecker.generateNonce(overMaxTimestampMs);
         long extracted = (nonce >>> 8);
