@@ -894,5 +894,9 @@ public class AdjustInstance {
             AdjustFactory.setIgnoreSystemLifecycleBootstrap(
               testOptions.ignoreSystemLifecycleBootstrap.booleanValue());
         }
+        if (testOptions.ignoreSkippingUrlStrategyForOverwrittenUrl != null) {
+            AdjustFactory.setIgnoreSkippingUrlStrategyForOverwrittenUrl(
+                    testOptions.ignoreSkippingUrlStrategyForOverwrittenUrl.booleanValue());
+        }
     }
 }
