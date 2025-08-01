@@ -19,7 +19,8 @@ public interface Constants {
     int THIRTY_MINUTES = 30 * ONE_MINUTE;
     int ONE_HOUR = 2 * THIRTY_MINUTES;
 
-    int CONNECTION_TIMEOUT = Constants.ONE_MINUTE;
+    int CONNECTION_TIMEOUT = ONE_MINUTE;
+    int CONNECTION_TIMEOUT_VERIFY = 30 * ONE_SECOND;
     int SOCKET_TIMEOUT = Constants.ONE_MINUTE;
     int MAX_WAIT_INTERVAL = Constants.ONE_MINUTE;
 

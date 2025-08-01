@@ -16,10 +16,10 @@ public class TestConnectionOptions {
     public static void setTestConnectionOptions() {
         AdjustFactory.setConnectionOptions(new UtilNetworking.IConnectionOptions() {
             @Override
-            public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk) {
+            public void applyConnectionOptions(HttpsURLConnection connection, String clientSdk, int timeout) {
                 UtilNetworking.IConnectionOptions defaultConnectionOption =
                         UtilNetworking.createDefaultConnectionOptions();
-                defaultConnectionOption.applyConnectionOptions(connection, clientSdk);
+                defaultConnectionOption.applyConnectionOptions(connection, clientSdk, timeout);
 
                 try {
                     // create modern SSLContext that supports TLS 1.2+

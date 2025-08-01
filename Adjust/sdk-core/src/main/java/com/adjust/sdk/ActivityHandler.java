@@ -11,6 +11,8 @@ package com.adjust.sdk;
 
 import static com.adjust.sdk.Constants.ACTIVITY_STATE_FILENAME;
 import static com.adjust.sdk.Constants.ATTRIBUTION_FILENAME;
+import static com.adjust.sdk.Constants.CONNECTION_TIMEOUT;
+import static com.adjust.sdk.Constants.CONNECTION_TIMEOUT_VERIFY;
 import static com.adjust.sdk.Constants.GLOBAL_CALLBACK_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.GLOBAL_PARTNER_PARAMETERS_FILENAME;
 import static com.adjust.sdk.Constants.REFERRER_API_HUAWEI_ADS;
@@ -936,6 +938,7 @@ public class ActivityHandler
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk,
+                        CONNECTION_TIMEOUT,
                         adjustConfig.context);
         packageHandler = AdjustFactory.getPackageHandler(
                 this,
@@ -952,6 +955,7 @@ public class ActivityHandler
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk,
+                        CONNECTION_TIMEOUT,
                         adjustConfig.context);
 
         attributionHandler = AdjustFactory.getAttributionHandler(
@@ -968,6 +972,7 @@ public class ActivityHandler
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk,
+                        CONNECTION_TIMEOUT,
                         adjustConfig.context);
 
         sdkClickHandler = AdjustFactory.getSdkClickHandler(
@@ -984,6 +989,7 @@ public class ActivityHandler
                         adjustConfig.subscriptionPath,
                         adjustConfig.purchaseVerificationPath,
                         deviceInfo.clientSdk,
+                        CONNECTION_TIMEOUT_VERIFY,
                         adjustConfig.context);
 
         purchaseVerificationHandler = AdjustFactory.getPurchaseVerificationHandler(
