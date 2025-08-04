@@ -5,7 +5,6 @@ import android.net.Uri;
 
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
@@ -119,7 +118,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
             tryToGetResponse(responseData);
 
-            retryToSend = shouldRetryToSend(responseData);
+            retryToSend = shouldRetryToSendWithUrlStrategy(responseData);
         } while (retryToSend);
 
         return responseData;
@@ -170,9 +169,9 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return AdjustSigner.sign(packageParams, extraParams, context, logger);
     }
 
-    private boolean shouldRetryToSend(final ResponseData responseData) {
-        if (!responseData.willRetry) {
-            logger.debug("Will not retry with current url strategy");
+    private boolean shouldRetryToSendWithUrlStrategy(final ResponseData responseData) {
+        if (responseData.jsonResponse != null) {
+            logger.debug("Will not retry with current url strategy, already got a valid json response");
             urlStrategy.resetAfterSuccess();
             return false;
         }
