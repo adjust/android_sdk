@@ -32,7 +32,7 @@ public class AdjustFactory {
     private static UtilNetworking.IHttpsURLConnectionProvider httpsURLConnectionProvider = null;
     private static boolean tryInstallReferrer = true;
     private static boolean ignoreSystemLifecycleBootstrap = false;
-    private static boolean ignoreSkippingUrlStrategyForOverwrittenUrl = false;
+    private static boolean allowUrlStrategyFallback = true;
 
     public static class URLGetConnection {
         HttpsURLConnection httpsURLConnection;
@@ -290,13 +290,13 @@ public class AdjustFactory {
         return AdjustFactory.ignoreSystemLifecycleBootstrap;
     }
 
-    public static void setIgnoreSkippingUrlStrategyForOverwrittenUrl(
-            final boolean ignoreSkippingUrlStrategyForOverwrittenUrl)
+    public static void setAllowUrlStrategyFallback(
+            final boolean allowUrlStrategyFallback)
     {
-        AdjustFactory.ignoreSkippingUrlStrategyForOverwrittenUrl = ignoreSkippingUrlStrategyForOverwrittenUrl;
+        AdjustFactory.allowUrlStrategyFallback = allowUrlStrategyFallback;
     }
-    public static boolean isIgnoreSkippingUrlStrategyForOverwrittenUrl() {
-        return AdjustFactory.ignoreSkippingUrlStrategyForOverwrittenUrl;
+    public static boolean isAllowUrlStrategyFallback() {
+        return AdjustFactory.allowUrlStrategyFallback;
     }
 
     private static String byte2HexFormatted(byte[] arr) {

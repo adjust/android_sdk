@@ -79,7 +79,7 @@ public class UrlStrategy {
         //  since it will use the same overwritten url
         //  might as well stop retrying in the same sending "session"
         //  and let the backoff strategy pick it up
-        if (!AdjustFactory.isIgnoreSkippingUrlStrategyForOverwrittenUrl()) {
+        if (AdjustFactory.isAllowUrlStrategyFallback()) {
             if (wasLastAttemptWithOverwrittenUrl) {
                 return false;
             }
