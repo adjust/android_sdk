@@ -6,9 +6,7 @@ import com.adjust.sdk.scheduler.ThreadScheduler;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * PurchaseVerificationHandler class.
@@ -39,9 +37,9 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
     private ILogger logger;
 
     /**
-     * Backoff strategy.
+     * Flag to indicate if Purchase Verification package is being sent.
      */
-    private BackoffStrategy backoffStrategy;
+    private boolean isSendingPurchaseVerificationPackage;
 
     /**
      * Sending queue.
@@ -74,7 +72,6 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
     {
         init(activityHandler, startsSending, purchaseVerificationHandlerActivityPackageSender);
         this.logger = AdjustFactory.getLogger();
-        backoffStrategy = AdjustFactory.getSdkClickBackoffStrategy();
         scheduler = new SingleThreadCachedScheduler(SCHEDULED_EXECUTOR_SOURCE);
     }
 
@@ -89,6 +86,8 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
         packageQueue = new ArrayList<ActivityPackage>();
         activityHandlerWeakRef = new WeakReference<IActivityHandler>(activityHandler);
         activityPackageSender = purchaseVerificationHandlerActivityPackageSender;
+        isSendingPurchaseVerificationPackage = false;
+        lastPackageRetryInMilli = 0L;
     }
 
     /**
@@ -97,6 +96,8 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
     @Override
     public void pauseSending() {
         paused = true;
+        isSendingPurchaseVerificationPackage = false;
+        lastPackageRetryInMilli = 0L;
     }
 
     /**
@@ -117,10 +118,7 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
         scheduler.submit(new Runnable() {
             @Override
             public void run() {
-                packageQueue.add(purchaseVerification);
-                logger.debug("Added purchase_verification %d", packageQueue.size());
-                logger.verbose("%s", purchaseVerification.getExtendedString());
-                sendNextPurchaseVerificationPackage();
+                sendPurchaseVerificationPackageI(purchaseVerification);
             }
         });
     }
@@ -146,8 +144,19 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
 
         logger = null;
         packageQueue = null;
-        backoffStrategy = null;
         scheduler = null;
+        isSendingPurchaseVerificationPackage = false;
+        lastPackageRetryInMilli = 0L;
+    }
+
+    /**
+     * Add purchase_verification package to the queue and send.
+     */
+    private void sendPurchaseVerificationPackageI(final ActivityPackage purchaseVerification) {
+        packageQueue.add(purchaseVerification);
+        logger.debug("Added purchase_verification %d", packageQueue.size());
+        logger.verbose("%s", purchaseVerification.getExtendedString());
+        sendNextPurchaseVerificationPackage();
     }
 
     /**
@@ -170,34 +179,40 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
         if (activityHandler.getActivityState() == null) {
             return;
         }
-        if (activityHandler.getActivityState().isGdprForgotten) {
-            return;
-        }
-        if (paused) {
-            return;
-        }
         if (packageQueue.isEmpty()) {
             return;
         }
-
-        final ActivityPackage purchaseVerificationPackage = packageQueue.remove(0);
-        int retries = purchaseVerificationPackage.getRetries();
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                sendPurchaseVerificationPackageI(purchaseVerificationPackage);
-                sendNextPurchaseVerificationPackage();
-            }
-        };
-
-        long waitTimeMilliSeconds = waitTime(retries);
-        if (waitTimeMilliSeconds > 0) {
-            scheduler.schedule(runnable, waitTimeMilliSeconds);
-        } else {
-            runnable.run();
+        if (activityHandler.getActivityState().isGdprForgotten) {
+            logger.debug("purchase_verification request won't be sent for GDPR forgotten user");
+            return;
+        }
+        if (paused) {
+            logger.debug("PurchaseVerificationHandler is paused");
+            return;
+        }
+        if (isSendingPurchaseVerificationPackage) {
+            logger.debug("PurchaseVerificationHandler is is already sending a package");
+            return;
         }
 
+        long waitTimeMilliSeconds = waitTime();
+
+        if (waitTimeMilliSeconds > 0) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    lastPackageRetryInMilli = 0L;
+                    sendNextPurchaseVerificationPackage();
+                }
+            };
+            scheduler.schedule(runnable, waitTimeMilliSeconds);
+            return;
+        }
+
+        // get the package but keep it in the queue until processing is complete
+        final ActivityPackage purchaseVerificationPackage = packageQueue.get(0);
+        isSendingPurchaseVerificationPackage = true;
+        sendPurchaseVerificationPackageSync(purchaseVerificationPackage);
     }
 
     /**
@@ -205,79 +220,71 @@ public class PurchaseVerificationHandler implements IPurchaseVerificationHandler
      *
      * @param purchaseVerificationPackage purchase_verification package to be sent.
      */
-    private void sendPurchaseVerificationPackageI(final ActivityPackage purchaseVerificationPackage) {
+    private void sendPurchaseVerificationPackageSync(final ActivityPackage purchaseVerificationPackage) {
         IActivityHandler activityHandler = activityHandlerWeakRef.get();
-        Map<String, String> sendingParameters = generateSendingParametersI();
         ResponseData responseData = activityPackageSender.sendActivityPackageSync(
                 purchaseVerificationPackage,
-                sendingParameters);
+                null);
 
         if (!(responseData instanceof PurchaseVerificationResponseData)) {
             return;
         }
 
+        // reset flag to indicate we're done processing this package
+        isSendingPurchaseVerificationPackage = false;
+
         PurchaseVerificationResponseData purchaseVerificationResponseData
                 = (PurchaseVerificationResponseData)responseData;
 
-        if (purchaseVerificationResponseData.willRetry) {
-            retrySendingI(purchaseVerificationPackage, responseData.retryIn);
-            return;
-        }
-
-        lastPackageRetryInMilli = 0L;
-
-        if (activityHandler == null) {
-            return;
-        }
-        if (purchaseVerificationResponseData.trackingState == TrackingState.OPTED_OUT) {
-            activityHandler.gotOptOutResponse();
-            return;
-        }
-
-        activityHandler.finishedTrackingActivity(purchaseVerificationResponseData);
-    }
-    private Map<String, String> generateSendingParametersI() {
-        HashMap<String, String> sendingParameters = new HashMap<>();
-        int queueSize = packageQueue.size() - 1;
-        if (queueSize > 0) {
-            PackageBuilder.addLong(sendingParameters, "queue_size", queueSize);
-        }
-        return sendingParameters;
-    }
-
-    /**
-     * Retry sending of the purchase_verification package passed as the parameter (runs within scheduled executor).
-     *
-     * @param purchaseVerificationPackage purchase_verification package to be retried.
-     */
-    private void retrySendingI(final ActivityPackage purchaseVerificationPackage, Long retryIn) {
-        if (retryIn != null && retryIn > 0) {
-            lastPackageRetryInMilli = retryIn;
+        if (purchaseVerificationResponseData.jsonResponse == null) {
+            logger.error("Could not get purchase_verification JSON response with message: %s",
+                    purchaseVerificationResponseData.message);
         } else {
-            int retries = purchaseVerificationPackage.increaseRetries();
-            logger.error("Retrying purchase_verification package for the %d time", retries);
+
+            if (activityHandler == null) {
+                return;
+            }
+            // check if any package response contains information that user has opted out.
+            // if yes, disable SDK and flush any potentially stored packages that happened afterwards.
+            if (purchaseVerificationResponseData.trackingState == TrackingState.OPTED_OUT) {
+                activityHandler.gotOptOutResponse();
+                return;
+            }
+
+            // check if backend requested retry_in delay
+            if (purchaseVerificationResponseData.willRetry) {
+                if (responseData.retryIn != null && responseData.retryIn > 0) {
+                    lastPackageRetryInMilli = responseData.retryIn;
+                    logger.error("Retrying purchase_verification package with retry in %d ms",
+                            lastPackageRetryInMilli);
+                }
+
+                // package stays in queue - schedule retry
+                sendNextPurchaseVerificationPackage();
+                return;
+            }
+
+            lastPackageRetryInMilli = 0L;
         }
 
-        sendPurchaseVerificationPackage(purchaseVerificationPackage);
+        // processing is complete - remove the package from queue
+        if (!packageQueue.isEmpty()) {
+            packageQueue.remove(0);
+        }
+
+        // finish package tracking without retrying / backoff
+        activityHandler.finishedTrackingActivity(purchaseVerificationResponseData);
+
+        // process next package in queue if any
+        sendNextPurchaseVerificationPackage();
     }
 
-    /**
-     * calculate wait time (runs within scheduled executor).
-     * @param retries count of retries
-     * @return calculated wait time depends on the number of retry in and backoff strategy
-     */
-    private long waitTime(int retries) {
+    private long waitTime() {
+        // handle backend-requested retry_in delay
         if (lastPackageRetryInMilli > 0) {
+            logger.verbose("Waiting for %d ms before retrying purchase_verification with retry_in",
+                    lastPackageRetryInMilli);
             return  lastPackageRetryInMilli;
-        }
-        if (retries > 0) {
-            long waitTimeMilliSeconds = Util.getWaitingTime(retries, backoffStrategy);
-            double waitTimeSeconds = waitTimeMilliSeconds / MILLISECONDS_TO_SECONDS_DIVISOR;
-            String secondsString = Util.SecondsDisplayFormat.format(waitTimeSeconds);
-            logger.verbose(
-              "Waiting for %s seconds before retrying purchase_verification for the %d time",
-              secondsString, retries);
-            return waitTimeMilliSeconds;
         }
 
         return 0L;

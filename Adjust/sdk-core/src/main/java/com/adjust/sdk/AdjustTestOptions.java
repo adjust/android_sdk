@@ -24,4 +24,5 @@ public class AdjustTestOptions {
     public Boolean tryInstallReferrer = false;
     public Boolean noBackoffWait;
     public Boolean ignoreSystemLifecycleBootstrap = true;
+    public Boolean allowUrlStrategyFallback = false;
 }

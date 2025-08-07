@@ -5,7 +5,6 @@ import android.net.Uri;
 
 import com.adjust.sdk.ActivityKind;
 import com.adjust.sdk.ActivityPackage;
-import com.adjust.sdk.AdjustAttribution;
 import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustSigner;
 import com.adjust.sdk.Constants;
@@ -55,6 +54,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
     private IHttpsURLConnectionProvider httpsURLConnectionProvider;
     private IConnectionOptions connectionOptions;
     private Context context;
+    private int connectionTimeout;
 
     public ActivityPackageSender(final List<String> urlStrategyDomains,
                                  final boolean useSubdomains,
@@ -63,6 +63,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                                  final String subscriptionPath,
                                  final String purchaseVerificationPath,
                                  final String clientSdk,
+                                 final int connectionTimeout,
                                  final Context context)
     {
         this.basePath = basePath;
@@ -70,6 +71,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
         this.subscriptionPath = subscriptionPath;
         this.purchaseVerificationPath = purchaseVerificationPath;
         this.clientSdk = clientSdk;
+        this.connectionTimeout = connectionTimeout;
         this.context = context;
 
         logger = AdjustFactory.getLogger();
@@ -83,6 +85,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 useSubdomains);
         httpsURLConnectionProvider = AdjustFactory.getHttpsURLConnectionProvider();
         connectionOptions = AdjustFactory.getConnectionOptions();
+
     }
 
     @Override
@@ -115,7 +118,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
 
             tryToGetResponse(responseData);
 
-            retryToSend = shouldRetryToSend(responseData);
+            retryToSend = shouldRetryToSendWithUrlStrategy(responseData);
         } while (retryToSend);
 
         return responseData;
@@ -166,9 +169,9 @@ public class ActivityPackageSender implements IActivityPackageSender {
         return AdjustSigner.sign(packageParams, extraParams, context, logger);
     }
 
-    private boolean shouldRetryToSend(final ResponseData responseData) {
-        if (!responseData.willRetry) {
-            logger.debug("Will not retry with current url strategy");
+    private boolean shouldRetryToSendWithUrlStrategy(final ResponseData responseData) {
+        if (responseData.jsonResponse != null) {
+            logger.debug("Will not retry with current url strategy, already got a valid json response");
             urlStrategy.resetAfterSuccess();
             return false;
         }
@@ -210,7 +213,7 @@ public class ActivityPackageSender implements IActivityPackageSender {
                     httpsURLConnectionProvider.generateHttpsURLConnection(url);
 
             // get and apply connection options (default or for tests)
-            connectionOptions.applyConnectionOptions(connection, clientSdk);
+            connectionOptions.applyConnectionOptions(connection, clientSdk, connectionTimeout);
 
             if (authorizationHeader != null) {
                 connection.setRequestProperty("Authorization", authorizationHeader);

@@ -4,7 +4,7 @@ apply plugin: 'signing'
 
 repositories {
     maven {
-        url "https://oss.sonatype.org/content/repositories/staging/"
+        url "https://central.sonatype.com/repository/maven-snapshots/"
     }
 }
 
@@ -31,7 +31,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:5.4.1'
+    // implementation 'com.adjust.sdk:adjust-android:5.4.2'
 
     // Add xiaomi referrer lib via Maven.
     implementation 'com.miui.referrer:homereferrer:1.0.0.6'
@@ -111,9 +111,9 @@ afterEvaluate {
             maven {
                 if (rootProject.ext.coreVersionName.toString().contains('SNAPSHOT')) {
                     println "Using Maven SNAPSHOT repository for publishing"
-                    url "https://oss.sonatype.org/content/repositories/snapshots/"
+                    url "https://central.sonatype.com/repository/maven-snapshots/"
                 } else {
-                    url "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                    url "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2"
                 }
                 if (project.hasProperty("sonatypeUsername")) {
                     credentials {

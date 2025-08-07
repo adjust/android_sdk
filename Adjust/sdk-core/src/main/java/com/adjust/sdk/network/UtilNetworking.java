@@ -22,20 +22,21 @@ public class UtilNetworking {
     }
 
     public interface IConnectionOptions {
-        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk);
+        void applyConnectionOptions(HttpsURLConnection connection, String clientSdk, int connectionTimeout);
     }
 
     public static IConnectionOptions createDefaultConnectionOptions() {
         return new IConnectionOptions() {
             @Override
             public void applyConnectionOptions(final HttpsURLConnection connection,
-                                               final String clientSdk)
+                                               final String clientSdk,
+                                               final int timeout)
             {
                 connection.setRequestProperty("Client-SDK", clientSdk);
                 // in case of beta release, specify beta version here
                 // connection.setRequestProperty("Beta-Version", "2");
-                connection.setConnectTimeout(Constants.ONE_MINUTE);
-                connection.setReadTimeout(Constants.ONE_MINUTE);
+                connection.setConnectTimeout(timeout);
+                connection.setReadTimeout(timeout);
             }
         };
     }

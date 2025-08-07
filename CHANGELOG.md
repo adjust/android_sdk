@@ -1,3 +1,9 @@
+### Version 5.4.2 (7th August 2025)
+#### Changed
+- Updated purchase verification handler (internal changes).
+
+---
+
 ### Version 5.4.1 (23rd June 2025)
 #### Added
 - Optimized the logic behind the `processAndResolveDeeplink` method to immediately return links that have already been resolved.

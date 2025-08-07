@@ -39,11 +39,12 @@ public class Util {
         return new UtilNetworking.IConnectionOptions() {
             @Override
             public void applyConnectionOptions(final HttpsURLConnection connection,
-                                               final String clientSdk)
+                                               final String clientSdk,
+                                               final int timeout)
             {
                 UtilNetworking.IConnectionOptions defaultConnectionOption =
                         UtilNetworking.createDefaultConnectionOptions();
-                defaultConnectionOption.applyConnectionOptions(connection, clientSdk);
+                defaultConnectionOption.applyConnectionOptions(connection, clientSdk, timeout);
                 try {
                     SSLContext sc = SSLContext.getInstance("TLS");
                     sc.init(null, new TrustManager[]{

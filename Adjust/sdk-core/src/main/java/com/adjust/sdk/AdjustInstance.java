@@ -894,5 +894,9 @@ public class AdjustInstance {
             AdjustFactory.setIgnoreSystemLifecycleBootstrap(
               testOptions.ignoreSystemLifecycleBootstrap.booleanValue());
         }
+        if (testOptions.allowUrlStrategyFallback != null) {
+            AdjustFactory.setAllowUrlStrategyFallback(
+                    testOptions.allowUrlStrategyFallback.booleanValue());
+        }
     }
 }

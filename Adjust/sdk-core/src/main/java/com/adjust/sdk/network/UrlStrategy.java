@@ -11,6 +11,7 @@ import static com.adjust.sdk.Constants.SUBSCRIPTION_URL;
 import static com.adjust.sdk.Constants.SUBSCRIPTION_URL_FORMAT;
 
 import com.adjust.sdk.ActivityKind;
+import com.adjust.sdk.AdjustFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,8 +79,10 @@ public class UrlStrategy {
         //  since it will use the same overwritten url
         //  might as well stop retrying in the same sending "session"
         //  and let the backoff strategy pick it up
-        if (wasLastAttemptWithOverwrittenUrl) {
-            return false;
+        if (AdjustFactory.isAllowUrlStrategyFallback()) {
+            if (wasLastAttemptWithOverwrittenUrl) {
+                return false;
+            }
         }
 
         int choiceListSize;
