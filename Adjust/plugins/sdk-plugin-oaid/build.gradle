@@ -4,7 +4,7 @@ apply plugin: 'signing'
 
 repositories {
     maven {
-        url "https://oss.sonatype.org/content/repositories/staging/"
+        url "https://central.sonatype.com/repository/maven-snapshots/"
     }
     maven {
         url "https://developer.huawei.com/repo/"
