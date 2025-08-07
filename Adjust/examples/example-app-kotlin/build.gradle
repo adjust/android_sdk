@@ -40,5 +40,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-appset:16.1.0'
 
     implementation project(':sdk-core')
-    implementation 'com.adjust.signature:adjust-android-signature:3+'
+    implementation 'com.adjust.signature:adjust-android-signature:3.47.0'
 }
