@@ -1,5 +1,7 @@
 package com.adjust.sdk;
 
+import android.net.Uri;
+
 import org.json.JSONObject;
 
 /**
@@ -9,6 +11,7 @@ import org.json.JSONObject;
  */
 public class SessionResponseData extends ResponseData {
     private String sdkPlatform;
+    public Uri deeplink;
 
     public SessionResponseData(final ActivityPackage activityPackage) {
         this.sdkPlatform = Util.getSdkPrefixPlatform(activityPackage.getClientSdk());

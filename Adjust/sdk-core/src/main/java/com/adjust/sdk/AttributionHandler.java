@@ -187,6 +187,7 @@ public class AttributionHandler implements IAttributionHandler,
                                        SessionResponseData sessionResponseData)
     {
         checkAttributionI(activityHandler, sessionResponseData);
+        checkDeeplinkInSessionResponseI(sessionResponseData);
         activityHandler.launchSessionResponseTasks(sessionResponseData);
     }
 
@@ -201,11 +202,11 @@ public class AttributionHandler implements IAttributionHandler,
                                            AttributionResponseData attributionResponseData)
     {
         checkAttributionI(activityHandler, attributionResponseData);
-        checkDeeplinkI(attributionResponseData);
+        checkDeeplinkInAttributionResponseI(attributionResponseData);
         activityHandler.launchAttributionResponseTasks(attributionResponseData);
     }
 
-    private void checkDeeplinkI(AttributionResponseData attributionResponseData) {
+    private void checkDeeplinkInAttributionResponseI(AttributionResponseData attributionResponseData) {
         if (attributionResponseData.jsonResponse == null) {
             return;
         }
@@ -219,6 +220,18 @@ public class AttributionHandler implements IAttributionHandler,
             return;
         }
         attributionResponseData.deeplink = Uri.parse(deeplinkString);
+    }
+
+    private void checkDeeplinkInSessionResponseI(SessionResponseData sessionResponseData) {
+        if (sessionResponseData.jsonResponse == null) {
+            return;
+        }
+
+        String deeplinkString = sessionResponseData.jsonResponse.optString("deeplink", null);
+        if (deeplinkString == null) {
+            return;
+        }
+        sessionResponseData.deeplink = Uri.parse(deeplinkString);
     }
 
     private void sendAttributionRequestI() {
