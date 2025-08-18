@@ -29,4 +29,4 @@ This project includes code from the following third-party component(s):
   Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 The Apache 2.0 license and any required NOTICE file are located in:
-[**src/main/aidl/com/android/vending/licensing**](src/main/aidl/com/android/vending/licensing)
+[src/main/aidl/com/android/vending/licensing](./src/main/aidl/com/android/vending/licensing)
