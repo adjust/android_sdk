@@ -34,16 +34,16 @@ public class LicenseChecker {
         if (mBound) {
             return;
         }
-        logger.debug("LVL license check started");
+        logger.debug("LVL License check starts");
 
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
         boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        logger.debug("[LicenseVerification] bindService result: " + isBind);
+        logger.debug("LVL bindService result: " + isBind);
     }
 
     public void onDestroy() {
-        logger.debug("[LicenseVerification] LicenseChecker destroyed");
+        logger.debug("LVL license checker destroyed");
         if (mBound) {
             mContext.unbindService(mServiceConnection);
             mBound = false;
@@ -53,7 +53,7 @@ public class LicenseChecker {
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            logger.debug("[LicenseVerification] Service connected");
+            logger.debug("LVL service connected");
             mService = ILicensingService.Stub.asInterface(service);
             mBound = true;
             retryCount = 0;
@@ -62,7 +62,7 @@ public class LicenseChecker {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            logger.debug("[LicenseVerification] Service disconnected");
+            logger.debug("LVL service disconnected");
             mService = null;
             mBound = false;
         }
@@ -72,11 +72,11 @@ public class LicenseChecker {
         try {
             String packageName = mContext.getPackageName();
             long nonce = generateNonce(timestamp);
-            logger.debug("[LicenseVerification] Generated nonce: " + nonce);
+            logger.debug("LVL generated nonce: " + nonce);
 
             mService.checkLicense(nonce, packageName, new ResultListener());
         } catch (Exception e) {
-            logger.error("[LicenseVerification] License check failed", e);
+            logger.error("LVL license check failed: ", e);
             mCallback.onError(-1);
         }
     }
@@ -84,13 +84,13 @@ public class LicenseChecker {
     private class ResultListener extends com.android.vending.licensing.ILicenseResultListener.Stub {
         @Override
         public void verifyLicense(int responseCode, String signedData, String signature) throws RemoteException {
-            logger.debug("[LicenseVerification] Received license response: " + responseCode);
+            logger.debug("LVL Received license response: " + responseCode);
 
             LicenseResponseHandler handler = new LicenseResponseHandler(mCallback, logger, MAX_RETRIES);
             boolean shouldRetry = handler.handleResponse(responseCode, signedData, signature, retryCount);
             if (shouldRetry) {
                 retryCount++;
-                logger.debug("[LicenseVerification] Retrying license check... Attempt " + retryCount);
+                logger.debug("LVL retrying license check... Attempt: " + retryCount);
                 executeLicenseCheck();
             } else {
                 onDestroy();
