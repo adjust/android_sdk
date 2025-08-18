@@ -34,7 +34,7 @@ public class LicenseChecker {
         if (mBound) {
             return;
         }
-        logger.debug("[LicenseVerification] License check starts");
+        logger.debug("LVL license check started");
 
         Intent serviceIntent = new Intent("com.android.vending.licensing.ILicensingService");
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
