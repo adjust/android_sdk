@@ -100,7 +100,7 @@ public class LicenseChecker {
 
     /**
      * Generates a 64-bit nonce with:
-     * - 56-bit reduced timestamp (in seconds) stored in bits 8–63
+     * - 56-bit reduced timestamp (in milliseconds) stored in bits 8–63
      * - 8-bit reserved field in bits 0–7 (currently using 0x01 as version marker)
      */
     public static long generateNonce(long timestamp) {
