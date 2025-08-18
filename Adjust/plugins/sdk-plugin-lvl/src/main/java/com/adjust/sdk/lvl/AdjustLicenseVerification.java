@@ -1,3 +1,13 @@
+/*
+* This project is licensed under the MIT License.
+* However, this project includes code from the following third-party component(s):
+*       - ILicenseResultListener.aidl , ILicensingService.aidl - Licensed under
+*       the Apache License, Version 2.0
+*       http://www.apache.org/licenses/LICENSE-2.0
+* The Apache 2.0 license and any required NOTICE file are included in the
+* com.android.vending.licensing directory.
+*/
+
 package com.adjust.sdk.lvl;
 
 import android.content.Context;
@@ -16,7 +26,7 @@ public class AdjustLicenseVerification {
             BlockingQueue<LicenseData> licenseHolder = new LinkedBlockingQueue<LicenseData>(1);
             LicenseChecker checker = new LicenseChecker(context, new LicenseRawCallback() {
                 @Override
-                public void onLicenseDataReceived(int responseCode,String signedData, String signature) {
+                public void onLicenseDataReceived(int responseCode, String signedData, String signature) {
                     licenseHolder.offer(new LicenseData(signedData, signature, responseCode));
                 }
 
