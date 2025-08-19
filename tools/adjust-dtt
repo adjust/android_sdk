@@ -3,20 +3,21 @@
 require 'yaml'
 require 'fileutils'
 
-def unpack_apk(apk_path)
+def unpack_apk(apk_path, output_path)
     puts "\n[adjust-dtt][i]: Unpacking the APK file ..."
-    status = system({"APK_FILE" => apk_path}, "apktool d -f $APK_FILE")
+    status = system({"APK_FILE" => apk_path, "OUTPUT_DIR" => output_path}, "apktool d -f $APK_FILE -o $OUTPUT_DIR")
 
     if status == false
         abort "\n[adjust-dtt][e]: Aborting...\n\n"
     end
 end
 
-def repack_apk(apk_name, store_name)
+def repack_apk(apk_folder, apk_name, store_name)
     puts "[adjust-dtt][i]: Packing the APK file ..."
     status = system({"APK_NAME" => apk_name,
+		     "APK_PATH" => apk_folder,
                      "STORE_NAME" => store_name},
-                     "apktool b $APK_NAME -o ${APK_NAME}_${STORE_NAME}.apk")
+                     "apktool b $APK_PATH -o ${APK_NAME}_${STORE_NAME}.apk")
 
     if status == false
         abort "\n[adjust-dtt][e]: Aborting...\n\n"
@@ -168,13 +169,13 @@ def edit_apk_for_store(store_name, store_config)
     adj_apk_path_wo_ext = File.expand_path(File.basename(used_apk_path, File.extname(used_apk_path)))
 
     # Unpack the APK file first.
-    unpack_apk(used_apk_path)
+    unpack_apk(used_apk_path, adj_apk_folder)
 
     # Process the unpacked APK file.
     process_unpacked_apk(adj_apk_assets, adj_config_file, adj_default_tracker)
 
     # Repack the APK file.
-    repack_apk(adj_apk_name, store_name)
+    repack_apk(adj_apk_folder, adj_apk_name, store_name)
 
     # Sign the APK file.
     sign_apk(adj_apk_path_wo_ext, store_name, used_keystore_path, used_keystore_pass, used_keystore_alias)
