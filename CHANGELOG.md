@@ -1,3 +1,9 @@
+### Version 5.4.3 (22nd August 2025)
+#### Added
+- Added support for processing deferred deep links in session responses.
+
+---
+
 ### Version 5.4.2 (7th August 2025)
 #### Changed
 - Updated purchase verification handler (internal changes).
