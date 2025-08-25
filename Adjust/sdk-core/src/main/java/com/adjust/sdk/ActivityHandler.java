@@ -1654,6 +1654,9 @@ public class ActivityHandler
         // launch Session tracking listener if available
         launchSessionResponseListenerI(sessionResponseData, handler);
 
+        // if there is any, try to launch the deeplink
+        prepareDeeplinkI(sessionResponseData.deeplink, handler);
+
         // mark session response has proccessed
         internalState.sessionResponseProcessed = true;
     }
