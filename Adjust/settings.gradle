@@ -9,7 +9,7 @@ include ':plugins:sdk-plugin-vivo-referrer'
 include ':plugins:sdk-plugin-samsung-clouddev'
 include ':plugins:sdk-plugin-huawei-referrer'
 include ':plugins:sdk-plugin-meta-referrer'
-include ':plugins:sdk-plugin-lvl'
+include ':plugins:sdk-plugin-google-lvl'
 
 include ':tests:test-options'
 include ':tests:test-library'

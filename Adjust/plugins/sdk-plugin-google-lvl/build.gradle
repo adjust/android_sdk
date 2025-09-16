@@ -114,7 +114,7 @@ afterEvaluate {
             mavenAndroidLvlAar(MavenPublication) {
                 customizePomForAar(pom)
                 groupId rootProject.ext.adjustGroupId
-                artifactId 'adjust-android-license-verification'
+                artifactId 'adjust-android-google-lvl'
                 version rootProject.ext.coreVersionName
 
                 artifact("$buildDir/outputs/aar/sdk-plugin-lvl-release.aar") {
