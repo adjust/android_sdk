@@ -1,8 +1,10 @@
-package com.adjust.sdk.lvl;
+package com.adjust.sdk.google.lvl;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+import com.adjust.sdk.google.lvl.LicenseChecker;
 
 public class LicenseCheckerNonceTest {
 

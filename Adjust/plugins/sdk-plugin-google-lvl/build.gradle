@@ -20,7 +20,7 @@ android {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
     }
-    namespace 'com.adjust.sdk.lvl'
+    namespace 'com.adjust.sdk.google.lvl'
     sourceSets {
         main {
             aidl {
@@ -68,9 +68,9 @@ task adjustLvlPluginAar(type: Copy) {
     dependsOn 'assembleRelease'
 
     from('build/outputs/aar/')
-    include 'sdk-plugin-lvl-release.aar'
+    include 'sdk-plugin-google-lvl-release.aar'
     destinationDir file('build/libs/')
-    rename 'sdk-plugin-lvl-release.aar', "${project.name}.aar"
+    rename 'sdk-plugin-google-lvl-release.aar', "${project.name}.aar"
 
 }
 
@@ -117,7 +117,7 @@ afterEvaluate {
                 artifactId 'adjust-android-google-lvl'
                 version rootProject.ext.coreVersionName
 
-                artifact("$buildDir/outputs/aar/sdk-plugin-lvl-release.aar") {
+                artifact("$buildDir/outputs/aar/sdk-plugin-google-lvl-release.aar") {
                     builtBy tasks.getByPath("adjustLvlPluginAar")
                 }
                 artifact adjustLvlPluginSourcesJar

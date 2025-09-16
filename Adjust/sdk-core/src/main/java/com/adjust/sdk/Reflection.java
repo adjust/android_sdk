@@ -74,7 +74,7 @@ public class Reflection {
     public static LicenseData getLicenseRequiredData(Context context, ILogger logger, long timestamp) {
         LicenseData licenseData = null;
         try {
-            licenseData = (LicenseData) invokeStaticMethod("com.adjust.sdk.lvl.Util",
+            licenseData = (LicenseData) invokeStaticMethod("com.adjust.sdk.google.lvl.Util",
                     "getLicenseRequiredData",
                     new Class[]{Context.class, ILogger.class, long.class},
                     context, logger, timestamp);

@@ -1,4 +1,4 @@
-package com.adjust.sdk.lvl;
+package com.adjust.sdk.google.lvl;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,6 +8,8 @@ import android.content.ServiceConnection;
 import android.os.RemoteException;
 
 import com.adjust.sdk.ILogger;
+import com.adjust.sdk.google.lvl.LicenseChecker;
+import com.adjust.sdk.google.lvl.LicenseRawCallback;
 import com.android.vending.licensing.ILicenseResultListener;
 import com.android.vending.licensing.ILicensingService;
 

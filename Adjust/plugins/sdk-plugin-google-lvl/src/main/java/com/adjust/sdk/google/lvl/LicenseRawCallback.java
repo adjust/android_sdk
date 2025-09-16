@@ -1,4 +1,4 @@
-package com.adjust.sdk.lvl;
+package com.adjust.sdk.google.lvl;
 
 public interface LicenseRawCallback {
     void onLicenseDataReceived(int responseCode, String signedData, String signature);
