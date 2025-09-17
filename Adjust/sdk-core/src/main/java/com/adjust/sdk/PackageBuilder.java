@@ -1268,6 +1268,8 @@ public class PackageBuilder {
             PackageBuilder.addString(parameters, "store_app_id_from_client", deviceInfo.storeInfoFromClient.storeAppId);
         }
         PackageBuilder.addString(parameters, "store_name_from_system", deviceInfo.storeIdFromSystem);
+        PackageBuilder.addString(parameters, "initiating_package_name", deviceInfo.initiatingPackageName);
+        PackageBuilder.addString(parameters, "originating_package_name", deviceInfo.originatingPackageName);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {

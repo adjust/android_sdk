@@ -102,6 +102,8 @@ class DeviceInfo {
     String mnc;
     AdjustStoreInfo storeInfoFromClient;
     String storeIdFromSystem;
+    String initiatingPackageName;
+    String originatingPackageName;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -141,6 +143,8 @@ class DeviceInfo {
         }
         storeInfoFromClient = StoreInfoUtil.getStoreInfoFromClient(adjustConfig, context);
         storeIdFromSystem = StoreInfoUtil.getStoreIdFromSystem(context);
+        initiatingPackageName = StoreInfoUtil.getInitiatingPackageName(context);
+        originatingPackageName = StoreInfoUtil.getOriginatingPackageName(context);
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
