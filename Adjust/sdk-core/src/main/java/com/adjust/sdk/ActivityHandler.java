@@ -556,6 +556,17 @@ public class ActivityHandler
     }
 
     @Override
+    public void sendLicenseVerificationData(final LicenseData licenseVerificationData) {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendLicenseVerificationDataI(licenseVerificationData);
+            }
+        });
+    }
+
+
+    @Override
     public void launchEventResponseTasks(final EventResponseData eventResponseData) {
         executor.submit(new Runnable() {
             @Override
@@ -1371,6 +1382,8 @@ public class ActivityHandler
             readInstallReferrerSamsung();
             readInstallReferrerXiaomi();
             readInstallReferrerVivo();
+            readLicenseVerificationData();
+
 
             return;
         }
@@ -1385,6 +1398,23 @@ public class ActivityHandler
                 ReferrerDetails referrerDetails = Reflection.getMetaReferrer(getContext(), adjustConfig.fbAppId, logger);
                 if (referrerDetails != null) {
                     sendInstallReferrer(referrerDetails, REFERRER_API_META);
+                }
+            }
+        });
+    }
+
+    private void readLicenseVerificationData() {
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (SharedPreferencesManager
+                        .getDefaultInstance(getContext())
+                        .getLicenseVerificationTracked()){
+                    return;
+                }
+                LicenseData licenseData = Reflection.getLicenseRequiredData(getContext(), logger,deviceInfo.appInstallTime);
+                if (licenseData != null) {
+                    sendLicenseVerificationData(licenseData);
                 }
             }
         });
@@ -1927,6 +1957,7 @@ public class ActivityHandler
         readInstallReferrerSamsung();
         readInstallReferrerXiaomi();
         readInstallReferrerVivo();
+        readLicenseVerificationData();
     }
 
     private void setOfflineModeI(boolean offline) {
@@ -2055,6 +2086,28 @@ public class ActivityHandler
         sdkClickHandler.sendSdkClick(sdkClickPackage);
     }
 
+    private void sendLicenseVerificationDataI(LicenseData licenseData) {
+        if (!isEnabledI()) {
+            return;
+        }
+
+        if (licenseData == null || !licenseData.isValid()) {
+            return;
+        }
+
+        // Create sdk click
+        ActivityPackage sdkClickPackage = PackageFactory.buildLicenseVerificationSdkClickPackage(
+                licenseData,
+                activityState,
+                adjustConfig,
+                deviceInfo,
+                globalParameters,
+                firstSessionDelayManager,
+                internalState);
+
+        sdkClickHandler.sendSdkClick(sdkClickPackage);
+    }
+
     private boolean isValidReferrerDetails(final ReferrerDetails referrerDetails) {
         if (referrerDetails == null) {
             return false;
@@ -2066,6 +2119,7 @@ public class ActivityHandler
 
         return referrerDetails.installReferrer.length() != 0;
     }
+
 
     private void processDeeplinkI(AdjustDeeplink deeplink, long clickTime) {
         if (!isEnabledI()) {

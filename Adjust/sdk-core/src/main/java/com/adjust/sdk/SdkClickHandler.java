@@ -351,6 +351,8 @@ public class SdkClickHandler implements ISdkClickHandler {
 
         boolean isPreinstall = source != null && source.equals(Constants.PREINSTALL);
 
+        boolean isLicenseVerification = source != null && source.equals(Constants.LICENSE_VERIFICATION);
+
         Map<String, String> sendingParameters = generateSendingParametersI();
 
         ResponseData responseData = activityPackageSender.sendActivityPackageSync(
@@ -416,6 +418,14 @@ public class SdkClickHandler implements ISdkClickHandler {
                     sharedPreferencesManager.setPreinstallPayloadReadStatus(updatedStatus);
                 }
             }
+        }
+
+        if (isLicenseVerification){
+            // update preinstall flag in shared preferences after sdk_click is sent.
+            SharedPreferencesManager sharedPreferencesManager
+                    = SharedPreferencesManager.getDefaultInstance(activityHandler.getContext());
+
+            sharedPreferencesManager.setLicenseVerificationTracked();
         }
 
         activityHandler.finishedTrackingActivity(sdkClickResponseData);

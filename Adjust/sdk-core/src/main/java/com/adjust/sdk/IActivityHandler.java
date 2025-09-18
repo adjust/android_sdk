@@ -1,7 +1,6 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.net.Uri;
 
 /**
  * Created by pfms on 15/12/14.
@@ -43,6 +42,8 @@ public interface IActivityHandler {
     void sendPreinstallReferrer();
 
     void sendInstallReferrer(ReferrerDetails referrerDetails, String referrerApi);
+
+    void sendLicenseVerificationData(LicenseData licenseVerificationData);
 
     void setOfflineMode(boolean enabled);
 

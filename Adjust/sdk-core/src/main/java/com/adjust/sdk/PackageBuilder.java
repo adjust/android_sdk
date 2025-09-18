@@ -43,6 +43,7 @@ public class PackageBuilder {
     Map<String, String> extraParameters;
     Boolean isClick;
     ActivityHandler.InternalState internalState;
+    LicenseData licenseData;
 
     static class ActivityStateCopy {
         int eventCount = -1;
@@ -280,7 +281,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -539,7 +540,7 @@ public class PackageBuilder {
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time", installBeginTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "install_begin_time_server", installBeginTimeServerInSeconds);
         PackageBuilder.addString(parameters, "install_version", installVersion);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -566,6 +567,11 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "updated_at", deviceInfo.appUpdateTime);
         PackageBuilder.addString(parameters, "payload", preinstallPayload);
         PackageBuilder.addString(parameters, "found_location", preinstallLocation);
+        if (licenseData != null) {
+            PackageBuilder.addInteger(parameters, "lvl_response_code", licenseData.getResponseCode());
+            PackageBuilder.addString(parameters, "lvl_signed_data", licenseData.getSignedData());
+            PackageBuilder.addString(parameters, "lvl_signature", licenseData.getSignature());
+        }
 
         // google play games
         PackageBuilder.addBoolean(parameters, "gpg_pc_enabled", deviceInfo.isGooglePlayGamesForPC ? true : null);
@@ -913,7 +919,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1010,7 +1016,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1104,7 +1110,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1193,7 +1199,7 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "external_device_id", adjustConfig.externalDeviceId);
         PackageBuilder.addString(parameters, "fb_id", deviceInfo.fbAttributionId);
         PackageBuilder.addString(parameters, "hardware_name", deviceInfo.hardwareName);
-        PackageBuilder.addString(parameters, "installed_at", deviceInfo.appInstallTime);
+        PackageBuilder.addDateInMilliseconds(parameters, "installed_at", deviceInfo.appInstallTime);
         PackageBuilder.addString(parameters, "language", deviceInfo.language);
         PackageBuilder.addString(parameters, "mcc", deviceInfo.mcc);
         PackageBuilder.addString(parameters, "mnc", deviceInfo.mnc);
@@ -1262,6 +1268,8 @@ public class PackageBuilder {
             PackageBuilder.addString(parameters, "store_app_id_from_client", deviceInfo.storeInfoFromClient.storeAppId);
         }
         PackageBuilder.addString(parameters, "store_name_from_system", deviceInfo.storeIdFromSystem);
+        PackageBuilder.addString(parameters, "initiating_package_name", deviceInfo.initiatingPackageName);
+        PackageBuilder.addString(parameters, "originating_package_name", deviceInfo.originatingPackageName);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {

@@ -48,4 +48,32 @@ public class StoreInfoUtil {
             return adjustConfig.storeInfo;
         }
     }
+
+    public static String getInitiatingPackageName(final Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            String packageName = context.getPackageName();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                InstallSourceInfo installSourceInfo = packageManager.getInstallSourceInfo(packageName);
+                return installSourceInfo.getInitiatingPackageName();
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public static String getOriginatingPackageName(final Context context) {
+        try {
+            PackageManager packageManager = context.getPackageManager();
+            String packageName = context.getPackageName();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                InstallSourceInfo installSourceInfo = packageManager.getInstallSourceInfo(packageName);
+                return installSourceInfo.getOriginatingPackageName();
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
 }
