@@ -1,3 +1,9 @@
+### Version 5.4.4 (18th September 2025)
+#### Added
+- Added support to Google License Verification plugin.
+
+---
+
 ### Version 5.4.3 (25th August 2025)
 #### Added
 - Added support for processing deferred deep links in session responses.
