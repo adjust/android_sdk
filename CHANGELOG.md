@@ -1,6 +1,6 @@
 ### Version 5.4.4 (18th September 2025)
 #### Added
-- Added support to Google License Verification plugin.
+- Added support for Google License Verification (LVL). For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/android/plugins/google-lvl-plugin).
 
 ---
 
