@@ -1,2 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- https://developer.huawei.com/consumer/en/doc/3020903#h1-2-channel-id-query-api-of-the-appgallery-client-->
+    <uses-permission android:name="com.huawei.appmarket.service.commondata.permission.GET_COMMON_DATA" />
+
+    <queries>
+        <!-- Make Huawei AppGallery's provider visible to plugin -->
+        <provider android:authorities="com.huawei.appmarket.commondata" />
+    </queries>
+
 </manifest>
