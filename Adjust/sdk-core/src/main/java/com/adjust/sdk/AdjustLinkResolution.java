@@ -20,7 +20,11 @@ public final class AdjustLinkResolution {
     private static final String[] expectedUrlHostSuffixArray = {
             "adjust.com",
             "adj.st",
-            "go.link"
+            "go.link",
+            "adjust.net.in",
+            "adjust.cn",
+            "adjust.world",
+            "adjust.io"
     };
 
     private AdjustLinkResolution() { }

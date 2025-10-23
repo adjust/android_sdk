@@ -32,7 +32,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:2.1.1"
     implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
-    implementation 'com.adjust.signature:adjust-android-signature:3.47.0'
+    implementation 'com.adjust.signature:adjust-android-signature:3.61.0'
 
     implementation project(':sdk-core')
     implementation project(':plugins:sdk-plugin-webbridge')

@@ -1,3 +1,10 @@
+### Version 5.4.5 (23rd October 2025)
+#### Changed
+- Updated the Adjust Signature library version to 3.61.0.
+- Updated link resolution logic to include new Adjust domains where link resolution ends.
+
+---
+
 ### Version 5.4.4 (18th September 2025)
 #### Added
 - Added support for Google License Verification (LVL). For more details about this feature, refer to the [official documentation](https://dev.adjust.com/en/sdk/android/plugins/google-lvl-plugin).
