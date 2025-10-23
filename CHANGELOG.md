@@ -1,7 +1,7 @@
 ### Version 5.4.5 (23rd October 2025)
 #### Changed
 - Updated the Adjust Signature library version to 3.61.0.
-- Updated Link Resolution logic to resolve Adjust deep links with URL strategy domains.
+- Updated link resolution logic to include new Adjust domains where link resolution ends.
 
 ---
 
