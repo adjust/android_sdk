@@ -22,7 +22,7 @@ public class LicenseChecker {
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
     private final long timestamp;
-    private final ResultListenerBinder resultListenerBinder = new ResultListenerBinder();
+    private final ResultListenerBinder resultListenerBinder;
 
     private IBinder mServiceBinder;
     private boolean mBound;
@@ -34,6 +34,7 @@ public class LicenseChecker {
         this.mCallback = callback;
         this.logger = logger;
         this.timestamp = timestamp;
+        this.resultListenerBinder = new ResultListenerBinder();
     }
 
     public synchronized void checkAccess() {
