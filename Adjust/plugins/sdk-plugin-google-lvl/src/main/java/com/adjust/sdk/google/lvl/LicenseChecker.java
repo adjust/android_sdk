@@ -18,6 +18,14 @@ public class LicenseChecker {
     private static final String RESULT_LISTENER_DESCRIPTOR = "com.android.vending.licensing.ILicenseResultListener";
     private static final int TRANSACTION_CHECK_LICENSE = IBinder.FIRST_CALL_TRANSACTION;
 
+    // Error codes for better diagnostics
+    private static final int ERROR_GENERIC = -1;
+    private static final int ERROR_BIND_FAILED = -5;
+    private static final int ERROR_NO_BINDER = -3;
+    private static final int ERROR_TRANSACT_FAILED = -2;
+    private static final int ERROR_REMOTE_EXCEPTION = -4;
+    private static final int ERROR_BINDER_DIED = -6;
+
     private final Context mContext;
     private final LicenseRawCallback mCallback;
     private final ILogger logger;
@@ -47,6 +55,11 @@ public class LicenseChecker {
         serviceIntent.setPackage(GOOGLE_PLAY_PACKAGE);
         boolean isBind = mContext.bindService(serviceIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
         logger.debug("LVL bindService result: " + isBind);
+
+        if (!isBind) {
+            logger.error("LVL failed to bind licensing service");
+            mCallback.onError(ERROR_BIND_FAILED);
+        }
     }
 
     public void onDestroy() {
@@ -55,6 +68,8 @@ public class LicenseChecker {
             mContext.unbindService(mServiceConnection);
             mBound = false;
         }
+        // Ensure binder reference is cleared even if unbind fails
+        mServiceBinder = null;
     }
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -64,6 +79,18 @@ public class LicenseChecker {
             mServiceBinder = service;
             mBound = true;
             retryCount = 0;
+
+            // Detect binder death proactively
+            try {
+                mServiceBinder.linkToDeath(() -> {
+                    logger.error("LVL binder died unexpectedly");
+                    mCallback.onError(ERROR_BINDER_DIED);
+                    onDestroy();
+                }, 0);
+            } catch (RemoteException e) {
+                logger.error("LVL failed to link binder death recipient", e);
+            }
+
             executeLicenseCheck();
         }
 
@@ -79,7 +106,7 @@ public class LicenseChecker {
         try {
             if (mServiceBinder == null) {
                 logger.error("LVL binder unavailable for license check");
-                mCallback.onError(-1);
+                mCallback.onError(ERROR_NO_BINDER);
                 return;
             }
 
@@ -102,17 +129,17 @@ public class LicenseChecker {
                 logger.debug("LVL binder transact sent (code " + TRANSACTION_CHECK_LICENSE + "): " + transacted);
                 if (!transacted) {
                     logger.error("LVL binder transact failed to enqueue");
-                    mCallback.onError(-1);
+                    mCallback.onError(ERROR_TRANSACT_FAILED);
                 }
             } finally {
                 data.recycle();
             }
         } catch (RemoteException e) {
             logger.error("LVL remote exception during license check: ", e);
-            mCallback.onError(-1);
+            mCallback.onError(ERROR_REMOTE_EXCEPTION);
         } catch (Exception e) {
             logger.error("LVL license check failed: ", e);
-            mCallback.onError(-1);
+            mCallback.onError(ERROR_GENERIC);
         }
     }
 
@@ -156,7 +183,8 @@ public class LicenseChecker {
                     return true;
                 } catch (Exception ex) {
                     logger.error("LVL failed to process license response: ", ex);
-                    mCallback.onError(-1);
+                    mCallback.onError(ERROR_GENERIC);
+                    onDestroy();
                     return true;
                 }
             }
@@ -178,5 +206,4 @@ public class LicenseChecker {
         // Shift timestamp to occupy bits 8–63, reserve LSB for flags/version
         return (reducedTimestamp << 8) | 0x01;
     }
-
 }
