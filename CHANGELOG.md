@@ -1,3 +1,9 @@
+### Version 5.4.6 (7th November 2025)
+#### Changed
+- Refactored LVL plugin to use direct `Binder` interface instead of `AIDL`.
+
+---
+
 ### Version 5.4.5 (23rd October 2025)
 #### Changed
 - Updated the Adjust Signature library version to 3.61.0.

@@ -30,7 +30,7 @@ dependencies {
     // Add SDK via module.
     compileOnly project(':sdk-core')
     // Add SDK via Maven.
-    // implementation 'com.adjust.sdk:adjust-android:5.4.5'
+    // implementation 'com.adjust.sdk:adjust-android:5.4.6'
 }
 
 // read local properties

@@ -3,15 +3,13 @@ package com.adjust.sdk.google.lvl;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.content.ServiceConnection;
+import android.os.Parcel;
 import android.os.RemoteException;
 
 import com.adjust.sdk.ILogger;
-import com.adjust.sdk.google.lvl.LicenseChecker;
-import com.adjust.sdk.google.lvl.LicenseRawCallback;
-import com.android.vending.licensing.ILicenseResultListener;
-import com.android.vending.licensing.ILicensingService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -43,10 +41,38 @@ public class LicenseCheckerIntegrationTest {
     public void testSuccessfulLicenseCheck_shouldCallCallback() {
         doAnswer(invocation -> {
             ServiceConnection conn = invocation.getArgument(1);
-            IBinder binder = new ILicensingService.Stub() {
+            IBinder binder = new Binder() {
+                private static final String SERVICE_DESCRIPTOR = "com.android.vending.licensing.ILicensingService";
+                private static final String LISTENER_DESCRIPTOR = "com.android.vending.licensing.ILicenseResultListener";
+
                 @Override
-                public void checkLicense(long nonce, String packageName, ILicenseResultListener listener) throws RemoteException {
-                    listener.verifyLicense(0, "signedData", "signature");
+                protected boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+                    if (code == IBinder.INTERFACE_TRANSACTION) {
+                        if (reply != null) {
+                            reply.writeString(SERVICE_DESCRIPTOR);
+                        }
+                        return true;
+                    }
+
+                    if (code == IBinder.FIRST_CALL_TRANSACTION) {
+                        data.enforceInterface(SERVICE_DESCRIPTOR);
+                        long nonce = data.readLong();
+                        String packageName = data.readString();
+                        IBinder listenerBinder = data.readStrongBinder();
+
+                        Parcel response = Parcel.obtain();
+                        try {
+                            response.writeInterfaceToken(LISTENER_DESCRIPTOR);
+                            response.writeInt(0);
+                            response.writeString("signedData");
+                            response.writeString("signature");
+                            listenerBinder.transact(IBinder.FIRST_CALL_TRANSACTION, response, null, IBinder.FLAG_ONEWAY);
+                        } finally {
+                            response.recycle();
+                        }
+                        return true;
+                    }
+                    return super.onTransact(code, data, reply, flags);
                 }
             };
             conn.onServiceConnected(new ComponentName("com.android.vending", "LicensingService"), binder);
