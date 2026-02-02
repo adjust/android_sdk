@@ -8,6 +8,31 @@ import android.os.Build;
 import android.os.Bundle;
 
 public class StoreInfoUtil {
+
+    public static boolean getIsSystemApp(final Context context) {
+        try {
+            ApplicationInfo ai =
+                    context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
+            return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean getIsUpdatedSystemApp(final Context context) {
+        try {
+            ApplicationInfo ai =
+                    context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
+            return (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     @SuppressWarnings("deprecation")
     public static String getStoreIdFromSystem(final Context context) {
         try {

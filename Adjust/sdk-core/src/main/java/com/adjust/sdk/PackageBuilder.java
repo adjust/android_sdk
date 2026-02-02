@@ -1283,6 +1283,8 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "store_name_from_system", deviceInfo.storeIdFromSystem);
         PackageBuilder.addString(parameters, "initiating_package_name", deviceInfo.initiatingPackageName);
         PackageBuilder.addString(parameters, "originating_package_name", deviceInfo.originatingPackageName);
+        PackageBuilder.addBoolean(parameters, "is_system_app", deviceInfo.isSystemApp);
+        PackageBuilder.addBoolean(parameters, "is_updated_system_app", deviceInfo.isUpdatedSystemApp);
     }
 
     public static void addString(Map<String, String> parameters, String key, String value) {

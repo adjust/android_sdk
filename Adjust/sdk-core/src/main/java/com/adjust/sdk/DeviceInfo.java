@@ -104,6 +104,8 @@ class DeviceInfo {
     String storeIdFromSystem;
     String initiatingPackageName;
     String originatingPackageName;
+    boolean isSystemApp;
+    boolean isUpdatedSystemApp;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -147,6 +149,8 @@ class DeviceInfo {
         storeIdFromSystem = StoreInfoUtil.getStoreIdFromSystem(context);
         initiatingPackageName = StoreInfoUtil.getInitiatingPackageName(context);
         originatingPackageName = StoreInfoUtil.getOriginatingPackageName(context);
+        isSystemApp = StoreInfoUtil.getIsSystemApp(context);
+        isUpdatedSystemApp = StoreInfoUtil.getIsUpdatedSystemApp(context);
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
