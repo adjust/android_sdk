@@ -32,6 +32,51 @@ import static com.adjust.test.Utils.error;
  */
 
 public class TestLibrary {
+    private static final class StartTestSessionRunnable implements Runnable {
+        private final TestLibrary testLibrary;
+        private final String clientSdk;
+
+        private StartTestSessionRunnable(TestLibrary testLibrary, String clientSdk) {
+            this.testLibrary = testLibrary;
+            this.clientSdk = clientSdk;
+        }
+
+        @Override
+        public void run() {
+            testLibrary.startTestSessionI(clientSdk);
+        }
+    }
+
+    private static final class CancelTestAndGetNextRunnable implements Runnable {
+        private final TestLibrary testLibrary;
+
+        private CancelTestAndGetNextRunnable(TestLibrary testLibrary) {
+            this.testLibrary = testLibrary;
+        }
+
+        @Override
+        public void run() {
+            testLibrary.readResponseI(testLibrary.networking.sendPost("/end_test_read_next", testLibrary.currentBasePath));
+        }
+    }
+
+    private static final class SendInfoToServerRunnable implements Runnable {
+        private final TestLibrary testLibrary;
+        private final String basePath;
+        private final Map<String, String> infoSnapshot;
+
+        private SendInfoToServerRunnable(TestLibrary testLibrary, String basePath, Map<String, String> infoSnapshot) {
+            this.testLibrary = testLibrary;
+            this.basePath = basePath;
+            this.infoSnapshot = infoSnapshot;
+        }
+
+        @Override
+        public void run() {
+            testLibrary.sendInfoToServerI(basePath, infoSnapshot);
+        }
+    }
+
     private String controlUrl;
     private Networking networking;
     private Gson gson = new Gson();
@@ -120,12 +165,7 @@ public class TestLibrary {
             SystemClock.sleep(ONE_SECOND);
         }
 
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                startTestSessionI(clientSdk);
-            }
-        });
+        executor.submit(new StartTestSessionRunnable(this, clientSdk));
     }
 
     public void setOnExitListener(IOnExitListener onExitListener) {
@@ -138,12 +178,7 @@ public class TestLibrary {
 
     public void cancelTestAndGetNext() {
         resetTestLibrary();
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                readResponseI(networking.sendPost("/end_test_read_next", currentBasePath));
-            }
-        });
+        executor.submit(new CancelTestAndGetNextRunnable(this));
     }
 
     public void addInfoToSend(String key, String value) {
@@ -175,12 +210,7 @@ public class TestLibrary {
             infoToServer = null;
         }
         
-        executor.submit(new Runnable() {
-            @Override
-            public void run() {
-                sendInfoToServerI(basePath, infoSnapshot);
-            }
-        });
+        executor.submit(new SendInfoToServerRunnable(this, basePath, infoSnapshot));
     }
 
     private void startTestSessionI(String clientSdk) {
