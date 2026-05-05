@@ -34,6 +34,7 @@ import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnThirdPartySharingSettingsChangedListener;
 import com.adjust.sdk.OnThirdPartySharingSettingsReadListener;
 
 import org.json.JSONArray;
@@ -166,6 +167,7 @@ public class AdjustBridgeInstance {
             Object defaultTrackerField = jsonAdjustConfig.get("defaultTracker");
             Object externalDeviceIdField = jsonAdjustConfig.get("externalDeviceId");
             Object attributionCallbackNameField = jsonAdjustConfig.get("attributionCallbackName");
+            Object thirdPartySharingSettingsChangedCallbackNameField = jsonAdjustConfig.get("thirdPartySharingSettingsChangedCallbackName");
             Object isCostDataInAttributionEnabledField = jsonAdjustConfig.get("isCostDataInAttributionEnabled");
             Object eventSuccessCallbackNameField = jsonAdjustConfig.get("eventSuccessCallbackName");
             Object eventFailureCallbackNameField = jsonAdjustConfig.get("eventFailureCallbackName");
@@ -266,6 +268,19 @@ public class AdjustBridgeInstance {
                     @Override
                     public void onAttributionChanged(AdjustAttribution attribution) {
                         AdjustBridgeUtil.execAttributionCallbackCommand(webView, attributionCallbackName, attribution);
+                    }
+                });
+            }
+
+            // Third party sharing settings changed callback name
+            final String thirdPartySharingSettingsChangedCallbackName =
+                    AdjustBridgeUtil.fieldToString(thirdPartySharingSettingsChangedCallbackNameField);
+            if (thirdPartySharingSettingsChangedCallbackName != null) {
+                adjustConfig.setOnThirdPartySharingSettingsChangedListener(new OnThirdPartySharingSettingsChangedListener() {
+                    @Override
+                    public void onThirdPartySharingSettingsChanged(AdjustThirdPartySharingResult adjustThirdPartySharingResult) {
+                        AdjustBridgeUtil.execThirdPartySharingSettingsCallbackCommand(
+                                webView, thirdPartySharingSettingsChangedCallbackName, adjustThirdPartySharingResult);
                     }
                 });
             }

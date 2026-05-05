@@ -43,6 +43,7 @@ var Adjust = {
         };
 
         registerIfPresent(adjustConfig.attributionCallbackName, adjustConfig.attributionCallbackFunction);
+        registerIfPresent(adjustConfig.thirdPartySharingSettingsChangedCallbackName, adjustConfig.thirdPartySharingSettingsChangedCallbackFunction);
         registerIfPresent(adjustConfig.eventSuccessCallbackName, adjustConfig.eventSuccessCallbackFunction);
         registerIfPresent(adjustConfig.eventFailureCallbackName, adjustConfig.eventFailureCallbackFunction);
         registerIfPresent(adjustConfig.sessionSuccessCallbackName, adjustConfig.sessionSuccessCallbackFunction);
@@ -61,6 +62,7 @@ var Adjust = {
         };
 
         registerInternal(adjustConfig.attributionCallbackName, adjustConfig.adjust_attributionCallback);
+        registerInternal(adjustConfig.thirdPartySharingSettingsChangedCallbackName, adjustConfig.adjust_thirdPartySharingSettingsChangedCallback);
         registerInternal(adjustConfig.eventSuccessCallbackName, adjustConfig.adjust_eventSuccessCallback);
         registerInternal(adjustConfig.eventFailureCallbackName, adjustConfig.adjust_eventFailureCallback);
         registerInternal(adjustConfig.sessionSuccessCallbackName, adjustConfig.adjust_sessionSuccessCallback);

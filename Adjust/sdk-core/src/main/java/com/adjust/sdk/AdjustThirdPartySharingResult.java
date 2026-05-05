@@ -14,4 +14,19 @@ public class AdjustThirdPartySharingResult {
         return thirdPartySharingSettingsJson;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (other == null) return false;
+        if (other == this) return true;
+        if (!(other instanceof AdjustThirdPartySharingResult)) return false;
+
+        AdjustThirdPartySharingResult otherResult = (AdjustThirdPartySharingResult) other;
+        return Util.equalString(thirdPartySharingSettingsJson, otherResult.thirdPartySharingSettingsJson);
+    }
+
+    @Override
+    public int hashCode() {
+        return thirdPartySharingSettingsJson != null ? thirdPartySharingSettingsJson.hashCode() : 0;
+    }
+
 }

@@ -623,10 +623,19 @@ public class ActivityHandler
         return true;
     }
 
-    private void updateThirdPartySharingSettingsI() {
-        final SharedPreferencesManager sharedPreferencesManager =
-                SharedPreferencesManager.getDefaultInstance(getContext());
-        sharedPreferencesManager.saveThirdPartySharingResult(this.thirdPartySharingResult);
+    private boolean updateThirdPartySharingSettingsI(final AdjustThirdPartySharingResult thirdPartySharingResult) {
+        if (thirdPartySharingResult == null) {
+            return false;
+        }
+
+        boolean thirdPartySharingSettingsChanged = !thirdPartySharingResult.equals(this.thirdPartySharingResult);
+        this.thirdPartySharingResult = thirdPartySharingResult;
+
+        if (thirdPartySharingSettingsChanged) {
+            final SharedPreferencesManager sharedPreferencesManager =
+                    SharedPreferencesManager.getDefaultInstance(getContext());
+            sharedPreferencesManager.saveThirdPartySharingResult(this.thirdPartySharingResult);
+        }
 
         ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacksCopy = null;
         synchronized (cachedThirdPartySharingTimeoutCallbacks) {
@@ -638,7 +647,7 @@ public class ActivityHandler
 
         // process third party sharing callbacks
         if (cachedThirdPartySharingTimeoutCallbacksCopy != null) {
-            final AdjustThirdPartySharingResult thirdPartySharingResultCopy = thirdPartySharingResult;
+            final AdjustThirdPartySharingResult thirdPartySharingResultCopy = this.thirdPartySharingResult;
             ArrayList<AdjustTimeoutCallback> finalCachedThirdPartySharingTimeoutCallbacksCopy = cachedThirdPartySharingTimeoutCallbacksCopy;
             new Handler(adjustConfig.context.getMainLooper()).post(new Runnable() {
                 @Override
@@ -663,6 +672,8 @@ public class ActivityHandler
                 }
             });
         }
+
+        return thirdPartySharingSettingsChanged;
     }
 
     @Override
@@ -2269,6 +2280,26 @@ public class ActivityHandler
         handler.post(runnable);
     }
 
+    private void launchThirdPartySharingSettingsChangedListenerI(Handler handler) {
+        if (adjustConfig.onThirdPartySharingSettingsChangedListener == null) {
+            return;
+        }
+        // add it to the handler queue
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (adjustConfig == null) {
+                    return;
+                }
+                if (adjustConfig.onThirdPartySharingSettingsChangedListener == null) {
+                    return;
+                }
+                adjustConfig.onThirdPartySharingSettingsChangedListener.onThirdPartySharingSettingsChanged(thirdPartySharingResult);
+            }
+        };
+        handler.post(runnable);
+    }
+
     private void launchPurchaseVerificationResponseTasksI(PurchaseVerificationResponseData purchaseVerificationResponseData) {
         // use the same handler to ensure that all tasks are executed sequentially
         Handler handler = new Handler(adjustConfig.context.getMainLooper());
@@ -2372,8 +2403,14 @@ public class ActivityHandler
 
         String tpsSettingsJsonString = tpsSettingsJson.toString();
 
-        this.thirdPartySharingResult = new AdjustThirdPartySharingResult(tpsSettingsJsonString);
-        updateThirdPartySharingSettingsI();
+        boolean thirdPartySharingSettingsChanged =
+                updateThirdPartySharingSettingsI(new AdjustThirdPartySharingResult(tpsSettingsJsonString));
+
+        // if third party sharing settings changed, launch third party sharing settings changed delegate
+        if (thirdPartySharingSettingsChanged) {
+            Handler handler = new Handler(adjustConfig.context.getMainLooper());
+            launchThirdPartySharingSettingsChangedListenerI(handler);
+        }
     }
 
     private void prepareDeeplinkI(final Uri deeplink, final Handler handler) {

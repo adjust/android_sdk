@@ -20,6 +20,7 @@ public class AdjustConfig {
     String sdkPrefix;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
+    OnThirdPartySharingSettingsChangedListener onThirdPartySharingSettingsChangedListener;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
@@ -178,6 +179,10 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
+    public void setOnThirdPartySharingSettingsChangedListener(OnThirdPartySharingSettingsChangedListener onThirdPartySharingSettingsChangedListener) {
+        this.onThirdPartySharingSettingsChangedListener = onThirdPartySharingSettingsChangedListener;
+    }
+
     public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
         this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
     }
@@ -284,6 +289,10 @@ public class AdjustConfig {
 
     public OnAttributionChangedListener getOnAttributionChangedListener() {
         return onAttributionChangedListener;
+    }
+
+    public OnThirdPartySharingSettingsChangedListener getOnThirdPartySharingSettingsChangedListener() {
+        return onThirdPartySharingSettingsChangedListener;
     }
 
     public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {
