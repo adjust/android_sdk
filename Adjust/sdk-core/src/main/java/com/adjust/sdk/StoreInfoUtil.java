@@ -14,8 +14,6 @@ public class StoreInfoUtil {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
             return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
         } catch (Exception e) {
             return false;
         }
@@ -26,8 +24,6 @@ public class StoreInfoUtil {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
             return (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
-        } catch (PackageManager.NameNotFoundException e) {
-            return false;
         } catch (Exception e) {
             return false;
         }
