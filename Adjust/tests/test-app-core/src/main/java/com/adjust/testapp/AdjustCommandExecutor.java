@@ -27,6 +27,7 @@ import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
+import com.adjust.sdk.AdjustThirdPartySharingResult;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
@@ -38,6 +39,7 @@ import com.adjust.sdk.OnPurchaseVerificationFinishedListener;
 import com.adjust.sdk.OnRemoteTriggerListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnThirdPartySharingSettingsChangedListener;
 import com.adjust.test_options.TestConnectionOptions;
 
 import java.util.HashMap;
@@ -391,6 +393,21 @@ public class AdjustCommandExecutor {
                     if (attribution.costCurrency != null) fields.put("cost_currency", attribution.costCurrency);
                     if (attribution.fbInstallReferrer != null) fields.put("fb_install_referrer", attribution.fbInstallReferrer);
                     if (attribution.jsonResponse != null) fields.put("json_response", attribution.jsonResponse);
+                    MainActivity.testLibrary.setInfoToSend(fields);
+                    MainActivity.testLibrary.sendInfoToServer(localBasePath);
+                }
+            });
+        }
+
+        if (command.containsParameter("thirdPartySharingSettingsChangedCallbackSendAll")) {
+            final String localBasePath = basePath;
+            adjustConfig.setOnThirdPartySharingSettingsChangedListener(new OnThirdPartySharingSettingsChangedListener() {
+                @Override
+                public void onThirdPartySharingSettingsChanged(AdjustThirdPartySharingResult result) {
+                    Map<String, String> fields = new HashMap<>();
+                    if (result != null && result.getThirdPartySharingSettingsJson() != null) {
+                        fields.put("third_party_sharing_settings", result.getThirdPartySharingSettingsJson());
+                    }
                     MainActivity.testLibrary.setInfoToSend(fields);
                     MainActivity.testLibrary.sendInfoToServer(localBasePath);
                 }

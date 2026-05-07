@@ -382,6 +382,19 @@ AdjustCommandExecutor.prototype.config = function(params) {
         });
     }
 
+    if ('thirdPartySharingSettingsChangedCallbackSendAll' in params) {
+        var basePath = this.basePath;
+        adjustConfig.setThirdPartySharingSettingsChangedCallback(function(result) {
+            if (result != null) {
+                TestLibrary.addInfoToSend("third_party_sharing_settings", result.thirdPartySharingSettingsJson);
+            } else {
+                TestLibrary.addInfoToSend("third_party_sharing_settings", null);
+            }
+
+            TestLibrary.sendInfoToServer(basePath);
+        });
+    }
+
     if ('sessionCallbackSendSuccess' in params) {
         var basePath = this.basePath;
         adjustConfig.setSessionSuccessCallback(function(sessionSuccess) {
