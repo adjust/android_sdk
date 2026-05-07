@@ -9,23 +9,23 @@ import android.os.Bundle;
 
 public class StoreInfoUtil {
 
-    public static boolean getIsSystemApp(final Context context) {
+    public static Boolean getIsSystemApp(final Context context) {
         try {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
             return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
-    public static boolean getIsUpdatedSystemApp(final Context context) {
+    public static Boolean getIsUpdatedSystemApp(final Context context) {
         try {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
             return (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 

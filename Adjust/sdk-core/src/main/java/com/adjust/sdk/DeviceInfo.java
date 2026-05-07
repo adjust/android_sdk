@@ -104,8 +104,8 @@ class DeviceInfo {
     String storeIdFromSystem;
     String initiatingPackageName;
     String originatingPackageName;
-    boolean isSystemApp;
-    boolean isUpdatedSystemApp;
+    Boolean isSystemApp;
+    Boolean isUpdatedSystemApp;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
