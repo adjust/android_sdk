@@ -54,6 +54,7 @@ public class AdjustInstance {
     private final ArrayList<AdjustTimeoutCallback> cachedAdidReadTimeoutCallbacks = new ArrayList<>();
     private final ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     private final ArrayList<AdjustTimeoutCallback> cachedAttributionReadTimeoutCallbacks = new ArrayList<>();
+    private final ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacks = new ArrayList<>();
     /**
      * Base path for Adjust packages.
      */
@@ -110,6 +111,7 @@ public class AdjustInstance {
         adjustConfig.cachedAdidReadTimeoutCallbacks = cachedAdidReadTimeoutCallbacks;
         adjustConfig.cachedAttributionReadCallbacks = cachedAttributionReadCallbacks;
         adjustConfig.cachedAttributionReadTimeoutCallbacks = cachedAttributionReadTimeoutCallbacks;
+        adjustConfig.cachedThirdPartySharingTimeoutCallbacks = cachedThirdPartySharingTimeoutCallbacks;
 
         activityHandler = AdjustFactory.getActivityHandler(adjustConfig);
         setSendingReferrersAsNotSent(adjustConfig.context);
@@ -604,6 +606,39 @@ public class AdjustInstance {
             return;
         }
         activityHandler.getAttributionWithTimeout(timeoutInMilliSec, attributionReadListener);
+    }
+
+    /**
+     * Called to get user's current third party sharing settings.
+     *
+     * @param context                                 Application context
+     * @param timeoutInMilliSec                       Timeout in milliseconds. If third party sharing settings
+     *                                                are not available within this time, the callback will return null.
+     * @param listener Callback to get triggered once third party sharing settings are obtained
+     */
+    public void getThirdPartySharingSettingsWithTimeout(Context context, long timeoutInMilliSec, OnThirdPartySharingSettingsReadListener listener) {
+        if (!checkActivityHandler("getThirdPartySharingSettings")) {
+            ThreadExecutor executor = new SingleThreadCachedScheduler("getThirdPartySharingSettings");
+            executor.submit(new Runnable() {
+                @Override
+                public void run() {
+                    AdjustThirdPartySharingResult adjustThirdPartySharingResult = SharedPreferencesManager.getDefaultInstance(context).getThirdPartySharingResult();
+                    if (adjustThirdPartySharingResult != null) {
+                        new Handler(context.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onThirdPartySharingSettingsRead(adjustThirdPartySharingResult);
+                            }
+                        });
+                    } else {
+                        // third party sharing settings not found locally
+                        ActivityHandler.queueGetThirdPartySharingSettingsWithTimeout(timeoutInMilliSec, listener, cachedThirdPartySharingTimeoutCallbacks, context);
+                    }
+                }
+            });
+            return;
+        }
+        activityHandler.getThirdPartySharingSettingsWithTimeout(timeoutInMilliSec, listener);
     }
 
     /**

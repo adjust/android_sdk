@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.text.TextUtils;
 
 /**
  * Class used for shared preferences manipulation.
@@ -56,6 +57,7 @@ public class SharedPreferencesManager {
 
     private static final String PREFS_KEY_LVL_TRACKED = "lvl_tracked";
 
+    private static final String PREFS_KEY_TPS_RESULT_SETTINGS = "tps_result_settings";
 
     /**
      * Index for raw referrer string content in saved JSONArray object.
@@ -489,6 +491,23 @@ public class SharedPreferencesManager {
      */
     public synchronized boolean getLicenseVerificationTracked() {
         return getBoolean(PREFS_KEY_LVL_TRACKED, false);
+    }
+
+    public synchronized void saveThirdPartySharingResult(final AdjustThirdPartySharingResult thirdPartySharingResult) {
+        try {
+            saveString(PREFS_KEY_TPS_RESULT_SETTINGS, thirdPartySharingResult.getThirdPartySharingSettingsJson());
+        } catch (Throwable t) {
+        }
+    }
+
+    public synchronized AdjustThirdPartySharingResult getThirdPartySharingResult() {
+        String thirdPartySharingSettingsJson = getString(PREFS_KEY_TPS_RESULT_SETTINGS);
+
+        if (TextUtils.isEmpty(thirdPartySharingSettingsJson)) {
+            return null;
+        }
+
+        return new AdjustThirdPartySharingResult(thirdPartySharingSettingsJson);
     }
 
     /**

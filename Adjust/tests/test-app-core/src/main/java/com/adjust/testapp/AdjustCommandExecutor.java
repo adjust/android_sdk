@@ -28,7 +28,6 @@ import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustTestOptions;
 import com.adjust.sdk.AdjustThirdPartySharing;
 import com.adjust.sdk.LogLevel;
-import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAttributionChangedListener;
 import com.adjust.sdk.OnDeeplinkResolvedListener;
 import com.adjust.sdk.OnDeferredDeeplinkResponseListener;
@@ -109,6 +108,7 @@ public class AdjustCommandExecutor {
                 case "sdkVersionGetter" : sdkVersionGetter(); break;
                 case "googleAdIdGetter" : googleAdIdGetter(); break;
                 case "amazonAdIdGetter" : amazonAdIdGetter(); break;
+                case "tpsSettingsGetter" : tpsSettingsGetter(); break;
                 //case "testBegin": testBegin(); break;
                 // case "testEnd": testEnd(); break;
             }
@@ -525,6 +525,14 @@ public class AdjustCommandExecutor {
             boolean appSetIdReadingEnabled = "true".equals(appSetIdReadingEnabledS);
             if (!appSetIdReadingEnabled) {
                 adjustConfig.disableAppSetIdReading();
+            }
+        }
+
+        if (command.containsParameter("fbAidReadingEnabled")) {
+            String fbAidReadingEnabledS = command.getFirstParameterValue("fbAidReadingEnabled");
+            boolean fbAidReadingEnabled = "true".equals(fbAidReadingEnabledS);
+            if (!fbAidReadingEnabled) {
+                adjustConfig.disableFbAidReading();
             }
         }
     }
@@ -1022,6 +1030,21 @@ public class AdjustCommandExecutor {
             } else {
                 MainActivity.testLibrary.addInfoToSend("adid", "null");
             }
+            MainActivity.testLibrary.addInfoToSend("test_callback_id", testCallbackId);
+            MainActivity.testLibrary.sendInfoToServer(basePath);
+        });
+    }
+
+    private void tpsSettingsGetter() {
+        long timeout = Long.parseLong(command.getFirstParameterValue("timeout"));
+        String testCallbackId = command.getFirstParameterValue("testCallbackId");
+
+        Adjust.getThirdPartySharingSettingsWithTimeout(context, timeout, adjustThirdPartySharingResult -> {
+            Map<String, String> fields = new HashMap<>();
+            if (adjustThirdPartySharingResult != null) {
+                fields.put("third_party_sharing", adjustThirdPartySharingResult.getThirdPartySharingSettingsJson());
+            }
+            MainActivity.testLibrary.setInfoToSend(fields);
             MainActivity.testLibrary.addInfoToSend("test_callback_id", testCallbackId);
             MainActivity.testLibrary.sendInfoToServer(basePath);
         });

@@ -343,6 +343,14 @@ var Adjust = {
         }
     },
 
+    getThirdPartySharingSettingsWithTimeout: function (timeoutInMilliSec, callback) {
+        if (AdjustBridge) {
+            const callbackId = window.randomCallbackIdWithPrefix("adjust_getThirdPartySharingSettingsWithTimeout");
+            this._handleGetterCallback(callback, callbackId);
+            this._callBridge('getThirdPartySharingSettingsWithTimeout', [timeoutInMilliSec, callbackId]);
+        }
+    },
+
     getSdkVersion: function (callback) {
         if (AdjustBridge) {
             const callbackId = window.randomCallbackIdWithPrefix("adjust_getSdkVersion");

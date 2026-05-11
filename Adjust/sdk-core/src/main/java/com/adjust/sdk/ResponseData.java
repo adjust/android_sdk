@@ -57,6 +57,9 @@ public class ResponseData {
             case PURCHASE_VERIFICATION:
                 responseData = new PurchaseVerificationResponseData();
                 break;
+            case THIRD_PARTY_SHARING:
+                responseData = new ThirdPartySharingResponseData();
+                break;
             default:
                 responseData = new ResponseData();
                 break;

@@ -131,7 +131,9 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(adjustConfig.sdkPrefix);
-        fbAttributionId = getFacebookAttributionId(context);
+        if (Util.canReadFbAid(adjustConfig)) {
+            fbAttributionId = getFacebookAttributionId(context);
+        }
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();

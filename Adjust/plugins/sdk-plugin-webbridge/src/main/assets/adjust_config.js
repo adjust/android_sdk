@@ -56,6 +56,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.isFirstSessionDelayEnabled = null;
     this.storeInfo = null;
     this.isAppSetIdReadingEnabled = null;
+    this.isFbAidReadingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -269,4 +270,8 @@ AdjustConfig.prototype.setStoreInfo = function(storeInfo) {
 
 AdjustConfig.prototype.disableAppSetIdReading = function() {
     this.isAppSetIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableFbAidReading = function() {
+    this.isFbAidReadingEnabled = false;
 };

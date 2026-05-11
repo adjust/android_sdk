@@ -49,9 +49,11 @@ public class AdjustConfig {
     Integer eventDeduplicationIdsMaxSize;
     ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     ArrayList<AdjustTimeoutCallback> cachedAttributionReadTimeoutCallbacks = new ArrayList<>();
+    ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacks = new ArrayList<>();
     boolean isFirstSessionDelayEnabled;
     AdjustStoreInfo storeInfo;
     boolean isAppSetIdReadingEnabled;
+    boolean isFbAidReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -91,6 +93,7 @@ public class AdjustConfig {
         this.playStoreKidsComplianceEnabled = false;
         this.isFirstSessionDelayEnabled = false;
         this.isAppSetIdReadingEnabled = true;
+        this.isFbAidReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -203,6 +206,10 @@ public class AdjustConfig {
         this.isAppSetIdReadingEnabled = false;
     }
 
+    public void disableFbAidReading() {
+        this.isFbAidReadingEnabled = false;
+    }
+
     public Context getContext() {
         return context;
     }
@@ -309,6 +316,10 @@ public class AdjustConfig {
 
     public boolean isAppSetIdReadingEnabled() {
         return isAppSetIdReadingEnabled;
+    }
+
+    public boolean isFbAidReadingEnabled() {
+        return isFbAidReadingEnabled;
     }
 
     private boolean checkContext(Context context) {

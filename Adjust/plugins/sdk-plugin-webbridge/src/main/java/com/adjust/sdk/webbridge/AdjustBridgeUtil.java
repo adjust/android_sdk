@@ -10,6 +10,7 @@ import com.adjust.sdk.AdjustFactory;
 import com.adjust.sdk.AdjustRemoteTrigger;
 import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
+import com.adjust.sdk.AdjustThirdPartySharingResult;
 import com.adjust.sdk.ILogger;
 
 import org.json.JSONArray;
@@ -134,6 +135,26 @@ public class AdjustBridgeUtil {
                 jsonAttribution.put("jsonResponse", attribution.jsonResponse == null ? JSONObject.NULL : new JSONObject(attribution.jsonResponse));
 
                 execNativeCallback(webView, commandName, jsonAttribution.toString());
+            } else {
+                execNativeCallback(webView, commandName, "null");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void execThirdPartySharingSettingsCallbackCommand(final WebView webView, final String commandName, final AdjustThirdPartySharingResult result) {
+        if (webView == null) {
+            return;
+        }
+        if (commandName == null) {
+            return;
+        }
+        try {
+            if (result != null) {
+                JSONObject jsonAdjustThirdPartySharingResult = new JSONObject();
+                jsonAdjustThirdPartySharingResult.put("thirdPartySharingSettingsJson", result.getThirdPartySharingSettingsJson() == null ? JSONObject.NULL : result.getThirdPartySharingSettingsJson());
+                execNativeCallback(webView, commandName, jsonAdjustThirdPartySharingResult.toString());
             } else {
                 execNativeCallback(webView, commandName, "null");
             }

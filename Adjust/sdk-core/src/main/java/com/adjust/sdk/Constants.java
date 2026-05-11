@@ -106,5 +106,6 @@ public interface Constants {
 
     String ADID_TIMEOUT_TIMER_NAME = "Get Adid timeout timer";
     String ATTRIBUTION_TIMEOUT_TIMER_NAME = "Get Attribution timeout timer";
+    String TPS_SETTINGS_TIMEOUT_TIMER_NAME = "Get Third party sharing settings timeout timer";
 
 }

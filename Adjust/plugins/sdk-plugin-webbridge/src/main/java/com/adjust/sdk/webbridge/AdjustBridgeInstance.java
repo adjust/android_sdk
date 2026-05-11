@@ -19,6 +19,7 @@ import com.adjust.sdk.AdjustSessionFailure;
 import com.adjust.sdk.AdjustSessionSuccess;
 import com.adjust.sdk.AdjustStoreInfo;
 import com.adjust.sdk.AdjustThirdPartySharing;
+import com.adjust.sdk.AdjustThirdPartySharingResult;
 import com.adjust.sdk.LogLevel;
 import com.adjust.sdk.OnAdidReadListener;
 import com.adjust.sdk.OnAmazonAdIdReadListener;
@@ -33,6 +34,7 @@ import com.adjust.sdk.OnSdkVersionReadListener;
 import com.adjust.sdk.OnIsEnabledListener;
 import com.adjust.sdk.OnSessionTrackingFailedListener;
 import com.adjust.sdk.OnSessionTrackingSucceededListener;
+import com.adjust.sdk.OnThirdPartySharingSettingsReadListener;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -187,6 +189,7 @@ public class AdjustBridgeInstance {
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
             Object storeInfoField = jsonAdjustConfig.get("storeInfo");
             Object isAppSetIdReadingEnabledField = jsonAdjustConfig.get("isAppSetIdReadingEnabled");
+            Object isFbAidReadingEnabledField = jsonAdjustConfig.get("isFbAidReadingEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -456,6 +459,14 @@ public class AdjustBridgeInstance {
             if (isAppSetIdReadingEnabled != null) {
                 if (!isAppSetIdReadingEnabled) {
                     adjustConfig.disableAppSetIdReading();
+                }
+            }
+
+            // FbAid reading
+            Boolean isFbAidReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isFbAidReadingEnabledField);
+            if (isFbAidReadingEnabled != null) {
+                if (!isFbAidReadingEnabled) {
+                    adjustConfig.disableFbAidReading();
                 }
             }
 
@@ -1105,6 +1116,28 @@ public class AdjustBridgeInstance {
                     @Override
                     public void onAttributionRead(AdjustAttribution attribution) {
                         AdjustBridgeUtil.execAttributionCallbackCommand(webView, callback, attribution);
+                    }
+                });
+    }
+
+    @JavascriptInterface
+    public void getThirdPartySharingSettingsWithTimeout(final long timeoutInMilliSec, final String callback) {
+        getThirdPartySharingSettingsWithTimeout(timeoutInMilliSec, callback, null);
+    }
+
+    @JavascriptInterface
+    public void getThirdPartySharingSettingsWithTimeout(final long timeoutInMilliSec, final String callback, String bridgeToken) {
+        if (!isBridgeAuthorized(bridgeToken)) {
+            return;
+        }
+        if (!isInitialized()) {
+            return;
+        }
+        Adjust.getThirdPartySharingSettingsWithTimeout(application.getApplicationContext(), timeoutInMilliSec,
+                new OnThirdPartySharingSettingsReadListener() {
+                    @Override
+                    public void onThirdPartySharingSettingsRead(AdjustThirdPartySharingResult adjustThirdPartySharingResult) {
+                        AdjustBridgeUtil.execThirdPartySharingSettingsCallbackCommand(webView, callback, adjustThirdPartySharingResult);
                     }
                 });
     }
