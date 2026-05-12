@@ -54,7 +54,7 @@ public class AdjustConfig {
     boolean isFirstSessionDelayEnabled;
     AdjustStoreInfo storeInfo;
     boolean isAppSetIdReadingEnabled;
-    boolean isFbAidReadingEnabled;
+    boolean isFbIdReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -94,7 +94,7 @@ public class AdjustConfig {
         this.playStoreKidsComplianceEnabled = false;
         this.isFirstSessionDelayEnabled = false;
         this.isAppSetIdReadingEnabled = true;
-        this.isFbAidReadingEnabled = true;
+        this.isFbIdReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -211,8 +211,8 @@ public class AdjustConfig {
         this.isAppSetIdReadingEnabled = false;
     }
 
-    public void disableFbAidReading() {
-        this.isFbAidReadingEnabled = false;
+    public void disableFbIdReading() {
+        this.isFbIdReadingEnabled = false;
     }
 
     public Context getContext() {
@@ -327,8 +327,8 @@ public class AdjustConfig {
         return isAppSetIdReadingEnabled;
     }
 
-    public boolean isFbAidReadingEnabled() {
-        return isFbAidReadingEnabled;
+    public boolean isFbIdReadingEnabled() {
+        return isFbIdReadingEnabled;
     }
 
     private boolean checkContext(Context context) {

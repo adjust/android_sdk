@@ -191,7 +191,7 @@ public class AdjustBridgeInstance {
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
             Object storeInfoField = jsonAdjustConfig.get("storeInfo");
             Object isAppSetIdReadingEnabledField = jsonAdjustConfig.get("isAppSetIdReadingEnabled");
-            Object isFbAidReadingEnabledField = jsonAdjustConfig.get("isFbAidReadingEnabled");
+            Object isFbIdReadingEnabledField = jsonAdjustConfig.get("isFbIdReadingEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -477,11 +477,11 @@ public class AdjustBridgeInstance {
                 }
             }
 
-            // FbAid reading
-            Boolean isFbAidReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isFbAidReadingEnabledField);
-            if (isFbAidReadingEnabled != null) {
-                if (!isFbAidReadingEnabled) {
-                    adjustConfig.disableFbAidReading();
+            // FbId reading
+            Boolean isFbIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isFbIdReadingEnabledField);
+            if (isFbIdReadingEnabled != null) {
+                if (!isFbIdReadingEnabled) {
+                    adjustConfig.disableFbIdReading();
                 }
             }
 

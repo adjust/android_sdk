@@ -13,7 +13,9 @@ public class StoreInfoUtil {
         try {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
-            return (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+            return ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0)
+                    ? Boolean.TRUE
+                    : null;
         } catch (Exception e) {
             return null;
         }
@@ -23,7 +25,9 @@ public class StoreInfoUtil {
         try {
             ApplicationInfo ai =
                     context.getPackageManager().getApplicationInfo(context.getPackageName(), 0);
-            return (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+            return ((ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0)
+                    ? Boolean.TRUE
+                    : null;
         } catch (Exception e) {
             return null;
         }

@@ -695,8 +695,8 @@ public class Util {
         return canReadPlayIds(adjustConfig);
     }
 
-    public static boolean canReadFbAid(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isFbAidReadingEnabled) {
+    public static boolean canReadFbId(final AdjustConfig adjustConfig) {
+        if (!adjustConfig.isFbIdReadingEnabled) {
             return false;
         }
         return canReadNonPlayIds(adjustConfig);

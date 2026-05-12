@@ -545,11 +545,11 @@ public class AdjustCommandExecutor {
             }
         }
 
-        if (command.containsParameter("fbAidReadingEnabled")) {
-            String fbAidReadingEnabledS = command.getFirstParameterValue("fbAidReadingEnabled");
-            boolean fbAidReadingEnabled = "true".equals(fbAidReadingEnabledS);
-            if (!fbAidReadingEnabled) {
-                adjustConfig.disableFbAidReading();
+        if (command.containsParameter("fbIdReadingEnabled")) {
+            String fbIdReadingEnabledS = command.getFirstParameterValue("fbIdReadingEnabled");
+            boolean fbIdReadingEnabled = "true".equals(fbIdReadingEnabledS);
+            if (!fbIdReadingEnabled) {
+                adjustConfig.disableFbIdReading();
             }
         }
     }

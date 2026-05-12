@@ -1266,8 +1266,8 @@ public class PackageBuilder {
             PackageBuilder.addBoolean(parameters, "ff_app_set_id_disabled", true);
         }
 
-        if (!adjustConfig.isFbAidReadingEnabled) {
-            PackageBuilder.addBoolean(parameters, "ff_fb_aid_disabled", true);
+        if (!adjustConfig.isFbIdReadingEnabled) {
+            PackageBuilder.addBoolean(parameters, "ff_fb_id_disabled", true);
         }
 
         if (adjustConfig.onRemoteTriggerListener != null) {
