@@ -1,7 +1,7 @@
 ### Version 5.7.0 (12th May 2026)
 #### Added
 - Added `getThirdPartySharingSettingsWithTimeout` to the `Adjust` API and `setOnThirdPartySharingSettingsChangedListener` to `AdjustConfig` for reading current third-party-sharing settings from the Adjust backend.
-- Added support for sending parameters to identify pre-installed apps.
+- Added support for sending parameters that identify preinstalled Android system apps.
 
 ---
 
