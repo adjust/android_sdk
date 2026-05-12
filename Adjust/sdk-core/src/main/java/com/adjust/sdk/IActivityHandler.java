@@ -101,6 +101,8 @@ public interface IActivityHandler {
 
     void getAttributionWithTimeout(long timeoutInMilliSec, OnAttributionReadListener onAttributionReadListener);
 
+    void getThirdPartySharingSettingsWithTimeout(long timeoutInMilliSec, OnThirdPartySharingSettingsReadListener onThirdPartySharingSettingsReadListener);
+
     AdjustConfig getAdjustConfig();
 
     DeviceInfo getDeviceInfo();

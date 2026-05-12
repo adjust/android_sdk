@@ -695,6 +695,13 @@ public class Util {
         return canReadPlayIds(adjustConfig);
     }
 
+    public static boolean canReadFbId(final AdjustConfig adjustConfig) {
+        if (!adjustConfig.isFbIdReadingEnabled) {
+            return false;
+        }
+        return canReadNonPlayIds(adjustConfig);
+    }
+
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();
         return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");

@@ -43,6 +43,7 @@ var Adjust = {
         };
 
         registerIfPresent(adjustConfig.attributionCallbackName, adjustConfig.attributionCallbackFunction);
+        registerIfPresent(adjustConfig.thirdPartySharingSettingsChangedCallbackName, adjustConfig.thirdPartySharingSettingsChangedCallbackFunction);
         registerIfPresent(adjustConfig.eventSuccessCallbackName, adjustConfig.eventSuccessCallbackFunction);
         registerIfPresent(adjustConfig.eventFailureCallbackName, adjustConfig.eventFailureCallbackFunction);
         registerIfPresent(adjustConfig.sessionSuccessCallbackName, adjustConfig.sessionSuccessCallbackFunction);
@@ -61,6 +62,7 @@ var Adjust = {
         };
 
         registerInternal(adjustConfig.attributionCallbackName, adjustConfig.adjust_attributionCallback);
+        registerInternal(adjustConfig.thirdPartySharingSettingsChangedCallbackName, adjustConfig.adjust_thirdPartySharingSettingsChangedCallback);
         registerInternal(adjustConfig.eventSuccessCallbackName, adjustConfig.adjust_eventSuccessCallback);
         registerInternal(adjustConfig.eventFailureCallbackName, adjustConfig.adjust_eventFailureCallback);
         registerInternal(adjustConfig.sessionSuccessCallbackName, adjustConfig.adjust_sessionSuccessCallback);
@@ -343,6 +345,14 @@ var Adjust = {
         }
     },
 
+    getThirdPartySharingSettingsWithTimeout: function (timeoutInMilliSec, callback) {
+        if (AdjustBridge) {
+            const callbackId = window.randomCallbackIdWithPrefix("adjust_getThirdPartySharingSettingsWithTimeout");
+            this._handleGetterCallback(callback, callbackId);
+            this._callBridge('getThirdPartySharingSettingsWithTimeout', [timeoutInMilliSec, callbackId]);
+        }
+    },
+
     getSdkVersion: function (callback) {
         if (AdjustBridge) {
             const callbackId = window.randomCallbackIdWithPrefix("adjust_getSdkVersion");
@@ -359,7 +369,7 @@ var Adjust = {
         if (this.adjustConfig) {
             return this.adjustConfig.getSdkPrefix();
         } else {
-            return 'web-bridge5.6.1';
+            return 'web-bridge5.7.0';
         }
     },
 

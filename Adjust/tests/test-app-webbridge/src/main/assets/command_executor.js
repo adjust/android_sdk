@@ -146,6 +146,7 @@ AdjustCommandExecutor.prototype.executeCommand = function(command, idx) {
         case "sdkVersionGetter"               : this.sdkVersionGetter(command.params); break;
         case "googleAdIdGetter"               : this.googleAdIdGetter(command.params); break;
         case "amazonAdIdGetter"               : this.amazonAdIdGetter(command.params); break;
+        case "tpsSettingsGetter"              : this.tpsSettingsGetter(command.params); break;
         break;
     }
 
@@ -376,6 +377,19 @@ AdjustCommandExecutor.prototype.config = function(params) {
             TestLibrary.addInfoToSend("cost_currency", attribution.costCurrency);
             TestLibrary.addInfoToSend("fb_install_referrer", attribution.fbInstallReferrer);
             TestLibrary.addInfoToSend("json_response", JSON.stringify(attribution.jsonResponse));
+
+            TestLibrary.sendInfoToServer(basePath);
+        });
+    }
+
+    if ('thirdPartySharingSettingsChangedCallbackSendAll' in params) {
+        var basePath = this.basePath;
+        adjustConfig.setThirdPartySharingSettingsChangedCallback(function(result) {
+            if (result != null) {
+                TestLibrary.addInfoToSend("third_party_sharing_settings", result.thirdPartySharingSettingsJson);
+            } else {
+                TestLibrary.addInfoToSend("third_party_sharing_settings", null);
+            }
 
             TestLibrary.sendInfoToServer(basePath);
         });
@@ -819,6 +833,24 @@ AdjustCommandExecutor.prototype.adidGetterWithTimeout = function(params) {
         TestLibrary.addInfoToSend("test_callback_id", testCallbackId);
         TestLibrary.sendInfoToServer(basePath);
     });
+};
+
+AdjustCommandExecutor.prototype.tpsSettingsGetter = function(params) {
+        var timeoutS = getFirstParameterValue(params, 'timeout');
+        var timeout = parseInt(timeoutS);
+        var testCallbackId = getFirstParameterValue(params, 'testCallbackId');
+        var basePath = this.basePath;
+
+        Adjust.getThirdPartySharingSettingsWithTimeout(timeout, function(adjustThirdPartySharingResult) {
+            if (adjustThirdPartySharingResult != null) {
+                TestLibrary.addInfoToSend("third_party_sharing", adjustThirdPartySharingResult.thirdPartySharingSettingsJson);
+            } else {
+                TestLibrary.addInfoToSend("third_party_sharing", null);
+            }
+
+            TestLibrary.addInfoToSend("test_callback_id", testCallbackId);
+            TestLibrary.sendInfoToServer(basePath);
+        });
 };
 
 //Util

@@ -1,7 +1,6 @@
 package com.adjust.sdk;
 
 import android.content.Context;
-import android.net.Uri;
 
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class Adjust {
      */
     public static synchronized AdjustInstance getDefaultInstance() {
         @SuppressWarnings("unused")
-        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:5.6.1";
+        String VERSION = "!SDK-VERSION-STRING!:com.adjust.sdk:adjust-android:5.7.0";
 
         if (defaultInstance == null) {
             defaultInstance = new AdjustInstance();
@@ -403,6 +402,34 @@ public class Adjust {
 
         AdjustInstance adjustInstance = Adjust.getDefaultInstance();
         adjustInstance.getAttributionWithTimeout(extractApplicationContext(context), timeoutInMilliSec, attributionReadListener);
+    }
+
+    /**
+     * Called to get user's current third party sharing settings.
+     *
+     * @param context                                 Application context
+     * @param timeoutInMilliSec                       Timeout in milliseconds. If third party sharing settings
+     *                                                are not available within this time, the callback will return null.
+     * @param listener Callback to get triggered once third party sharing settings are obtained
+     */
+    public static void getThirdPartySharingSettingsWithTimeout(final Context context, final long timeoutInMilliSec,
+                                                               final OnThirdPartySharingSettingsReadListener listener) {
+        if (listener == null) {
+            AdjustFactory.getLogger().error("Callback for getting third party sharing settings can't be null");
+            return;
+        }
+        if (context == null) {
+            AdjustFactory.getLogger().error("Context for getting third party sharing settings can't be null");
+            listener.onThirdPartySharingSettingsRead(null);
+            return;
+        }
+        if (timeoutInMilliSec < 0) {
+            AdjustFactory.getLogger().error("Timeout value for getting third party sharing settings can't be negative");
+            listener.onThirdPartySharingSettingsRead(null);
+            return;
+        }
+        AdjustInstance adjustInstance = Adjust.getDefaultInstance();
+        adjustInstance.getThirdPartySharingSettingsWithTimeout(extractApplicationContext(context), timeoutInMilliSec, listener);
     }
 
     /**

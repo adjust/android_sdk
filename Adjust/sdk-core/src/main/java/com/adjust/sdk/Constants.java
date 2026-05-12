@@ -38,7 +38,7 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android5.6.1";
+    String CLIENT_SDK = "android5.7.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -106,5 +106,6 @@ public interface Constants {
 
     String ADID_TIMEOUT_TIMER_NAME = "Get Adid timeout timer";
     String ATTRIBUTION_TIMEOUT_TIMER_NAME = "Get Attribution timeout timer";
+    String TPS_SETTINGS_TIMEOUT_TIMER_NAME = "Get Third party sharing settings timeout timer";
 
 }

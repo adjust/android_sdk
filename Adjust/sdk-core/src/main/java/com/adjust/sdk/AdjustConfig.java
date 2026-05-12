@@ -20,6 +20,7 @@ public class AdjustConfig {
     String sdkPrefix;
     String defaultTracker;
     OnAttributionChangedListener onAttributionChangedListener;
+    OnThirdPartySharingSettingsChangedListener onThirdPartySharingSettingsChangedListener;
     OnEventTrackingSucceededListener onEventTrackingSucceededListener;
     OnEventTrackingFailedListener onEventTrackingFailedListener;
     OnSessionTrackingSucceededListener onSessionTrackingSucceededListener;
@@ -49,9 +50,11 @@ public class AdjustConfig {
     Integer eventDeduplicationIdsMaxSize;
     ArrayList<OnAttributionReadListener> cachedAttributionReadCallbacks = new ArrayList<>();
     ArrayList<AdjustTimeoutCallback> cachedAttributionReadTimeoutCallbacks = new ArrayList<>();
+    ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacks = new ArrayList<>();
     boolean isFirstSessionDelayEnabled;
     AdjustStoreInfo storeInfo;
     boolean isAppSetIdReadingEnabled;
+    boolean isFbIdReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -91,6 +94,7 @@ public class AdjustConfig {
         this.playStoreKidsComplianceEnabled = false;
         this.isFirstSessionDelayEnabled = false;
         this.isAppSetIdReadingEnabled = true;
+        this.isFbIdReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -175,6 +179,10 @@ public class AdjustConfig {
         this.onAttributionChangedListener = onAttributionChangedListener;
     }
 
+    public void setOnThirdPartySharingSettingsChangedListener(OnThirdPartySharingSettingsChangedListener onThirdPartySharingSettingsChangedListener) {
+        this.onThirdPartySharingSettingsChangedListener = onThirdPartySharingSettingsChangedListener;
+    }
+
     public void setOnEventTrackingSucceededListener(OnEventTrackingSucceededListener onEventTrackingSucceededListener) {
         this.onEventTrackingSucceededListener = onEventTrackingSucceededListener;
     }
@@ -201,6 +209,10 @@ public class AdjustConfig {
 
     public void disableAppSetIdReading() {
         this.isAppSetIdReadingEnabled = false;
+    }
+
+    public void disableFbIdReading() {
+        this.isFbIdReadingEnabled = false;
     }
 
     public Context getContext() {
@@ -279,6 +291,10 @@ public class AdjustConfig {
         return onAttributionChangedListener;
     }
 
+    public OnThirdPartySharingSettingsChangedListener getOnThirdPartySharingSettingsChangedListener() {
+        return onThirdPartySharingSettingsChangedListener;
+    }
+
     public OnEventTrackingSucceededListener getOnEventTrackingSucceededListener() {
         return onEventTrackingSucceededListener;
     }
@@ -309,6 +325,10 @@ public class AdjustConfig {
 
     public boolean isAppSetIdReadingEnabled() {
         return isAppSetIdReadingEnabled;
+    }
+
+    public boolean isFbIdReadingEnabled() {
+        return isFbIdReadingEnabled;
     }
 
     private boolean checkContext(Context context) {

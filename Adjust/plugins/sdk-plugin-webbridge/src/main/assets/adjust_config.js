@@ -27,6 +27,8 @@ function AdjustConfig(appToken, environment, legacy) {
     this.externalDeviceId = null;
     this.attributionCallbackName = null;
     this.attributionCallbackFunction = null;
+    this.thirdPartySharingSettingsChangedCallbackName = null;
+    this.thirdPartySharingSettingsChangedCallbackFunction = null;
     this.isCostDataInAttributionEnabled = null;
     this.eventSuccessCallbackName = null;
     this.eventSuccessCallbackFunction = null;
@@ -56,6 +58,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.isFirstSessionDelayEnabled = null;
     this.storeInfo = null;
     this.isAppSetIdReadingEnabled = null;
+    this.isFbIdReadingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -113,6 +116,21 @@ AdjustConfig.prototype.setAttributionCallback = function(callback) {
 AdjustConfig.prototype.adjust_attributionCallback = function(attribution) {
     if (this.attributionCallbackFunction) {
         this.attributionCallbackFunction(attribution);
+    }
+};
+
+AdjustConfig.prototype.setThirdPartySharingSettingsChangedCallback = function(callback) {
+    if (typeof callback === 'string' || callback instanceof String) {
+        this.thirdPartySharingSettingsChangedCallbackName = callback;
+    } else {
+        this.thirdPartySharingSettingsChangedCallbackName = 'Adjust.getConfig().adjust_thirdPartySharingSettingsChangedCallback';
+        this.thirdPartySharingSettingsChangedCallbackFunction = callback;
+    }
+};
+
+AdjustConfig.prototype.adjust_thirdPartySharingSettingsChangedCallback = function(result) {
+    if (this.thirdPartySharingSettingsChangedCallbackFunction) {
+        this.thirdPartySharingSettingsChangedCallbackFunction(result);
     }
 };
 
@@ -269,4 +287,8 @@ AdjustConfig.prototype.setStoreInfo = function(storeInfo) {
 
 AdjustConfig.prototype.disableAppSetIdReading = function() {
     this.isAppSetIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableFbIdReading = function() {
+    this.isFbIdReadingEnabled = false;
 };

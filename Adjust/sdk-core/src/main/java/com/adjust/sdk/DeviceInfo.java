@@ -104,6 +104,8 @@ class DeviceInfo {
     String storeIdFromSystem;
     String initiatingPackageName;
     String originatingPackageName;
+    Boolean isSystemApp;
+    Boolean isUpdatedSystemApp;
 
     DeviceInfo(AdjustConfig adjustConfig) {
         Context context = adjustConfig.context;
@@ -131,7 +133,9 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(adjustConfig.sdkPrefix);
-        fbAttributionId = getFacebookAttributionId(context);
+        if (Util.canReadFbId(adjustConfig)) {
+            fbAttributionId = getFacebookAttributionId(context);
+        }
         hardwareName = getHardwareName();
         abi = getABI();
         buildName = getBuildName();
@@ -145,6 +149,8 @@ class DeviceInfo {
         storeIdFromSystem = StoreInfoUtil.getStoreIdFromSystem(context);
         initiatingPackageName = StoreInfoUtil.getInitiatingPackageName(context);
         originatingPackageName = StoreInfoUtil.getOriginatingPackageName(context);
+        isSystemApp = StoreInfoUtil.getIsSystemApp(context);
+        isUpdatedSystemApp = StoreInfoUtil.getIsUpdatedSystemApp(context);
     }
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {

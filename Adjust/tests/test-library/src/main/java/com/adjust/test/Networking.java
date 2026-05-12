@@ -36,6 +36,34 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class Networking {
+    private static final class DebugTrustManager implements X509TrustManager {
+        @Override
+        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            debug("getAcceptedIssuers");
+
+            return null;
+        }
+
+        @Override
+        public void checkClientTrusted(
+            java.security.cert.X509Certificate[] certs, String authType) {
+            debug("checkClientTrusted");
+        }
+
+        @Override
+        public void checkServerTrusted(
+            java.security.cert.X509Certificate[] certs, String authType) {
+            debug("checkServerTrusted");
+        }
+    }
+
+    private static final class AllowAllHostnameVerifier implements HostnameVerifier {
+        @Override
+        public boolean verify(String hostname, SSLSession session) {
+            return true;
+        }
+    }
+
     public static class Response {
         public String response = null;
         public Integer responseCode = null;
@@ -63,30 +91,9 @@ public class Networking {
         this.fingerprint = fingerprint(context);
 
         trustAllCerts = new TrustManager[]{
-          new X509TrustManager() {
-              public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                  debug("getAcceptedIssuers");
-
-                  return null;
-              }
-
-              public void checkClientTrusted(
-                java.security.cert.X509Certificate[] certs, String authType) {
-                  debug("checkClientTrusted");
-              }
-
-              public void checkServerTrusted(
-                java.security.cert.X509Certificate[] certs, String authType) {
-                  debug("checkServerTrusted");
-              }
-          }
+            new DebugTrustManager()
         };
-        hostnameVerifier = new HostnameVerifier() {
-            @Override
-            public boolean verify(String hostname, SSLSession session) {
-                return true;
-            }
-        };
+        hostnameVerifier = new AllowAllHostnameVerifier();
     }
     // endregion
 
