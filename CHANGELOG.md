@@ -1,3 +1,10 @@
+### Version 5.7.0 (12th May 2026)
+#### Added
+- Added `getThirdPartySharingSettingsWithTimeout` to the `Adjust` API and `setOnThirdPartySharingSettingsChangedListener` to `AdjustConfig` to enable receiving the current third-party-sharing settings provided by the Adjust backend.
+- Added support for sending parameters to identify pre-installed apps.
+
+---
+
 ### Version 5.6.1 (16th April 2026)
 #### Changed
 - Updated the Adjust Signature library version to 3.67.0.
