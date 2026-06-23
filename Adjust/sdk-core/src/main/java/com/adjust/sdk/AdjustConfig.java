@@ -53,6 +53,8 @@ public class AdjustConfig {
     ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacks = new ArrayList<>();
     boolean isFirstSessionDelayEnabled;
     AdjustStoreInfo storeInfo;
+    boolean isGoogleAdIdReadingEnabled;
+    boolean isAndroidIdReadingEnabled;
     boolean isAppSetIdReadingEnabled;
     boolean isFbIdReadingEnabled;
 
@@ -93,6 +95,8 @@ public class AdjustConfig {
         this.coppaComplianceEnabled = false;
         this.playStoreKidsComplianceEnabled = false;
         this.isFirstSessionDelayEnabled = false;
+        this.isGoogleAdIdReadingEnabled = true;
+        this.isAndroidIdReadingEnabled = true;
         this.isAppSetIdReadingEnabled = true;
         this.isFbIdReadingEnabled = true;
     }
@@ -205,6 +209,14 @@ public class AdjustConfig {
 
     public void setOnRemoteTriggerListener(OnRemoteTriggerListener onRemoteTriggerListener) {
         this.onRemoteTriggerListener = onRemoteTriggerListener;
+    }
+
+    public void disableGoogleAdIdReading() {
+        this.isGoogleAdIdReadingEnabled = false;
+    }
+
+    public void disableAndroidIdReading() {
+        this.isAndroidIdReadingEnabled = false;
     }
 
     public void disableAppSetIdReading() {
@@ -321,6 +333,14 @@ public class AdjustConfig {
 
     public ILogger getLogger() {
         return logger;
+    }
+
+    public boolean isGoogleAdIdReadingEnabled() {
+        return isGoogleAdIdReadingEnabled;
+    }
+
+    public boolean isAndroidIdReadingEnabled() {
+        return isAndroidIdReadingEnabled;
     }
 
     public boolean isAppSetIdReadingEnabled() {

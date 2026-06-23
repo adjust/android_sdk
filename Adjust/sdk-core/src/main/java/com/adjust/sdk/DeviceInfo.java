@@ -63,7 +63,7 @@ class DeviceInfo {
     String playAdIdSource;
     int playAdIdAttempt = -1;
     Boolean isTrackingEnabled;
-    private boolean nonGoogleIdsReadOnce = false;
+    private boolean androidIdReadOnce = false;
     private boolean playIdsReadOnce = false;
     private boolean otherDeviceIdsParamsReadOnce = false;
     String androidId;
@@ -248,17 +248,17 @@ class DeviceInfo {
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (!Util.canReadNonPlayIds(adjustConfig)) {
+    void readAndroidId(final AdjustConfig adjustConfig) {
+        if (!Util.canReadAndroidId(adjustConfig)) {
             return;
         }
 
-        if (nonGoogleIdsReadOnce) {
+        if (androidIdReadOnce) {
             return;
         }
 
         androidId = Util.getAndroidId(adjustConfig.context);
-        nonGoogleIdsReadOnce = true;
+        androidIdReadOnce = true;
     }
 
     void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,

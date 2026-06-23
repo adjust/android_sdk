@@ -256,7 +256,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -349,7 +349,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -442,7 +442,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -499,7 +499,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -616,7 +616,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -681,7 +681,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -759,7 +759,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -828,7 +828,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -895,7 +895,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                         "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -988,7 +988,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1086,7 +1086,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1175,7 +1175,7 @@ public class PackageBuilder {
         if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
-            deviceInfo.reloadNonPlayIds(adjustConfig);
+            deviceInfo.readAndroidId(adjustConfig);
             PackageBuilder.addString(parameters, "android_id", deviceInfo.androidId);
         }
 
@@ -1260,6 +1260,14 @@ public class PackageBuilder {
 
         if (firstSessionDelayManager.wasSet()) {
             PackageBuilder.addBoolean(parameters, "ff_first_session_delay", true);
+        }
+
+        if (!adjustConfig.isGoogleAdIdReadingEnabled) {
+            PackageBuilder.addBoolean(parameters, "ff_gps_adid_disabled", true);
+        }
+
+        if (!adjustConfig.isAndroidIdReadingEnabled) {
+            PackageBuilder.addBoolean(parameters, "ff_android_id_disabled", true);
         }
 
         if (!adjustConfig.isAppSetIdReadingEnabled) {

@@ -681,11 +681,11 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled && adjustConfig.isGoogleAdIdReadingEnabled;
     }
 
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
+    public static boolean canReadAndroidId(final AdjustConfig adjustConfig) {
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled && adjustConfig.isAndroidIdReadingEnabled;
     }
 
     public static boolean canReadAppSetId(final AdjustConfig adjustConfig) {
@@ -699,7 +699,7 @@ public class Util {
         if (!adjustConfig.isFbIdReadingEnabled) {
             return false;
         }
-        return canReadNonPlayIds(adjustConfig);
+        return canReadAndroidId(adjustConfig);
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
