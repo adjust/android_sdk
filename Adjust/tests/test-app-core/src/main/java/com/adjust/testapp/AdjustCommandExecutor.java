@@ -537,6 +537,22 @@ public class AdjustCommandExecutor {
             }
         }
 
+        if (command.containsParameter("googleAdIdReadingEnabled")) {
+            String googleAdIdReadingEnabledS = command.getFirstParameterValue("googleAdIdReadingEnabled");
+            boolean googleAdIdReadingEnabled = "true".equals(googleAdIdReadingEnabledS);
+            if (!googleAdIdReadingEnabled) {
+                adjustConfig.disableGoogleAdIdReading();
+            }
+        }
+
+        if (command.containsParameter("androidIdReadingEnabled")) {
+            String androidIdReadingEnabledS = command.getFirstParameterValue("androidIdReadingEnabled");
+            boolean androidIdReadingEnabled = "true".equals(androidIdReadingEnabledS);
+            if (!androidIdReadingEnabled) {
+                adjustConfig.disableAndroidIdReading();
+            }
+        }
+
         if (command.containsParameter("appSetIdReadingEnabled")) {
             String appSetIdReadingEnabledS = command.getFirstParameterValue("appSetIdReadingEnabled");
             boolean appSetIdReadingEnabled = "true".equals(appSetIdReadingEnabledS);
