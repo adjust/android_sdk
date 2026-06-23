@@ -190,6 +190,8 @@ public class AdjustBridgeInstance {
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
             Object storeInfoField = jsonAdjustConfig.get("storeInfo");
+            Object isGoogleAdIdReadingEnabledField = jsonAdjustConfig.get("isGoogleAdIdReadingEnabled");
+            Object isAndroidIdReadingEnabledField = jsonAdjustConfig.get("isAndroidIdReadingEnabled");
             Object isAppSetIdReadingEnabledField = jsonAdjustConfig.get("isAppSetIdReadingEnabled");
             Object isFbIdReadingEnabledField = jsonAdjustConfig.get("isFbIdReadingEnabled");
 
@@ -469,6 +471,22 @@ public class AdjustBridgeInstance {
                 }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance storeInfo: %s", e.getMessage());
+            }
+
+            // Google AdId reading
+            Boolean isGoogleAdIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isGoogleAdIdReadingEnabledField);
+            if (isGoogleAdIdReadingEnabled != null) {
+                if (!isGoogleAdIdReadingEnabled) {
+                    adjustConfig.disableGoogleAdIdReading();
+                }
+            }
+
+            // Android Id reading
+            Boolean isAndroidIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isAndroidIdReadingEnabledField);
+            if (isAndroidIdReadingEnabled != null) {
+                if (!isAndroidIdReadingEnabled) {
+                    adjustConfig.disableAndroidIdReading();
+                }
             }
 
             // AppSetId reading

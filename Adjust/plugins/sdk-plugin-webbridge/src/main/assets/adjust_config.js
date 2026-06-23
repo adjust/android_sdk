@@ -57,6 +57,8 @@ function AdjustConfig(appToken, environment, legacy) {
     this.eventDeduplicationIdsMaxSize = null;
     this.isFirstSessionDelayEnabled = null;
     this.storeInfo = null;
+    this.isGoogleAdIdReadingEnabled = null;
+    this.isAndroidIdReadingEnabled = null;
     this.isAppSetIdReadingEnabled = null;
     this.isFbIdReadingEnabled = null;
 }
@@ -283,6 +285,14 @@ AdjustConfig.prototype.enableFirstSessionDelay = function() {
 
 AdjustConfig.prototype.setStoreInfo = function(storeInfo) {
     this.storeInfo = JSON.stringify(storeInfo);
+};
+
+AdjustConfig.prototype.disableGoogleAdIdReading = function() {
+    this.isGoogleAdIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableAndroidIdReading = function() {
+    this.isAndroidIdReadingEnabled = false;
 };
 
 AdjustConfig.prototype.disableAppSetIdReading = function() {
