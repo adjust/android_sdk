@@ -685,14 +685,14 @@ public class Util {
     }
 
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isAppSetIdReadingEnabled) {
+        if (!adjustConfig.isGoogleAdIdReadingEnabled) {
             return false;
         }
         return canReadIds(adjustConfig);
     }
 
     public static boolean canReadAndroidId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isAppSetIdReadingEnabled) {
+        if (!adjustConfig.isAndroidIdReadingEnabled) {
             return false;
         }
         return canReadIds(adjustConfig);
