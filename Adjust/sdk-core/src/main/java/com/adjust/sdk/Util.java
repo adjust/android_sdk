@@ -680,26 +680,36 @@ public class Util {
         return false;
     }
 
+    public static boolean canReadIds(final AdjustConfig adjustConfig) {
+        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
+    }
+
     public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled && adjustConfig.isGoogleAdIdReadingEnabled;
+        if (!adjustConfig.isAppSetIdReadingEnabled) {
+            return false;
+        }
+        return canReadIds(adjustConfig);
     }
 
     public static boolean canReadAndroidId(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled && adjustConfig.isAndroidIdReadingEnabled;
+        if (!adjustConfig.isAppSetIdReadingEnabled) {
+            return false;
+        }
+        return canReadIds(adjustConfig);
     }
 
     public static boolean canReadAppSetId(final AdjustConfig adjustConfig) {
         if (!adjustConfig.isAppSetIdReadingEnabled) {
             return false;
         }
-        return canReadPlayIds(adjustConfig);
+        return canReadIds(adjustConfig);
     }
 
     public static boolean canReadFbId(final AdjustConfig adjustConfig) {
         if (!adjustConfig.isFbIdReadingEnabled) {
             return false;
         }
-        return canReadAndroidId(adjustConfig);
+        return canReadIds(adjustConfig);
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {
