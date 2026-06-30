@@ -453,18 +453,20 @@ public class AdjustBridgeInstance {
             String storeInfoString = AdjustBridgeUtil.fieldToString(storeInfoField);
 
             try {
-                JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
+                if (storeInfoString != null) {
+                    JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
 
-                Object storeNameField = jsonStoreInfo.get("storeName");
-                Object storeAppIdField = jsonStoreInfo.get("storeAppId");
+                    Object storeNameField = jsonStoreInfo.get("storeName");
+                    Object storeAppIdField = jsonStoreInfo.get("storeAppId");
 
-                String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
-                String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
-                AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
-                storeInfo.setStoreAppId(storeAppId);
+                    String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
+                    String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
+                    AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+                    storeInfo.setStoreAppId(storeAppId);
 
-                // set store info
-                adjustConfig.setStoreInfo(storeInfo);
+                    // set store info
+                    adjustConfig.setStoreInfo(storeInfo);
+                }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance storeInfo: %s", e.getMessage());
             }
