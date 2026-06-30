@@ -170,7 +170,7 @@ public class PackageHandler implements IPackageHandler,
             }
         };
 
-        if (responseData.retryIn != null) {
+        if (responseData.retryIn != null && responseData.retryIn > 0) {
             long retryIn = responseData.retryIn;
             scheduler.schedule(runnable, retryIn);
             return;
