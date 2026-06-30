@@ -1,5 +1,7 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+}
+
 android {
     compileSdk 37
 
@@ -24,11 +26,13 @@ android {
         targetCompatibility 1.8
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     namespace 'com.adjust.examples'
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+    }
 }
 
 dependencies {
