@@ -133,7 +133,7 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(adjustConfig.sdkPrefix);
-        if (Util.canReadFbId(adjustConfig)) {
+        if (Util.isFbIdReadingEnabled(adjustConfig)) {
             fbAttributionId = getFacebookAttributionId(context);
         }
         hardwareName = getHardwareName();
@@ -142,7 +142,7 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Util.canReadAppSetId(adjustConfig)) {
+        if (Util.isAppSetIdReadingEnabled(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
         storeInfoFromClient = StoreInfoUtil.getStoreInfoFromClient(adjustConfig, context);
@@ -155,7 +155,7 @@ class DeviceInfo {
 
     void reloadPlayIds(final AdjustConfig adjustConfig) {
         if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
-            if (!Util.canReadPlayIds(adjustConfig)) {
+            if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
                 playAdId = null;
                 isTrackingEnabled = null;
                 playAdIdSource = null;
@@ -169,7 +169,7 @@ class DeviceInfo {
         playAdIdSource = null;
         playAdIdAttempt = -1;
 
-        if (!Util.canReadPlayIds(adjustConfig)) {
+        if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
             return;
         }
 
@@ -249,7 +249,7 @@ class DeviceInfo {
     }
 
     void readAndroidId(final AdjustConfig adjustConfig) {
-        if (!Util.canReadAndroidId(adjustConfig)) {
+        if (!Util.isAndroidIdReadingEnabled(adjustConfig)) {
             return;
         }
 

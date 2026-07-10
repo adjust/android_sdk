@@ -680,36 +680,36 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
-    }
-
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isGoogleAdIdReadingEnabled) {
+    public static boolean isGoogleAdvertisingIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadIds(adjustConfig);
+
+        return adjustConfig.isGoogleAdIdReadingEnabled;
     }
 
-    public static boolean canReadAndroidId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isAndroidIdReadingEnabled) {
+    public static boolean isAndroidIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadIds(adjustConfig);
+
+        return adjustConfig.isAndroidIdReadingEnabled;
     }
 
-    public static boolean canReadAppSetId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isAppSetIdReadingEnabled) {
+    public static boolean isAppSetIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadIds(adjustConfig);
+
+        return adjustConfig.isAppSetIdReadingEnabled;
     }
 
-    public static boolean canReadFbId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isFbIdReadingEnabled) {
+    public static boolean isFbIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadIds(adjustConfig);
+
+        return adjustConfig.isFbIdReadingEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {

@@ -1219,14 +1219,14 @@ public class ActivityHandler
 
         deviceInfo.reloadPlayIds(adjustConfig);
         if (deviceInfo.playAdId == null) {
-            if (!Util.canReadPlayIds(adjustConfig)) {
-                logger.info("Cannot read Google Play Services Advertising ID with COPPA or play store kids app enabled or reading disabled");
+            if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
+                logger.info("Cannot read Google Advertising ID with COPPA or play store kids app enabled or reading disabled");
             } else {
-                logger.warn("Unable to get Google Play Services Advertising ID at start time");
+                logger.warn("Unable to get Google Advertising ID at start time");
             }
 
             if (deviceInfo.androidId == null) {
-                if (! Util.canReadAndroidId(adjustConfig)) {
+                if (! Util.isAndroidIdReadingEnabled(adjustConfig)) {
                     logger.info("Cannot read Android ID with COPPA or play store kids app enabled or reading disabled");
                 } else {
                     logger.error("Unable to get Android Id. Please check if Proguard is correctly set with Adjust SDK");
