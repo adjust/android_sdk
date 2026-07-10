@@ -194,6 +194,7 @@ public class AdjustBridgeInstance {
             Object isAndroidIdReadingEnabledField = jsonAdjustConfig.get("isAndroidIdReadingEnabled");
             Object isAppSetIdReadingEnabledField = jsonAdjustConfig.get("isAppSetIdReadingEnabled");
             Object isFbIdReadingEnabledField = jsonAdjustConfig.get("isFbIdReadingEnabled");
+            Object isFireAdIdReadingEnabledField = jsonAdjustConfig.get("isFireAdIdReadingEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -502,6 +503,14 @@ public class AdjustBridgeInstance {
             if (isFbIdReadingEnabled != null) {
                 if (!isFbIdReadingEnabled) {
                     adjustConfig.disableFbIdReading();
+                }
+            }
+
+            // Fire AdId reading
+            Boolean isFireAdIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isFireAdIdReadingEnabledField);
+            if (isFireAdIdReadingEnabled != null) {
+                if (!isFireAdIdReadingEnabled) {
+                    adjustConfig.disableFireAdIdReading();
                 }
             }
 

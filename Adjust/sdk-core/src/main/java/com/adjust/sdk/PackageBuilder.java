@@ -565,6 +565,10 @@ public class PackageBuilder {
             PackageBuilder.addBoolean(parameters, "ff_fb_id_disabled", true);
         }
 
+        if (!adjustConfig.isFireAdIdReadingEnabled) {
+            PackageBuilder.addBoolean(parameters, "ff_fire_adid_disabled", true);
+        }
+
         if (adjustConfig.onRemoteTriggerListener != null) {
             PackageBuilder.addBoolean(parameters, "ff_remote_triggers_callback", true);
         }
@@ -762,6 +766,8 @@ public class PackageBuilder {
                 logger.info("Missing Google Advertising ID, reading disabled.");
             } else if (!adjustConfig.isAndroidIdReadingEnabled) {
                 logger.info("Missing Android ID, reading disabled.");
+            } else if (!adjustConfig.isFireAdIdReadingEnabled) {
+                logger.info("Missing Fire Advertising ID, reading disabled.");
             } else {
                 logger.error("Missing Device IDs. Please check if Proguard is correctly set with Adjust SDK");
             }

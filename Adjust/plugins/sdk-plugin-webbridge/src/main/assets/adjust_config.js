@@ -61,6 +61,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.isAndroidIdReadingEnabled = null;
     this.isAppSetIdReadingEnabled = null;
     this.isFbIdReadingEnabled = null;
+    this.isFireAdIdReadingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -301,4 +302,8 @@ AdjustConfig.prototype.disableAppSetIdReading = function() {
 
 AdjustConfig.prototype.disableFbIdReading = function() {
     this.isFbIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableFireAdIdReading = function() {
+    this.isFireAdIdReadingEnabled = false;
 };

@@ -534,7 +534,7 @@ class DeviceInfo {
         }
         private static String getFireAdvertisingId(final AdjustConfig adjustConfig)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isFireAdIdReadingEnabled(adjustConfig)) {
                 return null;
             }
 
@@ -568,7 +568,7 @@ class DeviceInfo {
         }
 
         private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isFireAdIdReadingEnabled(adjustConfig)) {
                 return null;
             }
 

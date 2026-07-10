@@ -568,6 +568,14 @@ public class AdjustCommandExecutor {
                 adjustConfig.disableFbIdReading();
             }
         }
+
+        if (command.containsParameter("fireAdIdReadingEnabled")) {
+            String fireAdIdReadingEnabledS = command.getFirstParameterValue("fireAdIdReadingEnabled");
+            boolean fireAdIdReadingEnabled = "true".equals(fireAdIdReadingEnabledS);
+            if (!fireAdIdReadingEnabled) {
+                adjustConfig.disableFireAdIdReading();
+            }
+        }
     }
 
     private void start() {

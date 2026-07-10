@@ -57,6 +57,7 @@ public class AdjustConfig {
     boolean isAndroidIdReadingEnabled;
     boolean isAppSetIdReadingEnabled;
     boolean isFbIdReadingEnabled;
+    boolean isFireAdIdReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -99,6 +100,7 @@ public class AdjustConfig {
         this.isAndroidIdReadingEnabled = true;
         this.isAppSetIdReadingEnabled = true;
         this.isFbIdReadingEnabled = true;
+        this.isFireAdIdReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -227,6 +229,10 @@ public class AdjustConfig {
         this.isFbIdReadingEnabled = false;
     }
 
+    public void disableFireAdIdReading() {
+        this.isFireAdIdReadingEnabled = false;
+    }
+
     public Context getContext() {
         return context;
     }
@@ -349,6 +355,10 @@ public class AdjustConfig {
 
     public boolean isFbIdReadingEnabled() {
         return isFbIdReadingEnabled;
+    }
+
+    public boolean isFireAdIdReadingEnabled() {
+        return isFireAdIdReadingEnabled;
     }
 
     private boolean checkContext(Context context) {
