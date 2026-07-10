@@ -59,12 +59,12 @@ class DeviceInfo {
                     "0d247663b26a9031e15f84bc1c74d141ff98a02d76f85b2c8ab2571b6469b232d8e768a7f7" +
                     "ca04f7abe4a775615916c07940656b58717457b42bd928a2";
 
-    String playAdId;
-    String playAdIdSource;
-    int playAdIdAttempt = -1;
+    String googleAdId;
+    String googleAdIdSource;
+    int googleAdIdReadAttempt = -1;
     Boolean isTrackingEnabled;
     private boolean androidIdReadOnce = false;
-    private boolean playIdsReadOnce = false;
+    private boolean googleAdIdReadOnce = false;
     private boolean otherDeviceIdsParamsReadOnce = false;
     String androidId;
     String fbAttributionId;
@@ -153,35 +153,35 @@ class DeviceInfo {
         isUpdatedSystemApp = StoreInfoUtil.getIsUpdatedSystemApp(context);
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig) {
-        if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
-            if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
-                playAdId = null;
+    void reloadGoogleAdId(final AdjustConfig adjustConfig) {
+        if (googleAdIdReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
+            if (!Util.isGoogleAdIdReadingEnabled(adjustConfig)) {
+                googleAdId = null;
                 isTrackingEnabled = null;
-                playAdIdSource = null;
-                playAdIdAttempt = -1;
+                googleAdIdSource = null;
+                googleAdIdReadAttempt = -1;
             }
             return;
         }
 
-        playAdId = null;
+        googleAdId = null;
         isTrackingEnabled = null;
-        playAdIdSource = null;
-        playAdIdAttempt = -1;
+        googleAdIdSource = null;
+        googleAdIdReadAttempt = -1;
 
-        if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
+        if (!Util.isGoogleAdIdReadingEnabled(adjustConfig)) {
             return;
         }
 
         Context context = adjustConfig.context;
 
         if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
-            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
-            playAdIdSource = "samsung_cloud_sdk";
-            playIdsReadOnce = true;
+            googleAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            googleAdIdSource = "samsung_cloud_sdk";
+            googleAdIdReadOnce = true;
         }
 
-        String previousPlayAdId = playAdId;
+        String previousGoogleAdId = googleAdId;
         Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         // attempt connecting to Google Play Service by own
@@ -193,17 +193,17 @@ class DeviceInfo {
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
                         GooglePlayServicesClient.getGooglePlayServicesInfo(context,
                                 timeoutServiceMilli);
-                if (playAdId == null) {
-                    playAdId = gpsInfo.getGpsAdid();
-                    playIdsReadOnce = true;
+                if (googleAdId == null) {
+                    googleAdId = gpsInfo.getGpsAdid();
+                    googleAdIdReadOnce = true;
                 }
                 if (isTrackingEnabled == null) {
                     isTrackingEnabled = gpsInfo.isTrackingEnabled();
                 }
 
-                if (playAdId != null && isTrackingEnabled != null) {
-                    playAdIdSource = "service";
-                    playAdIdAttempt = serviceAttempt;
+                if (googleAdId != null && isTrackingEnabled != null) {
+                    googleAdIdSource = "service";
+                    googleAdIdReadAttempt = serviceAttempt;
                     return;
                 }
             } catch (Exception e) {}
@@ -219,29 +219,29 @@ class DeviceInfo {
                 continue;
             }
 
-            if (playAdId == null) {
+            if (googleAdId == null) {
                 // just needs a short timeout since it should be just accessing a POJO
-                playAdId = Util.getPlayAdId(
+                googleAdId = Util.getGoogleAdId(
                         context, advertisingInfoObject, Constants.ONE_SECOND);
-                playIdsReadOnce = true;
+                googleAdIdReadOnce = true;
             }
             if (isTrackingEnabled == null) {
                 // just needs a short timeout since it should be just accessing a POJO
-                isTrackingEnabled = Util.isPlayTrackingEnabled(
+                isTrackingEnabled = Util.isGoogleAdIdTrackingEnabled(
                         context, advertisingInfoObject, Constants.ONE_SECOND);
             }
 
-            if (playAdId != null && isTrackingEnabled != null) {
-                playAdIdSource = "library";
-                playAdIdAttempt = libAttempt;
+            if (googleAdId != null && isTrackingEnabled != null) {
+                googleAdIdSource = "library";
+                googleAdIdReadAttempt = libAttempt;
                 return;
             }
         }
 
         // if both weren't found, use previous values
-        if (playAdId == null) {
-            playAdId = previousPlayAdId;
-            playIdsReadOnce = true;
+        if (googleAdId == null) {
+            googleAdId = previousGoogleAdId;
+            googleAdIdReadOnce = true;
         }
         if (isTrackingEnabled == null) {
             isTrackingEnabled = previousIsTrackingEnabled;

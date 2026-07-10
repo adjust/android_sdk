@@ -41,20 +41,20 @@ public class Reflection {
         return null;
     }
 
-    public static String getPlayAdId(Context context, Object AdvertisingInfoObject) {
+    public static String getGoogleAdId(Context context, Object AdvertisingInfoObject) {
         try {
-            String playAdid = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
-            return playAdid;
+            String googleAdId = (String) invokeInstanceMethod(AdvertisingInfoObject, "getId", null);
+            return googleAdId;
         } catch (Throwable t) {
             return null;
         }
     }
 
-    public static Boolean isPlayTrackingEnabled(Context context, Object AdvertisingInfoObject) {
+    public static Boolean isGoogleAdIdTrackingEnabled(Context context, Object AdvertisingInfoObject) {
         try {
             Boolean isLimitedTrackingEnabled = (Boolean) invokeInstanceMethod(AdvertisingInfoObject, "isLimitAdTrackingEnabled", null);
-            Boolean isPlayTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
-            return isPlayTrackingEnabled;
+            Boolean isGoogleAdIdTrackingEnabled = (isLimitedTrackingEnabled == null ? null : !isLimitedTrackingEnabled);
+            return isGoogleAdIdTrackingEnabled;
         } catch (Throwable t) {
             return null;
         }

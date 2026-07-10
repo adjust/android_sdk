@@ -451,16 +451,16 @@ public class PackageBuilder {
         }
 
         // Device identifiers.
-        deviceInfo.reloadPlayIds(adjustConfig);
+        deviceInfo.reloadGoogleAdId(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
-        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.playAdId);
-        PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.playAdIdAttempt);
-        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.playAdIdSource);
+        PackageBuilder.addString(parameters, "gps_adid", deviceInfo.googleAdId);
+        PackageBuilder.addLong(parameters, "gps_adid_attempt", deviceInfo.googleAdIdReadAttempt);
+        PackageBuilder.addString(parameters, "gps_adid_src", deviceInfo.googleAdIdSource);
         PackageBuilder.addBoolean(parameters, "tracking_enabled", deviceInfo.isTrackingEnabled);
         PackageBuilder.addString(parameters, "fire_adid", deviceInfo.fireAdId);
         PackageBuilder.addBoolean(parameters, "fire_tracking_enabled", deviceInfo.fireTrackingEnabled);
 
-        if (!containsPlayIds(parameters) && !containsFireIds(parameters)) {
+        if (!containsGoogleAdId(parameters) && !containsFireAdId(parameters)) {
             logger.warn("Google Advertising ID or Fire Advertising ID not detected, " +
                     "fallback to non Google Play and Fire identifiers will take place");
             deviceInfo.readAndroidId(adjustConfig);
@@ -729,14 +729,14 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, key, intString);
     }
 
-    private boolean containsPlayIds(Map<String, String> parameters) {
+    private boolean containsGoogleAdId(Map<String, String> parameters) {
         if (parameters == null) {
             return false;
         }
         return parameters.containsKey("gps_adid");
     }
 
-    private boolean containsFireIds(Map<String, String> parameters) {
+    private boolean containsFireAdId(Map<String, String> parameters) {
         if (parameters == null) {
             return false;
         }

@@ -1217,9 +1217,9 @@ public class ActivityHandler
 
         deviceInfo = new DeviceInfo(adjustConfig);
 
-        deviceInfo.reloadPlayIds(adjustConfig);
-        if (deviceInfo.playAdId == null) {
-            if (!Util.isGoogleAdvertisingIdReadingEnabled(adjustConfig)) {
+        deviceInfo.reloadGoogleAdId(adjustConfig);
+        if (deviceInfo.googleAdId == null) {
+            if (!Util.isGoogleAdIdReadingEnabled(adjustConfig)) {
                 logger.info("Cannot read Google Advertising ID with COPPA or play store kids app enabled or reading disabled");
             } else {
                 logger.warn("Unable to get Google Advertising ID at start time");
