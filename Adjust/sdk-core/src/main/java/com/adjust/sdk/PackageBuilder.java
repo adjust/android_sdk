@@ -224,10 +224,8 @@ public class PackageBuilder {
     private Map<String, String> getSessionParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
-        PackageBuilder.addMapJson(parameters, "callback_params", globalParameters.callbackParameters);
-        PackageBuilder.addMapJson(parameters, "partner_params", globalParameters.partnerParameters);
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
 
         injectStoreInfoToParameters(parameters);
@@ -239,11 +237,8 @@ public class PackageBuilder {
     public Map<String, String> getEventParameters(AdjustEvent event, int sequence) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
-
-        PackageBuilder.addMapJson(parameters, "callback_params",
-                Util.mergeParameters(globalParameters.callbackParameters, event.callbackParameters, "Callback"));
-        PackageBuilder.addMapJson(parameters, "partner_params",
+        addCommonPackageParameters(parameters,
+                Util.mergeParameters(globalParameters.callbackParameters, event.callbackParameters, "Callback"),
                 Util.mergeParameters(globalParameters.partnerParameters, event.partnerParameters, "Partner"));
 
         PackageBuilder.addString(parameters, "currency", event.currency);
@@ -264,7 +259,7 @@ public class PackageBuilder {
     private Map<String, String> getInfoParameters(String source) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         PackageBuilder.addString(parameters, "source", source);
 
@@ -275,7 +270,7 @@ public class PackageBuilder {
     private Map<String, String> getClickParameters(String source) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         // Attribution parameters.
         if (attribution != null) {
@@ -285,8 +280,6 @@ public class PackageBuilder {
             PackageBuilder.addString(parameters, "creative", attribution.creative);
         }
 
-        PackageBuilder.addMapJson(parameters, "callback_params", globalParameters.callbackParameters);
-        PackageBuilder.addMapJson(parameters, "partner_params", globalParameters.partnerParameters);
         PackageBuilder.addDateInMilliseconds(parameters, "click_time", clickTimeInMilliseconds);
         PackageBuilder.addDateInSeconds(parameters, "click_time", clickTimeInSeconds);
         PackageBuilder.addDateInSeconds(parameters, "click_time_server", clickTimeServerInSeconds);
@@ -318,7 +311,7 @@ public class PackageBuilder {
     private Map<String, String> getAttributionParameters(String initiatedBy) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         PackageBuilder.addString(parameters, "initiated_by", initiatedBy);
 
@@ -329,7 +322,7 @@ public class PackageBuilder {
     private Map<String, String> getGdprParameters() {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         checkDeviceIds(parameters);
         return parameters;
@@ -340,7 +333,7 @@ public class PackageBuilder {
     {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         if (adjustThirdPartySharing.isEnabled != null) {
             PackageBuilder.addString(parameters, "sharing", adjustThirdPartySharing.isEnabled.booleanValue() ? "enable" : "disable");
@@ -356,7 +349,7 @@ public class PackageBuilder {
     private Map<String, String> getMeasurementConsentParameters(final boolean consentMeasurement) {
         Map<String, String> parameters = new HashMap<>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         PackageBuilder.addString(parameters, "measurement", consentMeasurement ? "enable" : "disable");
 
@@ -367,12 +360,10 @@ public class PackageBuilder {
     private Map<String, String> getAdRevenueParameters(AdjustAdRevenue adjustAdRevenue) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters,
+                Util.mergeParameters(globalParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"),
+        Util.mergeParameters(globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
 
-        PackageBuilder.addMapJson(parameters, "callback_params",
-                Util.mergeParameters(globalParameters.callbackParameters, adjustAdRevenue.callbackParameters, "Callback"));
-        PackageBuilder.addMapJson(parameters, "partner_params",
-                Util.mergeParameters(globalParameters.partnerParameters, adjustAdRevenue.partnerParameters, "Partner"));
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "source", adjustAdRevenue.source);
         PackageBuilder.addDoubleWithoutRounding(parameters, "revenue", adjustAdRevenue.revenue);
@@ -389,12 +380,10 @@ public class PackageBuilder {
     private Map<String, String> getSubscriptionParameters(AdjustPlayStoreSubscription subscription) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
-
-        PackageBuilder.addMapJson(parameters, "callback_params",
-                Util.mergeParameters(globalParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"));
-        PackageBuilder.addMapJson(parameters, "partner_params",
+        addCommonPackageParameters(parameters,
+                Util.mergeParameters(globalParameters.callbackParameters, subscription.getCallbackParameters(), "Callback"),
                 Util.mergeParameters(globalParameters.partnerParameters, subscription.getPartnerParameters(), "Partner"));
+
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "currency", subscription.getCurrency());
         PackageBuilder.addString(parameters, "product_id", subscription.getSku());
@@ -411,7 +400,7 @@ public class PackageBuilder {
     private Map<String, String> getVerificationParameters(AdjustPlayStorePurchase purchase) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "product_id", purchase.getProductId());
@@ -424,7 +413,7 @@ public class PackageBuilder {
     private Map<String, String> getVerificationParameters(AdjustEvent event) {
         Map<String, String> parameters = new HashMap<String, String>();
 
-        addCommonPackageParameters(parameters);
+        addCommonPackageParameters(parameters, globalParameters.callbackParameters, globalParameters.partnerParameters);
 
         PackageBuilder.addString(parameters, "default_tracker", adjustConfig.defaultTracker);
         PackageBuilder.addString(parameters, "product_id", event.getProductId());
@@ -437,7 +426,9 @@ public class PackageBuilder {
         return parameters;
     }
 
-    private void addCommonPackageParameters(final Map<String, String> parameters) {
+    private void addCommonPackageParameters(final Map<String, String> parameters,
+                                            final Map<String, String> callbackParameters,
+                                            final Map<String, String> partnerParameters) {
         deviceInfo.reloadOtherDeviceInfoParams(adjustConfig, logger);
 
         // Check if plugin is used and if yes, add read parameters.
@@ -515,6 +506,10 @@ public class PackageBuilder {
         PackageBuilder.addDuration(parameters, "session_length", activityStateCopy.sessionLength);
         PackageBuilder.addLong(parameters, "subsession_count", activityStateCopy.subsessionCount);
         PackageBuilder.addDuration(parameters, "time_spent", activityStateCopy.timeSpent);
+
+        // callback and partner parameters
+        PackageBuilder.addMapJson(parameters, "callback_params", callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", partnerParameters);
 
         JSONObject controlParams = SharedPreferencesManager.getDefaultInstance(adjustConfig.context).getControlParamsJson();
         PackageBuilder.addJsonObject(parameters, "control_params", controlParams);
