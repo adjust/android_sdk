@@ -45,5 +45,5 @@ dependencies {
 
     implementation project(':sdk-core')
 
-    implementation 'com.adjust.signature:adjust-android-signature:3.67.0'
+    implementation 'com.adjust.signature:adjust-android-signature:5.0.0'
 }
