@@ -93,6 +93,7 @@ public interface Constants {
     String CONTENT_PROVIDER = "content_provider";
     String CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action";
     String CONTENT_PROVIDER_NO_PERMISSION = "content_provider_no_permission";
+    String CONTENT_PROVIDER_SAMSUNG_MAPS = "content_provider_samsung_maps";
     String FILE_SYSTEM = "file_system";
     String SYSTEM_INSTALLER_REFERRER = "system_installer_referrer";
 

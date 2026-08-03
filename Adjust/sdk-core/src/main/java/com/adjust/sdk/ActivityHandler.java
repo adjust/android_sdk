@@ -1733,6 +1733,20 @@ public class ActivityHandler
             }
         }
 
+        // 9. try reading preinstall payload from content provider maps
+        if (PreinstallUtil.hasNotBeenRead(Constants.CONTENT_PROVIDER_SAMSUNG_MAPS, readStatus)) {
+            String payloadContentProviderMaps = PreinstallUtil.getPayloadFromContentProviderSamsungMaps(
+                    adjustConfig.context,
+                    deviceInfo.packageName,
+                    logger);
+
+            if (payloadContentProviderMaps != null && !payloadContentProviderMaps.isEmpty()) {
+                sdkClickHandler.sendPreinstallPayload(payloadContentProviderMaps, Constants.CONTENT_PROVIDER_SAMSUNG_MAPS);
+            } else {
+                readStatus = PreinstallUtil.markAsRead(Constants.CONTENT_PROVIDER_SAMSUNG_MAPS, readStatus);
+            }
+        }
+
         sharedPreferencesManager.setPreinstallPayloadReadStatus(readStatus);
 
         internalState.preinstallHasBeenRead = true;
