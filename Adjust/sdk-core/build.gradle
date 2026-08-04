@@ -16,6 +16,9 @@ android {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
         consumerProguardFiles 'adjust-proguard-rules.txt'
+        aarMetadata {
+            minCompileSdk = 1
+        }
     }
 
     buildTypes {
