@@ -105,6 +105,11 @@ public interface Constants {
     String ADJUST_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/adjust.preinstall";
     String EXTRA_SYSTEM_INSTALLER_REFERRER = "com.attribution.EXTRA_SYSTEM_INSTALLER_REFERRER";
 
+    String SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY = "com.samsung.android.mapsagent.providers.apptracking";
+    String SAMSUNG_PREINSTALL_CONTENT_URI_PATH = "info";
+    String SAMSUNG_PREINSTALL_APP_TRACKING_ID = "ADJUSTSS0001";
+    String SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER = "samsung_maps";
+
     String ADID_TIMEOUT_TIMER_NAME = "Get Adid timeout timer";
     String ATTRIBUTION_TIMEOUT_TIMER_NAME = "Get Attribution timeout timer";
     String TPS_SETTINGS_TIMEOUT_TIMER_NAME = "Get Third party sharing settings timeout timer";

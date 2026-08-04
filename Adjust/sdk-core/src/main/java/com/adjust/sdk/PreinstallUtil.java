@@ -27,6 +27,10 @@ import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_SYSTEM_PROPERTY_PREFIX;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_FILE_SYSTEM_PATH;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_CONTENT_URI_AUTHORITY;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_CONTENT_URI_PATH;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_APP_TRACKING_ID;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_CONTENT_URI_PATH;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER;
 
 public class PreinstallUtil {
 
@@ -195,7 +199,7 @@ public class PreinstallUtil {
                                                                   final String packageName,
                                                                   final ILogger logger)
     {
-        if (!Util.resolveContentProvider(context, "com.samsung.android.mapsagent.providers.apptracking")) {
+        if (!Util.resolveContentProvider(context, SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY)) {
             return null;
         }
 
@@ -217,7 +221,7 @@ public class PreinstallUtil {
             }
 
             JSONObject payloadJsonObject = new JSONObject();
-            payloadJsonObject.put("provider", "samsung_maps");
+            payloadJsonObject.put("provider", SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER);
             payloadJsonObject.put("details", base64EncodedAppTrackingInfo);
 
             return payloadJsonObject.toString();
@@ -229,9 +233,11 @@ public class PreinstallUtil {
     }
 
     private static JSONObject getSamsungMapsAppTrackingInfo(Context context, String packageName, ILogger logger) {
+        Cursor cursor = null;
         try {
-            Uri contentUri = Uri.parse("content://com.samsung.android.mapsagent.providers.apptracking/info");
-            Cursor cursor = context.getContentResolver().query(contentUri, null, packageName, new String[]{"ADJUSTSS0001"}, null);
+            String contentUriString = Util.formatString("content://%s/%s", SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY, SAMSUNG_PREINSTALL_CONTENT_URI_PATH);
+            Uri contentUri = Uri.parse(contentUriString);
+            cursor = context.getContentResolver().query(contentUri, null, packageName, new String[]{SAMSUNG_PREINSTALL_APP_TRACKING_ID}, null);
 
             if (cursor == null) {
                 return null;
@@ -255,7 +261,11 @@ public class PreinstallUtil {
             return jsonObject;
 
         } catch (Exception e) {
-            logger.error("Samsung MAPS exception read content provider error [%s]", e.getMessage());
+            logger.error("Samsung MAPS Exception read content provider error [%s]", e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
         }
 
         return null;
