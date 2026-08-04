@@ -428,6 +428,10 @@ public class PackageBuilder {
             parameters.putAll(deviceInfo.oaidParameters);
         }
 
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -602,6 +606,10 @@ public class PackageBuilder {
             parameters.putAll(deviceInfo.oaidParameters);
         }
 
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -666,6 +674,10 @@ public class PackageBuilder {
         if (deviceInfo.oaidParameters != null) {
             parameters.putAll(deviceInfo.oaidParameters);
         }
+
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
@@ -745,6 +757,10 @@ public class PackageBuilder {
         PackageBuilder.addMapJson(parameters, "partner_sharing_settings",
                 adjustThirdPartySharing.partnerSharingSettings);
 
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -813,6 +829,10 @@ public class PackageBuilder {
         // Measurement Consent
         PackageBuilder.addString(parameters, "measurement",
                 consentMeasurement ? "enable" : "disable");
+
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
@@ -1073,6 +1093,10 @@ public class PackageBuilder {
             parameters.putAll(deviceInfo.oaidParameters);
         }
 
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
+
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
@@ -1161,6 +1185,10 @@ public class PackageBuilder {
         if (deviceInfo.oaidParameters != null) {
             parameters.putAll(deviceInfo.oaidParameters);
         }
+
+        // Callback and partner parameters.
+        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
+        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
 
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
