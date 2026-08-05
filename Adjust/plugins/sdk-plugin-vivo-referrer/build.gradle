@@ -20,6 +20,9 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.vivoReferrerMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        aarMetadata {
+            minCompileSdk = 1
+        }
     }
     namespace 'com.adjust.sdk.vivo'
 }

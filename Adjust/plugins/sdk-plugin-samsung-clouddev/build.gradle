@@ -19,6 +19,9 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.samsungCloudDevMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        aarMetadata {
+            minCompileSdk = 1
+        }
     }
     namespace 'com.adjust.sdk.samsung.clouddev'
 }

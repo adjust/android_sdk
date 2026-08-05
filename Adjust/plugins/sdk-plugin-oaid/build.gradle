@@ -24,6 +24,9 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
+        aarMetadata {
+            minCompileSdk = 1
+        }
     }
     namespace 'com.adjust.sdk.oaid'
 }
