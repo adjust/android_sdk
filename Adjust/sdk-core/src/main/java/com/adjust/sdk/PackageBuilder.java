@@ -818,10 +818,6 @@ public class PackageBuilder {
         PackageBuilder.addString(parameters, "measurement",
                 consentMeasurement ? "enable" : "disable");
 
-        // Callback and partner parameters.
-        PackageBuilder.addMapJson(parameters, "callback_params", this.globalParameters.callbackParameters);
-        PackageBuilder.addMapJson(parameters, "partner_params", this.globalParameters.partnerParameters);
-
         // Device identifiers.
         deviceInfo.reloadPlayIds(adjustConfig);
         PackageBuilder.addString(parameters, "android_uuid", activityStateCopy.uuid);
