@@ -233,6 +233,14 @@ public class AdjustConfig {
         this.isFireAdIdReadingEnabled = false;
     }
 
+    public void disableDeviceIdsReading() {
+        this.isGoogleAdIdReadingEnabled = false;
+        this.isAndroidIdReadingEnabled = false;
+        this.isAppSetIdReadingEnabled = false;
+        this.isFbIdReadingEnabled = false;
+        this.isFireAdIdReadingEnabled = false;
+    }
+
     public Context getContext() {
         return context;
     }

@@ -307,3 +307,11 @@ AdjustConfig.prototype.disableFbIdReading = function() {
 AdjustConfig.prototype.disableFireAdIdReading = function() {
     this.isFireAdIdReadingEnabled = false;
 };
+
+AdjustConfig.prototype.disableDeviceIdsReading = function() {
+    this.isGoogleAdIdReadingEnabled = false;
+    this.isAndroidIdReadingEnabled = false;
+    this.isAppSetIdReadingEnabled = false;
+    this.isFbIdReadingEnabled = false;
+    this.isFireAdIdReadingEnabled = false;
+};

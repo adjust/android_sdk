@@ -576,6 +576,14 @@ public class AdjustCommandExecutor {
                 adjustConfig.disableFireAdIdReading();
             }
         }
+
+        if (command.containsParameter("disableDeviceIdsReading")) {
+            String deviceIdsReadingEnabledS = command.getFirstParameterValue("disableDeviceIdsReading");
+            boolean deviceIdsReadingEnabled = "true".equals(deviceIdsReadingEnabledS);
+            if (!deviceIdsReadingEnabled) {
+                adjustConfig.disableDeviceIdsReading();
+            }
+        }
     }
 
     private void start() {
