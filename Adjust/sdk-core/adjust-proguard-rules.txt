@@ -31,7 +31,7 @@
 }
 -keep class com.google.android.gms.appset.AppSetIdClient {
     com.google.android.gms.tasks.Task getAppSetIdInfo();
-  }
+}
 -keep class com.google.android.gms.appset.AppSetIdInfo {
     java.lang.String getId();
 }
