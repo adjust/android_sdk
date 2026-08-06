@@ -58,6 +58,7 @@ public class AdjustConfig {
     boolean isAppSetIdReadingEnabled;
     boolean isFbIdReadingEnabled;
     boolean isFireAdIdReadingEnabled;
+    boolean isDeviceIdsReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -101,6 +102,7 @@ public class AdjustConfig {
         this.isAppSetIdReadingEnabled = true;
         this.isFbIdReadingEnabled = true;
         this.isFireAdIdReadingEnabled = true;
+        this.isDeviceIdsReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -234,6 +236,7 @@ public class AdjustConfig {
     }
 
     public void disableDeviceIdsReading() {
+        this.isDeviceIdsReadingEnabled = false;
         this.isGoogleAdIdReadingEnabled = false;
         this.isAndroidIdReadingEnabled = false;
         this.isAppSetIdReadingEnabled = false;

@@ -517,7 +517,8 @@ class DeviceInfo {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled
+                    || !adjustConfig.isDeviceIdsReadingEnabled) {
                 return null;
             }
 
@@ -526,7 +527,8 @@ class DeviceInfo {
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled
+                    || !adjustConfig.isDeviceIdsReadingEnabled) {
                 return null;
             }
 
