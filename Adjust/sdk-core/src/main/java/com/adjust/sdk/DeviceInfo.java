@@ -518,7 +518,7 @@ class DeviceInfo {
                                                              final ILogger logger)
         {
             if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled
-                    || !adjustConfig.isDeviceIdsReadingEnabled) {
+                    || !adjustConfig.isPluginsDeviceIdsReadingEnabled) {
                 return null;
             }
 
@@ -528,7 +528,7 @@ class DeviceInfo {
                                                              final ILogger logger)
         {
             if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled
-                    || !adjustConfig.isDeviceIdsReadingEnabled) {
+                    || !adjustConfig.isPluginsDeviceIdsReadingEnabled) {
                 return null;
             }
 

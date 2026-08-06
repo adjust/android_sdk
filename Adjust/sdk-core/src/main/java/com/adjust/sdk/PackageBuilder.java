@@ -1282,6 +1282,10 @@ public class PackageBuilder {
             PackageBuilder.addBoolean(parameters, "ff_fire_adid_disabled", true);
         }
 
+        if (!adjustConfig.isPluginsDeviceIdsReadingEnabled) {
+            PackageBuilder.addBoolean(parameters, "ff_plugins_device_ids_disabled", true);
+        }
+
         if (adjustConfig.onRemoteTriggerListener != null) {
             PackageBuilder.addBoolean(parameters, "ff_remote_triggers_callback", true);
         }
