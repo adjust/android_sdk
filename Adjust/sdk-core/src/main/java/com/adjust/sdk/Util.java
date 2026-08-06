@@ -720,6 +720,14 @@ public class Util {
         return adjustConfig.isFireAdIdReadingEnabled;
     }
 
+    public static boolean isDeviceIdsFromPluginsReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            return false;
+        }
+
+        return adjustConfig.isDeviceIdsFromPluginsReadingEnabled;
+    }
+
     public static boolean isGooglePlayGamesForPC(final Context context) {
         PackageManager pm = context.getPackageManager();
         return pm.hasSystemFeature("com.google.android.play.feature.HPE_EXPERIENCE");

@@ -350,6 +350,62 @@ AdjustCommandExecutor.prototype.config = function(params) {
         }
     }
 
+    if ('googleAdIdReadingEnabled' in params) {
+        var googleAdIdReadingEnabledS = getFirstParameterValue(params, 'googleAdIdReadingEnabled');
+        var googleAdIdReadingEnabled = googleAdIdReadingEnabledS == 'true';
+        if (googleAdIdReadingEnabled == false) {
+            adjustConfig.disableGoogleAdIdReading();
+        }
+    }
+
+    if ('androidIdReadingEnabled' in params) {
+        var androidIdReadingEnabledS = getFirstParameterValue(params, 'androidIdReadingEnabled');
+        var androidIdReadingEnabled = androidIdReadingEnabledS == 'true';
+        if (androidIdReadingEnabled == false) {
+            adjustConfig.disableAndroidIdReading();
+        }
+    }
+
+    if ('appSetIdReadingEnabled' in params) {
+        var appSetIdReadingEnabledS = getFirstParameterValue(params, 'appSetIdReadingEnabled');
+        var appSetIdReadingEnabled = appSetIdReadingEnabledS == 'true';
+        if (appSetIdReadingEnabled == false) {
+            adjustConfig.disableAppSetIdReading();
+        }
+    }
+
+    if ('fbIdReadingEnabled' in params) {
+        var fbIdReadingEnabledS = getFirstParameterValue(params, 'fbIdReadingEnabled');
+        var fbIdReadingEnabled = fbIdReadingEnabledS == 'true';
+        if (fbIdReadingEnabled == false) {
+            adjustConfig.disableFbIdReading();
+        }
+    }
+
+    if ('fireAdIdReadingEnabled' in params) {
+        var fireAdIdReadingEnabledS = getFirstParameterValue(params, 'fireAdIdReadingEnabled');
+        var fireAdIdReadingEnabled = fireAdIdReadingEnabledS == 'true';
+        if (fireAdIdReadingEnabled == false) {
+            adjustConfig.disableFireAdIdReading();
+        }
+    }
+
+    if ('deviceIdsFromPluginsReadingEnabled' in params) {
+        var deviceIdsFromPluginsReadingEnabledS = getFirstParameterValue(params, 'deviceIdsFromPluginsReadingEnabled');
+        var deviceIdsFromPluginsReadingEnabled = deviceIdsFromPluginsReadingEnabledS == 'true';
+        if (deviceIdsFromPluginsReadingEnabled == false) {
+            adjustConfig.disableDeviceIdsFromPluginsReading();
+        }
+    }
+
+    if ('deviceIdsReadingEnabled' in params) {
+        var deviceIdsReadingEnabledS = getFirstParameterValue(params, 'deviceIdsReadingEnabled');
+        var deviceIdsReadingEnabled = deviceIdsReadingEnabledS == 'true';
+        if (deviceIdsReadingEnabled == false) {
+            adjustConfig.disableDeviceIdsReading();
+        }
+    }
+
     if ('storeName' in params) {
         var storeInfo;
         var storeName = getFirstParameterValue(params, 'storeName');

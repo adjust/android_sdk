@@ -1282,7 +1282,7 @@ public class PackageBuilder {
             PackageBuilder.addBoolean(parameters, "ff_fire_adid_disabled", true);
         }
 
-        if (!adjustConfig.isPluginsDeviceIdsReadingEnabled) {
+        if (!adjustConfig.isDeviceIdsFromPluginsReadingEnabled) {
             PackageBuilder.addBoolean(parameters, "ff_plugins_device_ids_disabled", true);
         }
 

@@ -577,8 +577,16 @@ public class AdjustCommandExecutor {
             }
         }
 
-        if (command.containsParameter("disableDeviceIdsReading")) {
-            String deviceIdsReadingEnabledS = command.getFirstParameterValue("disableDeviceIdsReading");
+        if (command.containsParameter("deviceIdsFromPluginsReadingEnabled")) {
+            String deviceIdsFromPluginsReadingEnabledS = command.getFirstParameterValue("deviceIdsFromPluginsReadingEnabled");
+            boolean deviceIdsFromPluginsReadingEnabled = "true".equals(deviceIdsFromPluginsReadingEnabledS);
+            if (!deviceIdsFromPluginsReadingEnabled) {
+                adjustConfig.disableDeviceIdsFromPluginsReading();
+            }
+        }
+
+        if (command.containsParameter("deviceIdsReadingEnabled")) {
+            String deviceIdsReadingEnabledS = command.getFirstParameterValue("deviceIdsReadingEnabled");
             boolean deviceIdsReadingEnabled = "true".equals(deviceIdsReadingEnabledS);
             if (!deviceIdsReadingEnabled) {
                 adjustConfig.disableDeviceIdsReading();

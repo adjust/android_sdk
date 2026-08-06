@@ -62,6 +62,7 @@ function AdjustConfig(appToken, environment, legacy) {
     this.isAppSetIdReadingEnabled = null;
     this.isFbIdReadingEnabled = null;
     this.isFireAdIdReadingEnabled = null;
+    this.isDeviceIdsFromPluginsReadingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -308,10 +309,15 @@ AdjustConfig.prototype.disableFireAdIdReading = function() {
     this.isFireAdIdReadingEnabled = false;
 };
 
+AdjustConfig.prototype.disableDeviceIdsFromPluginsReading = function() {
+    this.isDeviceIdsFromPluginsReadingEnabled = false;
+};
+
 AdjustConfig.prototype.disableDeviceIdsReading = function() {
     this.isGoogleAdIdReadingEnabled = false;
     this.isAndroidIdReadingEnabled = false;
     this.isAppSetIdReadingEnabled = false;
     this.isFbIdReadingEnabled = false;
     this.isFireAdIdReadingEnabled = false;
+    this.isDeviceIdsFromPluginsReadingEnabled = false;
 };

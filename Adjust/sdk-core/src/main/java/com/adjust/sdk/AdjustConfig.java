@@ -58,7 +58,7 @@ public class AdjustConfig {
     boolean isAppSetIdReadingEnabled;
     boolean isFbIdReadingEnabled;
     boolean isFireAdIdReadingEnabled;
-    boolean isPluginsDeviceIdsReadingEnabled;
+    boolean isDeviceIdsFromPluginsReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -102,7 +102,7 @@ public class AdjustConfig {
         this.isAppSetIdReadingEnabled = true;
         this.isFbIdReadingEnabled = true;
         this.isFireAdIdReadingEnabled = true;
-        this.isPluginsDeviceIdsReadingEnabled = true;
+        this.isDeviceIdsFromPluginsReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -235,13 +235,17 @@ public class AdjustConfig {
         this.isFireAdIdReadingEnabled = false;
     }
 
+    public void disableDeviceIdsFromPluginsReading() {
+        this.isDeviceIdsFromPluginsReadingEnabled = false;
+    }
+
     public void disableDeviceIdsReading() {
         this.isGoogleAdIdReadingEnabled = false;
         this.isAndroidIdReadingEnabled = false;
         this.isAppSetIdReadingEnabled = false;
         this.isFbIdReadingEnabled = false;
         this.isFireAdIdReadingEnabled = false;
-        this.isPluginsDeviceIdsReadingEnabled = false;
+        this.isDeviceIdsFromPluginsReadingEnabled = false;
     }
 
     public Context getContext() {
@@ -370,6 +374,10 @@ public class AdjustConfig {
 
     public boolean isFireAdIdReadingEnabled() {
         return isFireAdIdReadingEnabled;
+    }
+
+    public boolean isDeviceIdsFromPluginsReadingEnabled() {
+        return isDeviceIdsFromPluginsReadingEnabled;
     }
 
     private boolean checkContext(Context context) {
