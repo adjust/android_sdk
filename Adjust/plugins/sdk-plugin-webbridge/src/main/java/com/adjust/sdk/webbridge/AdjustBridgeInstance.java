@@ -190,8 +190,12 @@ public class AdjustBridgeInstance {
             Object eventDeduplicationIdsMaxSizeField = jsonAdjustConfig.get("eventDeduplicationIdsMaxSize");
             Object isFirstSessionDelayEnabledField = jsonAdjustConfig.get("isFirstSessionDelayEnabled");
             Object storeInfoField = jsonAdjustConfig.get("storeInfo");
+            Object isGoogleAdIdReadingEnabledField = jsonAdjustConfig.get("isGoogleAdIdReadingEnabled");
+            Object isAndroidIdReadingEnabledField = jsonAdjustConfig.get("isAndroidIdReadingEnabled");
             Object isAppSetIdReadingEnabledField = jsonAdjustConfig.get("isAppSetIdReadingEnabled");
             Object isFbIdReadingEnabledField = jsonAdjustConfig.get("isFbIdReadingEnabled");
+            Object isFireAdIdReadingEnabledField = jsonAdjustConfig.get("isFireAdIdReadingEnabled");
+            Object isDeviceIdsFromPluginsReadingEnabledField = jsonAdjustConfig.get("isDeviceIdsFromPluginsReadingEnabled");
 
             String appToken = AdjustBridgeUtil.fieldToString(appTokenField);
             String environment = AdjustBridgeUtil.fieldToString(environmentField);
@@ -453,20 +457,38 @@ public class AdjustBridgeInstance {
             String storeInfoString = AdjustBridgeUtil.fieldToString(storeInfoField);
 
             try {
-                JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
+                if (storeInfoString != null) {
+                    JSONObject jsonStoreInfo = new JSONObject(storeInfoString);
 
-                Object storeNameField = jsonStoreInfo.get("storeName");
-                Object storeAppIdField = jsonStoreInfo.get("storeAppId");
+                    Object storeNameField = jsonStoreInfo.get("storeName");
+                    Object storeAppIdField = jsonStoreInfo.get("storeAppId");
 
-                String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
-                String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
-                AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
-                storeInfo.setStoreAppId(storeAppId);
+                    String storeName = AdjustBridgeUtil.fieldToString(storeNameField);
+                    String storeAppId = AdjustBridgeUtil.fieldToString(storeAppIdField);
+                    AdjustStoreInfo storeInfo = new AdjustStoreInfo(storeName);
+                    storeInfo.setStoreAppId(storeAppId);
 
-                // set store info
-                adjustConfig.setStoreInfo(storeInfo);
+                    // set store info
+                    adjustConfig.setStoreInfo(storeInfo);
+                }
             } catch (Exception e) {
                 AdjustFactory.getLogger().error("AdjustBridgeInstance storeInfo: %s", e.getMessage());
+            }
+
+            // Google AdId reading
+            Boolean isGoogleAdIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isGoogleAdIdReadingEnabledField);
+            if (isGoogleAdIdReadingEnabled != null) {
+                if (!isGoogleAdIdReadingEnabled) {
+                    adjustConfig.disableGoogleAdIdReading();
+                }
+            }
+
+            // Android Id reading
+            Boolean isAndroidIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isAndroidIdReadingEnabledField);
+            if (isAndroidIdReadingEnabled != null) {
+                if (!isAndroidIdReadingEnabled) {
+                    adjustConfig.disableAndroidIdReading();
+                }
             }
 
             // AppSetId reading
@@ -482,6 +504,21 @@ public class AdjustBridgeInstance {
             if (isFbIdReadingEnabled != null) {
                 if (!isFbIdReadingEnabled) {
                     adjustConfig.disableFbIdReading();
+                }
+            }
+
+            // Fire AdId reading
+            Boolean isFireAdIdReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isFireAdIdReadingEnabledField);
+            if (isFireAdIdReadingEnabled != null) {
+                if (!isFireAdIdReadingEnabled) {
+                    adjustConfig.disableFireAdIdReading();
+                }
+            }
+
+            Boolean isDeviceIdsFromPluginsReadingEnabled = AdjustBridgeUtil.fieldToBoolean(isDeviceIdsFromPluginsReadingEnabledField);
+            if (isDeviceIdsFromPluginsReadingEnabled != null) {
+                if (!isDeviceIdsFromPluginsReadingEnabled) {
+                    adjustConfig.disableDeviceIdsFromPluginsReading();
                 }
             }
 

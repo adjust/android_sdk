@@ -16,6 +16,9 @@ android {
         minSdkVersion rootProject.ext.coreMinSdkVersion
         targetSdkVersion rootProject.ext.coreTargetSdkVersion
         consumerProguardFiles 'adjust-proguard-rules.txt'
+        aarMetadata {
+            minCompileSdk = 1
+        }
     }
 
     buildTypes {
@@ -221,7 +224,7 @@ def customizePomForAar(pom) {
                 dependency {
                     groupId 'com.adjust.signature'
                     artifactId 'adjust-android-signature'
-                    version '3.67.0'
+                    version '5.0.0'
                     scope 'compile'
                 }
             }

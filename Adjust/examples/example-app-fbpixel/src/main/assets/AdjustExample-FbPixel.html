@@ -53,7 +53,7 @@
             adjustConfig.setFbPixelDefaultEventToken('34vgg9');
 
             // Start Adjust SDK.
-            Adjust.onCreate(adjustConfig);
+            Adjust.initSdk(adjustConfig);
 
             window.onload = function() {
                 var btnTrackSearchEvent = document.getElementById('btnTrackSearchEvent')

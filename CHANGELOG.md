@@ -1,3 +1,13 @@
+### Version 5.8.0 (7th August 2026)
+#### Added
+- Added support for Samsung MAPS (Mobile Application Preload System).
+- Added `disableDeviceIdsReading` method to `AdjustConfig` as an umbrella method alternative to invoking individual device ID disabling methods.
+
+#### Changed
+- Updated the Adjust Signature library version to 5.0.0.
+
+---
+
 ### Version 5.7.0 (12th May 2026)
 #### Added
 - Added `getThirdPartySharingSettingsWithTimeout` to the `Adjust` API and `setOnThirdPartySharingSettingsChangedListener` to `AdjustConfig` for reading current third-party-sharing settings from the Adjust backend.

@@ -281,7 +281,7 @@ public class ActivityPackage implements Serializable {
         suffix = Util.readStringField(fields, "suffix", null);
         callbackParameters = Util.readObjectField(fields, "callbackParameters", null);
         partnerParameters = Util.readObjectField(fields, "partnerParameters", null);
-        retryCount = Util.readIntField(fields, "errorCount", 0);
+        retryCount = Util.readIntField(fields, "retryCount", 0);
         firstErrorCode = Util.readIntField(fields, "firstErrorCode", 0);
         lastErrorCode = Util.readIntField(fields, "lastErrorCode", 0);
         waitBeforeSendTimeSeconds = Util.readDoubleField(fields, "waitBeforeSendTimeSeconds", 0.0);

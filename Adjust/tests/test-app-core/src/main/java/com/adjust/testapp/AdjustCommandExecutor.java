@@ -537,6 +537,22 @@ public class AdjustCommandExecutor {
             }
         }
 
+        if (command.containsParameter("googleAdIdReadingEnabled")) {
+            String googleAdIdReadingEnabledS = command.getFirstParameterValue("googleAdIdReadingEnabled");
+            boolean googleAdIdReadingEnabled = "true".equals(googleAdIdReadingEnabledS);
+            if (!googleAdIdReadingEnabled) {
+                adjustConfig.disableGoogleAdIdReading();
+            }
+        }
+
+        if (command.containsParameter("androidIdReadingEnabled")) {
+            String androidIdReadingEnabledS = command.getFirstParameterValue("androidIdReadingEnabled");
+            boolean androidIdReadingEnabled = "true".equals(androidIdReadingEnabledS);
+            if (!androidIdReadingEnabled) {
+                adjustConfig.disableAndroidIdReading();
+            }
+        }
+
         if (command.containsParameter("appSetIdReadingEnabled")) {
             String appSetIdReadingEnabledS = command.getFirstParameterValue("appSetIdReadingEnabled");
             boolean appSetIdReadingEnabled = "true".equals(appSetIdReadingEnabledS);
@@ -550,6 +566,30 @@ public class AdjustCommandExecutor {
             boolean fbIdReadingEnabled = "true".equals(fbIdReadingEnabledS);
             if (!fbIdReadingEnabled) {
                 adjustConfig.disableFbIdReading();
+            }
+        }
+
+        if (command.containsParameter("fireAdIdReadingEnabled")) {
+            String fireAdIdReadingEnabledS = command.getFirstParameterValue("fireAdIdReadingEnabled");
+            boolean fireAdIdReadingEnabled = "true".equals(fireAdIdReadingEnabledS);
+            if (!fireAdIdReadingEnabled) {
+                adjustConfig.disableFireAdIdReading();
+            }
+        }
+
+        if (command.containsParameter("deviceIdsFromPluginsReadingEnabled")) {
+            String deviceIdsFromPluginsReadingEnabledS = command.getFirstParameterValue("deviceIdsFromPluginsReadingEnabled");
+            boolean deviceIdsFromPluginsReadingEnabled = "true".equals(deviceIdsFromPluginsReadingEnabledS);
+            if (!deviceIdsFromPluginsReadingEnabled) {
+                adjustConfig.disableDeviceIdsFromPluginsReading();
+            }
+        }
+
+        if (command.containsParameter("deviceIdsReadingEnabled")) {
+            String deviceIdsReadingEnabledS = command.getFirstParameterValue("deviceIdsReadingEnabled");
+            boolean deviceIdsReadingEnabled = "true".equals(deviceIdsReadingEnabledS);
+            if (!deviceIdsReadingEnabled) {
+                adjustConfig.disableDeviceIdsReading();
             }
         }
     }

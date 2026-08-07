@@ -1,12 +1,14 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+}
+
 android {
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 21
-        targetSdkVersion 36
+        targetSdkVersion 37
         versionCode 1
         versionName "1.0"
 
@@ -24,11 +26,13 @@ android {
         targetCompatibility 1.8
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     namespace 'com.adjust.examples'
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+    }
 }
 
 dependencies {
@@ -41,5 +45,5 @@ dependencies {
 
     implementation project(':sdk-core')
 
-    implementation 'com.adjust.signature:adjust-android-signature:3.67.0'
+    implementation 'com.adjust.signature:adjust-android-signature:5.0.0'
 }

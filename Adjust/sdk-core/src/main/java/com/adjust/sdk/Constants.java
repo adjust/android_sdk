@@ -38,7 +38,7 @@ public interface Constants {
 
     String SCHEME = "https";
     String AUTHORITY = "app.adjust.com";
-    String CLIENT_SDK = "android5.7.0";
+    String CLIENT_SDK = "android5.8.0";
     String LOGTAG = "Adjust";
     String REFTAG = "reftag";
     String INSTALL_REFERRER = "install_referrer";
@@ -93,6 +93,7 @@ public interface Constants {
     String CONTENT_PROVIDER = "content_provider";
     String CONTENT_PROVIDER_INTENT_ACTION = "content_provider_intent_action";
     String CONTENT_PROVIDER_NO_PERMISSION = "content_provider_no_permission";
+    String CONTENT_PROVIDER_SAMSUNG_MAPS = "content_provider_samsung_maps";
     String FILE_SYSTEM = "file_system";
     String SYSTEM_INSTALLER_REFERRER = "system_installer_referrer";
 
@@ -103,6 +104,11 @@ public interface Constants {
     String ADJUST_PREINSTALL_CONTENT_PROVIDER_INTENT_ACTION = "com.attribution.REFERRAL_PROVIDER";
     String ADJUST_PREINSTALL_FILE_SYSTEM_PATH = "/data/local/tmp/adjust.preinstall";
     String EXTRA_SYSTEM_INSTALLER_REFERRER = "com.attribution.EXTRA_SYSTEM_INSTALLER_REFERRER";
+
+    String SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY = "com.samsung.android.mapsagent.providers.apptracking";
+    String SAMSUNG_PREINSTALL_CONTENT_URI_PATH = "info";
+    String SAMSUNG_PREINSTALL_APP_TRACKING_ID = "ADJUSTSS0001";
+    String SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER = "samsung_maps";
 
     String ADID_TIMEOUT_TIMER_NAME = "Get Adid timeout timer";
     String ATTRIBUTION_TIMEOUT_TIMER_NAME = "Get Attribution timeout timer";

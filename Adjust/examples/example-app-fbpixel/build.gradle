@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 21
-        targetSdkVersion 36
+        targetSdkVersion 37
         versionCode 1
         versionName "1.0"
     }
@@ -14,7 +14,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -35,5 +35,5 @@ dependencies {
 
     implementation project(':sdk-core')
     implementation project(':plugins:sdk-plugin-webbridge')
-    implementation 'com.adjust.signature:adjust-android-signature:3.67.0'
+    implementation 'com.adjust.signature:adjust-android-signature:5.0.0'
 }

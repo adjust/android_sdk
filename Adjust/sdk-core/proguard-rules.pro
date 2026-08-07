@@ -29,3 +29,16 @@
     boolean isLimitAdTrackingEnabled();
 }
 -keep public class com.android.installreferrer.** { *; }
+-keep class com.google.android.gms.appset.AppSet {
+    com.google.android.gms.appset.AppSetIdClient getClient(android.content.Context);
+}
+-keep class com.google.android.gms.appset.AppSetIdClient {
+    com.google.android.gms.tasks.Task getAppSetIdInfo();
+}
+-keep class com.google.android.gms.appset.AppSetIdInfo {
+    java.lang.String getId();
+}
+-keep class com.google.android.gms.tasks.Task
+-keep class com.google.android.gms.tasks.Tasks {
+    java.lang.Object await(com.google.android.gms.tasks.Task, long, java.util.concurrent.TimeUnit);
+}

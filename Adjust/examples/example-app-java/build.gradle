@@ -7,19 +7,19 @@ repositories {
 }
 
 android {
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "com.adjust.examples"
         minSdkVersion 21
-        targetSdkVersion 36
+        targetSdkVersion 37
         versionCode 1
         versionName "1.0"
     }
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
     compileOptions {
@@ -38,5 +38,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-appset:16.1.0'
 
     implementation project(':sdk-core')
-    implementation 'com.adjust.signature:adjust-android-signature:3.67.0'
+    implementation 'com.adjust.signature:adjust-android-signature:5.0.0'
 }

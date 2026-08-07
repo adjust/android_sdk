@@ -59,12 +59,12 @@ class DeviceInfo {
                     "0d247663b26a9031e15f84bc1c74d141ff98a02d76f85b2c8ab2571b6469b232d8e768a7f7" +
                     "ca04f7abe4a775615916c07940656b58717457b42bd928a2";
 
-    String playAdId;
-    String playAdIdSource;
-    int playAdIdAttempt = -1;
+    String googleAdId;
+    String googleAdIdSource;
+    int googleAdIdReadAttempt = -1;
     Boolean isTrackingEnabled;
-    private boolean nonGoogleIdsReadOnce = false;
-    private boolean playIdsReadOnce = false;
+    private boolean androidIdReadOnce = false;
+    private boolean googleAdIdReadOnce = false;
     private boolean otherDeviceIdsParamsReadOnce = false;
     String androidId;
     String fbAttributionId;
@@ -133,7 +133,7 @@ class DeviceInfo {
         displayWidth = getDisplayWidth(displayMetrics);
         displayHeight = getDisplayHeight(displayMetrics);
         clientSdk = getClientSdk(adjustConfig.sdkPrefix);
-        if (Util.canReadFbId(adjustConfig)) {
+        if (Util.isFbIdReadingEnabled(adjustConfig)) {
             fbAttributionId = getFacebookAttributionId(context);
         }
         hardwareName = getHardwareName();
@@ -142,7 +142,7 @@ class DeviceInfo {
         appInstallTime = getAppInstallTime(packageInfo);
         appUpdateTime = getAppUpdateTime(packageInfo);
         uiMode = getDeviceUiMode(configuration);
-        if (Util.canReadAppSetId(adjustConfig)) {
+        if (Util.isAppSetIdReadingEnabled(adjustConfig)) {
             appSetId = Reflection.getAppSetId(context);
         }
         storeInfoFromClient = StoreInfoUtil.getStoreInfoFromClient(adjustConfig, context);
@@ -153,35 +153,35 @@ class DeviceInfo {
         isUpdatedSystemApp = StoreInfoUtil.getIsUpdatedSystemApp(context);
     }
 
-    void reloadPlayIds(final AdjustConfig adjustConfig) {
-        if (playIdsReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
-            if (!Util.canReadPlayIds(adjustConfig)) {
-                playAdId = null;
+    void reloadGoogleAdId(final AdjustConfig adjustConfig) {
+        if (googleAdIdReadOnce && adjustConfig.isDeviceIdsReadingOnceEnabled) {
+            if (!Util.isGoogleAdIdReadingEnabled(adjustConfig)) {
+                googleAdId = null;
                 isTrackingEnabled = null;
-                playAdIdSource = null;
-                playAdIdAttempt = -1;
+                googleAdIdSource = null;
+                googleAdIdReadAttempt = -1;
             }
             return;
         }
 
-        playAdId = null;
+        googleAdId = null;
         isTrackingEnabled = null;
-        playAdIdSource = null;
-        playAdIdAttempt = -1;
+        googleAdIdSource = null;
+        googleAdIdReadAttempt = -1;
 
-        if (!Util.canReadPlayIds(adjustConfig)) {
+        if (!Util.isGoogleAdIdReadingEnabled(adjustConfig)) {
             return;
         }
 
         Context context = adjustConfig.context;
 
         if (Reflection.isAppRunningInSamsungCloudEnvironment(context, adjustConfig.logger)) {
-            playAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
-            playAdIdSource = "samsung_cloud_sdk";
-            playIdsReadOnce = true;
+            googleAdId = Reflection.getSamsungCloudDevGoogleAdId(context, adjustConfig.logger);
+            googleAdIdSource = "samsung_cloud_sdk";
+            googleAdIdReadOnce = true;
         }
 
-        String previousPlayAdId = playAdId;
+        String previousGoogleAdId = googleAdId;
         Boolean previousIsTrackingEnabled = isTrackingEnabled;
 
         // attempt connecting to Google Play Service by own
@@ -193,17 +193,17 @@ class DeviceInfo {
                 GooglePlayServicesClient.GooglePlayServicesInfo gpsInfo =
                         GooglePlayServicesClient.getGooglePlayServicesInfo(context,
                                 timeoutServiceMilli);
-                if (playAdId == null) {
-                    playAdId = gpsInfo.getGpsAdid();
-                    playIdsReadOnce = true;
+                if (googleAdId == null) {
+                    googleAdId = gpsInfo.getGpsAdid();
+                    googleAdIdReadOnce = true;
                 }
                 if (isTrackingEnabled == null) {
                     isTrackingEnabled = gpsInfo.isTrackingEnabled();
                 }
 
-                if (playAdId != null && isTrackingEnabled != null) {
-                    playAdIdSource = "service";
-                    playAdIdAttempt = serviceAttempt;
+                if (googleAdId != null && isTrackingEnabled != null) {
+                    googleAdIdSource = "service";
+                    googleAdIdReadAttempt = serviceAttempt;
                     return;
                 }
             } catch (Exception e) {}
@@ -219,46 +219,46 @@ class DeviceInfo {
                 continue;
             }
 
-            if (playAdId == null) {
+            if (googleAdId == null) {
                 // just needs a short timeout since it should be just accessing a POJO
-                playAdId = Util.getPlayAdId(
+                googleAdId = Util.getGoogleAdId(
                         context, advertisingInfoObject, Constants.ONE_SECOND);
-                playIdsReadOnce = true;
+                googleAdIdReadOnce = true;
             }
             if (isTrackingEnabled == null) {
                 // just needs a short timeout since it should be just accessing a POJO
-                isTrackingEnabled = Util.isPlayTrackingEnabled(
+                isTrackingEnabled = Util.isGoogleAdIdTrackingEnabled(
                         context, advertisingInfoObject, Constants.ONE_SECOND);
             }
 
-            if (playAdId != null && isTrackingEnabled != null) {
-                playAdIdSource = "library";
-                playAdIdAttempt = libAttempt;
+            if (googleAdId != null && isTrackingEnabled != null) {
+                googleAdIdSource = "library";
+                googleAdIdReadAttempt = libAttempt;
                 return;
             }
         }
 
         // if both weren't found, use previous values
-        if (playAdId == null) {
-            playAdId = previousPlayAdId;
-            playIdsReadOnce = true;
+        if (googleAdId == null) {
+            googleAdId = previousGoogleAdId;
+            googleAdIdReadOnce = true;
         }
         if (isTrackingEnabled == null) {
             isTrackingEnabled = previousIsTrackingEnabled;
         }
     }
 
-    void reloadNonPlayIds(final AdjustConfig adjustConfig) {
-        if (!Util.canReadNonPlayIds(adjustConfig)) {
+    void readAndroidId(final AdjustConfig adjustConfig) {
+        if (!Util.isAndroidIdReadingEnabled(adjustConfig)) {
             return;
         }
 
-        if (nonGoogleIdsReadOnce) {
+        if (androidIdReadOnce) {
             return;
         }
 
         androidId = Util.getAndroidId(adjustConfig.context);
-        nonGoogleIdsReadOnce = true;
+        androidIdReadOnce = true;
     }
 
     void reloadOtherDeviceInfoParams(final AdjustConfig adjustConfig,
@@ -517,7 +517,7 @@ class DeviceInfo {
         private static Map<String, String> getImeiParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isDeviceIdsFromPluginsReadingEnabled(adjustConfig)) {
                 return null;
             }
 
@@ -526,7 +526,7 @@ class DeviceInfo {
         private static Map<String, String> getOaidParameters(final AdjustConfig adjustConfig,
                                                              final ILogger logger)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isDeviceIdsFromPluginsReadingEnabled(adjustConfig)) {
                 return null;
             }
 
@@ -534,7 +534,7 @@ class DeviceInfo {
         }
         private static String getFireAdvertisingId(final AdjustConfig adjustConfig)
         {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isFireAdIdReadingEnabled(adjustConfig)) {
                 return null;
             }
 
@@ -568,7 +568,7 @@ class DeviceInfo {
         }
 
         private static Boolean getFireTrackingEnabled(final AdjustConfig adjustConfig) {
-            if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            if (!Util.isFireAdIdReadingEnabled(adjustConfig)) {
                 return null;
             }
 

@@ -53,8 +53,12 @@ public class AdjustConfig {
     ArrayList<AdjustTimeoutCallback> cachedThirdPartySharingTimeoutCallbacks = new ArrayList<>();
     boolean isFirstSessionDelayEnabled;
     AdjustStoreInfo storeInfo;
+    boolean isGoogleAdIdReadingEnabled;
+    boolean isAndroidIdReadingEnabled;
     boolean isAppSetIdReadingEnabled;
     boolean isFbIdReadingEnabled;
+    boolean isFireAdIdReadingEnabled;
+    boolean isDeviceIdsFromPluginsReadingEnabled;
 
     public static final String ENVIRONMENT_SANDBOX = "sandbox";
     public static final String ENVIRONMENT_PRODUCTION = "production";
@@ -93,8 +97,12 @@ public class AdjustConfig {
         this.coppaComplianceEnabled = false;
         this.playStoreKidsComplianceEnabled = false;
         this.isFirstSessionDelayEnabled = false;
+        this.isGoogleAdIdReadingEnabled = true;
+        this.isAndroidIdReadingEnabled = true;
         this.isAppSetIdReadingEnabled = true;
         this.isFbIdReadingEnabled = true;
+        this.isFireAdIdReadingEnabled = true;
+        this.isDeviceIdsFromPluginsReadingEnabled = true;
     }
 
     public void setLogLevel(LogLevel logLevel) {
@@ -207,12 +215,37 @@ public class AdjustConfig {
         this.onRemoteTriggerListener = onRemoteTriggerListener;
     }
 
+    public void disableGoogleAdIdReading() {
+        this.isGoogleAdIdReadingEnabled = false;
+    }
+
+    public void disableAndroidIdReading() {
+        this.isAndroidIdReadingEnabled = false;
+    }
+
     public void disableAppSetIdReading() {
         this.isAppSetIdReadingEnabled = false;
     }
 
     public void disableFbIdReading() {
         this.isFbIdReadingEnabled = false;
+    }
+
+    public void disableFireAdIdReading() {
+        this.isFireAdIdReadingEnabled = false;
+    }
+
+    public void disableDeviceIdsFromPluginsReading() {
+        this.isDeviceIdsFromPluginsReadingEnabled = false;
+    }
+
+    public void disableDeviceIdsReading() {
+        this.isGoogleAdIdReadingEnabled = false;
+        this.isAndroidIdReadingEnabled = false;
+        this.isAppSetIdReadingEnabled = false;
+        this.isFbIdReadingEnabled = false;
+        this.isFireAdIdReadingEnabled = false;
+        this.isDeviceIdsFromPluginsReadingEnabled = false;
     }
 
     public Context getContext() {
@@ -323,12 +356,28 @@ public class AdjustConfig {
         return logger;
     }
 
+    public boolean isGoogleAdIdReadingEnabled() {
+        return isGoogleAdIdReadingEnabled;
+    }
+
+    public boolean isAndroidIdReadingEnabled() {
+        return isAndroidIdReadingEnabled;
+    }
+
     public boolean isAppSetIdReadingEnabled() {
         return isAppSetIdReadingEnabled;
     }
 
     public boolean isFbIdReadingEnabled() {
         return isFbIdReadingEnabled;
+    }
+
+    public boolean isFireAdIdReadingEnabled() {
+        return isFireAdIdReadingEnabled;
+    }
+
+    public boolean isDeviceIdsFromPluginsReadingEnabled() {
+        return isDeviceIdsFromPluginsReadingEnabled;
     }
 
     private boolean checkContext(Context context) {

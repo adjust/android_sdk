@@ -10,12 +10,14 @@ import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Base64;
 
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,17 +27,22 @@ import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_SYSTEM_PROPERTY_PREFIX;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_FILE_SYSTEM_PATH;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_CONTENT_URI_AUTHORITY;
 import static com.adjust.sdk.Constants.ADJUST_PREINSTALL_CONTENT_URI_PATH;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_APP_TRACKING_ID;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_CONTENT_URI_PATH;
+import static com.adjust.sdk.Constants.SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER;
 
 public class PreinstallUtil {
 
-    private static final long SYSTEM_PROPERTY_BITMASK = 1;                  //00...000000001
-    private static final long SYSTEM_PROPERTY_REFLECTION_BITMASK = 2;       //00...000000010
-    private static final long SYSTEM_PROPERTY_PATH_BITMASK = 4;             //00...000000100
-    private static final long SYSTEM_PROPERTY_PATH_REFLECTION_BITMASK = 8;  //00...000001000
-    private static final long CONTENT_PROVIDER_BITMASK = 16;                //00...000010000
-    private static final long CONTENT_PROVIDER_INTENT_ACTION_BITMASK = 32;  //00...000100000
-    private static final long FILE_SYSTEM_BITMASK = 64;                     //00...001000000
-    private static final long CONTENT_PROVIDER_NO_PERMISSION_BITMASK = 128; //00...010000000
+    private static final long SYSTEM_PROPERTY_BITMASK = 1;                  //00...0000000001
+    private static final long SYSTEM_PROPERTY_REFLECTION_BITMASK = 2;       //00...0000000010
+    private static final long SYSTEM_PROPERTY_PATH_BITMASK = 4;             //00...0000000100
+    private static final long SYSTEM_PROPERTY_PATH_REFLECTION_BITMASK = 8;  //00...0000001000
+    private static final long CONTENT_PROVIDER_BITMASK = 16;                //00...0000010000
+    private static final long CONTENT_PROVIDER_INTENT_ACTION_BITMASK = 32;  //00...0000100000
+    private static final long FILE_SYSTEM_BITMASK = 64;                     //00...0001000000
+    private static final long CONTENT_PROVIDER_NO_PERMISSION_BITMASK = 128; //00...0010000000
+    private static final long CONTENT_PROVIDER_MAPS_BITMASK = 256;          //00...0100000000
 
     // bitwise OR (|) of all above locations
     private static final long ALL_LOCATION_BITMASK = (SYSTEM_PROPERTY_BITMASK |
@@ -45,7 +52,8 @@ public class PreinstallUtil {
             CONTENT_PROVIDER_BITMASK |
             CONTENT_PROVIDER_INTENT_ACTION_BITMASK |
             FILE_SYSTEM_BITMASK |
-            CONTENT_PROVIDER_NO_PERMISSION_BITMASK);                        //00...011111111
+            CONTENT_PROVIDER_NO_PERMISSION_BITMASK |
+            CONTENT_PROVIDER_MAPS_BITMASK);                        //00...0111111111
 
     public static boolean hasAllLocationsBeenRead(long status) {
         // Check if the given status has none of the valid location with bit `0`, indicating it has
@@ -72,6 +80,8 @@ public class PreinstallUtil {
                 return (status & FILE_SYSTEM_BITMASK) != FILE_SYSTEM_BITMASK;
             case Constants.CONTENT_PROVIDER_NO_PERMISSION:
                 return (status & CONTENT_PROVIDER_NO_PERMISSION_BITMASK) != CONTENT_PROVIDER_NO_PERMISSION_BITMASK;
+            case Constants.CONTENT_PROVIDER_SAMSUNG_MAPS:
+                return (status & CONTENT_PROVIDER_MAPS_BITMASK) != CONTENT_PROVIDER_MAPS_BITMASK;
         }
         return false;
     }
@@ -95,6 +105,8 @@ public class PreinstallUtil {
                 return (status | FILE_SYSTEM_BITMASK);
             case Constants.CONTENT_PROVIDER_NO_PERMISSION:
                 return (status | CONTENT_PROVIDER_NO_PERMISSION_BITMASK);
+            case Constants.CONTENT_PROVIDER_SAMSUNG_MAPS:
+                return (status | CONTENT_PROVIDER_MAPS_BITMASK);
         }
         return status;
     }
@@ -181,6 +193,82 @@ public class PreinstallUtil {
                                                packageName,
                                                null,// no permission
                                                logger);
+    }
+
+    public static String getPayloadFromContentProviderSamsungMaps(final Context context,
+                                                                  final String packageName,
+                                                                  final ILogger logger)
+    {
+        if (!Util.resolveContentProvider(context, SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY)) {
+            return null;
+        }
+
+        JSONObject appTrackingInfoJsonObject = getSamsungMapsAppTrackingInfo(context, packageName, logger);
+        if (appTrackingInfoJsonObject == null || appTrackingInfoJsonObject.length() <= 0) {
+            return null;
+        }
+
+        boolean result = Boolean.parseBoolean(appTrackingInfoJsonObject.optString("RESULT", "false"));
+        if (!result) {
+            return null;
+        }
+
+        try {
+            String appTrackingInfoJsonString = appTrackingInfoJsonObject.toString();
+            String base64EncodedAppTrackingInfo = Base64.encodeToString(appTrackingInfoJsonString.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+            if (base64EncodedAppTrackingInfo == null || base64EncodedAppTrackingInfo.isEmpty()) {
+                return null;
+            }
+
+            JSONObject payloadJsonObject = new JSONObject();
+            payloadJsonObject.put("provider", SAMSUNG_PREINSTALL_PAYLOAD_PROVIDER);
+            payloadJsonObject.put("details", base64EncodedAppTrackingInfo);
+
+            return payloadJsonObject.toString();
+        } catch (Exception e) {
+            logger.error("Samsung MAPS Exception during payload json object creation from content provider Samsung maps [%s]", e.getMessage());
+        }
+
+        return null;
+    }
+
+    private static JSONObject getSamsungMapsAppTrackingInfo(Context context, String packageName, ILogger logger) {
+        Cursor cursor = null;
+        try {
+            String contentUriString = Util.formatString("content://%s/%s", SAMSUNG_PREINSTALL_CONTENT_URI_AUTHORITY, SAMSUNG_PREINSTALL_CONTENT_URI_PATH);
+            Uri contentUri = Uri.parse(contentUriString);
+            cursor = context.getContentResolver().query(contentUri, null, packageName, new String[]{SAMSUNG_PREINSTALL_APP_TRACKING_ID}, null);
+
+            if (cursor == null) {
+                return null;
+            }
+
+            if (!cursor.moveToFirst()) {
+                cursor.close();
+                return null;
+            }
+
+            JSONObject jsonObject = new JSONObject();
+
+            for (int col = 0; col < cursor.getColumnCount(); col++) {
+                jsonObject.put(cursor.getColumnName(col), cursor.getString(col));
+            }
+            cursor.close();
+            if (jsonObject.length() <= 0) {
+                return null;
+            }
+
+            return jsonObject;
+
+        } catch (Exception e) {
+            logger.error("Samsung MAPS Exception read content provider error [%s]", e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return null;
     }
 
     public static String getPayloadFromFileSystem(final String packageName,

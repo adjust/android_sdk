@@ -64,7 +64,7 @@ public class Util {
     public static final SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT, Locale.US);
 
     // https://www.cs.umd.edu/~pugh/java/memoryModel/DoubleCheckedLocking.html
-    private static volatile SingleThreadFutureScheduler playAdIdScheduler = null;
+    private static volatile SingleThreadFutureScheduler googleAdIdScheduler = null;
 
     private static ILogger getLogger() {
         return AdjustFactory.getLogger();
@@ -94,7 +94,7 @@ public class Util {
     }
 
     public static Object getAdvertisingInfoObject(final Context context, long timeoutMilli) {
-        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Object>() {
+        return runSyncInGoogleAdIdSchedulerWithTimeout(context, new Callable<Object>() {
             @Override
             public Object call() {
                 try {
@@ -106,46 +106,46 @@ public class Util {
         }, timeoutMilli);
     }
 
-    public static String getPlayAdId(final Context context,
-                                     final Object advertisingInfoObject,
-                                     long timeoutMilli)
+    public static String getGoogleAdId(final Context context,
+                                       final Object advertisingInfoObject,
+                                       long timeoutMilli)
     {
-        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<String>() {
+        return runSyncInGoogleAdIdSchedulerWithTimeout(context, new Callable<String>() {
             @Override
             public String call() {
-                return Reflection.getPlayAdId(context, advertisingInfoObject);
+                return Reflection.getGoogleAdId(context, advertisingInfoObject);
             }
         }, timeoutMilli);
     }
 
-    public static Boolean isPlayTrackingEnabled(final Context context,
-                                               final Object advertisingInfoObject,
-                                               long timeoutMilli)
+    public static Boolean isGoogleAdIdTrackingEnabled(final Context context,
+                                                      final Object advertisingInfoObject,
+                                                      long timeoutMilli)
     {
-        return runSyncInPlayAdIdSchedulerWithTimeout(context, new Callable<Boolean>() {
+        return runSyncInGoogleAdIdSchedulerWithTimeout(context, new Callable<Boolean>() {
             @Override
             public Boolean call() {
-                return Reflection.isPlayTrackingEnabled(context, advertisingInfoObject);
+                return Reflection.isGoogleAdIdTrackingEnabled(context, advertisingInfoObject);
             }
         }, timeoutMilli);
     }
 
-    private static <R> R runSyncInPlayAdIdSchedulerWithTimeout(final Context context,
-                                                               Callable<R> callable,
-                                                               long timeoutMilli)
+    private static <R> R runSyncInGoogleAdIdSchedulerWithTimeout(final Context context,
+                                                                 Callable<R> callable,
+                                                                 long timeoutMilli)
     {
-        if (playAdIdScheduler == null) {
+        if (googleAdIdScheduler == null) {
             synchronized (Util.class) {
-                if (playAdIdScheduler == null) {
-                    playAdIdScheduler = new SingleThreadFutureScheduler("PlayAdIdLibrary", true);
+                if (googleAdIdScheduler == null) {
+                    googleAdIdScheduler = new SingleThreadFutureScheduler("PlayAdIdLibrary", true);
                 }
             }
         }
 
-        ScheduledFuture<R> playAdIdFuture = playAdIdScheduler.scheduleFutureWithReturn(callable, 0);
+        ScheduledFuture<R> googleAdIdFuture = googleAdIdScheduler.scheduleFutureWithReturn(callable, 0);
 
         try {
-            return playAdIdFuture.get(timeoutMilli, TimeUnit.MILLISECONDS);
+            return googleAdIdFuture.get(timeoutMilli, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
         } catch (InterruptedException e) {
         } catch (TimeoutException e) {
@@ -172,9 +172,9 @@ public class Util {
             }
 
             @Override
-            protected void onPostExecute(String playAdiId) {
+            protected void onPostExecute(String googleAdiId) {
                 if (onGoogleAdIdReadListener != null) {
-                    onGoogleAdIdReadListener.onGoogleAdIdRead(playAdiId);
+                    onGoogleAdIdReadListener.onGoogleAdIdRead(googleAdiId);
                 }
             }
         }.execute(context);
@@ -196,7 +196,7 @@ public class Util {
                     context, Constants.ONE_SECOND * 11);
 
             if (advertisingInfoObject != null) {
-                googleAdId = Util.getPlayAdId(context, advertisingInfoObject, Constants.ONE_SECOND);
+                googleAdId = Util.getGoogleAdId(context, advertisingInfoObject, Constants.ONE_SECOND);
             }
         }
 
@@ -680,26 +680,52 @@ public class Util {
         return false;
     }
 
-    public static boolean canReadPlayIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
-    }
-
-    public static boolean canReadNonPlayIds(final AdjustConfig adjustConfig) {
-        return !adjustConfig.coppaComplianceEnabled && !adjustConfig.playStoreKidsComplianceEnabled;
-    }
-
-    public static boolean canReadAppSetId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isAppSetIdReadingEnabled) {
+    public static boolean isGoogleAdIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadPlayIds(adjustConfig);
+
+        return adjustConfig.isGoogleAdIdReadingEnabled;
     }
 
-    public static boolean canReadFbId(final AdjustConfig adjustConfig) {
-        if (!adjustConfig.isFbIdReadingEnabled) {
+    public static boolean isAndroidIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
             return false;
         }
-        return canReadNonPlayIds(adjustConfig);
+
+        return adjustConfig.isAndroidIdReadingEnabled;
+    }
+
+    public static boolean isAppSetIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            return false;
+        }
+
+        return adjustConfig.isAppSetIdReadingEnabled;
+    }
+
+    public static boolean isFbIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            return false;
+        }
+
+        return adjustConfig.isFbIdReadingEnabled;
+    }
+
+    public static boolean isFireAdIdReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            return false;
+        }
+
+        return adjustConfig.isFireAdIdReadingEnabled;
+    }
+
+    public static boolean isDeviceIdsFromPluginsReadingEnabled(final AdjustConfig adjustConfig) {
+        if (adjustConfig.coppaComplianceEnabled || adjustConfig.playStoreKidsComplianceEnabled) {
+            return false;
+        }
+
+        return adjustConfig.isDeviceIdsFromPluginsReadingEnabled;
     }
 
     public static boolean isGooglePlayGamesForPC(final Context context) {

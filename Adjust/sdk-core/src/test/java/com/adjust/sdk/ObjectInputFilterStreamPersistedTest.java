@@ -186,8 +186,8 @@ public class ObjectInputFilterStreamPersistedTest {
         assertEquals(original.getSuffix(), restored.getSuffix());
         assertEquals(original.getCallbackParameters(), restored.getCallbackParameters());
         assertEquals(original.getPartnerParameters(), restored.getPartnerParameters());
-        // current ActivityPackage.readObject reads legacy "errorCount" and drops "retryCount"
-        assertEquals(0, restored.getRetryCount());
+        // current ActivityPackage.readObject reads "retryCount" and drops legacy "errorCount"
+        assertEquals(original.getRetryCount(), restored.getRetryCount());
         assertEquals(original.getFirstErrorCode(), restored.getFirstErrorCode());
         assertEquals(original.getLastErrorCode(), restored.getLastErrorCode());
         assertEquals(original.getWaitBeforeSendTimeSeconds(), restored.getWaitBeforeSendTimeSeconds(), 0.0d);
@@ -246,7 +246,7 @@ public class ObjectInputFilterStreamPersistedTest {
         assertEquals(first.getSuffix(), restored.get(0).getSuffix());
         assertEquals(first.getCallbackParameters(), restored.get(0).getCallbackParameters());
         assertEquals(first.getPartnerParameters(), restored.get(0).getPartnerParameters());
-        assertEquals(0, restored.get(0).getRetryCount());
+        assertEquals(first.getRetryCount(), restored.get(0).getRetryCount());
         assertEquals(first.getFirstErrorCode(), restored.get(0).getFirstErrorCode());
         assertEquals(first.getLastErrorCode(), restored.get(0).getLastErrorCode());
         assertEquals(first.getWaitBeforeSendTimeSeconds(), restored.get(0).getWaitBeforeSendTimeSeconds(), 0.0d);
@@ -258,7 +258,7 @@ public class ObjectInputFilterStreamPersistedTest {
         assertEquals(second.getSuffix(), restored.get(1).getSuffix());
         assertEquals(second.getCallbackParameters(), restored.get(1).getCallbackParameters());
         assertEquals(second.getPartnerParameters(), restored.get(1).getPartnerParameters());
-        assertEquals(0, restored.get(1).getRetryCount());
+        assertEquals(second.getRetryCount(), restored.get(1).getRetryCount());
         assertEquals(second.getFirstErrorCode(), restored.get(1).getFirstErrorCode());
         assertEquals(second.getLastErrorCode(), restored.get(1).getLastErrorCode());
         assertEquals(second.getWaitBeforeSendTimeSeconds(), restored.get(1).getWaitBeforeSendTimeSeconds(), 0.0d);

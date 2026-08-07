@@ -57,8 +57,12 @@ function AdjustConfig(appToken, environment, legacy) {
     this.eventDeduplicationIdsMaxSize = null;
     this.isFirstSessionDelayEnabled = null;
     this.storeInfo = null;
+    this.isGoogleAdIdReadingEnabled = null;
+    this.isAndroidIdReadingEnabled = null;
     this.isAppSetIdReadingEnabled = null;
     this.isFbIdReadingEnabled = null;
+    this.isFireAdIdReadingEnabled = null;
+    this.isDeviceIdsFromPluginsReadingEnabled = null;
 }
 
 AdjustConfig.EnvironmentSandbox = 'sandbox';
@@ -285,10 +289,35 @@ AdjustConfig.prototype.setStoreInfo = function(storeInfo) {
     this.storeInfo = JSON.stringify(storeInfo);
 };
 
+AdjustConfig.prototype.disableGoogleAdIdReading = function() {
+    this.isGoogleAdIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableAndroidIdReading = function() {
+    this.isAndroidIdReadingEnabled = false;
+};
+
 AdjustConfig.prototype.disableAppSetIdReading = function() {
     this.isAppSetIdReadingEnabled = false;
 };
 
 AdjustConfig.prototype.disableFbIdReading = function() {
     this.isFbIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableFireAdIdReading = function() {
+    this.isFireAdIdReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableDeviceIdsFromPluginsReading = function() {
+    this.isDeviceIdsFromPluginsReadingEnabled = false;
+};
+
+AdjustConfig.prototype.disableDeviceIdsReading = function() {
+    this.isGoogleAdIdReadingEnabled = false;
+    this.isAndroidIdReadingEnabled = false;
+    this.isAppSetIdReadingEnabled = false;
+    this.isFbIdReadingEnabled = false;
+    this.isFireAdIdReadingEnabled = false;
+    this.isDeviceIdsFromPluginsReadingEnabled = false;
 };
