@@ -1,5 +1,6 @@
 ### Version 5.8.0 (7th August 2026)
 #### Added
+- Added support for Samsung MAPS (Mobile Application Preload System).
 - Added `disableDeviceIdsReading` method to `AdjustConfig` as an umbrella method alternative to invoking individual device ID disabling methods.
 
 #### Changed
