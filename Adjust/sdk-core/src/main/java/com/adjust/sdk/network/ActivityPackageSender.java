@@ -515,12 +515,18 @@ public class ActivityPackageSender implements IActivityPackageSender {
                 inputStream = connection.getInputStream();
             }
 
-            final InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            if (inputStream == null) {
+                logger.error("Empty response stream");
+                return responseCode;
+            }
 
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                responseStringBuilder.append(line);
+            final InputStreamReader reader = new InputStreamReader(inputStream, Constants.ENCODING);
+
+            try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    responseStringBuilder.append(line);
+                }
             }
         } catch (final IOException ioException) {
             String errorMessage = errorMessage(ioException,
