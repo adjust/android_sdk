@@ -1,3 +1,10 @@
+### Version 5.8.1 (23rd October 2026)
+#### Changed
+- Updated the Adjust Signature library version to 5.8.0.
+- Improved HTTP response stream handling and resource cleanup.
+
+---
+
 ### Version 5.8.0 (7th August 2026)
 #### Added
 - Added support for Samsung MAPS (Mobile Application Preload System).
